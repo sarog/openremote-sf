@@ -86,8 +86,9 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       return true;
    }
    
+   @SuppressWarnings("finally")
    @Override
-   public boolean refreshController() {
+   public synchronized boolean refreshController() {
       logger.info("Controller.xml of Controller changed, refreshing controller.xml");
       boolean success = false;
       tagControllerXMLChanged(true);
@@ -97,13 +98,16 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          clearStatusCache();
          clearAndReloadSensors();
          restartPollingMachineThreads();
+         success = true;
       } catch (ControllerException e) {
          logger.error("Error occured while refreshing controller.", e);
+         success = false;
+      } finally {
+         tagControllerXMLChanged(false);
+         String isSuccessInfo = success ? " success " : " failed ";
+         logger.info("Finished refreshing controller.xml" + isSuccessInfo);
+         return success;
       }
-      tagControllerXMLChanged(false);
-      success = true;
-      logger.info("Finished refreshing controller.xml");
-      return success;
    }
    
    private void tagControllerXMLChanged(boolean isChanged) {
