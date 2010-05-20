@@ -65,7 +65,7 @@ public class PollingHelper {
    private Context context;
    private static String deviceId = null;
    private Handler handler;
-   
+   private static final int NET_ERROR = 0;
    public PollingHelper(HashSet<Integer> ids, final Context context) {
       this.context = context;
       this.serverUrl = AppSettingsModel.getCurrentServer(context);
@@ -84,8 +84,11 @@ public class PollingHelper {
          @Override
          public void handleMessage(Message msg) {
             isPolling = false;
-            Log.i("POLLING", "polling failed and canceled.");
-            ORControllerServerSwitcher.doSwitch(context);
+            Log.i("POLLING", "polling failed and canceled." + msg.what);
+            // only the network is error, switch controller server, or endless loop would happen to switch server.
+            if (msg.what == NET_ERROR) {
+               ORControllerServerSwitcher.doSwitch(context);
+            }
          }
       };
    }
@@ -131,19 +134,19 @@ public class PollingHelper {
          } catch (SocketTimeoutException e) {
             isPolling = false;
             Log.e("POLLING", "polling socket timeout.");
-            handler.sendEmptyMessage(0);
+            handler.sendEmptyMessage(NET_ERROR);
          } catch (ClientProtocolException e) {
             isPolling = false;
-            Log.e("POLLING", "polling failed.");
-            handler.sendEmptyMessage(0);
+            Log.e("POLLING", "polling failed.", e);
+            handler.sendEmptyMessage(NET_ERROR);
          } catch (SocketException e) {
             isPolling = false;
             Log.e("POLLING", "polling failed.", e);
-            handler.sendEmptyMessage(0);
+            handler.sendEmptyMessage(NET_ERROR);
          } catch (IllegalArgumentException e) {
             isPolling = false;
             Log.e("POLLING", "polling failed", e);
-            handler.sendEmptyMessage(0);
+            handler.sendEmptyMessage(NET_ERROR);
          } catch (InterruptedIOException e) {
             isPolling = false;
             Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
