@@ -28,7 +28,6 @@ import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -60,7 +59,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 
-public class AppSettingsActivity extends Activity{
+public class AppSettingsActivity extends GenericActivity {
 
    private LinearLayout appSettingsView;
    private ListView customeListView;
@@ -282,7 +281,7 @@ public class AppSettingsActivity extends Activity{
       addServer.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
             Intent intent = new Intent();
-            intent.setClass(AppSettingsActivity.this, ConfigureActivity.class);
+            intent.setClass(AppSettingsActivity.this, AddServerActivity.class);
             startActivityForResult(intent, Constants.REQUEST_CODE);
          }
          

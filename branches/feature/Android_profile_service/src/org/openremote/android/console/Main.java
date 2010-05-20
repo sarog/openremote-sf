@@ -28,7 +28,6 @@ import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.util.AsyncResourceLoader;
 import org.openremote.android.console.util.ImageUtil;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -61,7 +60,7 @@ import android.widget.ListView;
  * 
  * @author Andrew C. Oliver <acoliver at osintegrators.com>
  */
-public class Main extends Activity {
+public class Main extends GenericActivity {
 
     LinearLayout activitiesListView;
     public static final String LOAD_RESOURCE = "loadResource";
@@ -119,7 +118,7 @@ public class Main extends Activity {
     private void doSettings(String error) {
         Intent i = new Intent();
         i.setClassName(this.getClass().getPackage().getName(),
-                ConfigureActivity.class.getName());
+                AddServerActivity.class.getName());
         if (TextUtils.isEmpty(error))
             ;
         i.putExtra(Constants.ERROR, error);

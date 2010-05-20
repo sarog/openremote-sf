@@ -3,7 +3,6 @@ package org.openremote.android.console;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,7 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class LoginViewActivity extends Activity {
+public class LoginViewActivity extends GenericActivity {
 
    private EditText usernameText;
    private EditText passwordText;

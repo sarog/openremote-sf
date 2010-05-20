@@ -84,6 +84,7 @@ public class PollingHelper {
          @Override
          public void handleMessage(Message msg) {
             isPolling = false;
+            Log.i("POLLING", "polling failed and canceled.");
             ORControllerServerSwitcher.doSwitch(context);
          }
       };

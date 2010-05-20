@@ -20,6 +20,7 @@
 package org.openremote.android.console.model;
 
 import org.openremote.android.console.AppSettingsActivity;
+import org.openremote.android.console.GenericActivity;
 
 import android.R;
 import android.app.AlertDialog;
@@ -51,7 +52,9 @@ public class ViewHelper {
     */
    public static void showAlertViewWithTitleYesOrNo(Context context, String title, String message, 
          AlertDialog.OnClickListener yesClickListener) {
-      
+      if (!isActivityResumed(context)) {
+         return;
+      }
       AlertDialog alertDialog = new AlertDialog.Builder(context).create();
       alertDialog.setTitle(title);
       alertDialog.setMessage(message);
@@ -64,6 +67,9 @@ public class ViewHelper {
    }
    
    public static void showAlertViewWithTitle(Context context, String title, String message) {
+      if (!isActivityResumed(context)) {
+         return;
+      }
       AlertDialog alertDialog = new AlertDialog.Builder(context).create();
       alertDialog.setTitle(title);
       alertDialog.setMessage(message);
@@ -81,6 +87,9 @@ public class ViewHelper {
     * @author handy
     */
    public static void showAlertViewWithSetting(final Context context, String title, String message) {
+      if (!isActivityResumed(context)) {
+         return;
+      }
       final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
       alertDialog.setTitle(title);
       alertDialog.setMessage(message);
@@ -102,5 +111,12 @@ public class ViewHelper {
 		}
       });
       alertDialog.show();
+   }
+   
+   private static boolean isActivityResumed(Context context) {
+      if (context instanceof GenericActivity) {
+         return ((GenericActivity)context).isActivityResumed();
+      }
+      return true;
    }
 }
