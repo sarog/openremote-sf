@@ -47,18 +47,10 @@ import android.widget.ListView;
 
 /**
  * This class represents the main OpenRemote activity. It starts up, reads the
- * xml file, and displays the list of activities. If the user clicks an
- * activity, it is launched via an intent to the ActivityHandler class.
+ * xml file via AsyncResourceLoader class. It is launched via an intent to the GroupActivity class.
  * 
- * The XML file is parsed using SimpleBinder which returns a list of
- * org.openremote.android.console.bindings.ORActivity instances which in turn
- * contain the Screen and Button instances. The actual configuration of Screens
- * and such is handled by ActivityHandler.
- * 
- * Note that ORActivity, ORButton, ORScreen are convenience interfaces which are
- * used solely for not conflicting with the Android classes for the same name.
- * 
- * @author Andrew C. Oliver <acoliver at osintegrators.com>
+ * @author Andrew C. Oliver <acoliver at osintegrators.com> 
+ *         Tomsky
  */
 public class Main extends GenericActivity {
 
