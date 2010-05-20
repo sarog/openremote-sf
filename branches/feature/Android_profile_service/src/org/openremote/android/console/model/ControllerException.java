@@ -23,9 +23,9 @@ public class ControllerException {
    public static final int CONTROLLER_UNAVAILABLE = 0;
 
    public static final int UNAUTHORIZED = 401;
-   private static final int REQUEST_ERROR = 404;
+   public static final int REQUEST_ERROR = 404;
 
-   private static final int SERVER_ERROR = 500;
+   public static final int SERVER_ERROR = 500;
    private static final int NA_SERVICE = 503;
    public static final int GATEWAY_TIMEOUT = 504;
    public static final int REFRESH_CONTROLLER = 506;

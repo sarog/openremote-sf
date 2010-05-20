@@ -99,10 +99,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      if (getIntent().getDataString() != null) {
-         useLocalCache = true;
-         ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
-      }
 
       getWindow().requestFeature(Window.FEATURE_NO_TITLE);
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -423,6 +419,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    @Override
    protected void onResume() {
       super.onResume();
+      if (getIntent().getDataString() != null) {
+         useLocalCache = true;
+         ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
+      }
       mSensorManager.registerListener(this, SensorManager.SENSOR_ORIENTATION, SensorManager.SENSOR_DELAY_NORMAL);
       startCurrentPolling();
    }
