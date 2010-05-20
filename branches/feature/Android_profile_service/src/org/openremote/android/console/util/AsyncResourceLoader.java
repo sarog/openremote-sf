@@ -68,15 +68,15 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    @Override
    protected AsyncResourceLoaderResult doInBackground(Void... params) {
       AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
-      boolean isControllerAvailable = false;
+      boolean isDownloadSuccess = false;
       String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
       publishProgress("panel: " + panelName);
       String serverUrl = AppSettingsModel.getCurrentServer(activity);
 
       HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, serverUrl);
-      isControllerAvailable = (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) ? true : false;
+      isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
 
-      if (isControllerAvailable) {
+      if (isDownloadSuccess) {
          int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
          if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
             Log.i("DOWNLOAD", "Download file panel.xml fail.");
@@ -116,7 +116,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                HTTPUtil.downLoadImage(activity, AppSettingsModel.getCurrentServer(activity), imageName);
             }
          }
-      } else { // controller isn't available
+      } else { // Download failed.
          if (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == ControllerException.UNAUTHORIZED) {
             result.setAction(TO_LOGIN);
             result.setStatusCode(ControllerException.UNAUTHORIZED);
@@ -124,7 +124,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          }
          
          if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-            Log.i("DOWNLOAD", "Current controller server isn't available, so use local cache.");
+            Log.i("DOWNLOAD", "Download failed, so use local cache.");
             FileUtil.parsePanelXML(activity);
             result.setCanUseLocalCache(true);
             result.setAction(TO_GROUP);

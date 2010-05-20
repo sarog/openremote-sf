@@ -34,7 +34,7 @@ public class LoginDialog extends Dialog {
 
    private EditText usernameText;
    private EditText passwordText;
-   
+   private Button loginButton;
    public LoginDialog(Context context) {
       super(context);
       setContentView(R.layout.login_view);
@@ -43,26 +43,34 @@ public class LoginDialog extends Dialog {
       usernameText = (EditText)findViewById(R.id.username);
       usernameText.setText(UserCache.getUsername(context));
       passwordText = (EditText)findViewById(R.id.password);
-      Button loginButton = (Button)findViewById(R.id.login);
+      loginButton = (Button)findViewById(R.id.login);
       loginButton.setOnClickListener(new OnloginClickListener());
       Button cancelButton = (Button)findViewById(R.id.login_cancel);
       cancelButton.setOnClickListener(new OnCancelClickListener());
       show();
    }
    
-   private final class OnloginClickListener implements android.view.View.OnClickListener {
-      public void onClick(View v) {
-         String username = usernameText.getText().toString();
-         String password = passwordText.getText().toString();
-         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-            ViewHelper.showAlertViewWithTitle(getContext(), "Warn", "No username or password entered.");
-            return;
-         } else {
-            UserCache.saveUser(getContext(), username, password);
-         }
-         dismiss();
+   
+   public void setOnClickListener(OnloginClickListener onloginClickListener) {
+      loginButton.setOnClickListener(onloginClickListener);
+   }
+   
+   private void checkAndSave() {
+      String username = usernameText.getText().toString();
+      String password = passwordText.getText().toString();
+      if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+         ViewHelper.showAlertViewWithTitle(getContext(), "Warn", "No username or password entered.");
+         return;
+      } else {
+         UserCache.saveUser(getContext(), username, password);
       }
-
+      dismiss();
+   }
+   
+   public class OnloginClickListener implements android.view.View.OnClickListener {
+      public void onClick(View v) {
+         checkAndSave();
+      }
    }
    
    private final class OnCancelClickListener implements android.view.View.OnClickListener {

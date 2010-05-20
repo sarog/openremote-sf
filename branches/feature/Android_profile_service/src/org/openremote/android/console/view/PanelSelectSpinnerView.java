@@ -61,7 +61,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    private ArrayAdapter<String> arrayAdapter;
    private static final String  CHOOSE_PANEL = "choose panel";
    private static final String  NONE = "None";
-   private boolean isSending;
+   private int sendCount;
    
    public PanelSelectSpinnerView(Context context) {
       super(context);
@@ -81,17 +81,12 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       setOnItemSelectListener(context);
    }
    
-   private void setOntouchListener(final Context context, final PanelSelectSpinnerView ORConnectionDelegate) {
+   private void setOntouchListener(final Context context, final PanelSelectSpinnerView orConnectionDelegate) {
       setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
-            String currentServer = AppSettingsModel.getCurrentServer(context);
-            if (!isSending && !TextUtils.isEmpty(currentServer)) {
-               isSending = true;
-               new ORConnection(context ,ORHttpMethod.GET, true, currentServer + "/rest/panels", ORConnectionDelegate);
-            }
+            requestPanelList(context, orConnectionDelegate);
             return false;
          }
-         
       });
    }
    
@@ -116,7 +111,6 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    }
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
-      isSending = false;
       ViewHelper.showAlertViewWithTitle(getContext(), "Error", "Can not get panel identity list.");
       setDefaultAdapterContent();
       Log.e("PANEL LIST", "Can not get panel identity list", e);
@@ -124,7 +118,6 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
 
    @Override
    public void urlConnectionDidReceiveData(InputStream data) {
-      isSending = false;
       arrayAdapter.clear();
       arrayAdapter.add(NONE);
       try {
@@ -168,11 +161,19 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
 
    @Override
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
-      isSending = false;
       int statusCode = httpResponse.getStatusLine().getStatusCode();
       if (statusCode != Constants.HTTP_SUCCESS) {
          if (statusCode == ControllerException.UNAUTHORIZED) {
-            new LoginDialog(getContext());
+            LoginDialog loginDialog = new LoginDialog(getContext());
+            loginDialog.setOnClickListener(loginDialog.new OnloginClickListener() {
+               @Override
+               public void onClick(View v) {
+                  super.onClick(v);
+                  Log.e("", "login success");
+                  requestPanelList(getContext(), PanelSelectSpinnerView.this);
+               }
+               
+            });
          } else {
             // The following code customizes the dialog, becaurse the finish method should do after dialog show and click ok.
             AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
@@ -184,8 +185,8 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
                }
             });
             alertDialog.show();
+            setDefaultAdapterContent();
          }
-         setDefaultAdapterContent();
       }
    }
 
@@ -198,6 +199,18 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
          } else {
             arrayAdapter.add(CHOOSE_PANEL);
          }
+      }
+   }
+
+   /**
+    * @param context
+    * @param ORConnectionDelegate
+    */
+   private void requestPanelList(final Context context, final PanelSelectSpinnerView ORConnectionDelegate) {
+      sendCount++;
+      String currentServer = AppSettingsModel.getCurrentServer(context);
+      if (sendCount%2 == 1 && !TextUtils.isEmpty(currentServer)) {
+         new ORConnection(context ,ORHttpMethod.GET, true, currentServer + "/rest/panels", ORConnectionDelegate);
       }
    }
 
