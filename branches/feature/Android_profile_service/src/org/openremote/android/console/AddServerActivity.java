@@ -19,7 +19,6 @@
  */
 package org.openremote.android.console;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -41,7 +40,7 @@ import android.widget.TextView;
  * 
  * @author Andrew C. Oliver <acoliver at osintegrators.com>
  */
-public class ConfigureActivity extends Activity {
+public class AddServerActivity extends GenericActivity {
     public static final String OPEN_REMOTE_PREFS = "openRemoteConfig";
 
     public void onCreate(Bundle savedState) {

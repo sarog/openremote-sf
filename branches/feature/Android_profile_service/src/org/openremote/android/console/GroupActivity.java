@@ -71,7 +71,7 @@ import android.widget.LinearLayout;
  * 
  */
 
-public class GroupActivity extends Activity implements OnGestureListener, ORConnectionDelegate, SensorListener {
+public class GroupActivity extends GenericActivity implements OnGestureListener, ORConnectionDelegate, SensorListener {
 
    // private static final int FLIPPER = 0xF00D;
    private GestureDetector gestureScanner;
@@ -95,7 +95,6 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
    /* sensor simulator end */
 
    private OROrientation orientation;
-   private boolean isActivityResumed;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +206,7 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
       ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerNavigateTo, new OREventListener() {
          public void handleEvent(OREvent event) {
             Navigate navigate = (Navigate) event.getData();
-            if (isActivityResumed && navigate != null) {
+            if (isActivityResumed() && navigate != null) {
                handleNavigate(navigate);
             }
          }
@@ -417,14 +416,12 @@ public class GroupActivity extends Activity implements OnGestureListener, ORConn
 
    @Override
    protected void onPause() {
-      isActivityResumed = false;
       super.onPause();
       cancelCurrentPolling();
    }
 
    @Override
    protected void onResume() {
-      isActivityResumed = true;
       super.onResume();
       mSensorManager.registerListener(this, SensorManager.SENSOR_ORIENTATION, SensorManager.SENSOR_DELAY_NORMAL);
       startCurrentPolling();
