@@ -66,6 +66,8 @@ public class AppSettingsActivity extends GenericActivity {
    private ListView customeListView;
    private int currentCustomServerIndex = -1;
    private boolean autoMode;
+   public static String currentServer = "";
+   private PanelSelectSpinnerView panelSelectSpinnerView;
    
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -91,13 +93,16 @@ public class AppSettingsActivity extends GenericActivity {
       
       appSettingsView.addView(createAutoLayout());
       appSettingsView.addView(createChooseControllerLabel());
+      
+      currentServer = "";
       if (autoMode) {
          appSettingsView.addView(constructAutoServersView());
       } else {
          appSettingsView.addView(constructCustomeServersView());
       }
       appSettingsView.addView(createChoosePanelLabel());
-      appSettingsView.addView(new PanelSelectSpinnerView(this));
+      panelSelectSpinnerView = new PanelSelectSpinnerView(this);
+      appSettingsView.addView(panelSelectSpinnerView);
       
       appSettingsView.addView(createCacheText());
       appSettingsView.addView(createClearImageCacheButton());
@@ -156,6 +161,19 @@ public class AppSettingsActivity extends GenericActivity {
       Button doneButton = (Button)findViewById(R.id.setting_done);
       doneButton.setOnClickListener(new OnClickListener() {
          public void onClick(View v) {
+            if ("".equals(currentServer)) {
+               ViewHelper.showAlertViewWithTitle(AppSettingsActivity.this, "Warning",
+                     "No controller. Please configure Controller URL manually.");
+               return;
+            }
+            String selectedPanel = (String)panelSelectSpinnerView.getSelectedItem();
+            if (!TextUtils.isEmpty(selectedPanel) && !selectedPanel.equals(PanelSelectSpinnerView.CHOOSE_PANEL)) {
+               AppSettingsModel.setCurrentPanelIdentity(AppSettingsActivity.this, selectedPanel);
+            } else {
+               ViewHelper.showAlertViewWithTitle(AppSettingsActivity.this, "Warning",
+                     "No Panel. Please configure Panel Identity manually.");
+               return;
+            }
             Intent intent = new Intent();
             intent.setClass(AppSettingsActivity.this, Main.class);
             startActivity(intent);
@@ -222,6 +240,7 @@ public class AppSettingsActivity extends GenericActivity {
       autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             appSettingsView.removeViewAt(2);
+            currentServer = "";
             if (isChecked) {
                IPAutoDiscoveryServer.isInterrupted = false;
                appSettingsView.addView(constructAutoServersView(), 2);
@@ -319,10 +338,12 @@ public class AppSettingsActivity extends GenericActivity {
       customeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
       if (currentCustomServerIndex != -1) {
          customeListView.setItemChecked(currentCustomServerIndex, true);
+         currentServer = (String)customeListView.getItemAtPosition(currentCustomServerIndex);
       }
       customeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, (String)parent.getItemAtPosition(position));
+            currentServer = (String)parent.getItemAtPosition(position);
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
             writeCustomServerToFile();
          }
          
@@ -340,7 +361,11 @@ public class AppSettingsActivity extends GenericActivity {
          String result = data.getDataString();
          if (Constants.REQUEST_CODE == requestCode && !TextUtils.isEmpty(result)) {
             if (Constants.RESULT_CONTROLLER_URL == resultCode) {
-               ((ArrayAdapter<String>) customeListView.getAdapter()).add("http://" + result);
+               currentServer = "http://" + result;
+               ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customeListView.getAdapter();
+               customeListAdapter.add(currentServer);
+               customeListView.setItemChecked(customeListAdapter.getCount() - 1, true);
+               AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
                writeCustomServerToFile();
             }
          }
@@ -360,11 +385,13 @@ public class AppSettingsActivity extends GenericActivity {
       lv.setAdapter(serverListAdapter);
       if (serverListAdapter.getCount() > 0) {
          lv.setItemChecked(0, true);
-         AppSettingsModel.setCurrentServer(AppSettingsActivity.this, serverListAdapter.getItem(0));
+         currentServer = serverListAdapter.getItem(0);
+         AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
       }
       lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, (String)parent.getItemAtPosition(position));
+            currentServer = (String)parent.getItemAtPosition(position);
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
          }
       });
       
