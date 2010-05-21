@@ -151,14 +151,15 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    @Override
    protected void onProgressUpdate(String... values) {
       RelativeLayout loadingView = (RelativeLayout) (activity.findViewById(R.id.welcome_view));
+      if (loadingView == null) {
+         return;
+      }
+      
       if (!bgImageUpdated) {
-         try {
-            loadingView.setBackgroundResource(R.drawable.loading);
-         } catch (OutOfMemoryError e) {
-            Log.e("OutOfMemoryError",  "loading.png bitmap size exceeds VM budget");
-         }
+         ImageUtil.setBackgroundResourceQuitely(loadingView, R.drawable.loading);
          bgImageUpdated = true;
       }
+      
       TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
       loadingText.setText("loading " + values[0] + "...");
       loadingText.setEllipsize(TruncateAt.MIDDLE);
@@ -187,6 +188,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          ViewHelper.showAlertViewWithTitle(activity, "Send Request Error", ControllerException.exceptionMessageOfCode(result.getStatusCode()));
          return;
       }
+      
       activity.startActivity(intent);
       activity.finish();
    }

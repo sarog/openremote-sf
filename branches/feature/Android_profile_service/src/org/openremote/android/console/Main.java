@@ -44,6 +44,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * This class represents the main OpenRemote activity. It starts up, reads the
@@ -56,6 +57,8 @@ public class Main extends GenericActivity {
 
     LinearLayout activitiesListView;
     public static final String LOAD_RESOURCE = "loadResource";
+    public static boolean isRefreshingController;
+    public static Toast loadingToast;
     
     /** Called when the activity is first created. */
     @Override
@@ -63,13 +66,30 @@ public class Main extends GenericActivity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        ImageUtil.setContentViewQuietly(this, R.layout.welcome_view);
+        
+        loadingToast = Toast.makeText(this, "Refreshing from Controller...", Integer.MAX_VALUE);
+        if (!isRefreshingController) {
+           ImageUtil.setContentViewQuietly(this, R.layout.welcome_view);
+        } else {
+           loadingToast.show();
+        }
+        isRefreshingController = false;
         
         checkNetType();
         readDisplayMetrics();        
         if(!toLogginOrSetting()) {        
            new AsyncResourceLoader(this).execute((Void) null);
         }
+    }
+    
+    public static void prepareToastForSwitchingController() {
+       isRefreshingController = true;
+       loadingToast.setText("Refreshing from Controller...");
+    }
+    
+    public static void prepareToastForRefreshingController() {
+       isRefreshingController = true;
+       loadingToast.setText("Switching Controller...");
     }
     
     private void checkNetType() {
