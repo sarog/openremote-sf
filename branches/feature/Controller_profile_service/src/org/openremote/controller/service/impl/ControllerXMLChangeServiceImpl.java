@@ -58,7 +58,36 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   public boolean isObservedXMLContentChanged(String observedXMLFileName) {
+   @SuppressWarnings("finally")
+   @Override
+   public synchronized boolean refreshController() {
+      if (!isObservedXMLContentChanged(Constants.CONTROLLER_XML) && !isObservedXMLContentChanged(Constants.PANEL_XML)) {
+         return true;
+      }
+      
+      logger.info("Controller.xml of Controller changed, refreshing controller.xml");
+      boolean success = false;
+      tagControllerXMLChanged(true);
+      try {
+         killAndClearPollingMachineThreads();
+         clearChangedStatusTable();
+         clearStatusCache();
+         clearAndReloadSensors();
+         restartPollingMachineThreads();
+         success = true;
+      } catch (ControllerException e) {
+         logger.error("Error occured while refreshing controller.", e);
+         success = false;
+      } finally {
+         tagControllerXMLChanged(false);
+         String isSuccessInfo = success ? " success " : " failed ";
+         logger.info("Finished refreshing controller.xml" + isSuccessInfo);
+         return success;
+      }
+      
+   }
+   
+   private boolean isObservedXMLContentChanged(String observedXMLFileName) {
       //if changed, save the latest controller.xml.
       String observedXMLFilePath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + observedXMLFileName;
       File observedXMLFile = new File(observedXMLFilePath);
@@ -84,30 +113,6 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          controllerXMLListenSharingData.setPanelXMLFileContent(fileContent);
       }
       return true;
-   }
-   
-   @SuppressWarnings("finally")
-   @Override
-   public synchronized boolean refreshController() {
-      logger.info("Controller.xml of Controller changed, refreshing controller.xml");
-      boolean success = false;
-      tagControllerXMLChanged(true);
-      try {
-         killAndClearPollingMachineThreads();
-         clearChangedStatusTable();
-         clearStatusCache();
-         clearAndReloadSensors();
-         restartPollingMachineThreads();
-         success = true;
-      } catch (ControllerException e) {
-         logger.error("Error occured while refreshing controller.", e);
-         success = false;
-      } finally {
-         tagControllerXMLChanged(false);
-         String isSuccessInfo = success ? " success " : " failed ";
-         logger.info("Finished refreshing controller.xml" + isSuccessInfo);
-         return success;
-      }
    }
    
    private void tagControllerXMLChanged(boolean isChanged) {
