@@ -22,6 +22,8 @@ package org.openremote.android.console.util;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.InflateException;
+import android.view.View;
 
 /**
  * Image Utility class.
@@ -34,7 +36,7 @@ public class ImageUtil {
    }
    
    /**
-    * Call native Drawable.createFromPath(pathName), but catch OutOfMemoryError and do nothing.
+    * Calls native Drawable.createFromPath(pathName), but catch OutOfMemoryError and do nothing.
     * 
     * @param pathName
     *           path name
@@ -51,7 +53,7 @@ public class ImageUtil {
    }
    
    /**
-    * Call Activity.setContentView(int layoutResID), but catch OutOfMemoryError and do nothing.
+    * Calls native Activity.setContentView(int layoutResID), but catch OutOfMemoryError and do nothing.
     * 
     * @param activity
     *           an activity
@@ -59,10 +61,34 @@ public class ImageUtil {
     *           Resource ID to be inflated.
     */
    public static void setContentViewQuietly(Activity activity, int layoutResID) {
+      if (activity == null) {
+         return;
+      }
       try {
          activity.setContentView(layoutResID);
+      } catch (InflateException e) {
+         Log.e("OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
       } catch (OutOfMemoryError e) {
          Log.e("OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
+      }
+   }
+   
+   /**
+    * Calls native View.setBackgroundResource(int resid), but catch OutOfMemoryError and do nothing.
+    * 
+    * @param view
+    *           a view
+    * @param layoutResID
+    *           Resource ID to be background.
+    */
+   public static void setBackgroundResourceQuitely(View view, int layoutResID) {
+      if (view == null) {
+         return;
+      }
+      try {
+         view.setBackgroundResource(layoutResID);
+      } catch (OutOfMemoryError e) {
+         Log.e("OutOfMemoryError",  "unable to setBackgroundResource, bitmap size exceeds VM budget");
       }
    }
 

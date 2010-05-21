@@ -226,6 +226,7 @@ public class ORControllerServerSwitcher {
 	 * Switch to the controller identified by the availableGroupMemberURL
 	 */
 	private static void switchControllerWithURL(Context context, String availableGroupMemberURL) {
+	   Main.prepareToastForSwitchingController();
 		Log.i("GROUP MEMBER", "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
 		AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
 		Intent intent = new Intent();

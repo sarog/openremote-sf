@@ -198,6 +198,8 @@ public class ORConnection {
          Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (IOException e) {
          Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+      } catch (OutOfMemoryError e) {
+         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       }
       return response;
    }

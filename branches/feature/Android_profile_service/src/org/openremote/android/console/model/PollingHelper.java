@@ -152,6 +152,10 @@ public class PollingHelper {
             isPolling = false;
             Log.e("POLLING", "polling failed", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
+         } catch (OutOfMemoryError e) {
+            isPolling = false;
+            Log.i("POLLING", "OutOfMemoryError");
+            handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (InterruptedIOException e) {
             isPolling = false;
             Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
@@ -178,6 +182,7 @@ public class PollingHelper {
          if (statusCode == ControllerException.GATEWAY_TIMEOUT) { // polling timeout, need to refresh
             return;
          } if (statusCode == ControllerException.REFRESH_CONTROLLER) {
+            Main.prepareToastForRefreshingController();
             Intent refreshControllerIntent = new Intent();
             refreshControllerIntent.setClass(context, Main.class);
             context.startActivity(refreshControllerIntent);
