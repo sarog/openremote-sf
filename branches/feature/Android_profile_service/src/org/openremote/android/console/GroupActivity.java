@@ -50,6 +50,7 @@ import org.openremote.android.console.view.ScreenViewFlipper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -98,7 +99,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    /* sensor simulator end */
 
    private OROrientation orientation;
-
+   private int lastConfigurationOrientation = -1;
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -107,10 +108,17 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+      Log.i("ORIENTATION", "onCreate:" + display.getOrientation());
       if (display != null && display.getOrientation() == 1) {
          isLandscape = true;
+         orientation = OROrientation.UIInterfaceOrientationLandscapeRight;
+         lastConfigurationOrientation = Configuration.ORIENTATION_LANDSCAPE;
+      } else {
+         isLandscape = false;
+         orientation = OROrientation.UIInterfaceOrientationPortrait;
+         lastConfigurationOrientation = Configuration.ORIENTATION_PORTRAIT;
       }
-      orientation = OROrientation.UIInterfaceOrientationPortrait;
+      
       this.gestureScanner = new GestureDetector(this);
 
       if (groupViews == null) {
@@ -589,7 +597,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       if (SensorManager.SENSOR_ORIENTATION == sensor) {
          float pitch = values[1]; // pitch
          float roll = values[2]; // roll
-         OROrientation lastOrientataion = orientation;
          if (!(roll > -45 && roll < 45)) {
             if (pitch > -45 && pitch < 45) {
                if (roll > 0) {
@@ -597,21 +604,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
                } else {
                   orientation = OROrientation.UIInterfaceOrientationLandscapeRight;
                }
-               isLandscape = true;
             } else {
                if (pitch < 0) {
                   orientation = OROrientation.UIInterfaceOrientationPortrait;
                } else {
                   orientation = OROrientation.UIInterfaceOrientationPortraitUpsideDown;
                }
-               isLandscape = false;
-            }
-         }
-
-         if (lastOrientataion != orientation) {
-            Log.i("orientation change", "orientation:" + orientation);
-            if (canRotateToInterfaceOrientation()) {
-               rotateToIntefaceOrientation();
             }
          }
 
@@ -642,4 +640,26 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
+   @Override
+   public void onConfigurationChanged(Configuration newConfig) {
+      int newOrientation = newConfig.orientation;
+      Log.i("ORIENTATION", "orientation:" + newOrientation);
+      if (lastConfigurationOrientation != newOrientation) {
+         if (newOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            isLandscape = false;
+         } else if (newOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            isLandscape = true;
+         }
+         if (canRotateToInterfaceOrientation()) {
+            rotateToIntefaceOrientation();
+         } else {
+            newConfig.orientation = Configuration.ORIENTATION_UNDEFINED;
+         }
+      } else if (lastConfigurationOrientation == Configuration.ORIENTATION_LANDSCAPE && lastConfigurationOrientation == newOrientation) {
+         newConfig.orientation = Configuration.ORIENTATION_UNDEFINED;
+      }
+      lastConfigurationOrientation = newOrientation;
+      super.onConfigurationChanged(newConfig);
+   }
+   
 }
