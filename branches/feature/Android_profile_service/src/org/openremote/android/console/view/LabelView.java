@@ -73,7 +73,11 @@ public class LabelView extends ComponentView implements SensoryDelegate {
       if (sensorId > 0) {
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + sensorId, new OREventListener() {
             public void handleEvent(OREvent event) {
-               text = sensor.getStateValue(PollingStatusParser.statusMap.get(sensorId.toString()));
+               String newState = PollingStatusParser.statusMap.get(sensorId.toString());
+               text = sensor.getStateValue(newState);
+               if (text == null) {
+                  text = newState;
+               }
                handler.sendEmptyMessage(0);
             }
          });
