@@ -502,6 +502,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
             
             if (targetGroup.hasOrientationScreens(isLandscape)) {
                currentOrientation = isLandscape;
+            } else {
+               return false;
             }
             
             linearLayout.removeView(currentScreenViewFlipper);

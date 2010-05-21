@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
+import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.R;
@@ -48,7 +49,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -59,9 +59,9 @@ import android.widget.Spinner;
 public class PanelSelectSpinnerView extends Spinner implements ORConnectionDelegate {
 
    private ArrayAdapter<String> arrayAdapter;
-   private static final String  CHOOSE_PANEL = "choose panel";
-   private static final String  NONE = "None";
+   public static final String  CHOOSE_PANEL = "choose panel";
    private int sendCount;
+   private int touchCount;
    
    public PanelSelectSpinnerView(Context context) {
       super(context);
@@ -78,37 +78,23 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       }
       
       setOntouchListener(context, this);
-      setOnItemSelectListener(context);
    }
    
    private void setOntouchListener(final Context context, final PanelSelectSpinnerView orConnectionDelegate) {
       setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
+            touchCount++;
+            if (touchCount%2== 1 && "".equals(AppSettingsActivity.currentServer)) {
+               ViewHelper.showAlertViewWithTitle(context, "Warning",
+                     "No controller. Please configure Controller URL manually.");
+               return true;
+            }
             requestPanelList(context, orConnectionDelegate);
             return false;
          }
       });
    }
    
-   private void setOnItemSelectListener(Context context) {
-      setOnItemSelectedListener(new OnItemSelectedListener() {
-         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (arrayAdapter != null) {
-               String selectedItem = arrayAdapter.getItem(position);
-               if (!TextUtils.isEmpty(selectedItem)
-                     && !selectedItem.equals(AppSettingsModel.getCurrentPanelIdentity(getContext()))
-                     && !selectedItem.equals(CHOOSE_PANEL)) {
-                  AppSettingsModel.setCurrentPanelIdentity(getContext(), selectedItem);
-               }
-            }
-         }
-
-         public void onNothingSelected(AdapterView<?> parent) {
-            //nothing
-         }
-         
-      });
-   }
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
       ViewHelper.showAlertViewWithTitle(getContext(), "Error", "Can not get panel identity list.");
@@ -119,7 +105,6 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    @Override
    public void urlConnectionDidReceiveData(InputStream data) {
       arrayAdapter.clear();
-      arrayAdapter.add(NONE);
       try {
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
@@ -208,9 +193,8 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
     */
    private void requestPanelList(final Context context, final PanelSelectSpinnerView ORConnectionDelegate) {
       sendCount++;
-      String currentServer = AppSettingsModel.getCurrentServer(context);
-      if (sendCount%2 == 1 && !TextUtils.isEmpty(currentServer)) {
-         new ORConnection(context ,ORHttpMethod.GET, true, currentServer + "/rest/panels", ORConnectionDelegate);
+      if (sendCount%2 == 1 && !TextUtils.isEmpty(AppSettingsActivity.currentServer)) {
+         new ORConnection(context ,ORHttpMethod.GET, true, AppSettingsActivity.currentServer + "/rest/panels", ORConnectionDelegate);
       }
    }
 
