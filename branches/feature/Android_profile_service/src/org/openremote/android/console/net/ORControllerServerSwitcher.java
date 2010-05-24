@@ -226,6 +226,10 @@ public class ORControllerServerSwitcher {
 	 * Switch to the controller identified by the availableGroupMemberURL
 	 */
 	private static void switchControllerWithURL(Context context, String availableGroupMemberURL) {
+	   if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentServer(context))) {
+	      Log.i("GROUP MEMBER", "The current server is already: " + availableGroupMemberURL + ", should not switch to self.");
+	      return;
+	   }
 	   Main.prepareToastForSwitchingController();
 		Log.i("GROUP MEMBER", "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
 		AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
