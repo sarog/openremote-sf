@@ -137,25 +137,22 @@ public class PollingHelper {
             }
             return;
          } catch (SocketTimeoutException e) {
-            isPolling = false;
-            Log.e("POLLING", "polling socket timeout.");
-            handler.sendEmptyMessage(NETWORK_ERROR);
+            Log.i("POLLING", "polling [" + pollingStatusIds +"] socket timeout.");
          } catch (ClientProtocolException e) {
             isPolling = false;
-            Log.e("POLLING", "polling failed.", e);
+            Log.e("POLLING", "polling [" + pollingStatusIds +"] failed.", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (SocketException e) {
             isPolling = false;
-            Log.e("POLLING", "polling failed.", e);
+            Log.e("POLLING", "polling [" + pollingStatusIds +"] failed.", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (IllegalArgumentException e) {
             isPolling = false;
-            Log.e("POLLING", "polling failed", e);
+            Log.e("POLLING", "polling [" + pollingStatusIds +"] failed", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (OutOfMemoryError e) {
             isPolling = false;
-            Log.i("POLLING", "OutOfMemoryError");
-            handler.sendEmptyMessage(NETWORK_ERROR);
+            Log.e("POLLING", "OutOfMemoryError");
          } catch (InterruptedIOException e) {
             isPolling = false;
             Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
