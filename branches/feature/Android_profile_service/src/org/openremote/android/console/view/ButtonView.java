@@ -54,13 +54,12 @@ public class ButtonView extends ControlView {
       uiButton.setId(button.getComponentId());
       uiButton.setText(button.getName());
       uiButton.setTextSize(Constants.DEFAULT_FONT_SIZE);
+      uiButton.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
       if (button.getDefaultImage() != null) {
          defaultImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc());
          if (defaultImage != null) {
             uiButton.setText(null);
             uiButton.setBackgroundDrawable(defaultImage);
-            uiButton.setLayoutParams(new FrameLayout.LayoutParams(defaultImage.getIntrinsicWidth(), defaultImage
-                  .getIntrinsicHeight()));
          }
       }
       if (button.getPressedImage() != null) {
