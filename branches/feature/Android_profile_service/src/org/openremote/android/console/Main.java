@@ -95,8 +95,8 @@ public class Main extends GenericActivity {
     private void checkNetType() {
        ConnectivityManager conn = (ConnectivityManager)(this).getSystemService(Context.CONNECTIVITY_SERVICE);
        NetworkInfo info = conn.getActiveNetworkInfo();
-       String type = info.getTypeName();
-       if ("wifi".equals(type.toLowerCase())) {
+       String type = info == null ? null : info.getTypeName();
+       if (type != null && "wifi".equals(type.toLowerCase())) {
           IPAutoDiscoveryClient.isNetworkTypeWIFI = true;
        } else  {
           IPAutoDiscoveryClient.isNetworkTypeWIFI = false;
