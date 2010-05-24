@@ -58,6 +58,7 @@ public class SwitchView extends SensoryControlView {
    }
 
    private void initSwitch(Switch switchComponent) {
+      button.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
       if (switchComponent.getOnImage() != null) {
          onImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
       }
@@ -72,8 +73,6 @@ public class SwitchView extends SensoryControlView {
          } else {
             button.setBackgroundDrawable(offImage);
          }
-         button.setLayoutParams(new FrameLayout.LayoutParams(onImage.getIntrinsicWidth(), onImage
-               .getIntrinsicHeight()));
       } else {
          if (isOn) {
             button.setText("ON");

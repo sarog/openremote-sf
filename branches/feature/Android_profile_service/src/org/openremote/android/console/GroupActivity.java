@@ -430,7 +430,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    @Override
    protected void onResume() {
       super.onResume();
-      Main.loadingToast.cancel();
+      if (Main.loadingToast != null) {
+         Main.loadingToast.cancel();
+      }
       if (getIntent().getDataString() != null) {
          useLocalCache = true;
          ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
