@@ -28,9 +28,9 @@ import org.openremote.modeler.domain.component.ImageSource;
  */
 public class TouchPanelTabbarDefinition implements Serializable {
    private static final long serialVersionUID = 1342495193441933268L;
-   
+   public static final String IPHONE_TABBAR_BACKGROUND = "resources/images/iphone_tabbar_bg.png";
    private int height = 44;
-   private ImageSource background = new ImageSource("resources/images/iphone_tabbar_bg.png");
+   private ImageSource background = new ImageSource(IPHONE_TABBAR_BACKGROUND);
    
    public TouchPanelTabbarDefinition() {}
 
