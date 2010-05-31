@@ -261,6 +261,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    @Override
    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+      // The panel or group is empty.
+      if (currentGroupView == null) {
+         return true;
+      }
+      
       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
          Log.i("fling", "right to left");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
