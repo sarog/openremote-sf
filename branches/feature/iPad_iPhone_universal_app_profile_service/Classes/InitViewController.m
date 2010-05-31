@@ -37,11 +37,18 @@
 	NSString *v = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
 	NSLog(@"version is %@", v);
 	version.text = [NSString stringWithFormat:@"v %@", v];
-	[[Definition sharedDefinition] setLoading:label];
+	//[[Definition sharedDefinition] setLoading:label];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
 	return YES;
+}
+
+- (void)dealloc {
+	[label release];
+	[version release];
+	
+	[super dealloc];
 }
 
 
