@@ -32,7 +32,6 @@ import org.openremote.android.console.util.ImageUtil;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.FrameLayout;
@@ -44,11 +43,15 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    private ImageView imageView;
    private TextView textView;
    private String newStatus;
+   private int width;
+   private int height;
    public ORImageView(Context context, Image image) {
       super(context);
       setComponent(image);
       if (image != null) {
          image.setLinkedLabel();// read label from cache.
+         width = image.getFrameWidth();
+         height = image.getFrameHeight();
          imageView = new ImageView(context);
          textView = new TextView(getContext());
          addImageView(image.getSrc());
@@ -59,12 +62,12 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    }
 
    private void addImageView(String imageSrc) {
-      BitmapDrawable bd = (BitmapDrawable) ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + imageSrc);
+      BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + imageSrc, width, height);
       if (bd == null) {
          return;
       }
-      imageView.setLayoutParams(new FrameLayout.LayoutParams(bd.getIntrinsicWidth(), bd.getIntrinsicHeight()));
-      imageView.setImageDrawable(bd);
+      imageView.setLayoutParams(new FrameLayout.LayoutParams(width, height));
+      imageView.setBackgroundDrawable(bd);
       addView(imageView);
    }
    
