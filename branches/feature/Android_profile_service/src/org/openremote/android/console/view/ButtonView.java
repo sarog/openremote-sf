@@ -29,7 +29,7 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -38,8 +38,8 @@ import android.widget.FrameLayout;
 public class ButtonView extends ControlView {
 
    private Button uiButton;
-   private Drawable defaultImage;
-   private Drawable pressedImage;
+   private BitmapDrawable defaultImage;
+   private BitmapDrawable pressedImage;
    public final static long REPEAT_CMD_INTERVAL = 300;
    public ButtonView(Context context, ORButton button) {
       super(context);
@@ -51,19 +51,21 @@ public class ButtonView extends ControlView {
    }
    
    private void initButton(final ORButton button) {
+      int width = button.getFrameWidth();
+      int height = button.getFrameHeight();
       uiButton.setId(button.getComponentId());
       uiButton.setText(button.getName());
       uiButton.setTextSize(Constants.DEFAULT_FONT_SIZE);
-      uiButton.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+      uiButton.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (button.getDefaultImage() != null) {
-         defaultImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc());
+         defaultImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc(), width, height);
          if (defaultImage != null) {
             uiButton.setText(null);
             uiButton.setBackgroundDrawable(defaultImage);
          }
       }
       if (button.getPressedImage() != null) {
-         pressedImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc());
+         pressedImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc(), width, height);
       }
       View.OnTouchListener touchListener = new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {

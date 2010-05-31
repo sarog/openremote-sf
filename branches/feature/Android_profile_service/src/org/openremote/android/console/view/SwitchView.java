@@ -29,7 +29,7 @@ import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
@@ -40,8 +40,8 @@ import android.widget.FrameLayout;
 public class SwitchView extends SensoryControlView {
 
    private Button button;
-   private Drawable onImage;
-   private Drawable offImage;
+   private BitmapDrawable onImage;
+   private BitmapDrawable offImage;
    private boolean isOn;
    private boolean canUseImage;
    public SwitchView(Context context, Switch switchComponent) {
@@ -58,12 +58,14 @@ public class SwitchView extends SensoryControlView {
    }
 
    private void initSwitch(Switch switchComponent) {
-      button.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+      int width = switchComponent.getFrameWidth();
+      int height = switchComponent.getFrameHeight();
+      button.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (switchComponent.getOnImage() != null) {
-         onImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
+         onImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc(), width, height);
       }
       if (switchComponent.getOffImage() != null) {
-         offImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
+         offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc(), width, height);
       }
       if (onImage != null && offImage != null) {
          canUseImage = true;

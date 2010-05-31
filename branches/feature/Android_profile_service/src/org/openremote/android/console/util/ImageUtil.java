@@ -20,8 +20,10 @@
 package org.openremote.android.console.util;
 
 import android.app.Activity;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.InflateException;
 import android.view.View;
 
@@ -52,6 +54,16 @@ public class ImageUtil {
       return d;
    }
    
+   public static BitmapDrawable createClipedDrawableFromPath(String pathName, int width, int height) {
+      Drawable d = createFromPathQuietly(pathName);
+      if (d != null) {
+         BitmapDrawable bd = (BitmapDrawable)d;
+         bd.setBounds(0, 0, width, height);
+         bd.setGravity(Gravity.LEFT|Gravity.TOP);
+         return bd;
+      }
+      return null;
+   }
    /**
     * Calls native Activity.setContentView(int layoutResID), but catch OutOfMemoryError and do nothing.
     * 
