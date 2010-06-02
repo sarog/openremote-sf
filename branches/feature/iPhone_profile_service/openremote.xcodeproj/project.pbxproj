@@ -39,6 +39,8 @@
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
+		8C09289B11B63D1900674C4F /* ErrorViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */; };
+		8C09289C11B63D1900674C4F /* InitViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */; };
 		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
 		8C28E6421181950F000154CA /* InitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C28E6411181950F000154CA /* InitView.m */; };
 		8C3839191189D69100750257 /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C3839181189D69100750257 /* LoadingHUDView.m */; };
@@ -276,6 +278,8 @@
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
+		8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ErrorViewController~iPhone.xib"; sourceTree = "<group>"; };
+		8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "InitViewController~iPhone.xib"; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
 		8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zUIAccelerometer.h; sourceTree = "<group>"; };
 		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
@@ -561,6 +565,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */,
+				8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */,
 				8C3DE3001163492C00DD4EE7 /* btn_green.png */,
 				8C3DE3011163492C00DD4EE7 /* button.png */,
 				8C3DE3021163492C00DD4EE7 /* Default.png */,
@@ -973,6 +979,8 @@
 				8C3DE30D1163492C00DD4EE7 /* loading.png in Resources */,
 				8C3DE30E1163492C00DD4EE7 /* repair.png in Resources */,
 				8C3DE30F1163492C00DD4EE7 /* slider_tip.png in Resources */,
+				8C09289B11B63D1900674C4F /* ErrorViewController~iPhone.xib in Resources */,
+				8C09289C11B63D1900674C4F /* InitViewController~iPhone.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

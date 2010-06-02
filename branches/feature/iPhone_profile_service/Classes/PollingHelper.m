@@ -49,7 +49,7 @@
 	isPolling = YES;
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition statusRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@",pollingStatusIds]];
-	NSLog([location stringByAppendingFormat:@"/%@",pollingStatusIds]);
+	NSLog(@"%@", [location stringByAppendingFormat:@"/%@",pollingStatusIds]);
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
@@ -68,7 +68,7 @@
 	//NSString *deviceId = @"96e79218965eb72c92a549dd5a330112";
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition pollingRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]];
-	NSLog([location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]);
+	NSLog(@"%@", [location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]);
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];

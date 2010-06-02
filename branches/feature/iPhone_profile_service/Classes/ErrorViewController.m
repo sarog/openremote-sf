@@ -21,68 +21,36 @@
 
 #import "ErrorViewController.h"
 #import "NotificationConstant.h"
-#import "Navigate.h"
-#import "UIViewUtil.h"
-#import "ClippedUIImage.h"
-#import "XMLEntity.h"
 
 @interface ErrorViewController (Private)
 - (void)gotoSettings:(id)sender;
 - (void)goBack:(id)sender;
 @end
 
-static const int ERROR_IMAGE_FIXED_WIDTH = 160;
-static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
-
 @implementation ErrorViewController
 
 - (id)initWithErrorTitle:(NSString *)title message:(NSString *)message{
-	if (self = [super init]) {
-		CGSize size = [UIScreen mainScreen].bounds.size;
-		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, size.width, 44)];
+	BOOL isIPad = [UIScreen mainScreen].bounds.size.width == 768;
+	if (self = [super initWithNibName: isIPad ? @"ErrorViewController~iPad" : @"ErrorViewController~iPhone" bundle:nil]) {
+		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
+		[toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
 		items = [[NSMutableArray alloc] init];
 		
-//		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(goBack:)];
-//		[items addObject: item];
-//		[item release];
-		
-		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Settings" style:UIBarButtonItemStyleBordered target:self action:@selector(gotoSettings:)];
+		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Settings" 
+																														 style:UIBarButtonItemStyleBordered 
+																														target:self 
+																														action:@selector(gotoSettings:)];
 		[items addObject: item];
 		[item release];
 		
 		[toolbar setItems:items];
 		
-		UIView *bgview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
-		[bgview setBackgroundColor:[UIColor whiteColor]];
-		[self setView:bgview];
-		UIImage *errorImage = [UIImage imageNamed:@"repair.png"];
-		UIView *errorImageDependingOnView = [[UIView alloc] initWithFrame:CGRectMake((size.width - ERROR_IMAGE_FIXED_WIDTH)/2.0, 100, ERROR_IMAGE_FIXED_WIDTH , ERROR_IMAGE_FIXED_HEIGHT)];
-		UIImageView *errorImageView = [UIViewUtil clippedUIImageViewWith:errorImage dependingOnUIView:errorImageDependingOnView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
-		
-		titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 280, 320, 30)];
 		[titleLabel setText:title];
-		[titleLabel setBackgroundColor:[UIColor clearColor]];
-		[titleLabel setTextColor:[UIColor grayColor]];
-		[titleLabel setFont:[UIFont boldSystemFontOfSize:20]];
-		[titleLabel setTextAlignment:UITextAlignmentCenter];
-		
-		msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 310, 280, 60)];
 		[msgLabel setText:message];
-		[msgLabel setBackgroundColor:[UIColor clearColor]];
-		[msgLabel setTextColor:[UIColor grayColor]];
-		[msgLabel setFont:[UIFont boldSystemFontOfSize:13]];
-		[msgLabel setTextAlignment:UITextAlignmentCenter];
-		[msgLabel setNumberOfLines:3];
-		
-		[self.view addSubview:titleLabel];
-		[self.view addSubview:msgLabel];
-		[self.view addSubview:errorImageView];
+
 		[self.view addSubview:toolbar];
 		
 		[toolbar release];
-		[titleLabel release];
-		[msgLabel release];
-		[errorImageView release];
 	}
 	return self;
 }
@@ -101,8 +69,15 @@ static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
 }
 
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	return YES;
+}
+
+
 - (void)dealloc {
 	[items release];
+	[titleLabel release];
+	[msgLabel release];
 	
 	[super dealloc];
 }

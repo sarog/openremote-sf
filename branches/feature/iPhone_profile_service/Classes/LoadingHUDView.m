@@ -105,7 +105,7 @@
 		
 		_title = [ttl copy];
 		_message = [msg copy];
-		_activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 		[self addSubview:_activity];
 		_hidden = YES;
 		self.backgroundColor = [UIColor clearColor];
@@ -134,21 +134,23 @@
 	if([_message length] < 1) s2.height = 0;
 	
 	
-	rHeight = (s1.height + s2.height + (HEIGHT_MARGIN*2) + 10 + _activity.frame.size.height);
-	rWidth = width = (s2.width > s1.width) ? (int) s2.width : (int) s1.width;
-	rWidth += WIDTH_MARGIN * 2;
+	//rHeight = (s1.height + s2.height + (HEIGHT_MARGIN*2) + 10 + _activity.frame.size.height);
+	rHeight =  100;
+	//rWidth = width = (s2.width > s1.width) ? (int) s2.width : (int) s1.width;
+	//rWidth = _activity.frame.size.width;
+	rWidth = 100;
 	x = (280 - rWidth) / 2;
 	
-	_activity.center = CGPointMake(280/2,HEIGHT_MARGIN + _activity.frame.size.height/2);
+	_activity.center = CGPointMake(280/2,200/2);
 	
 	
 	//NSLog(@"DRAW RECT %d %f",rHeight,self.frame.size.height);
 	
 	// DRAW ROUNDED RECTANGLE
 	[[UIColor colorWithRed:0 green:0 blue:0 alpha:0.9] set];
-	CGRect r = CGRectMake(x, 0, rWidth,rHeight);
+	CGRect r = CGRectMake(x, _activity.frame.origin.y - (rHeight)/2 + 18, rWidth,rHeight);
 	[UIView drawRoundRectangleInRect:r 
-						  withRadius:10.0 
+						  withRadius:20.0 
 							   color:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.75]];
 	
 	

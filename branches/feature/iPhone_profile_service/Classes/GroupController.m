@@ -151,7 +151,10 @@
 		paginationController = temp;
 		[self setView:paginationController.view];
 		[[paginationController currentScreenViewController] startPolling];
+	} else {
+		[self showErrorView];
 	}
+
 }
 
 - (void)showPortrait {
@@ -180,6 +183,7 @@
 	errorViewController = [[ErrorViewController alloc] 
 															initWithErrorTitle:@"No Screen Found" 
 																				 message:@"Please associate screens with this group of this orientation."];
+	[errorViewController.view setFrame:[self getFullFrame]];
 	[self setView:errorViewController.view];	
 }
 

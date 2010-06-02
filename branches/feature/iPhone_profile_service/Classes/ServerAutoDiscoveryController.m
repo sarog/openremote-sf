@@ -156,7 +156,7 @@
 		
 #pragma mark UdpSocket delegate method
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-	NSLog([NSString stringWithFormat:@"onUdpSocket didSendData."]); 
+	NSLog(@"%@", [NSString stringWithFormat:@"onUdpSocket didSendData."]); 
 	[sock close];	
 }
 
