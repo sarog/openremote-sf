@@ -27,7 +27,7 @@
 
 @interface SliderView(Private)
 - (void) afterSlide:(UISlider *)sender;
--(void) releaseSlider;
+-(void) releaseSlider:(UISlider *)sender;
 -(void) touchDownSlider:(UISlider *)sender;
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender;
 -(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam;
@@ -97,7 +97,8 @@
 	if (!sliderModel.passive) {
 		[uiSlider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
 		[uiSlider addTarget:self action:@selector(touchDownSlider:) forControlEvents:UIControlEventTouchDown];
-		[uiSlider addTarget:self action:@selector(releaseSlider) forControlEvents:UIControlEventTouchUpInside];
+		[uiSlider addTarget:self action:@selector(releaseSlider:) forControlEvents:UIControlEventTouchUpInside];
+		[uiSlider addTarget:self action:@selector(releaseSlider:) forControlEvents:UIControlEventTouchUpOutside];
 	} else {
 		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
 		[cover setBackgroundColor:[UIColor colorWithRed:255.0 green:255.0 blue:255.0 alpha:0.0]];
@@ -119,15 +120,19 @@
 - (void) afterSlide:(UISlider *)sender {
 	int afterSlideValue = (int)[sender value];
 	if (currentValue >= 0 && abs(currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
-		NSLog(@"The value sent is : %d", afterSlideValue);
+		//NSLog(@"The value sent is : %d", afterSlideValue);
 		[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
-		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
+		//[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
 	} else {
 		NSLog(@"The min slide variant value less than %d", MIN_SLIDE_VARIANT);
 	}
 }
 
--(void) releaseSlider {
+-(void) releaseSlider:(UISlider *)sender {
+	int afterSlideValue = (int)[sender value];
+	if (currentValue >= 0 && abs(currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
+		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
+	}
 	sliderTip.hidden = YES;
 	[self clearSliderTipSubviews:sliderTip];
 	

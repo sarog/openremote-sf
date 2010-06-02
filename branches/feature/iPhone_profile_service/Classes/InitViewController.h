@@ -21,11 +21,11 @@
 
 
 #import <UIKit/UIKit.h>
-#import "InitView.h"
 
 @interface InitViewController : UIViewController {
 	
-	UIInterfaceOrientation currentOrientation;
+	IBOutlet UILabel *label;
+	IBOutlet UILabel *version;
 
 }
 

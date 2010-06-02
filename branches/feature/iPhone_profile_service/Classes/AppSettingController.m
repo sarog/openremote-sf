@@ -74,7 +74,7 @@
 }
 
 - (void)showSpinner {
-	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(180, 113, 44, 44)] autorelease];
+	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(210, 113, 44, 44)] autorelease];
 	[spinner startAnimating];
 	spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 	spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
@@ -184,13 +184,13 @@
 		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:CONTROLLER_URLS_SECTION]];
 	}
 	[serverArray removeAllObjects];
-	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationTop];
+	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationFade];
 	
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
 	
 	if (!autoDiscovery) {
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:0 inSection:CONTROLLER_URLS_SECTION]];
-		[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
+		[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
 	}
 	[tv endUpdates];
 	
@@ -211,7 +211,7 @@
 	}
 	[serverArray addObjectsFromArray:newArray];
 	
-	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
+	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
 	[tv endUpdates];
 	
 	[insertIndexPaths release];
@@ -511,6 +511,10 @@
 	if (buttonIndex == 1) {
 		[FileUtils deleteFolderWithPath:[DirectoryDefinition imageCacheFolder]];
 	} 
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	return YES;
 }
 
 

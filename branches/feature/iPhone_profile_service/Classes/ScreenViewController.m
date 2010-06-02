@@ -93,7 +93,7 @@
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]];
-	NSLog([location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]);
+	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]);
 	
 	
 	//assemble put request 

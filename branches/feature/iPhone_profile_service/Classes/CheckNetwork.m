@@ -66,7 +66,7 @@
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serverUrl]]; 
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	[NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
-	NSLog([ServerDefinition serverUrl]);
+	NSLog(@"%@", [ServerDefinition serverUrl]);
 	[request release];
 	if (error ) {
 		NSLog(@"checkControllerAvailable failed %@",[error localizedDescription]);

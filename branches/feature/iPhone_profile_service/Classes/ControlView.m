@@ -106,7 +106,7 @@
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
-	NSLog([location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
+	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
 	
 	
 	//assemble put request 
