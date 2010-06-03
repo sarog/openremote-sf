@@ -66,7 +66,7 @@ public class HighlightUtil {
             String[] subStr = trimLine.split("\\s+");
             if (subStr.length > 1 && subStr[1].startsWith("0x")) { // codes key
                line = line.replaceFirst(StringUtil.escapeRegexp(subStr[0]), "<span class=\"keyname\">"
-                     + subStr[0].replace("\\", "\\\\") + "</span>");
+                     + subStr[0].replace("\\", "\\\\").replace("$", "\\$") + "</span>");
             }
 
          }
