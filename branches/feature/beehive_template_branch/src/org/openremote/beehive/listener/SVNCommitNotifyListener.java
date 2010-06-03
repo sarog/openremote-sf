@@ -103,11 +103,12 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
       if (command == Command.ADD) {
          FileUtil.writeLineToFile(commitFilePath, "Adding        " + FileUtil.relativeWorkcopyPath(file));
       } else if (command == Command.COMMIT) {
-         FileUtil.writeLineToFile(commitFilePath, "Committing    " + FileUtil.relativeWorkcopyPath(file));
+         File fixedFile = FileUtil.fixCommitFilePath(file);
+         FileUtil.writeLineToFile(commitFilePath, "Committing    " + FileUtil.relativeWorkcopyPath(fixedFile));
          if (kind == SVNNodeKind.DIR) {
-            vendorService.syncWith(file);
+            vendorService.syncWith(fixedFile);
          } else if (kind == SVNNodeKind.FILE) {
-            modelService.syncWith(file);
+            modelService.syncWith(fixedFile);
          }
       }
    }
