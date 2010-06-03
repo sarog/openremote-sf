@@ -24,7 +24,7 @@
    function compareFiles(){
 	   var rev1 = 0;
 	   var rev2 = 0;
-	   $('input[name="items"][checked="true"]').each(function(i){
+	   $('input[name="items"]:checked').each(function(i){
 		   if(i==0){
 	        rev1 = $(this).val();
 		   }
