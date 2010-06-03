@@ -105,9 +105,9 @@ public class SVNCommitNotifyListener implements ISVNNotifyListener {
       } else if (command == Command.COMMIT) {
          File fixedFile = FileUtil.fixCommitFilePath(file);
          FileUtil.writeLineToFile(commitFilePath, "Committing    " + FileUtil.relativeWorkcopyPath(fixedFile));
-         if (kind == SVNNodeKind.DIR) {
+         if (fixedFile.isDirectory()) {
             vendorService.syncWith(fixedFile);
-         } else if (kind == SVNNodeKind.FILE) {
+         } else if (fixedFile.isFile()) {
             modelService.syncWith(fixedFile);
          }
       }
