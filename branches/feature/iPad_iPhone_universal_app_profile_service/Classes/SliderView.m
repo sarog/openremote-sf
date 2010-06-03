@@ -25,12 +25,52 @@
 #import "Slider.h"
 #import "DirectoryDefinition.h"
 
+
+@interface UIImage (RotateAdditions)
+- (UIImage *)imageRotatedByDegrees:(CGFloat)degrees;
+@end;
+
+CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
+
+@implementation UIImage (RotateAdditions)
+- (UIImage *)imageRotatedByDegrees:(CGFloat)degrees {   
+	// calculate the size of the rotated view's containing box for our drawing space
+	UIView *rotatedViewBox = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.size.width, self.size.height)];
+	CGAffineTransform t = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
+	rotatedViewBox.transform = t;
+	CGSize rotatedSize = rotatedViewBox.frame.size;
+	[rotatedViewBox release];
+	
+	// Create the bitmap context
+	UIGraphicsBeginImageContext(rotatedSize);
+	CGContextRef bitmap = UIGraphicsGetCurrentContext();
+	
+	// Move the origin to the middle of the image so we will rotate and scale around the center.
+	CGContextTranslateCTM(bitmap, rotatedSize.width/2, rotatedSize.height/2);
+	
+	//   // Rotate the image context
+	CGContextRotateCTM(bitmap, DegreesToRadians(degrees));
+	
+	// Now, draw the rotated/scaled image into the context
+	CGContextScaleCTM(bitmap, 1.0, -1.0);
+	CGContextDrawImage(bitmap, CGRectMake(-self.size.width / 2, -self.size.height / 2, self.size.width, self.size.height), [self CGImage]);
+	
+	UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	return newImage;
+	
+}
+
+@end
+
 @interface SliderView(Private)
 - (void) afterSlide:(UISlider *)sender;
 -(void) releaseSlider:(UISlider *)sender;
 -(void) touchDownSlider:(UISlider *)sender;
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender;
 -(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam;
+- (UIImage *)getImageFromCacheByName:(NSString *)name;
+- (UIImage *)transformToHorizontalWhenVertical:(UIImage *)vImg;
 @end
 
 @implementation SliderView
@@ -48,19 +88,16 @@
 	
 	uiSlider = [[UISlider alloc] initWithFrame:[self bounds]];
 	vertical = sliderModel.vertical;
-	if (sliderModel.vertical) {
-		uiSlider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
-		uiSlider.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
-	}
+	
 
 	uiSlider.minimumValue = sliderModel.minValue;
 	NSString *minimumValueImageSrc = sliderModel.minImage.src;
-	UIImage *minimumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minimumValueImageSrc]];
+	UIImage *minimumValueImage = [self getImageFromCacheByName:minimumValueImageSrc];
 	uiSlider.minimumValueImage = minimumValueImage;
 	
 	uiSlider.maximumValue = sliderModel.maxValue;
 	NSString *maximumValueImageSrc = sliderModel.maxImage.src;
-	UIImage *maximumValueImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maximumValueImageSrc]];
+	UIImage *maximumValueImage = [self getImageFromCacheByName:maximumValueImageSrc];
 	uiSlider.maximumValueImage = maximumValueImage;
 	
 	// TrackImages, thumbImage
@@ -69,14 +106,14 @@
 	NSString *maxTrackImageSrc = sliderModel.maxTrackImage.src;
 	NSString *thumbImageSrc = sliderModel.thumbImage.src;
 	
-	UIImage *stetchLeftTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:minTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
-	UIImage *stetchRightTrack = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:maxTrackImageSrc]] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
-	UIImage *thumbImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:thumbImageSrc]];
-	if (stetchRightTrack) {
-		[uiSlider setMaximumTrackImage:stetchRightTrack forState:UIControlStateNormal];
+	UIImage *stretchedLeftTrack = [[self getImageFromCacheByName:minTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+	UIImage *stretchedRightTrack = [[self getImageFromCacheByName:maxTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+	UIImage *thumbImage = [self getImageFromCacheByName:thumbImageSrc];
+	if (stretchedRightTrack) {
+		[uiSlider setMaximumTrackImage:stretchedRightTrack forState:UIControlStateNormal];
 	}
-	if (stetchLeftTrack) {
-		[uiSlider setMinimumTrackImage:stetchLeftTrack forState:UIControlStateNormal];
+	if (stretchedLeftTrack) {
+		[uiSlider setMinimumTrackImage:stretchedLeftTrack forState:UIControlStateNormal];
 	}
 	if (thumbImage) {
 		[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
@@ -92,6 +129,11 @@
 	uiSlider.value = 0.0;
 	currentValue = 0.0;
 	
+	if (sliderModel.vertical) {
+		uiSlider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
+		uiSlider.frame = self.frame;
+	}
+	
 	[self addSubview:uiSlider];
 	
 	if (!sliderModel.passive) {
@@ -101,9 +143,18 @@
 		[uiSlider addTarget:self action:@selector(releaseSlider:) forControlEvents:UIControlEventTouchUpOutside];
 	} else {
 		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
-		[cover setBackgroundColor:[UIColor colorWithRed:255.0 green:255.0 blue:255.0 alpha:0.0]];
+		[cover setBackgroundColor:[UIColor clearColor]];
 		[self addSubview:cover]; 
 	}
+}
+
+- (UIImage *)getImageFromCacheByName:(NSString *)name {
+	UIImage *img = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:name]];
+	return [self transformToHorizontalWhenVertical:img];
+}
+
+- (UIImage *)transformToHorizontalWhenVertical:(UIImage *)vImg {
+	return vertical ? [vImg imageRotatedByDegrees:90.0] : vImg;
 }
 
 - (void)setPollingStatus:(NSNotification *)notification {
@@ -145,15 +196,21 @@
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender {
 	tip.hidden = NO;
 	[self clearSliderTipSubviews:tip];
-	if (!vertical) {
-		CGFloat x = ((sender.value - uiSliderParam.minimumValue)/(uiSliderParam.maximumValue - uiSliderParam.minimumValue)) * (uiSliderParam.frame.size.width) + uiSliderParam.frame.origin.x;
-		CGFloat y = uiSliderParam.frame.origin.y + uiSliderParam.frame.size.height / 2;	
-		tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+	CGFloat x = 0;
+	CGFloat y = 0;
+	CGFloat span = uiSliderParam.minimumValue - uiSliderParam.maximumValue;
+	
+	if (vertical) {
+		span = uiSlider.maximumValueImage ? span - uiSlider.maximumValueImage.size.height : span;
+		span = uiSlider.minimumValueImage ? span - uiSlider.minimumValueImage.size.height : span;
+		x = uiSliderParam.frame.origin.x + uiSliderParam.frame.size.width / 2;
+		y = ((sender.value - uiSliderParam.maximumValue)/span) * uiSliderParam.frame.size.height + uiSliderParam.frame.origin.y;		
 	} else {
-		CGFloat x = uiSliderParam.frame.origin.x + uiSliderParam.frame.size.width / 2;
-		CGFloat y = ((sender.value - uiSliderParam.maximumValue)/(uiSliderParam.minimumValue - uiSliderParam.maximumValue)) * (uiSliderParam.frame.size.height) + uiSliderParam.frame.origin.y;
-		tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+		x = ((uiSliderParam.minimumValue - sender.value)/span) * uiSliderParam.frame.size.width + uiSliderParam.frame.origin.x;
+		y = uiSliderParam.frame.origin.y + uiSliderParam.frame.size.height / 2;
 	}
+	
+	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
 	UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
 	tipText.font = [UIFont systemFontOfSize:40];
 	tipText.backgroundColor = [UIColor clearColor];
