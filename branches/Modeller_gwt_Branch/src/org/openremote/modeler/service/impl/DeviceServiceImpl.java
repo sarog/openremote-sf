@@ -25,8 +25,11 @@ import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
@@ -97,6 +100,11 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       }
       Hibernate.initialize(device.getDeviceCommands());
       Hibernate.initialize(device.getSensors());
+      for (Sensor sensor : device.getSensors()) {
+         if (SensorType.CUSTOM == sensor.getType()) {
+            Hibernate.initialize(((CustomSensor)sensor).getStates());
+         }
+      }
       Hibernate.initialize(device.getSliders());
       Hibernate.initialize(device.getSwitchs());
       return device;
