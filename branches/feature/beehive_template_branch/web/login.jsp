@@ -16,14 +16,14 @@
 
 <form method="POST" action="<c:url value='j_security_check'/>" name="loginform" style="vertical-align: middle;">
    <div align="center">
-      <div style="margin-top: 20px;">
+      <div style="margin-top: 20px; border-top:1px solid #CCC; padding-top:10px">
          <c:if test="${not empty param.login_error}">
 			      <font color="red">
 			        Your login attempt was not successful, try again.<br/>
 			      </font>
 			</c:if>
       </div>
-      <div style="width: 500px;">
+      <div style="width: 500px; border:1px solid #CCC">
          <div style="text-align: left;">
             <div class="form-header">
                <p>Enter your account details below to login to Beehive.</p>
@@ -38,10 +38,11 @@
 					    <input type="password" name="j_password" tabindex="2" accesskey="P" size="30"><br />
 					</p>					
             </div>
-				<div class="form-buttons"><input id="loginButton" name="login"	type="submit" value="Log In" tabindex="4" />
+				<div class="form-buttons">
+                    <input id="loginButton" name="login"	type="submit" value="Log In" tabindex="4" />
 				</div>								
-				<p>Powered by <a href="http://openremote.org">Openremote</a>
-				</p>            
+				<div class="copyright">Powered by <a href="http://openremote.org">OpenRemote</a>
+				</div>            
          </div>
       </div>
    </div>
