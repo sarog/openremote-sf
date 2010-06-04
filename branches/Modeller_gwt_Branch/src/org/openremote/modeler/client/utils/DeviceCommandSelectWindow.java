@@ -71,7 +71,7 @@ public class DeviceCommandSelectWindow extends Dialog{
    }
    
    protected void createCommandTree(Device device) {
-      deviceCommandTree = TreePanelBuilder.buildCommandTree(device);
+      deviceCommandTree = TreePanelBuilder.buildCommandTree(device, null);
    }
    
    private void addButtonListener() {
