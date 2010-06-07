@@ -136,4 +136,14 @@ public class Slider extends BusinessEntity {
       } else if(other.sliderSensorRef != null) return false;
       return true;
    }
+   
+   public void initCmdSensorAndDevice() {
+      if (this.sliderSensorRef != null) {
+         sliderSensorRef.setSlider(this);
+      }
+      if (this.setValueCmd != null) {
+         setValueCmd.setSlider(this);
+         device = setValueCmd.getDeviceCommand().getDevice();
+      }
+   }
 }

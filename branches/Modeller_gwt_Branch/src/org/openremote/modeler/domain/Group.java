@@ -20,10 +20,14 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Transient;
 
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 
@@ -182,4 +186,28 @@ public class Group extends RefedEntity {
       return landscapeScreens;
    }
    
+   public Collection<ImageSource> getAllImageSources() {
+	   Set<ImageSource> imageSources = new HashSet<ImageSource>();
+	   List<ScreenPairRef> screenPairRefs = this.getScreenRefs();
+       if (screenPairRefs != null && screenPairRefs.size() > 0) {
+          for (ScreenPairRef screenPairRef : screenPairRefs) {
+             ScreenPair screenPair = screenPairRef.getScreen();
+             Collection<ImageSource> imagesOnScreen = screenPair.getAllImageSources();
+             if (imagesOnScreen != null && imagesOnScreen.size()>0) {
+            	 imageSources.addAll(imagesOnScreen);
+             }
+          }
+       }
+	   imageSources.addAll(getAllImageSourcesFromTabbar());
+	   return imageSources;
+   }
+   
+   private Collection<ImageSource> getAllImageSourcesFromTabbar() {
+      UITabbar uiTabbar = this.getTabbar();
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(5);
+      if (uiTabbar != null) {
+         imageSources.addAll(uiTabbar.getAllImageSources());
+      }
+      return imageSources;
+   }
 }

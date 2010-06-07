@@ -20,6 +20,7 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -184,4 +185,25 @@ public class DeviceMacro extends BusinessEntity {
       return macroItems == null && deviceMacroItems == null;
    }
    
+   @Transient
+   @JSON(include = false)
+   public Collection<DeviceCommandRef> getDeviceCommandsRefs() {
+      Collection<DeviceCommandRef> deviceCommands = new ArrayList<DeviceCommandRef> ();
+
+         if (deviceMacroItems != null && deviceMacroItems.size() >0) {
+            for (DeviceMacroItem macroItem : deviceMacroItems) {
+               if (macroItem instanceof DeviceCommandRef) {
+                  DeviceCommandRef cmdRef = (DeviceCommandRef) macroItem;
+                  deviceCommands.add(cmdRef);
+               } else if (macroItem instanceof DeviceMacroRef) {
+                  DeviceMacroRef macroRef = (DeviceMacroRef) macroItem;
+                  if (macroRef.getTargetDeviceMacro() != null) {
+                     Collection<DeviceCommandRef> cmds = macroRef.getTargetDeviceMacro().getDeviceCommandsRefs();
+                     deviceCommands.addAll(cmds);
+                  }
+               }
+            }
+         }
+      return deviceCommands;
+   }
 }

@@ -21,6 +21,7 @@ package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Transient;
 
@@ -183,5 +184,31 @@ public class ScreenPair extends RefedEntity {
          return true;
       }
       return false;
+   }
+   @Transient
+   @JSON(include = false)
+   public List<Screen> getScreens() {
+      List<Screen> screens = new ArrayList<Screen>();
+
+      if (OrientationType.PORTRAIT.equals(this.orientation)) {
+         screens.add(getPortraitScreen());
+      } else if (OrientationType.LANDSCAPE.equals(this.orientation)) {
+         screens.add(getLandscapeScreen());
+      } else if (OrientationType.BOTH.equals(this.orientation)) {
+         screens.add(getPortraitScreen());
+         screens.add(getLandscapeScreen());
+      }
+
+      return screens;
+   }
+   
+   public void resetGestures() {
+      if (landscapeScreen != null) {
+         landscapeScreen.resetGestures();
+      }
+      
+      if(portraitScreen != null) {
+         portraitScreen.resetGestures();
+      }
    }
 }

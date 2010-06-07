@@ -93,8 +93,6 @@ import org.openremote.modeler.domain.component.UIImage;
 import org.openremote.modeler.domain.component.UILabel;
 import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
-import org.openremote.modeler.domain.component.UITabbar;
-import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
@@ -108,7 +106,6 @@ import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
@@ -1206,77 +1203,13 @@ public class ResourceServiceImpl implements ResourceService {
       Set<ImageSource> imageSources = new HashSet<ImageSource>();
       if (panels != null & panels.size() > 0) {
          for (Panel panel : panels) {
-            List<GroupRef> groupRefs = panel.getGroupRefs();
-            if (groupRefs != null && groupRefs.size() > 0) {
-               for (GroupRef groupRef : groupRefs) {
-                  Group group = groupRef.getGroup();
-                  if (group.getTabbar() != null) {
-                     imageSources.addAll(getImageSourcesFromTabbar(group.getTabbar()));
-                  }
-                  List<ScreenPairRef> screenPairRefs = group.getScreenRefs();
-                  if (screenPairRefs != null && screenPairRefs.size() > 0) {
-                     for (ScreenPairRef screenPairRef : screenPairRefs) {
-                        ScreenPair screenPair = screenPairRef.getScreen();
-                        if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
-                           imageSources.addAll(screenPair.getPortraitScreen().getAllImageSources());
-                        } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
-                           imageSources.addAll(screenPair.getLandscapeScreen().getAllImageSources());
-                        } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
-                           imageSources.addAll(screenPair.getPortraitScreen().getAllImageSources());
-                           imageSources.addAll(screenPair.getLandscapeScreen().getAllImageSources());
-                        }
-                     }
-                  }
-               }
-            }
-            if (panel.getTabbar() != null) {
-               imageSources.addAll(getImageSourcesFromTabbar(panel.getTabbar()));
-            }
-            if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
-               imageSources.addAll(getCustomPanelImages(panel));
-            }
+            imageSources.addAll(panel.getAllImageSources());
          }
       }
       return imageSources;
    }
 
-   private Collection<ImageSource> getImageSourcesFromTabbar(UITabbar uiTabbar) {
-      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(5);
-      if (uiTabbar != null) {
-         List<UITabbarItem> uiTabbarItems = uiTabbar.getTabbarItems();
-         if (uiTabbarItems != null && uiTabbarItems.size() > 0) {
-            for (UITabbarItem item : uiTabbarItems) {
-               ImageSource image = item.getImage();
-               if (image != null && !image.isEmpty()) {
-                  imageSources.add(image);
-               }
-            }
-         }
-      }
-      return imageSources;
-   }
-
-   private Collection<ImageSource> getCustomPanelImages(Panel panel) {
-      Collection<ImageSource> images = new ArrayList<ImageSource>(2);
-      if (panel != null) {
-         ImageSource vBImage = new ImageSource(panel.getTouchPanelDefinition().getBgImage());
-         ImageSource hBgImage = new ImageSource(panel.getTouchPanelDefinition().getHorizontalDefinition().getBgImage());
-         ImageSource tbImage = panel.getTouchPanelDefinition().getTabbarDefinition().getBackground();
-         if (!vBImage.isEmpty()) {
-            images.add(vBImage);
-         }
-         if (!hBgImage.isEmpty()) {
-            images.add(hBgImage);
-         }
-         if (tbImage != null && !tbImage.isEmpty()
-               && !TouchPanelTabbarDefinition.IPHONE_TABBAR_BACKGROUND.equals(tbImage.getSrc())) {
-            images.add(tbImage);
-         }
-      }
-      return images;
-   }
-
-   static class MaxId {
+   private static class MaxId {
       Long maxId = 0L;
 
       public MaxId(Long maxId) {
