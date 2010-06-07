@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.client.proxy;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
@@ -33,6 +34,8 @@ import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
@@ -207,6 +210,28 @@ public class TemplateProxy {
          }
          for (Gesture gesture : screen.getGestures()) {
             gesture.setOid(IDUtil.nextID());
+         }
+         
+         resetFallbackLabelForUIImages(screen);
+      }
+      
+   }
+   
+   
+   @SuppressWarnings({ "unchecked" })
+   private static void resetFallbackLabelForUIImages (Screen screen) {
+      Collection<UILabel> labelsOnScreen = (Collection<UILabel>) screen.getAllUIComponentByType(UILabel.class);
+      Collection<UIImage> images = (Collection<UIImage>)screen.getAllUIComponentByType(UIImage.class);
+      
+      for (UIImage image : images) {
+         nextImage:
+         if (image != null && image.getLabel() !=null) {
+            for (UILabel label : labelsOnScreen) {
+               if (image.getLabel().equalsIgnoreOid(label)) {
+                  image.getLabel().setOid(label.getOid());
+                  break nextImage;
+               }
+            }
          }
       }
    }

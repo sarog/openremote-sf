@@ -20,15 +20,19 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Transient;
 
 import org.openremote.modeler.client.Constants;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
+import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 
 import flexjson.JSON;
 
@@ -125,4 +129,46 @@ public class Panel extends BusinessEntity {
       }
       return groups;
    }
+   
+   public Collection<ImageSource> getAllImageSources() {
+	   Collection<ImageSource> imageSources = new HashSet<ImageSource>();
+	   List<GroupRef> groupRefs = getGroupRefs();
+       if (groupRefs != null && groupRefs.size() > 0) {
+          for (GroupRef groupRef : groupRefs) {
+             Group group = groupRef.getGroup();
+             imageSources.addAll(group.getAllImageSources());
+          }
+       }
+       imageSources.addAll(getImageSourcesFromTabbar());
+       imageSources.addAll(getTouchPanelDefImageSources());
+	   return imageSources;
+   }
+   
+   private Collection<ImageSource> getImageSourcesFromTabbar() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(5);
+      if (tabbar != null) {
+         imageSources.addAll(tabbar.getAllImageSources());
+      }
+      return imageSources;
+   }
+   
+   private Collection<ImageSource> getTouchPanelDefImageSources() {
+      Collection<ImageSource> imageSources = new ArrayList<ImageSource>(3);
+      if (Constants.CUSTOM_PANEL.equals(this.getType())) {
+         ImageSource vBgImage = new ImageSource(getTouchPanelDefinition().getBgImage());
+         ImageSource hBgImage = new ImageSource(getTouchPanelDefinition().getHorizontalDefinition().getBgImage());
+         ImageSource tabbarImage = getTouchPanelDefinition().getTabbarDefinition().getBackground();
+         if (!vBgImage.isEmpty()) {
+            imageSources.add(vBgImage);
+         }
+         if (!hBgImage.isEmpty()) {
+            imageSources.add(hBgImage);
+         }
+         if (tabbarImage != null && !tabbarImage.isEmpty() && !TouchPanelTabbarDefinition.IPHONE_TABBAR_BACKGROUND.equals(tabbarImage.getSrc())) {
+            imageSources.add(tabbarImage);
+         }
+      }
+      return imageSources;
+   }
+
 }

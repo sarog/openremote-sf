@@ -20,6 +20,7 @@
 package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -79,4 +80,17 @@ public class UITabbar extends UIComponent {
    public void removeAll() {
       tabbarItems.removeAll(this.tabbarItems);
    }
+   
+	public Collection<ImageSource> getAllImageSources() {
+		Collection<ImageSource> imageSources = new ArrayList<ImageSource>(5);
+		if (tabbarItems != null && tabbarItems.size() > 0) {
+			for (UITabbarItem item : tabbarItems) {
+				ImageSource image = item.getImage();
+				if (image != null && !image.isEmpty()) {
+					imageSources.add(image);
+				}
+			}
+		}
+		return imageSources;
+	}
 }

@@ -95,7 +95,7 @@ public class ImagePropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
                   Sensor sensor = dataModel.getBean();
-                  uiImage.setSensor(sensor);
+                  uiImage.setSensorAndInitSensorLink(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
                   if (sensor.getType() == SensorType.SWITCH || sensor.getType()==SensorType.CUSTOM) {
                      statesPanel.show();

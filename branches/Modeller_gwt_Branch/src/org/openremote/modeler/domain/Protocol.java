@@ -134,4 +134,12 @@ public class Protocol extends BusinessEntity {
       } else if (!(attributes.containsAll(other.attributes) && other.attributes.containsAll(attributes))) return false;
       return true;
    }
+   
+   public void initAttributes() {
+      if (this.attributes != null) {
+         for (ProtocolAttr attr : attributes) {
+            attr.setProtocol(this);
+         }
+      }
+   }
 }

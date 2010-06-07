@@ -34,6 +34,8 @@ import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.GridCellBounds;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -744,5 +746,23 @@ public class ScreenCanvas extends ComponentContainer {
          screenIndicator = null;
       }
       layout();
+   }
+   
+   public void initTabbarContainer() {
+      Group screenGroup = screen.getScreenPair().getParentGroup();
+      if (screenGroup != null) {
+         Panel groupPanel = screenGroup.getParentPanel();
+         ScreenTabbar tabbar = null;
+         if (screenGroup.getTabbar() != null) {
+            tabbar = new ScreenTabbar(this, screenGroup.getTabbar());
+         } else if (groupPanel != null && groupPanel.getTabbar() != null) {
+            tabbar = new ScreenTabbar(this, groupPanel.getTabbar());
+            tabbar.setToPanel();
+         }
+
+         if (tabbar != null) {
+            addTabbar(tabbar);
+         }
+      }
    }
 }
