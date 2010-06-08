@@ -143,11 +143,4 @@ public class Sensor extends BusinessEntity {
       } else if (other.sensorCommandRef != null && !sensorCommandRef.equalsWithoutCompareOid(other.sensorCommandRef)) return false;
       return true;
    }
-   
-   public void initCmdAndDevice() {
-      if (sensorCommandRef !=null ) {
-         sensorCommandRef.setSensor(this);
-         device = sensorCommandRef.getDeviceCommand().getDevice();
-      }
-   }
 }

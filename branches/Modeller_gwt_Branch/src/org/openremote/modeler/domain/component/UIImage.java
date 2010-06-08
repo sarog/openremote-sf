@@ -75,10 +75,6 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
 
    public void setSensor(Sensor sensor) {
       this.sensor = sensor;
-   }
-   
-   public void setSensorAndInitSensorLink(Sensor sensor) {
-      this.sensor = sensor;
       if (sensor != null) {
          this.sensorLink = new SensorLink(sensor);
       } else {

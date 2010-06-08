@@ -28,7 +28,6 @@ import javax.persistence.Transient;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.ImageSourceOwner;
-import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.UIComponent;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
@@ -324,17 +323,5 @@ public class Screen extends BusinessEntity {
          imageSources.add(this.background.getImageSource());
       }
       return imageSources;
-   }
-   
-   public void resetGestures() {
-      if (gestures != null && gestures.size()>0 ) {
-         for (Gesture gesture : gestures) {
-            Navigate navigate = gesture.getNavigate();
-            // make sure not navigate to a new group. 
-            if(navigate.getToGroup() != -1L) {
-               gesture.setNavigate(new Navigate());
-            }
-         }
-      }
    }
 }

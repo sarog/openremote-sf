@@ -25,8 +25,10 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,10 +50,14 @@ import org.apache.log4j.Logger;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
+import org.openremote.modeler.client.utils.SensorLink;
+import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
@@ -64,8 +70,20 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
+import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.domain.ScreenPair.OrientationType;
+import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
+import org.openremote.modeler.domain.component.Navigate;
+import org.openremote.modeler.domain.component.SensorOwner;
+import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.domain.component.UIComponent;
+import org.openremote.modeler.domain.component.UIGrid;
+import org.openremote.modeler.domain.component.UIImage;
+import org.openremote.modeler.domain.component.UILabel;
+import org.openremote.modeler.domain.component.UISlider;
+import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.DeviceCommandService;
@@ -77,7 +95,7 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.utils.ScreenCmdBuilder;
+import org.openremote.modeler.utils.UIComponentBox;
 
 import flexjson.ClassLocator;
 import flexjson.JSONDeserializer;
@@ -122,6 +140,10 @@ public class TemplateServiceImpl implements TemplateService {
       try {
          String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
                + "/template/";
+
+         /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
+            saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
+         }*/
 
          HttpPost httpPost = new HttpPost(saveRestUrl);
          addAuthentication(httpPost);
@@ -190,7 +212,9 @@ public class TemplateServiceImpl implements TemplateService {
                };
          return new JSONSerializer().include(includedPropertyNames).exclude(excludePropertyNames).deepSerialize(screen);
       } catch (Exception e) {
+
          log.error(e.getMessage(), e);
+        
          return "";
       }
    }
@@ -251,7 +275,7 @@ public class TemplateServiceImpl implements TemplateService {
             .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOnRef.sensor",new SimpleClassLocator())
             .use("landscapeScreen.grids.values.cells.values.uiComponent.switchCommand.switchCommandOffRef.sensor",new SimpleClassLocator())
             .deserialize(screenJson);
-      screenPair.resetGestures();
+      resetGestureForScreenPair(screenPair);
       return screenPair;
    }
    
@@ -314,9 +338,9 @@ public class TemplateServiceImpl implements TemplateService {
 
          String result = sb.toString();
          TemplateList templateList = buildTemplateListFromJson(result);
-         List<TemplateFromBeehive> dtoes = templateList.getTemplates();
+         List<TemplateDTO> dtoes = templateList.getTemplates();
 
-         for (TemplateFromBeehive dto : dtoes) {
+         for (TemplateDTO dto : dtoes) {
             templates.add(dto.toTemplate());
          }
       } catch (IOException e) {
@@ -362,9 +386,9 @@ public class TemplateServiceImpl implements TemplateService {
 
          String result = sb.toString();
          TemplateList templateList = buildTemplateListFromJson(result);
-         List<TemplateFromBeehive> dtoes = templateList.getTemplates();
+         List<TemplateDTO> dtoes = templateList.getTemplates();
 
-         for (TemplateFromBeehive dto : dtoes) {
+         for (TemplateDTO dto : dtoes) {
             templates.add(dto.toTemplate());
          }
       } catch (IOException e) {
@@ -374,115 +398,495 @@ public class TemplateServiceImpl implements TemplateService {
       return templates;
    }
    
+   @SuppressWarnings("unchecked")
    @Override
    public ScreenFromTemplate reBuildCommand(ScreenPair screenPair) {
-      List<Screen> screens = screenPair.getScreens();
-      ScreenCmdBuilder cmdBuilder = new ScreenCmdBuilder(screens);
-      rebuild(cmdBuilder);
+      List<Screen> screens = new ArrayList<Screen>();
+      if (OrientationType.PORTRAIT.equals(screenPair.getOrientation())) {
+         screens.add(screenPair.getPortraitScreen());
+      } else if (OrientationType.LANDSCAPE.equals(screenPair.getOrientation())) {
+         screens.add(screenPair.getLandscapeScreen());
+      } else if (OrientationType.BOTH.equals(screenPair.getOrientation())) {
+         screens.add(screenPair.getPortraitScreen());
+         screens.add(screenPair.getLandscapeScreen());
+      }
+      
+      UIComponentBox box = initUIComponentBox(screens);
+      Set<Device> devices = getDevices(screens);
+      Set<DeviceCommand> commands = getDeviceCommands(screens);
+      Set<Slider> sliders = getSliders((Collection<UISlider>) (box.getUIComponentsByType(UISlider.class)));
+      Set<Switch> switchs = getSwitches((Collection<UISwitch>) box.getUIComponentsByType(UISwitch.class));
+      Set<UIButton> uiButtons = (Set<UIButton>) box.getUIComponentsByType(UIButton.class);
+      Set<Sensor> sensors = getSensors(screens);
+      
+      Collection<Gesture> gestures = getGestures(screens);
+      Set<DeviceMacro> macros = getMacros(box,gestures);
+      
+      this.resetNavigateForButtons(uiButtons);
+      
+      rebuild(devices, commands, sensors, switchs, sliders, macros,false);
 
-      return new ScreenFromTemplate(cmdBuilder.getDevices(), screenPair, cmdBuilder.getMacros());
+      return new ScreenFromTemplate(devices, screenPair,macros);
    }
 
-   private void rebuild(ScreenCmdBuilder cmdBuilder) {
+
+   private static UIComponentBox initUIComponentBox(List<Screen> screens) {
+      UIComponentBox box = new UIComponentBox();
+
+      for (Screen screen : screens) {
+         for (Absolute absolute : screen.getAbsolutes()) {
+            UIComponent component = absolute.getUiComponent();
+            box.add(component);
+         }
+         
+         for (UIGrid grid : screen.getGrids()) {
+            for (Cell cell : grid.getCells()) {
+               box.add(cell.getUiComponent());
+            }
+         }
+      }
+
+      return box;
+   }
+
+   private Set<DeviceCommand> getDeviceCommands(List<Screen> screens) {
+      UIComponentBox box = initUIComponentBox(screens);
+      Set<DeviceCommand> uiCmds = new HashSet<DeviceCommand>();
+      
+      getDeviceCommandsFromSlider(box, uiCmds);
+      getDeviceCommandsFromSwitch(box, uiCmds);
+      getDeviceCommandsFromButton(box, uiCmds);
+      Collection<Gesture> gestures = getGestures(screens);
+      getDeviceCommandsFromGesture(gestures,uiCmds);
+      getDeviceCommandsFromSensor(screens, uiCmds);
+      
+      return uiCmds;
+   }
+
+   private void getDeviceCommandsFromSensor(List<Screen> screens, Set<DeviceCommand> uiCmds) {
+      Collection<Sensor> sensors = getSensors(screens);
+
+      for (Sensor sensor: sensors) {
+         for (DeviceCommand cmd : uiCmds) {
+            if (cmd.equals(sensor.getSensorCommandRef().getDeviceCommand())) {
+               sensor.getSensorCommandRef().setDeviceCommand(cmd);
+               sensor.setDevice(cmd.getDevice());
+            }
+         }
+         uiCmds.add(sensor.getSensorCommandRef().getDeviceCommand());
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   private void getDeviceCommandsFromButton(UIComponentBox box, Set<DeviceCommand> uiCmds) {
+      Collection<UIButton> buttons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
+
+      for (UIButton btn : buttons) {
+         UICommand cmd = btn.getUiCommand();
+
+         if (cmd != null) {
+            if (cmd instanceof DeviceCommandRef) {
+               DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
+
+               for (DeviceCommand tmpCmd : uiCmds) {
+                  if (tmpCmd.equals(cmdRef.getDeviceCommand())) {
+                     cmdRef.setDeviceCommand(tmpCmd);
+                  }
+               }
+
+               uiCmds.add(cmdRef.getDeviceCommand());
+
+            } else if (cmd instanceof DeviceMacroRef) {
+               DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
+               DeviceMacro macro = macroRef.getTargetDeviceMacro();
+
+               if (macro != null) {
+                  Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macro);
+
+                  for (DeviceCommandRef cmdFromMacro : cmds) {
+                     for (DeviceCommand cmdInCommandSet : uiCmds) {
+                        if (cmdFromMacro.getDeviceCommand().equals(cmdInCommandSet)) {
+                           cmdFromMacro.setDeviceCommand(cmdInCommandSet);
+                        }
+                     }
+                     uiCmds.add(cmdFromMacro.getDeviceCommand());
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   private void getDeviceCommandsFromSwitch(UIComponentBox box, Set<DeviceCommand> uiCmds) {
+      Collection<Switch> switchs = getSwitches((Collection<UISwitch>) box.getUIComponentsByType(UISwitch.class));
+
+      for (Switch switchToggle : switchs) {
+         DeviceCommand onCmd = switchToggle.getSwitchCommandOnRef().getDeviceCommand();
+
+         for (DeviceCommand cmd : uiCmds) {
+            if (cmd.equals(onCmd)) {
+               switchToggle.getSwitchCommandOnRef().setDeviceCommand(cmd);
+            }
+         }
+
+         uiCmds.add(onCmd);
+         DeviceCommand offCmd = switchToggle.getSwitchCommandOffRef().getDeviceCommand();
+
+         for (DeviceCommand cmd : uiCmds) {
+            if (cmd.equals(offCmd)) {
+               switchToggle.getSwitchCommandOffRef().setDeviceCommand(cmd);
+            }
+         }
+
+         uiCmds.add(offCmd);
+
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   private void getDeviceCommandsFromSlider(UIComponentBox box, Set<DeviceCommand> uiCmds) {
+      Collection<Slider> sliders = getSliders((Collection<UISlider>) box.getUIComponentsByType(UISlider.class));
+
+      for (Slider slider : sliders) {
+         for (DeviceCommand cmd : uiCmds) {
+            if (cmd.equals(slider.getSetValueCmd().getDeviceCommand())) {
+               slider.getSetValueCmd().setDeviceCommand(cmd);
+            }
+         }
+
+         uiCmds.add(slider.getSetValueCmd().getDeviceCommand());
+      }
+   }
+
+   private Set<Device> getDevices(List<Screen> screens) {
+      Set<Device> devices = new HashSet<Device>();
+      // Because UICommand like the Slider, Switch can only select DeviceCommand from one device and the DeviceCommand only belongs to one device, the UICommand are in the same device as the DeviceCommand they have selected.
+      // Therefore, we can get all the device by the DeviceCommand without get device from UICommand. 
+      Collection<DeviceCommand> deviceCmds = getDeviceCommands(screens);
+
+      for (DeviceCommand cmd : deviceCmds ) {
+         Device device = cmd.getDevice();
+
+         if (devices.contains(device)) {
+            for (Device dvc : devices) {
+               if (dvc.equals(device)) {
+                  cmd.setDevice(dvc);
+               }
+            }
+         }
+
+         devices.add(device);
+      }
+      return devices;
+   }
+
+   private Set<Slider> getSliders(Collection<UISlider> uiSliders) {
+      Set<Slider> sliders = new HashSet<Slider>();
+
+      for (UISlider uiSlider : uiSliders ) {
+         Slider slider = uiSlider.getSlider();
+
+         if (slider != null) {
+            for (Slider sld : sliders) {
+               if (slider.equals(sld)) {
+                  uiSlider.setSlider(sld);
+               }
+            }
+
+            sliders.add(slider);
+         }
+      }
+      return sliders;
+   }
+
+   private Set<Switch> getSwitches(Collection<UISwitch> uiSwitchs) {
+      Set<Switch> switches = new HashSet<Switch>();
+
+      for (UISwitch uiSwitch : uiSwitchs) {
+         Switch switchToggle = uiSwitch.getSwitchCommand();
+         if (switchToggle != null) {
+            for (Switch swh: switches) {
+               if (switchToggle.equals(swh)) {
+                  uiSwitch.setSwitchCommand(swh);
+               }
+            }
+            switches.add(switchToggle);
+         }
+      }
+      return switches;
+   }
+
+   private Set<Sensor> getSensors(List<Screen> screens) {
+      Set<Sensor> sensors = new HashSet<Sensor>();
+
+      for (Screen screen : screens) {
+         for (Absolute absolute : screen.getAbsolutes()) {
+            UIComponent component = absolute.getUiComponent();
+
+            if (component instanceof SensorOwner) {
+               SensorOwner sensorOwner = (SensorOwner) component;
+               Sensor s = sensorOwner.getSensor();
+
+               if (s != null) {
+
+                  for (Sensor sensor : sensors) {
+                     if (sensor.equals(sensorOwner.getSensor())) {
+                        sensorOwner.setSensor(sensor);
+                     }
+                  }
+
+                  initSensorLinker(component, sensorOwner);
+                  sensors.add(s);
+               }
+            }
+         }
+
+         for (UIGrid grid : screen.getGrids()) {
+            for (Cell cell : grid.getCells()) {
+               UIComponent component = cell.getUiComponent();
+               if (component instanceof SensorOwner) {
+                  SensorOwner sensorOwner = (SensorOwner) component;
+                  for (Sensor sensor : sensors) {
+                     if (sensor.equals(sensorOwner.getSensor())) {
+                        sensorOwner.setSensor(sensor);
+                     }
+                  }
+
+                  initSensorLinker(component, sensorOwner);
+                  sensors.add(sensorOwner.getSensor());
+               }
+            }
+         }
+      }
+
+      return sensors;
+   }
+
+   private void initSensorLinker(UIComponent component,SensorOwner sensorOwner) {
+      if (component != null ) {
+         if(component instanceof UILabel ) {
+            UILabel uiLabel = (UILabel) component;
+            if (uiLabel.getSensorLink() == null) {
+               uiLabel.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+            }
+            uiLabel.getSensorLink().setSensor(sensorOwner.getSensor());
+         } else if (component instanceof UIImage) {
+            UIImage uiImage = (UIImage) component;
+            if (uiImage.getSensorLink() == null) {
+               uiImage.setSensorLink(new SensorLink(sensorOwner.getSensor()));
+            }
+            uiImage.getSensorLink().setSensor(sensorOwner.getSensor());
+         }
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   private Set<DeviceMacro> getMacros(UIComponentBox box,Collection<Gesture> gestures) {
+      Set<DeviceMacro> macros = new HashSet<DeviceMacro>();
+      Collection<UIButton> uiButtons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
+
+      for (UIButton btn : uiButtons) {
+         if (btn.getUiCommand() instanceof DeviceMacroRef) {
+            DeviceMacroRef macroRef = (DeviceMacroRef) btn.getUiCommand();
+
+            if (macroRef.getTargetDeviceMacro() != null) {
+               DeviceMacro macro = macroRef.getTargetDeviceMacro();
+               macros.add(macro);
+               macros.addAll(macro.getSubMacros());
+            }
+         }
+      }
+      if (gestures != null && gestures.size() >0) {
+         for (Gesture gesture : gestures) {
+            if (gesture.getUiCommand() !=null && gesture.getUiCommand() instanceof DeviceMacroRef) {
+               DeviceMacroRef macroRef = (DeviceMacroRef) gesture.getUiCommand();
+   
+               if (macroRef.getTargetDeviceMacro() != null) {
+                  DeviceMacro macro = macroRef.getTargetDeviceMacro();
+                  macros.add(macro);
+                  macros.addAll(macro.getSubMacros());
+               }
+            }
+         }
+      }
+      return macros;
+   }
+
+   /*private  Set<DeviceMacro> getSubMacrosForMacro(DeviceMacro macro) {
+      Set<DeviceMacro> macros = new HashSet<DeviceMacro> ();
+      if (macro != null && macro.getDeviceMacroItems() != null) {
+         List<DeviceMacroItem> macroItems = macro.getDeviceMacroItems();
+         for (DeviceMacroItem item : macroItems) {
+            if (item instanceof DeviceMacroRef) {
+               DeviceMacroRef macroRef = (DeviceMacroRef) item;
+               DeviceMacro dvcMacro = macroRef.getTargetDeviceMacro();
+               macros.add(dvcMacro);
+               macros.addAll(getSubMacrosForMacro(dvcMacro));
+            } else if (item instanceof DeviceCommandRef) {
+               item.setParentDeviceMacro(macro);
+            }
+         }
+      }
+      return macros;
+   }*/
+
+   private Collection<DeviceCommandRef> getDeviceCommandsRefsFromMacro(DeviceMacro deviceMacro) {
+      Collection<DeviceCommandRef> deviceCommands = new ArrayList<DeviceCommandRef> ();
+
+      if (deviceMacro != null) {
+         List<DeviceMacroItem> macroRefs = deviceMacro.getDeviceMacroItems();
+
+         if (macroRefs != null && macroRefs.size() >0) {
+            for (DeviceMacroItem macroItem : macroRefs) {
+               if (macroItem instanceof DeviceCommandRef) {
+                  DeviceCommandRef cmdRef = (DeviceCommandRef) macroItem;
+                  deviceCommands.add(cmdRef);
+               } else if (macroItem instanceof DeviceMacroRef) {
+                  DeviceMacroRef macroRef = (DeviceMacroRef) macroItem;
+                  if (macroRef.getTargetDeviceMacro() != null) {
+                     Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macroRef.getTargetDeviceMacro());
+                     deviceCommands.addAll(cmds);
+                  }
+               }
+            }
+         }
+      }
+      return deviceCommands;
+   }
+
+   private boolean rebuild(Collection<Device> devices, Collection<DeviceCommand> deviceCommands, Collection<Sensor> sensors,
+         Collection<Switch> switches,Collection<Slider> sliders,Collection<DeviceMacro> macros,boolean createNew) {
+      boolean isHasNewCmd = false;
       Account account = userService.getAccount();
      
-      buildDevices(cmdBuilder.getDevices(), account);
-      buildDeviceCommands(cmdBuilder.getDeviceCommands());
-      buildSensors(cmdBuilder.getSensors(), account);
-      buildSwitchs(cmdBuilder.getSwitches(), account);
-      buildSliders(cmdBuilder.getSliders(), account);
-      buildMacros(cmdBuilder.getMacros(), account);
-      
-      prepareToSendToClient(cmdBuilder, account);
-   }
-
-   private void buildMacros(Collection<DeviceMacro> macros, Account account) {
-      for (DeviceMacro macro : macros) {
-         macro.setAccount(account);
-         saveMacro(macro);
-      }
-   }
-
-   private void buildSliders(Collection<Slider> sliders, Account account) {
-      for (Slider slider : sliders) {
-         slider.setAccount(account);
-         slider.initCmdSensorAndDevice();
-         List<Slider> sameSliders = sliderService.loadSameSliders(slider);
-         if (sameSliders != null && sameSliders.size() >0) {
-            slider.setOid(sameSliders.get(0).getOid());
-         } else {
-            sliderService.save(slider);
-         }
-      }
-   }
-
-   private void buildSwitchs(Collection<Switch> switches, Account account) {
-      for (Switch switchToggle : switches) {
-         switchToggle.setAccount(account);
-         switchToggle.initCmdsDeviceAndSensor();
-         List<Switch> swhs = switchService.loadSameSwitchs(switchToggle);
-         if (swhs !=null && swhs.size() >0) {
-            switchToggle.setOid(swhs.get(0).getOid());
-         } else {
-            switchService.save(switchToggle);
-         }
-      }
-   }
-
-   private void buildSensors(Collection<Sensor> sensors, Account account) {
-      for (Sensor sensor : sensors) {
-         sensor.setAccount(account);
-         sensor.initCmdAndDevice();
-         List<Sensor> sameSensors = sensorService.loadSameSensors(sensor);
-         if (sameSensors != null && sameSensors.size() >0) {
-            sensor.setOid(sameSensors.get(0).getOid());
-         } else {
-            sensorService.saveSensor(sensor);
-         }
-      }
-   }
-
-   private void buildDeviceCommands(Collection<DeviceCommand> deviceCommands) {
-      for (DeviceCommand deviceCommand : deviceCommands) {
-         Protocol protocol = deviceCommand.getProtocol();
-         protocol.initAttributes();
-         List<DeviceCommand> sameCmds = deviceCommandService.loadSameCommands(deviceCommand);
-         if (sameCmds != null && sameCmds.size() >0) {
-            deviceCommand.setOid(sameCmds.get(0).getOid());
-         } else {
-            deviceCommandService.save(deviceCommand);
-         }
-      }
-   }
-
-   private void buildDevices(Collection<Device> devices, Account account) {
+      //1, build devices. 
       for (Device device : devices) {
          device.setAccount(account);
          List<Device> sameDevices = deviceService.loadSameDevices(device);
-         if (sameDevices != null && sameDevices.size() >0) {
-            device.setOid(sameDevices.get(0).getOid());
+         if (! createNew) {
+            if (sameDevices != null && sameDevices.size() >0) {
+               device.setOid(sameDevices.get(0).getOid());
+            } else {
+               deviceService.saveDevice(device);
+               isHasNewCmd = true;
+            }
          } else {
             deviceService.saveDevice(device);
+            isHasNewCmd = true;
          }
       }
-   }
-
-   private void prepareToSendToClient(ScreenCmdBuilder cmdBuilder, Account account) {
-      // Because some of the domain classes are lazy loaded by hibernate, 
-      // we need replace some hibernate proxy classes with the class declared in their own class. 
-      // (for example we may need replace PersistentBag with ArrayList.)
-      // so that they can be serialized by GWT. 
-      for (DeviceCommand deviceCommand : cmdBuilder.getDeviceCommands()) {
+      
+      //2, build DeviceCommands. 
+      for (DeviceCommand deviceCommand : deviceCommands) {
          Protocol protocol = deviceCommand.getProtocol();
          if (protocol.getAttributes() != null) {
             for (ProtocolAttr attr : protocol.getAttributes()) {
                attr.setProtocol(protocol);
             }
          }
+         if (! createNew) {
+            List<DeviceCommand> sameCmds = deviceCommandService.loadSameCommands(deviceCommand);
+            if (sameCmds != null && sameCmds.size() >0) {
+               deviceCommand.setOid(sameCmds.get(0).getOid());
+            } else {
+               deviceCommandService.save(deviceCommand);
+               isHasNewCmd = true;
+            }
+         } else {
+            deviceCommandService.save(deviceCommand);
+            isHasNewCmd = true;
+         }
+      }
+
+      //3, build sensors. 
+      for (Sensor sensor : sensors) {
+         sensor.setAccount(account);
+         sensor.getSensorCommandRef().setSensor(sensor);
+         sensor.setDevice(sensor.getSensorCommandRef().getDeviceCommand().getDevice());
+         if (! createNew) {
+            List<Sensor> sameSensors = sensorService.loadSameSensors(sensor);
+            if (sameSensors != null && sameSensors.size() >0) {
+               sensor.setOid(sameSensors.get(0).getOid());
+            } else {
+               sensorService.saveSensor(sensor);
+               isHasNewCmd = true;
+            }
+         } else {
+            sensorService.saveSensor(sensor);
+            isHasNewCmd = true;
+         }
+      }
+
+      //4, build switch. 
+      for (Switch switchToggle : switches) {
+         switchToggle.setAccount(account);
+         switchToggle.getSwitchCommandOffRef().setOffSwitch(switchToggle);
+         switchToggle.getSwitchCommandOnRef().setOnSwitch(switchToggle);
+         switchToggle.setDevice(switchToggle.getSwitchCommandOffRef().getDeviceCommand().getDevice());
+         switchToggle.getSwitchSensorRef().setSwitchToggle(switchToggle);
+         if (! createNew) {
+            List<Switch> swhs = switchService.loadSameSwitchs(switchToggle);
+            if (swhs !=null && swhs.size() >0) {
+               switchToggle.setOid(swhs.get(0).getOid());
+            } else {
+               switchService.save(switchToggle);
+            }
+         } else {
+            switchService.save(switchToggle);
+         }
+      }
+
+      //5, build slider. 
+      for (Slider slider : sliders) {
+         slider.setAccount(account);
+         slider.setDevice(slider.getSetValueCmd().getDeviceCommand().getDevice());
+         slider.getSliderSensorRef().setSlider(slider);
+         slider.getSetValueCmd().setSlider(slider);
+         if (! createNew) {
+            List<Slider> sameSliders = sliderService.loadSameSliders(slider);
+            if (sameSliders != null && sameSliders.size() >0) {
+               slider.setOid(sameSliders.get(0).getOid());
+            } else {
+               sliderService.save(slider);
+            }
+         } else {
+            sliderService.save(slider);
+         }
+      }
+
+      //6, build macro. 
+      for (DeviceMacro macro : macros) {
+         macro.setAccount(account);
+         saveMacro(macro,createNew);
+      }
+
+      //7, prepare to send to client.
+      prepareToSendToClient(devices, deviceCommands, macros, account);
+      return isHasNewCmd;
+   }
+
+   private void prepareToSendToClient(Collection<Device> devices, Collection<DeviceCommand> deviceCommands,
+         Collection<DeviceMacro> macros, Account account) {
+      // Because some of the domain classes are lazy loaded by hibernate, 
+      // we need replace some hibernate proxy classes with the class declared in their own class. 
+      // (for example we may need replace PersistentBag with ArrayList.)
+      // so that they can be serialized by GWT. 
+      for (DeviceCommand deviceCommand : deviceCommands) {
+         Protocol protocol = deviceCommand.getProtocol();
+
+         if (protocol.getAttributes() != null) {
+            for (ProtocolAttr attr : protocol.getAttributes()) {
+               attr.setProtocol(protocol);
+            }
+         }
+
          List<ProtocolAttr> attrs = new ArrayList<ProtocolAttr> ();
+
          for (ProtocolAttr attr : protocol.getAttributes()) {
            attrs.add(attr);
          }
+        
          deviceCommand.getProtocol().setAttributes(attrs);
       }
 
@@ -495,7 +899,7 @@ public class TemplateServiceImpl implements TemplateService {
       account.setUsers(new ArrayList<User>());
       userService.getCurrentUser().setRoles(new ArrayList<Role>());
 
-      for (Device device : cmdBuilder.getDevices() ) {
+      for (Device device : devices ) {
          device.setAccount(null);
          device.setSensors(new ArrayList<Sensor>());
          device.setSwitchs(new ArrayList<Switch>());
@@ -503,35 +907,38 @@ public class TemplateServiceImpl implements TemplateService {
          device.setDeviceCommands(new ArrayList<DeviceCommand>());
       }
 
-      for (DeviceMacro macro : cmdBuilder.getMacros()) {
+      for (DeviceMacro macro : macros) {
          macro.setAccount(null);
-         List<DeviceMacroItem> items = new ArrayList<DeviceMacroItem>();
-         for (DeviceMacroItem item: macro.getDeviceMacroItems()) {
-            items.add(item);
-         }
-         macro.setDeviceMacroItems(items);
+         macro.setDeviceMacroItems(new ArrayList<DeviceMacroItem>());
       }
    }
    
-   private void saveMacro(DeviceMacro macro) {
+   private void saveMacro(DeviceMacro macro,boolean createNew) {
+
       if (null != macro) {
          List<DeviceMacroItem> items = macro.getDeviceMacroItems();
-         //save the macros belongs to it. 
+
+         // first, save the macros belongs to it. 
          if (null != items) {
             for (DeviceMacroItem item : items) {
                if (item instanceof DeviceMacroRef) {
                   DeviceMacroRef macroRef = (DeviceMacroRef) item;
                   DeviceMacro subMacro = macroRef.getTargetDeviceMacro();
-                  saveMacro(subMacro);
+                  saveMacro(subMacro,createNew);
                }
                item.setParentDeviceMacro(macro);
             }
          }
-         // save the macro itself.  
-         macro.setAccount(userService.getAccount());
-         List<DeviceMacro> sameMacro = deviceMacroService.loadSameMacro(macro);
-         if (sameMacro != null && sameMacro.size() >0) {
-            macro.setOid(sameMacro.get(0).getOid());
+
+         // second, save the macro itself. 
+         if (! createNew) {
+            macro.setAccount(userService.getAccount());
+            List<DeviceMacro> sameMacro = deviceMacroService.loadSameMacro(macro);
+            if (sameMacro != null && sameMacro.size() >0) {
+               macro.setOid(sameMacro.get(0).getOid());
+            } else {
+               this.deviceMacroService.saveDeviceMacro(macro);
+            }
          } else {
             this.deviceMacroService.saveDeviceMacro(macro);
          }
@@ -598,7 +1005,6 @@ public class TemplateServiceImpl implements TemplateService {
    public void setSwitchService(SwitchService switchService) {
       this.switchService = switchService;
    }
-   
 
    public void setSliderService(SliderService sliderService) {
       this.sliderService = sliderService;
@@ -618,7 +1024,7 @@ public class TemplateServiceImpl implements TemplateService {
     * @author javen
     * 
     */
-   static class SimpleClassLocator implements ClassLocator {
+   private static class SimpleClassLocator implements ClassLocator {
 
       @SuppressWarnings("unchecked")
       public Class locate(Map map, Path currentPath) throws ClassNotFoundException {
@@ -633,13 +1039,13 @@ public class TemplateServiceImpl implements TemplateService {
     *
     */
    public static class TemplateList {
-      private List<TemplateFromBeehive> templates = new ArrayList<TemplateFromBeehive> ();
+      private List<TemplateDTO> templates = new ArrayList<TemplateDTO> ();
 
-      public List<TemplateFromBeehive> getTemplates() {
+      public List<TemplateDTO> getTemplates() {
          return templates;
       }
 
-      public void setTemplates(List<TemplateFromBeehive> templates) {
+      public void setTemplates(List<TemplateDTO> templates) {
          this.templates = templates;
       }
       
@@ -652,7 +1058,7 @@ public class TemplateServiceImpl implements TemplateService {
     * @author javen
     *
     */
-   public static class TemplateFromBeehive {
+   public static class TemplateDTO {
       private int id;
       private String content;
       private String name;
@@ -742,6 +1148,95 @@ public class TemplateServiceImpl implements TemplateService {
                + (e.getMessage() == null ? "" : e.getMessage()), e);
       }
       return template;
+   }
+   
+   private void resetGestureForScreen(Screen screen) {
+      List<Gesture> gestures = screen.getGestures();
+      if (gestures != null && gestures.size()>0 ) {
+         for (Gesture gesture : gestures) {
+            Navigate navigate = gesture.getNavigate();
+            // make sure not navigate to a new group. 
+            if(navigate.getToGroup() != -1L) {
+               gesture.setNavigate(new Navigate());
+            }
+         }
+      }
+   }
+   
+   private void resetGestureForScreenPair(ScreenPair screenPair) {
+      if (screenPair.getLandscapeScreen() != null) {
+         resetGestureForScreen(screenPair.getLandscapeScreen());
+      }
+      
+      if(screenPair.getPortraitScreen() != null) {
+         resetGestureForScreen(screenPair.getPortraitScreen());
+      }
+   }
+   
+   private void resetNavigateForButton(UIButton uiBtn) {
+      Navigate navigate = uiBtn.getNavigate();
+      if (navigate != null) {
+         if (navigate.getToGroup() != -1L) {
+            uiBtn.setNavigate(new Navigate());
+         }
+      }
+   }
+   
+   private void resetNavigateForButtons(Collection<UIButton> uiBtns) {
+      if (uiBtns != null && uiBtns.size() >0 ) {
+         for(UIButton uiBtn : uiBtns) {
+            resetNavigateForButton(uiBtn);
+         }
+      }
+   }
+   
+   private void getDeviceCommandsFromGesture(Collection<Gesture> gestures,Set<DeviceCommand> uiCmds) {
+      if (gestures != null && gestures.size() >0 ) {
+         for (Gesture gesture : gestures) {
+            UICommand cmd = gesture.getUiCommand();
+            if (cmd != null) {
+               if (cmd instanceof DeviceCommandRef) {
+                  DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
+
+                  for (DeviceCommand tmpCmd : uiCmds) {
+                     if (tmpCmd.equals(cmdRef.getDeviceCommand())) {
+                        cmdRef.setDeviceCommand(tmpCmd);
+                     }
+                  }
+
+                  uiCmds.add(cmdRef.getDeviceCommand());
+
+               } else if (cmd instanceof DeviceMacroRef) {
+                  DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
+                  DeviceMacro macro = macroRef.getTargetDeviceMacro();
+
+                  if (macro != null) {
+                     Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macro);
+
+                     for (DeviceCommandRef cmdFromMacro : cmds) {
+                        for (DeviceCommand cmdInCommandSet : uiCmds) {
+                           if (cmdFromMacro.getDeviceCommand().equals(cmdInCommandSet)) {
+                              cmdFromMacro.setDeviceCommand(cmdInCommandSet);
+                           }
+                        }
+                        uiCmds.add(cmdFromMacro.getDeviceCommand());
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+   
+   private Collection<Gesture> getGestures(Collection<Screen> screens) {
+      Collection<Gesture> gestures = new ArrayList<Gesture>();
+      for(Screen screen: screens) {
+         Collection<Gesture> gstures  = screen.getGestures();
+         if (gstures != null && gstures.size() > 0) {
+            gestures.addAll(gstures);
+         }
+      }
+      return gestures;
    }
    
    private void resetImageSourceLocationForScreen(ScreenPair sp) {

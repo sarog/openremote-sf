@@ -264,17 +264,17 @@ public class ScreenTabbar extends ScreenComponent {
          public void handleEvent(WidgetDeleteEvent be) {
             removeItself();
             getScreenCanvas().removeTabbar();
-            getScreenCanvas().initTabbarContainer();
          }
       });
    }
    
    private void removeItself () {
       Group group = this.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
-      Panel panel = group.getParentPanel();
-      if (UITabbar.Scope.GROUP == uiTabbar.getScope()) {
+      if (group.getTabbar() != null && group.getTabbar().equals(uiTabbar)) {
          group.setTabbar(null);
-      } else {
+      } 
+      Panel panel = group.getParentPanel();
+      if (panel.getTabbar() != null && panel.getTabbar().equals(uiTabbar)) {
          panel.setTabbar(null);
       }
       for (ScreenTabbarItem item : this.getScreenTabbarItems()) {
