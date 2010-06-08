@@ -245,6 +245,7 @@ public class DeviceCommandWindow extends FormWindow {
       }
       form.add(attrSet);
       form.layout();
+      center();
    }
    
    /**
