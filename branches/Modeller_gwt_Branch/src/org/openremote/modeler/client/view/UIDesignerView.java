@@ -74,8 +74,6 @@ public class UIDesignerView extends TabItem {
 
    private ProfilePanel profilePanel = null;
    
-   private TemplatePanel templatePanel = null;
-   
    private PropertyPanel propertyPanel = null;
    
    /**
@@ -152,40 +150,36 @@ public class UIDesignerView extends TabItem {
    }
 
    public void saveUiDesignerLayout() {
-      if (templatePanel != null && templatePanel.isExpanded()) {
-         templatePanel.saveTemplateUpdates();
-      } else {
-         if (profilePanel.isInitialized()) {
-            UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
-                  new AsyncSuccessCallback<AutoSaveResponse>() {
-               @Override
-               public void onSuccess(AutoSaveResponse result) {
-                  if (result != null && result.isUpdated()) {
-                     Info.display("Info", "UI designer layout saved at "
+      if (profilePanel.isInitialized()) {
+         UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
+               new AsyncSuccessCallback<AutoSaveResponse>() {
+                  @Override
+                  public void onSuccess(AutoSaveResponse result) {
+                     if (result != null && result.isUpdated()) {
+                        Info.display("Info", "UI designer layout saved at "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                     }
+                     Window.setStatus("UI designer layout saved at: "
                            + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                   }
-                  Window.setStatus("UI designer layout saved at: "
-                        + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-               }
-               
-               @Override
-               public void onFailure(Throwable caught) {
-                  timer.cancel();
-                  boolean timeout = super.checkTimeout(caught);
-                  if (!timeout) {
-                     Info.display(new InfoConfig("Error", caught.getMessage() + " "
-                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     timer.cancel();
+                     boolean timeout = super.checkTimeout(caught);
+                     if (!timeout) {
+                        Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                     }
+                     Window.setStatus("Failed to save UI designer layout at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+
                   }
-                  Window.setStatus("Failed to save UI designer layout at: "
-                        + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-                  
-               }
-               
-            });
-            Window.setStatus("Saving ....");
-         } else {
-            Window.setStatus("Unable to save UI designer because panel list has not been initialized. ");
-         }
+
+               });
+         Window.setStatus("Saving ....");
+      } else {
+         Window.setStatus("Unable to save UI designer because panel list has not been initialized. ");
       }
    }
 
@@ -244,7 +238,7 @@ public class UIDesignerView extends TabItem {
          }
          
       });
-      templatePanel = new TemplatePanel(screenPanel);
+      TemplatePanel templatePanel = new TemplatePanel(screenPanel);
       BorderLayoutData westData = new BorderLayoutData(LayoutRegion.WEST, 200);
       westData.setSplit(true);
       west.setLayout(new AccordionLayout());

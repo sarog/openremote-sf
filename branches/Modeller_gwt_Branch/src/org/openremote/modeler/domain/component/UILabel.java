@@ -95,12 +95,7 @@ public class UILabel extends UIComponent implements SensorOwner {
       return sensor;
    }
 
-   
    public void setSensor(Sensor sensor) {
-      this.sensor = sensor;
-   }
-   
-   public void setSensorAndInitSensorLink(Sensor sensor) {
       this.sensor = sensor;
       if (sensor != null) {
          this.sensorLink = new SensorLink(sensor);
@@ -152,10 +147,5 @@ public class UILabel extends UIComponent implements SensorOwner {
    @Override
    public int getPreferredHeight() {
       return 50;
-   }
-   
-   public boolean equalsIgnoreOid(UILabel other) {
-      if (other == null) return false;
-      return text.equals(other.text) && color.equals(other.color) && fontSize == other.fontSize;
    }
 }

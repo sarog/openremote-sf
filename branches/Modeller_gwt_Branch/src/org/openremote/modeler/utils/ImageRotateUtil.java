@@ -26,8 +26,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
-
 
 /**
  * A utility class for rotating an image. 
@@ -35,8 +33,6 @@ import org.apache.log4j.Logger;
  *
  */
 public class ImageRotateUtil {
-   
-   private static final Logger logger = Logger.getLogger(ImageRotateUtil.class);
    /**
     * The image type supported by this class. 
     */
@@ -50,7 +46,6 @@ public class ImageRotateUtil {
          try {
             return doRotate(sourceImage, targetImageName, Math.toRadians(degree));
          } catch (IOException e) {
-            logger.error("Failed to rotate image: "+ sourceImage.getName(), e);
             return null;
          }
       } else {
@@ -72,7 +67,6 @@ public class ImageRotateUtil {
          g.drawRenderedImage(image, null);
          return result;
       } catch (IOException e) {
-         logger.error("Failed to rotate image: "+ sourceImageFile.getName(), e);
          return null;
       }
    }

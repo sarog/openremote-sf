@@ -152,17 +152,5 @@ public class Switch extends BusinessEntity {
       return true;
    }
 
-   public void initCmdsDeviceAndSensor() {
-      if (this.switchCommandOnRef != null) {
-         switchCommandOnRef.setOnSwitch(this);
-         device = switchCommandOnRef.getDeviceCommand().getDevice();
-      }
-      if (this.switchCommandOffRef !=null) {
-         switchCommandOffRef.setOffSwitch(this);
-         device = switchCommandOnRef.getDeviceCommand().getDevice();
-      }
-      if (this.switchSensorRef != null) {
-         switchSensorRef.setSwitchToggle(this);
-      }
-   }
+   
 }

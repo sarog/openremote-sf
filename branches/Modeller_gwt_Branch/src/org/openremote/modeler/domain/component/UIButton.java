@@ -192,11 +192,4 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       return imageSources;
    }
 
-   public void resetNavigate() {
-      if (navigate != null) {
-         if (navigate.getToGroup() != -1L) {
-            this.navigate = new Navigate();
-         }
-      }
-   }
 }

@@ -81,7 +81,6 @@ public class TemplatePanel extends ContentPanel {
    public TemplatePanel(ScreenPanel templateEditPanel) {
       this.templateEditPanel = templateEditPanel;
       selectionService = new SelectionServiceExt<BeanModel>();
-      setExpanded(false);
       setHeading("Template");
       setIcon(icon.templateIcon());
       setLayout(new FitLayout());
@@ -291,7 +290,7 @@ public class TemplatePanel extends ContentPanel {
       
    }
    
-   public void saveTemplateUpdates() {
+   private void saveTemplateUpdates() {
       if (templateInEditing != null) {
          TemplateProxy.updateTemplate(templateInEditing, new AsyncCallback<Template>(){
 
@@ -304,7 +303,8 @@ public class TemplatePanel extends ContentPanel {
             public void onSuccess(Template result) {
                if (result != null && result.getOid() == templateInEditing.getOid()) {
                   templateInEditing.setContent(result.getContent());
-                  Info.display("Success", "Save template " + templateInEditing.getName()+" successfully !");
+                  templateInEditing.setScreen(result.getScreen());
+                  Info.display("Success", "Auto save template " + templateInEditing.getName()+" successfully !");
                   // stop auto-saving when the template preview tab has been closed. 
                   if (editTabItem != null && templateEditPanel.indexOf(editTabItem) == -1) {
                      templateInEditing = null;
@@ -346,7 +346,7 @@ public class TemplatePanel extends ContentPanel {
                //--------------------------
                if (result.getOid() == TemplatePanel.this.templateInEditing.getOid()){
                   TemplatePanel.this.templateInEditing.setContent(result.getContent());
-                  Info.display("Success", "Save template " + TemplatePanel.this.templateInEditing.getName() + " successfully !");
+                  Info.display("Success", "Auto save template " + TemplatePanel.this.templateInEditing.getName() + " successfully !");
                }
                mask("Building screen and downloading resources ...");
                //--------------------------
@@ -365,15 +365,6 @@ public class TemplatePanel extends ContentPanel {
    }
    
    private void buildScreen(final Template templateInEditing) {
-      if (templateInEditing.getScreen() != null) {
-         unmask();
-         editTabItem = new ScreenTab(templateInEditing.getScreen());
-         templateEditPanel.setScreenItem(editTabItem);
-         templateInEditing.setScreen(templateInEditing.getScreen());
-         TemplatePanel.this.templateInEditing = templateInEditing;
-         return;
-      }
-      
       TemplateProxy.buildScreen(templateInEditing, new AsyncCallback<ScreenPair>() {
 
          @Override
