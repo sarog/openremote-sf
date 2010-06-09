@@ -44,11 +44,13 @@ import org.openremote.modeler.selenium.DebugId;
 import com.extjs.gxt.ui.client.data.BaseModelData;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
@@ -75,6 +77,8 @@ public class DeviceCommandWindow extends FormWindow {
    
    /** The device. */
    private Device device = null;
+   
+   protected boolean hideWindow = true;
    
    /**
     * Instantiates a new device command window.
@@ -119,12 +123,26 @@ public class DeviceCommandWindow extends FormWindow {
       form.setWidth(370);
 
       Button submitBtn = new Button("Submit");
-      Button resetButton = new Button("Reset");
+      form.addButton(submitBtn);
 
       submitBtn.addSelectionListener(new FormSubmitListener(form));
+      if (deviceCommand == null) {
+         Button continueButton = new Button("Submit and continue");
+         form.addButton(continueButton);
+         continueButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent ce) {
+               if (form.isValid()) {
+                  hideWindow = false;
+                  form.submit();
+               }
+            }
+         });
+      }
+      
+      Button resetButton = new Button("Reset");
       resetButton.addSelectionListener(new FormResetListener(form));
-      form.addButton(submitBtn);
       form.addButton(resetButton);
+      
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          public void handleEvent(FormEvent be) {
@@ -145,6 +163,11 @@ public class DeviceCommandWindow extends FormWindow {
                @Override
                public void onSuccess(BeanModel deviceCommandModel) {
                   fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommandModel));
+                  if (hideWindow) {
+                     hide();
+                  } else {
+                     hideWindow = true;
+                  }
                }
             };
             if (deviceCommand == null) {
