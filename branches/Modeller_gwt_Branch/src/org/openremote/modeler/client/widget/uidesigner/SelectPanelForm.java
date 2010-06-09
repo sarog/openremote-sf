@@ -96,6 +96,7 @@ public class SelectPanelForm extends CommonForm {
       for (BeanModel panelModel : panelModels) {
          store.add(panelModel);
       }
+      panelListView.setHeight(150);
       panelListView.setStore(store);
       panelListView.setDisplayProperty("displayName");
       panelListView.setStyleAttribute("overflow", "auto");

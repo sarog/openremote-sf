@@ -72,6 +72,7 @@ public class SelectSliderWindow extends Dialog {
       sliderList.setDisplayProperty("displayName");
       sliderList.setStyleAttribute("overflow", "auto");
       sliderList.setBorders(false);
+      sliderList.setHeight(150);
       sliderListContainer.add(sliderList);
       add(sliderListContainer, new RowData(1, -1, new Margins(4)));
    }

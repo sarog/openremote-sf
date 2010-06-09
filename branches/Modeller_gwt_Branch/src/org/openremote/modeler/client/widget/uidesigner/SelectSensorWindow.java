@@ -72,6 +72,7 @@ public class SelectSensorWindow extends Dialog {
       
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       store.add(BeanModelDataBase.sensorTable.loadAll());
+      sensorList.setHeight(150);
       sensorList.setStore(store);
       sensorList.setDisplayProperty("displayName");
       sensorList.setStyleAttribute("overflow", "auto");
