@@ -63,6 +63,7 @@ public class SelectCommandWindow extends Dialog {
          devicesAndMacrosTree = DeviceAndMacroTree.getInstance();
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
       }
+      devicesAndMacrosTree.setHeight(240);
       // overflow-auto style is for IE hack.
       devicesAndMacrosTreeContainer.addStyleName("overflow-auto");
       add(devicesAndMacrosTreeContainer);

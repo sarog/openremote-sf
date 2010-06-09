@@ -103,6 +103,7 @@ public class SelectScreenForm extends CommonForm {
       
       screenListView = new CheckBoxListView<BeanModel>();
       ListStore<BeanModel> store = new ListStore<BeanModel>();
+      screenListView.setHeight(150);
       screenListView.setStore(store);
       screenListView.setDisplayProperty("panelName");
       screenListView.setStyleAttribute("overflow", "auto");
