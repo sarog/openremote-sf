@@ -57,7 +57,7 @@
 	NSString *filePath = [thisBundle pathForResource:fileName ofType:@"xml"];
 	NSData *data = [[NSData alloc] initWithContentsOfFile:filePath];
 	NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSLog(content);
+	NSLog(@"%@", content);
 	[content release];
 	return data;
 }
