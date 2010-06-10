@@ -435,6 +435,7 @@ public class GridLayoutContainer extends ComponentContainer {
             if (screenComponent instanceof ScreenButton) {
                ((ScreenButton)screenComponent).setDefaultImage();
             }
+            grid.removeCell(cellContainer.getCell());
          }
       };
       source.setGroup(Constants.CONTROL_DND_GROUP);
@@ -570,6 +571,7 @@ public class GridLayoutContainer extends ComponentContainer {
          cellContainer.setCellPosition(targetPosition.x, targetPosition.y);
          cellContainer.setPagePosition(targetCell.getAbsoluteLeft(), targetCell.getAbsoluteTop());
       }
+      grid.addCell(container.getCell());
       add(cellContainer);
       createDragSource(cellContainer);
       return cellContainer;
