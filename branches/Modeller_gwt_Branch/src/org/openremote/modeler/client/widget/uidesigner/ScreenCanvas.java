@@ -193,9 +193,9 @@ public class ScreenCanvas extends ComponentContainer {
                MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                   public void handleEvent(MessageBoxEvent be) {
                      if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                        cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell());
                         WidgetSelectionUtil.setSelectWidget(null);
                      } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                        cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
                         cellContainer.getGridContainer().addGridCellContainer(cellContainer);
                      }
                   }
@@ -248,9 +248,9 @@ public class ScreenCanvas extends ComponentContainer {
                   MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                      public void handleEvent(MessageBoxEvent be) {
                         if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           controlContainer.getGridContainer().getGrid().removeCell(controlContainer.getCell());
                            WidgetSelectionUtil.setSelectWidget(null);
                         } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                           controlContainer.getGridContainer().getGrid().addCell(controlContainer.getCell());
                            controlContainer.getGridContainer().addGridCellContainer(controlContainer);
                         }
                      }
@@ -527,7 +527,6 @@ public class ScreenCanvas extends ComponentContainer {
 
    private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,
          GridCellBounds recorder) {
-      cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell()); // remove the old cell from grid.
 
       UIComponent uiComponent = cellContainer.getCell().getUiComponent();
       AbsoluteLayoutContainer controlContainer = null;
