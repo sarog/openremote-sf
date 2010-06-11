@@ -17,62 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.knx;
-
+package org.openremote.controller.service;
 
 /**
- * TODO
- *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * The service for Button Command from remote.
+ * 
+ * This service is responsible for trigger event of control which can be found by the control ids in the controller.xml
+ * and return the status result.
+ * 
+ * @author Handy.Wang 
  */
-public enum KNXCommand
-{
-  /**
-   * TODO
-   */
-  SWITCH_ON
-  (
-      new String[] { "ON" }
-  ),
+public interface StatusCommandService {
+   
+   /**
+    * Trigger .
+    * 
+    * @param buttonID the button id
+    */
+   String trigger(String unParsedcontrolIDs);
 
-  /**
-   * TODO
-   */
-  SWITCH_OFF
-  (
-      new String[] { "OFF" }
-  ),
-  
-  /**
-   * TODO
-   */
-  STATUS
-  (
-      new String[] {"STATUS"}
-  );
-
-
-  private String[] commandTranslations = null;
-
-  private KNXCommand(String[] commandTranslations)
-  {
-    this.commandTranslations = commandTranslations;
-  }
-
-  /**
-   * TODO
-   *
-   * @param command
-   * @return
-   */
-  boolean isEqual(String command)
-  {
-    for (String translation : commandTranslations)
-    {
-      if (translation.equalsIgnoreCase(command))
-        return true;
-    }
-
-    return false;
-  }
 }
