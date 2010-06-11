@@ -21,7 +21,10 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
+import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.cemi.CEMILData;
+import tuwien.auto.calimero.datapoint.Datapoint;
+import tuwien.auto.calimero.datapoint.StateDP;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
 import tuwien.auto.calimero.exception.KNXTimeoutException;
@@ -30,6 +33,12 @@ import tuwien.auto.calimero.knxnetip.KNXConnectionClosedException;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
+import tuwien.auto.calimero.link.KNXNetworkLink;
+import tuwien.auto.calimero.link.KNXNetworkLinkIP;
+import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
+import tuwien.auto.calimero.process.ProcessListener;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -47,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 /**
  * The goal of the KNXConnectionManager is to:
@@ -123,8 +133,6 @@ class KNXConnectionManager
    *
    * NOTE: use of "any" local interface address (0.0.0.0) is not supported at the moment.
    */
-
-  // IMPL NOTE: disallowing "0.0.0.0" address is mandated by the underlying Calimero impl.
   public final static String KNX_LOCAL_BIND_ADDRESS = "knx.bind.address";
 
   // TODO : all the settings below should be externalized
@@ -864,7 +872,10 @@ class KNXConnectionManager
    */
   private class CalimeroConnection implements KNXConnection
   {
+    /** The connection. */
     private KNXnetIPTunnel connection = null;
+    /** The ProcessCommunicator. */
+    private ProcessCommunicator pc; 
 
     private CalimeroConnection(KNXnetIPTunnel connection)
     {
@@ -875,7 +886,6 @@ class KNXConnectionManager
 
     public void send(String groupAddress, KNXCommand command)
     {
-
       // KNX Addressing on the common EMI wireformat is a two byte field, consisting of address
       // high byte (a.k.a Octet 0) and low byte (a.k.a Octet 1) [KNX 1.1].
       //
@@ -1253,6 +1263,80 @@ class KNXConnectionManager
         );
       }
     }
+    
+    /* (non-Javadoc)
+     * @see org.openremote.controller.protocol.knx.KNXConnection#readDeviceStatus(java.lang.String, java.lang.String)
+     */
+    public String readDeviceStatus(String groupAddress, String dptTypeID) {
+        try {
+            sendReadStatusRequest(connection, null);
+            return read(groupAddress, dptTypeID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "unknown";
+    }
+    
+    /**
+     * Sends read request to Device.
+     * 
+     * @param knxNetIPTunnel KNXnetIPTunnel
+     * @param l the ProcessListener
+     * 
+     * @throws Exception the exception
+     */
+    private void sendReadStatusRequest(KNXnetIPTunnel knxNetIPTunnel, ProcessListener l) throws Exception {
+        // create the network link to the KNX network
+        KNXNetworkLink lnk = createLink(knxNetIPTunnel);
+        
+        // create process communicator with the established link
+        pc = new ProcessCommunicatorImpl(lnk);
+        if (l != null) {
+            pc.addProcessListener(l);
+        }
+        pc.setResponseTimeout(10);
+    }
+    
+    /**
+     * Creates the knxNetIPTunnel link.
+     * 
+     * @param knxNetIPTunnel the knx net ip tunnel
+     * 
+     * @return the kNX network link
+     * 
+     * @throws Exception the exception
+     */
+    private KNXNetworkLink createLink(KNXnetIPTunnel knxNetIPTunnel) throws Exception {
+        // create local and remote socket address for network link
+        final InetSocketAddress local = new InetSocketAddress(InetAddress.getLocalHost(), CLIENT_CONNECTION_PORT);
+        final InetSocketAddress host = new InetSocketAddress(InetAddress.getByName("192.168.0.10"), 3671);//knxNetIPTunnel.getRemoteAddress();
+        final int mode = KNXNetworkLinkIP.TUNNEL;
+        this.connection.close();
+        return new KNXNetworkLinkIP(mode, local, host, CONNECTION_USE_NAT, TPSettings.TP1);
+    }
+    
+    /**
+     * Read status of device with group address and DataPointType id.
+     * 
+     * @param groupAddress the group address
+     * @param dptTypeID the dpt type id
+     * 
+     * @return the string
+     * 
+     * @throws KNXException the KNX exception
+     */
+    private String read(String groupAddress, String dptTypeID) throws KNXException {
+            // check if we are doing a read or write operation
+            final GroupAddress main = new GroupAddress(groupAddress);
+            // encapsulate information into a datapoint
+            // this is a convenient way to let the process communicator
+            // handle the DPT stuff, so an already formatted string will be
+            // returned
+            final Datapoint dp = new StateDP(main, "", 0, dptTypeID);
+            String rst = pc.read(dp);
+            System.out.println("read value: " + rst);
+            return rst;
+        }
   }
 
 
