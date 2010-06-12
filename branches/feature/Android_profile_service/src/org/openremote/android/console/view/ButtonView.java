@@ -60,7 +60,6 @@ public class ButtonView extends ControlView {
       if (button.getDefaultImage() != null) {
          defaultImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc(), width, height);
          if (defaultImage != null) {
-            uiButton.setText(null);
             uiButton.setBackgroundDrawable(defaultImage);
          }
       }
