@@ -91,4 +91,10 @@ public interface UserService {
    void deleteUser(long uid);
    
    List<User> getAccountAccessUsers(User currentUser);
+   
+   User forgetPassword(String username);
+   
+   User checkPasswordToken(long uid, String passwordToken);
+   
+   boolean resetPassword(long uid, String password, String passwordToken);
 }

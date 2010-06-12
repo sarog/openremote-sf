@@ -8,7 +8,7 @@
 <meta content="openremote, knx, iphone, insteon, x10, infrared, crestron, zigbee, opensource, gpl, iknx, lirc, beehive, modeler, uicomposer" name="KEYWORDS"/>
 <link href="image/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
 <link href="image/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
-<title>Login - OpenRemote Boss 2.0 Online</title>
+<title>Forget Password - OpenRemote Boss 2.0 Online</title>
 <style type="text/css">
     body{
         line-height:100%;
@@ -27,8 +27,8 @@
 	a img{
         border:none;
     }
-    .login_submit{
-        width:70px;
+    .send_submit{
+        width:100px;
         margin-left: 80px;
     }
     .copyright{
@@ -46,9 +46,6 @@
     p.pass{
         color:green;
         text-align: center;
-    }
-    .register_btn{
-    	margin-left: 40px;
     }
     div.inner-boundary {
 		border:1px solid #A6A6A6;
@@ -70,49 +67,34 @@
 		color:red;
 		text-align: left;
 	}
-	.forget_btn {
-	   margin-left: 10px;
-	}
 </style>
 </head>
 <body>
 
 <div class="center-form">
-	<form method="POST" action="j_security_check">
+	<form method="POST" action="account.htm?method=forgetPassword">
 		<div class="inner-boundary">
 		  <div class="inner-border">
             <a href="http://www.openremote.org" ><img src="image/global.logo.png" /></a>
-            <p class="title">Login to OpenRemote Boss 2.0 Online</p>
+            <p class="title">Forget your password?</p>
+            <c:if test="${isUserAvailable ne null and not isUserAvailable}">
+                <p class="fail">Invalid username, get password failed.</p>
+            </c:if>
             
-            <c:if test="${isActivated ne null and isActivated}">
-                <p class="pass"><b>${username}</b> has been activated, please login.</p>
+            <c:if test="${needReset ne null}">
+                <p class="pass">We have sent you an email to <b>${email}</b>,
+                 please follow the instructions in the email to reset your password.</p>
             </c:if>
-            <c:if test="${isActivated ne null and not isActivated}">
-                <p class="fail">Invalid activation credentials, activation failed.</p>
-            </c:if>
-            <c:if test="${needActivation ne null}">
-                <p class="pass">We have sent you an activation email to <b>${email}</b>,
-                 please follow the instructions in the email to finish your registration.</p>
-            </c:if>
-            <c:if test="${isAccepted ne null and isAccepted}">
-                <p class="pass">You have accepted the invitation, please login.</p>
-            </c:if>
-            <c:if test="${needActivation eq null}">
+
+            <c:if test="${needReset eq null}">
 	            <div style="padding-left:110px">
 		            <p class="input"><b class="form_label">Username</b>
-		            <input id="username" style="width:150px" type="text" name="j_username" value="${username}"></p>
-		            <p class="input"><b class="form_label">Password</b>
-		            <input id="password" style="width:150px" type="password" name="j_password" value=""></p>
-	                <c:if test="${param.fail ne null }">
-		                <p class="incorrect">The username or password you entered is incorrect.</p>
-	                </c:if>
-	                <p>
-	                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">Remember Me</label>
-	                	<a class="register_btn" href="register.jsp">Create a New Account</a>
-	                </p> 
+		            <input id="username" style="width:150px" type="text" name="username" value="${username}"></p>
+                  <c:if test="${username_blank ne null}">
+                      <p class="fail">Username cannot be left blank.</p>
+                   </c:if>
 		            <div>
-                     <input class="login_submit" type="submit" value="Login">
-                     <a class="forget_btn" href="forget.jsp">Forget password?</a>
+                     <input class="send_submit" type="submit" value="Submit">
                   </div>
 	            </div>
             </c:if>                    
