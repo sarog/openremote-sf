@@ -29,8 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.command.CommandType;
-import org.openremote.controller.exception.ButtonCommandException;
+import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.spring.SpringContext;
@@ -63,42 +62,39 @@ public class ControlCommandRESTServlet extends HttpServlet {
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        
       String url = request.getRequestURL().toString();      
-      String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";      
+      String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";
       Pattern pattern = Pattern.compile(regexp);      
       Matcher matcher = pattern.matcher(url);      
       String controlID = null;
-      String commandTypeStr = null;
+      String commandParam = null;
       
       if (matcher.find()) {
          controlID = matcher.group(1);
-         commandTypeStr = matcher.group(2);
+         commandParam = matcher.group(2);
          try{
-            if (commandTypeStr != null) {
-               CommandType commandType = null;
-               if ("press".equalsIgnoreCase(commandTypeStr)) {
-                  commandType = CommandType.SEND_START;
-               } else if ("release".equalsIgnoreCase(commandTypeStr)) {
-                  commandType = CommandType.SEND_STOP;
-               } else if ("click".equalsIgnoreCase(commandTypeStr)) {
-                  commandType = CommandType.SEND_ONCE;
+            if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
+                  controlCommandService.trigger(controlID, commandParam);
                } else {
-                  commandType = CommandType.SEND_ONCE;
+                  throw new InvalidCommandTypeException(commandParam);
                }
-               if (commandType != null) {
-                  controlCommandService.trigger(controlID, commandType);
-               } else {
-                  throw new InvalidCommandTypeException(commandTypeStr);
-               }
-            } else {
-               controlCommandService.trigger(controlID);
-            }
-         } catch (ButtonCommandException e) {
+         } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
             response.sendError(e.getErrorCode(),e.getMessage());
          }
       } else {
-         response.sendError(400,"Bad REST Request, should be /rest/control/{button_id}/{command_type}");
+         response.sendError(400,"Bad REST Request, should be /rest/control/{control_id}/{commandParam}");
       }
+   }
+   
+   /**
+    * Checks if String parameter is not empty.
+    * 
+    * @param param the param
+    * 
+    * @return true, if parameter is not empty
+    */
+   private boolean isNotEmpty(String param) {
+      return (param != null && !"".equals(param)) ? true : false;
    }
 
 }

@@ -19,10 +19,12 @@
 */
 package org.openremote.controller.control.toggle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.ControlBuilder;
@@ -34,33 +36,62 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * @author Handy.Wang 2009-10-15
  */
 public class ToggleBuilder extends ControlBuilder {
-
+   
     /* (non-Javadoc)
      * @see org.openremote.controller.control.ControlBuilder#build(org.jdom.Element, java.lang.String)
      */
-    @SuppressWarnings("unchecked")
-    @Override
+   @SuppressWarnings("unchecked")
+   @Override
     public Control build(Element toggleElement, String commandParam) {
-        Toggle toggle = new Toggle();        
-        List<Element> subElements = toggleElement.getChildren();
-        
-        //status command
-        if (Command.STATUS_COMMAND.equalsIgnoreCase(commandParam)) {
-            for(Element element : subElements) {
-                if(Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
-                    Element commandElementRef = (Element) element.getChildren().get(0);
-                    String statusCommandID = commandElementRef.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);            
-                    Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
-                       if (statusCommandElement != null) {
-                          StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-                          toggle.getStatus().setStatusCommand(statusCommand);
-                          return toggle;
-                       } else {
-                          throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
-                       }
-                }
+      if (!isContainAction(commandParam)) {
+         return new Toggle();
+      }
+      Toggle toggle = new Toggle();
+      List<Element> subElements = toggleElement.getChildren();
+
+      for (int i = 0; i < subElements.size(); i++) {
+         Element element = subElements.get(i);
+         // status element
+         if (Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
+            Element commandElementRef = (Element) element.getChildren().get(0);
+            String statusCommandID = commandElementRef.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
+            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
+            if (statusCommandElement != null) {
+               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
+               toggle.getStatus().setStatusCommand(statusCommand);
+               continue;
+            } else {
+               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
             }
-        }
-        return toggle;
+         }
+
+         // non-status elements
+         List<Element> commandRefElements = element.getChildren();
+         List<ExecutableCommand> executableCommands = new ArrayList<ExecutableCommand>();
+         for (Element commandRefElement : commandRefElements) {
+            String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
+            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+            Command command = commandFactory.getCommand(commandElement);
+            executableCommands.add((ExecutableCommand) command);
+         }
+         toggle.getStates().put(Toggle.SWITCH_STATUSES[i], executableCommands);
+      }
+      return toggle;
     }
+
+   /**
+    * Checks if is contain action.
+    * 
+    * @param commandParam the command param
+    * 
+    * @return true, if is contain action
+    */
+   private boolean isContainAction(String commandParam) {
+      for (String action : Toggle.AVAILABLE_ACTIONS) {
+         if (action.equals(commandParam)) {
+            return true;
+         }
+      }
+      return false;
+   }
 }

@@ -21,6 +21,8 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.control.Control;
+
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.datapoint.Datapoint;
@@ -1262,19 +1264,36 @@ class KNXConnectionManager
             exception
         );
       }
+
+/*
+
+  Lines below were introduced as part of R1105 -- they don't look like they belong here,
+  especially with the public static access to Control class.
+
+=======
+      
+      if ("off".equalsIgnoreCase(Control.CURRENT_STATUS)) {
+         Control.CURRENT_STATUS = "on";
+      } else {
+         Control.CURRENT_STATUS = "off";
+      }
+>>>>>>> .merge-right.r1105
+*/
+
     }
     
     /* (non-Javadoc)
      * @see org.openremote.controller.protocol.knx.KNXConnection#readDeviceStatus(java.lang.String, java.lang.String)
      */
     public String readDeviceStatus(String groupAddress, String dptTypeID) {
-        try {
-            sendReadStatusRequest(connection, null);
-            return read(groupAddress, dptTypeID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "unknown";
+//        try {
+//            sendReadStatusRequest(connection, null);
+//            return read(groupAddress, dptTypeID);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return "unknown";
+        return Control.CURRENT_STATUS;
     }
     
     /**

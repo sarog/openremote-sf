@@ -56,7 +56,7 @@ public class PollingTest extends TestCase {
    
    public void testRegex() {
 //     String urlButton = "http://localhost:8080/controller/rest/button/3/click";
-     String urlControl = "http://localhost:8080/controller/rest/control/1/reverse";
+     String urlControl = "http://localhost:8080/controller/rest/control/1/next";
      String urlStatus = "http://localhost:8080/controller/rest/status/1,2,3";
      
 //     String regexpButton = "rest\\/button\\/(\\d+)\\/(\\w+)";

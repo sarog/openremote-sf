@@ -33,6 +33,9 @@ import org.openremote.controller.control.Status;
  * @author Handy.Wang 2009-10-15
  */
 public class Button extends Control {
+   
+    /** The Constant AVAILABLE_ACTIONS. */
+    public static final String[] AVAILABLE_ACTIONS = { "click" }; 
 
     /** The commands. */
     private List<ExecutableCommand> commands;
