@@ -35,6 +35,6 @@ public interface X10Controller {
     * @param command
     *           the command to transmit.
     */
-   void send(String address, X10Command command);
+   void send(String address, X10CommandType command);
 
 }

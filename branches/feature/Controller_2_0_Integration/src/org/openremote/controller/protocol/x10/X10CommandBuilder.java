@@ -21,8 +21,8 @@
 package org.openremote.controller.protocol.x10;
 
 import org.jdom.Element;
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.ExecutableCommand;
 
 /**
  * The Class X10EventBuilder.
@@ -30,7 +30,7 @@ import org.openremote.controller.event.EventBuilder;
  * @author Dan 2009-4-30
  * @author Jerome Velociter
  */
-public class X10EventBuilder implements EventBuilder {
+public class X10CommandBuilder implements CommandBuilder {
 
    public final static String X10_LOG_CATEGORY = "X10";
    public final static String ADDRESS_XML_ATTRIBUTE = "address";
@@ -41,22 +41,22 @@ public class X10EventBuilder implements EventBuilder {
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
+   public ExecutableCommand build(Element element) {
 
       String address = element.getAttributeValue(ADDRESS_XML_ATTRIBUTE);
       String commandAsString = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
 
-      X10Command command = null;
+      X10CommandType commandType = null;
 
-      if (X10Command.ALL_UNITS_OFF.isEqual(commandAsString)) {
-         command = X10Command.ALL_UNITS_OFF;
-      } else if (X10Command.SWITCH_ON.isEqual(commandAsString)) {
-         command = X10Command.SWITCH_ON;
-      } else if (X10Command.SWITCH_OFF.isEqual(commandAsString)) {
-         command = X10Command.SWITCH_OFF;
+      if (X10CommandType.ALL_UNITS_OFF.isEqual(commandAsString)) {
+         commandType = X10CommandType.ALL_UNITS_OFF;
+      } else if (X10CommandType.SWITCH_ON.isEqual(commandAsString)) {
+         commandType = X10CommandType.SWITCH_ON;
+      } else if (X10CommandType.SWITCH_OFF.isEqual(commandAsString)) {
+         commandType = X10CommandType.SWITCH_OFF;
       }
 
-      X10Event event = new X10Event(connectionManager, address, command);
+      X10Command event = new X10Command(connectionManager, address, commandType);
 
       return event;
    }
