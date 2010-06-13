@@ -19,7 +19,7 @@
 */
 package org.openremote.controller.service;
 
-import org.openremote.controller.event.CommandType;
+import org.openremote.controller.command.CommandType;
 
 
 

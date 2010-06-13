@@ -29,11 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.event.CommandType;
+import org.openremote.controller.command.CommandType;
 import org.openremote.controller.exception.ButtonCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
-import org.openremote.controller.service.ButtonCommandService;
-import org.openremote.controller.service.StatusCommandService;
+import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.spring.SpringContext;
 
 /**
@@ -46,8 +45,8 @@ public class ControlCommandRESTServlet extends HttpServlet {
    
    private Logger logger = Logger.getLogger(ControlCommandRESTServlet.class.getName());
    
-   private static StatusCommandService controlCommandService = 
-      (StatusCommandService) SpringContext.getInstance().getBean("controlCommandService");
+   private static ControlCommandService controlCommandService = 
+      (ControlCommandService) SpringContext.getInstance().getBean("controlCommandService");
    
    /* (non-Javadoc)
     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -62,19 +61,16 @@ public class ControlCommandRESTServlet extends HttpServlet {
     */
    @Override
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      String url = request.getRequestURL().toString();
-      
-      String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";
-      
-      Pattern pattern = Pattern.compile(regexp);
-      
-      Matcher matcher = pattern.matcher(url);
-      
-      String buttonID = null;
+       
+      String url = request.getRequestURL().toString();      
+      String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";      
+      Pattern pattern = Pattern.compile(regexp);      
+      Matcher matcher = pattern.matcher(url);      
+      String controlID = null;
       String commandTypeStr = null;
       
       if (matcher.find()) {
-         buttonID = matcher.group(1);
+         controlID = matcher.group(1);
          commandTypeStr = matcher.group(2);
          try{
             if (commandTypeStr != null) {
@@ -85,21 +81,23 @@ public class ControlCommandRESTServlet extends HttpServlet {
                   commandType = CommandType.SEND_STOP;
                } else if ("click".equalsIgnoreCase(commandTypeStr)) {
                   commandType = CommandType.SEND_ONCE;
+               } else {
+                  commandType = CommandType.SEND_ONCE;
                }
                if (commandType != null) {
-                  controlCommandService.trigger(buttonID);
+                  controlCommandService.trigger(controlID, commandType);
                } else {
                   throw new InvalidCommandTypeException(commandTypeStr);
                }
             } else {
-               controlCommandService.trigger(buttonID);
+               controlCommandService.trigger(controlID);
             }
          } catch (ButtonCommandException e) {
-            logger.error("ButtonCommandException occurs", e);
+            logger.error("ControlCommandException occurs", e);
             response.sendError(e.getErrorCode(),e.getMessage());
          }
       } else {
-         response.sendError(400,"Bad REST Request, should be /rest/button/{button_id}/{command_type}");
+         response.sendError(400,"Bad REST Request, should be /rest/control/{button_id}/{command_type}");
       }
    }
 

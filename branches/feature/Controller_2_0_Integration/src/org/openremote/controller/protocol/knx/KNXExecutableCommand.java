@@ -19,25 +19,40 @@
 */
 package org.openremote.controller.protocol.knx;
 
+import org.openremote.controller.command.ExecutableCommand;
 
 /**
- * TODO
+ * TODO: The KNX Event.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Dan 2009-4-20
  */
-public interface KNXConnection
-{
+public class KNXExecutableCommand extends KNXCommand implements ExecutableCommand {
 
-    void send(String groupAddress, KNXCommandType command);
-    
-    /**
-     * Read devices status.
-     * 
-     * @param groupAddress the group address
-     * @param dptTypeID the dpt type id
-     * 
-     * @return the string
-     */
-    String readDeviceStatus(String groupAddress, String dptTypeID);
+  public KNXExecutableCommand() {}
+  
+  /**
+   * TODO : javadoc
+   *
+   */
+  public KNXExecutableCommand(KNXConnectionManager connectionManager, String groupAddress, KNXCommandType command) {
+      super(connectionManager, groupAddress, command);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override public void send() {
+    try
+    {
+      KNXConnection connection = getConnectionManager().getConnection();    
+      connection.send(getGroupAddress(), getKnxCommandType());
+    }
+    catch (ConnectionException e)
+    {
+      log.error(e);   // TODO
+    }
+  }
+
 
 }

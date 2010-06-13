@@ -25,17 +25,17 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.event.Event;
+import org.openremote.controller.command.ExecutableCommand;
 
 /**
  * The Socket Event.
  *
  * @author Marcus 2009-4-26
  */
-public class HttpGetEvent extends Event {
+public class HttpGetCommand implements ExecutableCommand {
 
    /** The logger. */
-   private static Logger logger = Logger.getLogger(HttpGetEvent.class.getName());
+   private static Logger logger = Logger.getLogger(HttpGetCommand.class.getName());
 
    /** A name to identify event in controller.xml. */
    private String name;
@@ -84,7 +84,7 @@ public class HttpGetEvent extends Event {
     * {@inheritDoc}
     */
    @Override
-   public void exec() {
+   public void send() {
 	   BufferedReader in = null;
 		try {
 	        URL url = new URL(getUrl());

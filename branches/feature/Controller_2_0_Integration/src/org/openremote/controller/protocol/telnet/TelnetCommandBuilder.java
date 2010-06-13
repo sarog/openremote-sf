@@ -17,28 +17,30 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.http;
+package org.openremote.controller.protocol.telnet;
 
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
 import org.jdom.Element;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.ExecutableCommand;
 
 
 /**
- * The Class HttpGetEventBuilder.
+ * The Class TelnetEventBuilder.
  *
  * @author Marcus 2009-4-26
  */
-public class HttpGetEventBuilder implements EventBuilder {
+public class TelnetCommandBuilder implements CommandBuilder {
 
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
-      HttpGetEvent getEvent = new HttpGetEvent();
-      getEvent.setUrl(element.getAttributeValue("url"));
-      getEvent.setName(element.getAttributeValue("name"));
-      return getEvent;
+   public ExecutableCommand build(Element element) {
+      TelnetCommand telnetEvent = new TelnetCommand();
+      telnetEvent.setCommand(element.getAttributeValue("command"));
+      telnetEvent.setName(element.getAttributeValue("name"));
+      telnetEvent.setIp(element.getAttributeValue("ip"));
+      telnetEvent.setPort(element.getAttributeValue("port"));
+      return telnetEvent;
    }
 
 }
