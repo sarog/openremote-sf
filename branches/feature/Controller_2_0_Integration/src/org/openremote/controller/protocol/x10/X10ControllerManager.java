@@ -142,7 +142,7 @@ public class X10ControllerManager {
             needsAddressEvent = false;
             break;
          default:
-            throw new IllegalArgumentException(MessageFormat.format("The command code [{0}] is not supported", command));
+            throw new IllegalArgumentException(MessageFormat.format("The command code [{0}] is not supported", commandType));
          }
 
          if (needsAddressEvent) {

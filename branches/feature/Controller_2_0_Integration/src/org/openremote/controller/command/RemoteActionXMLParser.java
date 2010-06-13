@@ -18,11 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.controller.event;
+package org.openremote.controller.command;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -33,10 +32,11 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
+import org.openremote.controller.control.Control;
+import org.openremote.controller.control.ControlFactory;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.NoSuchButtonException;
-import org.openremote.controller.exception.NoSuchEventException;
 import org.openremote.controller.utils.PathUtil;
 
 
@@ -50,49 +50,45 @@ public class RemoteActionXMLParser {
    /** The logger. */
    private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
    
-   /** The event factory. */
-   private EventFactory eventFactory;
+   /** The control factory. */
+   private ControlFactory controlFactory;
    
    /** The configuration. */
    private Configuration configuration;
    
-   /** The Constant STATUS_ELEMENT_NAME. */
-   private static final String STATUS_ELEMENT_NAME = "status"; 
-    
-   /** The Constant REF_EVENT_ATTRIBUTE_NAME. */
-   private static final String REF_EVENT_ATTRIBUTE_NAME = "ref";
-
 
    /**
-    * Find event commanders by button id.
+    * Find commands by control id.
     * 
-    * @param buttonID the button id
+    * @param controlID the control id
+    * @param commandParam CommandParam in the RESTful url. e.g: rest/{control_id}/{commandParam}
     * 
-    * @return the list< event commander>
+    * @return the list< executable command>
     */
-   @SuppressWarnings("unchecked")
-   public List<Event> findEventsByButtonID(String buttonID) {
-      List<Event> events = new ArrayList<Event>();
-      Element button = queryElementFromXMLById(buttonID);
-      if (button == null) {
-         throw new NoSuchButtonException("Cannot find that button with id = " + buttonID);
+   public List<ExecutableCommand> findCommandsByControlID(String controlID, String commandParam) {
+      Element controlElement = queryElementFromXMLById(controlID);
+      
+      if (controlElement == null) {
+         throw new NoSuchButtonException("Cannot find that button with id = " + controlID);
       }
-      List<Element> children = button.getChildren();
-      for (Element elementRef : children) {
-         String eventID = elementRef.getTextTrim();
-         String delay = elementRef.getAttributeValue("delay");
-         Element element = queryElementFromXMLById(eventID);
-         if (element != null) {
-            Event event = eventFactory.getEvent(element);
-            if (delay != null) {
-               event.setDelay(Long.valueOf(delay));
-            }
-            events.add(event);
-         }else{
-            throw new NoSuchEventException("Cannot find that event with id = " + eventID);
-         }
-      }
-      return events;
+      Control control = controlFactory.getControl(controlElement, commandParam);
+      return control.getExecutableCommands();
+   }
+
+   /**
+    * Find status command by control id.
+    * 
+    * @param controlID the control id
+    * 
+    * @return the StatusCommand
+    */
+   public StatusCommand findStatusCommandByControlID(String controlID) {
+      Element controlElement = queryElementFromXMLById(controlID);
+      if (controlElement == null) {
+         throw new NoSuchButtonException("Cannot find that control with id = " + controlID);
+        }
+      Control control = controlFactory.getControl(controlElement, Command.STATUS_COMMAND);
+      return control.getStatusCommand();
    }
    
 
@@ -103,7 +99,7 @@ public class RemoteActionXMLParser {
     * 
     * @return the element
     */
-   private Element queryElementFromXMLById(String id){
+   public Element queryElementFromXMLById(String id){
       return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
    
@@ -147,17 +143,6 @@ public class RemoteActionXMLParser {
       return null;
    }
 
-
-   /**
-    * Sets the event factory.
-    * 
-    * @param eventFactory the new event factory
-    */
-   public void setEventFactory(EventFactory eventFactory) {
-      this.eventFactory = eventFactory;
-   }
-
-
    /**
     * Sets the configuration.
     * 
@@ -168,36 +153,11 @@ public class RemoteActionXMLParser {
    }
 
    /**
-    * Find status events by control id.
+    * Sets the control factory.
     * 
-    * @param controlID the control id
-    * 
-    * @return the event
+    * @param controlFactory the new control factory
     */
-   @SuppressWarnings("unchecked")
-   public Stateful findStatusEventsByControlID(String controlID) {
-      Stateful statusEvent = null;
-      Element control = queryElementFromXMLById(controlID);
-      if (control == null) {
-         throw new NoSuchButtonException("Cannot find that control with id = " + controlID);
-        }
-      List<Element> children = control.getChildren();
-      for (Element elementRef : children) {
-         if(STATUS_ELEMENT_NAME.equalsIgnoreCase(elementRef.getName())) {
-            Element statusElement = (Element) elementRef.getChildren().get(0);
-            String statusEventID = statusElement.getAttributeValue(REF_EVENT_ATTRIBUTE_NAME);            
-            Element statusEventElement = queryElementFromXMLById(statusEventID);
-            
-               if (statusEventElement != null) {
-                  statusEvent = eventFactory.getStatusEvent(statusEventElement);
-               } else {
-                  throw new NoSuchEventException("Cannot find that event with id = " + statusEventID);
-               }
-            break;
-         }
-      }
-      return statusEvent;
+   public void setControlFactory(ControlFactory controlFactory) {
+      this.controlFactory = controlFactory;
    }
-
-
 }
