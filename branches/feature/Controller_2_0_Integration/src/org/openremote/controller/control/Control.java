@@ -19,6 +19,7 @@
 */
 package org.openremote.controller.control;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.controller.command.ExecutableCommand;
@@ -45,12 +46,16 @@ public abstract class Control {
     /** The status. */
     private Status status;
     
+    /** All commands a certain operation contains. */
+    private List<ExecutableCommand> executableCommands;
+    
     /**
      * Instantiates a new control.
      */
     public Control() {
         super();
         status = new Status();
+        executableCommands = new ArrayList<ExecutableCommand>();
     }
     
     /**
@@ -58,7 +63,16 @@ public abstract class Control {
      * 
      * @return the executable commands
      */
-    public abstract List<ExecutableCommand> getExecutableCommands();
+    public List<ExecutableCommand> getExecutableCommands() {
+       return executableCommands;
+    }
+    
+    /**
+     * add executable command into executable command list.
+     */
+    public void addExecutableCommand(ExecutableCommand executablecommand) {
+       executableCommands.add(executablecommand);
+    }
     
     /**
      * Gets the status command.
