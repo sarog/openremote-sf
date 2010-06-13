@@ -46,7 +46,7 @@ import org.openremote.controller.status_cache.PollingThread;
 public class ControlStatusPollingRESTServlet extends HttpServlet {
 
    /** This service is responsible for observe statuses change and return the changed statuses(xml-formatted). */
-   private ControlStatusPollingService controlStatusPollingService = (ControlStatusPollingService) SpringContext.getInstance().getBean("controlStatusPollingService");;
+   private ControlStatusPollingService controlStatusPollingService = (ControlStatusPollingService) SpringContext.getInstance().getBean("controlStatusPollingService");
 
    /** The max length of time of current servlet response. */
    private static final int MAX_TIME_OUT_SECONDS = 50;
@@ -58,7 +58,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
    private static final String CONTROL_ID_SEPARATOR = ",";
 
    /** This value will be responsed when current servlet couldn't get the changed statuses in the <b>MAX_TIME_OUT_SECONDS</b>. */
-   private static final String CONNECTION_TIME_OUT_MSG = "TIME_OUT";
+   private static final String SERVER_RESPONSE_TIME_OUT_STATUS_CODE = "503";
 
    /**
     * The Constructor.
@@ -96,8 +96,8 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
          
          while (true) {
             if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
-               changedStatuses = CONNECTION_TIME_OUT_MSG;
-               pollingThread.interrupt();
+               changedStatuses = SERVER_RESPONSE_TIME_OUT_STATUS_CODE;
+               pollingThread.setTimeToWaitStatusChange(false);
                break;
             }
             if (pollingData.getChangedStatuses() == null) {
@@ -106,7 +106,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
                break;
             }
          }
-         if (!CONNECTION_TIME_OUT_MSG.equals(changedStatuses)) {
+         if (!SERVER_RESPONSE_TIME_OUT_STATUS_CODE.equals(changedStatuses)) {
             changedStatuses = controlStatusPollingService.parsePollingResult(pollingData);
          }
          System.out.println("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));

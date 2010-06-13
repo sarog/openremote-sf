@@ -27,64 +27,117 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 /**
- * ControlStatusPollingRESTServlet TestCase with JUnit and HttpUnit
+ * ControlStatusPollingRESTServlet TestCase with JUnit and HttpUnit.<br /><br />
  * 
- * It mainly test if the StatusPolling RESTful Service works well in the several situation.
+ * It mainly test if the StatusPolling RESTful Service works well in the several situation.<br /><br />
+ * 
+ * <b>Test work flow with current Test class in IDE Eclipse3.4.0 .</b><br /><br />
+ * <b>Step1:</b> Please deploy the controller application into tomcat in IDE Eclipse and then start tomcat application server in Eclipse.<br />
+ * A listener named InitCachedStatusDBListener will be running after tomcat start up.<br />
+ * This listener is responsible for initializing the cached DataBase which is used to cache statuses of devices.<br />
+ * However, currently there is a thread(This thread is responsible for simulating the status change of devices and only change the status which of control id is "1") running 
+ *   in the InitCachedStatusDBListener after InitCachedStatusDBListener was running.<br /><br />
+ * 
+ * <b>Step2:</b> There several situations exist: <b>Tomcat application server don't start up</b>, tomcat started up but <b>single request with time out</b>,<br />
+ * <b>multi requests with time out</b>, <b>single request without time out</b> and <b>multi requests without time out</b>.<br />
+ * So, you can test previous several situations with the following methods in this Test class.
  * 
  * @author Handy.Wang 2009-10-20
  */
 public class ControlStatusPollingRESTServletTest extends TestCase {
 
    /**
-    * Situation 1
+    * <b>Situation 1</b><br />
     * 
-    * Test StatusPolling RESTful Service when the App server didn't startup.
+    * Test StatusPolling RESTful Service when the App server didn't startup.<br />
     * So plean run this method in the situation of app server wasn't running.
     * 
     * @throws Exception the exception
     */
    public void testDoPostWithAppServerNotStartup() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/1,2,3");
+      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/1,2");
       System.out.println(wr.getText());
    }
    
    /**
-    * Situation2
+    * <b>Situation2</b><br />
     * 
-    * Test StatusPolling RESTful Service when app server was running but the response will be time out.
+    * Test StatusPolling RESTful Service when app server was running but the response will be time out.<br />
     * 
-    * If you want simulate several panels making polling request, you can run this method more times.
-    * 
-    * And also, if you want simulate: 
-    *     some polling requests will time out, some won't.
-    * You can run this method at the same time running the next test method(testDoPostWithoutTimeOut).
-    * 
-    * @throws Exception the exception
+    * If you want simulate several panels making polling request, you can run this method more times.<br />
+    * <b>And also</b>, if you want simulate: 
+    *     some polling requests will time out, some won't, You can run this method at the same time running the method named testDoPostWithoutTimeOutSingleRequest.
     */
-   public void testDoPostWithTimeOut() throws Exception {
+   public void testDoPostWithTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/1,2,3,4");
+      WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/3,4");
       WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);      
       System.out.println(pollingResponse.getText());
    }
    
    /**
-    * Situation3
+    * <b>Situation3</b><br />
     * 
-    * Test StatusPolling RESTful Service when app server was running and the response will be getted by client.
-    * 
-    * If you want simulate several panels making polling request, you can run this method more times.
-    * And also, if you want simulate: 
-    *     some polling requests will time out, some won't.
-    * You can run this method at the same time running the previous test method(testDoPostWithoutTimeOut).
-    * 
-    * @throws Exception the exception
+    * This method simulate multi polling requests and the requests will time out.<br />
     */
-   public void testDoPostWithoutTimeOut() throws Exception {
+   public void testDoPostWithTimeOutMultiRequests() throws Exception {
+      for (int i = 1; i <=3; i++) {
+         Thread t = new Thread() {
+            @Override
+            public void run() {
+               try {
+                  WebConversation wc = new WebConversation();
+                  WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/3,4");
+                  WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
+                  System.out.println(pollingResponse.getText());
+               } catch (Exception e) {
+                  e.printStackTrace();
+               }
+            }
+         };
+         t.start();
+      }
+      Thread.sleep(100000);
+   }
+   
+   /**
+    * <b>Situation4</b><br />
+    * 
+    * Test StatusPolling RESTful Service when app server was running and the response will be getted by client.<br />
+    * 
+    * If you want simulate several panels making polling request, you can run this method more times.<br />
+    * <b>And also</b>, if you want simulate: 
+    *     some polling requests will time out, some won't, You can run this method at the same time running the previous test method named testDoPostWithTimeOutSingleRequest.
+    */
+   public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/1,2,3");
+      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/1,2");
       System.out.println(wr.getText());
    }
-
+   
+   /**
+    * <b>Situation5</b><br />
+    * 
+    * This method simulate multi polling requests and response the corresponding result.<br />
+    */
+   public void testDoPostWithoutTimeOutMultiRequests() throws Exception {
+      for (int i = 1; i <= 3; i++) {
+         Thread t = new Thread() {
+            @Override
+            public void run() {
+               try {
+                  WebConversation wc = new WebConversation();
+                  WebRequest pollingGetMethodRequest = new GetMethodWebRequest("http://localhost:8080/controller/rest/polling/1,2");
+                  WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+                  System.out.println(wr.getText());
+               } catch (Exception e) {
+                  e.printStackTrace();
+               }
+            }
+         };
+         t.start();
+      }
+      Thread.sleep(100000);
+   }
 }

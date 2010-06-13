@@ -19,17 +19,19 @@
 */
 package org.openremote.controller.status_cache;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
- * It store control ids and changed statuses which associate with stored control ids per polling request.
+ * It store control ids and changed statuses which associate with stored control ids of a polling request.
  * 
  * @author Handy.Wang 2009-10-21
  */
 public class PollingData {
    
    /** The control ids of a polling request. */
-   private String[] controlIDs;
+   private List<String> controlIDs;
 
    /** The changed statuses a polling request care about. */
    private Map<String, String> changedStatuses;
@@ -45,7 +47,11 @@ public class PollingData {
     */
    public PollingData(String[] controlIDs) {
       super();
-      this.controlIDs = controlIDs;
+      List<String> ids = new ArrayList<String>();
+      for (String controlID : controlIDs) {
+         ids.add(controlID);
+      }
+      this.controlIDs = ids;
    }
 
    public Map<String, String> getChangedStatuses() {
@@ -56,11 +62,11 @@ public class PollingData {
       this.changedStatuses = changedStatuses;
    }
 
-   public String[] getControlIDs() {
+   public List<String> getControlIDs() {
       return controlIDs;
    }
 
-   public void setControlIDs(String[] controlIDs) {
+   public void setControlIDs(List<String> controlIDs) {
       this.controlIDs = controlIDs;
    }
    
