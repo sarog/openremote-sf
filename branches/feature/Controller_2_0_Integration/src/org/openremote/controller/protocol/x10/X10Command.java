@@ -20,6 +20,7 @@
 package org.openremote.controller.protocol.x10;
 
 import org.openremote.controller.command.ExecutableCommand;
+import org.apache.log4j.Logger;
 
 
 /**

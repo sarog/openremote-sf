@@ -47,7 +47,7 @@ public enum X10CommandType {
 
    private String[] commandTranslations = null;
 
-   private X10Command(String[] commandTranslations) {
+   private X10CommandType(String[] commandTranslations) {
       this.commandTranslations = commandTranslations;
    }
 

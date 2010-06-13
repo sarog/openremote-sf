@@ -17,31 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.event;
+package org.openremote.controller.command;
+
+import org.jdom.Element;
 
 /**
- * The Interface Executable.
+ * The Interface CommandBuilder.
  * 
- * @author Dan 2009-4-20
+ * @author Handy.Wang 2009-10-15
  */
-public interface Executable {
+public interface CommandBuilder {
    
    /**
-    * Execute method, tells how to execute an event. 
-    * This will ask a send_once command.
+    * Builds command.
+    * 
+    * @param element the element
+    * 
+    * @return the command
     */
-   void exec();
+   Command build(Element element);
    
-   /**
-    * Start an event.
-    * This will ask a send_start command.
-    */
-   void start();
-   
-   /**
-    * Stop an event.
-    * This will ask a send_stop command.
-    */
-   void stop();
-
 }

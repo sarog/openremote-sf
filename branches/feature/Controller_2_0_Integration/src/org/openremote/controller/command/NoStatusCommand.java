@@ -17,27 +17,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.event;
-
-import org.jdom.Element;
-
-
+package org.openremote.controller.command;
 
 /**
- * The Interface EventBuilder. 
- * Allows to build an Event from a DOM Element in controller.xml
+ * The Class NoStatusCommand.
  * 
- * @author Dan 2009-4-3
+ * @author Handy.Wang 2009-10-15
  */
-public interface EventBuilder {
-   
-   /**
-    * Builds an event from a DOM element.
-    * 
-    * @param element the element
-    * 
-    * @return the event
-    */
-   Event build(Element element);
-   
+public class NoStatusCommand implements StatusCommand {
+
+    /* (non-Javadoc)
+     * @see org.openremote.controller.command.StatusCommand#read()
+     */
+    @Override
+    public String read() {
+        return "noStatus";
+    }
+
 }
