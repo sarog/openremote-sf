@@ -54,7 +54,7 @@ public class X10ControllerManager {
    /**
     * X10 logger. Uses a common category for all KNX related logging.
     */
-   private final static Logger log = Logger.getLogger(X10EventBuilder.X10_LOG_CATEGORY);
+   private final static Logger log = Logger.getLogger(X10CommandBuilder.X10_LOG_CATEGORY);
 
    /**
     * The default serial port to use when none is indicated in the configuration file.
@@ -120,7 +120,7 @@ public class X10ControllerManager {
       }
 
       @Override
-      public void send(String address, X10Command command) {
+      public void send(String address, X10CommandType commandType) {
 
          final char houseCodeChar = address.charAt(0);
          final int deviceCodeInt = Integer.valueOf(address.substring(1));
@@ -130,7 +130,7 @@ public class X10ControllerManager {
 
          boolean needsAddressEvent = true;
 
-         switch (command) {
+         switch (commandType) {
          case SWITCH_ON:
             commandEvent = new OnEvent(this, houseCodeChar);
             break;
