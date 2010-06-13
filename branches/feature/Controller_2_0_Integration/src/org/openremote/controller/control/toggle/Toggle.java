@@ -37,7 +37,7 @@ import org.openremote.controller.control.Status;
 public class Toggle extends Control {
     
     /** The Constant AVAILABLE_ACTIONS. */
-    public static final String[] AVAILABLE_ACTIONS = { "next" };
+    public static final String[] AVAILABLE_ACTIONS = { "next", "status" };
    
     /** The switch states. */
     public static final String[] SWITCH_STATUSES = {"ON", "OFF"};
