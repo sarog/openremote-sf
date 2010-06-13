@@ -57,9 +57,9 @@ public class StatusCommandServiceImpl implements StatusCommandService {
      */
     public String trigger(String unParsedcontrolIDs){
         
-       String[] parsedBtnIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
+       String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
        Map<String, StatusCommand> statusCommands = new HashMap<String, StatusCommand>();
-       for (String controlID : parsedBtnIDs) {
+       for (String controlID : parsedControlIDs) {
            statusCommands.put(controlID, remoteActionXMLParser.findStatusCommandByControlID(controlID));
        }
        StringBuffer sb = new StringBuffer();
