@@ -35,7 +35,7 @@ import com.meterware.httpunit.WebResponse;
  * <b>Step1:</b> Please deploy the controller application into tomcat in IDE Eclipse and then start tomcat application server in Eclipse.<br />
  * A listener named InitCachedStatusDBListener will be running after tomcat start up.<br />
  * This listener is responsible for initializing the cached DataBase which is used to cache statuses of devices.<br />
- * However, currently there is a thread(This thread is responsible for simulating the status change of devices and only change the status which of control id is "1") running 
+ * However, currently there is a thread(This thread is responsible for simulating the status change every 10seconds of devices and only change the status which of control id is "1") running 
  *   in the InitCachedStatusDBListener after InitCachedStatusDBListener was running.<br /><br />
  * 
  * <b>Step2:</b> There several situations exist: <b>Tomcat application server don't start up</b>, tomcat started up but <b>single request with time out</b>,<br />

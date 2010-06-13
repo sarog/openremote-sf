@@ -87,8 +87,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
 
       if (matcher.find()) {
          unParsedcontrolIDs = matcher.group(1);
-         PrintWriter printWriter = response.getWriter();
-         
+         PrintWriter printWriter = response.getWriter();         
          String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[]{} : unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
          PollingData pollingData = new PollingData(controlIDs);
          PollingThread pollingThread = new PollingThread(pollingData);
