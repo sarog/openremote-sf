@@ -146,5 +146,7 @@
 
   <!-- Toggle Builder -->
   <bean id = "toggleBuilder" class = "org.openremote.controller.control.toggle.ToggleBuilder"/>
+  
+  <bean id = "observedStatusesSubject" class="org.openremote.controller.status_cache.ObservedStatusesSubject" />
 
 </beans>
