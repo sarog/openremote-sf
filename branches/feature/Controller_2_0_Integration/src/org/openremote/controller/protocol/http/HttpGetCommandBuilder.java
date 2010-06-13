@@ -17,27 +17,28 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.knx;
+package org.openremote.controller.protocol.http;
+
+import org.jdom.Element;
+import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandBuilder;
 
 
 /**
- * TODO
+ * The Class HttpGetEventBuilder.
  *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Marcus 2009-4-26
  */
-public interface KNXConnection
-{
+public class HttpGetCommandBuilder implements CommandBuilder {
 
-    void send(String groupAddress, KNXCommandType command);
-    
-    /**
-     * Read devices status.
-     * 
-     * @param groupAddress the group address
-     * @param dptTypeID the dpt type id
-     * 
-     * @return the string
-     */
-    String readDeviceStatus(String groupAddress, String dptTypeID);
+   /**
+    * {@inheritDoc}
+    */
+   public Command build(Element element) {
+      HttpGetCommand getEvent = new HttpGetCommand();
+      getEvent.setUrl(element.getAttributeValue("url"));
+      getEvent.setName(element.getAttributeValue("name"));
+      return getEvent;
+   }
 
 }

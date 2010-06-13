@@ -36,6 +36,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire = "byName">
 
+<<<<<<< .working
   <bean id = "propertyConfigurer"
         class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name = "location">
@@ -62,68 +63,85 @@
     <property name = "comPort" value = "${com.port}"/>
   </bean>
 
-  <!-- service for button command from iPhone -->
-  <bean id = "buttonCommandService"
-        class = "org.openremote.controller.service.impl.ButtonCommandServiceImpl">
-    <property name = "macroCmdExecutionDelay" value = "${Macro.Execution.Delay}"/>
-  </bean>
 
-    <!-- service for control command from iPhone -->
+    <!-- service for button command from iPhone -->
+    <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
+        <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
+    </bean> -->
+    
+    <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
     
-  <!-- controller.xml parser -->
-  <bean id = "remoteActionXMLParser"
-        class = "org.openremote.controller.event.RemoteActionXMLParser">
-  </bean>
+    <!-- service for control command from iPhone -->
+    <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
+    
+    <!-- controller.xml parser -->
+    <bean id = "remoteActionXMLParser"
+          class = "org.openremote.controller.command.RemoteActionXMLParser">
+    </bean>
 
   <!-- service for file system operation : upload, unzip etc. -->
   <bean id = "fileService" class = "org.openremote.controller.service.impl.FileServiceImpl">
   </bean>
 
 
-  <bean id = "eventFactory" class = "org.openremote.controller.event.EventFactory">
-    <property name = "eventBuilders">
-      <props>
-        <prop key = "irEvent">irEventBuilder</prop>
-        <prop key = "knxEvent">knxEventBuilder</prop>
-        <prop key = "x10Event">x10EventBuilder</prop>
-        <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
-        <prop key = "telnetEvent">telnetEventBuilder</prop>
-        <prop key = "httpGetEvent">httpGetEventBuilder</prop>
-      </props>
-    </property>
-  </bean>
+    <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
+		<property name = "commandBuilders">
+		    <props>
+		        <prop key = "ir">irCommandBuilder</prop>
+		        <prop key = "knx">knxCommandBuilder</prop>
+		        <prop key = "x10">x10CommandBuilder</prop>
+            	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
+            	<prop key = "telnet">telnetCommandBuilder</prop>
+            	<prop key = "httpGet">httpGetCommandBuilder</prop>
+		    </props>
+		</property>
+	</bean>
 
-
-  <!-- EVENT BUILDERS ============================================================================
-    |
-    | Implementation specific builders for the Event Factory bean. In short, each distinct event
-    | type, as they appear in controller.xml, will need a corresponding builder implementation.
-    |
-    | See the org.openremote.controller.event.EventBuilder interface for details if you seek to
-    | extend the implementation with additional event types.
-    +-->
-
+	<!-- COMMAND BUILDERS ============================================================================
+	 |
+	 | Implementation specific builders for the Event Factory bean. In short, each distinct command
+	 | type, as they appear in controller.xml, will need a corresponding builder implementation.
+	 |
+	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
+	 | extend the implementation with additional command types.
+	 +-->
+	
   <!-- Infrared Event Builder -->
-  <bean id = "irEventBuilder" class = "org.openremote.controller.protocol.infrared.IREventBuilder"/>
+  <bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
 
   <!-- KNX Event Builder -->
-  <bean id = "knxEventBuilder" class = "org.openremote.controller.protocol.knx.KNXEventBuilder"/>
+  <bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder"/>
 
-  <!-- TCP Socket Event Builder for IP enabled devices -->
-  <bean id = "tcpSocketEventBuilder"
-        class = "org.openremote.controller.protocol.socket.TCPSocketEventBuilder"
-        scope = "prototype"/>
+   <!-- TCP Socket Event Builder for IP enabled devices -->
+   <bean id = "tcpSocketCommandBuilder"
+         class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
+         scope = "prototype"/>
 
   <!-- X10 Event Builder -->
-  <bean id = "x10EventBuilder" class = "org.openremote.controller.protocol.x10.X10EventBuilder"/>
+  <bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
 
-  <bean id = "telnetEventBuilder"
-        class = "org.openremote.controller.protocol.telnet.TelnetEventBuilder"
-        scope = "prototype"/>
+  <bean id = "telnetCommandBuilder"
+        class = "org.openremote.controller.protocol.telnet.TelnetCommandBuilder"
+        scope = "prototype" />
 
-  <bean id = "httpGetEventBuilder"
-        class = "org.openremote.controller.protocol.http.HttpGetEventBuilder"
-        scope = "prototype"/>
+  <bean id = "httpGetCommandBuilder"
+        class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
+        scope = "prototype" />
+
+  <bean id = "controlFactory" class = "org.openremote.controller.control.ControlFactory">
+		<property name = "controlBuilders">
+		    <props>
+		        <prop key = "button">buttonBuilder</prop>
+		        <prop key = "toggle">toggleBuilder</prop>
+		    </props>
+		</property>
+  </bean>
+  
+  <!-- Button Builder -->
+  <bean id = "buttonBuilder" class = "org.openremote.controller.control.button.ButtonBuilder"/>
+
+  <!-- Toggle Builder -->
+  <bean id = "toggleBuilder" class = "org.openremote.controller.control.toggle.ToggleBuilder"/>
 
 </beans>

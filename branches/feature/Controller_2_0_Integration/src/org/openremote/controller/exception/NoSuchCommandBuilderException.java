@@ -25,15 +25,15 @@ package org.openremote.controller.exception;
  * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class NoSuchEventBuilderException extends ButtonCommandException {
+public class NoSuchCommandBuilderException extends ControlCommandException {
 
    /**
     * Instantiates a new no such event builder exception.
     */
-   public NoSuchEventBuilderException() {
+   public NoSuchCommandBuilderException() {
       super("Please check the property 'eventBuilders' " +
       "configuration of bean 'eventFactory' in applicationContext.xml");
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
+      setErrorCode(ControlCommandException.NO_SUCH_EVENT_BUILDER);
    }
 
    /**
@@ -42,10 +42,10 @@ public class NoSuchEventBuilderException extends ButtonCommandException {
     * @param message the message
     * @param cause the cause
     */
-   public NoSuchEventBuilderException(String message, Throwable cause) {
+   public NoSuchCommandBuilderException(String message, Throwable cause) {
       super(message + ", please check the property 'eventBuilders' " +
       "configuration of bean 'eventFactory' in applicationContext.xml",cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
+      setErrorCode(ControlCommandException.NO_SUCH_EVENT_BUILDER);
    }
 
    /**
@@ -53,10 +53,10 @@ public class NoSuchEventBuilderException extends ButtonCommandException {
     * 
     * @param message the message
     */
-   public NoSuchEventBuilderException(String message) {
+   public NoSuchCommandBuilderException(String message) {
       super(message + ", please check the property 'eventBuilders' " +
       		"configuration of bean 'eventFactory' in applicationContext.xml");
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
+      setErrorCode(ControlCommandException.NO_SUCH_EVENT_BUILDER);
    }
 
    /**
@@ -64,9 +64,9 @@ public class NoSuchEventBuilderException extends ButtonCommandException {
     * 
     * @param cause the cause
     */
-   public NoSuchEventBuilderException(Throwable cause) {
+   public NoSuchCommandBuilderException(Throwable cause) {
       super(cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT_BUILDER);
+      setErrorCode(ControlCommandException.NO_SUCH_EVENT_BUILDER);
    }
    
 

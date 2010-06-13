@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
-import org.openremote.controller.event.Event;
+import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.utils.ConfigFactory;
 
 /**
@@ -31,10 +31,10 @@ import org.openremote.controller.utils.ConfigFactory;
  * 
  * @author Dan 2009-4-20
  */
-public class IREvent extends Event {
+public class IRCommand implements ExecutableCommand {
    
    /** The logger. */
-   private static Logger logger = Logger.getLogger(IREvent.class.getName());
+   private static Logger logger = Logger.getLogger(IRCommand.class.getName());
    
    /** The remote device name. This name MUST be the name defined in lircd.conf */
    private String name;
@@ -49,26 +49,26 @@ public class IREvent extends Event {
     * {@inheritDoc}
     */
    @Override
-   public void exec() {
+   public void send() {
       irsend("SEND_ONCE");   
    }
 
 
    /* (non-Javadoc)
     * @see org.openremote.controller.event.Event#start()
-    */
+    
    @Override
    public void start() {
       irsend("SEND_START");
    }
 
-   /* (non-Javadoc)
+    (non-Javadoc)
     * @see org.openremote.controller.event.Event#stop()
-    */
+    
    @Override
    public void stop() {
       irsend("SEND_STOP");
-   }
+   }*/
    
 
    /**

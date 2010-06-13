@@ -19,9 +19,9 @@
 */
 package org.openremote.controller.protocol.socket;
 
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
 import org.jdom.Element;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.ExecutableCommand;
 
 
 /**
@@ -29,13 +29,13 @@ import org.jdom.Element;
  *
  * @author Marcus 2009-4-26
  */
-public class TCPSocketEventBuilder implements EventBuilder {
+public class TCPSocketCommandBuilder implements CommandBuilder {
 
    /**
     * {@inheritDoc}
     */
-   public Event build(Element element) {
-      TCPSocketEvent irEvent = new TCPSocketEvent();
+   public ExecutableCommand build(Element element) {
+      TCPSocketCommand irEvent = new TCPSocketCommand();
       irEvent.setCommand(element.getAttributeValue("command"));
       irEvent.setName(element.getAttributeValue("name"));
       irEvent.setIp(element.getAttributeValue("ip"));

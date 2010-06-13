@@ -17,30 +17,62 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.telnet;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.EventBuilder;
-import org.jdom.Element;
+package org.openremote.controller.protocol.knx;
 
 
 /**
- * The Class TelnetEventBuilder.
+ * TODO
  *
- * @author Marcus 2009-4-26
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class TelnetEventBuilder implements EventBuilder {
+public enum KNXCommandType
+{
+  /**
+   * TODO
+   */
+  SWITCH_ON
+  (
+      new String[] { "ON" }
+  ),
 
-   /**
-    * {@inheritDoc}
-    */
-   public Event build(Element element) {
-      TelnetEvent telnetEvent = new TelnetEvent();
-      telnetEvent.setCommand(element.getAttributeValue("command"));
-      telnetEvent.setName(element.getAttributeValue("name"));
-      telnetEvent.setIp(element.getAttributeValue("ip"));
-      telnetEvent.setPort(element.getAttributeValue("port"));
-      return telnetEvent;
-   }
+  /**
+   * TODO
+   */
+  SWITCH_OFF
+  (
+      new String[] { "OFF" }
+  ),
+  
+  /**
+   * TODO
+   */
+  STATUS
+  (
+      new String[] {"STATUS"}
+  );
 
+
+  private String[] commandTranslations = null;
+
+  private KNXCommandType(String[] commandTranslations)
+  {
+    this.commandTranslations = commandTranslations;
+  }
+
+  /**
+   * TODO
+   *
+   * @param command
+   * @return
+   */
+  boolean isEqual(String command)
+  {
+    for (String translation : commandTranslations)
+    {
+      if (translation.equalsIgnoreCase(command))
+        return true;
+    }
+
+    return false;
+  }
 }

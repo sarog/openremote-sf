@@ -19,41 +19,52 @@
 */
 package org.openremote.controller.exception;
 
+
 /**
- * The exception class when NoSuchEvent.
+ * The exception for EventBuild.
  * 
- * @author Dan 2009-5-23
+ * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class NoSuchEventException extends ButtonCommandException {
+public class CommandBuildException extends ControlCommandException {
 
    /**
-    * Instantiates a new no such event exception.
-    */
-   public NoSuchEventException() {
-      super();
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
-   }
-
-   /**
-    * Instantiates a new no such event exception.
+    * Instantiates a new invalid event exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public NoSuchEventException(String message, Throwable cause) {
+   public CommandBuildException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
    }
 
    /**
-    * Instantiates a new no such event exception.
+    * Instantiates a new invalid event exception.
     * 
     * @param message the message
     */
-   public NoSuchEventException(String message) {
+   public CommandBuildException(String message) {
       super(message);
-      setErrorCode(ButtonCommandException.NO_SUCH_EVENT);
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+   }
+
+   /**
+    * Instantiates a new event build exception.
+    */
+   public CommandBuildException() {
+      super();
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+   }
+
+   /**
+    * Instantiates a new event build exception.
+    * 
+    * @param cause the cause
+    */
+   public CommandBuildException(Throwable cause) {
+      super(cause);
+      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
    }
 
 }

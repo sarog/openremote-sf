@@ -150,7 +150,7 @@ class KNXConnectionManager
   /**
    * KNX logger. Uses a common category for all KNX related logging.
    */
-  private final static Logger log = Logger.getLogger(KNXEventBuilder.KNX_LOG_CATEGORY);
+  private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -884,7 +884,7 @@ class KNXConnectionManager
       this.connection = connection;
     }
 
-    public void send(String groupAddress, KNXCommand command)
+    public void send(String groupAddress, KNXCommandType command)
     {
       // KNX Addressing on the common EMI wireformat is a two byte field, consisting of address
       // high byte (a.k.a Octet 0) and low byte (a.k.a Octet 1) [KNX 1.1].
