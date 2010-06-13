@@ -41,7 +41,7 @@ public class PollingData {
    }
    
    /**
-    * Instantiates a new polling data with control ids in the RESTful polling url.
+    * Instantiates a new polling data with control ids array in the RESTful polling url.
     * 
     * @param controlIDs the control i ds
     */
@@ -52,6 +52,15 @@ public class PollingData {
          ids.add(controlID);
       }
       this.controlIDs = ids;
+   }
+   
+   /**
+    * Instantiates a new polling data with control ids list in the RESTful polling url.
+    * 
+    * @param controlIDs the control i ds
+    */
+   public PollingData(List<String> controlIDs) {
+      this.controlIDs = controlIDs;
    }
 
    public Map<String, String> getChangedStatuses() {
