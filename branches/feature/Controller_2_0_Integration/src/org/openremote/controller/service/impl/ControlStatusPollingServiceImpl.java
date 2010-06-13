@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openremote.controller.service.ControlStatusPollingService;
-import org.openremote.controller.status_cache.DBManager;
 import org.openremote.controller.status_cache.PollingData;
 
 /**
