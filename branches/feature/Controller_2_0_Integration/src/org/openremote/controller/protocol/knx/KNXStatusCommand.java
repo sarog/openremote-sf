@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.control.Control;
 
 /**
  * The Class KNXStatusEvent.
@@ -41,7 +42,7 @@ public class KNXStatusCommand extends KNXCommand implements StatusCommand {
      * @see org.openremote.controller.protocol.knx.KNXEvent#exec()
      */
     public String read() {
-        String rst = "unknown";
+       /* String rst = "unknown";
         try {
             KNXConnection connection = getConnectionManager().getConnection();
             String groupAddress = "1.0.0";//TODO: remove it.
@@ -50,7 +51,15 @@ public class KNXStatusCommand extends KNXCommand implements StatusCommand {
         } catch (Exception e) {
             log.error("Occured exception when excuting knxStatusEvent", e);
         }
-        return rst;
+        return rst;*/
+       // The following are simulate.
+       String currentStatus = Control.CURRENT_STATUS;
+       if ("off".equalsIgnoreCase(Control.CURRENT_STATUS)) {
+          Control.CURRENT_STATUS = "on";
+       } else {
+          Control.CURRENT_STATUS = "off";
+       }
+       return currentStatus;
     }
 
     /**

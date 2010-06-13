@@ -31,7 +31,7 @@ import org.openremote.controller.spring.SpringContext;
 /**
  * The Class ButtonCommandServiceTest.
  * 
- * @author Dan 2009-4-3
+ * @author Handy.Wang 2009-10-26
  */
 public class PollingTest extends TestCase {
 
@@ -56,23 +56,27 @@ public class PollingTest extends TestCase {
    
    public void testRegex() {
 //     String urlButton = "http://localhost:8080/controller/rest/button/3/click";
-     String urlControl = "http://localhost:8080/controller/rest/control/1/next";
-     String urlStatus = "http://localhost:8080/controller/rest/status/1,2,3";
+//     String urlControl = "http://localhost:8080/controller/rest/control/1/next";
+//     String urlStatus = "http://localhost:8080/controller/rest/status/1,2,3";
+     String urlPolling = "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2,3";
      
 //     String regexpButton = "rest\\/button\\/(\\d+)\\/(\\w+)";
-     String regexpControl = "rest\\/control\\/(\\d+)\\/(\\w+)";
-     String regexpStatus = "rest\\/status\\/(.*)";
+//     String regexpControl = "rest\\/control\\/(\\d+)\\/(\\w+)";
+//     String regexpStatus = "rest\\/status\\/(.*)";
+     String regexpPolling = "rest\\/polling\\/(.*?)\\/(.*)";
      
 //     Pattern patternButton = Pattern.compile(regexpButton);
-     Pattern patternControl = Pattern.compile(regexpControl);
-     Pattern patternnStatus = Pattern.compile(regexpStatus);
+//     Pattern patternControl = Pattern.compile(regexpControl);
+//     Pattern patternnStatus = Pattern.compile(regexpStatus);
+     Pattern patternnPolling = Pattern.compile(regexpPolling);
      
-     String buttonID = null;
+     String controlID = null;
      String commandTypeStr = null;
      
 //     Matcher matcherButton = patternButton.matcher(urlButton);
-     Matcher matcherControl = patternControl.matcher(urlControl);
-     Matcher matcherStatus = patternnStatus.matcher(urlStatus);
+//     Matcher matcherControl = patternControl.matcher(urlControl);
+//     Matcher matcherStatus = patternnStatus.matcher(urlStatus);
+     Matcher matcherPolling = patternnPolling.matcher(urlPolling);
      
 //     if (matcherButton.find()) {
 //         buttonID = matcherButton.group(1);
@@ -80,17 +84,26 @@ public class PollingTest extends TestCase {
 //         System.out.println(buttonID + ", " + commandTypeStr);
 //      }
      
-     if (matcherControl.find()) {
-        buttonID = matcherControl.group(1);
-        commandTypeStr = matcherControl.group(2);
-        System.out.println(buttonID + ", " + commandTypeStr);
-     }
+//     if (matcherControl.find()) {
+//        controlID = matcherControl.group(1);
+//        commandTypeStr = matcherControl.group(2);
+//        System.out.println(controlID + ", " + commandTypeStr);
+//     }
+//     
+//     String buttonIDs = null;
+//     if (matcherStatus.find()) {
+//         buttonIDs = matcherStatus.group(1);
+//         System.out.println(buttonIDs);
+//     }
      
-     String buttonIDs = null;
-     if (matcherStatus.find()) {
-         buttonIDs = matcherStatus.group(1);
-         System.out.println(buttonIDs);
-     }
+     String deviceID = "";
+     String pollingControlIDs = "";
+     if (matcherPolling.find()) {
+        deviceID = matcherPolling.group(1);
+        pollingControlIDs = matcherPolling.group(2);
+        System.out.println(deviceID);
+        System.out.println(pollingControlIDs);
+  }
      
      
    }

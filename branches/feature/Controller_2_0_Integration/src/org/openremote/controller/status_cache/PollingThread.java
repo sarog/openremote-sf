@@ -36,7 +36,7 @@ public class PollingThread extends Thread {
     * 
     * This property will be set to flase by servlet thread when the process of observe status change has time out.
     */
-   private boolean isTimeToWaitStatusChange = true;
+   private boolean isWaitingStatusChange = true;
    
    /** 
     * It store the controlIDs which a polling request associate with 
@@ -66,7 +66,7 @@ public class PollingThread extends Thread {
    public void run() {
       ObservedStatusesSubject observedStatusesSubject = (ObservedStatusesSubject) SpringContext.getInstance().getBean("observedStatusesSubject");
       StatusesChangedObserver statusChangeObserver = new StatusesChangedObserver(observedStatusesSubject, pollingData.getControlIDs());
-      while(isTimeToWaitStatusChange) {
+      while(isWaitingStatusChange) {
          StatusChangedData statusChangeData = statusChangeObserver.getStatusChangeData();
          if (statusChangeData != null) {
             Map<String, String> changedStatuses = new HashMap<String, String>();
@@ -85,8 +85,8 @@ public class PollingThread extends Thread {
       this.pollingData = pollingData;
    }
 
-   public void setTimeToWaitStatusChange(boolean isTimeToWaitStatusChange) {
-      this.isTimeToWaitStatusChange = isTimeToWaitStatusChange;
+   public void setWaitingStatusChange(boolean isWaitingStatusChange) {
+      this.isWaitingStatusChange = isWaitingStatusChange;
    }
    
 }
