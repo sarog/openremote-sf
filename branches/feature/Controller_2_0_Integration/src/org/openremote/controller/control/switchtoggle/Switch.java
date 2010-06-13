@@ -17,28 +17,26 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.toggle;
+package org.openremote.controller.control.switchtoggle;
 
 import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.Status;
 
 /**
- * The Class Toggle.
+ * Switch Control.<br />
+ * It provides two operations: ON and OFF.
  * 
- * @author Handy.Wang 2009-10-15
+ * @author Handy.Wang 2009-10-23
  */
-public class Toggle extends Control {
-    
-    /** The Constant AVAILABLE_ACTIONS. */
-    public static final String[] AVAILABLE_ACTIONS = { "0", "1", "2", "status" };
+public class Switch extends Control {
    
-    /**
-     * Instantiates a new toggle.
-     */
-    public Toggle() {
-        super();
-        setStatus(new Status(new NoStatusCommand()));
-    }
+   /** Available actions of Switch control. */
+   public static final String[] AVAILABLE_ACTIONS = { "on", "off", "status"};
+   
+   public Switch() {
+      super();
+      setStatus(new Status(new NoStatusCommand()));
+   }
 
 }

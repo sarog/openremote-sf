@@ -19,10 +19,6 @@
 */
 package org.openremote.controller.control.button;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.Status;
@@ -37,33 +33,12 @@ public class Button extends Control {
     /** The Constant AVAILABLE_ACTIONS. */
     public static final String[] AVAILABLE_ACTIONS = { "click" }; 
 
-    /** The commands. */
-    private List<ExecutableCommand> commands;
-    
     /**
      * Instantiates a new button.
      */
     public Button() {
         super();
         setStatus(new Status(new NoStatusCommand()));
-        commands = new ArrayList<ExecutableCommand>();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.openremote.controller.control.Control#getExecutableCommands()
-     */
-    @Override
-    public List<ExecutableCommand> getExecutableCommands() {
-        return commands;
-    }
-    
-    /**
-     * Adds the executable command.
-     * 
-     * @param command the command
-     */
-    public void addExecutableCommand(ExecutableCommand command) {
-        commands.add(command);
     }
     
 }
