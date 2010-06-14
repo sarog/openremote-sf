@@ -1,31 +1,34 @@
 package org.openremote.controller.label;
 
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.junit.Before;
+import org.junit.Test;
 import org.openremote.controller.Constants;
+import org.openremote.controller.TestConstraint;
 import org.openremote.controller.control.label.Label;
 import org.openremote.controller.control.label.LabelBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 
-public class LabelBuilderTest extends TestCase {
+public class LabelBuilderTest {
    private String controllerXMLPath = null;
    private Document doc = null;
    private LabelBuilder builder = (LabelBuilder) SpringTestContext.getInstance().getBean("labelBuilder");
-   
-   protected void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();
+   @Before
+   public void setUp() throws Exception {
+      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(controllerXMLPath);
-      super.setUp();
    }
 
    @SuppressWarnings("unchecked")
@@ -41,12 +44,12 @@ public class LabelBuilderTest extends TestCase {
       }
       return elements.get(0);
    }
-   
+   @Test
    public void testGetLabelforRealID() throws JDOMException{
       Label label = getLabelByID("6");
       Assert.assertNotNull(label);
    }
-   
+   @Test
    public void testGetLabelforInvalidLabel() throws JDOMException{
       try{
          getLabelByID("8");
@@ -54,7 +57,7 @@ public class LabelBuilderTest extends TestCase {
       } catch (NoSuchComponentException e){
       }
    }
-   
+   @Test
    public void testGetLabelforNoSuchID() throws JDOMException {
       try {
          getLabelByID("200");

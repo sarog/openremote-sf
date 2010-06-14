@@ -54,6 +54,7 @@
     <property name = "irsendPath" value = "${irsend.path}"/>
     <property name = "lircdconfPath" value = "${lircd.conf.path}"/>
     <property name = "copyLircdconf" value = "${copy.lircd.conf.on}"/>
+    <property name = "webappIp" value = "${webapp.ip}" />
     <property name = "webappPort" value = "${webapp.port}"/>
     <property name = "multicastAddress" value = "${multicast.address}"/>
     <property name = "multicastPort" value = "${multicast.port}"/>

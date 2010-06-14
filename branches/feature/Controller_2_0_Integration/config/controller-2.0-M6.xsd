@@ -3,10 +3,10 @@
 
     <xsd:annotation>
 		<xsd:documentation><![CDATA[
-			OpenRemote iPhone XML Schema, version 1.0.
+			OpenRemote iPhone XML Schema, version 2.0.
 			Authors:Dan Cong.
 						
-			This defines the button layout on iPhone panel.
+			This defines the UI component layout on panel.
 			iPhone native application can redraw the layout by them.
 		]]></xsd:documentation>
 	</xsd:annotation>
@@ -15,7 +15,7 @@
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 	The top level (typically root) element. Allows the definition
-	of the different activities.
+	of the different groups.
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -229,7 +229,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					a button element.
+					a monitor element.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
@@ -245,7 +245,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					a button element.
+					a label element.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
@@ -261,7 +261,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					a button element.
+					a gesture element.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
