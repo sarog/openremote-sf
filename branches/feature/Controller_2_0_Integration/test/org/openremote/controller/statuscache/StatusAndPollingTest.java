@@ -19,12 +19,15 @@
 */
 package org.openremote.controller.statuscache;
 
-import org.apache.log4j.Logger;
-
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebResponse;
-
 import junit.framework.TestCase;
+
+import org.apache.log4j.Logger;
+import org.openremote.controller.utils.SecurityUtil;
+
+import com.meterware.httpunit.HttpException;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebRequest;
+import com.meterware.httpunit.WebResponse;
 
 /**
  * 
@@ -37,36 +40,63 @@ public class StatusAndPollingTest extends TestCase {
    
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/status/1");
-      logger.info("The status result was : \n" + wr.getText());
-      for (int i = 1; i <= 6; i++) {
-         wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
-         logger.info("The " + i + " result was : \n" + wr.getText());
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/status/1");
+      WebResponse wr;
+      try {
+         wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The status result was : \n" + wr.getText());
+      } catch (HttpException e1) {
+         if (e1.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+            try {
+               pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/status/1");
+               wr = wc.getResponse(pollingGetMethodRequest);
+               logger.info("The result was : \n" + wr.getText());
+            } catch (HttpException e2) {
+               if (e2.getResponseCode() == 504) {
+                  logger.info("Polling request was timeout.");
+               }
+            }
+         }
       }
    }
 
    public void testCase2() throws Exception {
-      for(int i = 1; i <= 6; i++) {
-         WebConversation wc = new WebConversation();
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
-         logger.info("The " + i + " result was : \n" + wr.getText());
-         Thread.sleep(10000);
+      WebConversation wc = new WebConversation();
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/status/2");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
    
    public void testCase3() throws Exception {
-      for(int i = 1; i <= 6; i++) {
-         WebConversation wc = new WebConversation();
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
-         logger.info("The " + i + " result was : \n" + wr.getText());
+      WebConversation wc = new WebConversation();
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
 
    public void testCase4() throws Exception {
-      for(int i = 1; i <= 6; i++) {
-         WebConversation wc = new WebConversation();
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
-         logger.info("The " + i + " result was : \n" + wr.getText());
+      WebConversation wc = new WebConversation();
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
 }
