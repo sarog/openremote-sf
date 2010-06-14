@@ -35,8 +35,10 @@ package org.openremote.controller;
  * @author Jerome Velociter
  */
 public class Configuration {
-
+   
   // Private Instance Variables -------------------------------------------------------------------
+
+  private long macroIRExecutionDelay = 500;
 
   private String irsendPath;
 
@@ -364,4 +366,11 @@ public class Configuration {
     this.x10transmitter = x10transmitter.trim();
   }
 
+   public long getMacroIRExecutionDelay() {
+      return macroIRExecutionDelay;
+   }
+
+   public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
+      this.macroIRExecutionDelay = macroIRExecutionDelay;
+   }
 }

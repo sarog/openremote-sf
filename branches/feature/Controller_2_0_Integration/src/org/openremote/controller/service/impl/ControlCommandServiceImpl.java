@@ -30,12 +30,14 @@ import org.openremote.controller.control.ControlFactory;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.service.StatusCacheService;
+import org.openremote.controller.utils.MacrosIrDelayUtil;
 
 
 /**
  * The implementation for ControlCommandService class.
  * 
  * @author Handy.Wang
+ * @param <T>
  */
 public class ControlCommandServiceImpl implements ControlCommandService {
 
@@ -53,11 +55,12 @@ public class ControlCommandServiceImpl implements ControlCommandService {
     */
    public void trigger(String controlID, String commandParam) {
       Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlID);
-      if(controlElement == null ){
+      if (controlElement == null) {
          throw new NoSuchComponentException("No such component id :" + controlID);
       }
       Control control = controlFactory.getControl(controlElement, commandParam);
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
+      MacrosIrDelayUtil.ensureDelayForIrCommand(executableCommands);
       for (ExecutableCommand executableCommand : executableCommands) {
          executableCommand.send();
       }
@@ -87,5 +90,6 @@ public class ControlCommandServiceImpl implements ControlCommandService {
    public void setStatusCacheService(StatusCacheService statusCacheService) {
       this.statusCacheService = statusCacheService;
    }
+   
    
 }
