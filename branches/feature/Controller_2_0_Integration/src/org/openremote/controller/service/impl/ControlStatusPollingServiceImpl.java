@@ -29,10 +29,10 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.service.StatusCacheService;
-import org.openremote.controller.status_cache.PollingData;
-import org.openremote.controller.status_cache.PollingThread;
-import org.openremote.controller.status_cache.SkippedStatusRecord;
-import org.openremote.controller.status_cache.SkippedStatusTable;
+import org.openremote.controller.statuscache.PollingData;
+import org.openremote.controller.statuscache.PollingThread;
+import org.openremote.controller.statuscache.SkippedStatusRecord;
+import org.openremote.controller.statuscache.SkippedStatusTable;
 
 /**
  * Implementation of controlStatusPollingService.
