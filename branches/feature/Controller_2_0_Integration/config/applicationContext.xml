@@ -102,6 +102,7 @@
            	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
            	<prop key = "telnet">telnetCommandBuilder</prop>
            	<prop key = "httpGet">httpGetCommandBuilder</prop>
+            	<prop key = "test">testCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -137,6 +138,9 @@
         class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
         scope = "prototype" />
 
+  <bean id = "testCommandBuilder" class = "org.openremote.controller.protocol.test.TestCommandBuilder"
+        scope = "prototype" />
+        
   <bean id = "controlFactory" class = "org.openremote.controller.control.ControlFactory">
 		<property name = "controlBuilders">
 		    <props>

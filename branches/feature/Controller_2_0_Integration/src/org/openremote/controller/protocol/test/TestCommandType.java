@@ -1,4 +1,3 @@
-package org.openremote.controller.service;
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -18,19 +17,62 @@ package org.openremote.controller.service;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-import java.util.Map;
-import java.util.Set;
+package org.openremote.controller.protocol.test;
+
 
 /**
- * service for manage the StatusCache
- * @author Javen
+ * TODO
  *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public interface StatusCacheService {
-   
-   void saveOrUpdateStatus(Integer componentId,String newStatus);
-   
-   String getStatusByComponentId(Integer componentId);
-   
-   Map<Integer,String> queryStatuses(Set<Integer> componentIds);
+public enum TestCommandType
+{
+  /**
+   * TODO
+   */
+  SWITCH_ON
+  (
+      new String[] { "ON" }
+  ),
+
+  /**
+   * TODO
+   */
+  SWITCH_OFF
+  (
+      new String[] { "OFF" }
+  ),
+  
+  /**
+   * TODO
+   */
+  STATUS
+  (
+      new String[] {"STATUS"}
+  );
+
+
+  private String[] commandTranslations = null;
+
+  private TestCommandType(String[] commandTranslations)
+  {
+    this.commandTranslations = commandTranslations;
+  }
+
+  /**
+   * TODO
+   *
+   * @param command
+   * @return
+   */
+  boolean isEqual(String command)
+  {
+    for (String translation : commandTranslations)
+    {
+      if (translation.equalsIgnoreCase(command))
+        return true;
+    }
+
+    return false;
+  }
 }

@@ -27,14 +27,40 @@ package org.openremote.controller.service;
  */
 public interface ControlStatusPollingService {
    
+   /** The max length of time of current servlet response. */
+    static final int MAX_TIME_OUT_SECONDS = 50;
+   
+   /** A second equals how much mili seconds. */
+    static final int MILLI_SECONDS_A_SECOND = 1000;
+   
+   /** Separator of control ids in the RESTful url. */
+   static final String CONTROL_ID_SEPARATOR = ",";
+
+   /** This value will be responsed when current servlet couldn't get the changed statuses in the <b>MAX_TIME_OUT_SECONDS</b>. */
+   static final String SERVER_RESPONSE_TIME_OUT_STATUS_CODE = "TIMEOUT";
+   
+   /** header of xml-formatted polling result data. */
+    static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"\">\n";
+   
+   /** status element name of xml-formatted polling result data. */
+    static final String XML_STATUS_RESULT_ELEMENT_NAME = "status";
+   
+   /** id element name of xml-formatted polling result data. */
+    static final String XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY = "id";
+   
+   /** tail of xml-formatted polling result data. */
+    static final String XML_TAIL = "</openremote>";
+   
    /**
     * get the changed statuses from cached DB. 
     */
-   public String getChangedStatuses(long startTime, String deviceID, String unParsedcontrolIDs);
+   public String waitForChangedStatuses(long startTime, String deviceID, String unParsedcontrolIDs);
 
    /**
     * Query skip states from TIME_OUT table. 
     */
-   public String querySkipState(String deviceID, String unParsedcontrolIDs);
+   public String querySkippedState(String deviceID, String unParsedcontrolIDs);
+   
+   public void saveOrUpdateSkippedStateRecord(String deviceId,String unParsedcontrolIDs);
    
 }

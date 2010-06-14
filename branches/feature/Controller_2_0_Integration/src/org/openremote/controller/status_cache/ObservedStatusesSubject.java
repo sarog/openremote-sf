@@ -44,7 +44,9 @@ public class ObservedStatusesSubject {
     * Register the observer to this subject. 
     */
    public void registerObserver(StatusesChangedObserver statusChangeObserver) {
-      statusChangeObservers.add(statusChangeObserver);
+      synchronized (statusChangeObservers) {
+         statusChangeObservers.add(statusChangeObserver);
+      }
    }
 
    /**
@@ -53,12 +55,14 @@ public class ObservedStatusesSubject {
     * The notified observers will get the change status.
     */
    public void notifyObserver() {
-      Iterator<StatusesChangedObserver> iterator = statusChangeObservers.iterator();
-      while (iterator.hasNext()) {
-         StatusesChangedObserver statusChangeObserver = iterator.next();
-         if (containControlID(statusChangeObserver)) {
-            statusChangeObserver.update(statusChangeData);
-            iterator.remove();
+      synchronized (statusChangeObservers) {
+         Iterator<StatusesChangedObserver> iterator = statusChangeObservers.iterator();
+         while (iterator.hasNext()) {
+            StatusesChangedObserver statusChangeObserver = iterator.next();
+            if (containControlID(statusChangeObserver)) {
+               statusChangeObserver.update(statusChangeData);
+               iterator.remove();
+            }
          }
       }
    }
