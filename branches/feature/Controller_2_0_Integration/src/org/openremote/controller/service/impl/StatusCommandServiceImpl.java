@@ -20,11 +20,13 @@
 package org.openremote.controller.service.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
 
 /**
@@ -51,6 +53,8 @@ public class StatusCommandServiceImpl implements StatusCommandService {
     
     /** The Constant XML_TAIL of composed xml-formatted status results. */
     private static final String XML_TAIL = "</openremote>";
+    
+    private StatusCacheService statusCacheService;
 
     /**
      * {@inheritDoc}
@@ -87,4 +91,36 @@ public class StatusCommandServiceImpl implements StatusCommandService {
         this.remoteActionXMLParser = remoteActionXMLParser;
     }
 
+   @Override
+   public String readFromCache(String unParsedcontrolIDs) {
+      Set<Integer> statusComponentIDs = parseStatusComponentIDStrToSet(unParsedcontrolIDs);
+      Map<Integer, String> latestStatuses = statusCacheService.queryStatuses(statusComponentIDs);
+      
+      StringBuffer sb = new StringBuffer();
+      sb.append(XML_HEADER);
+      Set<Integer> componentIDs = latestStatuses.keySet();
+      for (Integer componentID : componentIDs) {
+          sb.append("<" + XML_STATUS_RESULT_ELEMENT_NAME + " " + XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY + "=\"" + componentID + "\">");
+          sb.append(latestStatuses.get(componentID));
+          sb.append("</" + XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+          sb.append("\n");
+      }
+      sb.append(XML_TAIL); 
+      
+      return sb.toString();
+   }
+   
+   private Set<Integer> parseStatusComponentIDStrToSet(String unParsedcontrolIDs) {
+      String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
+      Set<Integer> statusComponentIDs = new HashSet<Integer>();
+      for (String statusConponentID : parsedControlIDs) {
+         statusComponentIDs.add(Integer.parseInt(statusConponentID));
+      }
+      return statusComponentIDs;
+   }
+
+   public void setStatusCacheService(StatusCacheService statusCacheService) {
+      this.statusCacheService = statusCacheService;
+   }
+   
 }

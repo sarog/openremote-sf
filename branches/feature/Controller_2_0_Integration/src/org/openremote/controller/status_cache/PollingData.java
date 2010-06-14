@@ -19,9 +19,9 @@
 */
 package org.openremote.controller.status_cache;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * It store control ids and changed statuses which associate with stored control ids of a polling request.
@@ -31,10 +31,10 @@ import java.util.Map;
 public class PollingData {
    
    /** The control ids of a polling request. */
-   private List<String> controlIDs;
+   private Set<Integer> controlIDs;
 
    /** The changed statuses a polling request care about. */
-   private Map<String, String> changedStatuses;
+   private Map<Integer, String> changedStatuses;
 
    public PollingData() {
       super();
@@ -45,11 +45,20 @@ public class PollingData {
     * 
     * @param controlIDs the control i ds
     */
+   public PollingData(Integer[] controlIDs) {
+      super();
+      Set<Integer> ids = new HashSet<Integer>();
+      for (Integer controlID : controlIDs) {
+         ids.add(controlID);
+      }
+      this.controlIDs = ids;
+   }
+   
    public PollingData(String[] controlIDs) {
       super();
-      List<String> ids = new ArrayList<String>();
+      Set<Integer> ids = new HashSet<Integer>();
       for (String controlID : controlIDs) {
-         ids.add(controlID);
+         ids.add(Integer.parseInt(controlID));
       }
       this.controlIDs = ids;
    }
@@ -59,24 +68,24 @@ public class PollingData {
     * 
     * @param controlIDs the control i ds
     */
-   public PollingData(List<String> controlIDs) {
+   public PollingData(Set<Integer> controlIDs) {
       this.controlIDs = controlIDs;
    }
 
-   public Map<String, String> getChangedStatuses() {
-      return changedStatuses;
-   }
-
-   public void setChangedStatuses(Map<String, String> changedStatuses) {
-      this.changedStatuses = changedStatuses;
-   }
-
-   public List<String> getControlIDs() {
+   public Set<Integer> getControlIDs() {
       return controlIDs;
    }
 
-   public void setControlIDs(List<String> controlIDs) {
+   public void setControlIDs(Set<Integer> controlIDs) {
       this.controlIDs = controlIDs;
    }
-   
+
+   public Map<Integer, String> getChangedStatuses() {
+      return changedStatuses;
+   }
+
+   public void setChangedStatuses(Map<Integer, String> changedStatuses) {
+      this.changedStatuses = changedStatuses;
+   }
+
 }
