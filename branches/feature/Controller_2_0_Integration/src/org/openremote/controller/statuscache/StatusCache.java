@@ -45,15 +45,13 @@ public class StatusCache {
 
    private Map<Integer, String> controlStatus = null;
 
-   private ObservedStatusesSubject observedStatusesSubject = null;
-
    public StatusCache() {
       controlStatus = new HashMap<Integer, String>();
    }
 
-   public StatusCache(SkippedStatusTable skippedStatusTable, ObservedStatusesSubject observers) {
+   public StatusCache(SkippedStatusTable skippedStatusTable) {
+      super();
       this.skippedStatusTable = skippedStatusTable;
-      this.observedStatusesSubject = observers;
    }
    
    /**
@@ -62,9 +60,20 @@ public class StatusCache {
     * @param status
     */
    public synchronized void saveOrUpdateStatus(Integer componentID, String status) {
+      String oldStatus = controlStatus.get(componentID);
+      if (status == null || "".equals(status)) {
+         throw new NullPointerException("The current status was null.");
+      }
+      
+      boolean needNotify = false;
       controlStatus.put(componentID, status);
-      updateSkippedStatusTable(componentID);
-      observedStatusesSubject.statusChanged(new StatusChangedData(componentID, status));
+      if (oldStatus== null || "".equals(oldStatus) || !oldStatus.equals(status)) {
+         needNotify = true;
+      }
+      
+      if (needNotify) {
+         updateSkippedStatusTable(componentID);
+      }
    }
    
    /**
@@ -96,23 +105,12 @@ public class StatusCache {
       return result;
    }
 
-   public StatusCache(SkippedStatusTable skippedStatusTable) {
-      super();
-      this.skippedStatusTable = skippedStatusTable;
-   }
-
-   
-
    public SkippedStatusTable getSkippedStatusTable() {
       return skippedStatusTable;
    }
 
    public void setSkippedStatusTable(SkippedStatusTable skippedStatusTable) {
       this.skippedStatusTable = skippedStatusTable;
-   }
-
-   public void setObservedStatusesSubject(ObservedStatusesSubject observedStatusesSubject) {
-      this.observedStatusesSubject = observedStatusesSubject;
    }
 
    private void updateSkippedStatusTable(Integer controlId) {

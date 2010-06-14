@@ -147,6 +147,7 @@
 		        <prop key = "button">buttonBuilder</prop>
 		        <prop key = "toggle">toggleBuilder</prop>
 		        <prop key = "switch">switchBuilder</prop>
+		        <prop key = "monitor">monitorBuilder</prop>
 		    </props>
 		</property>
   </bean>
@@ -160,9 +161,9 @@
   <!-- Switch Builder -->
   <bean id = "switchBuilder" class = "org.openremote.controller.control.switchtoggle.SwitchBuilder"/>
   
-  <bean id = "observedStatusesSubject" class="org.openremote.controller.statuscache.ObservedStatusesSubject" />
-  
   <bean id = "skippedStatusTable" class="org.openremote.controller.statuscache.SkippedStatusTable" />
 
   <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
+  <!-- Monitor Builder -->
+  <bean id= "monitorBuilder " class="org.openremote.controller.control.monitor.MonitorBuilder" />
 </beans>

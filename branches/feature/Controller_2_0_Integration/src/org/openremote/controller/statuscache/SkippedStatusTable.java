@@ -20,11 +20,8 @@
 package org.openremote.controller.statuscache;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 /**
  * We use subject-listener pattern to do polling. During the process of iPhone is refreshing the polling connection or
@@ -41,7 +38,7 @@ public class SkippedStatusTable {
    
    private List<SkippedStatusRecord> recordList;
    
-   private Logger logger = Logger.getLogger(this.getClass().getName());
+//   private Logger logger = Logger.getLogger(this.getClass().getName());
 
    public SkippedStatusTable() {
       super();
@@ -52,19 +49,9 @@ public class SkippedStatusTable {
     * Insert a timeout record into TIME_OUT table.
     */
    public synchronized void insert(SkippedStatusRecord record) {
-      recordList.add(record);
-   }
-   
-   /**
-    * Delete a record from TIME_OUT table.
-    */
-   public synchronized void delete(SkippedStatusRecord record) {
-      for (Iterator<SkippedStatusRecord> iterator = recordList.iterator(); iterator.hasNext(); ) {
-         if (record.equals(iterator.next())) {
-            iterator.remove();
-         }
+      if (this.query(record.getDeviceID(), record.getPollingControlIDs()) == null) { 
+         recordList.add(record);
       }
-      logger.info("Delete the found timeout record.");
    }
    
    /**
@@ -80,31 +67,6 @@ public class SkippedStatusTable {
          if (tempRecord.equals(record)) {
             return tempRecord;
          }
-      }
-      return null;
-   }
-   
-   /**
-    * Query timeout record by pollingControlIDs(order-insensitive). 
-    */
-   public synchronized SkippedStatusRecord query(List<Integer> pollingControlIDs) {
-      if (pollingControlIDs == null || pollingControlIDs.size() == 0) {
-         return null;
-      }
-      
-      Collections.sort(pollingControlIDs, new PollingControlIDListComparator());
-      for (SkippedStatusRecord tempRecord : recordList) {
-         List<Integer> tempPollingControlIDs = tempRecord.getPollingControlIDs();
-         if (tempPollingControlIDs.size() != pollingControlIDs.size()) {
-            return null;
-         }
-         Collections.sort(tempPollingControlIDs, new PollingControlIDListComparator());
-         for (int i = 0; i < tempPollingControlIDs.size(); i++) {
-            if (!tempPollingControlIDs.get(i).equals(pollingControlIDs.get(i))) {
-               return null;
-            }
-         }
-         return tempRecord;
       }
       return null;
    }
@@ -128,27 +90,28 @@ public class SkippedStatusTable {
    /**
     * Update status_changed_id column.
     */
-   public synchronized void updateStatusChangedIDs(Integer statusChangedControlID) {
+   public void updateStatusChangedIDs(Integer statusChangedControlID) {
       for(SkippedStatusRecord record : recordList){
-         if(record.getPollingControlIDs()!=null && record.getPollingControlIDs().size()!=0){
-         for (Integer tmpControlId : record.getPollingControlIDs()) {
-               if (statusChangedControlID.equals(tmpControlId)) {
-                  record.getStatusChangedIDs().add(statusChangedControlID);
-                  break;
+         synchronized (record) {
+            if (record.getPollingControlIDs() != null && record.getPollingControlIDs().size() != 0) {
+               for (Integer tmpControlId : record.getPollingControlIDs()) {
+                  if (statusChangedControlID.equals(tmpControlId)) {
+                     record.getStatusChangedIDs().add(statusChangedControlID);
+                     record.notifyAll();
+                     break;
+                  }
                }
             }
          }
       }
    }
    
-   public synchronized SkippedStatusRecord queryRecordByDeviceId(String deviceId) {
-      if (recordList != null & recordList.size() != 0) {
-         for (SkippedStatusRecord record : recordList) {
-            if (record.getDeviceID().equals(deviceId)) {
-               return record;
-            }
-         }
-      }
-      return null;
+   /**
+    * Reset changed status of panel in {@link SkippedStatusTable}. 
+    */
+   public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingControlIDs) {
+      SkippedStatusRecord skippedStatusRecord = this.query(deviceID, pollingControlIDs);
+      skippedStatusRecord.setStatusChangedIDs(new HashSet<Integer>());
    }
+
 }

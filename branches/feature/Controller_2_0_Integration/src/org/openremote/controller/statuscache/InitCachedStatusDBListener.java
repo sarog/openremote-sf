@@ -25,9 +25,11 @@ import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
+import org.openremote.controller.Configuration;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.utils.NetworkUtil;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
@@ -38,7 +40,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
 public class InitCachedStatusDBListener extends ApplicationObjectSupport implements ServletContextListener {
 
    /** The logger. */
-   private Logger logger = Logger.getLogger(InitCachedStatusDBListener.class.getName());
+//   private Logger logger = Logger.getLogger(InitCachedStatusDBListener.class.getName());
    
    /** The connection. */
    public static Connection connection;
@@ -49,6 +51,12 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    private SkippedStatusTable skippedStatusTable = (SkippedStatusTable) SpringContext.getInstance().getBean("skippedStatusTable");
    private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
 
+   private static Configuration configuration = ConfigFactory.getConfig();
+   private static  String ServerIP = NetworkUtil.getLocalhostIP();
+   
+   private static  String webAppName = "controller";
+   private static  String resourceBasePath = "http://"+ServerIP+":"+configuration.getWebappPort()+"/"+webAppName+"/resources/";
+   
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
     */
@@ -59,6 +67,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          simulateStatusCacheControlID1();
          simulateStatusCacheControlID2();
          simulateStatusCacheControlID3();
+         simulateStatusCacheControlID5();
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -72,6 +81,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       statusCacheService.saveOrUpdateStatus(2, "OFF");
       statusCacheService.saveOrUpdateStatus(3, "OFF");
       statusCacheService.saveOrUpdateStatus(4, "OFF");
+      statusCacheService.saveOrUpdateStatus(5, "url");
    }
    
    /**
@@ -160,8 +170,27 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       simulateThread.start();
    }
    
-   //
-
+   private void simulateStatusCacheControlID5() {
+      Thread simulateThread = new Thread() {
+         String[] imageNames = new String[] {"1.png","2.png","3.png","4.png","5.png"};
+         @Override
+         public void run() {
+            int index = 0;
+            while(true){
+               String image = imageNames[index];
+               statusCacheService.saveOrUpdateStatus(5, resourceBasePath+image);
+               index = index<imageNames.length-1?++index:0;
+               try {
+                  sleep(1000);
+               } catch (InterruptedException e) {
+                  e.printStackTrace();
+               }
+            }
+         }
+      };
+      simulateThread.start();
+   }
+   
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
     */
