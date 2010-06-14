@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.openremote.org" targetNamespace="http://www.openremote.org">
+    <xsd:annotation>
+		<xsd:documentation><![CDATA[
+			OpenRemote iPhone XML Schema, version 1.0.
+			Authors:Dan Cong.
+						
+			This defines the button layout on iPhone panel.
+			iPhone native application can redraw the layout by them.
+		]]></xsd:documentation>
+	</xsd:annotation>
+	<!-- Top-level <openremote> tag -->
+	<xsd:element name="openremote">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+	The top level (typically root) element. Allows the definition
+	of the different activities.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="panels" maxOccurs="unbounded" minOccurs="0"/>
+				<xsd:element ref="screens" maxOccurs="unbounded" minOccurs="0"/>
+				<xsd:element ref="groups" maxOccurs="unbounded" minOccurs="0"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="screen">
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+				The screen is a page when you slide the iPhone.
+			]]></xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:group ref="screenGroup" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="background" type="xsd:string" use="optional" />
+		<xsd:attribute name="id" type="idType" use="required" />
+	</xsd:complexType>
+</xsd:element>
+	
+	
+	
+	<xsd:element name="button">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The button on iPhone panel.Its label is the name shown on the button.
+				Its position is defined by coordinates (x, y).
+				Its size is defined by width and height.The meature is one cell on the iPhone panel.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="buttonGroup" minOccurs="0" maxOccurs="unbounded"></xsd:group>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required" />
+			<xsd:attribute name="name" type="xsd:string" use="required" />
+			<xsd:attribute name="repeat" type="xsd:boolean" use="optional"></xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="panel">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The button on iPhone panel.Its label is the name shown on the button.
+				Its position is defined by coordinates (x, y).
+				Its size is defined by width and height.The meature is one cell on the iPhone panel.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:string" use="required" />
+			<xsd:attribute name="name" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="panels">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="panel" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:attributeGroup name="idAttr">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The unique identifier attribute for a event or button. 				
+			]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:attributeGroup>
+	<xsd:simpleType name="idType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The unique identifier type. 				
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="groups">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="group" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	
+	<xsd:element name="group">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The screen is a page when you slide the iPhone.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="tab" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+				
+			</xsd:sequence>
+			<xsd:attribute name="name" type="xsd:string" use="required"/>
+			<xsd:attribute name="id" type="idType"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="screens">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="screen" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="portrait">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="screenGroup" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="landscape">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="screenGroup" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="image">
+		<xsd:complexType>
+			<xsd:attribute name="src" type="xsd:string"/>
+			<xsd:attribute name="state" type="xsd:string"/>
+			<xsd:attribute name="border" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="navigate">
+		<xsd:complexType>
+			<xsd:attribute name="back" type="xsd:boolean" />
+			<xsd:attribute name="toScreen" type="xsd:int"/>
+			<xsd:attribute name="toGroup" type="xsd:int"/>
+			<xsd:attribute name="toSetting" type="xsd:boolean"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="absolute">
+		<xsd:complexType>
+			<xsd:group ref="componentGroup"/>
+			<xsd:attribute name="left" type="xsd:int" use="required"/>
+			<xsd:attribute name="top" type="xsd:int" use="required"/>
+			<xsd:attribute name="width" type="xsd:int" use="required"/>
+			<xsd:attribute name="height" type="xsd:int" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="monitor">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="image"/>
+				<xsd:element ref="status"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int"/>
+			<xsd:attribute name="border" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="status">
+		<xsd:complexType>
+			<xsd:attribute name="ref" type="xsd:int"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="gesture">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="command"/>
+			</xsd:sequence>
+			<xsd:attribute name="type" type="xsd:string" use="required"/>
+			<xsd:attribute name="id" type="idType" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="command">
+		<xsd:complexType>
+			<xsd:attribute name="ref" type="idType" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="label">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="statusGroup" minOccurs="0"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required"/>
+			<xsd:attribute name="border" type="xsd:string" use="optional"/>
+			<xsd:attribute name="value" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="toggle">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="state" minOccurs="2" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="state">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="image"/>
+			</xsd:sequence>
+			<xsd:attribute name="name" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="tab">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="item" maxOccurs="unbounded"></xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="item">
+		<xsd:complexType>
+			<xsd:all>
+				<xsd:element ref="image"></xsd:element>
+				<xsd:element ref="navigate"></xsd:element>
+			</xsd:all>
+			<xsd:attribute name="name" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="switch">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="image" minOccurs="0" maxOccurs="2"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="grid">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="cell" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="left" type="xsd:int"></xsd:attribute>
+			<xsd:attribute name="top" type="xsd:int"></xsd:attribute>
+			<xsd:attribute name="width" type="xsd:int"></xsd:attribute>
+			<xsd:attribute name="height" type="xsd:int"></xsd:attribute>
+			<xsd:attribute name="rows" type="xsd:int"></xsd:attribute>
+			<xsd:attribute name="cols" type="xsd:int"></xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="cell">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="componentGroup"></xsd:group>
+			</xsd:sequence>
+			<xsd:attribute name="x" type="xsd:int" use="required"></xsd:attribute>
+			<xsd:attribute name="y" type="xsd:int" use="required"></xsd:attribute>
+			<xsd:attribute name="rowspan" type="xsd:int"
+				use="optional">
+			</xsd:attribute>
+			<xsd:attribute name="colspan" type="xsd:int"
+				use="optional">
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!--<xsd:element name="screenRef">
+		<xsd:complexType>
+			<xsd:attribute name="id" type="idType" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	--><xsd:element name="include">
+		<xsd:complexType>
+			<xsd:attribute name="type" type="xsd:string"></xsd:attribute>
+			<xsd:attribute name="ref" type="xsd:int"></xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:group name="componentGroup">
+		<xsd:choice>
+			<xsd:element ref="button"/>
+			<xsd:element ref="toggle"/>
+			<xsd:element ref="label"/>
+			<xsd:element ref="switch"/>
+			<xsd:element ref="image"/>
+			<xsd:element ref="monitor"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="screenGroup">
+		<xsd:choice>
+			<xsd:element ref="gesture" />
+			<xsd:element ref="absolute" />
+			<xsd:element ref="grid"></xsd:element>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="statusGroup">
+		<xsd:choice>
+			<xsd:element ref="status"/>
+		</xsd:choice>
+	</xsd:group>
+
+	<xsd:group name="buttonGroup">
+		<xsd:choice>
+			<xsd:element ref="image"></xsd:element>
+			<xsd:element ref="command"></xsd:element>
+			<xsd:element ref="navigate"></xsd:element>
+		</xsd:choice>
+	</xsd:group>
+</xsd:schema>

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.openremote.org" targetNamespace="http://www.openremote.org">
+
+    <xsd:annotation>
+		<xsd:documentation><![CDATA[
+			OpenRemote iPhone XML Schema, version 1.0.
+			Authors:Dan Cong.
+						
+			This defines the button layout on iPhone panel.
+			iPhone native application can redraw the layout by them.
+		]]></xsd:documentation>
+	</xsd:annotation>
+	<!-- Top-level <openremote> tag -->
+	<xsd:element name="openremote">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+	The top level (typically root) element. Allows the definition
+	of the different activities.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="controls" />
+				<xsd:element ref="commands" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="controls">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="controlGroup" minOccurs="0" maxOccurs="unbounded"></xsd:group>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="commands">
+        <xsd:annotation>
+        	<xsd:documentation><![CDATA[
+	The parent element of command. include all the coomand's definition
+			]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="command" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="command">
+        <xsd:annotation>
+        	<xsd:documentation><![CDATA[
+	the definition of a command. the command must have a id , protocol.  
+			]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string">
+				<xsd:attribute name="id" type="idType" use="required" />
+				<xsd:attribute name="protocol" type="xsd:string" use="required"/>
+				<xsd:attribute name="url" type="xsd:string" />
+				<xsd:attribute name="groupAddress" type="xsd:string" />
+				<xsd:attribute name="name" type="xsd:string"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="switch">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					The switch means from one state to another state. 
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="on" />
+				<xsd:element ref="off" />
+				<xsd:element ref="status"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="toggle">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					The toggle means from current status to other status.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="state" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="slider">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					The slider means turn up  or turn down the current status.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="exe" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="on">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					The "on" status of a switch
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="off">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					The "off" status of a switch
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="up">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					in this status ,you turn up the slider.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="down">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					in this status ,you turn down the slider.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="status">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					The current status .
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="state">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					the status which is defined for current action.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" />
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="button">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:group ref="macroGroup" minOccurs="0" maxOccurs="unbounded"></xsd:group>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="monitor">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="label">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="status" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="gesture">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+			<xsd:attribute name="type" type="xsd:string" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="exe">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					a button element.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:int" />
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="include">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					you can use this tag to import your command by its "type" attribute.eg :type="command" 
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="type" type="xsd:string"></xsd:attribute>
+			<xsd:attribute name="ref" type="xsd:int"></xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="delay" type="xsd:int" >
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					This element defined the time it will delay when a command is excuting.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	
+	<xsd:simpleType name="idType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The unique identifier type. 				
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int">
+			<xsd:minInclusive value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:group name="controlGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					This group put the comman component together. 
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element ref="switch" />
+			<xsd:element ref="toggle" />
+			<xsd:element ref="slider"/>
+			<xsd:element ref="button"/>
+			<xsd:element ref="monitor"/>
+			<xsd:element ref="label" />
+			<xsd:element ref="gesture" />
+		</xsd:choice>
+	</xsd:group>
+	
+	<xsd:group name="macroGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					This group define a macro group. 
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element ref="delay" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="include"  minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+</xsd:schema>

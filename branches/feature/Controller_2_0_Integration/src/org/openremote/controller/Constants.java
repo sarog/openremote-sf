@@ -27,26 +27,30 @@ package org.openremote.controller;
  */
 public class Constants {
 
-  public final static String LIRCD_CONF = "lircd.conf";
+   public final static String LIRCD_CONF = "lircd.conf";
+   
+   public final static String CONTROLLER_XSD_PATH = "/controller-2.0-M6.xsd";
+   
+   public final static String PANEL_XSD_PATH = "/panel-2.0-M6.xsd";
+   
+   public final static String CONTROLLER_XML = "controller.xml";
+   
+   public final static String OPENREMOTE_WEBSITE= "http://www.openremote.org";
+   
+   public final static String OPENREMOTE_NAMESPACE= "or";
+   
+   public final static String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+   
+   public final static String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+   
+   public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+   
+   public final static String TRUE = "TRUE";
+   
+   public final static String OK = "OK";
    
    public static final String SERVER_RESPONSE_TIME_OUT = "TIMEOUT";
    
    public static final String PANEL_XML = "panel.xml";
-
-  public final static String CONTROLLER_XSD_PATH = "/controller-1.0.xsd";
-
-  public final static String CONTROLLER_XML = "controller.xml";
-
-  public final static String OPENREMOTE_WEBSITE = "http://www.openremote.org";
-
-  public final static String OPENREMOTE_NAMESPACE = "or";
-
-  public final static String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-
-  public final static String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-
-  public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
-
-  public final static String OK = "OK";
 
 }

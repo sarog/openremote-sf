@@ -17,7 +17,7 @@ public class GestureBuilderTest extends TestCase {
    
    protected void setUp() throws Exception {
       controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();
-      doc = XMLUtil.getDocument(controllerXMLPath);
+      doc = XMLUtil.getControllerDocument(controllerXMLPath);
       super.setUp();
    }
 

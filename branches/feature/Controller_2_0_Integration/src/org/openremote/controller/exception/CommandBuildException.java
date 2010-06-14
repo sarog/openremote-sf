@@ -36,7 +36,7 @@ public class CommandBuildException extends ControlCommandException {
     */
    public CommandBuildException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+      setErrorCode(ControlCommandException.COMMAND_BUILDER_ERROR);
    }
 
    /**
@@ -46,7 +46,7 @@ public class CommandBuildException extends ControlCommandException {
     */
    public CommandBuildException(String message) {
       super(message);
-      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+      setErrorCode(ControlCommandException.COMMAND_BUILDER_ERROR);
    }
 
    /**
@@ -54,7 +54,7 @@ public class CommandBuildException extends ControlCommandException {
     */
    public CommandBuildException() {
       super();
-      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+      setErrorCode(ControlCommandException.COMMAND_BUILDER_ERROR);
    }
 
    /**
@@ -64,7 +64,7 @@ public class CommandBuildException extends ControlCommandException {
     */
    public CommandBuildException(Throwable cause) {
       super(cause);
-      setErrorCode(ControlCommandException.EVENT_BUILDER_ERROR);
+      setErrorCode(ControlCommandException.COMMAND_BUILDER_ERROR);
    }
 
 }

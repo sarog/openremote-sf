@@ -42,7 +42,7 @@ public class LabelBuilder extends ControlBuilder {
          List<Element> cmdsEle = status.getChildren(Control.COMMAND_ELEMENT_NAME, controlElement.getNamespace());
          for(Element cmd :cmdsEle){
             String cmdID = cmd.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(cmdID);
+            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),cmdID);
             StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(commandElement);
             control.setStatus(new Status(statusCommand));
          }

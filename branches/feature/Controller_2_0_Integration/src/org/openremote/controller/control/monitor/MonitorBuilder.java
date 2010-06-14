@@ -51,7 +51,7 @@ public class MonitorBuilder extends ControlBuilder {
             if (commands != null && commands.size() != 0) {
                for (Element command : commands) {
                   String commandID = command.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandID);
+                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(monitorElement.getDocument(),commandID);
                   StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(commandElement);
                   monitor.setStatus(new Status(statusCommand));
                }

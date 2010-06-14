@@ -190,7 +190,7 @@
 	</listener>
 	
 	<!-- Constraint resource: /rest/control/* -->
-	<!-- 
+	
 	<security-constraint>
 	  <web-resource-collection>
 	    <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
@@ -203,6 +203,20 @@
 	    <role-name>openremote</role-name>
 	  </auth-constraint>
 	</security-constraint>
+	<!-- Constraint resource: /rest/panel/* -->
+	<security-constraint>
+	  <web-resource-collection>
+	    <web-resource-name>Panel identity RESTful service of Openremote Controller</web-resource-name>
+	    <description>Panel identity RESTful service of Openremote Controller</description>
+	    <url-pattern>/rest/panel/*</url-pattern>
+	    <http-method>GET</http-method>
+	    <http-method>POST</http-method>
+	  </web-resource-collection>
+	  <auth-constraint>
+	    <role-name>openremote</role-name>
+	  </auth-constraint>
+	</security-constraint>
+	<!-- 
 	<security-constraint>
 	  <web-resource-collection>
 	    <web-resource-name>Status command RESTful service of Openremote Controller</web-resource-name>
@@ -227,6 +241,7 @@
 	    <role-name>openremote</role-name>
 	  </auth-constraint>
 	</security-constraint>
+	-->
 	<login-config>
 	  <auth-method>BASIC</auth-method>
 	  <realm-name>OPENREMOTE_Controller</realm-name>
@@ -234,5 +249,5 @@
 	<security-role>
 	  <role-name>openremote</role-name>
 	</security-role>
- -->
+ 
 </web-app>
