@@ -64,6 +64,12 @@ public interface ProfileService {
    String getAllPanels();
    /**
     * This method is used to get a xml string which include all the panels in panel.xml. 
+    * @param panleXMLPath The path of file panel.xml
+    * @return A xml string that contains all the panels. 
+    */
+   String getAllPanels(String panleXMLPath);
+   /**
+    * This method is used to get a xml string which include all the panels in panel.xml. 
     * @param xmlPath The path of file panel.xml. 
     * @return A xml string that contains all the panels. 
     */
