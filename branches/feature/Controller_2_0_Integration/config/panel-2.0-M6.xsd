@@ -36,13 +36,34 @@
 			<xsd:group ref="screenGroup" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="background" type="xsd:string" use="optional" />
 		<xsd:attribute name="id" type="idType" use="required" />
 	</xsd:complexType>
 </xsd:element>
-	
-	
-	
+
+	<xsd:element name="background">
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+				The background is used for describe the background for a screen. 
+			]]></xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType>
+		<xsd:attribute name="src" type="xsd:string" use="required" />
+		<xsd:attribute name="fillScreen" type="xsd:boolean" use="optional" />
+		<xsd:attribute name="absolute" type="xsd:string" use="optional"/>
+		<xsd:attribute name="relative" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="property">
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+				The property is used to describe the property for a background..
+			]]></xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="value" type="xsd:string" use="required" />
+	</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="button">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
@@ -71,6 +92,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
+				<xsd:element ref="tabbar" minOccurs="0" maxOccurs="unbounded" />
 				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" use="required" />
@@ -123,7 +145,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="tab" minOccurs="0" maxOccurs="unbounded"/>
+				<xsd:element ref="tabbar" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
 				
 			</xsd:sequence>
@@ -165,10 +187,14 @@
 	</xsd:element>
 	<xsd:element name="navigate">
 		<xsd:complexType>
-			<xsd:attribute name="back" type="xsd:boolean" />
+			<xsd:attribute name="toBack" type="xsd:boolean" />
 			<xsd:attribute name="toScreen" type="xsd:int"/>
 			<xsd:attribute name="toGroup" type="xsd:int"/>
 			<xsd:attribute name="toSetting" type="xsd:boolean"/>
+			<xsd:attribute name="toPreviousScreen" type="xsd:boolean"/>
+			<xsd:attribute name="toNextScreen" type="xsd:boolean"/>
+			<xsd:attribute name="toLogin" type="xsd:boolean"/>
+			<xsd:attribute name="toLogout" type="xsd:boolean"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="absolute">
@@ -235,7 +261,7 @@
 			<xsd:attribute name="name" type="xsd:string"/>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="tab">
+	<xsd:element name="tabbar">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="item" maxOccurs="unbounded"></xsd:element>
@@ -245,8 +271,8 @@
 	<xsd:element name="item">
 		<xsd:complexType>
 			<xsd:all>
-				<xsd:element ref="image"></xsd:element>
-				<xsd:element ref="navigate"></xsd:element>
+				<xsd:element ref="image" minOccurs="0" maxOccurs="1"/>
+				<xsd:element ref="navigate" minOccurs="0" maxOccurs="1"/>
 			</xsd:all>
 			<xsd:attribute name="name" type="xsd:string" />
 		</xsd:complexType>
@@ -317,6 +343,7 @@
 			<xsd:element ref="gesture" />
 			<xsd:element ref="absolute" />
 			<xsd:element ref="grid"></xsd:element>
+			<xsd:element ref="background"/>
 		</xsd:choice>
 	</xsd:group>
 	<xsd:group name="statusGroup">
