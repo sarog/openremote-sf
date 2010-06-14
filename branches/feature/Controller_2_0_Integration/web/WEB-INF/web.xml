@@ -137,7 +137,7 @@
     </listener>
     
     <listener>
-		<listener-class>org.openremote.controller.status_cache.InitCachedStatusDBListener</listener-class>
+		<listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener</listener-class>
 	</listener>
 
 </web-app>
