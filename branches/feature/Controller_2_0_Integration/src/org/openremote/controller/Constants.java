@@ -30,6 +30,8 @@ public class Constants {
   public final static String LIRCD_CONF = "lircd.conf";
    
    public static final String SERVER_RESPONSE_TIME_OUT = "TIMEOUT";
+   
+   public static final String PANEL_XML = "panel.xml";
 
   public final static String CONTROLLER_XSD_PATH = "/controller-1.0.xsd";
 

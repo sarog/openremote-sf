@@ -50,6 +50,12 @@ public class ControlCommandException extends RuntimeException {
    
    public final static int INVALID_POLLING_URL = 425;
    
+   public final static int PANEL_XML_NOT_FOUND = 426;
+   
+   public final static int INVALID_PANEL_XML = 427;
+   
+   public final static int NO_SUCH_PANEL = 428;
+   
    /** The error code. */
    private int errorCode;
 
