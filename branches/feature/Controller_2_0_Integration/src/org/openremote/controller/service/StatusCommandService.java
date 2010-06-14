@@ -35,5 +35,10 @@ public interface StatusCommandService {
     * @param buttonID the button id
     */
    String trigger(String unParsedcontrolIDs);
+   
+   /**
+    * Read statuses of componet ids from statuscache. 
+    */
+   String readFromCache(String unParsedcontrolIDs);
 
 }

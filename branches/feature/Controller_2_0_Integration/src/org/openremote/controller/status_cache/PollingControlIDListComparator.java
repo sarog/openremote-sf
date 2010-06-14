@@ -27,20 +27,21 @@ import java.util.Comparator;
  * @author Handy.Wang 2009-10-23
  */
 
-public class PollingControlIDListComparator implements Comparator<String> {
+public class PollingControlIDListComparator implements Comparator<Integer> {
 
-   /* (non-Javadoc)
+   /*
+    * (non-Javadoc)
+    * 
     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
     */
    @Override
-   public int compare(String controlIDStr1, String controlIDStr2) {
-      // Avoid overflow in case of "( Integer.parseInt(obj1.toString()).intValue() - Integer.parseInt(obj2.toString()).intValue() )"
-      Integer controlID1 = Integer.parseInt(controlIDStr1);
-      Integer controlID2 = Integer.parseInt(controlIDStr2);
-      if (controlID1.intValue() > controlID2.intValue()) {
+   public int compare(Integer controlID1, Integer controlID2) {
+      // Avoid overflow in case of
+      // "( Integer.parseInt(obj1.toString()).intValue() - Integer.parseInt(obj2.toString()).intValue() )"
+      if (controlID1 > controlID2) {
          return 1;
       }
-      if (controlID1.intValue() < controlID2.intValue()) {
+      if (controlID1 < controlID2) {
          return -1;
       }
       return 0;

@@ -21,7 +21,9 @@ package org.openremote.controller.status_cache;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A timeout record.
@@ -32,32 +34,42 @@ public class TimeoutRecord {
    
    private String deviceID;
 
-   private List<String> pollingControlIDs;
+   private List<Integer> pollingControlIDs;
 
-   private List<String> statusChangedIDs;
+   private Set<Integer> statusChangedIDs;
 
    public TimeoutRecord() {
       super();
       deviceID = "";
-      pollingControlIDs = new ArrayList<String>();
-      statusChangedIDs = new ArrayList<String>();
+      pollingControlIDs = new ArrayList<Integer>();
+      statusChangedIDs = new HashSet<Integer>();
    }
 
-   public TimeoutRecord(String deviceID, List<String> pollingControlIDs) {
+   public TimeoutRecord(String deviceID, List<Integer> pollingControlIDs) {
       super();
       this.deviceID = deviceID;
       this.pollingControlIDs = pollingControlIDs;
-      this.statusChangedIDs = new ArrayList<String>();
+      this.statusChangedIDs = new HashSet<Integer>();
    }
    
-   public TimeoutRecord(String deviceID, String[] pollingControlIDs) {
+   public TimeoutRecord(String deviceID, Integer[] pollingControlIDs) {
       super();
       this.deviceID = deviceID;
-      this.pollingControlIDs = new ArrayList<String>();
+      this.pollingControlIDs = new ArrayList<Integer>();
       this.setPollingControlIDs(pollingControlIDs);
-      this.statusChangedIDs = new ArrayList<String>();
+      this.statusChangedIDs = new HashSet<Integer>();
    }
 
+   public TimeoutRecord(String deviceID, String[] pollingControlIDs) {
+      super();
+      this.pollingControlIDs = new ArrayList<Integer>();
+      for(String s:pollingControlIDs){
+         this.pollingControlIDs.add(Integer.parseInt(s));
+      }
+      this.deviceID = deviceID;
+      this.statusChangedIDs = new HashSet<Integer>();
+   }
+   
    public String getDeviceID() {
       return deviceID;
    }
@@ -66,33 +78,17 @@ public class TimeoutRecord {
       this.deviceID = deviceID;
    }
 
-   public List<String> getPollingControlIDs() {
-      return pollingControlIDs;
-   }
-
-   public void setPollingControlIDs(List<String> pollingControlIDs) {
-      this.pollingControlIDs = pollingControlIDs;
-   }
-
-   public List<String> getStatusChangedIDs() {
-      return statusChangedIDs;
-   }
-
-   public void setStatusChangedIDs(List<String> statusChangedIDs) {
-      this.statusChangedIDs = statusChangedIDs;
-   }
-   
    /**
     * Add pollingControl id into polling control id list. 
     */
-   public void addPollingControlID(String pollingControlID) {
+   public void addPollingControlID(Integer pollingControlID) {
       this.pollingControlIDs.add(pollingControlID);
    }
    
    /**
     * Add statusChanged id into status changed id list. 
     */
-   public void addStatusChangedID(String statusChangedID) {
+   public void addStatusChangedID(Integer statusChangedID) {
       this.statusChangedIDs.add(statusChangedID);
    }
 
@@ -122,10 +118,26 @@ public class TimeoutRecord {
    /**
     * Overload the method setPollingControlIDs with the parameter type "String[]". 
     */
-   public void setPollingControlIDs(String[] pollingControlIDs) {
-      for (String pollingControlID : pollingControlIDs) {
+   public void setPollingControlIDs(Integer[] pollingControlIDs) {
+      for (Integer pollingControlID : pollingControlIDs) {
          this.pollingControlIDs.add(pollingControlID);
       }
+   }
+
+   public List<Integer> getPollingControlIDs() {
+      return pollingControlIDs;
+   }
+
+   public void setPollingControlIDs(List<Integer> pollingControlIDs) {
+      this.pollingControlIDs = pollingControlIDs;
+   }
+
+   public Set<Integer> getStatusChangedIDs() {
+      return statusChangedIDs;
+   }
+
+   public void setStatusChangedIDs(Set<Integer> statusChangedIDs) {
+      this.statusChangedIDs = statusChangedIDs;
    }
    
    

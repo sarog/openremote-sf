@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.service.ControlStatusPollingService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -46,6 +47,8 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
    /** This service is responsible for observe statuses change and return the changed statuses(xml-formatted). */
    private ControlStatusPollingService controlStatusPollingService = (ControlStatusPollingService) SpringContext.getInstance().getBean("controlStatusPollingService");
 
+   private Logger logger = Logger.getLogger(this.getClass().getName());
+   
    /**
     * The Constructor.
     */
@@ -62,7 +65,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
     */
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       long startTime = System.currentTimeMillis();
-      System.out.println("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+      logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
@@ -78,11 +81,12 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
          
          String skipState = controlStatusPollingService.querySkipState(deviceID, unParsedcontrolIDs);
          if (skipState != null && !"".equals(skipState)) {
+            logger.info("Return the skip state which queried from StatusCache.");
             printWriter.write(skipState);
-         } else {            
+         } else {
             printWriter.write(controlStatusPollingService.getChangedStatuses(startTime, deviceID, unParsedcontrolIDs));
          }
-         System.out.println("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+         logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
       }
    }
    
