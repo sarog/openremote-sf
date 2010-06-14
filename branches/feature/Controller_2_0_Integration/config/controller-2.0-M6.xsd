@@ -25,7 +25,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+	<xsd:element name="property">
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+				The property is used to describe the property for a background..
+			]]></xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType>
+		<xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="value" type="xsd:string" use="required" />
+	</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="controls">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -54,15 +64,12 @@
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="xsd:string">
+	        <xsd:sequence>
+	        		<xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+	        </xsd:sequence>
 				<xsd:attribute name="id" type="idType" use="required" />
 				<xsd:attribute name="protocol" type="xsd:string" use="required"/>
-				<xsd:attribute name="url" type="xsd:string" />
-				<xsd:attribute name="groupAddress" type="xsd:string" />
-				<xsd:attribute name="name" type="xsd:string"/>
-				</xsd:extension>
-			</xsd:simpleContent>
+				<xsd:attribute name="value" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 	
