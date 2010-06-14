@@ -36,12 +36,12 @@ public class GestureBuilderTest {
       return (Gesture) builder.build(controlElement, "test");
    }
    @Test
-   public void testGetLabelforRealID() throws JDOMException{
+   public void testGetGestureforRealID() throws JDOMException{
       Gesture gesture = getGestureByID("7");
       Assert.assertNotNull(gesture);
    }
    @Test
-   public void testGetLabelforInvalidGesture() throws JDOMException{
+   public void testGetGestureforInvalidGesture() throws JDOMException{
       try{
          getGestureByID("8");
          fail();
@@ -49,7 +49,7 @@ public class GestureBuilderTest {
       }
    }
    @Test
-   public void testGetLabelforNoSuchID() throws JDOMException{
+   public void testGetGestureforNoSuchID() throws JDOMException{
       try{
          getGestureByID("200");
          fail();
