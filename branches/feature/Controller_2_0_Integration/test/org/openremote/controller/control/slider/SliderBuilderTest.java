@@ -32,7 +32,6 @@ import org.jdom.xpath.XPath;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.InvalidElementException;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.spring.SpringContext;
 
 /**
@@ -52,7 +51,7 @@ public class SliderBuilderTest extends TestCase {
     * @see junit.framework.TestCase#setUp()
     */
    protected void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller_slider.xml").getFile();
+      controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(controllerXMLPath);
       super.setUp();
@@ -69,19 +68,24 @@ public class SliderBuilderTest extends TestCase {
    
    /** Get a non-null slider and it's valid. */
    public void testGetSliderNotNull() throws JDOMException{
-      Slider slider = getSliderByID("6");
+      Slider slider = getSliderByID("8");
       Assert.assertNotNull(slider);
    }
    
    /** Get slider with control id from controller.xml but the control don't exsit in controller.xml.  */
    public void testGetSliderNoSuchID() throws JDOMException{
-      Slider slider = getSliderByID("10");
-      Assert.assertNotNull(slider);
+      Slider slider  = null;
+      try{
+         slider = getSliderByID("11");
+      }catch(Exception e){
+         
+      }
+      Assert.assertNull(slider);
    }
    
    /** Get the slider and check whether the executable commands are null. */
    public void testGetExecutableCommandsOfSlider() throws JDOMException {
-      Slider slider = getSliderByID("6");
+      Slider slider = getSliderByID("8");
       Assert.assertNotNull(slider.getExecutableCommands());
       Assert.assertTrue(slider.getExecutableCommands().size() > 0);
       for (ExecutableCommand executableCommand : slider.getExecutableCommands()) {
