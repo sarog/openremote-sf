@@ -32,7 +32,8 @@ import org.jdom.xpath.XPath;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.InvalidElementException;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.utils.SpringContextForTest;
 
 /**
  * Test cases for SliderBuilder.
@@ -45,7 +46,7 @@ public class SliderBuilderTest extends TestCase {
    
    private Document doc = null;
    
-   private SliderBuilder sliderBuilder = (SliderBuilder) SpringContext.getInstance().getBean("sliderBuilder");
+   private SliderBuilder sliderBuilder = (SliderBuilder) SpringContextForTest.getInstance().getBean("sliderBuilder");
    
    /* (non-Javadoc)
     * @see junit.framework.TestCase#setUp()

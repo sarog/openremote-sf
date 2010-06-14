@@ -168,14 +168,6 @@
         </listener-class>
     </listener>
     
-    <!-- 
-    <listener>
-        <listener-class>
-            org.openremote.controller.listener.HSQLDBListener
-        </listener-class>
-    </listener>
-     -->
-    
     <listener>
 		<listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener</listener-class>
 	</listener>

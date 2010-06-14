@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.protocol.knx.KNXCommandBuilder;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.utils.SpringContextForTest;
 
 /**
  * The Class ButtonCommandServiceTest.
@@ -36,8 +36,8 @@ import org.openremote.controller.spring.SpringContext;
 public class PollingTest extends TestCase {
 
    /** The status command service. */
-   private KNXCommandBuilder knxCommandBuilder = (KNXCommandBuilder) SpringContext.getInstance().getBean("knxCommandBuilder");;
-   private StatusCommandService statusCommandService = (StatusCommandService) SpringContext.getInstance().getBean("statusCommandService");
+   private KNXCommandBuilder knxCommandBuilder = (KNXCommandBuilder) SpringContextForTest.getInstance().getBean("knxCommandBuilder");;
+   private StatusCommandService statusCommandService = (StatusCommandService) SpringContextForTest.getInstance().getBean("statusCommandService");
    /**
     * Test trigger.
     */
