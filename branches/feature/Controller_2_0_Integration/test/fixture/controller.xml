@@ -55,11 +55,24 @@
 				<command ref="10"/>
 			</status>
 		</label>
+		<gesture id="7" type = "swipe-bottom-to-top">
+			<command ref= "100"/>
+			<command ref= "99"/>
+		</gesture>
+		<slider id="8">
+			<exe>
+			    <command ref="97" />
+			</exe>
+			<status>
+			    <command ref="96" />
+			</status>
+		</slider>
 	</controls>
 	<commands>
 		<command id="100" protocol="test" >ON</command>
 		<command id="99" protocol="test" >OFF</command>
 		<command id="10" protocol="test" >STATUS</command>
 		<command id="98" protocol="test" >STATUS</command>
+		<command id="97" protocol="test" >STATUS</command>
 	</commands>
 </openremote>
