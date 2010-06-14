@@ -1,5 +1,6 @@
 package org.openremote.controller.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -12,6 +13,45 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.NoSuchComponentException;
 
 public class XMLUtil {
+   public static Document getPanelDocument(String xmlPath){
+      SAXBuilder builder = new SAXBuilder();
+      Document doc = null;
+      try {
+         builder.setValidation(true);
+         File xsdfile = new File(XMLUtil.class.getResource(Constants.PANEL_XSD_PATH).getPath());
+
+         builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+         builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+         doc = builder.build(xmlPath);
+         
+      } catch (JDOMException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      
+      return doc;
+   }
+   
+   public static Document getControllerDocument(String xmlPath){
+      SAXBuilder builder = new SAXBuilder();
+      Document doc = null;
+      try {
+         builder.setValidation(true);
+         File xsdfile = new File(XMLUtil.class.getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+
+         builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+         builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+         doc = builder.build(xmlPath);
+         
+      } catch (JDOMException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+      
+      return doc;
+   }
    public static Document getDocument(String xmlPath){
       SAXBuilder builder = new SAXBuilder();
       Document doc = null;
@@ -45,5 +85,35 @@ public class XMLUtil {
       }
    }
    
+   public static boolean validateControlleXML(SAXBuilder builder,String xmlPath) {
+      builder.setValidation(true);
+      File xsdfile = new File(XMLUtil.class.getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+
+      builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      
+      try {
+         builder.build(xmlPath);
+         return true;
+      } catch (Exception e) {
+         e.printStackTrace();
+         return false;
+      } 
+   }
    
+   public static boolean validatePanelXML(SAXBuilder builder,String xmlPath){
+      builder.setValidation(true);
+      File xsdfile = new File(XMLUtil.class.getResource(Constants.PANEL_XSD_PATH).getPath());
+
+      builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      
+      try {
+         builder.build(xmlPath);
+         return true;
+      } catch (Exception e) {
+         e.printStackTrace();
+         return false;
+      } 
+   }
 }

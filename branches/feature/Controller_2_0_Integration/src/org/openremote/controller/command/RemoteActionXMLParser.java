@@ -74,7 +74,25 @@ public class RemoteActionXMLParser {
       Control control = controlFactory.getControl(controlElement, commandParam);
       return control.getExecutableCommands();
    }
-
+   
+   /**
+    * Find commands by control id.
+    * 
+    * @param doc The document for xml file. 
+    * @param controlID the control id
+    * @param commandParam CommandParam in the RESTful url. e.g: rest/{control_id}/{commandParam}
+    * 
+    * @return the list< executable command>
+    */
+   public List<ExecutableCommand> findCommandsByControlID(Document doc, String controlID, String commandParam) {
+      Element controlElement = queryElementFromXMLById(doc,controlID);
+      
+      if (controlElement == null) {
+         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
+      }
+      Control control = controlFactory.getControl(controlElement, commandParam);
+      return control.getExecutableCommands();
+   }
    /**
     * Find status command by control id.
     * 
@@ -103,7 +121,9 @@ public class RemoteActionXMLParser {
       return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
    
-
+   public Element queryElementFromXMLById(Document doc,String id){
+      return queryElementFromXML(doc,"//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
+   }
    /**
     * Query element from xml.
     * 
@@ -111,26 +131,20 @@ public class RemoteActionXMLParser {
     * 
     * @return the element
     */
-   @SuppressWarnings("unchecked")
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder();
-//    sb.setValidation(true);
-//    File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+      sb.setValidation(true);
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
 
-//    sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-//    sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
       }
       try {
          Document doc = sb.build(new File(xmlPath));
-         XPath xpath = XPath.newInstance(xPath);
-         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-         List<Element> elements = xpath.selectNodes(doc);
-         if(!elements.isEmpty()){
-           return elements.get(0);
-         }
+         return queryElementFromXML(doc, xPath);
       } catch (JDOMException e) {
          logger.error("JDOMException occurs when parsing controller.xml.", e);
          throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
@@ -140,9 +154,25 @@ public class RemoteActionXMLParser {
          logger.error(msg, e);
          throw new ControllerXMLNotFoundException(msg);
       }
+   }
+   
+   @SuppressWarnings("unchecked")
+   private Element queryElementFromXML(Document doc, String xPath) {
+      try {
+         XPath xpath = XPath.newInstance(xPath);
+         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+         List<Element> elements = xpath.selectNodes(doc);
+         if (!elements.isEmpty()) {
+            return elements.get(0);
+         }
+      } catch (JDOMException e) {
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
+      }
       return null;
    }
-
+   
    /**
     * Sets the configuration.
     * 

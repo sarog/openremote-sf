@@ -34,13 +34,13 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
-import org.openremote.controller.exception.ControllerXMLNotFoundException;
-import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.exception.InvalidPanelXMLException;
 import org.openremote.controller.exception.NoSuchPanelException;
+import org.openremote.controller.exception.PanelXMLNotFoundException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.utils.PathUtil;
 /**
+ * Used to get panel.xml content according to panel identity.
  * 
  * @author Javen
  *
@@ -169,7 +169,13 @@ public class ProfileServiceImpl implements ProfileService {
       List<Element> refGroups = panel.getChildren("include", root.getNamespace());
       for (Element groupRef : refGroups) {
          String groupID = groupRef.getAttributeValue("ref");
-         Element group = (Element) queryElementFromXMLById(xmlPath, groupID).clone();
+         Element includeGroup = queryElementFromXMLById(xmlPath, groupID);
+         if (null == includeGroup) {
+            throw new InvalidPanelXMLException("Group reference ID = " + groupID + 
+                  " not found in panel: " + name);
+         }
+         Element group = (Element) includeGroup.clone();
+
          groupsEle.addContent(group);
       }
 
@@ -231,8 +237,8 @@ public class ProfileServiceImpl implements ProfileService {
          List<Element> elements = xpath.selectNodes(doc);
          return elements;
       } catch (JDOMException e) {
-         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
-               + Constants.CONTROLLER_XSD_PATH);
+         throw new InvalidPanelXMLException("check the version of schema or structure of " + Constants.PANEL_XML
+               + " with " + Constants.CONTROLLER_XSD_PATH);
       }
    }
 
@@ -240,7 +246,7 @@ public class ProfileServiceImpl implements ProfileService {
       SAXBuilder sb = new SAXBuilder();
 
       if (!new File(xmlPath).exists()) {
-         throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
+         throw new PanelXMLNotFoundException(" Make sure it's in /resources");
       }
       try {
          Document doc = sb.build(new File(xmlPath));
@@ -249,8 +255,8 @@ public class ProfileServiceImpl implements ProfileService {
          throw new InvalidPanelXMLException(
                "check the version of schema or structure of panel.xml with its dtd or schema");
       } catch (IOException e) {
-         String msg = " An I/O error prevents a controller.xml from being fully parsed";
-         throw new ControllerXMLNotFoundException(msg, e);
+         String msg = " An I/O error prevents a " + Constants.PANEL_XML + " from being fully parsed";
+         throw new PanelXMLNotFoundException(msg, e);
       }
    }
 
