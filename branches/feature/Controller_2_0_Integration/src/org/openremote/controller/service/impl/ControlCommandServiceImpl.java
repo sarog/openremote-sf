@@ -27,6 +27,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.control.Control;
 import org.openremote.controller.control.ControlFactory;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.service.StatusCacheService;
 
@@ -52,6 +53,9 @@ public class ControlCommandServiceImpl implements ControlCommandService {
     */
    public void trigger(String controlID, String commandParam) {
       Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlID);
+      if(controlElement == null ){
+         throw new NoSuchComponentException("No such component id :" + controlID);
+      }
       Control control = controlFactory.getControl(controlElement, commandParam);
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
       for (ExecutableCommand executableCommand : executableCommands) {
