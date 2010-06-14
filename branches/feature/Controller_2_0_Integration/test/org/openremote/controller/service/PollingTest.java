@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
-import org.openremote.controller.utils.SpringContextForTest;
+import org.openremote.controller.utils.SpringTestContext;
 
 /**
  * The Class ButtonCommandServiceTest.
@@ -35,7 +35,7 @@ public class PollingTest extends TestCase {
 
    /** The status command service. */
 //   private KNXCommandBuilder knxCommandBuilder = (KNXCommandBuilder) SpringContextForTest.getInstance().getBean("knxCommandBuilder");;
-   private StatusCommandService statusCommandService = (StatusCommandService) SpringContextForTest.getInstance().getBean("statusCommandService");
+   private StatusCommandService statusCommandService = (StatusCommandService) SpringTestContext.getInstance().getBean("statusCommandService");
    /**
     * Test trigger.
     */

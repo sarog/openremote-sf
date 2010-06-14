@@ -3,7 +3,7 @@ package org.openremote.controller.service;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.openremote.controller.utils.SpringContextForTest;
+import org.openremote.controller.utils.SpringTestContext;
 
 public class ProfileServiceTest extends TestCase {
 
@@ -11,7 +11,7 @@ public class ProfileServiceTest extends TestCase {
    private String xmlPath = null;
    
    protected void setUp() throws Exception {
-       service = (ProfileService) SpringContextForTest.getInstance().getBean("profileService");
+       service = (ProfileService) SpringTestContext.getInstance().getBean("profileService");
        xmlPath = this.getClass().getClassLoader().getResource("./fixture/panel.xml").getFile();
        super.setUp();
    }

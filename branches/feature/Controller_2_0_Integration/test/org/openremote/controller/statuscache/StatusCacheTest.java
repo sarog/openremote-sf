@@ -20,8 +20,11 @@
 package org.openremote.controller.statuscache;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.utils.SecurityUtil;
 
+import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import junit.framework.TestCase;
@@ -49,9 +52,14 @@ public class StatusCacheTest extends TestCase {
     */
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      for (int i = 1; i <= 6; i++) {
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
-         logger.info("The " + i + " result was : \n" + wr.getText());
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
 
@@ -70,11 +78,15 @@ public class StatusCacheTest extends TestCase {
     * while <b>InitCachedStatusDBListener</b> starting.
     */
    public void testCase2() throws Exception {
-      for(int i = 1; i <= 6; i++) {
-         WebConversation wc = new WebConversation();
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
-         logger.info("The " + i + " result was : \n" + wr.getText());
-         Thread.sleep(10000);
+      WebConversation wc = new WebConversation();
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
    
@@ -93,10 +105,15 @@ public class StatusCacheTest extends TestCase {
     * while <b>InitCachedStatusDBListener</b> starting.
     */
    public void testCase3() throws Exception {
-      for(int i = 1; i <= 6; i++) {
-         WebConversation wc = new WebConversation();
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
-         logger.info("The " + i + " result was : \n" + wr.getText());
+      WebConversation wc = new WebConversation();
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
 
@@ -113,10 +130,15 @@ public class StatusCacheTest extends TestCase {
     * client gets 503 error at last.<br /><br />
     */
    public void testCase4() throws Exception {
-      for(int i = 1; i <= 6; i++) {
-         WebConversation wc = new WebConversation();
-         WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
-         logger.info("The " + i + " result was : \n" + wr.getText());
+      WebConversation wc = new WebConversation();
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      try {
+         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+         logger.info("The result was : \n" + wr.getText());
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was timeout.");
+         }
       }
    }
 }

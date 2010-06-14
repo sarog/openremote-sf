@@ -28,19 +28,19 @@ import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
  * 
  * @author Handy.Wang 2009-11-12
  */
-public class SpringContextForTest {
+public class SpringTestContext {
 
-   private static SpringContextForTest m_instance;
+   private static SpringTestContext m_instance;
 
    private static String[] contextFiles = new String[] { "testApplicationContext.xml" };
 
    private ApplicationContext ctx;
 
-   public SpringContextForTest() {
+   public SpringTestContext() {
       ctx = new ClassPathXmlApplicationContext(contextFiles);
    }
 
-   public SpringContextForTest(String[] setting) {
+   public SpringTestContext(String[] setting) {
       ctx = new ClassPathXmlApplicationContext(setting);
    }
 
@@ -49,9 +49,9 @@ public class SpringContextForTest {
     * 
     * @return the instance of <code>SpringContext</code>
     */
-   public synchronized static SpringContextForTest getInstance() {
+   public synchronized static SpringTestContext getInstance() {
       if (m_instance == null) {
-         m_instance = new SpringContextForTest(contextFiles);
+         m_instance = new SpringTestContext(contextFiles);
       }
       return m_instance;
    }
