@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
+	<controls>
+		<switch id="1">
+			<on>
+			    <command ref="100" />
+			</on>
+			<off>
+			    <command ref="99" />
+			</off>
+			<status>
+			    <command ref="98" />
+			</status>
+		</switch>
+		<switch id="2">
+			<on>
+			    <command ref="100" />
+			</on>
+			<off>
+			    <command ref="99" />
+			</off>
+			<status>
+			    <command ref="98" />
+			</status>
+		</switch>
+		<switch id="3">
+			<on>
+			    <command ref="100" />
+			</on>
+			<off>
+			    <command ref="99" />
+			</off>
+			<status>
+			    <command ref="98" />
+			</status>
+		</switch>
+		<switch id="4">
+			<on>
+			    <command ref="100" />
+			</on>
+			<off>
+			    <command ref="99" />
+			</off>
+			<status>
+			    <command ref="98" />
+			</status>
+		</switch>
+		<monitor id="5">
+			<status>
+				<command ref="10"/>
+			</status>
+		</monitor>
+		<label id="6">
+			<status>
+				<command ref="10"/>
+			</status>
+		</label>
+	</controls>
+	<commands>
+		<command id="100" protocol="test" >ON</command>
+		<command id="99" protocol="test" >OFF</command>
+		<command id="10" protocol="test" >STATUS</command>
+		<command id="98" protocol="test" >STATUS</command>
+	</commands>
+</openremote>

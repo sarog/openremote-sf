@@ -42,6 +42,9 @@ public abstract class Control {
     
     /** The Constant DELAY_ELEMENT_NAME. */
     public static final String DELAY_ELEMENT_NAME = "delay";
+    
+    public static final String COMMAND_ELEMENT_NAME= "command";
+    
 
     /** The status. */
     private Status status;
