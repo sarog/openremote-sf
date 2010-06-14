@@ -21,7 +21,9 @@ public class TestCommandBuilder implements CommandBuilder {
          testCommand = TestCommandType.SWITCH_OFF;
       else if (TestCommandType.STATUS.isEqual(commandStr)) {
          testCommand = TestCommandType.STATUS;
-      } else {
+      } else if (Integer.parseInt(commandStr) >= -10 || Integer.parseInt(commandStr) <= 35) {
+         testCommand = TestCommandType.NUMBER_COMAND;
+      }else {
          throw new NoSuchCommandException("Couldn't find command " + commandStr + " in TestCommandType.");
       }
 

@@ -49,6 +49,14 @@ public enum TestCommandType
   STATUS
   (
       new String[] {"STATUS"}
+  ), 
+  
+  /**
+   * TODO
+   */
+  NUMBER_COMAND
+  (
+      new String[] { "CHANGE" }
   );
 
 
