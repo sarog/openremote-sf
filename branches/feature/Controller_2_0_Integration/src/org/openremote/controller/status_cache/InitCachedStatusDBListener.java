@@ -48,7 +48,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    /**
     * TIME_OUT table instance.
     */
-   private TimeoutTable timeoutTable = (TimeoutTable) SpringContext.getInstance().getBean("timeoutTable");
+   private SkippedStatusTable skippedStatusTable = (SkippedStatusTable) SpringContext.getInstance().getBean("skippedStatusTable");
    private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
 
    /* (non-Javadoc)
@@ -116,8 +116,8 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          public void run() {
             int i = 0;
             for (;; i++) {
-               List<TimeoutRecord> timeoutRecords = timeoutTable.query(2);
-               if (timeoutRecords != null && timeoutRecords.size() != 0) {
+               List<SkippedStatusRecord> skippedStatusRecord = skippedStatusTable.query(2);
+               if (skippedStatusRecord != null && skippedStatusRecord.size() != 0) {
                   if (i % 2 == 0) {
                      statusCacheService.saveOrUpdateStatus(2, "ON");
                   } else {
@@ -188,8 +188,5 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       }
    }
 
-   public void setTimeoutTable(TimeoutTable timeoutTable) {
-      this.timeoutTable = timeoutTable;
-   }
 
 }

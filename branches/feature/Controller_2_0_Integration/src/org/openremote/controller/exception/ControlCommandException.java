@@ -48,6 +48,8 @@ public class ControlCommandException extends RuntimeException {
    /** The Constant INVALID_CONTROLLER_XML. */
    public final static int INVALID_CONTROLLER_XML = 424;
    
+   public final static int INVALID_POLLING_URL = 425;
+   
    /** The error code. */
    private int errorCode;
 

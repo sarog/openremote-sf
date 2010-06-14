@@ -32,7 +32,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
+import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlStatusPollingService;
+import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.spring.SpringContext;
 
 /**
@@ -45,8 +49,12 @@ import org.openremote.controller.spring.SpringContext;
 public class ControlStatusPollingRESTServlet extends HttpServlet {
 
    /** This service is responsible for observe statuses change and return the changed statuses(xml-formatted). */
-   private ControlStatusPollingService controlStatusPollingService = (ControlStatusPollingService) SpringContext.getInstance().getBean("controlStatusPollingService");
-
+   private ControlStatusPollingService controlStatusPollingService = 
+      (ControlStatusPollingService) SpringContext.getInstance().getBean("controlStatusPollingService");
+   
+   /** This service is check whether the component is exist. */
+   private StatusCacheService cacheService = (StatusCacheService)SpringContext.getInstance().getBean("statusCacheService");
+   
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
    /**
@@ -71,23 +79,52 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
       String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
-      String unParsedcontrolIDs = null;
+      String unParsedComponentIDs = null;
       String deviceID = null;
       
       if (matcher.find()) {
          deviceID = matcher.group(1);
-         unParsedcontrolIDs = matcher.group(2);
-         PrintWriter printWriter = response.getWriter();         
-         
-         String skipState = controlStatusPollingService.querySkipState(deviceID, unParsedcontrolIDs);
-         if (skipState != null && !"".equals(skipState)) {
-            logger.info("Return the skip state which queried from StatusCache.");
-            printWriter.write(skipState);
-         } else {
-            printWriter.write(controlStatusPollingService.getChangedStatuses(startTime, deviceID, unParsedcontrolIDs));
-         }
-         logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
+         unParsedComponentIDs = matcher.group(2);
+         PrintWriter printWriter = response.getWriter();
+         try {
+            checkComponentId(unParsedComponentIDs);
+            String skippedState = controlStatusPollingService.querySkippedState(deviceID, unParsedComponentIDs);
+            if (skippedState != null && !"".equals(skippedState)) {
+               logger.info("Return the skip state which queried from StatusCache.");
+               printWriter.write(skippedState);
+            } else {
+               String stateFromPolling = controlStatusPollingService.waitForChangedStatuses(startTime, deviceID, unParsedComponentIDs);
+               if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(stateFromPolling)) {
+                  response.sendError(504, "Time out!");
+               } else {
+                  printWriter.write(stateFromPolling);
+               }
+            }
+            controlStatusPollingService.saveOrUpdateSkippedStateRecord(deviceID, unParsedComponentIDs);
+            logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
+         } catch (ControlCommandException e) {
+            response.sendError(e.getErrorCode(), e.getMessage());
+         } 
+      } else {
+         response.sendError(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
       }
    }
    
+   /**
+    * check whether the component id is valid.
+    * @param unParsedcontrolIDs
+    */
+   private void checkComponentId(String unParsedcontrolIDs){
+      String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[] {}
+            : unParsedcontrolIDs.split(ControlStatusPollingService.CONTROL_ID_SEPARATOR);
+      String tmpStr = null;
+      try {
+         for (int i = 0; i < controlIDs.length; i++) {
+            tmpStr = controlIDs[i];
+            cacheService.getStatusByComponentId(Integer.parseInt(tmpStr));
+         }
+      } catch (NumberFormatException e) {
+         throw new NoSuchComponentException("Wrong component id :'"+tmpStr+"' The component id can only be digit");
+      }
+   }
 }

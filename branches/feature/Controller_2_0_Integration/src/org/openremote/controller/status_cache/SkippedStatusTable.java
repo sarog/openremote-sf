@@ -27,33 +27,39 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- * TIME_OUT table for record skip-state.
+ * We use subject-listener pattern to do polling. During the process of iPhone is refreshing the polling connection or
+ * dealing with the response of changed state, a later (very soon, before iPhone reestablishes the next polling,
+ * although it's kind of probability stuff) change won't be detected by iPhone , in other word, this listener has left
+ * the subject and subject won't notify it at that time. the result is when iPhone comes back to continue polling, it
+ * knows nothing about what has happened just now, and iPhone will keep the old view and waiting for the next change
+ * which is not synchronous any more.
  * 
+ * This table is used to record the skipped status .
  * @author Handy.Wang 2009-10-23
  */
-public class TimeoutTable {
+public class SkippedStatusTable {
    
-   private List<TimeoutRecord> recordList;
+   private List<SkippedStatusRecord> recordList;
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   public TimeoutTable() {
+   public SkippedStatusTable() {
       super();
-      recordList = new ArrayList<TimeoutRecord>();
+      recordList = new ArrayList<SkippedStatusRecord>();
    }
 
    /**
     * Insert a timeout record into TIME_OUT table.
     */
-   public synchronized void insert(TimeoutRecord record) {
+   public synchronized void insert(SkippedStatusRecord record) {
       recordList.add(record);
    }
    
    /**
     * Delete a record from TIME_OUT table.
     */
-   public synchronized void delete(TimeoutRecord record) {
-      for (Iterator<TimeoutRecord> iterator = recordList.iterator(); iterator.hasNext(); ) {
+   public synchronized void delete(SkippedStatusRecord record) {
+      for (Iterator<SkippedStatusRecord> iterator = recordList.iterator(); iterator.hasNext(); ) {
          if (record.equals(iterator.next())) {
             iterator.remove();
          }
@@ -64,12 +70,13 @@ public class TimeoutTable {
    /**
     * Query timeout record by deviceID and pollingControlIDs(order-insensitive).
     */
-   public synchronized TimeoutRecord query(String deviceID, List<Integer> pollingControlIDs) {
-      if (pollingControlIDs == null || pollingControlIDs.size() == 0) {
+   public synchronized SkippedStatusRecord query(String deviceID, List<Integer> pollingControlIDs) {
+      if (recordList.size() == 0 || pollingControlIDs == null || pollingControlIDs.size() == 0) {
          return null;
       }
-      TimeoutRecord record = new TimeoutRecord(deviceID, pollingControlIDs);
-      for (TimeoutRecord tempRecord : recordList) {
+      SkippedStatusRecord record = new SkippedStatusRecord(deviceID, pollingControlIDs);
+      
+      for (SkippedStatusRecord tempRecord : recordList) {
          if (tempRecord.equals(record)) {
             return tempRecord;
          }
@@ -80,13 +87,13 @@ public class TimeoutTable {
    /**
     * Query timeout record by pollingControlIDs(order-insensitive). 
     */
-   public synchronized TimeoutRecord query(List<Integer> pollingControlIDs) {
+   public synchronized SkippedStatusRecord query(List<Integer> pollingControlIDs) {
       if (pollingControlIDs == null || pollingControlIDs.size() == 0) {
          return null;
       }
       
       Collections.sort(pollingControlIDs, new PollingControlIDListComparator());
-      for (TimeoutRecord tempRecord : recordList) {
+      for (SkippedStatusRecord tempRecord : recordList) {
          List<Integer> tempPollingControlIDs = tempRecord.getPollingControlIDs();
          if (tempPollingControlIDs.size() != pollingControlIDs.size()) {
             return null;
@@ -105,9 +112,12 @@ public class TimeoutTable {
    /**
     * Query all timeout records whose pollingControlID column contains statusChangeControlID.
     */
-   public synchronized List<TimeoutRecord> query(Integer statusChangedControlID) {
-      List<TimeoutRecord> statusChangedRecord = new ArrayList<TimeoutRecord>();
-      for (TimeoutRecord record : recordList) {
+   public synchronized List<SkippedStatusRecord> query(Integer statusChangedControlID) {
+      List<SkippedStatusRecord> statusChangedRecord = new ArrayList<SkippedStatusRecord>();
+      if(recordList==null||recordList.size()==0){
+         return null;
+      }
+      for (SkippedStatusRecord record : recordList) {
          if (record.getPollingControlIDs().contains(statusChangedControlID)) {
             statusChangedRecord.add(record);
          }
@@ -119,14 +129,26 @@ public class TimeoutTable {
     * Update status_changed_id column.
     */
    public synchronized void updateStatusChangedIDs(Integer statusChangedControlID) {
-      for(TimeoutRecord record : recordList){
-         for(Integer tmpControlId : record.getPollingControlIDs()){
-            if(statusChangedControlID.equals(tmpControlId)){
-               record.getStatusChangedIDs().add(statusChangedControlID);
-               break;
+      for(SkippedStatusRecord record : recordList){
+         if(record.getPollingControlIDs()!=null && record.getPollingControlIDs().size()!=0){
+         for (Integer tmpControlId : record.getPollingControlIDs()) {
+               if (statusChangedControlID.equals(tmpControlId)) {
+                  record.getStatusChangedIDs().add(statusChangedControlID);
+                  break;
+               }
             }
          }
       }
    }
    
+   public synchronized SkippedStatusRecord queryRecordByDeviceId(String deviceId) {
+      if (recordList != null & recordList.size() != 0) {
+         for (SkippedStatusRecord record : recordList) {
+            if (record.getDeviceID().equals(deviceId)) {
+               return record;
+            }
+         }
+      }
+      return null;
+   }
 }

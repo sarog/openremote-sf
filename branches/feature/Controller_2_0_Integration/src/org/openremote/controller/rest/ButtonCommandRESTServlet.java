@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.CommandType;
-import org.openremote.controller.exception.ButtonCommandException;
+import org.openremote.controller.exception.ComponentCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
 import org.openremote.controller.service.ButtonCommandService;
 import org.openremote.controller.spring.SpringContext;
@@ -88,7 +88,7 @@ public class ButtonCommandRESTServlet extends HttpServlet {
             } else {
                buttonCommandService.trigger(buttonID);
             }
-         } catch (ButtonCommandException e) {
+         } catch (ComponentCommandException e) {
             logger.error("ButtonCommandException occurs", e);
             response.sendError(e.getErrorCode(),e.getMessage());
          }

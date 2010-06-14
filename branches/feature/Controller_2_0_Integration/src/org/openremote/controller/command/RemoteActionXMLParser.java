@@ -36,7 +36,7 @@ import org.openremote.controller.control.Control;
 import org.openremote.controller.control.ControlFactory;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
-import org.openremote.controller.exception.NoSuchButtonException;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.PathUtil;
 
 
@@ -69,7 +69,7 @@ public class RemoteActionXMLParser {
       Element controlElement = queryElementFromXMLById(controlID);
       
       if (controlElement == null) {
-         throw new NoSuchButtonException("Cannot find that button with id = " + controlID);
+         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
       }
       Control control = controlFactory.getControl(controlElement, commandParam);
       return control.getExecutableCommands();
@@ -85,7 +85,7 @@ public class RemoteActionXMLParser {
    public StatusCommand findStatusCommandByControlID(String controlID) {
       Element controlElement = queryElementFromXMLById(controlID);
       if (controlElement == null) {
-         throw new NoSuchButtonException("Cannot find that control with id = " + controlID);
+         throw new NoSuchComponentException("Cannot find that control with id = " + controlID);
         }
       Control control = controlFactory.getControl(controlElement, Command.STATUS_COMMAND);
       return control.getStatusCommand();
