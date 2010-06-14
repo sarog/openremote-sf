@@ -20,10 +20,8 @@
 package org.openremote.controller.statuscache;
 
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -169,23 +167,6 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
     */
    @Override
    public void contextDestroyed(ServletContextEvent event) {
-
-      ServletContext context = event.getServletContext();
-      try {
-         Statement stmt = connection.createStatement();
-         stmt.executeUpdate("SHUTDOWN;");
-         stmt.close();
-      } catch (Exception e) {
-         System.out.println("Shutdown HSQL database error : " + e);
-         logger.error("Shutdown HSQL database error", e);
-         context.log(e.getMessage());
-      } finally {
-         try {
-            connection.close();
-            context.log("Closing HSQL database...");
-         } catch (Exception e) {
-         }
-      }
    }
 
 

@@ -68,6 +68,14 @@ public class ControlStatusPollingServiceImpl implements ControlStatusPollingServ
       PollingThread pollingThread = new PollingThread(pollingData);
       pollingThread.start();
       
+      //begin 
+      //Avoid skipping state when adding observer to subject.
+      String skipState = querySkippedState(deviceID, unParsedcontrolIDs);
+      if (skipState != null && !"".equals(skipState)) {
+         return skipState;
+      }
+      //end
+      
       while (true) {
          if ((System.currentTimeMillis() - startTime) / MILLI_SECONDS_A_SECOND >= MAX_TIME_OUT_SECONDS) {
             changedStatuses = Constants.SERVER_RESPONSE_TIME_OUT;
