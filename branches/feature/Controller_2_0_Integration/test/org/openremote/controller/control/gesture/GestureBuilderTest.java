@@ -6,8 +6,7 @@ import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.utils.XMLUtil;
 
@@ -26,11 +25,10 @@ public class GestureBuilderTest extends TestCase {
       return XMLUtil.getElementByID(doc, id);
    }
    
-   public Gesture getGestureByID(String labelID) throws JDOMException{
+   private Gesture getGestureByID(String labelID) throws JDOMException{
       Element controlElement = getElementByID(labelID);
       if(! controlElement.getName().equals("gesture")) {
-         //throw new NoSuchComponentException();
-         return null;
+         throw new NoSuchComponentException("Invalid Gesture.");
       }
       return (Gesture) builder.build(controlElement, "test");
    }
@@ -40,16 +38,20 @@ public class GestureBuilderTest extends TestCase {
       Assert.assertNotNull(gesture);
    }
    
-   public void testGetLabelforNoSuchID() throws JDOMException{
-      boolean error = true;
+   public void testGetLabelforInvalidGesture() throws JDOMException{
       try{
-         Gesture label = getGestureByID("8");
-         error = false;
-         StatusCommand s = label.getStatus().getStatusCommand();
-         Assert.assertTrue(s instanceof NoStatusCommand);
-      } catch (Exception e){
+         getGestureByID("8");
+         fail();
+      } catch (NoSuchComponentException e){
       }
-      Assert.assertEquals(error, true);
+   }
+   
+   public void testGetLabelforNoSuchID() throws JDOMException{
+      try{
+         getGestureByID("200");
+         fail();
+      } catch (NoSuchComponentException e){
+      }
    }
    
    

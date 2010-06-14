@@ -21,7 +21,7 @@ package org.openremote.controller.service;
 
 import junit.framework.TestCase;
 
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.utils.SpringContextForTest;
 
 /**
  * The Class ButtonCommandServiceTest.
@@ -31,7 +31,7 @@ import org.openremote.controller.spring.SpringContext;
 public class ButtonCommandServiceTest extends TestCase {
 
    /** The button command service. */
-   private ButtonCommandService buttonCommandService = (ButtonCommandService) SpringContext.getInstance().getBean(
+   private ButtonCommandService buttonCommandService = (ButtonCommandService) SpringContextForTest.getInstance().getBean(
          "buttonCommandService");
    
    /**

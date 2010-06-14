@@ -73,6 +73,7 @@
 		<command id="99" protocol="test" >OFF</command>
 		<command id="10" protocol="test" >STATUS</command>
 		<command id="98" protocol="test" >STATUS</command>
-		<command id="97" protocol="test" >STATUS</command>
+		<command id="97" protocol="test" >CHANGE</command>
+		<command id="96" protocol="test" >STATUS</command>
 	</commands>
 </openremote>

@@ -19,10 +19,14 @@
 */
 package org.openremote.controller.rest;
 
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebResponse;
-
 import junit.framework.TestCase;
+
+import org.openremote.controller.utils.SecurityUtil;
+
+import com.meterware.httpunit.HttpException;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebRequest;
+import com.meterware.httpunit.WebResponse;
 
 /**
  * This class is mainly used to test the <b>SkipStateTrack</b>.<br /><br />
@@ -45,7 +49,8 @@ public class SkipStateTrackTest extends TestCase {
     */
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
+      WebResponse wr = wc.getResponse(request);
       System.out.println("The result is : \n" + wr.getText());
    }
 
@@ -65,9 +70,10 @@ public class SkipStateTrackTest extends TestCase {
     */
    public void testCase2() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      WebResponse wr = wc.getResponse(request);
       System.out.println("The result of first polling request is : \n" + wr.getText());
-      wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      wr = wc.getResponse(request);
       System.out.println("The result of second polling request is : \n" + wr.getText());
    }
    
@@ -87,10 +93,16 @@ public class SkipStateTrackTest extends TestCase {
     */
    public void testCase3() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      WebResponse wr;
+      wr = wc.getResponse(request);
       System.out.println("The result of first polling request is : \n" + wr.getText());
-      wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
-      System.out.println("The result of second polling request is : \n" + wr.getText());
+      try {
+         wr = wc.getResponse(request);
+         System.out.println("The result of second polling request is : \n" + wr.getText());
+         fail();
+      } catch (HttpException e) {
+      }
    }
 
    /**
@@ -107,9 +119,10 @@ public class SkipStateTrackTest extends TestCase {
     */
    public void testCase4() throws Exception {
       WebConversation wc = new WebConversation();
-      WebResponse wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      WebResponse wr = wc.getResponse(request);
       System.out.println("The result of first polling request is : \n" + wr.getText());
-      wr = wc.getResponse("http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      wr = wc.getResponse(request);
       System.out.println("The result of second polling request is : \n" + wr.getText());
    }
 }
