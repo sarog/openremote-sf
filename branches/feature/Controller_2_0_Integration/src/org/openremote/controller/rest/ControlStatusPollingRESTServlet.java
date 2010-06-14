@@ -72,7 +72,6 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
     * It's responsible for polling the <b>changed statuses</b> or <b>TIME_OUT</b> if time out.
     */
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      long startTime = System.currentTimeMillis();
       logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
       String url = request.getRequestURL().toString();
@@ -84,23 +83,22 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
       
       if (matcher.find()) {
          deviceID = matcher.group(1);
+         if (deviceID == null || "".equals(deviceID)) {
+            throw new NullPointerException("Device id was null");
+         }
          unParsedComponentIDs = matcher.group(2);
          PrintWriter printWriter = response.getWriter();
          try {
             checkComponentId(unParsedComponentIDs);
-            String skippedState = controlStatusPollingService.querySkippedState(deviceID, unParsedComponentIDs);
-            if (skippedState != null && !"".equals(skippedState)) {
-               logger.info("Return the skip state which queried from StatusCache.");
-               printWriter.write(skippedState);
-            } else {
-               String stateFromPolling = controlStatusPollingService.waitForChangedStatuses(startTime, deviceID, unParsedComponentIDs);
+            String stateFromPolling = controlStatusPollingService.querySkippedState(deviceID, unParsedComponentIDs);
+            if (stateFromPolling != null && !"".equals(stateFromPolling)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(stateFromPolling)) {
                   response.sendError(504, "Time out!");
                } else {
+                  logger.info("Return the polling status.");
                   printWriter.write(stateFromPolling);
                }
             }
-            controlStatusPollingService.saveOrUpdateSkippedStateRecord(deviceID, unParsedComponentIDs);
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (ControlCommandException e) {
             response.sendError(e.getErrorCode(), e.getMessage());
@@ -117,6 +115,9 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
    private void checkComponentId(String unParsedcontrolIDs){
       String[] controlIDs = (unParsedcontrolIDs == null || "".equals(unParsedcontrolIDs)) ? new String[] {}
             : unParsedcontrolIDs.split(ControlStatusPollingService.CONTROL_ID_SEPARATOR);
+      if (controlIDs.length == 0) {
+         throw new NullPointerException("Polling ids were null.");
+      }
       String tmpStr = null;
       try {
          for (int i = 0; i < controlIDs.length; i++) {

@@ -22,6 +22,7 @@ package org.openremote.controller.control;
 import java.util.Properties;
 
 import org.jdom.Element;
+import org.openremote.controller.exception.NoSuchCommandBuilderException;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
@@ -45,6 +46,9 @@ public class ControlFactory extends ApplicationObjectSupport {
     public Control getControl(Element controlElement, String commandParam) {
         String controlType = controlElement.getName();
         String controlBuilderName = controlBuilders.getProperty(controlType);
+        if(controlBuilderName == null || controlBuilderName.equals("")){
+           throw new NoSuchCommandBuilderException();
+        }
         ControlBuilder controlBuilder = (ControlBuilder)getApplicationContext().getBean(controlBuilderName);
         return controlBuilder.build(controlElement, commandParam);
     }
