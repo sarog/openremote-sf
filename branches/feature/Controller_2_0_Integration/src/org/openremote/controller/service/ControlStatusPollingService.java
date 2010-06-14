@@ -21,7 +21,7 @@ package org.openremote.controller.service;
 
 
 /**
- * It's responsiable for polling changed statuses from cached DB.
+ * It's responsiable for polling changed statuses from changed status table.
  * 
  * @author Handy.Wang 2009-10-21
  */
@@ -52,8 +52,8 @@ public interface ControlStatusPollingService {
     static final String XML_TAIL = "</openremote>";
 
    /**
-    * Query skip states from TIME_OUT table. 
+    * Query changed states from ChangedStatus table. 
     */
-   public String querySkippedState(String deviceID, String unParsedcontrolIDs);
+   public String queryChangedState(String deviceID, String unParsedcontrolIDs);
    
 }

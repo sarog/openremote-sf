@@ -41,7 +41,7 @@ import org.openremote.controller.spring.SpringContext;
 
 /**
  * Status Polling RESTful servlet of control.
- * It's responsiable for response corresponding result with the RESTful url.
+ * It's responsiable for response corresponding result with the RESTful polling url.
  * 
  * @author Handy.Wang 2009-10-19
  */
@@ -90,7 +90,7 @@ public class ControlStatusPollingRESTServlet extends HttpServlet {
          PrintWriter printWriter = response.getWriter();
          try {
             checkComponentId(unParsedComponentIDs);
-            String stateFromPolling = controlStatusPollingService.querySkippedState(deviceID, unParsedComponentIDs);
+            String stateFromPolling = controlStatusPollingService.queryChangedState(deviceID, unParsedComponentIDs);
             if (stateFromPolling != null && !"".equals(stateFromPolling)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(stateFromPolling)) {
                   response.sendError(504, "Time out!");
