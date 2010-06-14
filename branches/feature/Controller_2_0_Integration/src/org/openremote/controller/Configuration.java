@@ -1,4 +1,4 @@
-/* 
+/*
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
  *
@@ -38,7 +38,6 @@ public class Configuration {
 
   // Private Instance Variables -------------------------------------------------------------------
 
-
   private String irsendPath;
 
   private String lircdconfPath;
@@ -48,7 +47,7 @@ public class Configuration {
    */
   private boolean copyLircdconf;
 
-  private String webappPort;
+  private int webappPort;
 
   private String multicastAddress;
 
@@ -172,14 +171,11 @@ public class Configuration {
   /**
    * Returns the port number used by controller discovery service.
    *
-   * @see #setWebappPort(String)
+   * @see #setWebappPort(int)
    *
    * @return port number
    */
-  public String getWebappPort() {
-
-    // TODO : this should not be stored as a string
-
+  public int getWebappPort() {
     return webappPort;
   }
 
@@ -197,8 +193,8 @@ public class Configuration {
    *
    * @param webappPort  the HTTP listening port of the web container (e.g. Tomcat 8080)
    */
-  public void setWebappPort(String webappPort) {
-    this.webappPort = webappPort.trim();
+  public void setWebappPort(int webappPort) {
+    this.webappPort = webappPort;
   }
 
   /**
