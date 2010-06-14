@@ -66,7 +66,8 @@
     <!-- service for button command from iPhone -->
     <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
         <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
-    </bean>-->
+    </bean>
+-->
     
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
@@ -152,6 +153,7 @@
 		        <prop key = "switch">switchBuilder</prop>
 		        <prop key = "monitor">monitorBuilder</prop>
 		        <prop key = "label">labelBuilder</prop>
+		        <prop key = "slider">sliderBuilder</prop>
 		    </props>
 		</property>
   </bean>
@@ -170,6 +172,9 @@
   
   <!-- Label Builder -->
   <bean id= "labelBuilder" class="org.openremote.controller.control.label.LabelBuilder" />
+  
+  <!-- Slider Builder -->
+  <bean id= "sliderBuilder" class="org.openremote.controller.control.slider.SliderBuilder" />
   
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
