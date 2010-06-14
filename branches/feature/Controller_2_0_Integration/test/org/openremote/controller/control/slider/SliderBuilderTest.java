@@ -19,17 +19,21 @@
 */
 package org.openremote.controller.control.slider;
 
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.junit.Before;
+import org.junit.Test;
 import org.openremote.controller.Constants;
+import org.openremote.controller.TestConstraint;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.InvalidElementException;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -40,7 +44,7 @@ import org.openremote.controller.utils.SpringTestContext;
  * 
  * @author Handy.Wang 2009-11-10
  */
-public class SliderBuilderTest extends TestCase {
+public class SliderBuilderTest {
    
    private String controllerXMLPath = null;
    
@@ -48,17 +52,15 @@ public class SliderBuilderTest extends TestCase {
    
    private SliderBuilder sliderBuilder = (SliderBuilder) SpringTestContext.getInstance().getBean("sliderBuilder");
    
-   /* (non-Javadoc)
-    * @see junit.framework.TestCase#setUp()
-    */
-   protected void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource("./fixture/controller.xml").getFile();
+   @Before
+   public void setUp() throws Exception {
+      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(controllerXMLPath);
-      super.setUp();
    }
    
    /** Get invalid slider with control id from controller.xml. */
+   @Test
    public void testGetInvalidSlider() throws JDOMException{
       try {
          getSliderByID("1");
@@ -68,12 +70,14 @@ public class SliderBuilderTest extends TestCase {
    }
    
    /** Get a non-null slider and it's valid. */
+   @Test
    public void testGetSliderNotNull() throws JDOMException{
       Slider slider = getSliderByID("8");
       Assert.assertNotNull(slider);
    }
    
    /** Get slider with control id from controller.xml but the control don't exsit in controller.xml.  */
+   @Test
    public void testGetSliderNoSuchID() throws JDOMException{
       Slider slider  = null;
       try{
@@ -85,6 +89,7 @@ public class SliderBuilderTest extends TestCase {
    }
    
    /** Get the slider and check whether the executable commands are null. */
+   @Test
    public void testGetExecutableCommandsOfSlider() throws JDOMException {
       Slider slider = getSliderByID("8");
       Assert.assertNotNull(slider.getExecutableCommands());

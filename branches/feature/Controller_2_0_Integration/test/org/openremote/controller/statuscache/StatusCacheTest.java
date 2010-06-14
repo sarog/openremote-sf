@@ -20,14 +20,14 @@
 package org.openremote.controller.statuscache;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.openremote.controller.TestConstraint;
 import org.openremote.controller.utils.SecurityUtil;
 
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
-import junit.framework.TestCase;
 
 /**
  * This class is mainly used to test the <b>SkipStateTrack</b>.<br /><br />
@@ -40,7 +40,7 @@ import junit.framework.TestCase;
  * 
  * 
  */
-public class StatusCacheTest extends TestCase {
+public class StatusCacheTest {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
@@ -50,9 +50,10 @@ public class StatusCacheTest extends TestCase {
     *  Not found time out record in TIME_OUT_TABLE during polling operation,<br />
     *  not timeout while observing and Getting the changed status at last.
     */
+   @Test
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -77,9 +78,10 @@ public class StatusCacheTest extends TestCase {
     * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase2</b> which was called<br />
     * while <b>InitCachedStatusDBListener</b> starting.
     */
+   @Test
    public void testCase2() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/2");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -104,9 +106,10 @@ public class StatusCacheTest extends TestCase {
     * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase3</b> which was called<br />
     * while <b>InitCachedStatusDBListener</b> starting.
     */
+   @Test
    public void testCase3() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -129,9 +132,10 @@ public class StatusCacheTest extends TestCase {
     * So, current polling request observes the change of statuses but timeout,<br />
     * client gets 503 error at last.<br /><br />
     */
+   @Test
    public void testCase4() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/4");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());

@@ -38,8 +38,6 @@ public class Configuration {
    
   // Private Instance Variables -------------------------------------------------------------------
 
-  private long macroIRExecutionDelay = 500;
-
   private String irsendPath;
 
   private String lircdconfPath;
@@ -62,6 +60,10 @@ public class Configuration {
    */
   private boolean resourceUpload;
 
+  private long macroIRExecutionDelay = 500;
+
+  private String webappIp;
+  
   /**
    * The COM (Serial) port the ORC should use (for example, to send X10 events)
    */
@@ -372,5 +374,13 @@ public class Configuration {
 
    public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
       this.macroIRExecutionDelay = macroIRExecutionDelay;
+   }
+
+   public String getWebappIp() {      
+      return webappIp;
+   }
+
+   public void setWebappIp(String webappIp) {
+      this.webappIp = webappIp;
    }
 }

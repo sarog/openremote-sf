@@ -45,16 +45,6 @@
         <servlet-name>dispatcherServlet</servlet-name>
         <url-pattern>*.htm</url-pattern>
     </servlet-mapping>
-
-    <servlet>
-        <servlet-name>buttonRESTServlet</servlet-name>
-        <servlet-class>org.openremote.controller.rest.ButtonCommandRESTServlet</servlet-class>
-    </servlet>
-    
-    <servlet-mapping>
-        <servlet-name>buttonRESTServlet</servlet-name>
-        <url-pattern>/rest/button/*</url-pattern>
-    </servlet-mapping>
     
     <servlet>
         <servlet-name>controlRESTServlet</servlet-name>
