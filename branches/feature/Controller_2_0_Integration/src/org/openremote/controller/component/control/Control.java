@@ -34,27 +34,11 @@ public abstract class Control extends Component {
    
     public static String CURRENT_STATUS = "OFF";
 
-    /** The Constant CONTROL_COMMAND_REF_ATTRIBUTE_NAME. */
-    public static final String CONTROL_COMMAND_REF_ATTRIBUTE_NAME = "ref";
-
-    /** The Constant STATUS_ELEMENT_NAME. */
-    public static final String STATUS_ELEMENT_NAME = "status";
-    
-    public static final String INCLUDE_ELEMENT_NAME = "include";
-    
-    public static final String INCLUDE_TYPE_SENSOR = "sensor";
-    
-    public static final String INCLUDE_TYPE_ATTRIBUTE_NAME = "type";
-    
     /** The Constant DELAY_ELEMENT_NAME. */
     public static final String DELAY_ELEMENT_NAME = "delay";
     
-    public static final String COMMAND_ELEMENT_NAME= "command";
-    
     /** All commands a certain operation contains. */
     private List<ExecutableCommand> executableCommands;
-    
-    protected List<String> availableActions;
     
     /**
      * Instantiates a new control.
@@ -62,20 +46,6 @@ public abstract class Control extends Component {
     public Control() {
         super();
         executableCommands = new ArrayList<ExecutableCommand>();
-        availableActions = new ArrayList<String>();
-        availableActions.addAll(getAvailableActions());
-    }
-    
-    /** All available actions of sub controls */
-    protected abstract List<String> getAvailableActions();
-    
-    public boolean isValidActionWith(String actionParam) {
-       for (String action : availableActions) {
-          if (action.equalsIgnoreCase(actionParam)) {
-             return true;
-          }
-       }
-       return false;
     }
     
     /**
