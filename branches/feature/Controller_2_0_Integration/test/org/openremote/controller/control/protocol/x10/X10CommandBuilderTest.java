@@ -30,43 +30,50 @@ import org.openremote.controller.protocol.x10.X10CommandBuilder;
 
 public class X10CommandBuilderTest {
    public X10CommandBuilder builder = null;
+
    @Before
-   public void setUp(){
+   public void setUp() {
       builder = new X10CommandBuilder();
    }
+
    @Test
-   public void testGetCommandByRightCmdAndAddress(){
-      X10Command cmd = getCommand("testCmd","127.0.0.1");
-      
-      assertEquals(cmd.getAddress(),"127.0.0.1");
-      assertEquals(cmd.getCommand(),"testCmd");
+   public void testGetCommandByRightCmdAndAddress() {
+      X10Command cmd = getCommand("testCmd", "127.0.0.1");
+
+      assertEquals(cmd.getAddress(), "127.0.0.1");
+      assertEquals(cmd.getCommand(), "testCmd");
    }
+
    @Test
-   public void testGetCommandByWrongCmd(){
-      try{
-         getCommand("  ","127.0.0.1");
+   public void testGetCommandByWrongCmd() {
+      try {
+         getCommand("  ", "127.0.0.1");
          fail();
-      } catch(CommandBuildException e){};
+      } catch (CommandBuildException e) {
+      };
    }
+
    @Test
-   public void testGetCommandByWrongAddress(){
-      try{
-         getCommand("my command ","  ");
+   public void testGetCommandByWrongAddress() {
+      try {
+         getCommand("my command ", "  ");
          fail();
-      } catch(CommandBuildException e){};
+      } catch (CommandBuildException e) {
+      };
    }
-   public X10Command getCommand(String cmd,String address){
+
+   public X10Command getCommand(String cmd, String address) {
       Element ele = new Element("command");
-      ele.setAttribute("id","test");
-      ele.setAttribute("protocal","x10");
-      ele.setAttribute("value",cmd);
-      
+      ele.setAttribute("id", "test");
+      ele.setAttribute("protocal", "x10");
+      ele.setAttribute("value", cmd);
+
       Element propAddr = new Element("property");
-      propAddr.setAttribute("name","address");
-      propAddr.setAttribute("value",address);
-      
+      propAddr.setAttribute("name", "address");
+      propAddr.setAttribute("value", address);
+
       ele.addContent(propAddr);
-      
+
       return (X10Command) builder.build(ele);
    }
 }

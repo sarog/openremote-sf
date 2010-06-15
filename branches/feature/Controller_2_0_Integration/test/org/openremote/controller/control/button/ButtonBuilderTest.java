@@ -39,44 +39,49 @@ public class ButtonBuilderTest {
    private String controllerXMLPath = null;
    private Document doc = null;
    private ButtonBuilder builder = (ButtonBuilder) SpringTestContext.getInstance().getBean("buttonBuilder");
-   
+
    @Before
    public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
+      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml")
+            .getFile();
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
    }
-   
-   protected Element getElementByID(String id)  {
+
+   protected Element getElementByID(String id) {
       return XMLUtil.getElementByID(doc, id);
    }
-   
-   private Button getButtonByID(String buttonID,String cmdParam) {
+
+   private Button getButtonByID(String buttonID, String cmdParam) {
       Element controlElement = getElementByID(buttonID);
-      if(! controlElement.getName().equals("button")) {
+      if (!controlElement.getName().equals("button")) {
          throw new NoSuchComponentException("button .");
       }
       return (Button) builder.build(controlElement, cmdParam);
    }
+
    @Test
-   public void testNoSuchButton(){
-      try{
-         getButtonByID("10","on");
+   public void testNoSuchButton() {
+      try {
+         getButtonByID("10", "on");
          fail();
-      }catch(Exception e){};
+      } catch (Exception e) {
+      };
    }
-   @Test 
-   public void testNotNull(){
-      Button btn = getButtonByID("9","on");
+
+   @Test
+   public void testNotNull() {
+      Button btn = getButtonByID("9", "on");
       Assert.assertNotNull(btn);
    }
+
    @Test
-   public void testGetCommand(){
-      Button btn = getButtonByID("9","on");
-      Assert.assertEquals(btn.getExecutableCommands().size(),2);
-      
-      btn = getButtonByID("9","off");
-      Assert.assertEquals(btn.getExecutableCommands().size(),2);
-      btn = getButtonByID("9","status");
-      Assert.assertEquals(btn.getExecutableCommands().size(),2);
+   public void testGetCommand() {
+      Button btn = getButtonByID("9", "on");
+      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+
+      btn = getButtonByID("9", "off");
+      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+      btn = getButtonByID("9", "status");
+      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
    }
 }

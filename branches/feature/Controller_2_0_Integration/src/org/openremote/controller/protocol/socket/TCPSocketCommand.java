@@ -94,7 +94,7 @@ public class TCPSocketCommand implements ExecutableCommand {
     * @return the ip
     */
    public String getIp() {
-	return ip;
+      return ip;
    }
 
    /**
@@ -102,66 +102,62 @@ public class TCPSocketCommand implements ExecutableCommand {
     * @param ip the new ip
     */
    public void setIp(String ip) {
-    this.ip = ip;
+      this.ip = ip;
    }
 
    /**
     * Gets the port
     * @return the port
     */
-	public String getPort() {
-		return port;
-	}
+   public String getPort() {
+      return port;
+   }
 
 	/**
 	 * Sets the port
 	 * @param port the new port
 	 */
-	public void setPort(String port) {
-		this.port = port;
-	}
+   public void setPort(String port) {
+      this.port = port;
+   }
 
    /**
     * {@inheritDoc}
     */
    @Override
    public void send() {
-	   Socket socket = null;
-		try {
-			socket = new Socket(getIp(), Integer.parseInt(getPort()));
-			OutputStream out = socket.getOutputStream();
+      Socket socket = null;
+      try {
+         socket = new Socket(getIp(), Integer.parseInt(getPort()));
+         OutputStream out = socket.getOutputStream();
 
-			StringTokenizer st = new StringTokenizer(getCommand(), "|");
-			while (st.hasMoreElements()) {
-				String cmd = (String) st.nextElement();
-				out.write((cmd+"\r").getBytes());
-			}
+         StringTokenizer st = new StringTokenizer(getCommand(), "|");
+         while (st.hasMoreElements()) {
+            String cmd = (String) st.nextElement();
+            out.write((cmd + "\r").getBytes());
+         }
 
-			String result = readReply(socket);
-			logger.info("received message: " + result);
-		} catch (Exception e) {
-			logger.error("Socket event could not execute", e);
-		} finally {
-			if (socket != null)  {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					logger.error("Socket could not be closed", e);
-				}
-			}
-		}
+         String result = readReply(socket);
+         logger.info("received message: " + result);
+      } catch (Exception e) {
+         logger.error("Socket event could not execute", e);
+      } finally {
+         if (socket != null) {
+            try {
+               socket.close();
+            } catch (IOException e) {
+               logger.error("Socket could not be closed", e);
+            }
+         }
+      }
    }
 
-
    private String readReply(java.net.Socket socket) throws IOException {
-    	BufferedReader bufferedReader =
-    	    new BufferedReader(
-    		new InputStreamReader(
-    	  	    socket.getInputStream()));
-    	char[] buffer = new char[200];
-    	int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
-    	String reply = new String(buffer, 0, readChars);
-    	return reply;
-       }
+      BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      char[] buffer = new char[200];
+      int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
+      String reply = new String(buffer, 0, readChars);
+      return reply;
+   }
 
 }
