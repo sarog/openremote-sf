@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.switchtoggle;
+package org.openremote.controller.component.control;
 
 import static org.junit.Assert.fail;
 import junit.framework.Assert;
@@ -27,8 +27,8 @@ import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
-import org.openremote.controller.component.control.switchtoggle.Switch;
-import org.openremote.controller.component.control.switchtoggle.SwitchBuilder;
+import org.openremote.controller.component.control.button.Button;
+import org.openremote.controller.component.control.button.ButtonBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
@@ -37,10 +37,10 @@ import org.openremote.controller.utils.XMLUtil;
  * @author Javen
  *
  */
-public class SwitchBuilderTest {
+public class ButtonBuilderTest {
    private String controllerXMLPath = null;
    private Document doc = null;
-   private SwitchBuilder builder = (SwitchBuilder) SpringTestContext.getInstance().getBean("switchBuilder");
+   private ButtonBuilder builder = (ButtonBuilder) SpringTestContext.getInstance().getBean("buttonBuilder");
 
    @Before
    public void setUp() throws Exception {
@@ -53,36 +53,37 @@ public class SwitchBuilderTest {
       return XMLUtil.getElementByID(doc, id);
    }
 
-   private Switch getSwitchByID(String switchID, String cmdParam) {
-      Element controlElement = getElementByID(switchID);
-      if (!controlElement.getName().equals("switch")) {
-         throw new NoSuchComponentException("switch .");
+   private Button getButtonByID(String buttonID, String cmdParam) {
+      Element controlElement = getElementByID(buttonID);
+      if (!controlElement.getName().equals("button")) {
+         throw new NoSuchComponentException("button .");
       }
-      return (Switch) builder.build(controlElement, cmdParam);
+      return (Button) builder.build(controlElement, cmdParam);
    }
 
    @Test
-   public void testNuSuchSwitch() {
+   public void testNoSuchButton() {
       try {
-         getSwitchByID("9", "on");
+         getButtonByID("10", "on");
          fail();
       } catch (Exception e) {
       };
    }
 
    @Test
-   public void testNoNull() {
-      Assert.assertNotNull(getSwitchByID("3", "on"));
+   public void testNotNull() {
+      Button btn = getButtonByID("9", "on");
+      Assert.assertNotNull(btn);
    }
 
    @Test
    public void testGetCommand() {
-      Switch swh = getSwitchByID("4", "on");
-      Assert.assertEquals(swh.getExecutableCommands().size(), 1);
-      swh = getSwitchByID("4", "off");
-      Assert.assertEquals(swh.getExecutableCommands().size(), 1);
+      Button btn = getButtonByID("9", "on");
+      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
 
-      swh = getSwitchByID("4", "status");
-      Assert.assertEquals(swh.getExecutableCommands().size(), 0);
+      btn = getButtonByID("9", "off");
+      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+      btn = getButtonByID("9", "status");
+      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
    }
 }
