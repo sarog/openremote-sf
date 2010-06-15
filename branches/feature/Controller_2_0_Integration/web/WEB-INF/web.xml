@@ -67,12 +67,12 @@
     </servlet-mapping>
     
     <servlet>
-    	<servlet-name>ControlStatusPollingRESTServlet</servlet-name>
-    	<servlet-class>org.openremote.controller.rest.ControlStatusPollingRESTServlet</servlet-class>
+    	<servlet-name>StatusPollingRESTServlet</servlet-name>
+    	<servlet-class>org.openremote.controller.rest.StatusPollingRESTServlet</servlet-class>
     </servlet>
     
     <servlet-mapping>
-    	<servlet-name>ControlStatusPollingRESTServlet</servlet-name>
+    	<servlet-name>StatusPollingRESTServlet</servlet-name>
     	<url-pattern>/rest/polling/*</url-pattern>
     </servlet-mapping>
     

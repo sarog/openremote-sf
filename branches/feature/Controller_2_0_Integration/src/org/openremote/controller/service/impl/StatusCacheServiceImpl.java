@@ -11,18 +11,18 @@ public class StatusCacheServiceImpl implements StatusCacheService{
    private StatusCache cache;
    
    @Override
-   public String getStatusByComponentId(Integer controlId) {
-      return cache.queryStatusByComponentlId(controlId);
+   public String getStatusBySensorId(Integer sensorId) {
+      return cache.queryStatusBySensorlId(sensorId);
    }
 
    @Override
-   public Map<Integer, String> queryStatuses(Set<Integer> controlIds) {
-      return cache.queryStatuses(controlIds);
+   public Map<Integer, String> queryStatuses(Set<Integer> sensorIds) {
+      return cache.queryStatuses(sensorIds);
    }
 
    @Override
-   public void saveOrUpdateStatus(Integer controlId, String newStatus) {
-      cache.saveOrUpdateStatus(controlId, newStatus);
+   public void saveOrUpdateStatus(Integer sensorId, String newStatus) {
+      cache.saveOrUpdateStatus(sensorId, newStatus);
    }
 
    public void setCache(StatusCache cache) {

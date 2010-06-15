@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.control.Control;
+import org.openremote.controller.component.control.Control;
 
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.cemi.CEMILData;

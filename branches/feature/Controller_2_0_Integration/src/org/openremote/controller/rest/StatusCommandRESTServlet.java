@@ -38,10 +38,10 @@ import org.openremote.controller.spring.SpringContext;
  * The Class Status Command REST Servlet.
  * 
  * This servlet is responsible for 
- *   parsing RESTful url "http://xxx.xxx.xxx/controller/rest/status/{control_id},{control_id}...",
- *   building Event,
- *   status query with stateful KNXStatusEvent,
- *   and conpose status result into XML formatted data to RESTful service caller.
+ *   parsing RESTful url "http://xxx.xxx.xxx/controller/rest/status/{sensor_id},{sensor_id}...",
+ *   building StatusCommand,
+ *   status query with stateful StatusCommand,
+ *   and conpose status result into XML formatted data to RESTful service client.
  * 
  * @author Handy.Wang
  */
@@ -79,21 +79,21 @@ public class StatusCommandRESTServlet extends HttpServlet {
         String regexp = "rest\\/status\\/(.*)";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(url);
-        String unParsedcontrolIDs = null;
+        String unParsedSensorIDs = null;
 
         if (matcher.find()) {
-            unParsedcontrolIDs = matcher.group(1);
+            unParsedSensorIDs = matcher.group(1);
             try {
-                if (unParsedcontrolIDs != null && !"".equals(unParsedcontrolIDs)) {
+                if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
                     PrintWriter printWriter = response.getWriter();
-                    printWriter.write(statusCommandService.readFromCache(unParsedcontrolIDs));
+                    printWriter.write(statusCommandService.readFromCache(unParsedSensorIDs));
                 }
             } catch (ControlCommandException e) {
                 logger.error("CommandException occurs", e);
                 response.sendError(e.getErrorCode(), e.getMessage());
             }
         } else {
-            response.sendError(400, "Bad REST Request, should be /rest/status/{button_id},{button_id}...");
+            response.sendError(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
         }
     }
 }
