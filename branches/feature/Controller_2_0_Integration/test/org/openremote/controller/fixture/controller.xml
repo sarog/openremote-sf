@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
-	<controls>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org ../../../../../config/controller-2.0-M6.xsd ">
+  <controls>
 		<switch id="1">
 			<on>
 			    <include type="command" ref="100" />
@@ -67,6 +67,10 @@
 			    <include type="command" ref="96" />
 			</status>
 		</slider>
+		<button id="9">
+			<delay>500</delay>
+      	<include type="command" ref="99" />
+    </button>
 	</controls>
 	<commands>
 		<command id="100" protocol="test" value="ON" />
