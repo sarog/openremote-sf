@@ -28,6 +28,8 @@ public class RoundRobinData {
    
    private String msgKey;
    
+   private int tcpServerPort;
+   
    private String content;
 
    public String getMsgKey() {
@@ -36,6 +38,14 @@ public class RoundRobinData {
 
    public void setMsgKey(String msgKey) {
       this.msgKey = msgKey;
+   }
+
+   public int getTcpServerPort() {
+      return tcpServerPort;
+   }
+
+   public void setTcpServerPort(int tcpServerPort) {
+      this.tcpServerPort = tcpServerPort;
    }
 
    public String getContent() {

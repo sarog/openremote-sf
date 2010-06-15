@@ -133,7 +133,7 @@ public class RoundRobinUDPServer implements Runnable {
             Socket tcpClientSocket = null;
             PrintWriter printWriter = null;
             try {
-               tcpClientSocket = new Socket(datagramPacket.getAddress(), roundRobinConfig.getRoundRobinTCPServerSocketPort());
+               tcpClientSocket = new Socket(datagramPacket.getAddress(), roundRobinData.getTcpServerPort());
                printWriter = new PrintWriter(tcpClientSocket.getOutputStream(), true);
             } catch (Exception e) {
                throw new TCPClientEstablishException("Established TCP Client socket fail.");
@@ -158,7 +158,10 @@ public class RoundRobinUDPServer implements Runnable {
             rrd.setMsgKey(datas[0]);
          }
          if (datas.length > 1) {
-            rrd.setContent(datas[1]);
+            rrd.setTcpServerPort(Integer.parseInt(datas[1]));
+         }
+         if (datas.length > 2) {
+            rrd.setContent(datas[2]);
          }
          return rrd;
       }
