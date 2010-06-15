@@ -29,7 +29,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
@@ -71,6 +73,8 @@ public class RoundRobinClient {
    
    public RoundRobinClient(){
       super();
+      this.groupMemberURLs = Collections.synchronizedList(new ArrayList<String>());
+      this.isTCPServerOn = false;
    }
    
    public RoundRobinClient(String groupName){
@@ -83,10 +87,18 @@ public class RoundRobinClient {
    /**
     * Public interface for providing function of get all the group members which have same group name of current controller application.
     */
-   public List<String> getGroupMemberURLs() {
+   public List<String> getGroupMemberURLsList() {
       this.groupMemberURLs.clear();
       discoverGroupMembers();
       return groupMemberURLs;
+   }
+   
+   public Set<String> getGroupMemberURLsSet() {
+      this.groupMemberURLs.clear();
+      discoverGroupMembers();
+      Set<String> urls = new HashSet<String>();
+      urls.addAll(groupMemberURLs);
+      return urls;
    }
    
    /**
