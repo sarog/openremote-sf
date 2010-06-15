@@ -89,7 +89,7 @@ public class StatusCache {
       Map<Integer, String> statuses = new HashMap<Integer, String>();
       for (Integer controlId : componentIDs) {
          if (this.controlStatus.get(controlId) == null || "".equals(this.controlStatus.get(controlId))) {
-            throw new NoSuchComponentException("No such component in you device !");
+            throw new NoSuchComponentException("No such component in status cache : " + controlId);
          } else {
             statuses.put(controlId, this.controlStatus.get(controlId));
          }

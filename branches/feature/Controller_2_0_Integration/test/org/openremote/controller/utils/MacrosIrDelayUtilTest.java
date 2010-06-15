@@ -87,12 +87,12 @@ public class MacrosIrDelayUtilTest extends TestCase {
       MacrosIrDelayUtil.ensureDelayForIrCommand(ContainOneOrNoDelayCmdBetweenTwoIrCmd);
       Assert.assertTrue(ContainOneOrNoDelayCmdBetweenTwoIrCmd.size() == 7);
       Assert.assertTrue(ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(0) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand)ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(1)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand)ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(2)).getDelaySeconds() == 300);
+      Assert.assertTrue(((DelayCommand) ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(1)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(2)).getDelaySeconds() == 300);
       Assert.assertTrue(ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(3) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand)ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(4)).getDelaySeconds() == 500);
+      Assert.assertTrue(((DelayCommand) ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(4)).getDelaySeconds() == 500);
       Assert.assertTrue(ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(5) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand)ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(6)).getDelaySeconds() == 800);
+      Assert.assertTrue(((DelayCommand) ContainOneOrNoDelayCmdBetweenTwoIrCmd.get(6)).getDelaySeconds() == 800);
    }
    /**
     * used to test this case: 
@@ -104,15 +104,15 @@ public class MacrosIrDelayUtilTest extends TestCase {
       MacrosIrDelayUtil.ensureDelayForIrCommand(ContainMultiDelayCmdBetweenTwoIrCmd);
       Assert.assertTrue(ContainMultiDelayCmdBetweenTwoIrCmd.size() == 11);
       Assert.assertTrue(ContainMultiDelayCmdBetweenTwoIrCmd.get(0) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(1)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(2)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(3)).getDelaySeconds() == 100);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(1)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(2)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(3)).getDelaySeconds() == 100);
       Assert.assertTrue(ContainMultiDelayCmdBetweenTwoIrCmd.get(4) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(5)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(6)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(7)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(5)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(6)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(7)).getDelaySeconds() == 200);
       Assert.assertTrue(ContainMultiDelayCmdBetweenTwoIrCmd.get(8) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand)ContainMultiDelayCmdBetweenTwoIrCmd.get(9)).getDelaySeconds() == 800);
+      Assert.assertTrue(((DelayCommand) ContainMultiDelayCmdBetweenTwoIrCmd.get(9)).getDelaySeconds() == 800);
       Assert.assertTrue(ContainMultiDelayCmdBetweenTwoIrCmd.get(10) instanceof IRCommand);
    }
 }

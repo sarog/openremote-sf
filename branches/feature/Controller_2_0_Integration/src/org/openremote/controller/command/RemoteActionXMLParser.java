@@ -147,7 +147,8 @@ public class RemoteActionXMLParser {
          return queryElementFromXML(doc, xPath);
       } catch (JDOMException e) {
          logger.error("JDOMException occurs when parsing controller.xml.", e);
-         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+         throw new InvalidControllerXMLException(e.getMessage() + 
+               " check the version of schema or structure of controller.xml with "
                + Constants.CONTROLLER_XSD_PATH);
       } catch (IOException e) {
          String msg = " An I/O error prevents a controller.xml from being fully parsed";
