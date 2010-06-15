@@ -173,6 +173,7 @@
 		        <prop key = "label">labelBuilder</prop>
 		        <prop key = "slider">sliderBuilder</prop>
 		        <prop key = "gesture">gestureBuilder</prop>
+		        <prop key = "image">imageBuilder</prop>
 		    </props>
 		</property>
   </bean>
@@ -195,6 +196,8 @@
   <!-- Gesture Builder -->
   <bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
   
+  <!-- imageBuilder -->
+  <bean id="imageBuilder" class="org.openremote.controller.component.onlysensorycomponent.ImageBuilder" />
   
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 

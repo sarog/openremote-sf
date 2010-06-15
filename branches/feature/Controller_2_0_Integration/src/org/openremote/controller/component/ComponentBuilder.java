@@ -18,9 +18,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.controller.component;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.jdom.Element;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.control.Control;
+import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
  * The Class ComponentBuilder.
@@ -34,6 +40,44 @@ public abstract class ComponentBuilder {
     
     /** The command factory. */
     protected CommandFactory commandFactory;
+    
+    @SuppressWarnings("unchecked")
+    protected Sensor parseSensor(Element componentElement, Element sensorIncludeElement) {
+       Element sensorElementRef = sensorIncludeElement;//(Element) sensorIncludeElement.getChildren().get(0);
+       String sensorID = sensorElementRef.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
+       Sensor sensor = new Sensor();
+       Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
+       if (sensorElement != null) {
+          List<Element> sensorSubElements = sensorElement.getChildren();
+          for (Element sensorSubElement : sensorSubElements) {
+             if (isIncludingStatusCommand(sensorSubElement)) {
+                String statusCommandID = sensorSubElement.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
+                Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),statusCommandID);
+                if (statusCommandElement != null) {
+                   StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
+                   sensor = new Sensor(statusCommand);
+                   sensor.setSensorID(Integer.parseInt(sensorID));
+                } else {
+                   throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
+                }
+                break;
+             }
+          }
+       } else {
+          throw new NoSuchElementException("No such sensor with id " + sensorID);
+       }
+       return sensor;
+    }
+    
+    private boolean isIncludingStatusCommand(Element sensorSubElement) {
+       return Component.INCLUDE_ELEMENT_NAME.equalsIgnoreCase(sensorSubElement.getName()) && Component.COMMAND_ELEMENT_NAME.equalsIgnoreCase(sensorSubElement.getAttributeValue(Component.INCLUDE_TYPE_ATTRIBUTE_NAME));
+    }
+    
+    protected boolean isIncludedSensorElement(Element childElementOfControl) {
+       boolean isIncludeChildElememntOfControl = Control.INCLUDE_ELEMENT_NAME.equalsIgnoreCase(childElementOfControl.getName());
+       boolean isIncludedSensor = Control.INCLUDE_TYPE_SENSOR.equals(childElementOfControl.getAttributeValue(Control.INCLUDE_TYPE_ATTRIBUTE_NAME));
+       return isIncludeChildElememntOfControl && isIncludedSensor;
+    }
     
     /**
      * Builds the component.

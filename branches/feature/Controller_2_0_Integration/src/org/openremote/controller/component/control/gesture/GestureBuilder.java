@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.jdom.Element;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.control.Control;
 
@@ -35,15 +36,15 @@ public class GestureBuilder extends ComponentBuilder {
 
    @SuppressWarnings("unchecked")
    @Override
-   public Control build(Element gestureElement, String commandParam) {
+   public Component build(Element componentElement, String commandParam) {
       Gesture gesture = new Gesture();
       if (!gesture.isValidActionWith(commandParam)) {
          return gesture;
       }
-      List<Element> commandRefElements = gestureElement.getChildren();
+      List<Element> commandRefElements = componentElement.getChildren();
       for (Element commandRefElement : commandRefElements) {
-         String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-         Element commandElement = remoteActionXMLParser.queryElementFromXMLById(gestureElement.getDocument(),commandID);
+         String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+         Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
          ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
          gesture.addExecutableCommand(command);
       }

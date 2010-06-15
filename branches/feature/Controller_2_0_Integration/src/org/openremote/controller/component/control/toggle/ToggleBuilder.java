@@ -19,16 +19,9 @@
 */
 package org.openremote.controller.component.control.toggle;
 
-import java.util.List;
-
 import org.jdom.Element;
-import org.openremote.controller.command.Command;
-import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
  * The Class ToggleBuilder.
@@ -40,54 +33,53 @@ public class ToggleBuilder extends ComponentBuilder {
     /* (non-Javadoc)
      * @see org.openremote.controller.control.ControlBuilder#build(org.jdom.Element, java.lang.String)
      */
-   @SuppressWarnings("unchecked")
    @Override
     public Control build(Element toggleElement, String commandParam) {
       Toggle toggle = new Toggle();
       if (!toggle.isValidActionWith(commandParam)) {
          return toggle;
       }
-      
-      int operation = -1;
-      if (!Control.STATUS_ELEMENT_NAME.equals(commandParam)) {
-         try {
-            operation = Integer.parseInt(commandParam);
-         } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return new Toggle();
-         }
-      }
-      
-      List<Element> subElements = toggleElement.getChildren();
-      for (int i = 0; i < subElements.size(); i++) {
-         Element element = subElements.get(i);         
-         if (commandParam.equalsIgnoreCase(element.getName()) && Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
-            // status element
-            Element commandElementRef = (Element) element.getChildren().get(0);
-            String statusCommandID = commandElementRef.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),statusCommandID);
-            if (statusCommandElement != null) {
-               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-               toggle.setSensor(new Sensor(statusCommand));
-               break;
-            } else {
-               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
-            }
-         } else {
-            // non-status elements
-            if (operation == i && !Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
-               List<Element> commandRefElements = element.getChildren();
-               for (Element commandRefElement : commandRefElements) {
-                  String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),commandID);
-                  Command command = commandFactory.getCommand(commandElement);
-                  toggle.addExecutableCommand((ExecutableCommand) command);
-               }
-               break;
-            }
-            continue;
-         }
-      }
+//      
+//      int operation = -1;
+//      if (!Control.STATUS_ELEMENT_NAME.equals(commandParam)) {
+//         try {
+//            operation = Integer.parseInt(commandParam);
+//         } catch (NumberFormatException e) {
+//            e.printStackTrace();
+//            return new Toggle();
+//         }
+//      }
+//      
+//      List<Element> subElements = toggleElement.getChildren();
+//      for (int i = 0; i < subElements.size(); i++) {
+//         Element element = subElements.get(i);         
+//         if (commandParam.equalsIgnoreCase(element.getName()) && Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
+//            // status element
+//            Element commandElementRef = (Element) element.getChildren().get(0);
+//            String statusCommandID = commandElementRef.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+//            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),statusCommandID);
+//            if (statusCommandElement != null) {
+//               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
+//               toggle.setSensor(new Sensor(statusCommand));
+//               break;
+//            } else {
+//               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
+//            }
+//         } else {
+//            // non-status elements
+//            if (operation == i && !Control.STATUS_ELEMENT_NAME.equalsIgnoreCase(element.getName())) {
+//               List<Element> commandRefElements = element.getChildren();
+//               for (Element commandRefElement : commandRefElements) {
+//                  String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+//                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),commandID);
+//                  Command command = commandFactory.getCommand(commandElement);
+//                  toggle.addExecutableCommand((ExecutableCommand) command);
+//               }
+//               break;
+//            }
+//            continue;
+//         }
+//      }
       return toggle;
     }
 }
