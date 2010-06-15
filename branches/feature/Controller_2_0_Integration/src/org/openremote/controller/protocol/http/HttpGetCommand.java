@@ -67,7 +67,7 @@ public class HttpGetCommand implements ExecutableCommand {
     * @return the url
     */
    public String getUrl() {
-	return url;
+      return url;
    }
 
    /**
@@ -75,7 +75,7 @@ public class HttpGetCommand implements ExecutableCommand {
     * @param url the new url
     */
    public void setUrl(String url) {
-    this.url = url;
+      this.url = url;
    }
 
 
@@ -85,28 +85,27 @@ public class HttpGetCommand implements ExecutableCommand {
     */
    @Override
    public void send() {
-	   BufferedReader in = null;
-		try {
-	        URL url = new URL(getUrl());
-	        in = new BufferedReader(new InputStreamReader(url.openStream()));
-	        StringBuffer result = new StringBuffer();
-	        String str;
-	        while ((str = in.readLine()) != null)
-	        {
-	          result.append(str);
-	        }
-	        logger.info("received message: " + result);
-		} catch (Exception e) {
-			logger.error("HttpGetEvent could not execute", e);
-		} finally {
-			if (in != null)  {
-				try {
-					in.close();
-				} catch (IOException e) {
-					logger.error("BufferedReader could not be closed", e);
-				}
-			}
-		}
+      BufferedReader in = null;
+      try {
+         URL url = new URL(getUrl());
+         in = new BufferedReader(new InputStreamReader(url.openStream()));
+         StringBuffer result = new StringBuffer();
+         String str;
+         while ((str = in.readLine()) != null) {
+            result.append(str);
+         }
+         logger.info("received message: " + result);
+      } catch (Exception e) {
+         logger.error("HttpGetEvent could not execute", e);
+      } finally {
+         if (in != null) {
+            try {
+               in.close();
+            } catch (IOException e) {
+               logger.error("BufferedReader could not be closed", e);
+            }
+         }
+      }
    }
 
 //

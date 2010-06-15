@@ -33,39 +33,42 @@ import org.openremote.controller.protocol.telnet.TelnetCommandBuilder;
  */
 public class TelnetCommandBuilderTest {
    private TelnetCommandBuilder builder = null;
+
    @Before
-   public void setUp(){
+   public void setUp() {
       builder = new TelnetCommandBuilder();
    }
-  @Test 
-   public void testTelnet(){
-      TelnetCommand cmd = getCommand("192.168.1.1",23);
+
+   @Test
+   public void testTelnet() {
+      TelnetCommand cmd = getCommand("192.168.1.1", 23);
       Assert.assertEquals(cmd.getIp(), "192.168.1.1");
-      Assert.assertEquals(cmd.getPort(),23+"");
+      Assert.assertEquals(cmd.getPort(), 23 + "");
       Assert.assertEquals(cmd.getName(), "testName");
    }
-   private TelnetCommand getCommand(String address,int port){
+
+   private TelnetCommand getCommand(String address, int port) {
       Element ele = new Element("command");
-      ele.setAttribute("id","test");
-      ele.setAttribute("protocal","telnet");
-      ele.setAttribute("value","test");
-      
+      ele.setAttribute("id", "test");
+      ele.setAttribute("protocal", "telnet");
+      ele.setAttribute("value", "test");
+
       Element propName = new Element("property");
-      propName.setAttribute("name","name");
-      propName.setAttribute("value","testName");
-      
+      propName.setAttribute("name", "name");
+      propName.setAttribute("value", "testName");
+
       Element propAddr = new Element("property");
-      propAddr.setAttribute("name","ipAddress");
-      propAddr.setAttribute("value",address);
-      
+      propAddr.setAttribute("name", "ipAddress");
+      propAddr.setAttribute("value", address);
+
       Element propPort = new Element("property");
-      propPort.setAttribute("name","port");
-      propPort.setAttribute("value",port+"");
-      
+      propPort.setAttribute("name", "port");
+      propPort.setAttribute("value", port + "");
+
       ele.addContent(propName);
       ele.addContent(propAddr);
       ele.addContent(propPort);
-      
+
       return (TelnetCommand) builder.build(ele);
    }
 }
