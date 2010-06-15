@@ -11,7 +11,8 @@ public class TestCommandBuilder implements CommandBuilder {
 
    @Override
    public Command build(Element element) {
-      String commandStr = element.getTextTrim();
+//      String commandStr = element.getTextTrim();
+      String commandStr = element.getAttributeValue("value");
 
       TestCommandType testCommand = null;
 

@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.protocol.telnet;
 
+import java.util.List;
+
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
@@ -34,12 +36,20 @@ public class TelnetCommandBuilder implements CommandBuilder {
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public ExecutableCommand build(Element element) {
       TelnetCommand telnetEvent = new TelnetCommand();
-      telnetEvent.setCommand(element.getAttributeValue("command"));
-      telnetEvent.setName(element.getAttributeValue("name"));
-      telnetEvent.setIp(element.getAttributeValue("ip"));
-      telnetEvent.setPort(element.getAttributeValue("port"));
+      List<Element> propertyEles = element.getChildren("property", element.getNamespace());
+      for(Element ele : propertyEles){
+         if("name".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setName(ele.getAttributeValue("value"));
+         } else if("port".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setPort(ele.getAttributeValue("value"));
+         } else if("ipAddress".equals(ele.getAttributeValue("ipAddress"))){
+            telnetEvent.setIp(ele.getAttributeValue("value"));
+         }
+      }
+      telnetEvent.setCommand(element.getAttributeValue("value"));
       return telnetEvent;
    }
 
