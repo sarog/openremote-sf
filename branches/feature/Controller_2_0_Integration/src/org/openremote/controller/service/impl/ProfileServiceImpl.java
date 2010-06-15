@@ -47,6 +47,7 @@ import org.openremote.controller.utils.PathUtil;
  */
 public class ProfileServiceImpl implements ProfileService {
 
+   private static final String TABBAR_ELEMENT_NAME = "tabbar";
    private Configuration configuration;
 
    @Override
@@ -161,17 +162,28 @@ public class ProfileServiceImpl implements ProfileService {
       newRoot.setNamespace(root.getNamespace());
 
       Document targetDocument = new Document(newRoot);
+
+      Element panel = queryPanelByName(xmlPath, name);
+      if (panel == null) {
+         throw new NoSuchPanelException("No such Panel :NAME = " + name);
+      }
+      
+      //Begin add tabbar.
+      Element globalTabBarEle = panel.getChild(TABBAR_ELEMENT_NAME, root.getNamespace());
+      if (globalTabBarEle != null) {
+         Element cloneGlobalTabBarEle = (Element) globalTabBarEle.clone();
+         cloneGlobalTabBarEle.setNamespace(root.getNamespace());
+         newRoot.addContent(cloneGlobalTabBarEle);
+      }
+      //End
+      
       Element screensEle = new Element("screens");
       Element groupsEle = new Element("groups");
       setNamespace(root, newRoot, screensEle, groupsEle);
 
       newRoot.addContent(screensEle);
       newRoot.addContent(groupsEle);
-
-      Element panel = queryPanelByName(xmlPath, name);
-      if (panel == null) {
-         throw new NoSuchPanelException("No such Panel :NAME = " + name);
-      }
+      
       List<Element> refGroups = panel.getChildren("include", root.getNamespace());
       for (Element groupRef : refGroups) {
          String groupID = groupRef.getAttributeValue("ref");
@@ -181,7 +193,13 @@ public class ProfileServiceImpl implements ProfileService {
                   " not found in panel: " + name);
          }
          Element group = (Element) includeGroup.clone();
-
+         //Begin local tabbar
+         Element localTabBarEle = includeGroup.getChild(TABBAR_ELEMENT_NAME);
+         if (localTabBarEle != null) {
+            Element newLocalTabBarEle = (Element) localTabBarEle.clone();
+            group.addContent(newLocalTabBarEle);
+         }
+         //End local tabbar
          groupsEle.addContent(group);
       }
 
