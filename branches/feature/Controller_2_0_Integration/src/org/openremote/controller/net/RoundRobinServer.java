@@ -28,6 +28,7 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
+import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
 import org.openremote.controller.utils.ConfigFactory;
@@ -46,6 +47,8 @@ public class RoundRobinServer implements Runnable {
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
    private Configuration configuration = ConfigFactory.getConfig();
+   
+   private RoundRobinConfig roundRobinConfig = ConfigFactory.getRoundRobinConfig();
    
    /**
     * Group name of controller.
@@ -77,8 +80,8 @@ public class RoundRobinServer implements Runnable {
       InetAddress multiCastAddress = null;
       try {
          logger.info("UDP Server : Starting UDP server...");
-         roundRobinUDPMulticastServerSocket = new MulticastSocket(configuration.getRoundRobinMulticastPort());
-         multiCastAddress = InetAddress.getByName(configuration.getRoundRobinMulticastAddress());
+         roundRobinUDPMulticastServerSocket = new MulticastSocket(roundRobinConfig.getRoundRobinMulticastPort());
+         multiCastAddress = InetAddress.getByName(roundRobinConfig.getRoundRobinMulticastAddress());
          roundRobinUDPMulticastServerSocket.joinGroup(multiCastAddress);
          logger.info("UDP Server : Started UDP server successfully.");
       } catch (Exception e) {
@@ -119,7 +122,7 @@ public class RoundRobinServer implements Runnable {
       @Override
       public void run() {
          if (groupName == null || "".equals(groupName)) {
-            groupName = configuration.getControllerGroupName();
+            groupName = roundRobinConfig.getControllerGroupName();
          }
          String roundRobinClientControllerGroupName = new String(datagramPacket.getData()).trim();
          if (groupName.equalsIgnoreCase(roundRobinClientControllerGroupName)) {
@@ -127,12 +130,12 @@ public class RoundRobinServer implements Runnable {
             Socket tcpClientSocket = null;
             PrintWriter printWriter = null;
             try {
-               tcpClientSocket = new Socket(datagramPacket.getAddress(), configuration.getRoundRobinTCPServerSocketPort());
+               tcpClientSocket = new Socket(datagramPacket.getAddress(), roundRobinConfig.getRoundRobinTCPServerSocketPort());
                printWriter = new PrintWriter(tcpClientSocket.getOutputStream(), true);
             } catch (Exception e) {
                throw new TCPClientEstablishException("Established TCP Client socket fail.");
             }
-            String controllerURL = CONTROLLER_URL_PROTOCOL_HEADER + NetworkUtil.getLocalhostIP() + ":" + configuration.getWebappPort() + CONTROLLER_URL_SEPARATOR + configuration.getControllerApplicationName();
+            String controllerURL = CONTROLLER_URL_PROTOCOL_HEADER + NetworkUtil.getLocalhostIP() + ":" + configuration.getWebappPort() + CONTROLLER_URL_SEPARATOR + roundRobinConfig.getControllerApplicationName();
             printWriter.println(controllerURL);
             printWriter.close();
             try {
