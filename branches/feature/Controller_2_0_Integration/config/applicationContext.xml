@@ -36,10 +36,14 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire = "byName">
 
+<<<<<<< .working
   <bean id = "propertyConfigurer"
         class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name = "location">
-      <value>classpath:config.properties</value>
+      <list>
+        <value>classpath:config.properties</value>
+        <value>classpath:roundrobin.properties</value>
+      </list>
     </property>
   </bean>
 
@@ -61,12 +65,17 @@
     <property name = "resourcePath" value = "${resource.path}"/>
     <property name = "resourceUpload" value = "${resource.upload.enable}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
-    <property name = "roundRobinMulticastAddress" value = "${controller.roundrobin.multicast.address}" />
-    <property name = "roundRobinMulticastPort" value = "${controller.roundrobin.multicast.port}" />
-    <property name = "controllerGroupName" value = "${controller.groupname}" />
-    <property name = "controllerApplicationName" value = "${controller.applicationname}" />
-    <property name = "roundRobinTCPServerSocketPort" value = "${controller.roundrobin.tcpserver.port}" />
     <property name = "comPort" value = "${com.port}"/>
+  </bean>
+
+  <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
+    <property name="isRoundRobinOn" value="${controller.roundrobin.on}" />
+      <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
+      <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />
+      <property name="controllerGroupName" value="${controller.groupname}" />
+      <property name="controllerApplicationName" value="${controller.applicationname}" />
+      <property name="roundRobinTCPServerSocketPort" value="${controller.roundrobin.tcpserver.port}" />
+      <property name="groupMembersURLs" value="${controller.groupmembers.urls}" />
   </bean>
 
     <!-- service for button command from iPhone -->
@@ -98,6 +107,7 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
+
 	<!-- status cache service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
     	<property name="configuration" ref="configuration"></property>

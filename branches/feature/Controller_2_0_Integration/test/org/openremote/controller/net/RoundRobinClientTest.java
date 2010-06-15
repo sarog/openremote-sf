@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.Configuration;
+import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
 import org.openremote.controller.utils.ConfigFactory;
@@ -51,6 +52,7 @@ import org.openremote.controller.utils.ConfigFactory;
 public class RoundRobinClientTest {
 
    private Configuration configuration = ConfigFactory.getConfig();
+   private RoundRobinConfig roundRobinConfig = ConfigFactory.getRoundRobinConfig();
    private Logger logger = Logger.getLogger(this.getClass().getName());
    private List<MulticastSocket> udpMulticastServerSockets = new ArrayList<MulticastSocket>();
    
@@ -112,8 +114,8 @@ public class RoundRobinClientTest {
          try {
             MulticastSocket udpMulticastServerSocket = null;
             try {
-               udpMulticastServerSocket = new MulticastSocket(configuration.getRoundRobinMulticastPort());
-               udpMulticastServerSocket.joinGroup(InetAddress.getByName(configuration.getRoundRobinMulticastAddress()));
+               udpMulticastServerSocket = new MulticastSocket(roundRobinConfig.getRoundRobinMulticastPort());
+               udpMulticastServerSocket.joinGroup(InetAddress.getByName(roundRobinConfig.getRoundRobinMulticastAddress()));
                udpMulticastServerSockets.add(udpMulticastServerSocket);
             } catch (Exception e) {
                TestCase.fail("Simulate UDP Server : Startup roundRobin UDP multicast serversocket fail.");
@@ -166,13 +168,13 @@ public class RoundRobinClientTest {
             Socket tcpClientSocket = null;
             PrintWriter printWriter = null;
             try {
-               tcpClientSocket = new Socket(datagramPacket.getAddress(), configuration.getRoundRobinTCPServerSocketPort());
+               tcpClientSocket = new Socket(datagramPacket.getAddress(), roundRobinConfig.getRoundRobinTCPServerSocketPort());
                printWriter = new PrintWriter(tcpClientSocket.getOutputStream(), true);
             } catch (Exception e) {
                TestCase.fail("Established TCP Client socket fail.");
                throw new TCPClientEstablishException("Established TCP Client socket fail.");
             }
-            controllerURL = CONTROLLER_URL_PROTOCOL_HEADER + getLocalHostIP() + ":" + configuration.getWebappPort() + CONTROLLER_URL_SEPARATOR + configuration.getControllerApplicationName();
+            controllerURL = CONTROLLER_URL_PROTOCOL_HEADER + getLocalHostIP() + ":" + configuration.getWebappPort() + CONTROLLER_URL_SEPARATOR + roundRobinConfig.getControllerApplicationName();
             printWriter.println(controllerURL);
             printWriter.close();
             try {

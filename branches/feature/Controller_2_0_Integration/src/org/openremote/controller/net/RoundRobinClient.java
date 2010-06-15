@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPServerStartFailException;
 import org.openremote.controller.utils.ConfigFactory;
 
@@ -53,7 +53,7 @@ public class RoundRobinClient {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   private Configuration configuration = ConfigFactory.getConfig();
+   private RoundRobinConfig roundRobinConfig = ConfigFactory.getRoundRobinConfig();
 
    /** Container of group members' url. */
    private List<String> groupMemberURLs;
@@ -139,15 +139,15 @@ public class RoundRobinClient {
       MulticastSocket socket = null;
       try {
          socket = new MulticastSocket();
-         InetAddress groupMulticastAdressForRoundRobin = InetAddress.getByName(configuration.getRoundRobinMulticastAddress());
+         InetAddress groupMulticastAdressForRoundRobin = InetAddress.getByName(roundRobinConfig.getRoundRobinMulticastAddress());
          socket.joinGroup(groupMulticastAdressForRoundRobin);
          byte[] data = null;
          if (groupName == null || "".equals(groupName)) {
-            data = (configuration.getControllerGroupName()).getBytes();
+            data = (roundRobinConfig.getControllerGroupName()).getBytes();
          } else {
             data = groupName.getBytes();
          }
-         DatagramPacket packet = new DatagramPacket(data, data.length, groupMulticastAdressForRoundRobin, configuration.getRoundRobinMulticastPort());
+         DatagramPacket packet = new DatagramPacket(data, data.length, groupMulticastAdressForRoundRobin, roundRobinConfig.getRoundRobinMulticastPort());
          socket.send(packet);
       } catch (IOException e) {
          logger.error("Created UDP request socket fail.", e);
@@ -199,7 +199,7 @@ public class RoundRobinClient {
       @Override
       public void run() throws TCPServerStartFailException {
             try {
-               tcpServerSocket = new ServerSocket(configuration.getRoundRobinTCPServerSocketPort());
+               tcpServerSocket = new ServerSocket(roundRobinConfig.getRoundRobinTCPServerSocketPort());
             } catch (IOException e) {
                logger.error(e.getStackTrace(), e);
                throw new TCPServerStartFailException("Start TCP Server fail.");
