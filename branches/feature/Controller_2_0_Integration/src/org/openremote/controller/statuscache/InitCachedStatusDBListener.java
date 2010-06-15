@@ -92,7 +92,7 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          @Override
          public void run() {
             int i = 0;
-            for(; ; i++) {
+            for (;; i++) {
                if (i % 2 == 0) {
                   statusCacheService.saveOrUpdateStatus(1001, "ON");
                } else {
@@ -170,19 +170,20 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    
    private void simulateStatusCacheControlID1005() {
       Thread simulateThread = new Thread() {
-         String[] imageNames = new String[] {"1.png","", "2.png", "", "3.png", "", "4.png", "","5.png", ""};
+         String[] imageNames = new String[] { "1.png", "", "2.png", "", "3.png", "", "4.png", "", "5.png", "" };
+
          @Override
          public void run() {
             int index = 0;
-            while(true){
+            while (true) {
                String image = imageNames[index];
                if ("".equals(image)) {
-                  int d = ((int)(Math.random()*50) - 10);
-                  statusCacheService.saveOrUpdateStatus(1005, d+""); 
+                  int d = ((int) (Math.random() * 50) - 10);
+                  statusCacheService.saveOrUpdateStatus(1005, d + "");
                } else {
-                  statusCacheService.saveOrUpdateStatus(1005, resourceBasePath+image);
+                  statusCacheService.saveOrUpdateStatus(1005, resourceBasePath + image);
                }
-               index = index<imageNames.length-1?++index:0;
+               index = index < imageNames.length - 1 ? ++index : 0;
                try {
                   sleep(5000);
                } catch (InterruptedException e) {
@@ -203,7 +204,6 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
          public void run() {
             while(true){
                float floatValue = (float) (Math.random()*100 + 1);
-               System.out.println("current slider value is : " + floatValue);
                statusCacheService.saveOrUpdateStatus(1008, floatValue+"");
                try {
                   sleep(5000);
