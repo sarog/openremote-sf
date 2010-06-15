@@ -23,7 +23,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.openremote.controller.net.IPAutoDiscoveryServer;
-import org.openremote.controller.net.RoundRobinServer;
+import org.openremote.controller.net.RoundRobinTCPServer;
+import org.openremote.controller.net.RoundRobinUDPServer;
+import org.springframework.context.ApplicationEvent;
 
 
 /**
@@ -53,7 +55,9 @@ public class ApplicationListener implements ServletContextListener {
    public void contextInitialized(ServletContextEvent event) {
       new Thread(new IPAutoDiscoveryServer()).start();
       nap(10);
-      new Thread(new RoundRobinServer()).start();
+      new Thread(new RoundRobinUDPServer()).start();
+      nap(10);
+      new Thread(new RoundRobinTCPServer()).start();
       nap(10);
    }
    
