@@ -44,7 +44,7 @@ public class HttpGetCommandBuilder implements CommandBuilder {
          if("url".equals(ele.getAttributeValue("name"))){
             getEvent.setUrl(ele.getAttributeValue("value"));
          } else if("name".equals(ele.getAttributeValue("name"))){
-            getEvent.setName(ele.getAttributeValue("name"));
+            getEvent.setName(ele.getAttributeValue("value"));
          }
       }
       return getEvent;

@@ -156,7 +156,7 @@ public Command build(Element element)
     }
 
     Command command = null;
-    if (knxCommandStr != null && !"".equals(knxCommandStr) && knxCommandStr.equalsIgnoreCase(STATUS_COMMAND)) {
+    if (knxCommandStr != null && !"".equals(knxCommandStr.trim()) && knxCommandStr.equalsIgnoreCase(STATUS_COMMAND)) {
        command =  new KNXStatusCommand(connectionManager, groupAddress);
     } else {
        command = new KNXExecutableCommand(connectionManager, groupAddress, knxCommand);

@@ -62,7 +62,7 @@ public class X10CommandBuilder implements CommandBuilder {
         }
       }
 
-      if (commandAsString == null || commandAsString.equals("") ||
+      if (commandAsString == null || commandAsString.trim().equals("") ||
           address == null || address.trim().equals(""))
       {
         throw new CommandBuildException(
