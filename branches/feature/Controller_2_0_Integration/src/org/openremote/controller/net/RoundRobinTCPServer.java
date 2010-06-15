@@ -3,6 +3,7 @@ package org.openremote.controller.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -35,6 +36,9 @@ public class RoundRobinTCPServer implements Runnable {
       ServerSocket tcpServerSocket = null;
       try {
          tcpServerSocket = new ServerSocket(roundRobinConfig.getRoundRobinTCPServerSocketPort());
+      } catch (BindException be) {
+         logger.info("The TCP server had started up.");
+         return;
       } catch (IOException e) {
          logger.error(e.getStackTrace(), e);
          throw new TCPServerStartFailException("Start TCP Server fail.");
@@ -77,7 +81,7 @@ public class RoundRobinTCPServer implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(this.innerSocket.getInputStream()));
             RoundRobinData roundRobinData = splitReceivedDataFromRoundRobinUDPServer(br.readLine());
             String groupMemberURL = roundRobinData.getContent();
-            logger.info("TCP Server deal thread : received a groundmember url : " + groupMemberURL);
+            logger.info("TCP Server deal thread : received a groupmember url : " + groupMemberURL);
             
             ConcurrentHashMap<String, List> chm = (ConcurrentHashMap<String, List>)(SpringContext.getInstance().getBean("servers"));
             List<String> urlList = chm.get(roundRobinData.getMsgKey());
