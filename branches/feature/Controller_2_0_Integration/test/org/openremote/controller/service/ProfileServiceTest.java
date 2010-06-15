@@ -23,7 +23,7 @@ public class ProfileServiceTest {
    }
 
    public String generateXMLByPanelName(String panelName) {
-      return service.getProfilByName(xmlPath, panelName);
+      return service.getProfileByName(xmlPath, panelName);
    }
 
    @Test
