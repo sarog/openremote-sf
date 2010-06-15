@@ -60,10 +60,14 @@
     <property name = "multicastPort" value = "${multicast.port}"/>
     <property name = "resourcePath" value = "${resource.path}"/>
     <property name = "resourceUpload" value = "${resource.upload.enable}"/>
-    <property name = "comPort" value = "${com.port}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
+    <property name = "roundRobinMulticastAddress" value = "${controller.roundrobin.multicast.address}" />
+    <property name = "roundRobinMulticastPort" value = "${controller.roundrobin.multicast.port}" />
+    <property name = "controllerGroupName" value = "${controller.groupname}" />
+    <property name = "controllerApplicationName" value = "${controller.applicationname}" />
+    <property name = "roundRobinTCPServerSocketPort" value = "${controller.roundrobin.tcpserver.port}" />
+    <property name = "comPort" value = "${com.port}"/>
   </bean>
-
 
     <!-- service for button command from iPhone -->
     <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
