@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.openremote.controller.rest.ControlStatusPollingRESTServletTest;
+import org.openremote.controller.rest.ProfileRestServletTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
@@ -34,7 +35,8 @@ import org.openremote.controller.statuscache.StatusCacheTest;
    ControlStatusPollingRESTServletTest.class,
    SkipStateTrackTest.class,
    StatusCacheTest.class,
-   StatusAndPollingTest.class
+   StatusAndPollingTest.class,
+   ProfileRestServletTest.class
 }
 )
 

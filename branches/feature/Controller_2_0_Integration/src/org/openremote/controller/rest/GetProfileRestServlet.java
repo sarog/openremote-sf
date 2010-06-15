@@ -38,12 +38,12 @@ public class GetProfileRestServlet extends HttpServlet {
          try{
             String panelName = matcher.group(1);
             panelName =  URLDecoder.decode(panelName,"UTF-8");
-            String panleXML = profileService.getProfilByPanelName(panelName);
+            String panleXML = profileService.getProfileByPanelName(panelName);
             out.print(panleXML);
             out.flush();
             out.close();
          } catch(ControlCommandException e){
-            logger.error("failed to get all the panels",e);
+            logger.error("failed to get all the panels : " + e.getLocalizedMessage(),e);
             response.sendError(e.getErrorCode(),e.getMessage());
          }
       } else {

@@ -65,7 +65,7 @@ public class ControlStatusPollingRESTServletTest {
    @Test
    public void testDoPostWithAppServerNotStartup() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
       try {
          WebResponse wr = wc.getResponse(request);
          System.out.println(wr.getText());
@@ -90,7 +90,7 @@ public class ControlStatusPollingRESTServletTest {
       WebConversation wc = new WebConversation();
       WebResponse pollingResponse;
       WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc,
-            "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
+            "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
       try {
          pollingResponse = wc.getResponse(pollingGetMethodRequest);
          System.out.println(pollingResponse.getText());
@@ -113,7 +113,7 @@ public class ControlStatusPollingRESTServletTest {
             @Override
             public void run() {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/3,4");
+                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
                try {
                   WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(pollingResponse.getText());
@@ -144,7 +144,7 @@ public class ControlStatusPollingRESTServletTest {
    @Test
    public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          System.out.println(wr.getText());
@@ -167,7 +167,7 @@ public class ControlStatusPollingRESTServletTest {
             @Override
             public void run() {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2");
+                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
                try {
                   WebResponse wr = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(wr.getText());

@@ -36,9 +36,9 @@ public class PollingServiceTest {
 
    @Test
    public void testRegex() {
-      String urlControl = "http://localhost:8080/controller/rest/control/1/next";
-      String urlStatus = "http://localhost:8080/controller/rest/status/1,2,3";
-      String urlPolling = "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2,3";
+      String urlControl = "http://localhost:8080/controller/rest/control/1001/next";
+      String urlStatus = "http://localhost:8080/controller/rest/status/1001,1002,1003";
+      String urlPolling = "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002,1003";
 
       String regexpControl = "rest\\/control\\/(\\d+)\\/(\\w+)";
       String regexpStatus = "rest\\/status\\/(.*)";
