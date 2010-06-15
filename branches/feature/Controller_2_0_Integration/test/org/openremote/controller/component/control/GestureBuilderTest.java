@@ -17,18 +17,19 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.button;
+package org.openremote.controller.component.control;
 
 import static org.junit.Assert.fail;
 import junit.framework.Assert;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
-import org.openremote.controller.component.control.button.Button;
-import org.openremote.controller.component.control.button.ButtonBuilder;
+import org.openremote.controller.component.control.gesture.Gesture;
+import org.openremote.controller.component.control.gesture.GestureBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
@@ -37,53 +38,49 @@ import org.openremote.controller.utils.XMLUtil;
  * @author Javen
  *
  */
-public class ButtonBuilderTest {
+public class GestureBuilderTest {
    private String controllerXMLPath = null;
    private Document doc = null;
-   private ButtonBuilder builder = (ButtonBuilder) SpringTestContext.getInstance().getBean("buttonBuilder");
-
+   private GestureBuilder builder = (GestureBuilder) SpringTestContext.getInstance().getBean("gestureBuilder");
+   
    @Before
    public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml")
-            .getFile();
+      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
    }
 
-   protected Element getElementByID(String id) {
+   protected Element getElementByID(String id) throws JDOMException {
       return XMLUtil.getElementByID(doc, id);
    }
-
-   private Button getButtonByID(String buttonID, String cmdParam) {
-      Element controlElement = getElementByID(buttonID);
-      if (!controlElement.getName().equals("button")) {
-         throw new NoSuchComponentException("button .");
+   
+   private Gesture getGestureByID(String labelID) throws JDOMException{
+      Element controlElement = getElementByID(labelID);
+      if(! controlElement.getName().equals("gesture")) {
+         throw new NoSuchComponentException("Invalid Gesture.");
       }
-      return (Button) builder.build(controlElement, cmdParam);
+      return (Gesture) builder.build(controlElement, "test");
    }
-
    @Test
-   public void testNoSuchButton() {
-      try {
-         getButtonByID("10", "on");
+   public void testGetGestureforRealID() throws JDOMException{
+      Gesture gesture = getGestureByID("7");
+      Assert.assertNotNull(gesture);
+   }
+   @Test
+   public void testGetGestureforInvalidGesture() throws JDOMException{
+      try{
+         getGestureByID("8");
          fail();
-      } catch (Exception e) {
-      };
+      } catch (NoSuchComponentException e){
+      }
    }
-
    @Test
-   public void testNotNull() {
-      Button btn = getButtonByID("9", "on");
-      Assert.assertNotNull(btn);
+   public void testGetGestureforNoSuchID() throws JDOMException{
+      try{
+         getGestureByID("200");
+         fail();
+      } catch (NoSuchComponentException e){
+      }
    }
-
-   @Test
-   public void testGetCommand() {
-      Button btn = getButtonByID("9", "on");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
-
-      btn = getButtonByID("9", "off");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
-      btn = getButtonByID("9", "status");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
-   }
+   
+   
 }
