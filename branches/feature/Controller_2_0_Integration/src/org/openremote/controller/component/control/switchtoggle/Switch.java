@@ -17,11 +17,15 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.switchtoggle;
+package org.openremote.controller.component.control.switchtoggle;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.Status;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.Sensory;
+import org.openremote.controller.component.control.Control;
 
 /**
  * Switch Control.<br />
@@ -29,14 +33,25 @@ import org.openremote.controller.control.Status;
  * 
  * @author Handy.Wang 2009-10-23
  */
-public class Switch extends Control {
-   
-   /** Available actions of Switch control. */
-   public static final String[] AVAILABLE_ACTIONS = { "on", "off", "status"};
+public class Switch extends Control implements Sensory {
    
    public Switch() {
       super();
-      setStatus(new Status(new NoStatusCommand()));
+      setSensor(new Sensor(new NoStatusCommand()));
+   }
+
+   @Override
+   protected List<String> getAvailableActions() {
+      List<String> availableActions = new ArrayList<String>();
+      availableActions.add("on");
+      availableActions.add("off");
+      availableActions.add("status");
+      return availableActions;
+   }
+
+   @Override
+   public int fetchSensorID() {
+      return getSensor().getSensorID();
    }
 
 }

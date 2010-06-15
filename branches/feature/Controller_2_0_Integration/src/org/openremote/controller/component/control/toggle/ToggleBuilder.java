@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.toggle;
+package org.openremote.controller.component.control.toggle;
 
 import java.util.List;
 
@@ -25,9 +25,9 @@ import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.ControlBuilder;
-import org.openremote.controller.control.Status;
+import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
@@ -35,7 +35,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * 
  * @author Handy.Wang 2009-10-15
  */
-public class ToggleBuilder extends ControlBuilder {
+public class ToggleBuilder extends ComponentBuilder {
    
     /* (non-Javadoc)
      * @see org.openremote.controller.control.ControlBuilder#build(org.jdom.Element, java.lang.String)
@@ -43,8 +43,9 @@ public class ToggleBuilder extends ControlBuilder {
    @SuppressWarnings("unchecked")
    @Override
     public Control build(Element toggleElement, String commandParam) {
-      if (!isContainAction(commandParam)) {
-         return new Toggle();
+      Toggle toggle = new Toggle();
+      if (!toggle.isValidActionWith(commandParam)) {
+         return toggle;
       }
       
       int operation = -1;
@@ -57,7 +58,6 @@ public class ToggleBuilder extends ControlBuilder {
          }
       }
       
-      Toggle toggle = new Toggle();
       List<Element> subElements = toggleElement.getChildren();
       for (int i = 0; i < subElements.size(); i++) {
          Element element = subElements.get(i);         
@@ -68,7 +68,7 @@ public class ToggleBuilder extends ControlBuilder {
             Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(toggleElement.getDocument(),statusCommandID);
             if (statusCommandElement != null) {
                StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-               toggle.setStatus(new Status(statusCommand));
+               toggle.setSensor(new Sensor(statusCommand));
                break;
             } else {
                throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
@@ -90,20 +90,4 @@ public class ToggleBuilder extends ControlBuilder {
       }
       return toggle;
     }
-
-   /**
-    * Checks if is contain action.
-    * 
-    * @param commandParam the command param
-    * 
-    * @return true, if is contain action
-    */
-   private boolean isContainAction(String commandParam) {
-      for (String action : Toggle.AVAILABLE_ACTIONS) {
-         if (action.equalsIgnoreCase(commandParam)) {
-            return true;
-         }
-      }
-      return false;
-   }
 }

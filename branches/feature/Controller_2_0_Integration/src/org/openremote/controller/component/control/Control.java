@@ -17,20 +17,20 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control;
+package org.openremote.controller.component.control;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Component;
 
 /**
  * The Class Control.
  * 
  * @author Handy.Wang 2009-10-15
  */
-public abstract class Control {
+public abstract class Control extends Component {
    
     public static String CURRENT_STATUS = "OFF";
 
@@ -40,25 +40,42 @@ public abstract class Control {
     /** The Constant STATUS_ELEMENT_NAME. */
     public static final String STATUS_ELEMENT_NAME = "status";
     
+    public static final String INCLUDE_ELEMENT_NAME = "include";
+    
+    public static final String INCLUDE_TYPE_SENSOR = "sensor";
+    
+    public static final String INCLUDE_TYPE_ATTRIBUTE_NAME = "type";
+    
     /** The Constant DELAY_ELEMENT_NAME. */
     public static final String DELAY_ELEMENT_NAME = "delay";
     
     public static final String COMMAND_ELEMENT_NAME= "command";
     
-
-    /** The status. */
-    private Status status;
-    
     /** All commands a certain operation contains. */
     private List<ExecutableCommand> executableCommands;
+    
+    protected List<String> availableActions;
     
     /**
      * Instantiates a new control.
      */
     public Control() {
         super();
-        status = new Status();
         executableCommands = new ArrayList<ExecutableCommand>();
+        availableActions = new ArrayList<String>();
+        availableActions.addAll(getAvailableActions());
+    }
+    
+    /** All available actions of sub controls */
+    protected abstract List<String> getAvailableActions();
+    
+    public boolean isValidActionWith(String actionParam) {
+       for (String action : availableActions) {
+          if (action.equalsIgnoreCase(actionParam)) {
+             return true;
+          }
+       }
+       return false;
     }
     
     /**
@@ -75,33 +92,6 @@ public abstract class Control {
      */
     public void addExecutableCommand(ExecutableCommand executablecommand) {
        executableCommands.add(executablecommand);
-    }
-    
-    /**
-     * Gets the status command.
-     * 
-     * @return the status command
-     */
-    public StatusCommand getStatusCommand() {
-        return status.getStatusCommand();
-    }
-
-    /**
-     * Gets the status.
-     * 
-     * @return the status
-     */
-    public Status getStatus() {
-        return status;
-    }
-
-    /**
-     * Sets the status.
-     * 
-     * @param status the new status
-     */
-    public void setStatus(Status status) {
-        this.status = status;
     }
     
 }

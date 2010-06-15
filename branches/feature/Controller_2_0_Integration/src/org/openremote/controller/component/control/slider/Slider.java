@@ -1,8 +1,3 @@
-/*
- * 
- */
-package org.openremote.controller.component.onlysensorycomponent;
-
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -22,6 +17,7 @@ package org.openremote.controller.component.onlysensorycomponent;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+package org.openremote.controller.component.control.slider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +26,38 @@ import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
+
 /**
- * This class is used to store the information for a label. 
- * @author Javen
- *
+ * Slider control for controlling devices with slide action.
+ * 
+ * @author Handy.Wang 2009-11-10
  */
-public class Label extends Control implements Sensory {
-   public Label(){
+public class Slider extends Control implements Sensory {
+
+   /** The actions which slider allows. */
+   public static final String[] AVAILABLE_ACTIONS = { "status" };
+   
+   /** The container element name of executable command refence of slider. */
+   public static final String EXE_CONTENT_ELEMENT_NAME = "exe";
+
+   public Slider() {
       super();
-      setSensor(new Sensor((new NoStatusCommand())));
+      setSensor(new Sensor(new NoStatusCommand()));
+   }
+   
+   @Override
+   public boolean isValidActionWith(String actionParam) {
+      for (String action : availableActions) {
+         if (action.equalsIgnoreCase(actionParam)) {
+            return true;
+         }
+      }
+      try {
+         Integer.parseInt(actionParam);
+         return true;
+      } catch (NumberFormatException e) {
+         return false;
+      }
    }
 
    @Override

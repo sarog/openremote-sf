@@ -17,28 +17,29 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.button;
+package org.openremote.controller.component.control.gesture;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.Status;
-
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.control.Control;
 /**
- * The Class Button.
- * 
- * @author Handy.Wang 2009-10-15
+ * This class is used to store the information for a gesture. 
+ * @author Javen
+ *
  */
-public class Button extends Control {
-   
-    /** The Constant AVAILABLE_ACTIONS. */
-    public static final String[] AVAILABLE_ACTIONS = { "click" }; 
+public class Gesture extends Control {
+   public Gesture(){
+      super();
+      setSensor(new Sensor(new NoStatusCommand()));
+   }
 
-    /**
-     * Instantiates a new button.
-     */
-    public Button() {
-        super();
-        setStatus(new Status(new NoStatusCommand()));
-    }
-    
+   @Override
+   protected List<String> getAvailableActions() {
+      List<String> availableActions = new ArrayList<String>();
+      availableActions.add("swap");
+      return availableActions;
+   }
 }

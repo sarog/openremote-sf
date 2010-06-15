@@ -17,28 +17,35 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.toggle;
+package org.openremote.controller.component.control.button;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.Status;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.control.Control;
 
 /**
- * The Class Toggle.
+ * The Class Button.
  * 
  * @author Handy.Wang 2009-10-15
  */
-public class Toggle extends Control {
-    
-    /** The Constant AVAILABLE_ACTIONS. */
-    public static final String[] AVAILABLE_ACTIONS = { "0", "1", "2", "status" };
+public class Button extends Control {
    
     /**
-     * Instantiates a new toggle.
+     * Instantiates a new button.
      */
-    public Toggle() {
+    public Button() {
         super();
-        setStatus(new Status(new NoStatusCommand()));
+        setSensor(new Sensor(new NoStatusCommand()));
     }
 
+   @Override
+   protected List<String> getAvailableActions() {
+      List<String> availableActions = new ArrayList<String>();
+      availableActions.add("click");
+      return availableActions;
+   }
+    
 }

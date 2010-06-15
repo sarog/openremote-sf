@@ -24,9 +24,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jdom.Element;
 import org.openremote.controller.Constants;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Component;
+import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
@@ -42,30 +46,41 @@ public class StatusCommandServiceImpl implements StatusCommandService {
     private RemoteActionXMLParser remoteActionXMLParser;
     
     private StatusCacheService statusCacheService;
+    
+    private ComponentFactory componentFactory;
 
     /**
      * {@inheritDoc}
      */
     public String trigger(String unParsedSensorIDs){
-        
+       
        String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
        Map<String, StatusCommand> sensorIdAndStatusCommandsMap = new HashMap<String, StatusCommand>();
        for (String sensorID : parsedSensorIDs) {
-           sensorIdAndStatusCommandsMap.put(sensorID, remoteActionXMLParser.findStatusCommandByControlID(sensorID));
+          sensorIdAndStatusCommandsMap.put(sensorID, getStatusCommand(sensorID));
        }
        StringBuffer sb = new StringBuffer();
        sb.append(Constants.STATUS_XML_HEADER);
        
-       Set<String> controlIDs = sensorIdAndStatusCommandsMap.keySet();
-       for (String controlID : controlIDs) {
-           sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + controlID + "\">");
-           sb.append(sensorIdAndStatusCommandsMap.get(controlID).read());
+       Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
+       for (String sensorID : sensorIDs) {
+           sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
+           sb.append(sensorIdAndStatusCommandsMap.get(sensorID).read());
            sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
            sb.append("\n");
        }
        
        sb.append(Constants.STATUS_XML_TAIL);       
        return sb.toString();
+   }
+    
+   private StatusCommand getStatusCommand(String sensorID) {
+      Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
+      if (sensorElement == null) {
+         throw new NoSuchComponentException("Cannot find that sensor with id = " + sensorID);
+        }
+      Component component = componentFactory.getComponent(sensorElement, Command.STATUS_COMMAND);
+      return component.getStatusCommand();
    }
 
    @Override
@@ -108,6 +123,10 @@ public class StatusCommandServiceImpl implements StatusCommandService {
 
    public void setStatusCacheService(StatusCacheService statusCacheService) {
       this.statusCacheService = statusCacheService;
+   }
+
+   public void setComponentFactory(ComponentFactory componentFactory) {
+      this.componentFactory = componentFactory;
    }
    
 }
