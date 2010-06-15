@@ -56,9 +56,9 @@ public class RoundRobinServerTest {
    @Test
    public void testIsRoundRobinSeverALive() {
       RoundRobinClient rrc = new RoundRobinClient("A");
-      int acturalGroupMembersSize = rrc.getGroupMemberURLs().size();
+      int acturalGroupMembersSize = rrc.getGroupMemberURLsList().size();
       Assert.assertTrue("expected groupmembers size = 4 but size = " + acturalGroupMembersSize , acturalGroupMembersSize == 4);
-      for (String groupName : rrc.getGroupMemberURLs()) {
+      for (String groupName : rrc.getGroupMemberURLsList()) {
          logger.info(groupName);
       }
    }

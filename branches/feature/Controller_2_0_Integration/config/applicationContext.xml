@@ -103,6 +103,9 @@
     	<property name="configuration" ref="configuration"></property>
     </bean>
 
+    <!-- roundrobin service -->
+    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
+    
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>

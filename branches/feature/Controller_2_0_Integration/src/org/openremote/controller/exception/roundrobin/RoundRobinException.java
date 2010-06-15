@@ -36,6 +36,9 @@ public class RoundRobinException extends RuntimeException {
    /** Error code of UDP Client establish fail.  */
    public static final int UDP_CLIENT_ESTABLISH_FAIL = 452;
    
+   /** Error code of wrong roundrobin url */
+   public static final int INVALID_ROUND_ROBIN_URL = 453;
+   
    /** Error code stand for different RoundRobin exception type. */
    private int errorCode; 
 

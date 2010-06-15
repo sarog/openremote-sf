@@ -107,6 +107,13 @@
     	<servlet-class>
     	org.openremote.controller.servlet.LogoutServlet</servlet-class>
     </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>RoundRobinRESTServlet</display-name>
+    	<servlet-name>RoundRobinRESTServlet</servlet-name>
+    	<servlet-class>org.openremote.controller.rest.RoundRobinRESTServlet</servlet-class>
+    </servlet>
     
     <servlet-mapping>
         <servlet-name>resourceServlet</servlet-name>
@@ -133,6 +140,10 @@
     <servlet-mapping>
     	<servlet-name>LogoutServlet</servlet-name>
     	<url-pattern>/logout/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>RoundRobinRESTServlet</servlet-name>
+    	<url-pattern>/rest/servers</url-pattern>
     </servlet-mapping>
 
 
