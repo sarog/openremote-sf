@@ -23,12 +23,16 @@ package org.openremote.controller.protocol.x10;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.exception.CommandBuildException;
+
+import java.util.List;
 
 /**
  * The Class X10EventBuilder.
  * 
  * @author Dan 2009-4-30
  * @author Jerome Velociter
+ * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  */
 public class X10CommandBuilder implements CommandBuilder {
 
@@ -41,10 +45,34 @@ public class X10CommandBuilder implements CommandBuilder {
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public ExecutableCommand build(Element element) {
 
-      String address = element.getAttributeValue(ADDRESS_XML_ATTRIBUTE);
-      String commandAsString = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
+      String commandAsString = element.getAttributeValue("value");
+      String address = null;
+
+
+      List<Element> propertyElements = element.getChildren("property", element.getNamespace());
+
+      for (Element el : propertyElements)
+      {
+        if(ADDRESS_XML_ATTRIBUTE.equals(el.getAttributeValue("name"))){
+           address = el.getAttributeValue("value");
+           break;
+        }
+      }
+
+      if (commandAsString == null || commandAsString.equals("") ||
+          address == null || address.trim().equals(""))
+      {
+        throw new CommandBuildException(
+            "Can not build a X10Command with empty command: " + commandAsString +
+            " or address: " + address
+        );
+      }
+
+      //String address = element.getAttributeValue(ADDRESS_XML_ATTRIBUTE);
+      //String commandAsString = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
 
       X10CommandType commandType = null;
 
@@ -55,6 +83,7 @@ public class X10CommandBuilder implements CommandBuilder {
       } else if (X10CommandType.SWITCH_OFF.isEqual(commandAsString)) {
          commandType = X10CommandType.SWITCH_OFF;
       }
+
 
       X10Command event = new X10Command(connectionManager, address, commandType);
 

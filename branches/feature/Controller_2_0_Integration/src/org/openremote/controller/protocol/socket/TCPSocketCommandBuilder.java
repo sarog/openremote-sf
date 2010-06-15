@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.protocol.socket;
 
+import java.util.List;
+
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
@@ -34,13 +36,21 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public ExecutableCommand build(Element element) {
-      TCPSocketCommand irEvent = new TCPSocketCommand();
-      irEvent.setCommand(element.getAttributeValue("command"));
-      irEvent.setName(element.getAttributeValue("name"));
-      irEvent.setIp(element.getAttributeValue("ip"));
-      irEvent.setPort(element.getAttributeValue("port"));
-      return irEvent;
+      TCPSocketCommand tcpEvent = new TCPSocketCommand();
+      List<Element> propertyEles = element.getChildren("property", element.getNamespace());
+      for(Element ele : propertyEles){
+         if("name".equals(ele.getAttributeValue("name"))){
+            tcpEvent.setName(ele.getAttributeValue("value"));
+         } else if("port".equals(ele.getAttributeValue("name"))){
+            tcpEvent.setPort(ele.getAttributeValue("value"));
+         } else if("ipAddress".equals(ele.getAttributeValue("ipAddress"))){
+            tcpEvent.setIp(ele.getAttributeValue("value"));
+         }
+      }
+      tcpEvent.setCommand(element.getAttributeValue("value"));
+      return tcpEvent;
    }
 
 }
