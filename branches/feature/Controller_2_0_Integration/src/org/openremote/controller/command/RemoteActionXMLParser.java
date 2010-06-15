@@ -33,10 +33,8 @@ import org.jdom.xpath.XPath;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.component.ComponentFactory;
-import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.PathUtil;
 
 
@@ -65,15 +63,15 @@ public class RemoteActionXMLParser {
     * 
     * @return the list< executable command>
     */
-   public List<ExecutableCommand> findCommandsByControlID(String controlID, String commandParam) {
-      Element controlElement = queryElementFromXMLById(controlID);
-      
-      if (controlElement == null) {
-         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
-      }
-      Control control = componentFactory.getControl(controlElement, commandParam);
-      return control.getExecutableCommands();
-   }
+//   public List<ExecutableCommand> findCommandsByControlID(String controlID, String commandParam) {
+//      Element controlElement = queryElementFromXMLById(controlID);
+//      
+//      if (controlElement == null) {
+//         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
+//      }
+//      Control control = (Control) componentFactory.getComponent(controlElement, commandParam);
+//      return control.getExecutableCommands();
+//   }
    
    /**
     * Find commands by control id.
@@ -84,31 +82,15 @@ public class RemoteActionXMLParser {
     * 
     * @return the list< executable command>
     */
-   public List<ExecutableCommand> findCommandsByControlID(Document doc, String controlID, String commandParam) {
-      Element controlElement = queryElementFromXMLById(doc,controlID);
-      
-      if (controlElement == null) {
-         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
-      }
-      Control control = componentFactory.getControl(controlElement, commandParam);
-      return control.getExecutableCommands();
-   }
-   /**
-    * Find status command by control id.
-    * 
-    * @param controlID the control id
-    * 
-    * @return the StatusCommand
-    */
-   public StatusCommand findStatusCommandByControlID(String controlID) {
-      Element controlElement = queryElementFromXMLById(controlID);
-      if (controlElement == null) {
-         throw new NoSuchComponentException("Cannot find that control with id = " + controlID);
-        }
-      Control control = componentFactory.getControl(controlElement, Command.STATUS_COMMAND);
-      return control.getStatusCommand();
-   }
-   
+//   public List<ExecutableCommand> findCommandsByControlID(Document doc, String controlID, String commandParam) {
+//      Element controlElement = queryElementFromXMLById(doc,controlID);
+//      
+//      if (controlElement == null) {
+//         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
+//      }
+//      Control control = componentFactory.getControl(controlElement, commandParam);
+//      return control.getExecutableCommands();
+//   }
 
    /**
     * Query element from xml by id.

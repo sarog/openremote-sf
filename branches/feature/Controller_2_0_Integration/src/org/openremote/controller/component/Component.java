@@ -20,7 +20,6 @@
 package org.openremote.controller.component;
 
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.control.Status;
 
 /**
  * Super class of all components
@@ -29,15 +28,14 @@ import org.openremote.controller.component.control.Status;
  */
 public abstract class Component {
    
-   /** The status. */
-   private Status status;
+   private Sensor sensor;
    
    /**
     * Instantiates a new Component.
     */
    public Component() {
        super();
-       status = new Status();
+       sensor = new Sensor();
    }
    
    
@@ -47,25 +45,15 @@ public abstract class Component {
     * @return the status command
     */
    public StatusCommand getStatusCommand() {
-       return status.getStatusCommand();
+       return sensor.getStatusCommand();
    }
 
-   /**
-    * Gets the status.
-    * 
-    * @return the status
-    */
-   public Status getStatus() {
-       return status;
+   protected Sensor getSensor() {
+      return sensor;
    }
 
-   /**
-    * Sets the status.
-    * 
-    * @param status the new status
-    */
-   public void setStatus(Status status) {
-       this.status = status;
-   }
 
+   public void setSensor(Sensor sensor) {
+      this.sensor = sensor;
+   }
 }

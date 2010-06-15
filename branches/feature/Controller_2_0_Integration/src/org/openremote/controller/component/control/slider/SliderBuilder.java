@@ -17,56 +17,50 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.slider;
+package org.openremote.controller.component.control.slider;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.ControlBuilder;
-import org.openremote.controller.control.Status;
+import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.InvalidElementException;
-import org.openremote.controller.exception.NoSuchCommandException;
 
 /**
  * Slider builder.
  * 
  * @author Handy.Wang 2009-11-10
  */
-public class SliderBuilder extends ControlBuilder {
+public class SliderBuilder extends ComponentBuilder {
    
-   private Logger logger = Logger.getLogger(this.getClass().getName());
-
    /* (non-Javadoc)
     * @see org.openremote.controller.control.ControlBuilder#build(org.jdom.Element, java.lang.String)
     */
    @SuppressWarnings("unchecked")
    @Override
    public Control build(Element controlElement, String commandParam) {
-      if (!isContainAction(commandParam)) {
-         return new Slider();
-      }
-      
       Slider slider = new Slider();
+      if (!slider.isValidActionWith(commandParam)) {
+         return slider;
+      }
       List<Element> operationElements = controlElement.getChildren(); 
       for (Element operationElement : operationElements) {
+         //TODO: the following commented codes are useless, because they aren't useful for sensor-controller.xml
          /** Status Element */
-         if (commandParam.equalsIgnoreCase(operationElement.getName()) && Control.STATUS_ELEMENT_NAME.equals(operationElement.getName())) {
-            Element statusCommandRefElement = (Element) operationElement.getChildren().get(0);
-            String statusCommandID = statusCommandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),statusCommandID);
-            if (statusCommandElement != null) {
-               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-               slider.setStatus(new Status(statusCommand));
-               break;
-            } else {
-               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
-            }
-         }
+//         if (Control.INCLUDE_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName()) && Control.STATUS_ELEMENT_NAME.equals(commandParam) && Control.INCLUDE_TYPE_SENSOR.equalsIgnoreCase(operationElement.getAttributeValue(Control.INCLUDE_TYPE_ATTRIBUTE_NAME))) {
+//            Element statusCommandRefElement = (Element) operationElement.getChildren().get(0);
+//            String statusCommandID = statusCommandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
+//            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(controlElement.getDocument(),statusCommandID);
+//            if (statusCommandElement != null) {
+//               StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
+//               slider.setStatus(new Status(statusCommand));
+//               break;
+//            } else {
+//               throw new NoSuchCommandException("Cannot find that command with id = " + statusCommandID);
+//            }
+//         }
          
          /** Non-Status Element */
          if (Slider.EXE_CONTENT_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName())) {
@@ -83,23 +77,4 @@ public class SliderBuilder extends ControlBuilder {
       }
       return slider;
    }
-
-   /**
-    * Check whether the commandParam contained the action whitch slider allows. 
-    */
-   private boolean isContainAction(String commandParam) {
-      for (String action : Slider.AVAILABLE_ACTIONS) {
-         if (action.equalsIgnoreCase(commandParam)) {
-            return true;
-         }
-      }
-      try {
-         Integer.parseInt(commandParam);
-         return true;
-      } catch (NumberFormatException e) {
-         logger.error("Parsed numberCommand exception in slider builder.", e);
-         throw new NoSuchCommandException("Don't support command param " + commandParam + " in slider." , e);
-      }
-   }
-
 }

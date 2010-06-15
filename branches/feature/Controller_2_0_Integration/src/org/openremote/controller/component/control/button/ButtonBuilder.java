@@ -17,23 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control.button;
+package org.openremote.controller.component.control.button;
 
 import java.util.List;
 
 import org.jdom.Element;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.control.Control;
-import org.openremote.controller.control.ControlBuilder;
+import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.control.Control;
 
 /**
  * The Class ButtonBuilder.
  * 
  * @author Handy.Wang 2009-10-15
  */
-public class ButtonBuilder extends ControlBuilder {
-
+public class ButtonBuilder extends ComponentBuilder {
+   
     /**
      * Build Button with button xml element.
      * 
@@ -44,19 +44,20 @@ public class ButtonBuilder extends ControlBuilder {
     @SuppressWarnings("unchecked")
    @Override
     public Control build(Element buttonElement, String commandParam) {
-       //commandParam could be "click" 
        Button button = new Button();
-       List<Element> commandRefElements = buttonElement.getChildren();
-       for (Element commandRefElement : commandRefElements) {
-           if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
-               button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
-               continue;
-           }
-           String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
-           Element commandElement = remoteActionXMLParser.queryElementFromXMLById(buttonElement.getDocument(),commandID);
-           ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
-           button.addExecutableCommand(command);
+       if (button.isValidActionWith(commandParam)) {
+          List<Element> commandRefElements = buttonElement.getChildren();
+          for (Element commandRefElement : commandRefElements) {
+              if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
+                  button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
+                  continue;
+              }
+              String commandID = commandRefElement.getAttributeValue(Control.CONTROL_COMMAND_REF_ATTRIBUTE_NAME);
+              Element commandElement = remoteActionXMLParser.queryElementFromXMLById(buttonElement.getDocument(),commandID);
+              ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
+              button.addExecutableCommand(command);
+          }
        }
-        return button;
+       return button;
     }
 }

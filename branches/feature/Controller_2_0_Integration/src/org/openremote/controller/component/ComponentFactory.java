@@ -22,36 +22,36 @@ package org.openremote.controller.component;
 import java.util.Properties;
 
 import org.jdom.Element;
-import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.NoSuchCommandBuilderException;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
- * A factory for creating Control objects.
+ * A factory for creating Component objects.
  * 
  * @author Handy.Wang 2009-10-15
  */
 public class ComponentFactory extends ApplicationObjectSupport {
 
-    /** The control builders. */
+    /** The component builders. */
     private Properties componentBuilders;
     
     /**
-     * Gets the control.
+     * Gets the component.
      * 
-     * @param controlElement the control element
+     * @param componentElement the component element
      * @param commandParam the command param
      * 
-     * @return the control
+     * @return the component
      */
-    public Control getControl(Element controlElement, String commandParam) {
-        String controlType = controlElement.getName();
-        String controlBuilderName = componentBuilders.getProperty(controlType);
-        if(controlBuilderName == null || controlBuilderName.equals("")){
+    public Component getComponent(Element componentElement, String commandParam) {
+        String componentType = componentElement.getName();
+        String componentBuilderName = componentBuilders.getProperty(componentType);
+        if(componentBuilderName == null || componentBuilderName.equals("")){
+           //TODO: refactored to NoSuchComponentBuilderException();
            throw new NoSuchCommandBuilderException();
         }
-        ComponentBuilder controlBuilder = (ComponentBuilder)getApplicationContext().getBean(controlBuilderName);
-        return controlBuilder.build(controlElement, commandParam);
+        ComponentBuilder componentBuilder = (ComponentBuilder)getApplicationContext().getBean(componentBuilderName);
+        return componentBuilder.build(componentElement, commandParam);
     }
 
    public void setComponentBuilders(Properties componentBuilders) {

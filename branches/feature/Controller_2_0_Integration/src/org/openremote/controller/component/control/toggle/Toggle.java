@@ -17,52 +17,44 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.control;
+package org.openremote.controller.component.control.toggle;
 
-import org.openremote.controller.command.StatusCommand;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.controller.command.NoStatusCommand;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.Sensory;
+import org.openremote.controller.component.control.Control;
 
 /**
- * The Class Status.
+ * The Class Toggle.
  * 
  * @author Handy.Wang 2009-10-15
  */
-public class Status {
-
-    /** The status command. */
-    private StatusCommand statusCommand;
+public class Toggle extends Control implements Sensory {
     
     /**
-     * Instantiates a new status.
+     * Instantiates a new toggle.
      */
-    public Status() {
+    public Toggle() {
         super();
+        setSensor(new Sensor(new NoStatusCommand()));
     }
 
-    /**
-     * Instantiates a new status.
-     * 
-     * @param statusCommand the status command
-     */
-    public Status(StatusCommand statusCommand) {
-        super();
-        this.statusCommand = statusCommand;
-    }
+   @Override
+   protected List<String> getAvailableActions() {
+      List<String> availableActions = new ArrayList<String>();
+      availableActions.add("0");
+      availableActions.add("1");
+      availableActions.add("2");
+      availableActions.add("status");
+      return availableActions;
+   }
 
-    /**
-     * Gets the status command.
-     * 
-     * @return the status command
-     */
-    public StatusCommand getStatusCommand() {
-        return statusCommand;
-    }
+   @Override
+   public int fetchSensorID() {
+      return getSensor().getSensorID();
+   }
 
-    /**
-     * Sets the status command.
-     * 
-     * @param statusCommand the new status command
-     */
-    public void setStatusCommand(StatusCommand statusCommand) {
-        this.statusCommand = statusCommand;
-    }
 }
