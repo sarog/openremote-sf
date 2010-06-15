@@ -1,4 +1,5 @@
-package org.openremote.controller.service;
+package org.openremote.controller.component.onlysensorycomponent;
+
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -18,19 +19,28 @@ package org.openremote.controller.service;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-import java.util.Map;
-import java.util.Set;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.controller.command.NoStatusCommand;
+import org.openremote.controller.component.control.Control;
+import org.openremote.controller.component.control.Status;
 /**
- * service for manage the StatusCache
+ * This class is used to store the information for a label. 
  * @author Javen
  *
  */
-public interface StatusCacheService {
-   
-   void saveOrUpdateStatus(Integer sensorId,String newStatus);
-   
-   String getStatusBySensorId(Integer sensorId);
-   
-   Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
+public class Label extends Control {
+   public Label(){
+      super();
+      this.setStatus(new Status(new NoStatusCommand()));
+   }
+
+   @Override
+   protected List<String> getAvailableActions() {
+      List<String> availableActions = new ArrayList<String>();
+      availableActions.add("status");
+      return availableActions;
+   }
 }

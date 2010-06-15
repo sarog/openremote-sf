@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.control.Control;
+import org.openremote.controller.component.control.Control;
 
 /**
  * The Class KNXStatusEvent.

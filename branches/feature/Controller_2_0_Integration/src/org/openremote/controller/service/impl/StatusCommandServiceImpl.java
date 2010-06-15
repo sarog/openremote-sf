@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -31,100 +32,78 @@ import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
 
 /**
- * The implementation for ButtonCommandService class.
+ * The implementation for StatusCommandService class.
  * 
  * @author Handy.Wang 2009-10-15
  */
 public class StatusCommandServiceImpl implements StatusCommandService {
     
-    /** The Constant CONTROL_ID_SEPARATOR. */
-    private static final String CONTROL_ID_SEPARATOR = ",";
-
     /** The remote action xml parser. */
     private RemoteActionXMLParser remoteActionXMLParser;
-    
-    /** The Constant xmlHeader of composed xml-formatted status results. */
-    private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"\">\n";
-    
-    /** The Constant XML_STATUS_RESULT_ELEMENT_NAME composed xml-formatted status results. */
-    private static final String XML_STATUS_RESULT_ELEMENT_NAME = "status";
-    
-    /** The Constant XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY composed xml-formatted status results. */
-    private static final String XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY = "id";
-    
-    /** The Constant XML_TAIL of composed xml-formatted status results. */
-    private static final String XML_TAIL = "</openremote>";
     
     private StatusCacheService statusCacheService;
 
     /**
      * {@inheritDoc}
      */
-    public String trigger(String unParsedcontrolIDs){
+    public String trigger(String unParsedSensorIDs){
         
-       String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-       Map<String, StatusCommand> statusCommands = new HashMap<String, StatusCommand>();
-       for (String controlID : parsedControlIDs) {
-           statusCommands.put(controlID, remoteActionXMLParser.findStatusCommandByControlID(controlID));//TODO replace with statusCache.getStatusByComponentId(controlID);
-          //statusCommands.put(controlID, statusCacheService.getStatusByComponentId(Integer.parseInt(controlID)).toString());
+       String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
+       Map<String, StatusCommand> sensorIdAndStatusCommandsMap = new HashMap<String, StatusCommand>();
+       for (String sensorID : parsedSensorIDs) {
+           sensorIdAndStatusCommandsMap.put(sensorID, remoteActionXMLParser.findStatusCommandByControlID(sensorID));
        }
        StringBuffer sb = new StringBuffer();
-       sb.append(XML_HEADER);
+       sb.append(Constants.STATUS_XML_HEADER);
        
-       Set<String> controlIDs = statusCommands.keySet();
+       Set<String> controlIDs = sensorIdAndStatusCommandsMap.keySet();
        for (String controlID : controlIDs) {
-           sb.append("<" + XML_STATUS_RESULT_ELEMENT_NAME + " " + XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY + "=\"" + controlID + "\">");
-           sb.append(statusCommands.get(controlID).read());
-           sb.append("</" + XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+           sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + controlID + "\">");
+           sb.append(sensorIdAndStatusCommandsMap.get(controlID).read());
+           sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
            sb.append("\n");
        }
        
-       sb.append(XML_TAIL);       
+       sb.append(Constants.STATUS_XML_TAIL);       
        return sb.toString();
    }
 
-    /**
-     * Sets the remote action xml parser.
-     * 
-     * @param remoteActionXMLParser the new remote action xml parser
-     */
-    public void setRemoteActionXMLParser(
-        RemoteActionXMLParser remoteActionXMLParser) {
-        this.remoteActionXMLParser = remoteActionXMLParser;
-    }
-
    @Override
-   public String readFromCache(String unParsedcontrolIDs) {
-      Set<Integer> statusComponentIDs = parseStatusComponentIDStrToSet(unParsedcontrolIDs);
-      Map<Integer, String> latestStatuses = statusCacheService.queryStatuses(statusComponentIDs);
+   public String readFromCache(String unParsedSensorIDs) {
+      Set<Integer> statusSensorIDs = parseStatusSensorIDsStrToSet(unParsedSensorIDs);
+      Map<Integer, String> latestStatuses = statusCacheService.queryStatuses(statusSensorIDs);
       
       StringBuffer sb = new StringBuffer();
-      sb.append(XML_HEADER);
-      Set<Integer> componentIDs = latestStatuses.keySet();
-      for (Integer componentID : componentIDs) {
-          sb.append("<" + XML_STATUS_RESULT_ELEMENT_NAME + " " + XML_STATUS_RESULT_ELEMENT_CONTROL_IDENTITY + "=\"" + componentID + "\">");
-          sb.append(latestStatuses.get(componentID));
-          sb.append("</" + XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+      sb.append(Constants.STATUS_XML_HEADER);
+      Set<Integer> sensorIDs = latestStatuses.keySet();
+      for (Integer sensorID : sensorIDs) {
+          sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
+          sb.append(latestStatuses.get(sensorID));
+          sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
           sb.append("\n");
       }
-      sb.append(XML_TAIL); 
+      sb.append(Constants.STATUS_XML_TAIL); 
       
       return sb.toString();
    }
    
-   private Set<Integer> parseStatusComponentIDStrToSet(String unParsedcontrolIDs) {
-      String[] parsedControlIDs = unParsedcontrolIDs.split(CONTROL_ID_SEPARATOR);
-      Set<Integer> statusComponentIDs = new HashSet<Integer>();
+   private Set<Integer> parseStatusSensorIDsStrToSet(String unParsedSensorIDs) {
+      String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
+      Set<Integer> statusSensorIDs = new HashSet<Integer>();
      
-      for (String statusConponentID : parsedControlIDs) {
+      for (String statusSensorID : parsedSensorIDs) {
          try {
-            statusComponentIDs.add(Integer.parseInt(statusConponentID));
+            statusSensorIDs.add(Integer.parseInt(statusSensorID));
          } catch (NumberFormatException e) {
-            throw new NoSuchComponentException("No such component whose id is :" + statusConponentID, e);
+            throw new NoSuchComponentException("No such sensor whose id is :" + statusSensorID, e);
          }
       }
-      
-      return statusComponentIDs;
+      return statusSensorIDs;
+   }
+   
+   public void setRemoteActionXMLParser(
+       RemoteActionXMLParser remoteActionXMLParser) {
+       this.remoteActionXMLParser = remoteActionXMLParser;
    }
 
    public void setStatusCacheService(StatusCacheService statusCacheService) {

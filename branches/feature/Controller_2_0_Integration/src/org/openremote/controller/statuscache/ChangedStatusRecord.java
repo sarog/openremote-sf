@@ -38,52 +38,52 @@ public class ChangedStatusRecord {
    private String deviceID;
 
    /** The ids a polling request contains */
-   private List<Integer> pollingControlIDs;
+   private List<Integer> pollingSensorIDs;
 
-   /** The ids whose status had changed in the pollingControlIDs */
-   private Set<Integer> statusChangedIDs;
+   /** The ids whose status had changed in the statusChangedSensorIDs */
+   private Set<Integer> statusChangedSensorIDs;
 
    /** Default constructor */
    public ChangedStatusRecord() {
       super();
       deviceID = "";
-      pollingControlIDs = new ArrayList<Integer>();
-      statusChangedIDs = new HashSet<Integer>();
+      pollingSensorIDs = new ArrayList<Integer>();
+      statusChangedSensorIDs = new HashSet<Integer>();
    }
 
-   public ChangedStatusRecord(String deviceID, List<Integer> pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, List<Integer> pollingSensorIDs) {
       super();
       this.deviceID = deviceID;
-      this.pollingControlIDs = pollingControlIDs;
-      this.statusChangedIDs = new HashSet<Integer>();
+      this.pollingSensorIDs = pollingSensorIDs;
+      this.statusChangedSensorIDs = new HashSet<Integer>();
    }
 
-   public ChangedStatusRecord(String deviceID, Integer[] pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, Integer[] pollingSensorIDs) {
       super();
       this.deviceID = deviceID;
-      this.pollingControlIDs = new ArrayList<Integer>();
-      this.setPollingControlIDs(pollingControlIDs);
-      this.statusChangedIDs = new HashSet<Integer>();
+      this.pollingSensorIDs = new ArrayList<Integer>();
+      this.setPollingSensorIDs(pollingSensorIDs);
+      this.statusChangedSensorIDs = new HashSet<Integer>();
    }
 
-   public ChangedStatusRecord(String deviceID, String[] pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, String[] pollingSensorIDs) {
       super();
-      this.pollingControlIDs = new ArrayList<Integer>();
-      for (String s : pollingControlIDs) {
-         this.pollingControlIDs.add(Integer.parseInt(s));
+      this.pollingSensorIDs = new ArrayList<Integer>();
+      for (String s : pollingSensorIDs) {
+         this.pollingSensorIDs.add(Integer.parseInt(s));
       }
       this.deviceID = deviceID;
-      this.statusChangedIDs = new HashSet<Integer>();
+      this.statusChangedSensorIDs = new HashSet<Integer>();
    }
 
-   public ChangedStatusRecord(String deviceID, Collection<Integer> pollingControlIDs) {
+   public ChangedStatusRecord(String deviceID, Collection<Integer> pollingSensorIDs) {
       super();
-      this.pollingControlIDs = new ArrayList<Integer>();
-      for (Integer i : pollingControlIDs) {
-         this.pollingControlIDs.add(i);
+      this.pollingSensorIDs = new ArrayList<Integer>();
+      for (Integer i : pollingSensorIDs) {
+         this.pollingSensorIDs.add(i);
       }
       this.deviceID = deviceID;
-      this.statusChangedIDs = new HashSet<Integer>();
+      this.statusChangedSensorIDs = new HashSet<Integer>();
    }
 
    public String getDeviceID() {
@@ -95,17 +95,17 @@ public class ChangedStatusRecord {
    }
 
    /**
-    * Add pollingControl id into polling control id list. 
+    * Add pollingSensor id into polling sensor id list. 
     */
-   public void addPollingControlID(Integer pollingControlID) {
-      this.pollingControlIDs.add(pollingControlID);
+   public void addPollingSensorID(Integer pollingSensorID) {
+      this.pollingSensorIDs.add(pollingSensorID);
    }
    
    /**
     * Add statusChanged id into status changed id list. 
     */
-   public void addStatusChangedID(Integer statusChangedID) {
-      this.statusChangedIDs.add(statusChangedID);
+   public void addStatusChangedSensorID(Integer statusChangedSensorID) {
+      this.statusChangedSensorIDs.add(statusChangedSensorID);
    }
 
    @Override
@@ -117,44 +117,47 @@ public class ChangedStatusRecord {
       if ("".equals(timeoutRecord.getDeviceID()) || !timeoutRecord.getDeviceID().equals(this.deviceID)) {
          return false;
       }
-      if (timeoutRecord.getPollingControlIDs().size() == 0
-            || timeoutRecord.getPollingControlIDs().size() != this.pollingControlIDs.size()) {
+      if (timeoutRecord.getPollingSensorIDs().size() == 0
+            || timeoutRecord.getPollingSensorIDs().size() != this.pollingSensorIDs.size()) {
          return false;
       }
 
-      Collections.sort(this.getPollingControlIDs(), new PollingControlIDListComparator());
-      Collections.sort(timeoutRecord.getPollingControlIDs(), new PollingControlIDListComparator());
-      for (int i = 0; i < timeoutRecord.getPollingControlIDs().size(); i++) {
-         if (!this.getPollingControlIDs().get(i).equals(timeoutRecord.getPollingControlIDs().get(i))) {
+      Collections.sort(this.getPollingSensorIDs(), new PollingSensorIDListComparator());
+      Collections.sort(timeoutRecord.getPollingSensorIDs(), new PollingSensorIDListComparator());
+      for (int i = 0; i < timeoutRecord.getPollingSensorIDs().size(); i++) {
+         if (!this.getPollingSensorIDs().get(i).equals(timeoutRecord.getPollingSensorIDs().get(i))) {
             return false;
          }
       }
       return true;
    }
+   
+   public List<Integer> getPollingSensorIDs() {
+      return pollingSensorIDs;
+   }
 
    /**
-    * Overload the method setPollingControlIDs with the parameter type "String[]". 
+    * Overload the method setPollingSensorIDs with the parameter type "List". 
     */
-   public void setPollingControlIDs(Integer[] pollingControlIDs) {
-      for (Integer pollingControlID : pollingControlIDs) {
-         this.pollingControlIDs.add(pollingControlID);
+   public void setPollingSensorIDs(Integer[] pollingSensorIDs) {
+      for (Integer pollingSensorID : pollingSensorIDs) {
+         this.pollingSensorIDs.add(pollingSensorID);
       }
    }
 
-   public List<Integer> getPollingControlIDs() {
-      return pollingControlIDs;
+   /**
+    * Overload the method setPollingSensorIDs with the parameter type "Integer[]". 
+    */
+   public void setPollingSensorIDs(List<Integer> pollingSensorIDs) {
+      this.pollingSensorIDs = pollingSensorIDs;
    }
 
-   public void setPollingControlIDs(List<Integer> pollingControlIDs) {
-      this.pollingControlIDs = pollingControlIDs;
+   public Set<Integer> getStatusChangedSensorIDs() {
+      return statusChangedSensorIDs;
    }
 
-   public Set<Integer> getStatusChangedIDs() {
-      return statusChangedIDs;
-   }
-
-   public void setStatusChangedIDs(Set<Integer> statusChangedIDs) {
-      this.statusChangedIDs = statusChangedIDs;
+   public void setStatusChangedSensorIDs(Set<Integer> statusChangedSensorIDs) {
+      this.statusChangedSensorIDs = statusChangedSensorIDs;
    }
 
    @Override
@@ -162,8 +165,8 @@ public class ChangedStatusRecord {
       StringBuffer sb = new StringBuffer();
 
       sb.append("DEVICEID:" + deviceID);
-      sb.append("\tcomponentID:" + this.pollingControlIDs.toString());
-      sb.append("statusChangedComponentID:" + this.statusChangedIDs);
+      sb.append("\tsensorID:" + this.pollingSensorIDs.toString());
+      sb.append("statusChangedSensorID:" + this.statusChangedSensorIDs);
       return sb.toString();
    }
 

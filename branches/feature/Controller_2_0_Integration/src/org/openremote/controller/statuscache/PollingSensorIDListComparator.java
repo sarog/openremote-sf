@@ -1,4 +1,3 @@
-package org.openremote.controller.service;
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -18,19 +17,34 @@ package org.openremote.controller.service;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-import java.util.Map;
-import java.util.Set;
+package org.openremote.controller.statuscache;
+
+import java.util.Comparator;
 
 /**
- * service for manage the StatusCache
- * @author Javen
- *
+ * Comparator for polling control id List.
+ * 
+ * @author Handy.Wang 2009-10-23
  */
-public interface StatusCacheService {
-   
-   void saveOrUpdateStatus(Integer sensorId,String newStatus);
-   
-   String getStatusBySensorId(Integer sensorId);
-   
-   Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
+
+public class PollingSensorIDListComparator implements Comparator<Integer> {
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+    */
+   @Override
+   public int compare(Integer controlID1, Integer controlID2) {
+      // Avoid overflow in case of
+      // "( Integer.parseInt(obj1.toString()).intValue() - Integer.parseInt(obj2.toString()).intValue() )"
+      if (controlID1 > controlID2) {
+         return 1;
+      }
+      if (controlID1 < controlID2) {
+         return -1;
+      }
+      return 0;
+   }
+
 }

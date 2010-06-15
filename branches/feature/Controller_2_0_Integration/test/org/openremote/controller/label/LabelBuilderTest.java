@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.TestConstraint;
-import org.openremote.controller.control.label.Label;
-import org.openremote.controller.control.label.LabelBuilder;
+import org.openremote.controller.component.control.label.Label;
+import org.openremote.controller.component.control.label.LabelBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 /**
