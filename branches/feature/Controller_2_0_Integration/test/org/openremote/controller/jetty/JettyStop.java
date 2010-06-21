@@ -24,7 +24,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class Stop {
+public class JettyStop {
 
     public static void main(String[] args) throws Exception {
         Socket s = new Socket(InetAddress.getByName("127.0.0.1"), 8079);
