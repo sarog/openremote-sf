@@ -55,9 +55,9 @@ public class XMLUtil {
          doc = builder.build(xmlPath);
 
       } catch (JDOMException e) {
-         e.printStackTrace();
+         throw new RuntimeException(e);
       } catch (IOException e) {
-         e.printStackTrace();
+         throw new RuntimeException(e);
       }
 
       return doc;
@@ -79,11 +79,11 @@ public class XMLUtil {
          doc = builder.build(xmlPath);
 
       } catch (JDOMException e) {
-         e.printStackTrace();
+         throw new RuntimeException(e);
       } catch (IOException e) {
-         e.printStackTrace();
+         throw new RuntimeException(e);
       }
-
+      
       return doc;
    }
    /**
