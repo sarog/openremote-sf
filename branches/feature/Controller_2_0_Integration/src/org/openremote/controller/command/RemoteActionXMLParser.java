@@ -115,11 +115,11 @@ public class RemoteActionXMLParser {
     */
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder();
-      //sb.setValidation(true);
-      //File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+      sb.setValidation(true);
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
 
       sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      //sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in /resources");

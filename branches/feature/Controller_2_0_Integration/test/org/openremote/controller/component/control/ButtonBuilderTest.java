@@ -64,7 +64,7 @@ public class ButtonBuilderTest {
    @Test
    public void testNoSuchButton() {
       try {
-         getButtonByID("10", "on");
+         getButtonByID("10", "click");
          fail();
       } catch (Exception e) {
       };
@@ -72,18 +72,18 @@ public class ButtonBuilderTest {
 
    @Test
    public void testNotNull() {
-      Button btn = getButtonByID("9", "on");
+      Button btn = getButtonByID("9", "click");
       Assert.assertNotNull(btn);
    }
 
    @Test
    public void testGetCommand() {
-      Button btn = getButtonByID("9", "on");
+      Button btn = getButtonByID("9", "click");
       Assert.assertEquals(btn.getExecutableCommands().size(), 2);
 
-      btn = getButtonByID("9", "off");
+      btn = getButtonByID("9", "click");
       Assert.assertEquals(btn.getExecutableCommands().size(), 2);
       btn = getButtonByID("9", "status");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+      Assert.assertEquals(btn.getExecutableCommands().size(), 0);
    }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org ihpone.xsd ">
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org iphone.xsd ">
   <panels>
         <panel id="MyIphone" name="father"><!--use panel identity as term, not device identity, to separate TV and other devices from remote-->
             <include type="group" ref="1" />
