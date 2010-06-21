@@ -28,6 +28,16 @@ package org.openremote.controller.protocol.knx;
 public interface KNXConnection
 {
 
-    void send(String groupAddress, KNXCommand command);
+    void send(String groupAddress, KNXCommandType command);
+    
+    /**
+     * Read devices status.
+     * 
+     * @param groupAddress the group address
+     * @param dptTypeID the dpt type id
+     * 
+     * @return the string
+     */
+    String readDeviceStatus(String groupAddress, String dptTypeID);
 
 }
