@@ -25,14 +25,14 @@ package org.openremote.controller.exception;
  * @author Dan 2009-5-23
  */
 @SuppressWarnings("serial")
-public class InvalidControllerXMLException extends ButtonCommandException {
+public class InvalidControllerXMLException extends ControlCommandException {
 
    /**
     * Instantiates a new invalid controller xml exception.
     */
    public InvalidControllerXMLException() {
       super();
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ControlCommandException.INVALID_CONTROLLER_XML);
    }
 
    /**
@@ -43,7 +43,7 @@ public class InvalidControllerXMLException extends ButtonCommandException {
     */
    public InvalidControllerXMLException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ControlCommandException.INVALID_CONTROLLER_XML);
    }
 
    /**
@@ -53,7 +53,7 @@ public class InvalidControllerXMLException extends ButtonCommandException {
     */
    public InvalidControllerXMLException(String message) {
       super(message);
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ControlCommandException.INVALID_CONTROLLER_XML);
    }
    
 

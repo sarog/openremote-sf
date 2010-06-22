@@ -39,7 +39,10 @@
   <bean id = "propertyConfigurer"
         class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name = "location">
-      <value>classpath:config.properties</value>
+      <list>
+        <value>classpath:config.properties</value>
+        <value>classpath:roundrobin.properties</value>
+      </list>
     </property>
   </bean>
 
@@ -54,78 +57,156 @@
     <property name = "irsendPath" value = "${irsend.path}"/>
     <property name = "lircdconfPath" value = "${lircd.conf.path}"/>
     <property name = "copyLircdconf" value = "${copy.lircd.conf.on}"/>
+    <property name = "webappIp" value = "${webapp.ip}" />
     <property name = "webappPort" value = "${webapp.port}"/>
     <property name = "multicastAddress" value = "${multicast.address}"/>
     <property name = "multicastPort" value = "${multicast.port}"/>
     <property name = "resourcePath" value = "${resource.path}"/>
     <property name = "resourceUpload" value = "${resource.upload.enable}"/>
+    <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
 
-  <!-- service for button command from iPhone -->
-  <bean id = "buttonCommandService"
-        class = "org.openremote.controller.service.impl.ButtonCommandServiceImpl">
-    <property name = "macroCmdExecutionDelay" value = "${Macro.Execution.Delay}"/>
+  <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
+    <property name="isRoundRobinOn" value="${controller.roundrobin.on}" />
+      <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
+      <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />
+      <property name="controllerGroupName" value="${controller.groupname}" />
+      <property name="controllerApplicationName" value="${controller.applicationname}" />
+      <property name="roundRobinTCPServerSocketPort" value="${controller.roundrobin.tcpserver.port}" />
+      <property name="groupMembersURLs" value="${controller.groupmembers.urls}" />
   </bean>
 
-  <!-- controller.xml parser -->
-  <bean id = "remoteActionXMLParser"
-        class = "org.openremote.controller.event.RemoteActionXMLParser">
-  </bean>
-
+    <!-- service for button command from iPhone -->
+    <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
+        <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
+    </bean>
+-->
+    
+    <!-- service for status command from iPhone -->
+    <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
+    
+    <!-- service for listenning the status of control -->
+    <bean id="statusPollingService" class="org.openremote.controller.service.impl.StatusPollingServiceImpl" />
+    
+    <!-- service for control command from iPhone -->
+    <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
+    
+    <!-- controller.xml parser -->
+    <bean id = "remoteActionXMLParser"
+          class = "org.openremote.controller.command.RemoteActionXMLParser">
+    </bean>
+    
   <!-- service for file system operation : upload, unzip etc. -->
-  <bean id = "fileService" class = "org.openremote.controller.service.impl.FileServiceImpl">
+  <bean id = "fileService"
+        class = "org.openremote.controller.service.impl.FileServiceImpl">
   </bean>
 
+    <!-- status cache service -->
+    <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
+    	<property name="cache" ref="statusCache"></property>
+    </bean>
 
-  <bean id = "eventFactory" class = "org.openremote.controller.event.EventFactory">
-    <property name = "eventBuilders">
-      <props>
-        <prop key = "irEvent">irEventBuilder</prop>
-        <prop key = "knxEvent">knxEventBuilder</prop>
-        <prop key = "x10Event">x10EventBuilder</prop>
-        <prop key = "upnpEvent">upnpEventBuilder</prop>
-        <prop key = "tcpSocketEvent">tcpSocketEventBuilder</prop>
-        <prop key = "telnetEvent">telnetEventBuilder</prop>
-        <prop key = "httpGetEvent">httpGetEventBuilder</prop>
-      </props>
-    </property>
-  </bean>
+  	<!-- status cache service -->
+    <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
+    	<property name="configuration" ref="configuration"></property>
+    </bean>
 
+    <!-- roundrobin service -->
+    <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
+    
+    <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
+		<property name = "commandBuilders">
+		    <props>
+		        <prop key = "ir">irCommandBuilder</prop>
+		        <prop key = "knx">knxCommandBuilder</prop>
+		        <prop key = "x10">x10CommandBuilder</prop>
+           	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
+           	<prop key = "telnet">telnetCommandBuilder</prop>
+           	<prop key = "httpGet">httpGetCommandBuilder</prop>
+            <prop key = "test">testCommandBuilder</prop>
+            <prop key = "upnp">upnpCommandBuilder</prop>
+		    </props>
+		</property>
+	</bean>
 
-  <!-- EVENT BUILDERS ============================================================================
-    |
-    | Implementation specific builders for the Event Factory bean. In short, each distinct event
-    | type, as they appear in controller.xml, will need a corresponding builder implementation.
-    |
-    | See the org.openremote.controller.event.EventBuilder interface for details if you seek to
-    | extend the implementation with additional event types.
-    +-->
-
+	<!-- COMMAND BUILDERS ============================================================================
+	 |
+	 | Implementation specific builders for the Event Factory bean. In short, each distinct command
+	 | type, as they appear in controller.xml, will need a corresponding builder implementation.
+	 |
+	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
+	 | extend the implementation with additional command types.
+	 +-->
+	
   <!-- Infrared Event Builder -->
-  <bean id = "irEventBuilder" class = "org.openremote.controller.protocol.infrared.IREventBuilder"/>
+  <bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
 
   <!-- KNX Event Builder -->
-  <bean id = "knxEventBuilder" class = "org.openremote.controller.protocol.knx.KNXEventBuilder"/>
+  <bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder"/>
 
-  <!-- TCP Socket Event Builder for IP enabled devices -->
-  <bean id = "tcpSocketEventBuilder"
-        class = "org.openremote.controller.protocol.socket.TCPSocketEventBuilder"
-        scope = "prototype"/>
+   <!-- TCP Socket Event Builder for IP enabled devices -->
+   <bean id = "tcpSocketCommandBuilder"
+         class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
+         scope = "prototype"/>
 
   <!-- X10 Event Builder -->
-  <bean id = "x10EventBuilder" class = "org.openremote.controller.protocol.x10.X10EventBuilder"/>
+  <bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
 
-  <bean id = "telnetEventBuilder"
-        class = "org.openremote.controller.protocol.telnet.TelnetEventBuilder"
-        scope = "prototype"/>
+  <bean id = "telnetCommandBuilder"
+        class = "org.openremote.controller.protocol.telnet.TelnetCommandBuilder"
+        scope = "prototype" />
 
   <!-- Universal Plug'n'Play Event Builder -->
-  <bean id = "upnpEventBuilder" class = "org.openremote.controller.protocol.upnp.UPnPEventBuilder"
+  <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
         scope = "singleton" />
 
-  <bean id = "httpGetEventBuilder"
-        class = "org.openremote.controller.protocol.http.HttpGetEventBuilder"
-        scope = "prototype"/>
+  <bean id = "httpGetCommandBuilder"
+        class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
+        scope = "prototype" />
+
+  <bean id = "testCommandBuilder" class = "org.openremote.controller.protocol.test.TestCommandBuilder"
+        scope = "prototype" />
+        
+  <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
+		<property name = "componentBuilders">
+		    <props>
+		        <prop key = "button">buttonBuilder</prop>
+		        <prop key = "toggle">toggleBuilder</prop>
+		        <prop key = "switch">switchBuilder</prop>
+		        <prop key = "label">labelBuilder</prop>
+		        <prop key = "slider">sliderBuilder</prop>
+		        <prop key = "gesture">gestureBuilder</prop>
+		        <prop key = "image">imageBuilder</prop>
+		    </props>
+		</property>
+  </bean>
+  
+  <!-- Button Builder -->
+  <bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder"/>
+
+  <!-- Toggle Builder -->
+  <bean id = "toggleBuilder" class = "org.openremote.controller.component.control.toggle.ToggleBuilder"/>
+  
+  <!-- Switch Builder -->
+  <bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
+  
+  <!-- Label Builder -->
+  <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensorycomponent.LabelBuilder" />
+  
+  <!-- Slider Builder -->
+  <bean id= "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
+  
+  <!-- Gesture Builder -->
+  <bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
+  
+  <!-- imageBuilder -->
+  <bean id="imageBuilder" class="org.openremote.controller.component.onlysensorycomponent.ImageBuilder" />
+  
+  <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
+
+  <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
+  
+  <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
 
 </beans>
