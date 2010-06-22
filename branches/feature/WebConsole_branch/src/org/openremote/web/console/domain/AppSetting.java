@@ -20,6 +20,7 @@
 package org.openremote.web.console.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppSetting implements Serializable {
@@ -64,4 +65,20 @@ public class AppSetting implements Serializable {
       this.customServers = customServers;
    }
    
+   public void addCustomServer(String customServer) {
+      if (customServer == null || "".equals(customServer)) {
+         return;
+      }
+      if (customServers == null) {
+         customServers = new ArrayList<String>();
+      }
+      customServers.add(customServer);
+   }
+   
+   public void removeCustomServer(String customServer) {
+      if (customServer == null || "".equals(customServer) || customServers == null) {
+         return;
+      }
+      customServers.remove(customServer);
+   }
 }

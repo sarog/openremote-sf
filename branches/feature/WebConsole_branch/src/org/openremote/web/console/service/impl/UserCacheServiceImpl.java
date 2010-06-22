@@ -34,7 +34,7 @@ import flexjson.JSONSerializer;
 
 public class UserCacheServiceImpl implements UserCacheService {
    
-   private static Logger log = Logger.getLogger(UserCacheServiceImpl.class);;
+   private static Logger log = Logger.getLogger(UserCacheServiceImpl.class);
    
    public UserCache getUserCache() {
       File userCacheFile = new File(PathConfig.userCacheFilePath());

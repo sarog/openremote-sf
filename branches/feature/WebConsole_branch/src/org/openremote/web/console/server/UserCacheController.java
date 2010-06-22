@@ -51,5 +51,9 @@ public class UserCacheController extends BaseGWTSpringController implements User
    public AppSetting getAppSetting() {
       return userCacheService.getAppSetting();
    }
+
+   public void saveAppSetting(AppSetting appSetting) {
+      userCacheService.saveAppSetting(appSetting);
+   }
    
 }

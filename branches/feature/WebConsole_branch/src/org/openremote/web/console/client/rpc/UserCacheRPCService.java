@@ -34,4 +34,5 @@ public interface UserCacheRPCService extends RemoteService {
    
    AppSetting getAppSetting();
    
+   void saveAppSetting(AppSetting appSetting);
 }

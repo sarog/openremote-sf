@@ -23,13 +23,13 @@ import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
+import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.window.LoginWindow;
 import org.openremote.web.console.client.window.SettingsWindow;
 import org.openremote.web.console.domain.AppSetting;
 import org.openremote.web.console.domain.UserCache;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -40,60 +40,44 @@ public class WebConsole implements EntryPoint {
     */
    public void onModuleLoad() {
       checkUserAndSettings();
-//      RootPanel.get("loading-msg").getElement().setInnerText("Loading panel.xml");
    }
    
    private void checkUserAndSettings() {
-      
-      String username = Cookies.getCookie(Constants.CONSOLE_USERNAME);
-      String password = Cookies.getCookie(Constants.CONSOLE_PASSWORD);
-      
-      if (username == null || password == null || "".equals(username) || "".equals(password)) {
-         AsyncServiceFactory.getUserCacheServiceAsync().getUserCache(new AsyncSuccessCallback<UserCache>() {
-            public void onSuccess(UserCache userCache) {
-               if (userCache != null) {
-                  Cookies.setCookie(Constants.CONSOLE_USERNAME, userCache.getUsername());
-                  Cookies.setCookie(Constants.CONSOLE_PASSWORD, userCache.getPassword());
-                  if (!"".equals(userCache.getUsername()) && !"".equals(userCache.getPassword())) {
-                     System.out.println("has login and check setting");
-                     checkSettings();
-                  } else {
-                     toLogin();
-                  }
-               } else {
-                  toLogin();
-               }
+      AsyncServiceFactory.getUserCacheServiceAsync().getUserCache(new AsyncSuccessCallback<UserCache>() {
+         public void onSuccess(UserCache result) {
+            if (result != null) {
+               ClientDataBase.userCache = result;
             }
-         });
-      } else {
-         checkSettings();
-      }
+            UserCache userCache = ClientDataBase.userCache;
+            
+            if ("".equals(userCache.getUsername()) || "".equals(userCache.getPassword())) {
+               toLogin();
+            } else {
+               checkSettings();
+            }
+         }
+      });
+      
    }
    
    private void checkSettings() {
-      String currentServer = Cookies.getCookie(Constants.CURRENT_SERVER);
-      String currentPanel = Cookies.getCookie(Constants.CURRENT_PANEL);
-      
-      if (currentServer == null || currentPanel == null || "".equals(currentServer) || "".equals(currentPanel)) {
-         System.out.println("no settings");
-         AsyncServiceFactory.getUserCacheServiceAsync().getAppSetting(new AsyncSuccessCallback<AppSetting>() {
-            public void onSuccess(AppSetting appSetting) {
-               if (appSetting != null) {
-                  Cookies.setCookie(Constants.CURRENT_SERVER, appSetting.getCurrentServer());
-                  Cookies.setCookie(Constants.CURRENT_PANEL, appSetting.getCurrentPanelIdentity());
-                  if (!"".equals(appSetting.getCurrentServer()) && !"".equals(appSetting.getCurrentPanelIdentity())) {
-                     // TODO:load resources.
-                  } else {
-                     toSetting();
-                  }
-               } else {
-                  toSetting();
-               }
+      AsyncServiceFactory.getUserCacheServiceAsync().getAppSetting(new AsyncSuccessCallback<AppSetting>() {
+         public void onSuccess(AppSetting result) {
+            if (result != null) {
+               ClientDataBase.appSetting = result;
             }
-         });
-      } else {
-         // TODO:load resources.
-      }
+            AppSetting appSetting = ClientDataBase.appSetting;
+            
+            String currentServer = appSetting.getCurrentServer();
+            String currentPanel = appSetting.getCurrentPanelIdentity();
+            
+            if ("".equals(currentServer) || "".equals(currentPanel)) {
+               toSetting();
+            } else {
+               // TODO:load resources.
+            }
+         }
+      });
    }
    
    private void toLogin() {
