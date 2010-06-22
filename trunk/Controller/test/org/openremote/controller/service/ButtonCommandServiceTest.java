@@ -17,36 +17,28 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.utils;
-
-import java.util.List;
+package org.openremote.controller.service;
 
 import junit.framework.TestCase;
 
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
 import org.openremote.controller.spring.SpringContext;
 
-
 /**
- * The Class RemoteActionXMLParserTest.
+ * The Class ButtonCommandServiceTest.
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+public class ButtonCommandServiceTest extends TestCase {
 
+   /** The button command service. */
+   private ButtonCommandService buttonCommandService = (ButtonCommandService) SpringContext.getInstance().getBean(
+         "buttonCommandService");
+   
    /**
-    * Test find ir event by button id.
+    * Test trigger.
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   public void testTrigger(){
+      //buttonCommandService.trigger("4");
    }
    
 }

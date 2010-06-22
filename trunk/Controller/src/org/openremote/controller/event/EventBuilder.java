@@ -17,36 +17,27 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.utils;
+package org.openremote.controller.event;
 
-import java.util.List;
+import org.jdom.Element;
 
-import junit.framework.TestCase;
-
-import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
-import org.openremote.controller.spring.SpringContext;
 
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The Interface EventBuilder. 
+ * Allows to build an Event from a DOM Element in controller.xml
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParserTest extends TestCase {
+public interface EventBuilder {
    
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
-
    /**
-    * Test find ir event by button id.
+    * Builds an event from a DOM element.
+    * 
+    * @param element the element
+    * 
+    * @return the event
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
-   }
+   Event build(Element element);
    
 }

@@ -19,42 +19,52 @@
 */
 package org.openremote.controller.exception;
 
+
 /**
- * The exception class when InvalidControllerXML.
+ * The exception for NoSuchButton.
  * 
- * @author Dan 2009-5-23
+ * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class InvalidControllerXMLException extends ButtonCommandException {
+public class NoSuchButtonException extends ButtonCommandException {
 
    /**
-    * Instantiates a new invalid controller xml exception.
+    * Instantiates a new no such button exception.
     */
-   public InvalidControllerXMLException() {
+   public NoSuchButtonException() {
       super();
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
    }
 
    /**
-    * Instantiates a new invalid controller xml exception.
+    * Instantiates a new no such button exception.
+    * 
+    * @param message the message
+    */
+   public NoSuchButtonException(String message) {
+      super(message);
+      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
+   }
+
+   /**
+    * Instantiates a new no such button exception.
+    * 
+    * @param cause the cause
+    */
+   public NoSuchButtonException(Throwable cause) {
+      super(cause);
+      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
+   }
+
+   /**
+    * Instantiates a new no such button exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public InvalidControllerXMLException(String message, Throwable cause) {
+   public NoSuchButtonException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ButtonCommandException.NO_SUCH_BUTTON);
    }
-
-   /**
-    * Instantiates a new invalid controller xml exception.
-    * 
-    * @param message the message
-    */
-   public InvalidControllerXMLException(String message) {
-      super(message);
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
-   }
-   
 
 }

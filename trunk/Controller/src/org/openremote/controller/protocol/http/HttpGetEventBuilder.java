@@ -17,36 +17,28 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.utils;
-
-import java.util.List;
-
-import junit.framework.TestCase;
+package org.openremote.controller.protocol.http;
 
 import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.event.EventBuilder;
+import org.jdom.Element;
 
 
 /**
- * The Class RemoteActionXMLParserTest.
- * 
- * @author Dan 2009-4-3
+ * The Class HttpGetEventBuilder.
+ *
+ * @author Marcus 2009-4-26
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+public class HttpGetEventBuilder implements EventBuilder {
 
    /**
-    * Test find ir event by button id.
+    * {@inheritDoc}
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   public Event build(Element element) {
+      HttpGetEvent getEvent = new HttpGetEvent();
+      getEvent.setUrl(element.getAttributeValue("url"));
+      getEvent.setName(element.getAttributeValue("name"));
+      return getEvent;
    }
-   
+
 }

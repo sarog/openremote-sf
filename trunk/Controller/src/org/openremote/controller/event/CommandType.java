@@ -17,54 +17,42 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.knx;
-
+package org.openremote.controller.event;
 
 /**
- * TODO
- *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * The Enum CommandType.
+ * 
+ * @author Dan 2009-5-21
  */
-public enum KNXCommand
-{
-  /**
-   * TODO
-   */
-  SWITCH_ON
-  (
-      new String[] { "ON" }
-  ),
+public enum CommandType {
+   
+   /** send command once. */
+   SEND_ONCE("SEND_ONCE"), 
+   
+   /** send command start. */
+   SEND_START("SEND_START"), 
+   
+   /** send command stop. */
+   SEND_STOP("SEND_STOP"); 
 
-  /**
-   * TODO
-   */
-  SWITCH_OFF
-  (
-      new String[] { "OFF" }
-  );
+   /** The type. */
+   private String type;
 
+   /**
+    * Instantiates a new command type.
+    * 
+    * @param type the type
+    */
+   private CommandType(String type) {
+      this.type = type;
+   }
 
-  private String[] commandTranslations = null;
+   /* (non-Javadoc)
+    * @see java.lang.Enum#toString()
+    */
+   @Override
+   public String toString() {
+      return type;
+   }
 
-  private KNXCommand(String[] commandTranslations)
-  {
-    this.commandTranslations = commandTranslations;
-  }
-
-  /**
-   * TODO
-   *
-   * @param command
-   * @return
-   */
-  boolean isEqual(String command)
-  {
-    for (String translation : commandTranslations)
-    {
-      if (translation.equalsIgnoreCase(command))
-        return true;
-    }
-
-    return false;
-  }
 }

@@ -19,42 +19,52 @@
 */
 package org.openremote.controller.exception;
 
+
 /**
- * The exception class when InvalidControllerXML.
+ * The exception for EventBuild.
  * 
- * @author Dan 2009-5-23
+ * @author Dan 2009-4-30
  */
 @SuppressWarnings("serial")
-public class InvalidControllerXMLException extends ButtonCommandException {
+public class EventBuildException extends ButtonCommandException {
 
    /**
-    * Instantiates a new invalid controller xml exception.
-    */
-   public InvalidControllerXMLException() {
-      super();
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
-   }
-
-   /**
-    * Instantiates a new invalid controller xml exception.
+    * Instantiates a new invalid event exception.
     * 
     * @param message the message
     * @param cause the cause
     */
-   public InvalidControllerXMLException(String message, Throwable cause) {
+   public EventBuildException(String message, Throwable cause) {
       super(message, cause);
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
    }
 
    /**
-    * Instantiates a new invalid controller xml exception.
+    * Instantiates a new invalid event exception.
     * 
     * @param message the message
     */
-   public InvalidControllerXMLException(String message) {
+   public EventBuildException(String message) {
       super(message);
-      setErrorCode(ButtonCommandException.INVALID_CONTROLLER_XML);
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
    }
-   
+
+   /**
+    * Instantiates a new event build exception.
+    */
+   public EventBuildException() {
+      super();
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
+   }
+
+   /**
+    * Instantiates a new event build exception.
+    * 
+    * @param cause the cause
+    */
+   public EventBuildException(Throwable cause) {
+      super(cause);
+      setErrorCode(ButtonCommandException.EVENT_BUILDER_ERROR);
+   }
 
 }
