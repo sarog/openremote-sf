@@ -17,16 +17,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.icon;
+package org.openremote.web.console.client.utils;
 
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.ImageBundle;
+import org.openremote.web.console.domain.AppSetting;
+import org.openremote.web.console.domain.UserCache;
 
-public interface Icons extends ImageBundle {
+/**
+ * The Class ClientDataBase.
+ */
+public class ClientDataBase {
 
-   @Resource("delete.png")
-   AbstractImagePrototype delete();
+   public static UserCache userCache = new UserCache();
    
-   @Resource("add.png")
-   AbstractImagePrototype add();
+   public static AppSetting appSetting = new AppSetting();
+   
+   private ClientDataBase() {
+   }
+   
 }

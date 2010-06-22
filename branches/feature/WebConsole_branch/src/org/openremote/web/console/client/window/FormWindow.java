@@ -74,7 +74,7 @@ public class FormWindow extends Window {
     */
    @Override
    public void show() {
-      setFocusWidget(form.getWidget(0));
+//      setFocusWidget(form.getWidget(0));
       super.show();
    }
 

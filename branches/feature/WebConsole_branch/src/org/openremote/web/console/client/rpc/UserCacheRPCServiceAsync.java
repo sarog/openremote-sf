@@ -32,4 +32,6 @@ public interface UserCacheRPCServiceAsync {
 
    void getAppSetting(AsyncCallback<AppSetting> callback);
 
+   void saveAppSetting(AppSetting appSetting, AsyncCallback<Void> callback);
+
 }
