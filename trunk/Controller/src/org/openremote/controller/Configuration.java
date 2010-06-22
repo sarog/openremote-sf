@@ -1,4 +1,4 @@
-/* 
+/*
  * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2009, OpenRemote Inc.
  *
@@ -35,9 +35,8 @@ package org.openremote.controller;
  * @author Jerome Velociter
  */
 public class Configuration {
-
+   
   // Private Instance Variables -------------------------------------------------------------------
-
 
   private String irsendPath;
 
@@ -48,7 +47,7 @@ public class Configuration {
    */
   private boolean copyLircdconf;
 
-  private String webappPort;
+  private int webappPort;
 
   private String multicastAddress;
 
@@ -60,6 +59,10 @@ public class Configuration {
    * The resource upload switch.
    */
   private boolean resourceUpload;
+
+  private long macroIRExecutionDelay = 500;
+
+  private String webappIp;
 
   /**
    * The COM (Serial) port the ORC should use (for example, to send X10 events)
@@ -172,14 +175,11 @@ public class Configuration {
   /**
    * Returns the port number used by controller discovery service.
    *
-   * @see #setWebappPort(String)
+   * @see #setWebappPort(int)
    *
    * @return port number
    */
-  public String getWebappPort() {
-
-    // TODO : this should not be stored as a string
-
+  public int getWebappPort() {
     return webappPort;
   }
 
@@ -197,8 +197,8 @@ public class Configuration {
    *
    * @param webappPort  the HTTP listening port of the web container (e.g. Tomcat 8080)
    */
-  public void setWebappPort(String webappPort) {
-    this.webappPort = webappPort.trim();
+  public void setWebappPort(int webappPort) {
+    this.webappPort = webappPort;
   }
 
   /**
@@ -368,4 +368,20 @@ public class Configuration {
     this.x10transmitter = x10transmitter.trim();
   }
 
+   public long getMacroIRExecutionDelay() {
+      return macroIRExecutionDelay;
+   }
+
+   public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
+      this.macroIRExecutionDelay = macroIRExecutionDelay;
+   }
+
+   public String getWebappIp() {      
+      return webappIp;
+   }
+
+   public void setWebappIp(String webappIp) {
+      this.webappIp = webappIp;
+   }
+   
 }
