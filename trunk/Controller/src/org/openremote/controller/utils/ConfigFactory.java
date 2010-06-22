@@ -20,7 +20,6 @@
 package org.openremote.controller.utils;
 
 import org.openremote.controller.Configuration;
-import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.spring.SpringContext;
 
 /**
@@ -37,10 +36,6 @@ public class ConfigFactory {
     */
    public static Configuration getConfig(){
       return (Configuration) SpringContext.getInstance().getBean("configuration");
-   }
-   
-   public static RoundRobinConfig getRoundRobinConfig() {
-      return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
    }
    
 }

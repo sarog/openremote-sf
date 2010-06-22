@@ -17,54 +17,31 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.protocol.knx;
-
+package org.openremote.controller.event;
 
 /**
- * TODO
- *
- * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ * The Interface Executable.
+ * 
+ * @author Dan 2009-4-20
  */
-public enum KNXCommand
-{
-  /**
-   * TODO
-   */
-  SWITCH_ON
-  (
-      new String[] { "ON" }
-  ),
+public interface Executable {
+   
+   /**
+    * Execute method, tells how to execute an event. 
+    * This will ask a send_once command.
+    */
+   void exec();
+   
+   /**
+    * Start an event.
+    * This will ask a send_start command.
+    */
+   void start();
+   
+   /**
+    * Stop an event.
+    * This will ask a send_stop command.
+    */
+   void stop();
 
-  /**
-   * TODO
-   */
-  SWITCH_OFF
-  (
-      new String[] { "OFF" }
-  );
-
-
-  private String[] commandTranslations = null;
-
-  private KNXCommand(String[] commandTranslations)
-  {
-    this.commandTranslations = commandTranslations;
-  }
-
-  /**
-   * TODO
-   *
-   * @param command
-   * @return
-   */
-  boolean isEqual(String command)
-  {
-    for (String translation : commandTranslations)
-    {
-      if (translation.equalsIgnoreCase(command))
-        return true;
-    }
-
-    return false;
-  }
 }

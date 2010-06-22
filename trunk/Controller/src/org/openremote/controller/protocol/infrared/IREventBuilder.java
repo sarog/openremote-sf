@@ -17,36 +17,35 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.utils;
+package org.openremote.controller.protocol.infrared;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
+import org.jdom.Element;
 import org.openremote.controller.event.Event;
-import org.openremote.controller.event.RemoteActionXMLParser;
-import org.openremote.controller.protocol.infrared.IREvent;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.event.EventBuilder;
+import org.openremote.controller.exception.EventBuildException;
 
 
 /**
- * The Class RemoteActionXMLParserTest.
+ * The IREvent Builder which can build a IREvent from a DOM Element in controller.xml.
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParserTest extends TestCase {
-   
-   /** The remote action xml parser. */
-   private RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringContext.getInstance().getBean(
-         "remoteActionXMLParser");
+public class IREventBuilder implements EventBuilder {
 
    /**
-    * Test find ir event by button id.
+    * {@inheritDoc}
     */
-   public void testFindIREventByButtonID(){
-//      List<Event> list= remoteActionXMLParser.findEventsByButtonID("8");
-//      System.out.println(((IREvent)list.get(0)).getName());
-//      assertEquals(1, list.size());
+   public Event build(Element element) {
+      IREvent irEvent = new IREvent();
+      String command = element.getAttributeValue("command");
+      String name = element.getAttributeValue("name");
+      if ("".equals(command) || "".equals(name)) {
+         throw new EventBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
+      } else {
+         irEvent.setCommand(command);
+         irEvent.setName(name);
+      }
+      return irEvent;
    }
-   
+
 }
