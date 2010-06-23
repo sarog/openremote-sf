@@ -21,15 +21,13 @@ package org.openremote.web.console.client;
 
 import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.listener.SubmitListener;
-import org.openremote.web.console.client.rpc.AsyncServiceFactory;
-import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.window.LoginWindow;
 import org.openremote.web.console.client.window.SettingsWindow;
 import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserCache;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -39,47 +37,45 @@ public class WebConsole implements EntryPoint {
     * This is the entry point method.
     */
    public void onModuleLoad() {
-      checkUserAndSettings();
-   }
-   
-   private void checkUserAndSettings() {
-      AsyncServiceFactory.getUserCacheServiceAsync().getUserCache(new AsyncSuccessCallback<UserCache>() {
-         public void onSuccess(UserCache result) {
-            if (result != null) {
-               ClientDataBase.userCache = result;
-            }
-            UserCache userCache = ClientDataBase.userCache;
-            
-            if ("".equals(userCache.getUsername()) || "".equals(userCache.getPassword())) {
-               toLogin();
-            } else {
-               checkSettings();
-            }
-         }
-      });
-      
+      initUserCache();
+      checkSettings();
    }
    
    private void checkSettings() {
-      AsyncServiceFactory.getUserCacheServiceAsync().getAppSetting(new AsyncSuccessCallback<AppSetting>() {
-         public void onSuccess(AppSetting result) {
-            if (result != null) {
-               ClientDataBase.appSetting = result;
-            }
-            AppSetting appSetting = ClientDataBase.appSetting;
-            
-            String currentServer = appSetting.getCurrentServer();
-            String currentPanel = appSetting.getCurrentPanelIdentity();
-            
-            if ("".equals(currentServer) || "".equals(currentPanel)) {
-               toSetting();
-            } else {
-               // TODO:load resources.
-            }
+      AppSetting appSetting = ClientDataBase.appSetting;
+      
+      String currentServer = appSetting.getCurrentServer();
+      String currentPanel = appSetting.getCurrentPanelIdentity();
+      
+      if ("".equals(currentServer) || "".equals(currentPanel)) {
+         toSetting();
+      } else {
+         // TODO:load resources.
+      }
+   }
+   
+   
+   private void toSetting() {      
+      System.out.println("to setting");
+      DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
+      SettingsWindow settingWindow = new SettingsWindow();
+      settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+         @Override
+         public void afterSubmit(SubmitEvent be) {
+            DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
+            // TODO:load resources.
          }
       });
    }
    
+   private void initUserCache() {
+      String userInfoJson = Cookies.getCookie(Constants.CONSOLE_USERINFO);
+      String appSettingJson = Cookies.getCookie(Constants.CONSOLE_SETTINGS);
+      ClientDataBase.userInfo.initFromJson(userInfoJson);
+      ClientDataBase.appSetting.initFromJson(appSettingJson);
+   }
+   
+   // unused method
    private void toLogin() {
       DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
       LoginWindow loginWindow = new LoginWindow();
@@ -91,12 +87,5 @@ public class WebConsole implements EntryPoint {
          }
          
       });
-   }
-   
-   private void toSetting() {
-      
-      System.out.println("to setting");
-      DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
-      SettingsWindow settingWindow = new SettingsWindow();
    }
 }

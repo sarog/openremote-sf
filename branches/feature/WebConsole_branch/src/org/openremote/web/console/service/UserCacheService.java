@@ -20,16 +20,16 @@
 package org.openremote.web.console.service;
 
 import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserCache;
+import org.openremote.web.console.domain.UserInfo;
 
 /**
  * The Interface UserCacheService is for save/get UserCache with file(usercache.json).
  */
 public interface UserCacheService {
    
-   UserCache getUserCache();
+   UserInfo getUserCache();
    
-   void saveUserCache(UserCache userCache);
+   void saveUserCache(UserInfo userCache);
    
    AppSetting getAppSetting();
    

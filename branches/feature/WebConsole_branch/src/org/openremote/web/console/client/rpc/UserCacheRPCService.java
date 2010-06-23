@@ -20,7 +20,7 @@
 package org.openremote.web.console.client.rpc;
 
 import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserCache;
+import org.openremote.web.console.domain.UserInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -28,7 +28,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("usercache.smvc")
 public interface UserCacheRPCService extends RemoteService {
 
-   UserCache getUserCache();
+   UserInfo getUserInfo();
 
    void saveUser(String username, String password);
    

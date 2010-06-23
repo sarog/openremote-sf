@@ -21,12 +21,11 @@ package org.openremote.web.console.client.window;
 
 import java.util.Map;
 
+import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.listener.FormSubmitListener;
-import org.openremote.web.console.client.rpc.AsyncServiceFactory;
-import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
-import org.openremote.web.console.domain.UserCache;
+import org.openremote.web.console.domain.UserInfo;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
@@ -35,6 +34,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.gwt.user.client.Cookies;
 
 public class LoginWindow extends FormWindow {
 
@@ -55,13 +55,13 @@ public class LoginWindow extends FormWindow {
    }
    
    private void addFields() {
-      UserCache userCache = ClientDataBase.userCache;
+      UserInfo userInfo = ClientDataBase.userInfo;
       TextField<String> usernameField = new TextField<String>();
       usernameField.setAllowBlank(false);
       usernameField.setFieldLabel("Username");
       usernameField.setName(USERNAME);
-      if (!"".equals(userCache.getUsername())) {
-         usernameField.setValue(userCache.getUsername());
+      if (!"".equals(userInfo.getUsername())) {
+         usernameField.setValue(userInfo.getUsername());
       }
       
       TextField<String> passwordField = new TextField<String>();
@@ -69,8 +69,8 @@ public class LoginWindow extends FormWindow {
       passwordField.setFieldLabel("Passowrd");
       passwordField.setName(PASSWORD);
       passwordField.setPassword(true);
-      if (!"".equals(userCache.getPassword())) {
-         passwordField.setValue(userCache.getPassword());
+      if (!"".equals(userInfo.getPassword())) {
+         passwordField.setValue(userInfo.getPassword());
       }
       
       form.add(usernameField);
@@ -96,14 +96,12 @@ public class LoginWindow extends FormWindow {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             Map<String, String> attrMap = getAttrMap();
-            final String username = attrMap.get(USERNAME);
-            final String password = attrMap.get(PASSWORD);
-            AsyncServiceFactory.getUserCacheServiceAsync().saveUser(username, password, new AsyncSuccessCallback<Void>() {
-               public void onSuccess(Void result) {
-                  ClientDataBase.userCache.setUsername(username);
-                  ClientDataBase.userCache.setPassword(password);
-               }
-            });
+            String username = attrMap.get(USERNAME);
+            String password = attrMap.get(PASSWORD);
+            ClientDataBase.userInfo.setUsername(username);
+            ClientDataBase.userInfo.setPassword(password);
+            Cookies.setCookie(Constants.CONSOLE_USERINFO, ClientDataBase.userInfo.toJson());
+            
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
             hide();
          }

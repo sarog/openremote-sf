@@ -23,23 +23,33 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONNull;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+
+/**
+ * The Class AppSetting is for storing the settings info.
+ */
 public class AppSetting implements Serializable {
 
    private static final long serialVersionUID = -3580463734417781801L;
 
-   private boolean autoMode;
+   private boolean autoDiscovery;
    private String currentServer;
    private String currentPanelIdentity;
    private List<String> customServers;
    
    public AppSetting() {
-      this.autoMode = true;
+      this.autoDiscovery = true;
       this.currentServer = "";
       this.currentPanelIdentity = "";
    }
    
-   public boolean isAutoMode() {
-      return autoMode;
+   public boolean isAutoDiscovery() {
+      return autoDiscovery;
    }
    public String getCurrentServer() {
       return currentServer;
@@ -47,8 +57,8 @@ public class AppSetting implements Serializable {
    public String getCurrentPanelIdentity() {
       return currentPanelIdentity;
    }
-   public void setAutoMode(boolean autoMode) {
-      this.autoMode = autoMode;
+   public void setAutoDiscovery(boolean autoDiscovery) {
+      this.autoDiscovery = autoDiscovery;
    }
    public void setCurrentServer(String currentServer) {
       this.currentServer = currentServer;
@@ -80,5 +90,48 @@ public class AppSetting implements Serializable {
          return;
       }
       customServers.remove(customServer);
+   }
+   
+   // The method is just calling by client code.
+   public String toJson() {
+      JSONObject jsonObj = new JSONObject();
+      jsonObj.put("autoDiscovery", JSONBoolean.getInstance(this.autoDiscovery));
+      jsonObj.put("currentServer", new JSONString(this.currentServer));
+      jsonObj.put("currentPanelIdentity", new JSONString(this.currentPanelIdentity));
+      if (customServers == null) {
+         jsonObj.put("customServers", JSONNull.getInstance());
+      } else {
+         JSONArray jsonArray = new JSONArray();
+         int serverSize = customServers.size();
+         for (int i = 0; i < serverSize; i++) {
+            jsonArray.set(i, new JSONString(customServers.get(i)));
+         }
+         jsonObj.put("customServers", jsonArray);
+      }
+      return jsonObj.toString();
+   }
+   
+   // The method is just calling by client code.
+   public void initFromJson(String jsonStr) {
+      if (jsonStr == null || "".equals(jsonStr)) {
+         return;
+      }
+      JSONObject jsonObj = JSONParser.parse(jsonStr).isObject();    
+      if (jsonObj == null) {
+         return;
+      }
+      
+      this.autoDiscovery = jsonObj.get("autoDiscovery").isBoolean().booleanValue();
+      this.currentServer = jsonObj.get("currentServer").isString().stringValue();
+      this.currentPanelIdentity = jsonObj.get("currentPanelIdentity").isString().stringValue();
+      JSONArray jsonArray = jsonObj.get("customServers").isArray();
+      if (jsonArray != null) {
+         if (customServers == null) {
+            customServers = new ArrayList<String>();
+         }
+         for(int i = 0; i < jsonArray.size(); i++) {
+            customServers.add(jsonArray.get(i).isString().stringValue());
+        }
+      }
    }
 }

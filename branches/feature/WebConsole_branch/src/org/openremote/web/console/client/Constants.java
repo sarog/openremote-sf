@@ -30,9 +30,7 @@ public class Constants {
    private Constants() {
    }
 
-   public static final String CONSOLE_USERNAME = "console_username";
-   public static final String CONSOLE_PASSWORD = "console_password";
-   public static final String CURRENT_SERVER = "current_server";
-   public static final String CURRENT_PANEL = "current_panel";
+   public static final String CONSOLE_USERINFO = "console_userinfo";
+   public static final String CONSOLE_SETTINGS = "console_settings";
    
 }

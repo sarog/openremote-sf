@@ -17,21 +17,30 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.utils;
+package org.openremote.web.console.net;
 
-import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserInfo;
+import java.util.ArrayList;
 
-/**
- * The Class ClientDataBase.
- */
-public class ClientDataBase {
+import org.apache.log4j.Logger;
 
-   public static UserInfo userInfo = new UserInfo();
+
+public class IPAutoDiscovery {
+   private static Logger log = Logger.getLogger(IPAutoDiscovery.class);
+   public static final String MULTICAST_ADDRESS = "224.0.1.100";
+   public static final int MULTICAST_PORT = 3333;
+   public static final int TCP_PORT = 2346;
    
-   public static AppSetting appSetting = new AppSetting();
-   
-   private ClientDataBase() {
+   private IPAutoDiscovery() {
    }
    
+   public static ArrayList<String> getAutoServers() {
+      new Thread(new IPAutoDiscoveryServer()).start();
+      new Thread(new IPAutoDiscoveryClient()).start();
+      try {
+         Thread.sleep(200);
+      } catch (InterruptedException e) {
+         log.error("Can not auto get servers.", e);
+      }
+      return IPAutoDiscoveryServer.autoServers;
+   }
 }

@@ -21,7 +21,15 @@ package org.openremote.web.console.domain;
 
 import java.io.Serializable;
 
-public class UserCache implements Serializable{
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONString;
+
+/**
+ * The Class is for storing the user info, include the username,password,lastGroupId and lastScreenId.
+ */
+public class UserInfo implements Serializable{
    
    private static final long serialVersionUID = 2988635019156071218L;
    
@@ -30,7 +38,7 @@ public class UserCache implements Serializable{
    private int lastGroupId;
    private int lastScreenId;
    
-   public UserCache() {
+   public UserInfo() {
       username = "";
       password = "";
    }
@@ -60,4 +68,30 @@ public class UserCache implements Serializable{
       this.lastScreenId = lastScreenId;
    }
    
+   // The method is just calling by client code.
+   public String toJson() {
+      JSONObject jsonObj = new JSONObject();
+      jsonObj.put("username", new JSONString(this.username));
+      jsonObj.put("password", new JSONString(this.password));
+      jsonObj.put("lastGroupId", new JSONNumber(this.lastGroupId));
+      jsonObj.put("lastScreenId", new JSONNumber(this.lastScreenId));
+      
+      return jsonObj.toString();
+   }
+   
+   // The method is just calling by client code.
+   public void initFromJson(String jsonStr) {
+      if (jsonStr == null || "".equals(jsonStr)) {
+         return;
+      }
+      JSONObject jsonObj = JSONParser.parse(jsonStr).isObject();
+      if (jsonObj == null) {
+         return;
+      }
+      
+      this.username = jsonObj.get("username").isString().stringValue();
+      this.password = jsonObj.get("password").isString().stringValue();
+      this.lastGroupId = (int) jsonObj.get("lastGroupId").isNumber().doubleValue();
+      this.lastScreenId = (int) jsonObj.get("lastScreenId").isNumber().doubleValue();
+   }
 }

@@ -21,7 +21,7 @@ package org.openremote.web.console.server;
 
 import org.openremote.web.console.client.rpc.UserCacheRPCService;
 import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserCache;
+import org.openremote.web.console.domain.UserInfo;
 import org.openremote.web.console.service.UserCacheService;
 
 public class UserCacheController extends BaseGWTSpringController implements UserCacheRPCService {
@@ -34,14 +34,14 @@ public class UserCacheController extends BaseGWTSpringController implements User
       this.userCacheService = userCacheService;
    }
    
-   public UserCache getUserCache() {
+   public UserInfo getUserInfo() {
       return userCacheService.getUserCache();
    }
 
    public void saveUser(String username, String password) {
-      UserCache userCache = getUserCache();
+      UserInfo userCache = getUserInfo();
       if (userCache == null) {
-         userCache = new UserCache();
+         userCache = new UserInfo();
       }
       userCache.setUsername(username);
       userCache.setPassword(password);

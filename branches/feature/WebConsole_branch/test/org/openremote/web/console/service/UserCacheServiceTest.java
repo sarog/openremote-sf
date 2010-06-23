@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.web.console.SpringTestContext;
 import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserCache;
+import org.openremote.web.console.domain.UserInfo;
 import org.openremote.web.console.utils.PathConfig;
 
 
@@ -52,8 +52,8 @@ public class UserCacheServiceTest {
    }
    
    @Test
-   public void testUserCache() {
-      UserCache userCache = new UserCache();
+   public void testUserInfo() {
+      UserInfo userCache = new UserInfo();
       userCache.setUsername("tomsky");
       userCache.setPassword("tomsky");
       userCache.setLastGroupId(2);
@@ -61,7 +61,7 @@ public class UserCacheServiceTest {
       
       userCacheService.saveUserCache(userCache);
       
-      UserCache storedUserCache = userCacheService.getUserCache();
+      UserInfo storedUserCache = userCacheService.getUserCache();
 
       Assert.assertEquals(userCache.getUsername(), storedUserCache.getUsername());
       Assert.assertEquals(userCache.getPassword(), storedUserCache.getPassword());
@@ -72,7 +72,7 @@ public class UserCacheServiceTest {
    @Test
    public void testAppSetting() {
       AppSetting appSetting = new AppSetting();
-      appSetting.setAutoMode(false);
+      appSetting.setAutoDiscovery(false);
       appSetting.setCurrentServer("http://127.0.0.1:8080/controller");
       appSetting.setCurrentPanelIdentity("NoTab");
       List<String> customServers = new ArrayList<String>();
@@ -84,7 +84,7 @@ public class UserCacheServiceTest {
       
       AppSetting newAppSetting = userCacheService.getAppSetting();
       
-      Assert.assertFalse(newAppSetting.isAutoMode());
+      Assert.assertFalse(newAppSetting.isAutoDiscovery());
       Assert.assertEquals(appSetting.getCurrentServer(), newAppSetting.getCurrentServer());
       Assert.assertEquals(appSetting.getCurrentPanelIdentity(), newAppSetting.getCurrentPanelIdentity());
       Assert.assertEquals(2, newAppSetting.getCustomServers().size());
