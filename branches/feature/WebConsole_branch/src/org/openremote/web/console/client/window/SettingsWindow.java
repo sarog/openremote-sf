@@ -23,13 +23,13 @@ package org.openremote.web.console.client.window;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.gxtextends.StringModelData;
 import org.openremote.web.console.client.icon.Icons;
 import org.openremote.web.console.client.listener.FormSubmitListener;
 import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
-import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.domain.AppSetting;
 
@@ -54,14 +54,15 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SettingsWindow extends FormWindow {
    
    private Icons icons = GWT.create(Icons.class);
+   private ToggleButton autoButton;
    private ContentPanel customServerContainer;
    private ContentPanel autoServerContainer;
-   
-   private boolean autoMode;
    
    public SettingsWindow() {
       super();
@@ -82,7 +83,7 @@ public class SettingsWindow extends FormWindow {
    }
    
    private void addAutoField() {
-      ToggleButton autoButton = new ToggleButton("OFF") {
+      autoButton = new ToggleButton("OFF") {
          @Override
          protected void toggle(boolean state, boolean silent) {
             super.toggle(state, silent);
@@ -93,12 +94,11 @@ public class SettingsWindow extends FormWindow {
                      customServerContainer.hide();
                   }
                   if (autoServerContainer != null) {
-                     //TODO: reload auto servers.
                      autoServerContainer.show();
                   } else {
                      createAutoServerGrid();
                   }
-                  ClientDataBase.appSetting.setAutoMode(true);
+                  ClientDataBase.appSetting.setAutoDiscovery(true);
                } else {
                   this.setText("OFF");
                   if (customServerContainer != null) {
@@ -107,15 +107,14 @@ public class SettingsWindow extends FormWindow {
                   if (autoServerContainer != null) {
                      autoServerContainer.hide();
                   }
-                  ClientDataBase.appSetting.setAutoMode(false);
+                  ClientDataBase.appSetting.setAutoDiscovery(false);
                }
             }
          }
       };
       autoButton.setWidth(200);
       
-      autoMode = ClientDataBase.appSetting.isAutoMode();
-      autoButton.toggle(autoMode);
+      autoButton.toggle(ClientDataBase.appSetting.isAutoDiscovery());
       
       AdapterField autoField = new AdapterField(autoButton);
       autoField.setFieldLabel("Auto Discovery");
@@ -216,21 +215,40 @@ public class SettingsWindow extends FormWindow {
       ColumnConfig serverColumn = new ColumnConfig("autoServer", "Auto Servers", 338);
       serverColumn.setSortable(false);
       autoServerConfigs.add(serverColumn);
-      
-      final StringModelData data1 = new StringModelData("autoServer", "http://127.0.0.1:8080/controller");
-      Grid<StringModelData> autoServerGrid = new Grid<StringModelData>(new ListStore<StringModelData>(), new ColumnModel(autoServerConfigs)) {
+      final ListStore<StringModelData> autoServersStore = new ListStore<StringModelData>();
+      final Grid<StringModelData> autoServerGrid = new Grid<StringModelData>(autoServersStore, new ColumnModel(autoServerConfigs)) {
          @Override
          protected void afterRenderView() {
             super.afterRenderView();
-            this.getSelectionModel().select(data1, false);
+            this.getSelectionModel().select(0, false);
          }
       };
       autoServerGrid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//      autoServerGrid.setHideHeaders(true);
-      autoServerGrid.getStore().add(data1);
-      autoServerGrid.getStore().add(new StringModelData("autoServer", "http://localhost:8080/controller"));
       
-      autoServerContainer = new ContentPanel();
+      autoServerContainer = new ContentPanel() {
+         @Override
+         public void show() {
+            super.show();
+            this.mask("Loading auto discovery servers...");
+            autoServersStore.removeAll();
+            autoButton.disable();
+            AsyncServiceFactory.getIPAutoDiscoveryServiceAsync().getAutoDiscoveryServers(new AsyncCallback<List<String>>() {
+               public void onFailure(Throwable caught) {
+                  autoServerContainer.unmask();
+                  autoButton.enable();
+               }
+
+               public void onSuccess(List<String> autoServers) {
+                  for (String autoServer : autoServers) {
+                     autoServersStore.add(new StringModelData("autoServer", autoServer));
+                  }
+                  autoServerGrid.getSelectionModel().select(0, false);
+                  autoServerContainer.unmask();
+                  autoButton.enable();
+               }
+            });
+         }
+      };
       autoServerContainer.setHeaderVisible(false);
       autoServerContainer.setBodyBorder(false);
       autoServerContainer.setLayout(new FitLayout());
@@ -238,18 +256,46 @@ public class SettingsWindow extends FormWindow {
       autoServerContainer.setStyleAttribute("marginBottom", "5px");
       autoServerContainer.setSize(360, 150);
       autoServerContainer.setBorders(true);
-      
+      autoServerContainer.show(); // for loading auto discovery servers.
       autoServerContainer.add(autoServerGrid);
       form.insert(autoServerContainer, 1);
       layout();
    }
    
    private void addPanelIdentityField() {
-      Button selectPanelButton = new Button("Select Panel...");
-      AdapterField panelIdentityField = new AdapterField(selectPanelButton);
-      panelIdentityField.setFieldLabel("Panel Identity");
-      form.add(panelIdentityField);
+       Button selectPanelButton = new Button("Select Panel...");
+       AdapterField panelIdentityField = new AdapterField(selectPanelButton);
+       panelIdentityField.setFieldLabel("Panel Identity");
+       form.add(panelIdentityField);
+      
+//      String url = "http://192.168.100.113:8080/controller/rest/panels";
+//      RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+//      HttpProxy<ListLoadResult<ModelData>> proxy = new HttpProxy<ListLoadResult<ModelData>>(builder);
+////      ScriptTagProxy<ListLoadResult<ModelData>> proxy = new ScriptTagProxy<ListLoadResult<ModelData>>(url);
+//
+//      ModelType type = new ModelType();
+//      type.setRoot("openremote");
+//      type.setRecordName("panel");
+//      type.addField("id");
+//      type.addField("name");
+//
+//      XmlReader<ListLoadResult<ModelData>> reader = new XmlReader<ListLoadResult<ModelData>>(type);
+//
+//      BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(proxy, reader);
+////      loader.addListener(Loader.BeforeLoad, new Listener<LoadEvent>() {
+////         public void handleEvent(LoadEvent be) {
+////            be.<ModelData> getConfig().set("start", be.<ModelData> getConfig().get("offset"));
+////         }
+////      });
+//      ListStore<ModelData> store = new ListStore<ModelData>(loader);
+//      ComboBox<ModelData> combo = new ComboBox<ModelData>();
+//      combo.setFieldLabel("Panel Identity");
+//      combo.setDisplayField("name");
+//      combo.setStore(store);
+//      combo.setTriggerAction(TriggerAction.ALL);
+//      form.add(combo);
    }
+   
    private void addButtons() {
       Button okButton = new Button("OK");
       okButton.addSelectionListener(new FormSubmitListener(form));
@@ -268,12 +314,9 @@ public class SettingsWindow extends FormWindow {
    private void addListener() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            AsyncServiceFactory.getUserCacheServiceAsync().saveAppSetting(ClientDataBase.appSetting, new AsyncSuccessCallback<Void>() {
-               public void onSuccess(Void result) {
-                  fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
-                  hide();
-               }
-            });
+            Cookies.setCookie(Constants.CONSOLE_SETTINGS, ClientDataBase.appSetting.toJson());
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent());
+            hide();
          }
       });
    }

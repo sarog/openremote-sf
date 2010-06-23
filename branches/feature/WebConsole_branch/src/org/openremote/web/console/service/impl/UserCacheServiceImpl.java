@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserCache;
+import org.openremote.web.console.domain.UserInfo;
 import org.openremote.web.console.service.UserCacheService;
 import org.openremote.web.console.utils.PathConfig;
 
@@ -36,15 +36,15 @@ public class UserCacheServiceImpl implements UserCacheService {
    
    private static Logger log = Logger.getLogger(UserCacheServiceImpl.class);
    
-   public UserCache getUserCache() {
+   public UserInfo getUserCache() {
       File userCacheFile = new File(PathConfig.userCacheFilePath());
-      UserCache userCache = null;
+      UserInfo userCache = null;
       if (!userCacheFile.exists()) {
          return userCache;
       }
       try {
          String userCacheStr = FileUtils.readFileToString(userCacheFile, "UTF-8");
-         userCache = new JSONDeserializer<UserCache>().use(null, UserCache.class).deserialize(userCacheStr);
+         userCache = new JSONDeserializer<UserInfo>().use(null, UserInfo.class).deserialize(userCacheStr);
       } catch (IOException e) {
          log.error("Can not read user cache from file.", e);
       }
@@ -52,7 +52,7 @@ public class UserCacheServiceImpl implements UserCacheService {
       return userCache;
    }
 
-   public void saveUserCache(UserCache userCache) {
+   public void saveUserCache(UserInfo userCache) {
       if (userCache == null) {
          return;
       }

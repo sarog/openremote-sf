@@ -17,21 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.utils;
+package org.openremote.web.console.server;
 
-import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.UserInfo;
+import java.util.List;
+
+import org.openremote.web.console.client.rpc.IPAutoDiscoveryRPCService;
+import org.openremote.web.console.net.IPAutoDiscovery;
 
 /**
- * The Class ClientDataBase.
+ * The Class is for get auto discovery servers.
  */
-public class ClientDataBase {
+public class IPAutoDiscoveryController extends BaseGWTSpringController implements IPAutoDiscoveryRPCService {
 
-   public static UserInfo userInfo = new UserInfo();
-   
-   public static AppSetting appSetting = new AppSetting();
-   
-   private ClientDataBase() {
+   private static final long serialVersionUID = 940351583130663140L;
+
+   public List<String> getAutoDiscoveryServers() {
+      return IPAutoDiscovery.getAutoServers();
    }
-   
+
 }
