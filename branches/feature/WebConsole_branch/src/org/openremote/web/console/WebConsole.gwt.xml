@@ -19,6 +19,7 @@
   <!-- Other module inherits                                      -->
   <source path='client'/>
   <source path='domain'/>
+  <source path="exception"/>
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.openremote.web.console.client.WebConsole'/>
 </module>

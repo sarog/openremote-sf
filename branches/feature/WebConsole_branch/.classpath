@@ -31,6 +31,5 @@
 	<classpathentry kind="lib" path="lib/core/flexjson/flexjson.jar"/>
 	<classpathentry kind="lib" path="lib/test/spring/spring-test-2.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit/junit-4.5.jar"/>
-	<classpathentry kind="lib" path="lib/core/gwt/gwt-user.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

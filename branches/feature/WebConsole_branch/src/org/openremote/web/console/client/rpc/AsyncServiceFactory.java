@@ -38,6 +38,8 @@ public class AsyncServiceFactory {
    
    private static IPAutoDiscoveryRPCServiceAsync ipAutoDiscoveryServiceAsync = null;
    
+   private static PanelIdentityRPCServiceAsync panelIdentityServiceAsync = null;
+   
    public static UserCacheRPCServiceAsync getUserCacheServiceAsync() {
       if (userCacheServiceAsync == null) {
          userCacheServiceAsync = GWT.create(UserCacheRPCService.class);
@@ -50,6 +52,13 @@ public class AsyncServiceFactory {
          ipAutoDiscoveryServiceAsync = GWT.create(IPAutoDiscoveryRPCService.class);
       }
       return ipAutoDiscoveryServiceAsync;
+   }
+   
+   public static PanelIdentityRPCServiceAsync getPanelIdentityServiceAsync() {
+      if (panelIdentityServiceAsync == null) {
+         panelIdentityServiceAsync = GWT.create(PanelIdentityRPCService.class);
+      }
+      return panelIdentityServiceAsync;
    }
    
 }

@@ -28,5 +28,6 @@
        default-autowire="byName">
 
    <bean id="userCacheService" class="org.openremote.web.console.service.impl.UserCacheServiceImpl" />    
+   <bean id="panelIdentityService" class="org.openremote.web.console.service.impl.PanelIdentityServiceImpl" />    
 </beans>
 

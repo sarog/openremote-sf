@@ -44,6 +44,7 @@
             <props>
                 <prop key="/webconsole/usercache.smvc">userCacheController</prop>
                 <prop key="/webconsole/autodiscovery.smvc">ipAutoDiscoveryController</prop>
+                <prop key="/webconsole/panelIdentity.smvc">panelIdentityController</prop>
             </props>
         </property>
     </bean>
@@ -55,4 +56,5 @@
     
     <bean id="userCacheController" class="org.openremote.web.console.server.UserCacheController"></bean>
     <bean id="ipAutoDiscoveryController" class="org.openremote.web.console.server.IPAutoDiscoveryController"></bean>
+    <bean id="panelIdentityController" class="org.openremote.web.console.server.PanelIdentityController"></bean>
 </beans>
