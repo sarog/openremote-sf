@@ -48,6 +48,6 @@ import org.openremote.controller.control.protocol.x10.X10CommandBuilderTest;
       KNXCommandBuilderTest.class
    }
 )
-public class AllCommandBuildersTest {
+public class AllCommandBuildersTests {
 
 }
