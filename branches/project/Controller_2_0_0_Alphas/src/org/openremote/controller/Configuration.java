@@ -37,32 +37,36 @@ package org.openremote.controller;
 public class Configuration {
    
   // Private Instance Variables -------------------------------------------------------------------
-
-  private String irsendPath;
-
-  private String lircdconfPath;
-
-  /**
-   * Whether copy lircd.conf for user.
-   */
-  private boolean copyLircdconf;
-
-  private int webappPort;
-
-  private String multicastAddress;
-
-  private int multicastPort;
-
-  private String resourcePath;
-
-  /**
-   * The resource upload switch.
-   */
-  private boolean resourceUpload;
-
-  private long macroIRExecutionDelay = 500;
-
-  private String webappIp;
+  
+   /** The irsend path. */
+   private String irsendPath;
+   
+   /** The lircdconf path. */
+   private String lircdconfPath;
+   
+   /** Whether copy lircd.conf for user. */
+   private boolean copyLircdconf;
+   
+   /** The webapp port. */
+   private int webappPort;
+   
+   /** The multicast address. */
+   private String multicastAddress;
+   
+   /** The multicast port. */
+   private int multicastPort;
+   
+   /** The resource path. */
+   private String resourcePath;
+   
+   /** The resource upload switch. */
+   private boolean resourceUpload;
+   
+   private long macroIRExecutionDelay = 500;
+   
+   private String webappIp;
+   
+   private String beehiveRESTRootUrl;
 
   /**
    * The COM (Serial) port the ORC should use (for example, to send X10 events)
@@ -73,7 +77,6 @@ public class Configuration {
    * The transmitter to use for X10
    */
   private String x10transmitter;
-
 
 
   // Public Methods -------------------------------------------------------------------------------
@@ -383,5 +386,15 @@ public class Configuration {
    public void setWebappIp(String webappIp) {
       this.webappIp = webappIp;
    }
+
+   public String getBeehiveRESTRootUrl() {
+      return beehiveRESTRootUrl;
+   }
+
+   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
+      this.beehiveRESTRootUrl = beehiveRESTRootUrl;
+   }
+   
+   
    
 }

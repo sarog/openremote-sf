@@ -28,5 +28,9 @@
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-util-6.1.22.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit/junit-4.8.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/spring/spring-security-core-2.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/core/apache/commons-codec-1.3.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
