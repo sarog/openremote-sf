@@ -36,14 +36,14 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire = "byName">
 
-  <bean id = "propertyConfigurer"
-        class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name = "locations">
-      <list>
-        <value>classpath:config.properties</value>
-        <value>classpath:roundrobin.properties</value>
-      </list>
-    </property>
+  <bean id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="locations">
+        <list>
+            <value>classpath:config.properties</value>
+            <value>classpath:roundrobin.properties</value>
+          </list>
+      </property>
   </bean>
 
   <!--
@@ -64,6 +64,7 @@
     <property name = "resourcePath" value = "${resource.path}"/>
     <property name = "resourceUpload" value = "${resource.upload.enable}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
+    <property name="beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
 

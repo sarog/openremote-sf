@@ -15,16 +15,48 @@
  */
 
 $(document).ready(function() {
+	var checkedMode = $("input[name='mode']:checked").val();
+	if (checkedMode == 'offline') {
+		showOffline();
+	} else {
+		showOnline();
+	}
+	
+	$('#online').click(function(){
+		showOnline();
+	});
+	$('#offline').click( function() {
+		showOffline();
+	});
     $('#uploadForm').ajaxForm(function(result) {
-    	if(result == 'OK'){
-    		message("upload successful");
-    	}else if (result == 'disabled'){
-    		error("upload is disabled");
-    	}else{
-    		error("upload failed");
-    	}
+    	if (result == 'OK') {
+			message("upload successful");
+		} else if (result == 'disabled') {
+			error("upload is disabled");
+		} else {
+			error("upload failed");
+		}
     }); 
+    $('#syncForm').ajaxForm(function(result) {
+    	if (result == 'OK') {
+			message("configuration is up to date!");
+    	} else if (result == 'forbidden') {
+			error("the username or password you entered is incorrect.");
+    	} else if (result == 'n/a') {
+    		error("can't connect to Beehive.");
+    	} else if (result == 'missing') {
+    		error("openremote.zip not found.");
+		} else {
+			error("sync failed!");
+		}
+    }); 
+    $('#syncSubmit').click(function(){
+    	clearMessage();
+    	showUpdateIndicator();
+    });
 	$('#uploadSubmit').click(function(){
+		clearMessage();
+		showUpdateIndicator();
 		var zipPath = $('#zip').val();
 		if(zipPath == ''){
 			error("Please select a zip first");
@@ -36,13 +68,38 @@ $(document).ready(function() {
 	});
 	$("#version").append(getVersionLabel());
 });
-function message(msg){
-	$('#errMsg').text("");
-	$('#msg').text(msg);
+function showOnline() {
+	$('#online-cont').show();
+	$('#offline-cont').hide();
+	clearMessage();
 }
+function showOffline() {
+	$('#offline-cont').show();
+	$('#online-cont').hide();
+	clearMessage();
+}
+function message(msg){
+	hideUpdateIndicator();
+	$('#errMsg').text("");
+	$('#msg').hide().show().text(msg);
+}
+
 function error(msg){
-	$('#errMsg').text(msg);
+	hideUpdateIndicator();
+	$('#errMsg').hide().show().text(msg);
 	$('#msg').text("");
+}
+
+function clearMessage() {
+	message("");
+	error("");
+}
+
+function showUpdateIndicator() {
+	$('#update_indicator').show();
+}
+function hideUpdateIndicator() {
+	$('#update_indicator').hide();
 }
 function getVersionLabel(){
 	var headUrl = "$HeadURL$";
