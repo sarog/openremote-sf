@@ -20,6 +20,9 @@
 package org.openremote.web.console.client.rpc;
 
 
+import org.openremote.web.console.client.window.LoginWindow;
+import org.openremote.web.console.exception.NotAuthenticatedException;
+
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -42,7 +45,11 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
     * @see com.google.gwt.user.client.rpc.AsyncCallback#onFailure(java.lang.Throwable)
     */
    public void onFailure(Throwable caught) {
-      MessageBox.alert("ERROR", caught.getMessage(), null);
+      if (caught instanceof NotAuthenticatedException) {
+         new LoginWindow();
+      } else {
+         MessageBox.alert("ERROR", caught.getMessage(), null);
+      }
    }
 
 

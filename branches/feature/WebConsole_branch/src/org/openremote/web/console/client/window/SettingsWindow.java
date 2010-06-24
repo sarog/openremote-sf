@@ -30,12 +30,15 @@ import org.openremote.web.console.client.icon.Icons;
 import org.openremote.web.console.client.listener.FormSubmitListener;
 import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
+import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.domain.AppSetting;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
+import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
+import com.extjs.gxt.ui.client.event.FieldEvent;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
@@ -47,6 +50,8 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ToggleButton;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
+import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
@@ -82,6 +87,9 @@ public class SettingsWindow extends FormWindow {
       form.setFieldWidth(200);
    }
    
+   /**
+    * Create Auto discovery button and add to form.
+    */
    private void addAutoField() {
       autoButton = new ToggleButton("OFF") {
          @Override
@@ -121,6 +129,9 @@ public class SettingsWindow extends FormWindow {
       form.add(autoField);
    }
    
+   /**
+    * Creates the custom server grid.
+    */
    private void createCustomServerGrid() {
      List<ColumnConfig> customServerConfigs = new ArrayList<ColumnConfig>();
      ColumnConfig serverColumn = new ColumnConfig("customServer", "Server", 338);
@@ -210,6 +221,9 @@ public class SettingsWindow extends FormWindow {
      form.add(customServerContainer);
    }
    
+   /**
+    * Creates the auto server grid.
+    */
    private void createAutoServerGrid() {
       List<ColumnConfig> autoServerConfigs = new ArrayList<ColumnConfig>();
       ColumnConfig serverColumn = new ColumnConfig("autoServer", "Auto Servers", 338);
@@ -224,6 +238,12 @@ public class SettingsWindow extends FormWindow {
          }
       };
       autoServerGrid.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+      
+      autoServerGrid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<StringModelData>() {
+         public void selectionChanged(SelectionChangedEvent<StringModelData> se) {
+            ClientDataBase.appSetting.setCurrentServer(se.getSelectedItem().getValue());
+         }
+        });
       
       autoServerContainer = new ContentPanel() {
          @Override
@@ -262,40 +282,60 @@ public class SettingsWindow extends FormWindow {
       layout();
    }
    
+   /**
+    * Adds the panel identity comboBox field, for select panel identity.
+    */
    private void addPanelIdentityField() {
-       Button selectPanelButton = new Button("Select Panel...");
-       AdapterField panelIdentityField = new AdapterField(selectPanelButton);
-       panelIdentityField.setFieldLabel("Panel Identity");
-       form.add(panelIdentityField);
+
+      final ListStore<ModelData> store = new ListStore<ModelData>();
+      final ComboBox<ModelData> panelListCombo = new ComboBox<ModelData>();
+      panelListCombo.setStore(store);
+      panelListCombo.setFieldLabel("Panel Identity");
+      panelListCombo.setDisplayField("name");
+      panelListCombo.setValueField("name");
+      panelListCombo.setTriggerAction(TriggerAction.ALL);
+      panelListCombo.setEditable(false);
+      String currentPanel = ClientDataBase.appSetting.getCurrentPanelIdentity();
+      if (!"".equals(currentPanel)) {
+         store.add(new StringModelData("name", currentPanel));
+      }
+      panelListCombo.addListener(Events.TriggerClick, new Listener<FieldEvent>() {
+         public void handleEvent(FieldEvent be) {
+            String currentServer = ClientDataBase.appSetting.getCurrentServer();
+            if (!"".equals(currentServer)) {
+               store.removeAll();
+               AsyncServiceFactory.getPanelIdentityServiceAsync().getPanels(currentServer,
+                     ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(),
+                     new AsyncSuccessCallback<List<String>>() {
+                  public void onSuccess(List<String> panels) {
+                     if (panels != null) {
+                        for (String panel : panels) {
+                           store.add(new StringModelData("name", panel));
+                        }
+                        panelListCombo.expand();
+                     }
+                  }
+               });
+            } else {
+               MessageBox.alert("WARN", "Please select a controller server.", null);
+            }
+         }
+      });
       
-//      String url = "http://192.168.100.113:8080/controller/rest/panels";
-//      RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
-//      HttpProxy<ListLoadResult<ModelData>> proxy = new HttpProxy<ListLoadResult<ModelData>>(builder);
-////      ScriptTagProxy<ListLoadResult<ModelData>> proxy = new ScriptTagProxy<ListLoadResult<ModelData>>(url);
-//
-//      ModelType type = new ModelType();
-//      type.setRoot("openremote");
-//      type.setRecordName("panel");
-//      type.addField("id");
-//      type.addField("name");
-//
-//      XmlReader<ListLoadResult<ModelData>> reader = new XmlReader<ListLoadResult<ModelData>>(type);
-//
-//      BaseListLoader<ListLoadResult<ModelData>> loader = new BaseListLoader<ListLoadResult<ModelData>>(proxy, reader);
-////      loader.addListener(Loader.BeforeLoad, new Listener<LoadEvent>() {
-////         public void handleEvent(LoadEvent be) {
-////            be.<ModelData> getConfig().set("start", be.<ModelData> getConfig().get("offset"));
-////         }
-////      });
-//      ListStore<ModelData> store = new ListStore<ModelData>(loader);
-//      ComboBox<ModelData> combo = new ComboBox<ModelData>();
-//      combo.setFieldLabel("Panel Identity");
-//      combo.setDisplayField("name");
-//      combo.setStore(store);
-//      combo.setTriggerAction(TriggerAction.ALL);
-//      form.add(combo);
+      panelListCombo.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
+         @Override
+         public void selectionChanged(SelectionChangedEvent<ModelData> se) {
+            System.out.println("selected:" + se.getSelectedItem().get("name").toString());
+            ClientDataBase.appSetting.setCurrentPanelIdentity(se.getSelectedItem().get("name").toString());
+         }
+
+      });
+      form.add(panelListCombo);
    }
    
+   /**
+    * Adds "OK"/"Cancel" buttons.
+    */
    private void addButtons() {
       Button okButton = new Button("OK");
       okButton.addSelectionListener(new FormSubmitListener(form));
