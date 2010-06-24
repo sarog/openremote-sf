@@ -46,7 +46,7 @@ public class IPResponseTCPClient implements Runnable {
    public final static int TCP_PORT = 2346;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.getConfig();
+   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
    
    
 
@@ -73,7 +73,8 @@ public class IPResponseTCPClient implements Runnable {
     */
    public void sendTcp() {
       String targetIPStr = targetIP.getHostAddress();
-      String data = "http://" + NetworkUtil.getLocalhostIP() + ":" + configuration.getWebappPort() + "/controller";
+      String data = "http://" + NetworkUtil.getLocalhostIP() + ":" + configuration.getWebappPort() + "/"
+            + configuration.getWebappName();
       logger.info("Sending server IP '" + data + "' to " + targetIPStr);
       Socket skt = null;
       PrintWriter out = null;

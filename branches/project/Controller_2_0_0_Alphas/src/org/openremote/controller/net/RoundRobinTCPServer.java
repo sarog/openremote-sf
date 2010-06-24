@@ -26,7 +26,7 @@ public class RoundRobinTCPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.getRoundRobinConfig();
+   private RoundRobinConfig roundRobinConfig = ConfigFactory.getCustomRoundRobinConfigFromDefaultControllerXML();
    
    private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    

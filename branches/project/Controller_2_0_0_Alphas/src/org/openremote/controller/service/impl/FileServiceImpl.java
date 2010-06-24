@@ -110,7 +110,6 @@ public class FileServiceImpl implements FileService {
          int len = 0;
          while ((len = inputStream.read(buffer)) != -1) {
             fos.write(buffer, 0, len);
-            System.out.println(len);
          }
          if (!ZipUtil.unzip(zip, resourcePath)) {
             return false;

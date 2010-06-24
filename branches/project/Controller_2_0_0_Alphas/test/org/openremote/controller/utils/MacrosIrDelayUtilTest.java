@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
@@ -34,7 +34,7 @@ import org.openremote.controller.protocol.knx.KNXExecutableCommand;
 /**
  * @author Javen
  */
-public class MacrosIrDelayUtilTest extends TestCase {
+public class MacrosIrDelayUtilTest {
 
    private List<ExecutableCommand> haveNotIrCmd = new ArrayList<ExecutableCommand>(5) {
       {
@@ -74,6 +74,7 @@ public class MacrosIrDelayUtilTest extends TestCase {
     * used to test a list not only has IrCommand and DelayCommand. 
     * If it is so, the list will not be changed.
     */
+   @Test
    public void testHaveNotOnlyIrcCmdAndDelayCmd() {
       MacrosIrDelayUtil.ensureDelayForIrCommand(haveNotIrCmd);
       Assert.assertTrue(haveNotIrCmd.size() == 5);
@@ -83,6 +84,7 @@ public class MacrosIrDelayUtilTest extends TestCase {
     * There is one DelayCommand between two IrCommand or there is no DelayCommand between the nearest two IrCommand
     * result: a DelayCommand will be added between theses two IrCommand.
     */
+   @Test
    public void testContainOneOrNoDelayCmdBetweenTwoIrCmd() {
       MacrosIrDelayUtil.ensureDelayForIrCommand(containOneOrNoDelayCmdBetweenTwoIrCmd);
       Assert.assertTrue(containOneOrNoDelayCmdBetweenTwoIrCmd.size() == 7);
@@ -100,6 +102,7 @@ public class MacrosIrDelayUtilTest extends TestCase {
     * result: If the total delay second is small than minimum delay seconds, a new DelayCommand will be added to make sure there be
     * at least minimum seconds between two IrCommand. else the delay will not be changed. 
     */
+   @Test
    public void testContainMultiDelayCmdBetweenTwoIrCmd() {
       MacrosIrDelayUtil.ensureDelayForIrCommand(containMultiDelayCmdBetweenTwoIrCmd);
       Assert.assertTrue(containMultiDelayCmdBetweenTwoIrCmd.size() == 11);

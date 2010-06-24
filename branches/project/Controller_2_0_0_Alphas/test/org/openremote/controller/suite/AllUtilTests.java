@@ -22,23 +22,19 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.openremote.controller.net.MulticastAutoDiscoveryTest;
+import org.openremote.controller.utils.ConfigFactoryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
+import org.openremote.controller.utils.RemoteActionXMLParserTest;
 
 
 @RunWith(Suite.class)
 @SuiteClasses(
 {
-   AllControlBuilderTests.class,
-   AllServiceTests.class,
-   AllRESTfulAPIMockTests.class,
    MacrosIrDelayUtilTest.class,
-   AllCommandBuildersTests.class,
-   MulticastAutoDiscoveryTest.class,
-   RoundRobinTests.class,
-   AllUtilTests.class
+   RemoteActionXMLParserTest.class,
+   ConfigFactoryTest.class
 }
 )
-public class AllTests {
+public class AllUtilTests {
 
 }

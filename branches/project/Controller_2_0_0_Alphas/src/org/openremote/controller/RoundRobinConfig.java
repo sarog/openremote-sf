@@ -26,11 +26,20 @@ import java.util.Set;
 /**
  * Configuration of RoundRobin.
  * 
- * @author Handy.Wang 2009-12-23
+ * @author Handy.Wang, Dan Cong
  */
-public class RoundRobinConfig {
+public class RoundRobinConfig extends CustomConfiguration {
    
-   private Boolean isRoundRobinOn;
+   public static final String CONTROLLER_GROUPMEMBER_AUTODETECT_ON = "controller.groupmember.autodetect.on";
+   public static final String CONTROLLER_ROUNDROBIN_MULTICAST_ADDRESS = "controller.roundrobin.multicast.address";
+   public static final String CONTROLLER_ROUNDROBIN_MULTICAST_PORT = "controller.roundrobin.multicast.port";
+   public static final String CONTROLLER_GROUPNAME = "controller.groupname";
+   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
+   public static final String CONTROLLER_ROUNDROBIN_TCPSERVER_PORT = "controller.roundrobin.tcpserver.port";
+   public static final String CONTROLLER_GROUPMEMBER_CANDIDATE_URLS = "controller.groupmember.candidate.urls";
+   
+   /** whether groupmember auto-dectect is on */
+   private boolean isGroupMemberAutoDetectOn;
    
    /**  Discovery multicast address of round robin. */
    private String roundRobinMulticastAddress;
@@ -47,19 +56,19 @@ public class RoundRobinConfig {
    /** TCP server socket port of Round Robin */
    public int roundRobinTCPServerSocketPort;
    
-   /** Group members url */
-   public String[] groupMembersURLs;
+   /** Group members candidate urls */
+   public String[] groupMemberCandidateURLs;
 
-   public Boolean getIsRoundRobinOn() {
-      return isRoundRobinOn;
+   public boolean getIsGroupMemberAutoDetectOn() {
+      return preferAttrCustomValue(CONTROLLER_GROUPMEMBER_AUTODETECT_ON, isGroupMemberAutoDetectOn);
    }
 
-   public void setIsRoundRobinOn(Boolean isRoundRobinOn) {
-      this.isRoundRobinOn = isRoundRobinOn;
+   public void setIsGroupMemberAutoDetectOn(boolean isGroupMemberAutoDetectOn) {
+      this.isGroupMemberAutoDetectOn = isGroupMemberAutoDetectOn;
    }
 
    public String getRoundRobinMulticastAddress() {
-      return roundRobinMulticastAddress;
+      return preferAttrCustomValue(CONTROLLER_ROUNDROBIN_MULTICAST_ADDRESS, roundRobinMulticastAddress);
    }
 
    public void setRoundRobinMulticastAddress(String roundRobinMulticastAddress) {
@@ -67,7 +76,7 @@ public class RoundRobinConfig {
    }
 
    public int getRoundRobinMulticastPort() {
-      return roundRobinMulticastPort;
+      return preferAttrCustomValue(CONTROLLER_ROUNDROBIN_MULTICAST_PORT, roundRobinMulticastPort);
    }
 
    public void setRoundRobinMulticastPort(int roundRobinMulticastPort) {
@@ -75,7 +84,7 @@ public class RoundRobinConfig {
    }
 
    public String getControllerGroupName() {
-      return controllerGroupName;
+      return preferAttrCustomValue(CONTROLLER_GROUPNAME, controllerGroupName);
    }
 
    public void setControllerGroupName(String controllerGroupName) {
@@ -83,7 +92,7 @@ public class RoundRobinConfig {
    }
 
    public String getControllerApplicationName() {
-      return controllerApplicationName;
+      return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, controllerApplicationName);
    }
 
    public void setControllerApplicationName(String controllerApplicationName) {
@@ -91,27 +100,27 @@ public class RoundRobinConfig {
    }
 
    public int getRoundRobinTCPServerSocketPort() {
-      return roundRobinTCPServerSocketPort;
+      return preferAttrCustomValue(CONTROLLER_ROUNDROBIN_TCPSERVER_PORT, roundRobinTCPServerSocketPort);
    }
 
    public void setRoundRobinTCPServerSocketPort(int roundRobinTCPServerSocketPort) {
       this.roundRobinTCPServerSocketPort = roundRobinTCPServerSocketPort;
    }
    
-   public String[] getGroupMembersURLs() {
-      return this.groupMembersURLs;
+   public String[] getGroupMemberCandidateURLs() {
+      return preferAttrCustomValue(CONTROLLER_GROUPMEMBER_CANDIDATE_URLS, groupMemberCandidateURLs);
    }
 
-   public Set<String> getGroupMembersURLsSet() {
+   public Set<String> getGroupMemberCandidateURLsSet() {
       Set<String> urlsSet = new HashSet<String>();
-      for (String groupMembersURL : groupMembersURLs) {
+      for (String groupMembersURL : getGroupMemberCandidateURLs()) {
          urlsSet.add(groupMembersURL);
       }
       return urlsSet;
    }
 
-   public void setGroupMembersURLs(String[] groupMembersURLs) {
-      this.groupMembersURLs = groupMembersURLs;
+   public void setGroupMemberCandidateURLs(String[] groupMemberCandidateURLs) {
+      this.groupMemberCandidateURLs = groupMemberCandidateURLs;
    }
 
 }

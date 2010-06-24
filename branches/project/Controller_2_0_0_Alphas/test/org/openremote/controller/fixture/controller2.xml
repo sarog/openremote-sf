@@ -115,8 +115,8 @@
 	</commands>
 	
 	<config>
-		<property name="controller.applicationname" value="controller1" />
-		<property name="copy.lircd.conf.on" value="false" />
+		<property name="controller.applicationname" value="controller2" />
+		<property name="copy.lircd.conf.on" value="true" />
 		<property name="resource.path" value="/home/openremote/controller" />
 		<property name="lircd.conf.path" value="/etc/lircd.conf" />
 		<property name="irsend.path" value="/usr/local/bin/irsend" />
@@ -127,10 +127,10 @@
 		<property name="webapp.ip" value="192.168.4.63" />
 		<property name="beehive.REST.Root.Url" value="http://openremote.org/beehvie/rest/" />
 		
-		<property name="controller.groupmember.autodetect.on" value="true" />
+		<property name="controller.groupmember.autodetect.on" value="false" />
 		<property name="controller.roundrobin.multicast.address" value="224.0.1.200" />
 		<property name="controller.roundrobin.multicast.port" value="20000" />
-		<property name="controller.groupname" value="openremote-office" />
+		<property name="controller.groupname" value="openremote-home" />
 		<property name="controller.roundrobin.tcpserver.port" value="10000" />
 		<property name="controller.groupmember.candidate.urls" value="http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/" />
 	</config>
