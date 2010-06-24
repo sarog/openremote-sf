@@ -24,6 +24,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.utils.CommandUtil;
 
 
 /**
@@ -38,16 +39,16 @@ public class HttpGetCommandBuilder implements CommandBuilder {
     */
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
-      HttpGetCommand getEvent = new HttpGetCommand();
+      HttpGetCommand getCmd = new HttpGetCommand();
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
       for(Element ele : propertyEles){
          if("url".equals(ele.getAttributeValue("name"))){
-            getEvent.setUrl(ele.getAttributeValue("value"));
+            getCmd.setUrl(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          } else if("name".equals(ele.getAttributeValue("name"))){
-            getEvent.setName(ele.getAttributeValue("value"));
+            getCmd.setName(ele.getAttributeValue("value"));
          }
       }
-      return getEvent;
+      return getCmd;
    }
 
 }

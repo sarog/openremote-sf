@@ -24,6 +24,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.utils.CommandUtil;
 
 
 /**
@@ -47,9 +48,10 @@ public class TelnetCommandBuilder implements CommandBuilder {
             telnetEvent.setPort(ele.getAttributeValue("value"));
          } else if("ipAddress".equals(ele.getAttributeValue("name"))){
             telnetEvent.setIp(ele.getAttributeValue("value"));
+         } else if("command".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          }
       }
-      telnetEvent.setCommand(element.getAttributeValue("value"));
       return telnetEvent;
    }
 

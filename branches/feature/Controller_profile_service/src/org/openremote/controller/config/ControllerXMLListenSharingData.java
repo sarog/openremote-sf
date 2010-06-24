@@ -38,6 +38,15 @@ public class ControllerXMLListenSharingData {
    private StringBuffer controllerXMLFileContent = new StringBuffer();
    private StringBuffer panelXMLFileContent = new StringBuffer();
    
+   public Sensor findSensorById(String id) {
+      for (Sensor sensor : sensors) {
+         if (sensor.getSensorID() == Integer.valueOf(id)) {
+            return sensor;
+         }
+      }
+      return null;
+   }
+   
    public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
       this.pollingMachineThreads.add(pollingMachineThread);
    }

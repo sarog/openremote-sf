@@ -24,7 +24,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.exception.CommandBuildException;
+import org.openremote.controller.utils.CommandUtil;
 
 /**
  * The Class X10EventBuilder.
@@ -38,23 +38,16 @@ public class X10CommandBuilder implements CommandBuilder {
     */
    @SuppressWarnings("unchecked")
    public ExecutableCommand build(Element element) {
-      String address = null;
-      X10Command xCommand = new X10Command();
-      String command = element.getAttributeValue("value");
+      X10Command x10Command = new X10Command();
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-      for (Element ele : propertyEles) {
-         if ("address".equals(ele.getAttributeValue("name"))) {
-            address = ele.getAttributeValue("value");
-            break;
+      for(Element ele : propertyEles){
+         if("address".equals(ele.getAttributeValue("name"))){
+            x10Command.setAddress(ele.getAttributeValue("value"));
+         } else if("command".equals(ele.getAttributeValue("name"))){
+            x10Command.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          }
       }
-      if (command == null || command.trim().equals("") || address == null || address.trim().equals("")) {
-         throw new CommandBuildException("Can not build a X10Command with empty command: " + command + "or address: "
-               + address);
-      }
-      xCommand.setAddress(address);
-      xCommand.setCommand(command);
-      return xCommand;
+      return x10Command;
    }
 
 }

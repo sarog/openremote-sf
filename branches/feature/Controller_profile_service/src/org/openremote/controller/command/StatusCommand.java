@@ -19,24 +19,31 @@
 */
 package org.openremote.controller.command;
 
+import java.util.Map;
+
 import org.openremote.controller.component.EnumSensorType;
 
 
 /**
- * interface command
+ * Interface StatusCommand.
  * 
  * @author Handy.Wang 2009-10-15
  */
 public interface StatusCommand extends Command {
+   
+   public final static String UNKNOWN_STATUS = "N/A";
 
    /**
-    * Read raw status from device and return it.<br />
+    * Read raw status from device and return parsed status.<br />
+    * And you also can translate the raw status to readable string according to sensoryType and state map.
     * 
-    * And you also can translate the raw status to readable string with sensoryType and then return it.
-    * 
-    * @return the string
+    * @param sensorType
+    *           sensor type
+    * @param stateMap
+    *           state map, key is state name, value is the returned raw string related to the state.
+    * @return parsed status string
     */
-   public String read(EnumSensorType sensoryType);
+   public String read(EnumSensorType sensorType, Map<String, String> stateMap);
    
     
 }

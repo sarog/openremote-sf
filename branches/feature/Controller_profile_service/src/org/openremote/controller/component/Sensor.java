@@ -19,6 +19,9 @@
 */
 package org.openremote.controller.component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.StatusCommand;
 
@@ -36,16 +39,20 @@ public class Sensor {
    
    private StatusCommand statusCommand;
    
+   private Map<String, String> stateMap;
+   
    public Sensor() {
       super();
       this.statusCommand = new NoStatusCommand();
+      stateMap = new HashMap<String, String>();
    }
 
-   public Sensor(int sensorID, String sensorType, StatusCommand statusCommand) {
+   public Sensor(int sensorID, String sensorType, StatusCommand statusCommand, Map<String, String> stateMap) {
       super();
       this.sensorID = sensorID;
       this.sensorType = sensorType;
       this.statusCommand = statusCommand;
+      this.stateMap = stateMap;
    }
    
    public Sensor(StatusCommand statusCommand) {
@@ -75,6 +82,23 @@ public class Sensor {
 
    public void setSensorType(String sensorType) {
       this.sensorType = sensorType;
+   }
+   
+   public Map<String, String> getStateMap() {
+      return stateMap;
+   }
+
+   public void setStateMap(Map<String, String> stateMap) {
+      this.stateMap = stateMap;
+   }
+
+   /**
+    * Read status using status command.
+    * 
+    * @return status
+    */
+   public String readStatus() {
+      return statusCommand.read(EnumSensorType.enumValueOf(sensorType), stateMap);
    }
 
 }

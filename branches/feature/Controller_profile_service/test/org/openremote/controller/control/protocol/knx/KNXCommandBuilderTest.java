@@ -27,12 +27,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.knx.KNXCommand;
 import org.openremote.controller.protocol.knx.KNXCommandBuilder;
 import org.openremote.controller.protocol.knx.KNXCommandType;
-import org.openremote.controller.protocol.knx.KNXExecutableCommand;
-import org.openremote.controller.protocol.knx.KNXStatusCommand;
 
 /**
+ * KNXCommandBuilder Test
  * 
  * @author Javen
  *
@@ -48,8 +48,8 @@ public class KNXCommandBuilderTest {
    @Test
    public void testKNXOn() {
       Command cmd = getCommand("ON", "testGroupAddress");
-      assertTrue(cmd instanceof KNXExecutableCommand);
-      KNXExecutableCommand exeCmd = (KNXExecutableCommand) cmd;
+      assertTrue(cmd instanceof KNXCommand);
+      KNXCommand exeCmd = (KNXCommand) cmd;
       assertEquals(exeCmd.getGroupAddress(), "testGroupAddress");
       assertEquals(exeCmd.getKnxCommandType(), KNXCommandType.SWITCH_ON);
    }
@@ -57,8 +57,8 @@ public class KNXCommandBuilderTest {
    @Test
    public void testKNXOff() {
       Command cmd = getCommand("OFF", "testGroupAddress");
-      assertTrue(cmd instanceof KNXExecutableCommand);
-      KNXExecutableCommand exeCmd = (KNXExecutableCommand) cmd;
+      assertTrue(cmd instanceof KNXCommand);
+      KNXCommand exeCmd = (KNXCommand) cmd;
       assertEquals(exeCmd.getGroupAddress(), "testGroupAddress");
       assertEquals(exeCmd.getKnxCommandType(), KNXCommandType.SWITCH_OFF);
    }
@@ -66,10 +66,10 @@ public class KNXCommandBuilderTest {
    @Test
    public void testKNXStatus() {
       Command cmd = getCommand("STATUS", "testGroupAddress");
-      assertTrue(cmd instanceof KNXStatusCommand);
-      KNXStatusCommand exeCmd = (KNXStatusCommand) cmd;
+      assertTrue(cmd instanceof KNXCommand);
+      KNXCommand exeCmd = (KNXCommand) cmd;
       assertEquals(exeCmd.getGroupAddress(), "testGroupAddress");
-      assertEquals(exeCmd.getKnxCommandType(), null);
+      assertEquals(KNXCommandType.STATUS, exeCmd.getKnxCommandType());
    }
 
    @Test
@@ -84,7 +84,7 @@ public class KNXCommandBuilderTest {
    private Command getCommand(String cmd, String groupAddress) {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
-      ele.setAttribute("protocal", "knx");
+      ele.setAttribute("protocol", "knx");
       ele.setAttribute("value", cmd);
 
       Element propAddr = new Element("property");
