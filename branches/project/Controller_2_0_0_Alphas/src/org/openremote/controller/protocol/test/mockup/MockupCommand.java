@@ -17,16 +17,33 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller;
+package org.openremote.controller.protocol.test.mockup;
 
-public class TestConstraint {
+import org.openremote.controller.command.Command;
+
+/**
+ * 
+ * @author handy.wang 2010-03-18
+ *
+ */
+public class MockupCommand implements Command {
    
-   public final static int WEBAPP_PORT = 8090;
-   
-   public final static String WEBAPP_IP = "127.0.0.1";
-   
-   public final static String FIXTURE_DIR = "./org/openremote/controller/fixture/";
-   
-   public final static String FIXTURE_DIR_OF_POLLING_MACHINES = "./org/openremote/controller/fixture/pollingMachines/";
-   
+   private String url;
+
+   public MockupCommand() {
+      super();
+   }
+
+   public MockupCommand(String url) {
+      super();
+      this.url = url;
+   }
+
+   public String getUrl() {
+      return url;
+   }
+
+   public void setUrl(String url) {
+      this.url = url;
+   }
 }

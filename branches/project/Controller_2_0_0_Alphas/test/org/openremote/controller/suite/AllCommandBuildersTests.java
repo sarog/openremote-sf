@@ -27,7 +27,6 @@ import org.openremote.controller.control.protocol.infrared.IRCommandBuilderTest;
 import org.openremote.controller.control.protocol.knx.KNXCommandBuilderTest;
 import org.openremote.controller.control.protocol.socket.TCPSocketCommandBuilderTest;
 import org.openremote.controller.control.protocol.telnet.TelnetCommandBuilderTest;
-import org.openremote.controller.control.protocol.test.TestCommandBuilderTest;
 import org.openremote.controller.control.protocol.x10.X10CommandBuilderTest;
 
 /**
@@ -39,7 +38,6 @@ import org.openremote.controller.control.protocol.x10.X10CommandBuilderTest;
 @RunWith(Suite.class)
 @SuiteClasses(
    {
-      TestCommandBuilderTest.class,
       HttpGetCommandBuilderTest.class,
       TelnetCommandBuilderTest.class,
       IRCommandBuilderTest.class,

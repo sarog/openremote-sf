@@ -32,7 +32,7 @@ public class SpringTestContext {
 
    private static SpringTestContext m_instance;
 
-   private static String[] contextFiles = new String[] { "testApplicationContext.xml" };
+   private static String[] contextFiles = new String[] { "spring-context-test.xml" };
 
    private ApplicationContext ctx;
 

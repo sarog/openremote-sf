@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.exception.ControllerXMLNotFoundException;
 
 
 /**
@@ -101,13 +100,7 @@ public class RemoteActionXMLParserTest {
    
    @Test
    public void testqueryElementFromDefaultXMLByIdNotFound(){
-      try {
-         remoteActionXMLParser.queryElementFromXMLById("1111111111");
-      } catch (ControllerXMLNotFoundException e) {
-         return;
-      }
-      Assert.fail();
-      
+      Assert.assertNull( remoteActionXMLParser.queryElementFromXMLById(doc, "1111111111"));
    }
    
    
