@@ -23,21 +23,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
- * The Socket Event.
+ * The HTTP GET Command.
  *
  * @author Marcus 2009-4-26
  */
-public class HttpGetCommand implements ExecutableCommand {
+public class HttpGetCommand implements ExecutableCommand, StatusCommand {
 
    /** The logger. */
    private static Logger logger = Logger.getLogger(HttpGetCommand.class.getName());
 
-   /** A name to identify event in controller.xml. */
+   /** A name to identify command in controller.xml. */
    private String name;
 
    /** The url to perform the http get request on */
@@ -85,6 +88,10 @@ public class HttpGetCommand implements ExecutableCommand {
     */
    @Override
    public void send() {
+      requestURL();
+   }
+
+   private String requestURL() {
       BufferedReader in = null;
       try {
          URL url = new URL(getUrl());
@@ -95,8 +102,9 @@ public class HttpGetCommand implements ExecutableCommand {
             result.append(str);
          }
          logger.info("received message: " + result);
+         return result.toString();
       } catch (Exception e) {
-         logger.error("HttpGetEvent could not execute", e);
+         logger.error("HttpGetCommand could not execute", e);
       } finally {
          if (in != null) {
             try {
@@ -106,6 +114,24 @@ public class HttpGetCommand implements ExecutableCommand {
             }
          }
       }
+      return "";
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public String read(EnumSensorType sensoryType, Map<String, String> stateMap) {
+      String rawResult = requestURL();
+      if ("".equals(rawResult)) {
+         return UNKNOWN_STATUS;
+      }
+      for (String state : stateMap.keySet()) {
+         if (rawResult.equals(stateMap.get(state))) {
+            return state;
+         }
+      }
+      return rawResult;
    }
 
 //

@@ -24,10 +24,12 @@ import static org.junit.Assert.fail;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.protocol.infrared.IRCommand;
 import org.openremote.controller.protocol.infrared.IRCommandBuilder;
 /**
+ * IRCommandBuilder Test
  * 
  * @author Javen
  *
@@ -44,8 +46,16 @@ public class IRCommandBuilderTest {
    public void testRightIRCommandBuilder() {
       IRCommand cmd = getCommand("testName", "VL++");
 
-      Assert.assertEquals(cmd.getName(), "testName");
-      Assert.assertEquals(cmd.getCommand(), "VL++");
+      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals("VL++", cmd.getCommand());
+   }
+   
+   @Test
+   public void testIRCommandWithParam() {
+      IRCommand cmd = getCommand("testName", "VL${param}");
+      
+      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals("VL++", cmd.getCommand());
    }
 
    @Test
@@ -69,7 +79,8 @@ public class IRCommandBuilderTest {
    private IRCommand getCommand(String name, String value) {
       Element ele = new Element("command");
       ele.setAttribute("id", "1");
-      ele.setAttribute("protocal", "ir");
+      ele.setAttribute("protocol", "ir");
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "++");
 
       Element nameProp = new Element("property");
       nameProp.setAttribute("name", "name");

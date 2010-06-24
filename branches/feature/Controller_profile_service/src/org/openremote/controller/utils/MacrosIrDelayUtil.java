@@ -75,7 +75,7 @@ public class MacrosIrDelayUtil {
             delays.put(nextIndex, delayCmd);
          } else {
             for (int j = currIndex + 1; j < nextIndex; j++) {
-               delaySeconds += ((DelayCommand) commands.get(j)).getDelaySeconds();
+               delaySeconds += ((DelayCommand) commands.get(j)).getDelayMillisecond();
             }
             if (delaySeconds < minDelaySeconds) {
                DelayCommand delayCmd = new DelayCommand(String.valueOf(minDelaySeconds - delaySeconds));

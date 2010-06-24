@@ -24,10 +24,17 @@ import static junit.framework.Assert.*;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.protocol.x10.X10Command;
 import org.openremote.controller.protocol.x10.X10CommandBuilder;
 
+/**
+ * X10CommandBuilder Test
+ * 
+ * @author Dan Cong
+ *
+ */
 public class X10CommandBuilderTest {
    public X10CommandBuilder builder = null;
 
@@ -40,11 +47,18 @@ public class X10CommandBuilderTest {
    public void testGetCommandByRightCmdAndAddress() {
       X10Command cmd = getCommand("testCmd", "127.0.0.1");
 
-      assertEquals(cmd.getAddress(), "127.0.0.1");
-      assertEquals(cmd.getCommand(), "testCmd");
+      assertEquals("127.0.0.1", cmd.getAddress());
+      assertEquals("testCmd", cmd.getCommand());
+   }
+   
+   @Test
+   public void testGetCommandByCmdAndAddressWithParam() {
+      X10Command cmd = getCommand("light1_${param}", "127.0.0.1");
+      
+      assertEquals("127.0.0.1", cmd.getAddress());
+      assertEquals("light1_255", cmd.getCommand());
    }
 
-   @Test
    public void testGetCommandByWrongCmd() {
       try {
          getCommand("  ", "127.0.0.1");
@@ -53,7 +67,6 @@ public class X10CommandBuilderTest {
       };
    }
 
-   @Test
    public void testGetCommandByWrongAddress() {
       try {
          getCommand("my command ", "  ");
@@ -65,14 +78,19 @@ public class X10CommandBuilderTest {
    public X10Command getCommand(String cmd, String address) {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
-      ele.setAttribute("protocal", "x10");
-      ele.setAttribute("value", cmd);
+      ele.setAttribute("protocol", "x10");
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
 
       Element propAddr = new Element("property");
       propAddr.setAttribute("name", "address");
       propAddr.setAttribute("value", address);
+      
+      Element propCommand = new Element("property");
+      propCommand.setAttribute("name", "command");
+      propCommand.setAttribute("value", cmd);
 
       ele.addContent(propAddr);
+      ele.addContent(propCommand);
 
       return (X10Command) builder.build(ele);
    }

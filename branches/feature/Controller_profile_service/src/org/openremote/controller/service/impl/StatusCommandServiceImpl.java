@@ -32,6 +32,7 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.config.ControllerXMLChangedException;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -70,9 +71,8 @@ public class StatusCommandServiceImpl implements StatusCommandService {
        Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
        for (String sensorID : sensorIDs) {
            sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
-           Element tempSensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
-           String typePropertyValueOfSensor = tempSensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME);
-           sb.append(sensorIdAndStatusCommandsMap.get(sensorID).read(EnumSensorType.enumValueOf(typePropertyValueOfSensor)));
+           Sensor sensor = controllerXMLListenSharingData.findSensorById(sensorID);
+           sb.append(sensor == null ? StatusCommand.UNKNOWN_STATUS : sensor.readStatus());
            sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
            sb.append("\n");
        }

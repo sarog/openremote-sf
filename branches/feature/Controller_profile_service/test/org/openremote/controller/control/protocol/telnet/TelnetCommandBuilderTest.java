@@ -24,9 +24,11 @@ import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.protocol.telnet.TelnetCommand;
 import org.openremote.controller.protocol.telnet.TelnetCommandBuilder;
 /**
+ * TelnetCommandBuilder Test
  * 
  * @author Javen
  *
@@ -41,17 +43,27 @@ public class TelnetCommandBuilderTest {
 
    @Test
    public void testTelnet() {
-      TelnetCommand cmd = getCommand("192.168.1.1", 23);
-      Assert.assertEquals(cmd.getIp(), "192.168.1.1");
-      Assert.assertEquals(cmd.getPort(), 23 + "");
-      Assert.assertEquals(cmd.getName(), "testName");
+      TelnetCommand cmd = getCommand("192.168.1.1", "23", "test");
+      Assert.assertEquals("192.168.1.1", cmd.getIp());
+      Assert.assertEquals("23", cmd.getPort());
+      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals("test", cmd.getCommand());
+   }
+   
+   @Test
+   public void testTelnetWithParam() {
+      TelnetCommand cmd = getCommand("192.168.1.1", "23", "light1_${param}");
+      Assert.assertEquals("192.168.1.1", cmd.getIp());
+      Assert.assertEquals("23", cmd.getPort());
+      Assert.assertEquals("testName", cmd.getName());
+      Assert.assertEquals("light1_255", cmd.getCommand());
    }
 
-   private TelnetCommand getCommand(String address, int port) {
+   private TelnetCommand getCommand(String address, String port, String cmd) {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
-      ele.setAttribute("protocal", "telnet");
-      ele.setAttribute("value", "test");
+      ele.setAttribute("protocol", "telnet");
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
 
       Element propName = new Element("property");
       propName.setAttribute("name", "name");
@@ -63,11 +75,16 @@ public class TelnetCommandBuilderTest {
 
       Element propPort = new Element("property");
       propPort.setAttribute("name", "port");
-      propPort.setAttribute("value", port + "");
+      propPort.setAttribute("value", port);
+      
+      Element propCommand = new Element("property");
+      propCommand.setAttribute("name", "command");
+      propCommand.setAttribute("value", cmd);
 
       ele.addContent(propName);
       ele.addContent(propAddr);
       ele.addContent(propPort);
+      ele.addContent(propCommand);
 
       return (TelnetCommand) builder.build(ele);
    }
