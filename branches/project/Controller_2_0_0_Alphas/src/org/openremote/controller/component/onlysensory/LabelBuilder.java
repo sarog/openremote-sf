@@ -1,3 +1,5 @@
+package org.openremote.controller.component.onlysensory;
+
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -17,35 +19,35 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.component.onlysensorycomponent;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
+import org.jdom.Element;
+import org.openremote.controller.component.Component;
+import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.Sensor;
-import org.openremote.controller.component.Sensory;
-import org.openremote.controller.component.control.Control;
 /**
- * This class is used to store the information for a label. 
+ * This class is used to build a Label by parse controll.xml
  * @author Javen, Handy
  *
  */
-public class Label extends Control implements Sensory {
-   public Label(){
-      super();
-      setSensor(new Sensor((new NoStatusCommand())));
+public class LabelBuilder extends ComponentBuilder {
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public Component build(Element componentElement, String commandParam) {
+      Label label = new Label();
+      if (!label.isValidActionWith(commandParam)) {
+         return label;
+      }
+      List<Element> operationElements = componentElement.getChildren(); 
+      for (Element operationElement : operationElements) {
+         if (isIncludedSensorElement(operationElement)) {
+            Sensor sensor = parseSensor(componentElement, operationElement);
+            label.setSensor(sensor);
+         }
+      }
+      return label;
    }
 
-   @Override
-   protected List<String> getAvailableActions() {
-      List<String> availableActions = new ArrayList<String>();
-      availableActions.add("status");
-      return availableActions;
-   }
-
-   @Override
-   public int fetchSensorID() {
-      return getSensor().getSensorID();
-   }
 }
