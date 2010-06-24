@@ -104,7 +104,7 @@
   <bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
   
   <!-- Label Builder -->
-  <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensorycomponent.LabelBuilder" />
+  <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
   
   <!-- Slider Builder -->
   <bean id= "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
@@ -113,7 +113,7 @@
   <bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
   
   <!-- imageBuilder -->
-  <bean id="imageBuilder" class="org.openremote.controller.component.onlysensorycomponent.ImageBuilder" />
+  <bean id="imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
   
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
