@@ -19,13 +19,13 @@
 */
 package org.openremote.controller.statuscache;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.spring.SpringContext;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -44,9 +44,9 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
     */
    @Override
    public void contextInitialized(ServletContextEvent event) {
-      Map<String, StatusCommand> sensorIdAndStatusCommandsMap = new HashMap<String, StatusCommand>();
-      pollingMachinesService.initStatusCacheWithControllerXML(null, sensorIdAndStatusCommandsMap);
-      pollingMachinesService.startPollingMachineMultiThread(sensorIdAndStatusCommandsMap);
+      List<Sensor> sensors = new ArrayList<Sensor>();
+      pollingMachinesService.initStatusCacheWithControllerXML(null, sensors);
+      pollingMachinesService.startPollingMachineMultiThread(sensors);
    }
    
    /* (non-Javadoc)

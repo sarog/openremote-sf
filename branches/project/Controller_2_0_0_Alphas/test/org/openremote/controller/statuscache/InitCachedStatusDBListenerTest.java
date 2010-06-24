@@ -21,6 +21,7 @@ package org.openremote.controller.statuscache;
 
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.TestConstraint;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Sensor;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.service.StatusCacheService;
@@ -65,9 +66,9 @@ public class InitCachedStatusDBListenerTest {
       doc = builder.build(controllerXMLPath);
       
       sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(doc, "sensor");
-      Map<String, StatusCommand> sensorIdAndStatusCommandsMap = new HashMap<String, StatusCommand>();
-      pollingMachinesService.initStatusCacheWithControllerXML(doc, sensorIdAndStatusCommandsMap);
-      pollingMachinesService.startPollingMachineMultiThread(sensorIdAndStatusCommandsMap);
+      List<Sensor> sensors = new ArrayList<Sensor>();
+      pollingMachinesService.initStatusCacheWithControllerXML(doc, sensors);
+      pollingMachinesService.startPollingMachineMultiThread(sensors);
    }
    
    private void nap(long sec) {
