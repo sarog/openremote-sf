@@ -63,6 +63,8 @@ public class Constants {
    /** The Constant XML_STATUS_RESULT_ELEMENT_NAME composed xml-formatted status results. */
    public static final String STATUS_XML_STATUS_RESULT_ELEMENT_NAME = "status";
    
+   public static final String SENSOR_TYPE_ATTRIBUTE = "type";
+   
    /** The Constant XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY composed xml-formatted status results. */
    public static final String STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY = "id";
    

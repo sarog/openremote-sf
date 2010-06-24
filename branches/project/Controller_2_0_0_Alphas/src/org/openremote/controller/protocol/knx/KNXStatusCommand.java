@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.control.Control;
 
 /**
@@ -41,7 +42,7 @@ public class KNXStatusCommand extends KNXCommand implements StatusCommand {
      * (non-Javadoc)
      * @see org.openremote.controller.protocol.knx.KNXEvent#exec()
      */
-    public String read() {
+    public String read(EnumSensorType sensorType) {
        /* String rst = "unknown";
         try {
             KNXConnection connection = getConnectionManager().getConnection();

@@ -19,10 +19,10 @@
 */
 package org.openremote.controller.service;
 
-import java.util.Map;
+import java.util.List;
 
 import org.jdom.Document;
-import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.Sensor;
 
 /**
  * This service is for polling the status of components of hardwares people cared.<br /><br />
@@ -37,8 +37,8 @@ import org.openremote.controller.command.StatusCommand;
  */
 public interface PollingMachinesService {
    /** init the <b>STATUSCACHE</b> with all sensor ids parsed from <b>CONTROLLER</b>.xml and their statuses */
-   public void initStatusCacheWithControllerXML(Document document, Map<String, StatusCommand> sensorIdAndStatusCommandsMap);
+   public void initStatusCacheWithControllerXML(Document document, List<Sensor> sensors);
    
    /** Create looped threads initialized by <b>STATUSCOMMAND</b> */
-   public void startPollingMachineMultiThread(Map<String, StatusCommand> sensorIdAndStatusCommandsMap);
+   public void startPollingMachineMultiThread(List<Sensor> sensors);
 }
