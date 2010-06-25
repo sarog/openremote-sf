@@ -29,7 +29,9 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.BeehiveNotAvailableException;
 import org.openremote.controller.exception.ForbiddenException;
 import org.openremote.controller.exception.ResourceNotFoundException;
+import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.FileService;
+import org.openremote.controller.spring.SpringContext;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,7 +49,7 @@ public class ConfigManageController extends MultiActionController {
    
    private Configuration configuration;
    
-
+   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService)SpringContext.getInstance().getBean("controllerXMLChangeService");
 
    /**
     * Upload zip.
@@ -89,6 +91,15 @@ public class ConfigManageController extends MultiActionController {
       } 
       return null;
    }
+   
+   public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletRequestBindingException {
+      if (controllerXMLChangeService.isControllerXMLContentChanged()) {
+         response.getWriter().print(controllerXMLChangeService.freshController() ? Constants.OK : "failed");
+      } else {
+         response.getWriter().print("latest");
+      }
+      return null;
+   }
 
    /**
     * Sets the file service.
@@ -107,6 +118,5 @@ public class ConfigManageController extends MultiActionController {
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
-   
 
 }

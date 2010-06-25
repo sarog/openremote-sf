@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
+import org.openremote.controller.config.ControllerXMLChangedException;
+import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
@@ -43,6 +45,8 @@ public class StatusPollingServiceImpl implements StatusPollingService {
    private ChangedStatusTable changedStatusTable;
    
    private StatusCacheService statusCacheService;
+   
+   private ControllerXMLListenSharingData controllerXMLListenSharingData;
    
    public void setStatusCacheService(StatusCacheService statusCacheService) {
       this.statusCacheService = statusCacheService;
@@ -63,6 +67,10 @@ public class StatusPollingServiceImpl implements StatusPollingService {
     */
    @Override
    public String queryChangedState(String deviceID, String unParsedSensorIDs) {
+      if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+         throw new ControllerXMLChangedException("The content of controller.xml had changed.");
+      }
+      
       logger.info("Querying changed state from ChangedStatus table...");
       String skipState = "";
       String[] sensorIDs = (unParsedSensorIDs == null || "".equals(unParsedSensorIDs)) ? new String[]{} : unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
@@ -98,6 +106,11 @@ public class StatusPollingServiceImpl implements StatusPollingService {
             try {
                logger.info(changedStateRecord + "Waiting...");
                changedStateRecord.wait(50000);
+               
+               if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+                  throw new ControllerXMLChangedException("The content of controller.xml had changed.");
+               }
+               
                willTimeout = true;
             } catch (InterruptedException e) {
                e.printStackTrace();
@@ -150,6 +163,10 @@ public class StatusPollingServiceImpl implements StatusPollingService {
 
    public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
       this.changedStatusTable = changedStatusTable;
+   }
+
+   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
+      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
    }
 
 }

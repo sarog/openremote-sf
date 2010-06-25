@@ -112,6 +112,9 @@
     
     <!-- polling machine sevice -->
     <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl" />
+    
+    <!-- controller xml change service -->
+    <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
@@ -201,5 +204,7 @@
   <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
   
   <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
+  
+  <bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
 </beans>

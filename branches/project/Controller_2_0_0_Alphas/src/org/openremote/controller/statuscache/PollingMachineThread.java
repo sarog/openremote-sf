@@ -30,7 +30,9 @@ import org.openremote.controller.service.StatusCacheService;
 public class PollingMachineThread extends Thread { 
    private Sensor sensor;
 	private StatusCacheService statusCacheService;
-	private static final long INTERVAL = 500;	
+	private static final long INTERVAL = 500;
+	private boolean alive = true;
+	
 	/** milliseconds */
 	private long pollingMachineInterval;
 	
@@ -46,7 +48,7 @@ public class PollingMachineThread extends Thread {
 	
 	@Override
 	public void run() {
-		while (true) {
+		while (alive) {
 			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), sensor.getStatusCommand().read(EnumSensorType.enumValueOf(sensor.getSensorType())));
 			try {
 				Thread.sleep(pollingMachineInterval);
@@ -54,6 +56,10 @@ public class PollingMachineThread extends Thread {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void kill() {
+	   this.alive = false;
 	}
 
 }

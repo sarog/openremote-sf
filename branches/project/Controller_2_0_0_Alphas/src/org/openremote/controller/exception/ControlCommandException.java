@@ -25,7 +25,7 @@ package org.openremote.controller.exception;
  * @author Dan 2009-6-2
  */
 @SuppressWarnings("serial")
-public class ControlCommandException extends RuntimeException {
+public class ControlCommandException extends ControllerException {
    
    /** The Constant EVENT_BUILDER_ERROR. */
    public final static int COMMAND_BUILDER_ERROR = 418;
@@ -59,28 +59,6 @@ public class ControlCommandException extends RuntimeException {
    public final static int INVALID_ELEMENT = 429;
    
    public final static int INVALID_REFERENCE = 430;
-   
-   
-   /** The error code. */
-   private int errorCode;
-
-   /**
-    * Gets the error code.
-    * 
-    * @return the error code
-    */
-   public int getErrorCode() {
-      return errorCode;
-   }
-
-   /**
-    * Sets the error code.
-    * 
-    * @param errorCode the new error code
-    */
-   public void setErrorCode(int errorCode) {
-      this.errorCode = errorCode;
-   }
 
    /**
     * Instantiates a new button command exception.
