@@ -32,7 +32,7 @@ public class CommandDelay extends DeviceMacroItem {
 
    private static final long serialVersionUID = -6381795078683635947L;
    
-   /** The delay second. */
+   /** The delay millisecond. */
    private String delaySecond;
    
    /**
@@ -76,7 +76,7 @@ public class CommandDelay extends DeviceMacroItem {
    @Override
    @Transient
    public String getDisplayName() {
-      return "Delay (" + getDelaySecond() + "s)";
+      return "Delay (" + getDelaySecond() + "ms)";
    }
    
 }
