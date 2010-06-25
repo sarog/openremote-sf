@@ -116,7 +116,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    @SuppressWarnings("unchecked")
    private Document getProfileDocumentByPanelID(String xmlPath, String panelID) {
-
+      
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -156,6 +156,8 @@ public class ProfileServiceImpl implements ProfileService {
 
    @SuppressWarnings("unchecked")
    private Document getProfileDocumentByPanelName(String xmlPath, String name) {
+  
+      
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -231,7 +233,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private void setNamespace(Element root, Element newRoot, Element... elements) {
       Namespace ns1 = Namespace.getNamespace("xsi", "htt//www.w3.org/2001/XMLSchema-instance");
-      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org ihpone.xsd");
+      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org panel.xsd");
       newRoot.setNamespace(root.getNamespace());
       newRoot.addNamespaceDeclaration(ns1);
       newRoot.addNamespaceDeclaration(ns2);

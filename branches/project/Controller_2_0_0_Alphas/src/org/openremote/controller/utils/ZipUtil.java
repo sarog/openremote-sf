@@ -53,11 +53,12 @@ public class ZipUtil {
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
       FileOutputStream fileOutputStream = null;
+      File zippedFile = null;
       try {
          while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (!zipEntry.isDirectory()) {
                targetDir = targetDir.endsWith("/") || targetDir.endsWith("\\") ? targetDir : targetDir + "/";
-               File zippedFile = new File(targetDir + zipEntry.getName());
+               zippedFile = new File(targetDir, zipEntry.getName());
                FileUtils.deleteQuietly(zippedFile);
                FileUtils.touch(zippedFile);
                fileOutputStream = new FileOutputStream(zippedFile);
@@ -69,7 +70,7 @@ public class ZipUtil {
             }
          }
       } catch (IOException e) {
-         logger.error("Can't unzip to " + targetDir, e);
+         logger.error("Can't unzip file to " + zippedFile.getPath(), e);
          return false;
       } finally {
          try {

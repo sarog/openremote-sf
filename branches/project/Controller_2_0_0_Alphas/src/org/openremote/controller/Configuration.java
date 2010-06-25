@@ -282,7 +282,8 @@ public class Configuration extends CustomConfiguration {
    * @return operating system specific filesystem path as a string
    */
   public String getResourcePath() {
-    return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
+//      return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
+     return resourcePath;
   }
 
   /**

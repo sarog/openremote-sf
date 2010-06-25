@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.exception.CommandBuildException;
 
 /**
  * 
@@ -64,9 +65,11 @@ public class MockupCommandBuilder implements CommandBuilder {
                }
             }
             return mockupCommand;
+         } else {
+            throw new CommandBuildException("Property \"type\" must appear in mockup protocol command DOM element.");
          }
       }
-      return null;
+      throw new CommandBuildException("Invalid Command DOM element.");
    }
    
    @SuppressWarnings("unchecked")
