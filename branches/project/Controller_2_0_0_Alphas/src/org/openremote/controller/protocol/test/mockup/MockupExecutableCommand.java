@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.test.mockup;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -49,8 +50,10 @@ public class MockupExecutableCommand extends MockupCommand implements Executable
             result.append(str);
          }         
 //         logger.info("Received message: " + result);
+      } catch(ConnectException ce) {
+         logger.error("MockupExecutableCommand excute fail: " + ce.getMessage());
       } catch (Exception e) {
-         logger.error("MockupExecutableCommand could not execute", e);
+         logger.error("MockupExecutableCommand excute fail: " + e.getMessage());
       } finally {
          if (in != null) {
             try {

@@ -37,7 +37,9 @@
 					</TR>
 					<TR>
 						<TD align=left colSpan=5 height=80>
-						<h1 class="welcome">Welcome to Controller!</h1>
+						<p class="welcome">Welcome to Controller!</p>
+						<p id="errMsg" class="errMsg" />
+						<p id="msg" class="msg" />
 						<p >
 							<a id="refresh" value="refresh" href="javascript:void(0);">Reload configuration and clear cache</a>
 							<img id="refresh_indicator" style="display:none" title="refreshing" src="image/progress.gif">
@@ -50,10 +52,8 @@
 							<label for="offline">offline</label>
 							<img id="update_indicator" style="display:none" title="updating" src="image/progress.gif">
 						</div>
-						<p id="errMsg" class="errMsg" />
-						<p id="msg" class="msg" />
 						<div id="online-cont">
-							<p>Login with your <b>Modeler</b> account.</p>
+							<p>This requires your <b>Modeler</b> account.</p>
 							<form id="syncForm" action="config.htm?method=syncOnline" 
 							method="post" enctype="multipart/form-data">
 								<p>

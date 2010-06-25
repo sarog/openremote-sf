@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.BeehiveNotAvailableException;
+import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ForbiddenException;
 import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.service.ControllerXMLChangeService;
@@ -49,7 +50,9 @@ public class ConfigManageController extends MultiActionController {
    
    private Configuration configuration;
    
-   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService)SpringContext.getInstance().getBean("controllerXMLChangeService");
+   /** MUST use <code>SpringContext</code> to keep the same context as <code>InitCachedStatusDBListener</code> */
+   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService) SpringContext
+         .getInstance().getBean("controllerXMLChangeService");
 
    /**
     * Upload zip.
@@ -64,12 +67,19 @@ public class ConfigManageController extends MultiActionController {
     */
    public ModelAndView uploadZip(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
-      if (configuration.isResourceUpload()) {
-         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-         boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
-         response.getWriter().print(success ? Constants.OK : null);
-      } else {
-         response.getWriter().print("disabled");
+      try {
+         if (configuration.isResourceUpload()) {
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+            if (success) {
+               controllerXMLChangeService.refreshController();
+            }
+            response.getWriter().print(success ? Constants.OK : null);
+         } else {
+            response.getWriter().print("disabled");
+         }
+      } catch (ControlCommandException e) {
+         response.getWriter().print(e.getMessage());
       }
       return null;
    }
@@ -81,6 +91,9 @@ public class ConfigManageController extends MultiActionController {
       boolean success = false;
       try {
          success = fileService.syncConfigurationWithModeler(username, password);
+         if (success) {
+            controllerXMLChangeService.refreshController();
+         }
          response.getWriter().print(success ? Constants.OK : null);
       } catch (ForbiddenException e) {
          response.getWriter().print("forbidden");
@@ -88,15 +101,23 @@ public class ConfigManageController extends MultiActionController {
          response.getWriter().print("n/a");
       } catch (ResourceNotFoundException e) {
          response.getWriter().print("missing");
-      } 
+      } catch (ControlCommandException e) {
+         response.getWriter().print(e.getMessage());
+      }
       return null;
    }
    
-   public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletRequestBindingException {
-      if (controllerXMLChangeService.isControllerXMLContentChanged()) {
-         response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
-      } else {
-         response.getWriter().print("latest");
+   public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException,
+         ServletRequestBindingException {
+      try {
+         if (controllerXMLChangeService.isObservedXMLContentChanged(Constants.CONTROLLER_XML)
+               || controllerXMLChangeService.isObservedXMLContentChanged(Constants.PANEL_XML)) {
+            response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
+         } else {
+            response.getWriter().print("latest");
+         }
+      } catch (ControlCommandException e) {
+         response.getWriter().print(e.getMessage());
       }
       return null;
    }

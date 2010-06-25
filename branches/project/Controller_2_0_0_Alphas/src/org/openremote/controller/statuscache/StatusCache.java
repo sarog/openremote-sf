@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.exception.NoSuchComponentException;
 
 /**
@@ -44,6 +45,8 @@ public class StatusCache {
    private ChangedStatusTable changedStatusTable;
 
    private Map<Integer, String> sensorStatus = null;
+   
+   private Logger logger = Logger.getLogger(this.getClass().getName());
 
    public StatusCache() {
       sensorStatus = new HashMap<Integer, String>();
@@ -62,7 +65,7 @@ public class StatusCache {
    public synchronized void saveOrUpdateStatus(Integer componentID, String status) {
       String oldStatus = sensorStatus.get(componentID);
       if (status == null || "".equals(status)) {
-         throw new NullPointerException("The current status was null.");
+         logger.info("Status is null or \"\" while calling saveOrUpdateStatus in statusCache.");
       }
       
       boolean needNotify = false;
