@@ -107,11 +107,21 @@
 	</sensors>
 	
 	<commands>
-		<command id="100" protocol="test" value="ON" />
-		<command id="99" protocol="test" value="OFF"/>
-		<command id="98" protocol="test" value="STATUS"/>
-		<command id="97" protocol="test" value="CHANGE"/>
-		<command id="96" protocol="test" value="STATUS"/>
+		<command id="100" protocol="test">
+			<property name="command" value="ON" />
+		</command>
+		<command id="99" protocol="test">
+			<property name="command" value="OFF" />
+		</command>
+		<command id="98" protocol="test">
+			<property name="command" value="STATUS" />
+		</command>
+		<command id="97" protocol="test">
+			<property name="command" value="CHANGE" />
+		</command>
+		<command id="96" protocol="test">
+			<property name="command" value="STATUS" />
+		</command>
 	</commands>
 	
 	<config>
