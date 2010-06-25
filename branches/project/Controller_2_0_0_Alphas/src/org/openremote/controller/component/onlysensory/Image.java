@@ -22,9 +22,7 @@ package org.openremote.controller.component.onlysensory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.component.Component;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.Sensory;
 
 /**
@@ -34,10 +32,6 @@ import org.openremote.controller.component.Sensory;
  */
 public class Image extends Component implements Sensory {
 
-   public Image() {
-      super();
-      setSensor(new Sensor(new NoStatusCommand()));
-   }
    
    @Override
    protected List<String> getAvailableActions() {

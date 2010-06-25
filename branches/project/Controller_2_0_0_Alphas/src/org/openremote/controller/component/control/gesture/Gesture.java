@@ -22,8 +22,6 @@ package org.openremote.controller.component.control.gesture;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.control.Control;
 /**
  * This class is used to store the information for a gesture. 
@@ -31,10 +29,6 @@ import org.openremote.controller.component.control.Control;
  *
  */
 public class Gesture extends Control {
-   public Gesture(){
-      super();
-      setSensor(new Sensor(new NoStatusCommand()));
-   }
 
    @Override
    protected List<String> getAvailableActions() {

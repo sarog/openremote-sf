@@ -22,8 +22,6 @@ package org.openremote.controller.component.control.slider;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
 
@@ -40,10 +38,6 @@ public class Slider extends Control implements Sensory {
    /** The container element name of executable command refence of slider. */
    public static final String EXECUTE_CONTENT_ELEMENT_NAME = "setvalue";
 
-   public Slider() {
-      super();
-      setSensor(new Sensor(new NoStatusCommand()));
-   }
    
    @Override
    public boolean isValidActionWith(String actionParam) {
