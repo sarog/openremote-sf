@@ -68,15 +68,19 @@ public class IRCommandBuilderTest {
 
    private IRCommand getCommand(String name, String value) {
       Element ele = new Element("command");
-      ele.setAttribute("id", "test");
+      ele.setAttribute("id", "1");
       ele.setAttribute("protocal", "ir");
-      ele.setAttribute("value", value);
 
-      Element propName = new Element("property");
-      propName.setAttribute("name", "name");
-      propName.setAttribute("value", name);
+      Element nameProp = new Element("property");
+      nameProp.setAttribute("name", "name");
+      nameProp.setAttribute("value", name);
+      
+      Element cmdProp = new Element("property");
+      cmdProp.setAttribute("name", "command");
+      cmdProp.setAttribute("value", value);
 
-      ele.addContent(propName);
+      ele.addContent(nameProp);
+      ele.addContent(cmdProp);
       return (IRCommand) builder.build(ele);
    }
 }

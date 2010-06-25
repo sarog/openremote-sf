@@ -33,7 +33,7 @@ public class Gesture extends Control {
    @Override
    protected List<String> getAvailableActions() {
       List<String> availableActions = new ArrayList<String>();
-      availableActions.add("swap");
+      availableActions.add("swipe");
       return availableActions;
    }
 }
