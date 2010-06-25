@@ -11,11 +11,13 @@ public class ProfileServiceTest {
 
    private ProfileService service;
    private String xmlPath = null;
+   private String panelNameXmlPath = null;
 
    @Before
    public void setUp() throws Exception {
       service = (ProfileService) SpringTestContext.getInstance().getBean("profileService");
       xmlPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "panel.xml").getFile();
+      panelNameXmlPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "panelName.xml").getFile();
    }
 
    public String generateXMLByPanelID(String panelID) {
@@ -24,6 +26,9 @@ public class ProfileServiceTest {
 
    public String generateXMLByPanelName(String panelName) {
       return service.getProfileByName(xmlPath, panelName);
+   }
+   public String generateXMLByPanelName2(String panelName) {
+      return service.getProfileByName(panelNameXmlPath, panelName);
    }
 
    @Test
@@ -89,5 +94,35 @@ public class ProfileServiceTest {
       }
 
       Assert.assertNull(result);
+   }
+   //'my panel'
+   @Test 
+   public void getGetPanelByName() {
+      String result = generateXMLByPanelName2("\'my panel\'");
+      System.out.println(result);
+   }
+   //"test"
+   @Test 
+   public void getGetPanelByName2() {
+      String result = generateXMLByPanelName2("\"test\"");
+      System.out.println(result);
+   }
+   //'his panel'
+   @Test 
+   public void getGetPanelByName3() {
+      String result = generateXMLByPanelName2("'his panel'");
+      System.out.println(result);
+   }
+   //'test
+   @Test 
+   public void getGetPanelByName4() {
+      String result = generateXMLByPanelName2("'test");
+      System.out.println(result);
+   }
+   //"'test test"
+//   @Test 
+   public void getGetPanelByName5() {
+      String result = generateXMLByPanelName2("\"\'test test\"");
+      System.out.println(result);
    }
 }
