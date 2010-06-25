@@ -44,13 +44,13 @@ public class MockupStatusCommand extends MockupCommand implements StatusCommand 
       StringBuffer result = new StringBuffer();
       try {
          URL url = new URL(getUrl());
-         logger.info("Had send status command : " + getUrl());
+//         logger.info("Had send status command : " + getUrl());
          in = new BufferedReader(new InputStreamReader(url.openStream()));
          String str;
          while ((str = in.readLine()) != null) {
             result.append(str);
          }         
-         logger.info("Received message: " + result);
+//         logger.info("Received message: " + result);
       } catch (Exception e) {
          logger.error("MockupStatusCommand could not execute", e);
       } finally {

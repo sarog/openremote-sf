@@ -104,6 +104,10 @@ public class StatusCache {
       }
       return result;
    }
+   
+   public void clear() {
+      this.sensorStatus.clear();
+   }
 
    public ChangedStatusTable getChangedStatusTable() {
       return changedStatusTable;
