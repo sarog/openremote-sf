@@ -41,6 +41,6 @@ public interface ControllerXMLChangeService {
     * <li>Reset the BOOL tag named controllerXMLChanged to FALSE</li>
     * </ol>
     */
-   public boolean freshController();
+   public boolean refreshController();
 
 }

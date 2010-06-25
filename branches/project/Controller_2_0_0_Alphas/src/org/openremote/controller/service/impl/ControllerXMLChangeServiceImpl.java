@@ -75,7 +75,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    }
    
    @Override
-   public boolean freshController() {
+   public boolean refreshController() {
       logger.info("Controller.xml of Controller changed, refreshing controller.xml");
       boolean success = false;
       tagControllerXMLChanged(true);
