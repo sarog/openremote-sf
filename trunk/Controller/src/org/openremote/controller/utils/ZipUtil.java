@@ -20,6 +20,7 @@
 package org.openremote.controller.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,11 +53,12 @@ public class ZipUtil {
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
       FileOutputStream fileOutputStream = null;
+      File zippedFile = null;
       try {
          while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (!zipEntry.isDirectory()) {
                targetDir = targetDir.endsWith("/") || targetDir.endsWith("\\") ? targetDir : targetDir + "/";
-               File zippedFile = new File(targetDir + zipEntry.getName());
+               zippedFile = new File(targetDir, zipEntry.getName());
                FileUtils.deleteQuietly(zippedFile);
                FileUtils.touch(zippedFile);
                fileOutputStream = new FileOutputStream(zippedFile);
@@ -68,7 +70,7 @@ public class ZipUtil {
             }
          }
       } catch (IOException e) {
-         logger.error("Can't unzip to " + targetDir, e);
+         logger.error("Can't unzip file to " + zippedFile.getPath(), e);
          return false;
       } finally {
          try {
@@ -82,6 +84,25 @@ public class ZipUtil {
 
       }
       return true;
+   }
+   
+   public static boolean unzip(File zipFile, String targetDir) {
+      InputStream inputStream = null;
+      try {
+         inputStream = new FileInputStream(zipFile);
+         return unzip(inputStream, targetDir);
+      } catch (Exception e) {
+         throw new RuntimeException("falied to unzip file" + zipFile.getName(), e);
+      } finally {
+         try {
+            if (inputStream != null) {
+               inputStream.close();
+            }
+         } catch (IOException e) {
+            logger.error("Error while closing stream.", e);
+         }
+
+      }
    }
 
 }

@@ -158,6 +158,16 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 			</fileset>
 		</copy>
 
+		<copy todir="${classes.dir}">
+			<fileset dir="${test.dir}">
+				<include name="**/*.xml" />
+				<include name="**/*.properties" />
+			</fileset>
+			<fileset dir="${test.dir}">
+				<include name="**/*.xml" />
+			</fileset>
+ 		</copy>
+    
     <javac destdir = "${classes.dir}" classpathref = "compile.path.id" debug = "${build.debug}">
       <src path = "${src.dir}"/>
     </javac>

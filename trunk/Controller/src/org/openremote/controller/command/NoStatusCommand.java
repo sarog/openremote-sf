@@ -19,6 +19,8 @@
 */
 package org.openremote.controller.command;
 
+import org.openremote.controller.component.EnumSensorType;
+
 /**
  * The Class NoStatusCommand.
  * 
@@ -30,7 +32,7 @@ public class NoStatusCommand implements StatusCommand {
      * @see org.openremote.controller.command.StatusCommand#read()
      */
     @Override
-    public String read() {
+    public String read(EnumSensorType sensorType) {
         return "noStatus";
     }
 

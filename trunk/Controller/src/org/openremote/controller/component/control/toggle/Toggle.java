@@ -22,8 +22,6 @@ package org.openremote.controller.component.control.toggle;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
 
@@ -34,13 +32,6 @@ import org.openremote.controller.component.control.Control;
  */
 public class Toggle extends Control implements Sensory {
     
-    /**
-     * Instantiates a new toggle.
-     */
-    public Toggle() {
-        super();
-        setSensor(new Sensor(new NoStatusCommand()));
-    }
 
    @Override
    protected List<String> getAvailableActions() {

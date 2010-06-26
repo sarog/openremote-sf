@@ -51,5 +51,16 @@ public interface FileService {
     * @return the input stream
     */
    InputStream findResource(String relativePath);
+   
+   /**
+    * Sync configuration (openremote.zip) with Modeler.
+    * 
+    * @param username
+    *           Modeler username
+    * @param password
+    *           Modeler password
+    * @return true if success.
+    */
+   boolean syncConfigurationWithModeler(String username, String password);
 
 }

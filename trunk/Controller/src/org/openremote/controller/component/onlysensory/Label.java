@@ -1,5 +1,3 @@
-package org.openremote.controller.component.onlysensorycomponent;
-
 /* OpenRemote, the Home of the Digital Home.
 * Copyright 2008-2009, OpenRemote Inc.
 *
@@ -19,35 +17,30 @@ package org.openremote.controller.component.onlysensorycomponent;
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+package org.openremote.controller.component.onlysensory;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.jdom.Element;
 import org.openremote.controller.component.Component;
-import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.Sensory;
 /**
- * This class is used to build a Label by parse controll.xml
+ * This class is used to store the information for a label. 
  * @author Javen, Handy
  *
  */
-public class LabelBuilder extends ComponentBuilder {
+public class Label extends Component implements Sensory {
+   
 
-   @SuppressWarnings("unchecked")
    @Override
-   public Component build(Element componentElement, String commandParam) {
-      Label label = new Label();
-      if (!label.isValidActionWith(commandParam)) {
-         return label;
-      }
-      List<Element> operationElements = componentElement.getChildren(); 
-      for (Element operationElement : operationElements) {
-         if (isIncludedSensorElement(operationElement)) {
-            Sensor sensor = parseSensor(componentElement, operationElement);
-            label.setSensor(sensor);
-         }
-      }
-      return label;
+   protected List<String> getAvailableActions() {
+      List<String> availableActions = new ArrayList<String>();
+      availableActions.add("status");
+      return availableActions;
    }
 
+   @Override
+   public int fetchSensorID() {
+      return getSensor().getSensorID();
+   }
 }

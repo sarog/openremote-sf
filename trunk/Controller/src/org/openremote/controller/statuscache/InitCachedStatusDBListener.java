@@ -19,16 +19,17 @@
 */
 package org.openremote.controller.statuscache;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.openremote.controller.Configuration;
-import org.openremote.controller.service.StatusCacheService;
+import org.apache.log4j.Logger;
+import org.openremote.controller.component.Sensor;
+import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.spring.SpringContext;
-import org.openremote.controller.utils.ConfigFactory;
-import org.openremote.controller.utils.NetworkUtil;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
@@ -38,177 +39,26 @@ import org.springframework.context.support.ApplicationObjectSupport;
  */
 public class InitCachedStatusDBListener extends ApplicationObjectSupport implements ServletContextListener {
 
-   private ChangedStatusTable changedStatusTable = (ChangedStatusTable) SpringContext.getInstance().getBean("changedStatusTable");
-   private StatusCacheService statusCacheService = (StatusCacheService) SpringContext.getInstance().getBean("statusCacheService");
-
-   private static Configuration configuration = ConfigFactory.getConfig();
-   private static  String ServerIP = NetworkUtil.getLocalhostIP();
+   private PollingMachinesService pollingMachinesService = (PollingMachinesService)SpringContext.getInstance().getBean("pollingMachinesService");
    
-   private static  String webAppName = "controller";
-   private static String resourceBasePath = "http://" + ServerIP + ":" + configuration.getWebappPort() + "/"
-         + webAppName + "/resources/";
+   private Logger logger = Logger.getLogger(this.getClass().getName());
    
    /* (non-Javadoc)
     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
     */
    @Override
    public void contextInitialized(ServletContextEvent event) {
+      List<Sensor> sensors = new ArrayList<Sensor>();
       try {
-         InitStatusCache();
-         simulateStatusCacheControlID1001();
-         simulateStatusCacheControlID1002();
-         simulateStatusCacheControlID1003();
-         simulateStatusCacheControlID1005();
-         simulateStatusCacheControlID1008();
-         simulateStatusCacheControlID1009();
-      } catch (Exception e) {
-         e.printStackTrace();
+         pollingMachinesService.initStatusCacheWithControllerXML(null, sensors);
+      } catch (ControllerException e) {
+         logger.error("Failed to init statusCache with controller.xml ." + e.getMessage());
       }
-   }
-   
-   /**
-    * Init 4 components initial status.
-    */
-   private void InitStatusCache() {
-      statusCacheService.saveOrUpdateStatus(1001, "OFF");
-      statusCacheService.saveOrUpdateStatus(1002, "OFF");
-      statusCacheService.saveOrUpdateStatus(1003, "OFF");
-      statusCacheService.saveOrUpdateStatus(1004, "OFF");
-      statusCacheService.saveOrUpdateStatus(1005, "url");
-      statusCacheService.saveOrUpdateStatus(1008, "50.0");
-      statusCacheService.saveOrUpdateStatus(1009, "close");
-   }
-   
-   /**
-    * Simulate Case1 of StatusCahe.<br />
-    * 
-    * The device of control id is 1 will switch ON/OFF every 10 seconds.
-    */
-   private void simulateStatusCacheControlID1001() {
-      Thread thread = new Thread() {
-         @Override
-         public void run() {
-            int i = 0;
-            for (;; i++) {
-               if (i % 2 == 0) {
-                  statusCacheService.saveOrUpdateStatus(1001, "ON");
-               } else {
-                  statusCacheService.saveOrUpdateStatus(1001, "OFF");
-               }
-               nap(10000);
-            }
-         }
-      };
-      thread.start();
-   }
-   
-   /**
-    * Simulate Case 2 of StatusCache.<br />
-    * 
-    * DESC: First polling request was time out, second polling request can find previous time out record and <br />
-    *   get the changed status during two polling requests.<br /> 
-    *   So, the client will get timeout response in odd times and changed statuses in even times.
-    */
-   private void simulateStatusCacheControlID1002() {
-      Thread simulateThread = new Thread() {
-         @Override
-         public void run() {
-            int i = 0;
-            for (;; i++) {
-               List<ChangedStatusRecord> changedStatusRecord = changedStatusTable.query(1002);
-               if (changedStatusRecord != null && changedStatusRecord.size() != 0) {
-                  if (i % 2 == 0) {
-                     statusCacheService.saveOrUpdateStatus(1002, "ON");
-                  } else {
-                     statusCacheService.saveOrUpdateStatus(1002, "OFF");
-                  }
-                  nap(10000);
-               }
-               nap(3);
-            }
-         }
-      };
-      simulateThread.start();
-   }
-   
-   private void simulateStatusCacheControlID1003() {
-      Thread simulateThread = new Thread() {
-         @Override
-         public void run() {
-            int i = 0;
-            for (;; i++) {
-               nap(80000);
-               if (i % 2 == 0) {
-                  statusCacheService.saveOrUpdateStatus(1003, "ON");
-               } else {
-                  statusCacheService.saveOrUpdateStatus(1003, "OFF");
-               }
-               nap(10000);
-            }
-         }
-      };
-      simulateThread.start();
-   }
-   
-   private void simulateStatusCacheControlID1005() {
-      Thread simulateThread = new Thread() {
-         String[] imageNames = new String[] { "1.png", "", "2.png", "", "3.png", "", "4.png", "", "5.png", "" };
-
-         @Override
-         public void run() {
-            int index = 0;
-            while (true) {
-               String image = imageNames[index];
-               if ("".equals(image)) {
-                  int d = ((int) (Math.random() * 50) - 10);
-                  statusCacheService.saveOrUpdateStatus(1005, d + "");
-               } else {
-                  statusCacheService.saveOrUpdateStatus(1005, resourceBasePath + image);
-               }
-               index = index < imageNames.length - 1 ? ++index : 0;
-               nap(5000);
-            }
-         }
-      };
-      simulateThread.start();
-   }
-   
-   /**
-    * Slider simulation.
-    */
-   private void simulateStatusCacheControlID1008() {
-      Thread simulateThread = new Thread() {
-         @Override
-         public void run() {
-            while(true){
-               float floatValue = (float) (Math.random()*100 + 1);
-               statusCacheService.saveOrUpdateStatus(1008, floatValue+"");
-               nap(5000);
-            }
-         }
-      };
-      simulateThread.start();
-   }
-   
-   /**
-    * Switch door(open/close) simulation.
-    */
-   private void simulateStatusCacheControlID1009() {
-      Thread thread = new Thread() {
-         @Override
-         public void run() {
-            int i = 0;
-            for (;; i++) {
-               if (i % 2 == 0) {
-                  statusCacheService.saveOrUpdateStatus(1009, "close");
-               } else {
-                  statusCacheService.saveOrUpdateStatus(1009, "open");
-               }
-               nap(10000);
-            }
-         }
-      };
-      thread.start();
+      try {
+         pollingMachinesService.startPollingMachineMultiThread(sensors);
+      } catch (ControllerException e) {
+         logger.error("Failed to start polling multiThread ." + e.getMessage());
+      }
    }
    
    /* (non-Javadoc)
@@ -217,13 +67,4 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
    @Override
    public void contextDestroyed(ServletContextEvent event) {
    }
-
-   private void nap(long sec) {
-      try {
-         Thread.sleep(sec);
-      } catch (InterruptedException e) {
-         e.printStackTrace();
-      }
-   }
-
 }

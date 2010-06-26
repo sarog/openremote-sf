@@ -35,15 +35,14 @@
        xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire = "byName">
-
-  <bean id = "propertyConfigurer"
-        class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name = "locations">
-      <list>
-        <value>classpath:config.properties</value>
-        <value>classpath:roundrobin.properties</value>
-      </list>
-    </property>
+  <bean id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="locations">
+        <list>
+            <value>classpath:config.properties</value>
+            <value>classpath:roundrobin.properties</value>
+          </list>
+      </property>
   </bean>
 
   <!--
@@ -64,25 +63,21 @@
     <property name = "resourcePath" value = "${resource.path}"/>
     <property name = "resourceUpload" value = "${resource.upload.enable}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
+    <property name="beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+    <property name="webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
 
   <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
-    <property name="isRoundRobinOn" value="${controller.roundrobin.on}" />
+    <property name="isGroupMemberAutoDetectOn" value="${controller.groupmember.autodetect.on}" />
       <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
       <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />
       <property name="controllerGroupName" value="${controller.groupname}" />
       <property name="controllerApplicationName" value="${controller.applicationname}" />
       <property name="roundRobinTCPServerSocketPort" value="${controller.roundrobin.tcpserver.port}" />
-      <property name="groupMembersURLs" value="${controller.groupmembers.urls}" />
+      <property name="groupMemberCandidateURLs" value="${controller.groupmember.candidate.urls}" />
   </bean>
 
-    <!-- service for button command from iPhone -->
-    <!-- bean id="buttonCommandService" class="org.openremote.controller.service.impl.ButtonCommandServiceImpl">
-        <property name="macroCmdExecutionDelay" value="${Macro.Execution.Delay}" />
-    </bean>
--->
-    
     <!-- service for status command from iPhone -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
     
@@ -115,6 +110,12 @@
     <!-- roundrobin service -->
     <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
     
+    <!-- polling machine sevice -->
+    <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl" />
+    
+    <!-- controller xml change service -->
+    <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />
+
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
@@ -124,8 +125,8 @@
            	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
            	<prop key = "telnet">telnetCommandBuilder</prop>
            	<prop key = "httpGet">httpGetCommandBuilder</prop>
-            <prop key = "test">testCommandBuilder</prop>
             <prop key = "upnp">upnpCommandBuilder</prop>
+           	<prop key = "mockup">mockupCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -165,7 +166,7 @@
         class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
         scope = "prototype" />
 
-  <bean id = "testCommandBuilder" class = "org.openremote.controller.protocol.test.TestCommandBuilder"
+  <bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
         scope = "prototype" />
         
   <bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
@@ -192,7 +193,7 @@
   <bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
   
   <!-- Label Builder -->
-  <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensorycomponent.LabelBuilder" />
+  <bean id= "labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
   
   <!-- Slider Builder -->
   <bean id= "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
@@ -201,12 +202,14 @@
   <bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
   
   <!-- imageBuilder -->
-  <bean id="imageBuilder" class="org.openremote.controller.component.onlysensorycomponent.ImageBuilder" />
+  <bean id="imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
   
   <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
   <bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
   
   <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
+  
+  <bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
 </beans>
