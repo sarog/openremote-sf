@@ -22,6 +22,7 @@ package org.openremote.controller.command;
 import java.util.Properties;
 
 import org.jdom.Element;
+import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.exception.NoSuchCommandBuilderException;
 import org.springframework.context.support.ApplicationObjectSupport;
 
@@ -44,7 +45,13 @@ public class CommandFactory extends ApplicationObjectSupport{
     * @return the command
     */
    public Command getCommand(Element element) {
+      if (element == null) {
+         throw new CommandBuildException("Command DOM element is null.");
+      }
       String protocolType = element.getAttributeValue(Command.PROTOCOL_ATTRIBUTE_NAME);
+      if (protocolType == null || "".equals(protocolType)) {
+         throw new CommandBuildException("Protocol type is null.");
+      }
       String builder = commandBuilders.getProperty(protocolType);
       if (builder == null){
          throw new NoSuchCommandBuilderException("Cannot find " + builder + " by " + protocolType + " protocol.");

@@ -22,8 +22,6 @@ package org.openremote.controller.component.control.button;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.command.NoStatusCommand;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.control.Control;
 
 /**
@@ -33,13 +31,6 @@ import org.openremote.controller.component.control.Control;
  */
 public class Button extends Control {
    
-    /**
-     * Instantiates a new button.
-     */
-    public Button() {
-        super();
-        setSensor(new Sensor(new NoStatusCommand()));
-    }
 
    @Override
    protected List<String> getAvailableActions() {

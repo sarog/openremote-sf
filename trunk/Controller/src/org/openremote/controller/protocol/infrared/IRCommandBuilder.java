@@ -40,14 +40,15 @@ public class IRCommandBuilder implements CommandBuilder {
    @SuppressWarnings("unchecked")
    public Command build(Element element) {
       IRCommand irCommand = new IRCommand();
-      String command = element.getAttributeValue("value");
+      String command = "";
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
       String name = "";
       for(Element ele : propertyEles){
          if("name".equals(ele.getAttributeValue("name"))){
             name = ele.getAttributeValue("value");
-            break;
-         } 
+         } else if ("command".equals(ele.getAttributeValue("name"))) {
+            command = ele.getAttributeValue("value");
+         }
       }
       if ("".equals(command.trim()) || "".equals(name.trim())) {
          throw new CommandBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);

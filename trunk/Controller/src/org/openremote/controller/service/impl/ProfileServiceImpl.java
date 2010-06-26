@@ -65,19 +65,19 @@ public class ProfileServiceImpl implements ProfileService {
    @Override
    public String getAllPanels() {
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.PANEL_XML;
-      Document doc = getPanelDocument(xmlPath);
+      Document doc = getAllPanelsDocument(xmlPath);
       return output(doc);
    }
    
    @Override
    public String getAllPanels(String panleXMLPath) {
-      Document doc = getPanelDocument(panleXMLPath);
+      Document doc = getAllPanelsDocument(panleXMLPath);
       return output(doc);
    }
 
    @Override
    public String getPanelsXML(String xmlPath) {
-      Document doc = getPanelDocument(xmlPath);
+      Document doc = getAllPanelsDocument(xmlPath);
       return output(doc);
    }
 
@@ -94,7 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
       return output(doc);
    }
 
-   private Document getPanelDocument(String xmlPath) {
+   private Document getAllPanelsDocument(String xmlPath) {
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -103,7 +103,7 @@ public class ProfileServiceImpl implements ProfileService {
       setNamespace(root, newRoot);
       List<Element> panels = queryElementByElementName(doc, "panel");
       if (panels == null || panels.size() == 0) {
-         throw new NoSuchPanelException("No panel in panels.xml");
+         throw new NoSuchPanelException("No panel in panel.xml");
       }
       for (Element tmpPanel : panels) {
          Element panel = (Element) tmpPanel.clone();
@@ -116,7 +116,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    @SuppressWarnings("unchecked")
    private Document getProfileDocumentByPanelID(String xmlPath, String panelID) {
-
+      
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -156,6 +156,8 @@ public class ProfileServiceImpl implements ProfileService {
 
    @SuppressWarnings("unchecked")
    private Document getProfileDocumentByPanelName(String xmlPath, String name) {
+  
+      
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();
       Element newRoot = new Element(root.getName());
@@ -231,7 +233,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private void setNamespace(Element root, Element newRoot, Element... elements) {
       Namespace ns1 = Namespace.getNamespace("xsi", "htt//www.w3.org/2001/XMLSchema-instance");
-      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org ihpone.xsd");
+      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org panel.xsd");
       newRoot.setNamespace(root.getNamespace());
       newRoot.addNamespaceDeclaration(ns1);
       newRoot.addNamespaceDeclaration(ns2);
@@ -245,7 +247,8 @@ public class ProfileServiceImpl implements ProfileService {
    }
 
    private Element queryPanelByName(String xmlPath, String name) {
-      return queryElementFromXML(xmlPath, "//" + Constants.OPENREMOTE_NAMESPACE + ":panel[@name='" + name + "']");
+      return queryElementFromXML(xmlPath, "//" + Constants.OPENREMOTE_NAMESPACE + ":panel[@name=\""
+            + escapeQuotes(name) + "\"]");
    }
 
    private List<Element> queryElementByElementName(Document doc, String eleName) {
@@ -262,7 +265,7 @@ public class ProfileServiceImpl implements ProfileService {
          return elements;
       } catch (JDOMException e) {
          throw new InvalidPanelXMLException("check the version of schema or structure of " + Constants.PANEL_XML
-               + " with " + Constants.CONTROLLER_XSD_PATH);
+               + " with " + Constants.PANEL_XSD_PATH);
       }
    }
 
@@ -294,4 +297,7 @@ public class ProfileServiceImpl implements ProfileService {
       this.configuration = configuration;
    }
 
+   private String escapeQuotes(String xpath) {
+      return xpath.replaceAll("\"", "");
+   }
 }

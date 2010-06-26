@@ -33,4 +33,6 @@ public interface StatusCacheService {
    String getStatusBySensorId(Integer sensorId);
    
    Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
+   
+   void clearAllStatusCache();
 }

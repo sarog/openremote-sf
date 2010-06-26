@@ -31,6 +31,9 @@ import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentFactory;
+import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.config.ControllerXMLChangedException;
+import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
@@ -48,6 +51,8 @@ public class StatusCommandServiceImpl implements StatusCommandService {
     private StatusCacheService statusCacheService;
     
     private ComponentFactory componentFactory;
+    
+    private ControllerXMLListenSharingData controllerXMLListenSharingData;
 
     /**
      * {@inheritDoc}
@@ -65,7 +70,9 @@ public class StatusCommandServiceImpl implements StatusCommandService {
        Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
        for (String sensorID : sensorIDs) {
            sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
-           sb.append(sensorIdAndStatusCommandsMap.get(sensorID).read());
+           Element tempSensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
+           String typePropertyValueOfSensor = tempSensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME);
+           sb.append(sensorIdAndStatusCommandsMap.get(sensorID).read(EnumSensorType.enumValueOf(typePropertyValueOfSensor)));
            sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
            sb.append("\n");
        }
@@ -85,6 +92,9 @@ public class StatusCommandServiceImpl implements StatusCommandService {
 
    @Override
    public String readFromCache(String unParsedSensorIDs) {
+      if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+         throw new ControllerXMLChangedException("The content of controller.xml had changed.");
+      }
       Set<Integer> statusSensorIDs = parseStatusSensorIDsStrToSet(unParsedSensorIDs);
       Map<Integer, String> latestStatuses = statusCacheService.queryStatuses(statusSensorIDs);
       
@@ -127,6 +137,10 @@ public class StatusCommandServiceImpl implements StatusCommandService {
 
    public void setComponentFactory(ComponentFactory componentFactory) {
       this.componentFactory = componentFactory;
+   }
+
+   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
+      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
    }
    
 }

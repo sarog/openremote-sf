@@ -26,7 +26,7 @@ import org.openremote.controller.component.control.ButtonBuilderTest;
 import org.openremote.controller.component.control.GestureBuilderTest;
 import org.openremote.controller.component.control.SliderBuilderTest;
 import org.openremote.controller.component.control.SwitchBuilderTest;
-import org.openremote.controller.component.onlysensorycomponent.LabelBuilderTest;
+import org.openremote.controller.component.onlysensory.LabelBuilderTest;
 
 @RunWith(Suite.class)
 @SuiteClasses(

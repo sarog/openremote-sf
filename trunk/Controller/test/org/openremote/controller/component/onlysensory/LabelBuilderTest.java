@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.component.onlysensorycomponent;
+package org.openremote.controller.component.onlysensory;
 
 import static org.junit.Assert.fail;
 
@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.TestConstraint;
-import org.openremote.controller.component.onlysensorycomponent.Label;
-import org.openremote.controller.component.onlysensorycomponent.LabelBuilder;
+import org.openremote.controller.component.onlysensory.Label;
+import org.openremote.controller.component.onlysensory.LabelBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.utils.SpringTestContext;
 /**

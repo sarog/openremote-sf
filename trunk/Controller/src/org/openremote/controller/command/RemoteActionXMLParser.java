@@ -32,7 +32,6 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
-import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.utils.PathUtil;
@@ -45,74 +44,96 @@ import org.openremote.controller.utils.PathUtil;
  */
 public class RemoteActionXMLParser {
    
-   /** The logger. */
    private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
    
-   /** The control factory. */
-   private ComponentFactory componentFactory;
-   
-   /** The configuration. */
    private Configuration configuration;
    
-
    /**
-    * Find commands by control id.
+    * Query element from default controller.xml by Id.
     * 
-    * @param controlID the control id
-    * @param commandParam CommandParam in the RESTful url. e.g: rest/{control_id}/{commandParam}
-    * 
-    * @return the list< executable command>
+    * @param id
+    *           element id
+    * @return element
     */
-//   public List<ExecutableCommand> findCommandsByControlID(String controlID, String commandParam) {
-//      Element controlElement = queryElementFromXMLById(controlID);
-//      
-//      if (controlElement == null) {
-//         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
-//      }
-//      Control control = (Control) componentFactory.getComponent(controlElement, commandParam);
-//      return control.getExecutableCommands();
-//   }
-   
-   /**
-    * Find commands by control id.
-    * 
-    * @param doc The document for xml file. 
-    * @param controlID the control id
-    * @param commandParam CommandParam in the RESTful url. e.g: rest/{control_id}/{commandParam}
-    * 
-    * @return the list< executable command>
-    */
-//   public List<ExecutableCommand> findCommandsByControlID(Document doc, String controlID, String commandParam) {
-//      Element controlElement = queryElementFromXMLById(doc,controlID);
-//      
-//      if (controlElement == null) {
-//         throw new NoSuchComponentException("Cannot find that component with id = " + controlID);
-//      }
-//      Control control = componentFactory.getControl(controlElement, commandParam);
-//      return control.getExecutableCommands();
-//   }
-
-   /**
-    * Query element from xml by id.
-    * 
-    * @param id the id
-    * 
-    * @return the element
-    */
-   public Element queryElementFromXMLById(String id){
+   public Element queryElementFromXMLById(String id) {
       return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
    
-   public Element queryElementFromXMLById(Document doc,String id){
-      return queryElementFromXML(doc,"//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
-   }
    /**
-    * Query element from xml.
+    * Query element from a specified controller.xml by Id.
     * 
-    * @param xPath the x path
-    * 
-    * @return the element
+    * @param doc
+    *           specified controller.xml doc
+    * @param id
+    *           element id
+    * @return element
     */
+   public Element queryElementFromXMLById(Document doc, String id) {
+      return queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
+   }
+   
+   public Element queryElementFromXMLByName(String elementName) {
+      return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
+   }
+   
+   public List<Element> queryElementsFromXMLByName(Document doc, String elementName) {
+      String xPathStr = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
+      return queryElementsFromXML(doc, xPathStr);
+   }
+   
+   public List<Element> queryElementsFromXMLByName(String elementName) {
+	  String xPath = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
+	  SAXBuilder sb = new SAXBuilder();
+      sb.setValidation(true);
+      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+
+      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
+      if (!new File(xmlPath).exists()) {
+         throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
+      }
+      try {
+         Document doc = sb.build(new File(xmlPath));
+         return queryElementsFromXML(doc, xPath);
+      } catch (JDOMException e) {
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException(e.getMessage() + 
+               " check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
+      } catch (IOException e) {
+         String msg = " An I/O error prevents a controller.xml from being fully parsed";
+         logger.error(msg, e);
+         throw new ControllerXMLNotFoundException(msg);
+      }
+   }   
+   /**
+    * Basic method for query element with document context and xPath string.
+    * @param doc
+    * @param xPath
+    * @return
+    */
+   @SuppressWarnings("unchecked")
+   private List<Element> queryElementsFromXML(Document doc, String xPath) {
+      try {
+         XPath xpath = XPath.newInstance(xPath);
+         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+         List<Element> elements = xpath.selectNodes(doc);
+         if (!elements.isEmpty()) {
+            return elements;
+         }
+      } catch (JDOMException e) {
+         logger.error("JDOMException occurs when parsing controller.xml.", e);
+         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+               + Constants.CONTROLLER_XSD_PATH);
+      }
+      return null;
+   }
+   
+   public Element queryElementFromXMLByName(Document doc, String elementName) {
+      return queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
+   }
+   
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder();
       sb.setValidation(true);
@@ -122,7 +143,7 @@ public class RemoteActionXMLParser {
       sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
-         throw new ControllerXMLNotFoundException(" Make sure it's in /resources");
+         throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
       }
       try {
          Document doc = sb.build(new File(xmlPath));
@@ -156,16 +177,8 @@ public class RemoteActionXMLParser {
       return null;
    }
    
-   /**
-    * Sets the configuration.
-    * 
-    * @param configuration the new configuration
-    */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
 
-   public void setComponentFactory(ComponentFactory componentFactory) {
-      this.componentFactory = componentFactory;
-   }
 }

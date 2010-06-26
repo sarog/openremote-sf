@@ -26,7 +26,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
+import org.openremote.controller.exception.BeehiveNotAvailableException;
+import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.exception.ForbiddenException;
+import org.openremote.controller.exception.ResourceNotFoundException;
+import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.FileService;
+import org.openremote.controller.spring.SpringContext;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,7 +50,9 @@ public class ConfigManageController extends MultiActionController {
    
    private Configuration configuration;
    
-
+   /** MUST use <code>SpringContext</code> to keep the same context as <code>InitCachedStatusDBListener</code> */
+   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService) SpringContext
+         .getInstance().getBean("controllerXMLChangeService");
 
    /**
     * Upload zip.
@@ -59,12 +67,57 @@ public class ConfigManageController extends MultiActionController {
     */
    public ModelAndView uploadZip(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
-      if (configuration.isResourceUpload()) {
-         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-         boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+      try {
+         if (configuration.isResourceUpload()) {
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
+            if (success) {
+               controllerXMLChangeService.refreshController();
+            }
+            response.getWriter().print(success ? Constants.OK : null);
+         } else {
+            response.getWriter().print("disabled");
+         }
+      } catch (ControlCommandException e) {
+         response.getWriter().print(e.getMessage());
+      }
+      return null;
+   }
+   
+   public ModelAndView syncOnline(HttpServletRequest request, HttpServletResponse response) throws IOException,
+         ServletRequestBindingException {
+      String username = request.getParameter("username");
+      String password = request.getParameter("password");
+      boolean success = false;
+      try {
+         success = fileService.syncConfigurationWithModeler(username, password);
+         if (success) {
+            controllerXMLChangeService.refreshController();
+         }
          response.getWriter().print(success ? Constants.OK : null);
-      } else {
-         response.getWriter().print("disabled");
+      } catch (ForbiddenException e) {
+         response.getWriter().print("forbidden");
+      } catch (BeehiveNotAvailableException e) {
+         response.getWriter().print("n/a");
+      } catch (ResourceNotFoundException e) {
+         response.getWriter().print("missing");
+      } catch (ControlCommandException e) {
+         response.getWriter().print(e.getMessage());
+      }
+      return null;
+   }
+   
+   public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException,
+         ServletRequestBindingException {
+      try {
+         if (controllerXMLChangeService.isObservedXMLContentChanged(Constants.CONTROLLER_XML)
+               || controllerXMLChangeService.isObservedXMLContentChanged(Constants.PANEL_XML)) {
+            response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
+         } else {
+            response.getWriter().print("latest");
+         }
+      } catch (ControlCommandException e) {
+         response.getWriter().print(e.getMessage());
       }
       return null;
    }
@@ -86,6 +139,5 @@ public class ConfigManageController extends MultiActionController {
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
-   
 
 }

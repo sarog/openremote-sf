@@ -21,16 +21,14 @@ package org.openremote.controller.service.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.component.ComponentFactory;
-import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.Control;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControlCommandService;
-import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.utils.MacrosIrDelayUtil;
 
 
@@ -41,14 +39,9 @@ import org.openremote.controller.utils.MacrosIrDelayUtil;
  */
 public class ControlCommandServiceImpl implements ControlCommandService {
 
-   /** The remote action xml parser. */
    private RemoteActionXMLParser remoteActionXMLParser;
    
    private ComponentFactory componentFactory;
-   
-   private StatusCacheService statusCacheService;
-   
-   private Logger logger = Logger.getLogger(this.getClass().getName());
    
    /**
     * {@inheritDoc}
@@ -59,14 +52,13 @@ public class ControlCommandServiceImpl implements ControlCommandService {
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
       MacrosIrDelayUtil.ensureDelayForIrCommand(executableCommands);
       for (ExecutableCommand executableCommand : executableCommands) {
-         executableCommand.send();
+         if (executableCommand != null) {
+            executableCommand.send();
+         } else {
+            throw new NoSuchCommandException("ExecutableCommand is null");
+         }
       }
-      if (control instanceof Sensory) {
-         logger.info("Begin updating statuscache after sending command to device.");
-         int sensorID = ((Sensory)control).fetchSensorID();
-         statusCacheService.saveOrUpdateStatus(sensorID, commandParam.toUpperCase());
-         logger.info("Finish updating statuscache after sending command to device.");
-      }
+      
    }
    
    private Control getControl(String controlID, String commandParam) {
@@ -77,11 +69,6 @@ public class ControlCommandServiceImpl implements ControlCommandService {
       return (Control) componentFactory.getComponent(controlElement, commandParam);
    }
    
-   /**
-    * Sets the remote action xml parser.
-    * 
-    * @param remoteActionXMLParser the new remote action xml parser
-    */
    public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
       this.remoteActionXMLParser = remoteActionXMLParser;
    }
@@ -89,10 +76,5 @@ public class ControlCommandServiceImpl implements ControlCommandService {
    public void setComponentFactory(ComponentFactory componentFactory) {
       this.componentFactory = componentFactory;
    }
-
-   public void setStatusCacheService(StatusCacheService statusCacheService) {
-      this.statusCacheService = statusCacheService;
-   }
-   
    
 }

@@ -85,8 +85,9 @@ public class X10ControllerManager {
    /**
     * @return a ready-to-send {@link X10Controller}
     */
-   public X10Controller getDevice() throws ConnectionException {
-      Configuration config = ConfigFactory.getConfig();
+   public X10Controller getDevice() throws ConnectionException
+   {
+      Configuration config = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
 
       String transmitterHint = StringUtils.defaultIfEmpty(config.getX10transmitter(), DEFAULT_TRANSMITTER_HINT);
 

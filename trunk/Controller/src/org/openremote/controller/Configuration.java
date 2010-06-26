@@ -20,6 +20,7 @@
  */
 package org.openremote.controller;
 
+
 /**
  * This class provides the Java bindings from config.properties file found in
  * <tt>WEB-INF/classes</tt> directory of the web archive.
@@ -34,35 +35,65 @@ package org.openremote.controller;
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  * @author Jerome Velociter
  */
-public class Configuration {
-   
+public class Configuration extends CustomConfiguration {
+
+  // Constants ------------------------------------------------------------------------------------
+
+  /* the following constants are the keys from config.properties */
+
+  public static final String RESOURCE_UPLOAD_ENABLE = "resource.upload.enable";
+  public static final String RESOURCE_PATH = "resource.path";
+  public static final String IRSEND_PATH = "irsend.path";
+  public static final String MULTICAST_PORT = "multicast.port";
+  public static final String MULTICAST_ADDRESS = "multicast.address";
+  public static final String WEBAPP_PORT = "webapp.port";
+  public static final String COPY_LIRCD_CONF_ON = "copy.lircd.conf.on";
+  public static final String LIRCD_CONF_PATH = "lircd.conf.path";
+  public static final String WEBAPP_IP = "webapp.ip";
+  public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
+  public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
+
+  // Class Methods --------------------------------------------------------------------------------
+
+  public static Configuration parseFromControllerXML() {
+
+     return null;
+  }
+
+  
   // Private Instance Variables -------------------------------------------------------------------
+  
+   /** The irsend path. */
+   private String irsendPath;
+   
+   /** The lircd.conf path. */
+   private String lircdconfPath;
+   
+   /** Whether copy lircd.conf for user. */
+   private boolean copyLircdconf;
+   
+   /** The webapp port. */
+   private int webappPort;
+   
+   /** The multicast address. */
+   private String multicastAddress;
+   
+   /** The multicast port. */
+   private int multicastPort;
+   
+   /** The resource path. */
+   private String resourcePath;
+   
+   /** The resource upload switch. */
+   private boolean resourceUpload;
+   
+   private long macroIRExecutionDelay = 500;
+   
+   private String webappIp;
+   
+   private String beehiveRESTRootUrl;
 
-  private String irsendPath;
-
-  private String lircdconfPath;
-
-  /**
-   * Whether copy lircd.conf for user.
-   */
-  private boolean copyLircdconf;
-
-  private int webappPort;
-
-  private String multicastAddress;
-
-  private int multicastPort;
-
-  private String resourcePath;
-
-  /**
-   * The resource upload switch.
-   */
-  private boolean resourceUpload;
-
-  private long macroIRExecutionDelay = 500;
-
-  private String webappIp;
+   private String webappName;
 
   /**
    * The COM (Serial) port the ORC should use (for example, to send X10 events)
@@ -75,9 +106,7 @@ public class Configuration {
   private String x10transmitter;
 
 
-
   // Public Methods -------------------------------------------------------------------------------
-
 
   /**
    * Returns a string containing an operating system specific filesystem path to
@@ -88,7 +117,7 @@ public class Configuration {
    * @return operating system specific filesystem path
    */
   public String getIrsendPath() {
-    return irsendPath;
+    return preferAttrCustomValue(IRSEND_PATH, irsendPath);
   }
 
   /**
@@ -100,7 +129,6 @@ public class Configuration {
    * @param irsendPath operating system specific filesystem path
    */
   public void setIrsendPath(String irsendPath) {
-
     // TODO :
     //  could attempt to convert the string to a valid URI to support
     //  a system neutral path format ?
@@ -120,7 +148,7 @@ public class Configuration {
    * @return operating system specific filesystem path
    */
   public String getLircdconfPath() {
-    return lircdconfPath;
+    return preferAttrCustomValue(LIRCD_CONF_PATH, lircdconfPath);
   }
 
   /**
@@ -132,7 +160,6 @@ public class Configuration {
    * @param lircdconfPath operating system specific path
    */
   public void setLircdconfPath(String lircdconfPath) {
-
     // TODO :
     //  could attempt to convert the string to a valid URI to support
     //  a system neutral path format ?
@@ -152,7 +179,7 @@ public class Configuration {
    * @return true if copy-over on configuration deployment is enabled; false otherwise
    */
   public boolean isCopyLircdconf() {
-    return copyLircdconf;
+    return preferAttrCustomValue(COPY_LIRCD_CONF_ON, copyLircdconf);
   }
 
   /**
@@ -180,7 +207,7 @@ public class Configuration {
    * @return port number
    */
   public int getWebappPort() {
-    return webappPort;
+    return preferAttrCustomValue(WEBAPP_PORT, webappPort);
   }
 
   /**
@@ -209,7 +236,7 @@ public class Configuration {
    * @return IP multicast address as a string
    */
   public String getMulticastAddress() {
-    return multicastAddress;
+    return preferAttrCustomValue(MULTICAST_ADDRESS, multicastAddress);
   }
 
   /**
@@ -232,7 +259,7 @@ public class Configuration {
    * @return  multicast port
    */
   public int getMulticastPort() {
-    return multicastPort;
+    return preferAttrCustomValue(MULTICAST_PORT, multicastPort);
   }
 
   /**
@@ -255,7 +282,8 @@ public class Configuration {
    * @return operating system specific filesystem path as a string
    */
   public String getResourcePath() {
-    return resourcePath;
+//      return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
+     return resourcePath;
   }
 
   /**
@@ -289,7 +317,7 @@ public class Configuration {
    *         web interface; false otherwise
    */
   public boolean isResourceUpload() {
-    return resourceUpload;
+    return preferAttrCustomValue(RESOURCE_UPLOAD_ENABLE, resourceUpload);
   }
 
   /**
@@ -369,7 +397,7 @@ public class Configuration {
   }
 
    public long getMacroIRExecutionDelay() {
-      return macroIRExecutionDelay;
+      return preferAttrCustomValue("Macro.IR.Execution.Delay", macroIRExecutionDelay);
    }
 
    public void setMacroIRExecutionDelay(long macroIRExecutionDelay) {
@@ -377,11 +405,27 @@ public class Configuration {
    }
 
    public String getWebappIp() {      
-      return webappIp;
+      return preferAttrCustomValue(WEBAPP_IP, webappIp);
    }
 
    public void setWebappIp(String webappIp) {
       this.webappIp = webappIp;
+   }
+
+   public String getBeehiveRESTRootUrl() {
+      return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
+   }
+
+   public void setBeehiveRESTRootUrl(String beehiveRESTRootUrl) {
+      this.beehiveRESTRootUrl = beehiveRESTRootUrl;
+   }
+   
+   public String getWebappName() {
+      return preferAttrCustomValue(CONTROLLER_APPLICATIONNAME, webappName);
+   }
+   
+   public void setWebappName(String webappName) {
+      this.webappName = webappName;
    }
    
 }

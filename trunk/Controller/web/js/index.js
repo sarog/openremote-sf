@@ -15,16 +15,48 @@
  */
 
 $(document).ready(function() {
+	var checkedMode = $("input[name='mode']:checked").val();
+	if (checkedMode == 'offline') {
+		showOffline();
+	} else {
+		showOnline();
+	}
+	
+	$('#online').click(function(){
+		showOnline();
+	});
+	$('#offline').click( function() {
+		showOffline();
+	});
     $('#uploadForm').ajaxForm(function(result) {
-    	if(result == 'OK'){
-    		message("upload successful");
-    	}else if (result == 'disabled'){
-    		error("upload is disabled");
-    	}else{
-    		error("upload failed");
-    	}
+    	if (result == 'OK') {
+			message("Upload complete!");
+		} else if (result == 'disabled') {
+			error("Upload is disabled");
+		} else {
+			error("Upload failed! " + result);
+		}
     }); 
+    $('#syncForm').ajaxForm(function(result) {
+    	if (result == 'OK') {
+			message("Sync complete!");
+    	} else if (result == 'forbidden') {
+			error("The username or password you entered is incorrect.");
+    	} else if (result == 'n/a') {
+    		error("Can't connect to Beehive.");
+    	} else if (result == 'missing') {
+    		error("openremote.zip not found in account, please edit UI and save.");
+		} else {
+			error("Sync failed! " + result);
+		}
+    }); 
+    $('#syncSubmit').click(function(){
+    	clearMessage();
+    	showUpdateIndicator();
+    });
 	$('#uploadSubmit').click(function(){
+		clearMessage();
+		showUpdateIndicator();
 		var zipPath = $('#zip').val();
 		if(zipPath == ''){
 			error("Please select a zip first");
@@ -34,16 +66,75 @@ $(document).ready(function() {
 			return false;
 		}
 	});
+	$('#refresh').click(function() {
+		clearMessage();
+		showRefreshIndicator();
+		$.get("config.htm?method=refreshController",
+			function(msg){
+				if (msg == 'OK') {
+					message("Finished reloading configuration.");
+				} else if (msg == 'latest') {
+					message("The cache is already up to date.");
+				} else {
+					error("Failed to reload configuration and clear cache! " + msg);
+				}
+			}
+		 );
+	});
 	$("#version").append(getVersionLabel());
 });
+function showOnline() {
+	$('#online-cont').show();
+	$('#offline-cont').hide();
+	clearMessage();
+}
+function showOffline() {
+	$('#offline-cont').show();
+	$('#online-cont').hide();
+	clearMessage();
+}
 function message(msg){
-	$('#errMsg').text("");
-	$('#msg').text(msg);
+	hideUpdateIndicator();
+	hideRefreshIndicator();
+	$('#errMsg').text("").hide();
+	if (msg == '') {
+		$('#msg').hide().text(msg);
+	} else {
+		$('#msg').hide().show().text(msg);
+	}
 }
+
 function error(msg){
-	$('#errMsg').text(msg);
-	$('#msg').text("");
+	hideUpdateIndicator();
+	hideRefreshIndicator();
+	$('#msg').text("").hide();
+	if (msg == '') {
+		$('#errMsg').hide().text(msg);
+	} else {
+		$('#errMsg').hide().show().text(msg);
+	}
 }
+
+function clearMessage() {
+	message("");
+	error("");
+}
+
+function showUpdateIndicator() {
+	$('#update_indicator').show();
+}
+function hideUpdateIndicator() {
+	$('#update_indicator').hide();
+}
+
+function showRefreshIndicator() {
+	$('#refresh_indicator').show();
+}
+
+function hideRefreshIndicator() {
+	$('#refresh_indicator').hide();
+}
+
 function getVersionLabel(){
 	var headUrl = "$HeadURL$";
 	var revision = "$Revision$";
