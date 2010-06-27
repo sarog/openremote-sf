@@ -19,7 +19,6 @@
 */
 package org.openremote.controller.config;
 
-import org.openremote.controller.Constants;
 import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.spring.SpringContext;
 import org.quartz.JobExecutionContext;
@@ -38,9 +37,7 @@ public class ControllerXMLChangeListener extends QuartzJobBean {
    // The entry of Quartz job
    @Override
    protected void executeInternal(JobExecutionContext arg0) throws JobExecutionException {
-      if (controllerXMLChangeService.isObservedXMLContentChanged(Constants.CONTROLLER_XML) || controllerXMLChangeService.isObservedXMLContentChanged(Constants.PANEL_XML)) {
-         controllerXMLChangeService.refreshController();
-      }
+      controllerXMLChangeService.refreshController();
    }
    
 }

@@ -22,6 +22,8 @@ package org.openremote.controller.command;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -85,10 +87,14 @@ public class RemoteActionXMLParser {
 	  String xPath = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
 	  SAXBuilder sb = new SAXBuilder();
       sb.setValidation(true);
-      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+      try {
+         File xsdfile = new File(URLDecoder.decode(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath(), "UTF-8"));
+         sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      } catch (UnsupportedEncodingException e) {
+         logger.error("The controller xsd file path unsupported encoding.", e);
+      }
 
       sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
@@ -137,10 +143,14 @@ public class RemoteActionXMLParser {
    private Element queryElementFromXML(String xPath) {
       SAXBuilder sb = new SAXBuilder();
       sb.setValidation(true);
-      File xsdfile = new File(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath());
-
+      try {
+         File xsdfile = new File(URLDecoder.decode(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath(), "UTF-8"));
+         sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+      } catch (UnsupportedEncodingException e) {
+         logger.error("The controller xsd file path unsupported encoding.", e);
+      }
+      
       sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
       String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
       if (!new File(xmlPath).exists()) {
          throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
