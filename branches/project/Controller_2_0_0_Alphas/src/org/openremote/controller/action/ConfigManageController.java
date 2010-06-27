@@ -110,12 +110,7 @@ public class ConfigManageController extends MultiActionController {
    public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
       try {
-         if (controllerXMLChangeService.isObservedXMLContentChanged(Constants.CONTROLLER_XML)
-               || controllerXMLChangeService.isObservedXMLContentChanged(Constants.PANEL_XML)) {
-            response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
-         } else {
-            response.getWriter().print("latest");
-         }
+         response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
       } catch (ControlCommandException e) {
          response.getWriter().print(e.getMessage());
       }
