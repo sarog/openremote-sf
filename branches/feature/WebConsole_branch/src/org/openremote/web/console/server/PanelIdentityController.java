@@ -21,8 +21,13 @@ package org.openremote.web.console.server;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.openremote.web.console.client.rpc.PanelIdentityRPCService;
+import org.openremote.web.console.domain.PanelXmlEntity;
 import org.openremote.web.console.service.PanelIdentityService;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * The Class PanelIdentityController is for get panel list from controller.
@@ -37,11 +42,25 @@ public class PanelIdentityController extends BaseGWTSpringController implements 
       this.panelIdentityService = panelIdentityService;
    }
 
-   /* (non-Javadoc)
-    * @see org.openremote.web.console.client.rpc.PanelIdentityRPCService#getPanels(java.lang.String, java.lang.String, java.lang.String)
+   /**
+    * {@inheritDoc}
     */
-   public List<String> getPanels(String serverUrl, String username, String password) {
-      return panelIdentityService.getPanels(serverUrl, username, password);
+   public List<String> getPanelNames(String serverUrl, String username, String password) {
+      return panelIdentityService.getPanelNames(serverUrl, username, password);
    }
 
+   @Override
+   public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+      ModelAndView mav = super.handleRequest(request, response);
+//      if ( mav != null) {
+//         mav.setViewName("home");
+//      }
+      
+      return mav;
+   }
+
+   public PanelXmlEntity getPanelXmlEntity(String url, String username, String password) {
+      return panelIdentityService.getPanelXmlEntity(url, username, password);
+   }
+   
 }

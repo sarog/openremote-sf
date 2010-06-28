@@ -17,18 +17,35 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.service;
+package org.openremote.web.console.domain;
 
-import java.util.List;
+import java.util.HashSet;
 
-import org.openremote.web.console.domain.PanelXmlEntity;
+@SuppressWarnings("serial")
+public class LayoutContainer extends BusinessEntity {
 
-/**
- * The Interface PanelIdentityService.
- */
-public interface PanelIdentityService {
-
-   List<String> getPanelNames(String url, String username, String password);
+   protected int left;
+   protected int top;
+   protected int width;
+   protected int height;
    
-   PanelXmlEntity getPanelXmlEntity(String url, String username, String password);
+   public int getLeft() {
+      return left;
+   }
+
+   public int getTop() {
+      return top;
+   }
+
+   public int getWidth() {
+      return width;
+   }
+
+   public int getHeight() {
+      return height;
+   }
+
+   public HashSet<Integer> getPollingComponentsIds() {
+      return null;
+   }
 }

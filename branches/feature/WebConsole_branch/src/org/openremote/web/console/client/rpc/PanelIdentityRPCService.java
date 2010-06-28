@@ -21,6 +21,7 @@ package org.openremote.web.console.client.rpc;
 
 import java.util.List;
 
+import org.openremote.web.console.domain.PanelXmlEntity;
 import org.openremote.web.console.exception.NotAuthenticatedException;
 import org.openremote.web.console.exception.ORConnectionException;
 
@@ -33,5 +34,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("panelIdentity.smvc")
 public interface PanelIdentityRPCService extends RemoteService {
 
-   List<String> getPanels(String serverUrl, String username, String password) throws NotAuthenticatedException, ORConnectionException;
+   List<String> getPanelNames(String serverUrl, String username, String password) throws NotAuthenticatedException, ORConnectionException;
+   
+   PanelXmlEntity getPanelXmlEntity(String url, String username, String password) throws NotAuthenticatedException, ORConnectionException;
 }

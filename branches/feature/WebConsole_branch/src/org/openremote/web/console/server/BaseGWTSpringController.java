@@ -63,6 +63,13 @@ public class BaseGWTSpringController extends RemoteServiceServlet implements Con
     * @return null
     */
    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//      String firefox = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.4) Gecko/20100611 Firefox/3.6.4 GTB7.0";
+//      String ie = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 2.0.50727)";
+//      if (ie.equals(request.getHeader("User-Agent"))) {
+//         super.doPost(request, response);
+//      } else {
+//         return new ModelAndView();
+//      }
       super.doPost(request, response);
       return null;
    }

@@ -17,18 +17,26 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.service;
+package org.openremote.web.console.domain;
 
-import java.util.List;
+import org.w3c.dom.Node;
 
-import org.openremote.web.console.domain.PanelXmlEntity;
 
-/**
- * The Interface PanelIdentityService.
- */
-public interface PanelIdentityService {
+@SuppressWarnings("serial")
+public class Control extends Component {
 
-   List<String> getPanelNames(String url, String username, String password);
-   
-   PanelXmlEntity getPanelXmlEntity(String url, String username, String password);
+   public static Component buildWithXML(Node node) {
+      Component component = null;
+      if (node == null) {
+         return null;
+      }
+      if (BUTTON.equals(node.getNodeName())) {
+         component =  new Button(node);
+      } else if (SWITCH.equals(node.getNodeName())) {
+         component = new Switch(node);
+      } else if (SLIDER.equalsIgnoreCase(node.getNodeName())) {
+         component = new Slider(node);
+      }
+      return component;
+   }
 }
