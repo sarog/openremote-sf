@@ -17,18 +17,23 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.service;
+package org.openremote.web.console.domain;
 
-import java.util.List;
+import org.w3c.dom.Node;
 
-import org.openremote.web.console.domain.PanelXmlEntity;
+@SuppressWarnings("serial")
+public class SensorComponent extends Component {
 
-/**
- * The Interface PanelIdentityService.
- */
-public interface PanelIdentityService {
+   private Sensor sensor;
 
-   List<String> getPanelNames(String url, String username, String password);
+   public void parser(Node node) {
+      if (LINK.equals(node.getNodeName()) && SENSOR.equals(node.getAttributes().getNamedItem(TYPE).getNodeValue())) {
+         sensor = new Sensor(node);
+      }
+   }
    
-   PanelXmlEntity getPanelXmlEntity(String url, String username, String password);
+   public Sensor getSensor() {
+      return sensor;
+   }
+   
 }

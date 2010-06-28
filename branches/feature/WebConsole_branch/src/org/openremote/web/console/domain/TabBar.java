@@ -17,24 +17,38 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.utils;
+package org.openremote.web.console.domain;
 
-import org.openremote.web.console.domain.AppSetting;
-import org.openremote.web.console.domain.PanelXmlEntity;
-import org.openremote.web.console.domain.UserInfo;
+import java.util.ArrayList;
 
-/**
- * The Class ClientDataBase.
- */
-public class ClientDataBase {
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-   public static UserInfo userInfo = new UserInfo();
+@SuppressWarnings("serial")
+public class TabBar extends BusinessEntity {
+
+   private ArrayList<TabBarItem> tabBarItems;
    
-   public static AppSetting appSetting = new AppSetting();
-   
-   public static final PanelXmlEntity panelXmlEntity = new PanelXmlEntity();
-   
-   private ClientDataBase() {
+   public TabBar() {
    }
+   
+   public TabBar(Node node) {
+      tabBarItems = new ArrayList<TabBarItem>();
+      NodeList childNodes = node.getChildNodes();
+      int nodeNum = childNodes.getLength();
+      for (int i = 0; i < nodeNum; i++) {
+         if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            Node elementNode = childNodes.item(i);
+            if (TABBAR_ITEM.equals(elementNode.getNodeName())) {
+               tabBarItems.add(new TabBarItem(elementNode));
+            }
+         }
+      }
+   }
+   
+   public ArrayList<TabBarItem> getTabBarItems() {
+      return tabBarItems;
+   }
+
    
 }

@@ -304,7 +304,7 @@ public class SettingsWindow extends FormWindow {
             String currentServer = ClientDataBase.appSetting.getCurrentServer();
             if (!"".equals(currentServer)) {
                store.removeAll();
-               AsyncServiceFactory.getPanelIdentityServiceAsync().getPanels(currentServer,
+               AsyncServiceFactory.getPanelIdentityServiceAsync().getPanelNames(currentServer,
                      ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(),
                      new AsyncSuccessCallback<List<String>>() {
                   public void onSuccess(List<String> panels) {

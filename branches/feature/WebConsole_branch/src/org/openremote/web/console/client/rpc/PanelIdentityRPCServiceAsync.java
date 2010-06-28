@@ -21,6 +21,8 @@ package org.openremote.web.console.client.rpc;
 
 import java.util.List;
 
+import org.openremote.web.console.domain.PanelXmlEntity;
+
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -28,6 +30,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface PanelIdentityRPCServiceAsync {
 
-   void getPanels(String serverUrl, String username, String password, AsyncCallback<List<String>> callback);
+   void getPanelNames(String serverUrl, String username, String password, AsyncCallback<List<String>> callback);
+
+   void getPanelXmlEntity(String url, String username, String password, AsyncCallback<PanelXmlEntity> callback);
 
 }
