@@ -26,8 +26,6 @@ package org.openremote.controller.service;
  */
 public interface ControllerXMLChangeService {
    
-   public boolean isObservedXMLContentChanged(String observedXMLFileName);
-
    /** 
     * do series of operations when controller.xml file changed.<br />
     * 

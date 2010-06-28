@@ -24,17 +24,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
  * The Socket Event.
  *
  * @author Marcus 2009-4-26
  */
-public class TCPSocketCommand implements ExecutableCommand {
+public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
 
    /** The logger. */
    private static Logger logger = Logger.getLogger(TCPSocketCommand.class.getName());
@@ -126,6 +129,10 @@ public class TCPSocketCommand implements ExecutableCommand {
     */
    @Override
    public void send() {
+      requestSocket();
+   }
+
+   private String requestSocket() {
       Socket socket = null;
       try {
          socket = new Socket(getIp(), Integer.parseInt(getPort()));
@@ -139,6 +146,7 @@ public class TCPSocketCommand implements ExecutableCommand {
 
          String result = readReply(socket);
          logger.info("received message: " + result);
+         return result;
       } catch (Exception e) {
          logger.error("Socket event could not execute", e);
       } finally {
@@ -150,6 +158,7 @@ public class TCPSocketCommand implements ExecutableCommand {
             }
          }
       }
+      return "";
    }
 
    private String readReply(java.net.Socket socket) throws IOException {
@@ -158,6 +167,20 @@ public class TCPSocketCommand implements ExecutableCommand {
       int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
       String reply = new String(buffer, 0, readChars);
       return reply;
+   }
+
+   @Override
+   public String read(EnumSensorType sensoryType, Map<String, String> stateMap) {
+      String rawResult = requestSocket();
+      if ("".equals(rawResult)) {
+         return UNKNOWN_STATUS;
+      }
+      for (String state : stateMap.keySet()) {
+         if (rawResult.equals(stateMap.get(state))) {
+            return state;
+         }
+      }
+      return rawResult;
    }
 
 }

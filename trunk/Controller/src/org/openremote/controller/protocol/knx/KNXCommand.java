@@ -1,8 +1,13 @@
 package org.openremote.controller.protocol.knx;
 
-import org.apache.log4j.Logger;
+import java.util.Map;
 
-public class KNXCommand {
+import org.apache.log4j.Logger;
+import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
+
+public class KNXCommand implements ExecutableCommand, StatusCommand {
     
     protected final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
     
@@ -43,6 +48,30 @@ public class KNXCommand {
 
     public void setKnxCommandType(KNXCommandType knxCommandType) {
         this.knxCommandType = knxCommandType;
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override public void send() {
+      try
+      {
+        KNXConnection connection = getConnectionManager().getConnection();    
+        connection.send(getGroupAddress(), getKnxCommandType());
+      }
+      catch (ConnectionException e)
+      {
+        log.error(e);   // TODO
+      }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
+       //TODO
+       return null;
     }
 
 }

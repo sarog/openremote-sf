@@ -28,6 +28,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.protocol.http.HttpGetCommand;
 import org.openremote.controller.protocol.http.HttpGetCommandBuilder;
 /**
+ * HttpGetCommandBuilder Test
  * 
  * @author Javen
  *
@@ -42,8 +43,8 @@ public class HttpGetCommandBuilderTest {
    private Command getHttpCommand(String name,String url){
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
-      ele.setAttribute("protocal","httpGet");
-      ele.setAttribute("value","noValue");
+      ele.setAttribute("protocol","httpGet");
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
       
       Element propName = new Element("property");
       propName.setAttribute("name","name");
@@ -63,8 +64,17 @@ public class HttpGetCommandBuilderTest {
       Command cmd = getHttpCommand("finalist","http://www.finalist.cn");
       Assert.assertTrue(cmd instanceof HttpGetCommand);
       HttpGetCommand httpCmd = (HttpGetCommand)cmd;
-      Assert.assertEquals(httpCmd.getName(), "finalist");
-      Assert.assertEquals(httpCmd.getUrl(), "http://www.finalist.cn");
+      Assert.assertEquals("finalist", httpCmd.getName());
+      Assert.assertEquals("http://www.finalist.cn", httpCmd.getUrl());
+   }
+   
+   @Test
+   public void testHasNameAndUrlWithParam(){
+      Command cmd = getHttpCommand("finalist","http://www.finalist.cn?command=light1_${param}");
+      Assert.assertTrue(cmd instanceof HttpGetCommand);
+      HttpGetCommand httpCmd = (HttpGetCommand)cmd;
+      Assert.assertEquals("finalist", httpCmd.getName());
+      Assert.assertEquals("http://www.finalist.cn?command=light1_255", httpCmd.getUrl());
    }
    
 }
