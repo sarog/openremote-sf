@@ -153,6 +153,7 @@
 	<xsd:element name="state">
 		<xsd:complexType>
 			<xsd:attribute name="name" use="required" />
+			<xsd:attribute name="value" use="optional" />
 		</xsd:complexType>
 	</xsd:element>
 	
