@@ -84,6 +84,8 @@ public class X10CommandBuilder implements CommandBuilder {
          commandType = X10CommandType.SWITCH_OFF;
       }
 
+// TODO : integrate ${param} handling
+//        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
 
       X10Command event = new X10Command(connectionManager, address, commandType);
 
@@ -91,3 +93,4 @@ public class X10CommandBuilder implements CommandBuilder {
    }
 
 }
+       

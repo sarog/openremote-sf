@@ -71,23 +71,23 @@
 		<!-- four switch sensors -->
 		<sensor id="1001" name="lampA power sensor" type="switch">
 	    	<include type="command" ref="98" />
-	    	<state name="on"/>
-	    	<state name="off"/>
+	    	<state name="on" value="on" />
+	    	<state name="off" value="off" />
 		</sensor>
 		<sensor id="1002" name="lampB power sensor" type="switch">
 	    	<include type="command" ref="98" />
-	    	<state name="on"/>
-	    	<state name="off"/>
+	    	<state name="on" value="on" />
+	    	<state name="off" value="off" />
 		</sensor>
 		<sensor id="1003" name="lampC power sensor" type="switch">
 	    	<include type="command" ref="98" />
-	    	<state name="on"/>
-	    	<state name="off"/>
+	    	<state name="on" value="on" />
+	    	<state name="off" value="off" />
 		</sensor>
 		<sensor id="1004" name="lampD power sensor" type="switch">
 	    	<include type="command" ref="98" />
-	    	<state name="on"/>
-	    	<state name="off"/>
+	    	<state name="on" value="on" />
+	    	<state name="off" value="off" />
 		</sensor>
 		<!-- Any possible state values will return -->
 		<sensor id="1005" name="DV sensor" type="custom">
@@ -101,8 +101,8 @@
 		</sensor>
 		<sensor id="1009" name="Door power sensor" type="custom">
 	    	<include type="command" ref="98" />
-	    	<state name="open"/>
-	    	<state name="close"/>
+	    	<state name="open" value="on" />
+	    	<state name="close" value="off" />
 		</sensor>
 	</sensors>
 	

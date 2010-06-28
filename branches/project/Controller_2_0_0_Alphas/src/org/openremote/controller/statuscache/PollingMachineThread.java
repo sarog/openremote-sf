@@ -19,7 +19,6 @@
 */
 package org.openremote.controller.statuscache;
 
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.service.StatusCacheService;
 
@@ -49,7 +48,7 @@ public class PollingMachineThread extends Thread {
 	@Override
 	public void run() {
 		while (alive) {
-			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), sensor.getStatusCommand().read(EnumSensorType.enumValueOf(sensor.getSensorType())));
+			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), sensor.readStatus());
 			try {
 				Thread.sleep(pollingMachineInterval);
 			} catch (InterruptedException e) {

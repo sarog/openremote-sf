@@ -23,18 +23,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
  * The Telnet Event.
  * 
  * @author Marcus 2009-4-26
  */
-public class TelnetCommand implements ExecutableCommand {
+public class TelnetCommand implements ExecutableCommand, StatusCommand {
 
    /** The logger. */
    private static Logger logger = Logger.getLogger(TelnetCommand.class.getName());
@@ -198,6 +201,12 @@ public class TelnetCommand implements ExecutableCommand {
       os.write((s + "\n").getBytes());
       logger.info("send: " + s);
       os.flush();
+   }
+
+   @Override
+   public String read(EnumSensorType sensoryType, Map<String, String> statusMap) {
+      // TODO Auto-generated method stub
+      return null;
    }
 
 }
