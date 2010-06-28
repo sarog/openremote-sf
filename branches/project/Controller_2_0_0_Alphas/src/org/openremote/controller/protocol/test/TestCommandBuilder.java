@@ -28,8 +28,6 @@ import org.openremote.controller.exception.NoSuchCommandException;
 
 public class TestCommandBuilder implements CommandBuilder {
    
-   private final static String STATUS_COMMAND = "STATUS";
-
    @SuppressWarnings("unchecked")
    @Override
    public Command build(Element element) {
@@ -63,13 +61,9 @@ public class TestCommandBuilder implements CommandBuilder {
          }
          
          TestCommand testCommand = null;
-         if (commandStr != null && !"".equals(commandStr.trim()) && commandStr.equalsIgnoreCase(STATUS_COMMAND)) {
-            testCommand =  new TestStatusCommand();
-         } else {
-            testCommand = new TestExecutableCommand(testCommandType);
-            testCommand.setCommandValue(commandStr);
-         }
-         return (Command) testCommand;
+         testCommand = new TestCommand(testCommandType);
+         testCommand.setCommandValue(commandStr);
+         return testCommand;
       }
       return null;
    }

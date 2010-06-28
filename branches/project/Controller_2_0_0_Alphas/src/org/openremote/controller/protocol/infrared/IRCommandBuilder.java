@@ -25,6 +25,7 @@ import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.CommandBuildException;
+import org.openremote.controller.utils.CommandUtil;
 
 
 /**
@@ -53,7 +54,7 @@ public class IRCommandBuilder implements CommandBuilder {
       if ("".equals(command.trim()) || "".equals(name.trim())) {
          throw new CommandBuildException("Cannot build a IREvent with empty property : command=" + command + ",name=" + name);
       } else {
-         irCommand.setCommand(command);
+         irCommand.setCommand(CommandUtil.parseStringWithParam(element, command));
          irCommand.setName(name);
       }
       return irCommand;

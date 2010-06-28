@@ -23,6 +23,7 @@ package org.openremote.controller.command;
  * The Interface Command.
  * 
  * @author Handy.Wang 2009-10-15
+ * @author Dan Cong
  */
 public interface Command {
     
@@ -40,4 +41,13 @@ public interface Command {
      * <b>10</b> means control command value of slider, which will be stored into the attribute named <b>DYNAMIC_VALUE_ATTR_NAME</b> of Command DOM element.
      */
     public static final String DYNAMIC_VALUE_ATTR_NAME = "dynamicValue";
+    
+    
+    /**
+     * Dynamic parameter place holder regular expression.
+     * When a command contains a dynamic value taken from a slider or color picker etc., 
+     * this could be as simple as allowing '${param}' literal somewhere in the command value, 
+     * any command builder should replace '${param}' with the command param value got from REST call.  
+     */
+    public static final String DYNAMIC_PARAM_PLACEHOLDER_REGEXP = "\\$\\{param\\}";
 }

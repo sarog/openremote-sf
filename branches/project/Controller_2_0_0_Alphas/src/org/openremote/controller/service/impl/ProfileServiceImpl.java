@@ -232,8 +232,8 @@ public class ProfileServiceImpl implements ProfileService {
    }
 
    private void setNamespace(Element root, Element newRoot, Element... elements) {
-      Namespace ns1 = Namespace.getNamespace("xsi", "htt//www.w3.org/2001/XMLSchema-instance");
-      Namespace ns2 = Namespace.getNamespace("schemaLocation", "htt//www.openremote.org panel.xsd");
+      Namespace ns1 = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+      Namespace ns2 = Namespace.getNamespace("schemaLocation", "http://www.openremote.org/panel.xsd");
       newRoot.setNamespace(root.getNamespace());
       newRoot.addNamespaceDeclaration(ns1);
       newRoot.addNamespaceDeclaration(ns2);

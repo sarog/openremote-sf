@@ -21,7 +21,9 @@ package org.openremote.controller.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -35,7 +37,6 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.PollingMachineThread;
@@ -77,14 +78,28 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       if (sensorElements != null) {
          for (Element sensorElement : sensorElements) {
             String sensorID = sensorElement.getAttributeValue("id");
-            Sensor sensor = new Sensor(Integer.parseInt(sensorID), sensorElement
-                  .getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), getStatusCommand(document, sensorID));
+            Sensor sensor = new Sensor(Integer.parseInt(sensorID), 
+                  sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), 
+                  getStatusCommand(document, sensorElement),
+                  getStateMap(sensorElement));
             sensors.add(sensor);
             controllerXMLListenSharingData.addSensor(sensor);
-            statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "noStatus");
+            statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "N/A");
          }
       }
       
+   }
+
+   @SuppressWarnings("unchecked")
+   private Map<String, String> getStateMap(Element sensorElement) {
+      HashMap<String, String> stateMap = new HashMap<String, String>();
+      List<Element>childrenOfSensor = sensorElement.getChildren();
+      for (Element childOfSensor : childrenOfSensor) {
+        if ("state".equalsIgnoreCase(childOfSensor.getName())) {
+           stateMap.put(childOfSensor.getAttributeValue("name"), childOfSensor.getAttributeValue("value"));
+        }
+      }
+      return stateMap;
    }
 
    /**
@@ -119,17 +134,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    }
    
    @SuppressWarnings("unchecked")
-   private StatusCommand getStatusCommand(Document document, String sensorID) {
-      Element sensorElement = null;
-      if (document == null) {
-         sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);   
-      } else {
-         sensorElement = remoteActionXMLParser.queryElementFromXMLById(document, sensorID);
-      }
-      
-      if (sensorElement == null) {
-         throw new NoSuchComponentException("Cannot find that sensor with id = " + sensorID);
-      }
+   private StatusCommand getStatusCommand(Document document, Element sensorElement) {
       
       List<Element>childrenOfSensor = sensorElement.getChildren();
       String commandElementId = "";

@@ -79,8 +79,6 @@ public class ControlCommandRESTServlet extends HttpServlet {
                }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            e.printStackTrace();
-            System.out.println(e.getErrorCode());
             response.sendError(e.getErrorCode(),e.getMessage());
          }
       } else {
