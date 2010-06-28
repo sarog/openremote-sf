@@ -272,19 +272,27 @@ public class SensorWindow extends FormWindow {
       stateItemsContainer.setScrollMode(Scroll.AUTOY);
       
       List<ColumnConfig> configs = new ArrayList<ColumnConfig>();
-      ColumnConfig column = new ColumnConfig();
-      column.setId("name");
-      column.setWidth(220);
+      ColumnConfig nameColumn = new ColumnConfig();
+      nameColumn.setId("name");
+      nameColumn.setHeader("Name");
+      nameColumn.setWidth(100);
+      
+      ColumnConfig valueColumn = new ColumnConfig();
+      valueColumn.setId("value");
+      valueColumn.setHeader("Value");
+      valueColumn.setWidth(100);
 
       TextField<String> text = new TextField<String>();
       text.setAllowBlank(false);
-      column.setEditor(new CellEditor(text));  
-      configs.add(column);
+      nameColumn.setEditor(new CellEditor(text));  
+      valueColumn.setEditor(new CellEditor(new TextField<String>()));
+      configs.add(nameColumn);
+      configs.add(valueColumn);
       
       grid = new EditorGrid<BeanModel>(new ListStore<BeanModel>(), new ColumnModel(configs));
       grid.setClicksToEdit(ClicksToEdit.TWO);
       grid.setAutoExpandColumn("name");
-      grid.setHideHeaders(true);
+//      grid.setHideHeaders(true);
       stateItemsContainer.add(grid);
       grid.addListener(Events.RowClick, new Listener<GridEvent<BeanModel>>() {
          @Override
@@ -376,9 +384,11 @@ public class SensorWindow extends FormWindow {
                   List<BeanModel> states = grid.getStore().getModels();
                   for (BeanModel stateModel : states) {
                      State state = stateModel.getBean();
-                     state.setSensor((CustomSensor) sensor);
-                     ((CustomSensor) sensor).addState(state);
+                     state.setSensor((CustomSensor)sensor);
+                     ((CustomSensor)sensor).addState(state);
                   }
+               } else if (type == SensorType.SWITCH) {
+                  
                }
                sensor.setType(type);
                sensor.setName(nameField.getValue());

@@ -133,7 +133,11 @@
 					<state name="off"/>
 				#elseif(${sensor.getType().toString().equals("custom")})
 					#foreach($state in $sensor.getStates())
-						<state name="${stringUtils.escapeXml($state.getName())}" />
+						<state name="${stringUtils.escapeXml($state.getName())}" 
+						#if($state.getValue())
+						   value="${stringUtils.escapeXml($state.getValue())}" 
+						#end
+						/>
 					#end
 				#end
   			#end
