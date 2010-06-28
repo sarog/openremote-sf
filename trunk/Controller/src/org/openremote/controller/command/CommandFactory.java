@@ -54,7 +54,7 @@ public class CommandFactory extends ApplicationObjectSupport{
       }
       String builder = commandBuilders.getProperty(protocolType);
       if (builder == null){
-         throw new NoSuchCommandBuilderException("Cannot find " + builder + " by " + protocolType + " protocol.");
+         throw new NoSuchCommandBuilderException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' protocol.");
       }
       CommandBuilder commandBuilder = (CommandBuilder) getApplicationContext().getBean(builder);
       return commandBuilder.build(element);

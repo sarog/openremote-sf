@@ -23,63 +23,40 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.service.impl.ControlCommandServiceImpl;
 
 /**
- * The Class DelayEvent.
+ * The Class Delay Command.
  * 
  * @author Handy.Wang 2009-10-15
  */
 public class DelayCommand implements ExecutableCommand {
     
-   /** The delay seconds. */
-   private long delaySeconds;
+   private long delayMillisecond;
 
-   /** The logger. */
    private static Logger logger = Logger.getLogger(ControlCommandServiceImpl.class.getName());
    
-   /**
-    * Instantiates a new delay event.
-    */
+   
    public DelayCommand() {
       super();
    }
 
-
-   /**
-    * Instantiates a new delay command.
-    * 
-    * @param delaySecondsStr the delay seconds str
-    */
-   public DelayCommand(String delaySecondsStr) {
-      super();
-      this.delaySeconds = (delaySecondsStr == null || "".equals(delaySecondsStr)) ? 0 : Long.parseLong(delaySecondsStr);
+   public DelayCommand(String delayMillisecondStr) {
+      this.delayMillisecond = (delayMillisecondStr == null || "".equals(delayMillisecondStr)) ? 0 : Long
+            .parseLong(delayMillisecondStr);
    }
 
-   /**
-    * Gets the delay seconds.
-    * 
-    * @return the delay seconds
-    */
-   public long getDelaySeconds() {
-      return delaySeconds;
+   public long getDelayMillisecond() {
+      return delayMillisecond;
    }
 
-   /**
-    * Sets the delay seconds.
-    * 
-    * @param delaySeconds the new delay seconds
-    */
-   public void setDelaySeconds(long delaySeconds) {
-      this.delaySeconds = delaySeconds;
+   public void setDelayMillisecond(long delayMillisecond) {
+      this.delayMillisecond = delayMillisecond;
    }
 
-   /**
-    * Execute delay.
-    */
    @Override
    public void send() {
       try {
-         Thread.sleep(delaySeconds * 1000);
+         Thread.sleep(delayMillisecond);
       } catch (InterruptedException e) {
-         logger.error("DelayEvent was interrupted.", e);
+         logger.error("DelayCommand was interrupted.", e);
       }
    }
 }

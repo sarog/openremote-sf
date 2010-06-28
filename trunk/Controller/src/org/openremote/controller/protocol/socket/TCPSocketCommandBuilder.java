@@ -24,6 +24,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.utils.CommandUtil;
 
 
 /**
@@ -47,9 +48,10 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
             tcpEvent.setPort(ele.getAttributeValue("value"));
          } else if("ipAddress".equals(ele.getAttributeValue("name"))){
             tcpEvent.setIp(ele.getAttributeValue("value"));
+         } else if("command".equals(ele.getAttributeValue("name"))){
+            tcpEvent.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          }
       }
-      tcpEvent.setCommand(element.getAttributeValue("value"));
       return tcpEvent;
    }
 

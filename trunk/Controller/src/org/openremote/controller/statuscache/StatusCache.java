@@ -66,6 +66,7 @@ public class StatusCache {
       String oldStatus = sensorStatus.get(componentID);
       if (status == null || "".equals(status)) {
          logger.info("Status is null or \"\" while calling saveOrUpdateStatus in statusCache.");
+         return;
       }
       
       boolean needNotify = false;

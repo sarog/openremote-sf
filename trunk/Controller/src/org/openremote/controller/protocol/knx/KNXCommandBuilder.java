@@ -87,7 +87,6 @@ public class KNXCommandBuilder implements CommandBuilder
 
   public final static String KNX_LOG_CATEGORY  = "KNX";   // TODO : externalize user-friendly log category constants
   public final static String GROUP_ADDRESS_XML_ATTRIBUTE = "groupAddress";
-  private final static String STATUS_COMMAND = "STATUS";
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -155,12 +154,7 @@ public Command build(Element element)
        throw new NoSuchCommandException("Couldn't find command " + knxCommandStr + " in KNXCommandType.");
     }
 
-    Command command = null;
-    if (knxCommandStr != null && !"".equals(knxCommandStr.trim()) && knxCommandStr.equalsIgnoreCase(STATUS_COMMAND)) {
-       command =  new KNXStatusCommand(connectionManager, groupAddress);
-    } else {
-       command = new KNXExecutableCommand(connectionManager, groupAddress, knxCommand);
-    }
+    Command command = new KNXCommand(connectionManager, groupAddress, knxCommand);
     
     log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
 

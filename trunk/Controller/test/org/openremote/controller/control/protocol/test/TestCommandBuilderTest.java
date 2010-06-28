@@ -29,9 +29,11 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.test.TestCommand;
 import org.openremote.controller.protocol.test.TestCommandBuilder;
 
 /**
+ * TestCommandBuilder Test
  * 
  * @author Javen
  *
@@ -48,12 +50,14 @@ public class TestCommandBuilderTest {
    public void testOn() {
       Command cmd = getCommand("ON");
       Assert.assertTrue(cmd instanceof ExecutableCommand);
+      Assert.assertEquals("ON", ((TestCommand)cmd).getCommandValue());
    }
 
    @Test
    public void testOFF() {
       Command cmd = getCommand("OFF");
       Assert.assertTrue(cmd instanceof ExecutableCommand);
+      Assert.assertEquals("OFF", ((TestCommand)cmd).getCommandValue());
    }
 
    @Test
@@ -64,8 +68,9 @@ public class TestCommandBuilderTest {
 
    @Test
    public void testRightNumber() {
-      Command cmd = getCommand("12");
+      Command cmd = getCommand("CHANGE");
       Assert.assertTrue(cmd instanceof ExecutableCommand);
+      Assert.assertEquals("255", ((TestCommand)cmd).getCommandValue());
    }
 
    @Test
@@ -77,29 +82,22 @@ public class TestCommandBuilderTest {
       }
    }
 
-   @Test
-   public void testWrongNumber2() {
-      try {
-         getCommand("-36");
-         fail();
-      } catch (NoSuchCommandException nse) {
-      }
-   }
-
-   @Test
-   public void testErrorCommand() {
-      try {
-         getCommand("xxx");
-         fail();
-      } catch (NumberFormatException nfe) {
-      }
-   }
-
    private Command getCommand(String cmdString) {
       Element ele = new Element("command");
       ele.setAttribute("id", "1234");
       ele.setAttribute("protocol", "test");
-      ele.setAttribute("value", cmdString);
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+      
+      Element propName = new Element("property");
+      propName.setAttribute("name","name");
+      propName.setAttribute("value","test");
+      
+      Element propCmd = new Element("property");
+      propCmd.setAttribute("name","command");
+      propCmd.setAttribute("value",cmdString);
+      
+      ele.addContent(propName);
+      ele.addContent(propCmd);
 
       return builder.build(ele);
    }

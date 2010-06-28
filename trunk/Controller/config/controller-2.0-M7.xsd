@@ -152,6 +152,7 @@
 	<xsd:element name="state">
 		<xsd:complexType>
 			<xsd:attribute name="name" use="required" />
+			<xsd:attribute name="value" use="optional" />
 		</xsd:complexType>
 	</xsd:element>
 	
@@ -339,7 +340,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					defines the time it will delay when a command is excuting.
+					defines the time (millisecond) it will delay when a command is executing.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>

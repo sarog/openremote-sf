@@ -34,8 +34,6 @@ import org.openremote.controller.exception.CommandBuildException;
  */
 public class MockupCommandBuilder implements CommandBuilder {
 
-   private final static String STATUS_COMMAND = "STATUS";
-   private final static String EXECUTE_COMMAND = "EXECUTE";
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
    @SuppressWarnings("unchecked")
@@ -50,19 +48,14 @@ public class MockupCommandBuilder implements CommandBuilder {
             }
          }         
          if (commandTypePropertyElement != null) {
-            String commandStr = commandTypePropertyElement.getAttributeValue("value");
             MockupCommand mockupCommand = null;
-            if (STATUS_COMMAND.equals(commandStr)) {
-               mockupCommand = new MockupStatusCommand();
-               initProperties(element, mockupCommand);
-            } else if (EXECUTE_COMMAND.equals(commandStr)) {
-               mockupCommand = new MockupExecutableCommand();
-               initProperties(element, mockupCommand);
-               
-               String dynamicCommandForSlider = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-               if (dynamicCommandForSlider != null && !"".equals(dynamicCommandForSlider) && isNumber(dynamicCommandForSlider)) {
-                  mockupCommand.setUrl(mockupCommand.getUrl().replaceAll("placeholder", dynamicCommandForSlider));
-               }
+            mockupCommand = new MockupCommand();
+            initProperties(element, mockupCommand);
+
+            String dynamicCommandForSlider = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+            if (dynamicCommandForSlider != null && !"".equals(dynamicCommandForSlider)
+                  && isNumber(dynamicCommandForSlider)) {
+               mockupCommand.setUrl(mockupCommand.getUrl().replaceAll("placeholder", dynamicCommandForSlider));
             }
             return mockupCommand;
          } else {

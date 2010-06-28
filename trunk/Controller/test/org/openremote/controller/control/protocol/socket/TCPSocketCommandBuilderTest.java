@@ -24,9 +24,11 @@ import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.protocol.socket.TCPSocketCommand;
 import org.openremote.controller.protocol.socket.TCPSocketCommandBuilder;
 /**
+ * TCPSocketCommandBuilder Test
  * 
  * @author Javen
  *
@@ -41,19 +43,29 @@ public class TCPSocketCommandBuilderTest {
 
    @Test
    public void testSocketCommandBuilder() {
-      TCPSocketCommand cmd = getCommand("192.168.0.1", 9090);
+      TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "test");
 
       Assert.assertEquals(cmd.getIp(), "192.168.0.1");
       Assert.assertEquals(cmd.getPort(), "9090");
       Assert.assertEquals(cmd.getCommand(), "test");
       Assert.assertEquals(cmd.getName(), "testName");
    }
+   
+   @Test
+   public void testSocketCommandWithParam() {
+      TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "light1_${param}");
+      
+      Assert.assertEquals(cmd.getIp(), "192.168.0.1");
+      Assert.assertEquals(cmd.getPort(), "9090");
+      Assert.assertEquals(cmd.getCommand(), "light1_255");
+      Assert.assertEquals(cmd.getName(), "testName");
+   }
 
-   private TCPSocketCommand getCommand(String address, int port) {
+   private TCPSocketCommand getCommand(String address, String port, String command) {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
-      ele.setAttribute("protocal", "tcpSocket");
-      ele.setAttribute("value", "test");
+      ele.setAttribute("protocol", "tcpSocket");
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
 
       Element propName = new Element("property");
       propName.setAttribute("name", "name");
@@ -65,11 +77,16 @@ public class TCPSocketCommandBuilderTest {
 
       Element propPort = new Element("property");
       propPort.setAttribute("name", "port");
-      propPort.setAttribute("value", port + "");
+      propPort.setAttribute("value", port);
+      
+      Element propCommand = new Element("property");
+      propCommand.setAttribute("name", "command");
+      propCommand.setAttribute("value", command);
 
       ele.addContent(propName);
       ele.addContent(propAddr);
       ele.addContent(propPort);
+      ele.addContent(propCommand);
 
       return (TCPSocketCommand) builder.build(ele);
    }

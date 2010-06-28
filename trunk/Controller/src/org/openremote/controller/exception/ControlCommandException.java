@@ -34,7 +34,7 @@ public class ControlCommandException extends ControllerException {
    public final static int NO_SUCH_COMPONENT = 419;
    
    /** The Constant NO_SUCH_EVENT_BUILDER. */
-   public final static int NO_SUCH_EVENT_BUILDER = 420;
+   public final static int NO_SUCH_COMMAND_BUILDER = 420;
    
    /** The Constant INVALID_COMMAND_TYPE. */
    public final static int INVALID_COMMAND_TYPE = 421;

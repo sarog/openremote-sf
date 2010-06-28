@@ -19,8 +19,13 @@
 */
 package org.openremote.controller.protocol.x10;
 
+import java.util.Map;
+
 import org.openremote.controller.command.ExecutableCommand;
 import org.apache.log4j.Logger;
+
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 
 /**
@@ -29,7 +34,7 @@ import org.apache.log4j.Logger;
  * @author Dan 2009-4-20
  * @author Jerome Velociter
  */
-public class X10Command implements ExecutableCommand {
+public class X10Command implements ExecutableCommand, StatusCommand {
    
    /** The address. */
    private String address;
@@ -101,6 +106,12 @@ public class X10Command implements ExecutableCommand {
         log.error(e);
      }
 
+   }
+
+   @Override
+   public String read(EnumSensorType sensoryType, Map<String, String> statusMap) {
+      // TODO Auto-generated method stub
+      return null;
    }
    
    

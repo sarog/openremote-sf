@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
-import org.openremote.controller.protocol.knx.KNXExecutableCommand;
+import org.openremote.controller.protocol.knx.KNXCommand;
 
 @SuppressWarnings("serial")
 /**
@@ -42,7 +42,7 @@ public class MacrosIrDelayUtilTest {
          add(new IRCommand());
          add(new DelayCommand());
          add(new IRCommand());
-         add(new KNXExecutableCommand());
+         add(new KNXCommand());
       }
    };
 
@@ -89,12 +89,12 @@ public class MacrosIrDelayUtilTest {
       MacrosIrDelayUtil.ensureDelayForIrCommand(containOneOrNoDelayCmdBetweenTwoIrCmd);
       Assert.assertTrue(containOneOrNoDelayCmdBetweenTwoIrCmd.size() == 7);
       Assert.assertTrue(containOneOrNoDelayCmdBetweenTwoIrCmd.get(0) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(1)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(2)).getDelaySeconds() == 300);
+      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(1)).getDelayMillisecond() == 200);
+      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(2)).getDelayMillisecond() == 300);
       Assert.assertTrue(containOneOrNoDelayCmdBetweenTwoIrCmd.get(3) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(4)).getDelaySeconds() == 500);
+      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(4)).getDelayMillisecond() == 500);
       Assert.assertTrue(containOneOrNoDelayCmdBetweenTwoIrCmd.get(5) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(6)).getDelaySeconds() == 800);
+      Assert.assertTrue(((DelayCommand) containOneOrNoDelayCmdBetweenTwoIrCmd.get(6)).getDelayMillisecond() == 800);
    }
    /**
     * used to test this case: 
@@ -107,15 +107,15 @@ public class MacrosIrDelayUtilTest {
       MacrosIrDelayUtil.ensureDelayForIrCommand(containMultiDelayCmdBetweenTwoIrCmd);
       Assert.assertTrue(containMultiDelayCmdBetweenTwoIrCmd.size() == 11);
       Assert.assertTrue(containMultiDelayCmdBetweenTwoIrCmd.get(0) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(1)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(2)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(3)).getDelaySeconds() == 100);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(1)).getDelayMillisecond() == 200);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(2)).getDelayMillisecond() == 200);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(3)).getDelayMillisecond() == 100);
       Assert.assertTrue(containMultiDelayCmdBetweenTwoIrCmd.get(4) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(5)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(6)).getDelaySeconds() == 200);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(7)).getDelaySeconds() == 200);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(5)).getDelayMillisecond() == 200);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(6)).getDelayMillisecond() == 200);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(7)).getDelayMillisecond() == 200);
       Assert.assertTrue(containMultiDelayCmdBetweenTwoIrCmd.get(8) instanceof IRCommand);
-      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(9)).getDelaySeconds() == 800);
+      Assert.assertTrue(((DelayCommand) containMultiDelayCmdBetweenTwoIrCmd.get(9)).getDelayMillisecond() == 800);
       Assert.assertTrue(containMultiDelayCmdBetweenTwoIrCmd.get(10) instanceof IRCommand);
    }
 }

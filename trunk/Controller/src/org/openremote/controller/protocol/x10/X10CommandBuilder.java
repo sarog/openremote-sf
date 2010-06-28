@@ -37,8 +37,8 @@ import java.util.List;
 public class X10CommandBuilder implements CommandBuilder {
 
    public final static String X10_LOG_CATEGORY = "X10";
-   public final static String ADDRESS_XML_ATTRIBUTE = "address";
-   public final static String COMMAND_XML_ATTRIBUTE = "command";
+   public final static String X10_ADDRESS_XML_PROPERTY_NAME = "address";
+   public final static String X10_COMMAND_XML_PROPERTY_NAME = "command";
 
    private X10ControllerManager connectionManager = new X10ControllerManager();
 
@@ -46,19 +46,24 @@ public class X10CommandBuilder implements CommandBuilder {
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public ExecutableCommand build(Element element) {
-
-      String commandAsString = element.getAttributeValue("value");
+   public ExecutableCommand build(Element element)
+   {
       String address = null;
-
+      String commandAsString = null;
 
       List<Element> propertyElements = element.getChildren("property", element.getNamespace());
 
       for (Element el : propertyElements)
       {
-        if(ADDRESS_XML_ATTRIBUTE.equals(el.getAttributeValue("name"))){
-           address = el.getAttributeValue("value");
-           break;
+        String x10CommandPropertyName = el.getAttributeValue("name");
+
+        if (X10_ADDRESS_XML_PROPERTY_NAME.equals(x10CommandPropertyName))
+        {
+          address = el.getAttributeValue("value");
+        }
+        else if (X10_COMMAND_XML_PROPERTY_NAME.equals(x10CommandPropertyName))
+        {
+          commandAsString = el.getAttributeValue("value");
         }
       }
 
@@ -84,6 +89,8 @@ public class X10CommandBuilder implements CommandBuilder {
          commandType = X10CommandType.SWITCH_OFF;
       }
 
+// TODO : integrate ${param} handling
+//        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
 
       X10Command event = new X10Command(connectionManager, address, commandType);
 
@@ -91,3 +98,4 @@ public class X10CommandBuilder implements CommandBuilder {
    }
 
 }
+       
