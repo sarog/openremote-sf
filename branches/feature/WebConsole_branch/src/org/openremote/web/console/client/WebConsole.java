@@ -33,6 +33,7 @@ import org.openremote.web.console.exception.NotAuthenticatedException;
 
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -88,7 +89,7 @@ public class WebConsole implements EntryPoint {
     */
    private void readPanelXmlEntity() {
       final String url = ClientDataBase.appSetting.getCurrentServer() + "/rest/panel/"
-            + ClientDataBase.appSetting.getCurrentPanelIdentity();
+            + URL.encode(ClientDataBase.appSetting.getCurrentPanelIdentity());
       
       AsyncSuccessCallback<PanelXmlEntity> callback = new AsyncSuccessCallback<PanelXmlEntity>() {
          public void onSuccess(PanelXmlEntity panelXmlEntity) {
@@ -97,7 +98,6 @@ public class WebConsole implements EntryPoint {
                ClientDataBase.panelXmlEntity.setGroups(panelXmlEntity.getGroups());
                ClientDataBase.panelXmlEntity.setScreens(panelXmlEntity.getScreens());
                ClientDataBase.panelXmlEntity.setGlobalTabBar(panelXmlEntity.getGlobalTabBar());
-               // TODO: initial screen view.
                new ApplicationView();
             }
          }
