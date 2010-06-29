@@ -134,7 +134,8 @@
            	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
            	<prop key = "telnet">telnetCommandBuilder</prop>
            	<prop key = "httpGet">httpGetCommandBuilder</prop>
-            	<prop key = "mockup">mockupCommandBuilder</prop>
+            <prop key = "upnp">upnpCommandBuilder</prop>
+            <prop key = "mockup">mockupCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -168,7 +169,11 @@
 	<!-- HTTP GET Command Builder -->
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
-	      
+
+  <!-- Universal Plug'n'Play Command Builder -->
+  <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
+        scope = "singleton" />
+
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
 	      
