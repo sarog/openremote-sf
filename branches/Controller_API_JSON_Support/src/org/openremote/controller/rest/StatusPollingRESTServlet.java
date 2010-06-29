@@ -36,6 +36,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
 import org.openremote.controller.spring.SpringContext;
@@ -97,7 +98,9 @@ public class StatusPollingRESTServlet extends HttpServlet {
                   response.sendError(504, "Time out!");
                } else {
                   logger.info("Return the polling status.");
-                  printWriter.write(pollingResults);
+                  printWriter.write(JSONTranslator.toDesiredData(request, pollingResults));
+                  printWriter.flush();
+                  printWriter.close();
                }
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");

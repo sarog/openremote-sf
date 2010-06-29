@@ -82,5 +82,11 @@ public class Constants {
    public static final String HTTP_BASIC_AUTH_HEADER_NAME = "Authorization";
 
    public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX = "Basic ";
+   
+   public static final String JSON_CALLBACK_PARAM_NAME = "jsoncallback";
+
+   public static final String HTTP_ACCEPT_HEADER_NAME = "accept";
+
+   public static final String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
 
 }
