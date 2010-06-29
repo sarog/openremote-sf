@@ -17,9 +17,6 @@
 package org.openremote.controller.rest;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.junit.After;
@@ -28,6 +25,7 @@ import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.TestConstraint;
 import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.utils.FileUtilOnlyForTest;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.SecurityUtil;
 
@@ -50,7 +48,7 @@ public class ProfileRestServletTest {
       if (new File(panelXmlPath).exists()) {
          new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
       }
-      copyFile(panelXmlFixturePath, panelXmlPath);
+      FileUtilOnlyForTest.copyFile(panelXmlFixturePath, panelXmlPath);
 
    }
 
@@ -59,7 +57,7 @@ public class ProfileRestServletTest {
       if (new File(panelXmlPath + ".bak").exists()) {
          new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
       } else {
-         deleteFile(panelXmlPath);
+         FileUtilOnlyForTest.deleteFile(panelXmlPath);
       }
    }
 
@@ -78,61 +76,6 @@ public class ProfileRestServletTest {
          }
       }
 
-   }
-
-   private void copyFile(String src, String dest) {
-      File inputFile = new File(src);
-      File outputFile = new File(dest);
-
-      FileReader in;
-      try {
-         in = new FileReader(inputFile);
-         if (!outputFile.getParentFile().exists()) {
-            outputFile.getParentFile().mkdirs();
-         }
-         if (!outputFile.exists()) {
-            outputFile.createNewFile();
-         }
-         FileWriter out = new FileWriter(outputFile);
-         int c;
-
-         while ((c = in.read()) != -1) {
-            out.write(c);
-         }
-
-         in.close();
-         out.close();
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-   }
-
-   private void deleteFile(String fileName) {
-
-      // A File object to represent the filename
-      File f = new File(fileName);
-
-      // Make sure the file or directory exists and isn't write protected
-      if (!f.exists()) {
-         throw new IllegalArgumentException("Delete: no such file or directory: " + fileName);
-      }
-
-      if (!f.canWrite()) {
-         throw new IllegalArgumentException("Delete: write protected: " + fileName);
-      }
-
-      // If it is a directory, make sure it is empty
-      if (f.isDirectory()) {
-         String[] files = f.list();
-         if (files.length > 0) throw new IllegalArgumentException("Delete: directory not empty: " + fileName);
-      }
-
-      // Attempt to delete it
-      boolean success = f.delete();
-
-      if (!success) {
-         throw new IllegalArgumentException("Delete: deletion failed");
-      }
    }
 
 }

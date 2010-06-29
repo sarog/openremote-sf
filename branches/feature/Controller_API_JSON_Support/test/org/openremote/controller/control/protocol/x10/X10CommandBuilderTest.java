@@ -19,7 +19,8 @@
 */
 package org.openremote.controller.control.protocol.x10;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 import org.jdom.Element;
 import org.junit.Before;
@@ -28,6 +29,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.protocol.x10.X10Command;
 import org.openremote.controller.protocol.x10.X10CommandBuilder;
+import org.openremote.controller.protocol.x10.X10CommandType;
 
 /**
  * X10CommandBuilder Test
@@ -45,20 +47,21 @@ public class X10CommandBuilderTest {
 
    @Test
    public void testGetCommandByRightCmdAndAddress() {
-      X10Command cmd = getCommand("testCmd", "127.0.0.1");
+      X10Command cmd = getCommand("OFF", "127.0.0.1");
 
       assertEquals("127.0.0.1", cmd.getAddress());
-      assertEquals("testCmd", cmd.getCommand());
+      assertEquals(true, X10CommandType.SWITCH_OFF == cmd.getCommand());
    }
    
    @Test
    public void testGetCommandByCmdAndAddressWithParam() {
-      X10Command cmd = getCommand("light1_${param}", "127.0.0.1");
+      X10Command cmd = getCommand("O${param}", "127.0.0.1");
       
       assertEquals("127.0.0.1", cmd.getAddress());
-      assertEquals("light1_255", cmd.getCommand());
+      assertEquals(true, X10CommandType.SWITCH_OFF == cmd.getCommand());
    }
 
+   @Test
    public void testGetCommandByWrongCmd() {
       try {
          getCommand("  ", "127.0.0.1");
@@ -67,6 +70,7 @@ public class X10CommandBuilderTest {
       };
    }
 
+   @Test
    public void testGetCommandByWrongAddress() {
       try {
          getCommand("my command ", "  ");
@@ -79,7 +83,7 @@ public class X10CommandBuilderTest {
       Element ele = new Element("command");
       ele.setAttribute("id", "test");
       ele.setAttribute("protocol", "x10");
-      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+      ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "FF");
 
       Element propAddr = new Element("property");
       propAddr.setAttribute("name", "address");
