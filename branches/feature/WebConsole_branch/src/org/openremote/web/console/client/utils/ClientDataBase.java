@@ -19,8 +19,12 @@
 */
 package org.openremote.web.console.client.utils;
 
+import java.util.Map;
+
 import org.openremote.web.console.domain.AppSetting;
+import org.openremote.web.console.domain.Group;
 import org.openremote.web.console.domain.PanelXmlEntity;
+import org.openremote.web.console.domain.Screen;
 import org.openremote.web.console.domain.UserInfo;
 
 /**
@@ -37,4 +41,42 @@ public class ClientDataBase {
    private ClientDataBase() {
    }
    
+   public static Group getFirstGroup() {
+      Map<Integer, Group> groups = panelXmlEntity.getGroups();
+      if (!groups.isEmpty()) {
+         return groups.get(groups.keySet().iterator().next());
+      }
+      return null;
+   }
+   
+   public static Group getGroupById(int groupId) {
+      Map<Integer, Group> groups = panelXmlEntity.getGroups();
+      if (!groups.isEmpty()) {
+         return groups.get(groupId);
+      }
+      return null;
+   }
+   
+   public static Group getDefaultGroup() {
+      if (userInfo.getLastGroupId() > 0) {
+         return getGroupById(userInfo.getLastGroupId());
+      } else {
+         return getFirstGroup();
+      }
+   }
+   
+   public static Screen getScreenById(int screenId) {
+      Map<Integer, Screen> screens = panelXmlEntity.getScreens();
+      if (!screens.isEmpty()) {
+         return screens.get(screenId);
+      }
+      return null;
+   }
+   
+   public static Screen getLastTimeScreen() {
+      if (userInfo.getLastScreenId() > 0) {
+         return getScreenById(userInfo.getLastScreenId());
+      }
+      return null;
+   }
 }
