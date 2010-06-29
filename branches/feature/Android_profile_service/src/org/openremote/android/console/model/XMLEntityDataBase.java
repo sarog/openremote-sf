@@ -50,7 +50,7 @@ public class XMLEntityDataBase {
    }
    
    public static Screen getScreen(int screenId) {
-      if (!groups.isEmpty()) {
+      if (!screens.isEmpty()) {
          return screens.get(screenId);
       }
       return null;
