@@ -24,6 +24,7 @@ import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
+import org.openremote.web.console.client.view.ApplicationView;
 import org.openremote.web.console.client.window.LoginWindow;
 import org.openremote.web.console.client.window.SettingsWindow;
 import org.openremote.web.console.domain.AppSetting;
@@ -46,6 +47,9 @@ public class WebConsole implements EntryPoint {
       checkSettings();
    }
    
+   /**
+    * Check controller server and panel identity configuration.
+    */
    private void checkSettings() {
       AppSetting appSetting = ClientDataBase.appSetting;
       
@@ -59,6 +63,9 @@ public class WebConsole implements EntryPoint {
       }
    }
    
+   /**
+    * Show setting window.
+    */
    private void toSetting() {      
       DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
       SettingsWindow settingWindow = new SettingsWindow();
@@ -76,19 +83,6 @@ public class WebConsole implements EntryPoint {
       ClientDataBase.appSetting.initFromJson(appSettingJson);
    }
    
-   // unused method
-   private void toLogin() {
-      DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
-      LoginWindow loginWindow = new LoginWindow();
-      loginWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-         public void afterSubmit(SubmitEvent be) {
-            DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
-            checkSettings();
-         }
-         
-      });
-   }
-
    /**
     * read panel entity from server.
     */
@@ -99,11 +93,12 @@ public class WebConsole implements EntryPoint {
       AsyncSuccessCallback<PanelXmlEntity> callback = new AsyncSuccessCallback<PanelXmlEntity>() {
          public void onSuccess(PanelXmlEntity panelXmlEntity) {
             if (panelXmlEntity != null) {
-               DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
+               DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
                ClientDataBase.panelXmlEntity.setGroups(panelXmlEntity.getGroups());
                ClientDataBase.panelXmlEntity.setScreens(panelXmlEntity.getScreens());
                ClientDataBase.panelXmlEntity.setGlobalTabBar(panelXmlEntity.getGlobalTabBar());
                // TODO: initial screen view.
+               new ApplicationView();
             }
          }
          public void onFailure(Throwable caught) {
