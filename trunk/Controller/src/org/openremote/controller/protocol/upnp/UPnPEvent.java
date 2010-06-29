@@ -5,6 +5,7 @@ package org.openremote.controller.protocol.upnp;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.cybergarage.upnp.Action;
@@ -12,17 +13,19 @@ import org.cybergarage.upnp.Argument;
 import org.cybergarage.upnp.ArgumentList;
 import org.cybergarage.upnp.ControlPoint;
 import org.cybergarage.upnp.Device;
-import org.openremote.controller.event.Event;
+import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
  * UPnP Event class
  * @author Mathieu Gallissot
  */
-public class UPnPEvent extends Event {
+public class UPnPEvent implements ExecutableCommand, StatusCommand {
 
 	private String device;
 	private String action;
-	private HashMap<String, String> args;
+	private Map<String, String> args;
 	private ControlPoint controlPoint;
 	private static Logger logger = Logger.getLogger(UPnPEvent.class.getName());
 
@@ -43,8 +46,9 @@ public class UPnPEvent extends Event {
 	 *            action specific. An external tool may be used in order to
 	 *            discover actions requirements.
 	 */
-	public UPnPEvent(ControlPoint controlPoint, String device, String action,
-			HashMap<String, String> args) {
+	public UPnPEvent(ControlPoint controlPoint, String device,
+                   String action, Map<String, String> args)
+  {
 		this.device = device;
 		this.action = action;
 		this.args = args;
@@ -54,7 +58,7 @@ public class UPnPEvent extends Event {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void exec() {
+	public void send() {
 		//First, let's grab the device corresponding to the event's id
 		Device dev = this.controlPoint.getDevice(this.device);
 		if (dev == null) {
@@ -87,5 +91,13 @@ public class UPnPEvent extends Event {
 		act.postControlAction();
 		//TODO : handle returned values ?
 	}
+
+  /**
+   * {@inheritDoc}
+   */
+  public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
+     //TODO
+     return null;
+  }
 
 }
