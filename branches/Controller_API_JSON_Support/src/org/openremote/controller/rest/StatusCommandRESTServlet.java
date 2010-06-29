@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -86,7 +87,9 @@ public class StatusCommandRESTServlet extends HttpServlet {
             try {
                 if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
                     PrintWriter printWriter = response.getWriter();
-                    printWriter.write(statusCommandService.readFromCache(unParsedSensorIDs));
+                    printWriter.write(JSONTranslator.toDesiredData(request, statusCommandService.readFromCache(unParsedSensorIDs)));
+                    printWriter.flush();
+                    printWriter.close();
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.exception.NoSuchPanelException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -45,7 +46,7 @@ public class GetProfileRestServlet extends HttpServlet {
             String decodedPanelName = panelName;
             decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
             String panleXML = profileService.getProfileByPanelName(decodedPanelName);
-            out.print(panleXML);
+            out.print(JSONTranslator.toDesiredData(request, panleXML));
             out.flush();
             out.close();
          } catch (NoSuchPanelException e) {

@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 /**
@@ -62,7 +63,7 @@ public class ShowPanelsRestServlet extends HttpServlet {
       if (matcher.find()) {
          try {
             String panlesXML = profileService.getAllPanels();
-            out.print(panlesXML);
+            out.print(JSONTranslator.toDesiredData(request, panlesXML));
             out.flush();
             out.close();
          } catch (ControlCommandException e) {
