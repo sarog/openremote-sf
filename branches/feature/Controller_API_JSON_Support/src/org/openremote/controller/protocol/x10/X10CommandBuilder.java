@@ -20,12 +20,13 @@
  */
 package org.openremote.controller.protocol.x10;
 
+import java.util.List;
+
 import org.jdom.Element;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.CommandBuildException;
-
-import java.util.List;
+import org.openremote.controller.utils.CommandUtil;
 
 /**
  * The Class X10EventBuilder.
@@ -75,6 +76,8 @@ public class X10CommandBuilder implements CommandBuilder {
             " or address: " + address
         );
       }
+      
+      commandAsString = CommandUtil.parseStringWithParam(element, commandAsString);
 
       //String address = element.getAttributeValue(ADDRESS_XML_ATTRIBUTE);
       //String commandAsString = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
@@ -89,8 +92,6 @@ public class X10CommandBuilder implements CommandBuilder {
          commandType = X10CommandType.SWITCH_OFF;
       }
 
-// TODO : integrate ${param} handling
-//        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
 
       X10Command event = new X10Command(connectionManager, address, commandType);
 
