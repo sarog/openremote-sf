@@ -82,6 +82,7 @@ public class Constants {
    
    public static final String REG_POSITIVEINT = "^[1-9][0-9]*$";
    public static final String REG_NONNEGATIVEINT = "^\\d+$";
+   public static final String REG_INTEGER = "^-?\\d+$";
    
    public final static String OPENREMOTE_WEBSITE= "http://www.openremote.org";
    
@@ -116,5 +117,9 @@ public class Constants {
    public static final String CURRETN_ROLE = "currentRole";
    
    public static final String CURRETN_RESOURCE_PATH = "currentResourcePath";
+   
+   public static final String IPHONE_TYPE = "iPhone";
+   
+   public static final String IPAD_TYPE = "iPad";
    
 }

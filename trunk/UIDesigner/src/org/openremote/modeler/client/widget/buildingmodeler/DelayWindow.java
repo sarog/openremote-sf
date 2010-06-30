@@ -105,7 +105,7 @@ public class DelayWindow extends FormWindow {
    private void createField() {
       NumberField delayField = new NumberField();
       delayField.setName(DELAY);
-      delayField.setFieldLabel("Delay(s)");
+      delayField.setFieldLabel("Delay(second)");
       delayField.setAllowBlank(false);
       delayField.setAutoWidth(true);
       if (commandDelayModel != null) {

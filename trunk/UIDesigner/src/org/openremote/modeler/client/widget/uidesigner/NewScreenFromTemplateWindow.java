@@ -61,7 +61,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *
  */
 public class NewScreenFromTemplateWindow extends FormWindow {
-   public static final int MAX_TEMPLATES_SIZE_PER_PAGE = 5;
+   public static final int MAX_TEMPLATES_SIZE_PER_PAGE = 10;
    
    private String currentKeywords = "";
    
@@ -146,6 +146,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
          MessageBox.alert("Error", "Please select a template.", null);
          be.cancelBubble();
       } else {
+         NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
          Template template = templateBeanModel.getBean();
          TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>() {
 
@@ -163,16 +164,17 @@ public class NewScreenFromTemplateWindow extends FormWindow {
                MessageBox
                      .alert("Error", "Failed to create screen from template: \"" + caught.getMessage() + "\"", null);
                NewScreenFromTemplateWindow.this.unmask();
+               super.checkTimeout(caught);
             }
 
          });
       }
-      NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
    }
 
    private void createTemplateView() {
       FieldSet templateFieldSet = new FieldSet();
       templateFieldSet.setHeading("Select from template");
+      templateFieldSet.setLayout(new FormLayout());
       
       LabelField keywordsLabel = new LabelField();
       keywordsLabel.setText("Keywords");
@@ -190,12 +192,10 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       searchContainerLayout.setLabelWidth(80);
       searchContainerLayout.setDefaultWidth(208);
       searchContainer.setLayout(searchContainerLayout);
-//      searchContainer.setButtonAlign(HorizontalAlignment.RIGHT);
       searchContainer.add(keywordsField);
       searchContainer.addButton(searchBtn);
       searchContainer.hide();
       
-      templateFieldSet.add(searchContainer);
       
       ContentPanel templateSelectContainer = new ContentPanel();
       templateSelectContainer.setHeaderVisible(false);
@@ -237,7 +237,9 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       
       
       shareRadioGroup.setFieldLabel("From");
-      templateSelectContainer.add(shareRadioGroup);
+      shareRadioGroup.setTitle("From");
+      templateFieldSet.add(shareRadioGroup);
+      templateFieldSet.add(searchContainer);
       templateSelectContainer.add(templateView);
       
       templateSelectContainer.addButton(previousPage);
@@ -312,11 +314,11 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       @Override
       public void componentSelected(ButtonEvent ce) {
          if (keywordsField.getValue() == null || keywordsField.getValue().trim().length()==0) {
-            MessageBox.alert("Warn", "At least, one keyword is needed!", null);
-            return; 
+           //search public templates without caring keywords.  
+           searchTemplates(null,0); 
+         } else {
+            searchTemplates(keywordsField.getValue(),0);
          }
-         
-         searchTemplates(keywordsField.getValue(),currentPage);
          currentPage = 0;
       }
    }
@@ -342,6 +344,8 @@ public class NewScreenFromTemplateWindow extends FormWindow {
          if (be.getSource() instanceof Radio && be.getSource().equals(shareNoneRadio)) {
             Boolean showPrivate = (Boolean) be.getValue();
             initTemplateView(showPrivate);
+            nextPage.setEnabled(false);
+            previousPage.setEnabled(false);
          }
       }
       

@@ -97,6 +97,9 @@ public class TemplateCreateWindow extends FormWindow
       templateName.setName(TEMPLATE_NAME_FIELD);
       templateName.setFieldLabel("Name");
       templateName.setAllowBlank(false);
+      templateName.setRegex("^\\s*.*\\D+\\d*\\s*");
+      TextField<String>.TextFieldMessages nameMsg = templateName.getMessages();
+      nameMsg.setRegexText("The template name can't be number.");
       templateName.setValidateOnBlur(true);
       if (template != null) {
          templateName.setValue(template.getName());
@@ -116,6 +119,9 @@ public class TemplateCreateWindow extends FormWindow
       keywordsLabel.setHideLabel(true);
       templateKeywords.setName(TEMPLATE_NAME_FIELD);
       templateKeywords.setLabelSeparator("");
+      templateKeywords.setRegex("^\\s*.*\\D+\\d*\\s*");
+      TextField<String>.TextFieldMessages keywordsMsg = templateKeywords.getMessages();
+      keywordsMsg.setRegexText("The keywords can't be number.");
       if(template!=null ) {
          templateKeywords.setValue(template.getKeywords());
       }
@@ -239,8 +245,9 @@ public class TemplateCreateWindow extends FormWindow
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error","Beehive database not available at the moment. Error message: " + caught.getLocalizedMessage(),null);
+            MessageBox.alert("Error","Beehive database not available at the moment. Error message: " + caught.getMessage(),null);
             TemplateCreateWindow.this.unmask();
+            super.checkTimeout(caught);
          }
          
          
@@ -266,8 +273,9 @@ public class TemplateCreateWindow extends FormWindow
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error","Beehive not available at the moment. Error message: " + caught.getLocalizedMessage(),null);
+            MessageBox.alert("Error","Beehive not available at the moment. Error message: " + caught.getMessage(),null);
             TemplateCreateWindow.this.unmask();
+            super.checkTimeout(caught);
          }
          
          
@@ -279,10 +287,12 @@ public class TemplateCreateWindow extends FormWindow
 
       @Override
       public void componentSelected(ButtonEvent ce) {
-         if (template == null) {
-            submitToCreateTemplate();
-         } else {
-            submitToEditTemplate();
+         if (form.isValid()) {
+            if (template == null) {
+               submitToCreateTemplate();
+            } else {
+               submitToEditTemplate();
+            }
          }
       }
    }

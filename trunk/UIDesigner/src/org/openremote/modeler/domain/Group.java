@@ -158,4 +158,28 @@ public class Group extends RefedEntity {
       this.tabbar = tabbar;
    }
    
+   @Transient
+   @JSON(include = false)
+   public List<Screen> getPortraitScreens() {
+      List<Screen> portraitScreens = new ArrayList<Screen>();
+      for (ScreenPairRef screenPairRef : screenRefs) {
+         if (screenPairRef.getScreen().hasPortraitScreen()) {
+            portraitScreens.add(screenPairRef.getScreen().getPortraitScreen());
+         }
+      }
+      return portraitScreens;
+   }
+   
+   @Transient
+   @JSON(include = false)
+   public List<Screen> getLandscapeScreens() {
+      List<Screen> landscapeScreens = new ArrayList<Screen>();
+      for (ScreenPairRef screenPairRef : screenRefs) {
+         if (screenPairRef.getScreen().hasLandscapeScreen()) {
+            landscapeScreens.add(screenPairRef.getScreen().getLandscapeScreen());
+         }
+      }
+      return landscapeScreens;
+   }
+   
 }

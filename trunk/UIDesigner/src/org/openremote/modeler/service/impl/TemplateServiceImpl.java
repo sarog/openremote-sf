@@ -73,6 +73,7 @@ import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
@@ -179,7 +180,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
 
       log.debug("save Template Ok!");
@@ -189,16 +190,12 @@ public class TemplateServiceImpl implements TemplateService {
    public String getTemplateContent(ScreenPair screen) {
       try {
          String[] includedPropertyNames = { 
-               "*.protocol.oid",
                "*.gestures.uiCommand",
-               "*.absolutes.uiComponent.sensor.sensorCommandRef.oid",
                "*.absolutes.uiComponent.sensorLink",
                "*.absolutes.uiComponent.oid",
                "*.grids.cells.uiComponent.sensorLink",
                "*.grids.cells.uiComponent.oid",
-               "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.oid",
                "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
-               "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs.oid",
                "*.absolutes.uiComponent.commands",
                "*.absolutes.uiComponent.slider.sliderSensorRef.sensor",
                "*.absolutes.uiComponent.switchCommand.switchSensorRef.sensor",
@@ -206,9 +203,7 @@ public class TemplateServiceImpl implements TemplateService {
                "*.grids.cells.uiComponent.slider.sliderSensorRef.sensor",
                "*.grids.cells.uiComponent.switchCommand.switchSensorRef.sensor",
                "*.grids.cells.uiComponent.uiCommand",
-               "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.oid",
                "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
-               "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs.oid",
                "*.grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
          String[] excludePropertyNames = { "grid", /* "*.touchPanelDefinition", */"*.refCount", "*.displayName",
                "*.oid", "*.proxyInformations", "*.proxyInformation", /* "gestures", */"*.panelXml", /* "*.navigate", */
@@ -226,6 +221,7 @@ public class TemplateServiceImpl implements TemplateService {
    @Override
    public ScreenFromTemplate buildFromTemplate(Template template) {
       ScreenPair screen = buildScreen(template);
+      resetImageSourceLocationForScreen(screen);
       
       // ---------------download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getOid());
@@ -903,9 +899,9 @@ public class TemplateServiceImpl implements TemplateService {
 
       for (Device device : devices ) {
          device.setAccount(null);
-         device.setSensors(new HashSet<Sensor>());
-         device.setSwitchs(new HashSet<Switch>());
-         device.setSliders(new HashSet<Slider>());
+         device.setSensors(new ArrayList<Sensor>());
+         device.setSwitchs(new ArrayList<Switch>());
+         device.setSliders(new ArrayList<Slider>());
          device.setDeviceCommands(new ArrayList<DeviceCommand>());
       }
 
@@ -1064,6 +1060,7 @@ public class TemplateServiceImpl implements TemplateService {
       private String content;
       private String name;
       private String keywords;
+      private boolean shared = false;
 
       public int getId() {
          return id;
@@ -1097,6 +1094,14 @@ public class TemplateServiceImpl implements TemplateService {
       public void setKeywords(String keywords) {
          this.keywords = keywords;
       }
+      
+      public boolean isShared() {
+         return shared;
+      }
+
+      public void setShared(boolean shared) {
+         this.shared = shared;
+      }
 
       public Template toTemplate() {
          Template template = new Template();
@@ -1104,6 +1109,7 @@ public class TemplateServiceImpl implements TemplateService {
          template.setContent(content);
          template.setOid(id);
          template.setKeywords(keywords);
+         template.setShared(shared);
          return template;
       }
    }
@@ -1165,7 +1171,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
 
       log.debug("update Template Ok!");
@@ -1259,5 +1265,17 @@ public class TemplateServiceImpl implements TemplateService {
          }
       }
       return gestures;
+   }
+   
+   private void resetImageSourceLocationForScreen(ScreenPair sp) {
+      String accountPath = resourceService.getRelativeResourcePathByCurrentAccount("account");
+      accountPath = accountPath.substring(0, accountPath.lastIndexOf("/") + 1);
+      Collection<ImageSource> images = sp.getAllImageSources();
+      if (images != null && images.size() >0) {
+         for(ImageSource image: images) {
+            String imageFileName = image.getImageFileName();
+            image.setSrc(accountPath+imageFileName);
+         }
+      }
    }
 }

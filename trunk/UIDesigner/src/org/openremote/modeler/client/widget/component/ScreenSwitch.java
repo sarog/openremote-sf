@@ -96,4 +96,12 @@ public class ScreenSwitch extends ScreenComponent {
          }
       }
    }
+   
+   public void removeIcon() {
+      center = new Text("Switch");
+      switchTable.setWidget(1, 1, center);
+      switchTable.addStyleName("screen-btn-cont");
+      image.setUrl("");
+      isOn = true;
+   }
 }

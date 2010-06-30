@@ -21,12 +21,10 @@ package org.openremote.modeler.service;
 
 import java.util.List;
 
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Switch;
 
 public interface SwitchService {
    
-   List<Switch> loadAll(Account account);
    List<Switch> loadAll();
    
    void delete(long id);

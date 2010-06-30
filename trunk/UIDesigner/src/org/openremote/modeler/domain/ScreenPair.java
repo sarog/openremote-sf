@@ -166,4 +166,22 @@ public class ScreenPair extends RefedEntity {
 
       return new ArrayList<ImageSource>();
    }
+
+   @Transient
+   @JSON(include = false)
+   public boolean hasPortraitScreen() {
+      if (orientation.equals(OrientationType.BOTH) || orientation.equals(OrientationType.PORTRAIT)) {
+         return true;
+      }
+      return false;
+   }
+   
+   @Transient
+   @JSON(include = false)
+   public boolean hasLandscapeScreen() {
+      if (orientation.equals(OrientationType.BOTH) || orientation.equals(OrientationType.LANDSCAPE)) {
+         return true;
+      }
+      return false;
+   }
 }

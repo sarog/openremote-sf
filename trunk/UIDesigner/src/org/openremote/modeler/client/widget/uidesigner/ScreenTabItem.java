@@ -16,6 +16,8 @@
  */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.List;
+
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
@@ -83,6 +85,7 @@ public class ScreenTabItem extends TabItem {
       updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
       initTabbarForScreenCanvas();
+      updateScreenIndicator();
       screenContainer.add(screenCanvas);
 //      screenContainer.setBorders(false);
       screenContainer.setStyleAttribute("border", "1px dashed gray");
@@ -105,6 +108,9 @@ public class ScreenTabItem extends TabItem {
       }
       screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
       screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
+      if (screenCanvas != null) {
+         screenCanvas.setSize(touchPanelDefinition.getCanvas().getWidth(), touchPanelDefinition.getCanvas().getHeight());
+      }
    }
 
    /**
@@ -140,7 +146,7 @@ public class ScreenTabItem extends TabItem {
       }
    }
    
-   public void initTabbarForScreenCanvas() {
+   private void initTabbarForScreenCanvas() {
       if (screen != null) {
          Group screenGroup = screen.getScreenPair().getParentGroup();
          if (screenGroup != null) {
@@ -156,6 +162,19 @@ public class ScreenTabItem extends TabItem {
             if (tabbar != null) {
                screenCanvas.addTabbar(tabbar);
             }
+         }
+      }
+   }
+   
+   public void updateScreenIndicator() {
+      Group screenGroup = screen.getScreenPair().getParentGroup();
+      if (screenGroup != null) {
+         if (screen.isLandscape()) {
+            List<Screen> landscapeScreens = screenGroup.getLandscapeScreens();
+            screenCanvas.updateScreenIndicator(landscapeScreens.size(), landscapeScreens.indexOf(screen));
+         } else {
+            List<Screen> portraitScreens = screenGroup.getPortraitScreens();
+            screenCanvas.updateScreenIndicator(portraitScreens.size(), portraitScreens.indexOf(screen));
          }
       }
    }

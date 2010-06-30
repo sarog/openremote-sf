@@ -67,11 +67,11 @@ public class SliderWindow extends FormWindow {
    public static final String SLIDER_SENSOR_FIELD_NAME = "sensor";
    public static final String SLIDER_SETVALUE_COMMMAND_FIELD_NAME="setValue";
    
-   private Slider slider = null;
+   protected Slider slider = null;
    
    private TextField<String> nameField = new TextField<String>();
-   private ComboBox<ModelData> sensorField = new SimpleComboBox();
-   private Button setValueBtn = new Button("select");
+   protected ComboBox<ModelData> sensorField = new SimpleComboBox();
+   protected Button setValueBtn = new Button("select");
    
    private boolean edit = false;
    
@@ -233,10 +233,10 @@ public class SliderWindow extends FormWindow {
                   DeviceCommandRef ref = (DeviceCommandRef) dataModel.getBean();
                   deviceCommandRef = new DeviceCommandRef(ref.getDeviceCommand());
                } else {
-                  MessageBox.alert("error", "A switch can only have command instead of macor", null);
+                  MessageBox.alert("error", "A slider can only have command instead of macor", null);
                   return;
                }
-               command.setText(deviceCommandRef.getDisplayName());
+               command.setText(deviceCommandRef.getDeviceCommand().getDisplayName());
                SliderCommandRef sliderCommandRef = new SliderCommandRef(slider);
                sliderCommandRef.setDeviceCommand(deviceCommandRef.getDeviceCommand());
                slider.setSetValueCmd(sliderCommandRef);

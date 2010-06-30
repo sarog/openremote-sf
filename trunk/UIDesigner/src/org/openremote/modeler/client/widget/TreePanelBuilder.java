@@ -17,6 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+/*
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.client.widget;
 
 import java.util.List;
@@ -24,7 +40,9 @@ import java.util.Set;
 
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.PropertyEditEvent;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.icon.Icons;
+import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.ConfigCategoryBeanModelProxy;
@@ -100,40 +118,40 @@ public class TreePanelBuilder {
    private static TreeStore<BeanModel> deviceAndCmdTreeStore = null;
    /** The macro tree store. */
    private static TreeStore<BeanModel> macroTreeStore = null;
-   
+
    private static TreeStore<BeanModel> widgetTreeStore = null;
    private static TreeStore<BeanModel> panelTreeStore = null;
    private static TreeStore<BeanModel> controllerConfigCategoryTreeStore = null;
    private static TreeStore<BeanModel> templateTreeStore = null;
-   
+
    /**
     * Builds a device command tree.
     * 
     * @return the a new device command tree
     */
    public static TreePanel<BeanModel> buildDeviceCommandTree() {
-//      if (commandTreeStore == null) {
-         RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
-            @Override
-            protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-                DeviceBeanModelProxy.loadDeviceAndCommand((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
-                    public void onSuccess(List<BeanModel> result) {
-                        listAsyncCallback.onSuccess(result);
-                    }
-                });
+      // if (commandTreeStore == null) {
+      RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
+         @Override
+         protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
+            DeviceBeanModelProxy.loadDeviceAndCommand((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
+               public void onSuccess(List<BeanModel> result) {
+                  listAsyncCallback.onSuccess(result);
+               }
+            });
+         }
+      };
+      TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+         @Override
+         public boolean hasChildren(BeanModel beanModel) {
+            if (beanModel.getBean() instanceof Device) {
+               return true;
             }
-        };
-        TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
-            @Override
-            public boolean hasChildren(BeanModel beanModel) {
-                if (beanModel.getBean() instanceof Device) {
-                    return true;
-                }
-                return false;
-            }
-        };
-        deviceAndCmdTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
-//      }
+            return false;
+         }
+      };
+      deviceAndCmdTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+      // }
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceAndCmdTreeStore);
 
       tree.setBorders(false);
@@ -155,31 +173,31 @@ public class TreePanelBuilder {
       });
       return tree;
    }
-   
+
    public static TreePanel<BeanModel> buildDeviceTree() {
       if (deviceTreeStore == null) {
          RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
             @Override
             protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
-                DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
-                    public void onSuccess(List<BeanModel> result) {
-                        listAsyncCallback.onSuccess(result);
-                    }
-                });
+               DeviceBeanModelProxy.loadDevice((BeanModel) o, new AsyncSuccessCallback<List<BeanModel>>() {
+                  public void onSuccess(List<BeanModel> result) {
+                     listAsyncCallback.onSuccess(result);
+                  }
+               });
             }
-        };
-        final TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
-           @Override
-           public boolean hasChildren(BeanModel beanModel) {
+         };
+         final TreeLoader<BeanModel> loadDeviceTreeLoader = new BaseTreeLoader<BeanModel>(loadDeviceRPCProxy) {
+            @Override
+            public boolean hasChildren(BeanModel beanModel) {
                if (beanModel.getBean() instanceof DeviceCommand || beanModel.getBean() instanceof UICommand) {
-                   return false;
+                  return false;
                }
                return true;
-           }
-        };
-        deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
+            }
+         };
+         deviceTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       }
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore){
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceTreeStore) {
          @SuppressWarnings("unchecked")
          @Override
          protected void onDoubleClick(TreePanelEvent tpe) {
@@ -191,6 +209,7 @@ public class TreePanelBuilder {
          protected void afterRender() {
             super.afterRender();
             mask("Loading devices...");
+            removeStyleName("x-masked");
          }
       };
       ((DeviceBeanModelTable) BeanModelDataBase.deviceTable)
@@ -202,7 +221,7 @@ public class TreePanelBuilder {
                      if (deviceTreeStore.contains(beanModel)) {
                         tree.getStore().removeAll(beanModel);
                         tree.getStore().remove(beanModel);
-                     } 
+                     }
                      deviceTreeStore.add(beanModel, false);
                      tree.getSelectionModel().select(beanModel, true);
                      tree.getStore().getLoader().load();
@@ -222,13 +241,13 @@ public class TreePanelBuilder {
                return ICON.deviceCmd();
             } else if (thisModel.getBean() instanceof Device) {
                return ICON.device();
-            } else if(thisModel.getBean() instanceof Sensor){
+            } else if (thisModel.getBean() instanceof Sensor) {
                return ICON.sensorIcon();
-            } else if(thisModel.getBean() instanceof Switch){
+            } else if (thisModel.getBean() instanceof Switch) {
                return ICON.switchIcon();
-            } else if(thisModel.getBean() instanceof Slider){
+            } else if (thisModel.getBean() instanceof Slider) {
                return ICON.sliderIcon();
-            } else if(thisModel.getBean() instanceof UICommand){
+            } else if (thisModel.getBean() instanceof UICommand) {
                return ICON.deviceCmd();
             } else {
                return ICON.folder();
@@ -238,7 +257,7 @@ public class TreePanelBuilder {
       });
       return tree;
    }
-   
+
    public static TreePanel<BeanModel> buildCommandTree(final Device device) {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
@@ -285,6 +304,7 @@ public class TreePanelBuilder {
       });
       return tree;
    }
+
    /**
     * Builds a new macro tree.
     * 
@@ -323,9 +343,10 @@ public class TreePanelBuilder {
             this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
          }
       };
-      ((DeviceMacroBeanModelTable)BeanModelDataBase.deviceMacroTable).addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel> (){
+      ((DeviceMacroBeanModelTable) BeanModelDataBase.deviceMacroTable)
+            .addDeviceMacroInsertListener(new DeviceMacroInsertListener<BeanModel>() {
 
-         @Override
+               @Override
                public void handleInsert(BeanModel beanModel) {
                   if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
                      if (!macroTreeStore.contains(beanModel)) {
@@ -335,13 +356,13 @@ public class TreePanelBuilder {
                   }
                }
 
-        });
+            });
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
       tree.setDisplayProperty("displayName");
       tree.setStyleAttribute("overflow", "auto");
-      
+
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
 
@@ -358,7 +379,7 @@ public class TreePanelBuilder {
       });
       return tree;
    }
-   
+
    /**
     * Builds the widget tree, it contain all kind's of component.
     * 
@@ -374,7 +395,7 @@ public class TreePanelBuilder {
       widgetTree.setHeight("100%");
       widgetTree.setDisplayProperty("name");
       widgetTree.setStyleAttribute("overflow", "auto");
-      
+
       widgetTreeStore.add(new UIGrid().getBeanModel(), true);
       widgetTreeStore.add(new UILabel().getBeanModel(), true);
       widgetTreeStore.add(new UIImage().getBeanModel(), true);
@@ -383,7 +404,7 @@ public class TreePanelBuilder {
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
       widgetTreeStore.add(new UITabbar().getBeanModel(), true);
       widgetTreeStore.add(new UITabbarItem().getBeanModel(), true);
-      
+
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof UIButton) {
@@ -410,7 +431,7 @@ public class TreePanelBuilder {
 
       return widgetTree;
    }
-   
+
    public static TreePanel<BeanModel> buildPanelTree(final ScreenPanel screenPanel) {
       if (panelTreeStore == null) {
          panelTreeStore = new TreeStore<BeanModel>();
@@ -424,7 +445,7 @@ public class TreePanelBuilder {
             if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
                ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
                screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
-               
+               screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
                ScreenTab screenTabItem = screenPanel.getScreenItem();
                if (screenTabItem != null) {
                   if (screen == screenTabItem.getScreenPair()) {
@@ -440,9 +461,11 @@ public class TreePanelBuilder {
                   screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
                   screenPanel.setScreenItem(screenTabItem);
                }
+               screenTabItem.updateScreenIndicator();
             }
             if (beanModel != null) {
-               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory.getPropertyEditable(beanModel,this)));
+               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
+                     .getPropertyEditable(beanModel, this)));
             }
          }
 
@@ -452,11 +475,12 @@ public class TreePanelBuilder {
             super.onDoubleClick(tpe);
             this.fireEvent(DoubleClickEvent.DOUBLECLICK, new DoubleClickEvent());
          }
-         
+
          @Override
          protected void afterRender() {
             super.afterRender();
             mask("Loading panels...");
+            removeStyleName("x-masked");
          }
 
       };
@@ -473,7 +497,7 @@ public class TreePanelBuilder {
             } else if (thisModel.getBean() instanceof GroupRef) {
                return ICON.groupIcon();
             } else if (thisModel.getBean() instanceof ScreenPairRef) {
-               if (((ScreenPairRef)thisModel.getBean()).getScreen().getRefCount() >1) {
+               if (((ScreenPairRef) thisModel.getBean()).getScreen().getRefCount() > 1) {
                   return ICON.screenLinkIcon();
                }
                return ICON.screenIcon();
@@ -482,19 +506,19 @@ public class TreePanelBuilder {
             }
          }
       });
-      
+
       return panelTree;
    }
-   
+
    public static TreePanel<BeanModel> buildPanelTree(TreeStore<BeanModel> store) {
       TreePanel<BeanModel> panelTree = new TreePanel<BeanModel>(store);
-         
+
       panelTree.setStateful(true);
       panelTree.setBorders(false);
       panelTree.setHeight("100%");
       panelTree.setDisplayProperty("displayName");
       panelTree.setStyleAttribute("overflow", "auto");
-      
+
       panelTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
             if (thisModel.getBean() instanceof Panel) {
@@ -511,30 +535,40 @@ public class TreePanelBuilder {
 
       return panelTree;
    }
-   
-   public static TreePanel<BeanModel> buildControllerConfigCategoryPanelTree(final TabPanel configTabPanel){
-      if(controllerConfigCategoryTreeStore == null){
+
+   public static TreePanel<BeanModel> buildControllerConfigCategoryPanelTree(final TabPanel configTabPanel) {
+      if (controllerConfigCategoryTreeStore == null) {
          controllerConfigCategoryTreeStore = new TreeStore<BeanModel>();
-         ConfigCategoryBeanModelProxy.getAllCategory(new AsyncSuccessCallback<Set<ConfigCategory>>(){
+         ConfigCategoryBeanModelProxy.getAllCategory(new AsyncSuccessCallback<Set<ConfigCategory>>() {
 
             @Override
             public void onSuccess(Set<ConfigCategory> result) {
-               for(ConfigCategory category : result){
+               for (ConfigCategory category : result) {
                   controllerConfigCategoryTreeStore.add(category.getBeanModel(), false);
                }
             }
          });
       }
-      
-      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(controllerConfigCategoryTreeStore){
+
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(controllerConfigCategoryTreeStore) {
          @Override
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONCLICK) {
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
-               ConfigCategory  category = beanModel.getBean();
+               final ConfigCategory  category = beanModel.getBean();
                configTabPanel.removeAll();
                ControllerConfigTabItem configTabItem = new ControllerConfigTabItem(category);
                configTabPanel.add(configTabItem);
+               configTabItem.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+
+                  @Override
+                  public void afterSubmit(SubmitEvent be) {
+                     configTabPanel.removeAll();
+                     ControllerConfigTabItem configTabItem = new ControllerConfigTabItem(category);
+                     configTabPanel.add(configTabItem);
+                  }
+                  
+               });
             }
             super.onBrowserEvent(event);
          }
@@ -544,24 +578,22 @@ public class TreePanelBuilder {
             return ICON.configIcon();
          }
       });
-      
+
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
       tree.setDisplayProperty("name");
       return tree;
    }
-   
-public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel){
-      
+
+   public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel) {
+
       TreeFolderBean privateTemplatesBean = new TreeFolderBean();
       privateTemplatesBean.setDisplayName("Private templates");
-      
+
       TreeFolderBean publicTemplatesBean = new TreeFolderBean();
       publicTemplatesBean.setDisplayName("Public templates");
-      
-      
-      
+
       RpcProxy<List<BeanModel>> loadTemplateRPCProxy = new RpcProxy<List<BeanModel>>() {
 
          @Override
@@ -571,46 +603,46 @@ public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templat
                if (model.getBean() instanceof TreeFolderBean) {
                   TreeFolderBean folderBean = model.getBean();
                   if (folderBean.getDisplayName().contains("Private")) {
-                     TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>(){
+                     TemplateProxy.getTemplates(true, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
                         public void onSuccess(List<Template> result) {
                            callback.onSuccess(Template.createModels(result));
                         }
-                        
+
                      });
                   } else {
-                     TemplateProxy.getTemplates(false, new AsyncSuccessCallback<List<Template>>(){
+                     TemplateProxy.getTemplates(false, new AsyncSuccessCallback<List<Template>>() {
 
                         @Override
                         public void onSuccess(List<Template> result) {
                            callback.onSuccess(Template.createModels(result));
                         }
-                        
+
                      });
                   }
                }
             }
          }
-         
+
       };
-      
-      TreeLoader<BeanModel> templateLoader = new BaseTreeLoader<BeanModel> (loadTemplateRPCProxy) {
+
+      TreeLoader<BeanModel> templateLoader = new BaseTreeLoader<BeanModel>(loadTemplateRPCProxy) {
          @Override
          public boolean hasChildren(BeanModel beanModel) {
-             if (beanModel.getBean() instanceof TreeFolderBean) {
-                 return true;
-             }
-             return false;
+            if (beanModel.getBean() instanceof TreeFolderBean) {
+               return true;
+            }
+            return false;
          }
       };
-      
+
       if (templateTreeStore == null) {
          templateTreeStore = new TreeStore<BeanModel>(templateLoader);
       }
       templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
-      TreePanel<BeanModel> tree = new TreePanel<BeanModel> (templateTreeStore){
+      TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
          @Override
          public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
@@ -618,27 +650,55 @@ public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templat
                BeanModel beanModel = this.getSelectionModel().getSelectedItem();
                if (beanModel != null && beanModel.getBean() instanceof Template) {
                   Template template = beanModel.getBean();
-//                  if (! template.equals(templatePanel.getTemplateInEditing())) {
-                     templatePanel.setTemplateInEditing(template);
-//                  }
+                  // if (! template.equals(templatePanel.getTemplateInEditing())) {
+                  templatePanel.setTemplateInEditing(template);
+                  // }
                }
             }
          }
       };
-      
+
       tree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
-            if(thisModel.getBean() instanceof TreeFolderBean) {
+            if (thisModel.getBean() instanceof TreeFolderBean) {
                return ICON.folder();
-            } 
+            }
             return ICON.templateIcon();
          }
       });
-      
+
       tree.setStateful(true);
       tree.setBorders(false);
       tree.setHeight("100%");
       tree.setDisplayProperty("displayName");
       return tree;
+   }
+
+   public static TreePanel<BeanModel> buildDeviceContentTree(TreeStore<BeanModel> store) {
+      TreePanel<BeanModel> deviceContentTree = new TreePanel<BeanModel>(store);
+
+      deviceContentTree.setStateful(true);
+      deviceContentTree.setBorders(false);
+      deviceContentTree.setHeight("100%");
+      deviceContentTree.setDisplayProperty("displayName");
+      deviceContentTree.setStyleAttribute("overflow", "auto");
+
+      deviceContentTree.setIconProvider(new ModelIconProvider<BeanModel>() {
+         public AbstractImagePrototype getIcon(BeanModel thisModel) {
+            if (thisModel.getBean() instanceof DeviceCommand) {
+               return ICON.deviceCmd();
+            } else if (thisModel.getBean() instanceof Sensor) {
+               return ICON.sensorIcon();
+            } else if (thisModel.getBean() instanceof Switch) {
+               return ICON.switchIcon();
+            } else if (thisModel.getBean() instanceof Slider) {
+               return ICON.sliderIcon();
+            } else {
+               return ICON.folder();
+            }
+         }
+      });
+
+      return deviceContentTree;
    }
 }

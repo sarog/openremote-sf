@@ -42,5 +42,8 @@ public class SwitchCommandOnRef extends CommandRefItem {
       this.onSwitch = onSwitch;
    }
    
-   
+   public boolean equalsWithoutCompareOid(SwitchCommandOnRef other) {
+      DeviceCommand cmd = super.getDeviceCommand();
+      return cmd.equalsWithoutCompareOid(other.getDeviceCommand());
+   }
 }
