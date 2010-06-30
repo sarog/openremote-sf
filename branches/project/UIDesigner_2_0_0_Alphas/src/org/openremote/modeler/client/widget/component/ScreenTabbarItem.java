@@ -125,4 +125,10 @@ public class ScreenTabbarItem extends ScreenComponent {
    public UITabbarItem getUITabbarIem() {
       return this.uiTabbarItem;
    }
+   
+   public void removeImage() {
+      setImageSource(null);
+      this.setStyleAttribute("backgroundImage", "");
+      layout();
+   }
 }
