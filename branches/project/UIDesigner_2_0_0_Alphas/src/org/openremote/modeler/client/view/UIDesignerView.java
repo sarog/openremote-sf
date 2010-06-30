@@ -58,7 +58,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * The Class UIDesignerView.
@@ -84,9 +83,10 @@ public class UIDesignerView extends TabItem {
       super();
       setText("UI Designer");
 
-      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncSuccessCallback <String>() {
          public void onFailure(Throwable caught) {
             Info.display("Error", "falid to get account path.");
+            super.checkTimeout(caught);
          }
          public void onSuccess(String result) {
             Cookies.setCookie(Constants.CURRETN_RESOURCE_PATH, result);
@@ -131,9 +131,12 @@ public class UIDesignerView extends TabItem {
 
                @Override
                public void onFailure(Throwable caught) {
-                  timer.cancel();
-                  Info.display(new InfoConfig("Error", caught.getMessage()
-                        + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+               	timer.cancel();
+                  boolean timeout = super.checkTimeout(caught);
+                  if (!timeout) {
+                     Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                  }
                   Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                }
             });
@@ -154,9 +157,13 @@ public class UIDesignerView extends TabItem {
          @Override
          public void onFailure(Throwable caught) {
             timer.cancel();
-            Info.display(new InfoConfig("Error", caught.getMessage()+" "
-                  + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+            boolean timeout = super.checkTimeout(caught);
+            if (!timeout) {
+               Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                     + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+            }
             Window.setStatus("Failed to save UI designer layout at: "+ DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+            
          }
 
       });
@@ -164,7 +171,7 @@ public class UIDesignerView extends TabItem {
    }
 
    public void restore() {
-      UtilsProxy.restore(new AsyncCallback<PanelsAndMaxOid>() {
+      UtilsProxy.restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
          @Override
          public void onSuccess(PanelsAndMaxOid panelsAndMaxOid) {
             BeanModelDataBase.panelTable.clear();
@@ -191,6 +198,7 @@ public class UIDesignerView extends TabItem {
          @Override
          public void onFailure(Throwable caught) {
             MessageBox.alert("Error", "UI designer restore failed: " + caught.getMessage(), null);
+            super.checkTimeout(caught);
          }
       });
    }
