@@ -30,6 +30,7 @@ import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.domain.component.UITabbar.Scope;
@@ -69,12 +70,20 @@ public class ScreenTabbar extends ScreenComponent {
    public ScreenTabbar(ScreenCanvas screenCanvas,UITabbar uiTabbar){
       super(screenCanvas);
       this.uiTabbar = uiTabbar;
+      
       setToGroup();
       Screen screen = this.getScreenCanvas().getScreen();
+      defaultHeight = screen.getTouchPanelDefinition().getTabbarDefinition().getHeight();
       
       setHeight(defaultHeight);
+      ImageSource bgImage = screen.getTouchPanelDefinition().getTabbarDefinition().getBackground();
       setWidth(screen.getTouchPanelDefinition().getCanvas().getWidth());
-      addStyleName("tabbar-background");
+      if (bgImage != null && !bgImage.isEmpty()) {
+         this.setStyleAttribute("backgroundImage", "url("+screen.getTouchPanelDefinition().getTabbarDefinition().getBackground().getSrc()+");repeat-x");
+      } else {
+         addStyleName("tabbar-background");
+      }
+      
       setPosition(0, screen.getTouchPanelDefinition().getCanvas().getHeight() - (defaultHeight));
       tabItemContainer.setSize(screen.getTouchPanelDefinition().getCanvas().getWidth()+"", defaultHeight+"");
       add(tabItemContainer);

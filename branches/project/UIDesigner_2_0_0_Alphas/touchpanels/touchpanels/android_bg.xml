@@ -3,5 +3,6 @@
    xsi:schemaLocation="http://www.openremote.org touchpanel_bg.xsd">
    <panel name="Android" type="Android" bgImage="resources/images/android_emulator.png" width="400" height="709" paddingLeft="36" paddingTop="78">
       <canvas width="320" height="460" />
+      <tabbar height="44" bgImage="resources/images/iphone_tabbar_bg.png" />
    </panel>
 </openremote>
