@@ -19,13 +19,13 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SwitchService;
@@ -42,9 +42,12 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
 
    @Override
    public List<Switch> loadAll() {
-      List<Switch> switchs = genericDAO.loadAll(Switch.class);
-      Hibernate.initialize(switchs);
-      return switchs;
+      List<Switch> result = userService.getAccount().getSwitches();
+      if (result == null || result.size() == 0) {
+         return new ArrayList<Switch> ();
+      }
+      Hibernate.initialize(result);
+      return result;
    }
 
 
@@ -82,12 +85,6 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       return old;
    }
    
-    @Override
-   public List<Switch> loadAll(Account account) {
-      List<Switch> switchs = account.getSwitches();
-      return switchs;
-   }
-
    public UserService getUserService() {
       return userService;
    }

@@ -859,7 +859,7 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          downloadOpenRemoteZip();
       } catch (IOException e) {
-         LOGGER.error("Beehive no available !" + e.getLocalizedMessage());
+         LOGGER.error("Beehive no available !" + e.getMessage());
       }
       //Restore panels and max oid. 
       

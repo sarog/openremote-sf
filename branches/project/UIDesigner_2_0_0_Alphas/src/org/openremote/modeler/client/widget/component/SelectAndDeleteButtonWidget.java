@@ -53,8 +53,8 @@ public class SelectAndDeleteButtonWidget extends LayoutContainer {
    }
    
    public void setText(String text) {
-      if (text.length() > 20) {
-         this.selectButton.setText(text.substring(0, 20) + "...");
+      if (text.length() > 15) {
+         this.selectButton.setText(text.substring(0, 15) + "...");
       } else {
          this.selectButton.setText(text);
       }

@@ -120,8 +120,20 @@ public class Switch extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Switch other = (Switch) obj;
-      if (!equalsWithoutCompareOid(other)) return false;
-      return getOid() == other.getOid();
+      if (this.getOid() != other.getOid()) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (switchCommandOffRef == null) {
+         if (other.switchCommandOffRef != null) return false;
+      } else if (!switchCommandOffRef.equals(other.switchCommandOffRef)) return false;
+      if (switchCommandOnRef == null) {
+         if (other.switchCommandOnRef != null) return false;
+      } else if (!switchCommandOnRef.equals(other.switchCommandOnRef)) return false;
+      if (switchSensorRef == null) {
+         if (other.switchSensorRef != null) return false;
+      } else if (!switchSensorRef.equals(other.switchSensorRef)) return false;
+      return true;
    }
    
    public boolean equalsWithoutCompareOid(Switch swh) {
@@ -130,13 +142,15 @@ public class Switch extends BusinessEntity {
       } else if (!name.equals(swh.name)) return false;
       if (switchCommandOffRef == null) {
          if (swh.switchCommandOffRef != null) return false;
-      } else if (!switchCommandOffRef.equalsWithoutCompareOid(swh.switchCommandOffRef)) return false;
+      } else if (swh.switchCommandOffRef == null || !switchCommandOffRef.equalsWithoutCompareOid(swh.switchCommandOffRef)) return false;
       if (switchCommandOnRef == null) {
          if (swh.switchCommandOnRef != null) return false;
-      } else if (!switchCommandOnRef.equalsWithoutCompareOid(swh.switchCommandOnRef)) return false;
+      } else if (swh.switchCommandOnRef == null || !switchCommandOnRef.equalsWithoutCompareOid(swh.switchCommandOnRef)) return false;
       if (switchSensorRef == null) {
          if (swh.switchSensorRef != null) return false;
-      } else if (!switchSensorRef.equalsWithoutCompareOid(swh.switchSensorRef)) return false;
+      } else if (swh.switchSensorRef == null || !switchSensorRef.equalsWithoutCompareOid(swh.switchSensorRef)) return false;
       return true;
    }
+
+   
 }

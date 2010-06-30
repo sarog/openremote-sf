@@ -61,7 +61,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  *
  */
 public class NewScreenFromTemplateWindow extends FormWindow {
-   public static final int MAX_TEMPLATES_SIZE_PER_PAGE = 5;
+   public static final int MAX_TEMPLATES_SIZE_PER_PAGE = 10;
    
    private String currentKeywords = "";
    
@@ -146,6 +146,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
          MessageBox.alert("Error", "Please select a template.", null);
          be.cancelBubble();
       } else {
+         NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
          Template template = templateBeanModel.getBean();
          TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>() {
 
@@ -167,7 +168,6 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 
          });
       }
-      NewScreenFromTemplateWindow.this.mask("Downloading resources for this template... ");
    }
 
    private void createTemplateView() {
@@ -314,9 +314,9 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       public void componentSelected(ButtonEvent ce) {
          if (keywordsField.getValue() == null || keywordsField.getValue().trim().length()==0) {
            //search public templates without caring keywords.  
-           searchTemplates(null,currentPage); 
+           searchTemplates(null,0); 
          } else {
-            searchTemplates(keywordsField.getValue(),currentPage);
+            searchTemplates(keywordsField.getValue(),0);
          }
          currentPage = 0;
       }

@@ -29,7 +29,7 @@ import org.openremote.modeler.domain.Sensor;
 
 import flexjson.JSON;
 /**
- * This class is used for record the property for a sensor 
+ * This class is used for recording the property for a sensor 
  * A sensor is defined in the build modeler, include the state, state name... But we can only set the value for the state in the UI designer.
  * we can't change the property for a sensor because it only have a device command or state name. therefore we need a class to record the state value 
  * for every SensorOwner and here it is. 
