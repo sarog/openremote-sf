@@ -137,39 +137,38 @@ public class TemplatePanel extends ContentPanel {
       deleteBtn.addSelectionListener(new ConfirmDeleteListener<ButtonEvent>() {
          @Override
          public void onDelete(ButtonEvent ce) {
-            final BeanModel templateBeanModel = templateTree.getSelectionModel().getSelectedItem();
-            
-            if (templateBeanModel == null) {
+            List<BeanModel> templateBeanModels = templateTree.getSelectionModel().getSelectedItems();
+            if (templateBeanModels == null || templateBeanModels.size() == 0) {
                MessageBox.alert("Error", "Please select a template.", null);
                ce.cancelBubble();
-            }
-
-            else {
-               Template template = templateBeanModel.getBean();
-               Long oid = template.getOid();
-
-               TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
-                  @Override
-                  public void onSuccess(Boolean success) {
-                     if (success) {
-                        templateTree.getStore().remove(templateBeanModel);
-                        if (editTabItem != null) {
-                           templateInEditing = null;
-                           templateEditPanel.remove(editTabItem);
-                           templateEditPanel.closeCurrentScreenTab();
-                           editTabItem = null;
-                           templateEditPanel.layout();
+            } else {
+               for (final BeanModel templateBeanModel : templateBeanModels) {
+                  Template template = templateBeanModel.getBean();
+                  Long oid = template.getOid();
+                  TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
+                     @Override
+                     public void onSuccess(Boolean success) {
+                        if (success) {
+                           templateTree.getStore().remove(templateBeanModel);
+                           if (editTabItem != null) {
+                              templateInEditing = null;
+                              templateEditPanel.remove(editTabItem);
+                              templateEditPanel.closeCurrentScreenTab();
+                              editTabItem = null;
+                              templateEditPanel.layout();
+                           }
+                           Info.display("Delete Template", "Template deleted successfully.");
                         }
-                        Info.display("Delete Template", "Template deleted successfully.");
                      }
-                  }
 
-                  @Override
-                  public void onFailure(Throwable caught) {
-                     MessageBox.alert("Error", "Failed to delete template :\""+caught.getMessage()+"\"", null);
-                  }
+                     @Override
+                     public void onFailure(Throwable caught) {
+                        MessageBox.alert("Error", "Failed to delete template :\"" + caught.getMessage() + "\"", null);
+                     }
 
-               });
+                  });
+
+               }
             }
          }
       });
@@ -220,11 +219,7 @@ public class TemplatePanel extends ContentPanel {
                      BeanModel parentNode = template.isShared()?publicTemplateTopNode:privateTemplateTopNode;
                      templateTree.getStore().add(parentNode, template.getBeanModel(),false);
                   }
-//                  if ( editTabItem != null) {
-//                     try{templateEditTab.remove(editTabItem);}catch(RuntimeException e){}
-//                  } 
                   editTabItem = new ScreenTab(template.getScreen());
-//                  editTabItem.setText("Template: "+templateInEditing.getName());
                   templateEditPanel.setScreenItem(editTabItem);
                }
 
@@ -340,13 +335,6 @@ public class TemplatePanel extends ContentPanel {
    }
 
    public void setTemplateInEditing(final Template templateInEditing) {
-      if (editTabItem != null) {
-         //reopen template tab item close by user. 
-         if (templateEditPanel.indexOf(editTabItem) == -1 ) {
-            templateEditPanel.setScreenItem(editTabItem);
-            templateInEditing.setScreen(templateInEditing.getScreen());
-         }
-      }
       if (templateInEditing != null &&templateInEditing.equals(this.templateInEditing)) return;
       
       if (this.templateInEditing != null) {
@@ -363,7 +351,11 @@ public class TemplatePanel extends ContentPanel {
             @Override
             public void onSuccess(Template result) {
                //--------------------------
-               // 2, edit another template.
+               // 2, make sure the content for the previous template be updated. 
+               //--------------------------
+               TemplatePanel.this.templateInEditing.setContent(result.getContent());
+               //--------------------------
+               // 3, edit another template.
                //--------------------------
                buildScreen(templateInEditing);
                Info.display("Success", "auto save template" + templateInEditing.getName() + " successfully !");
@@ -374,10 +366,6 @@ public class TemplatePanel extends ContentPanel {
       } else {
          buildScreen(templateInEditing);
       }
-      
-
-      //this.templateInEditing = templateInEditing;
-
    }
    
    private void buildScreen(final Template templateInEditing) {
@@ -390,15 +378,7 @@ public class TemplatePanel extends ContentPanel {
 
          @Override
          public void onSuccess(ScreenPair screen) {
-            // try to close previous template editing tab item.
-//            if (editTabItem != null) {
-//               try {
-//                  templateEditTab.remove(editTabItem);
-//               } catch (RuntimeException e) {
-//               }
-//            }
             editTabItem = new ScreenTab(screen);
-//            editTabItem.setText("Template: " + templateInEditing.getName());
             templateEditPanel.setScreenItem(editTabItem);
             templateInEditing.setScreen(screen);
             TemplatePanel.this.templateInEditing = templateInEditing;

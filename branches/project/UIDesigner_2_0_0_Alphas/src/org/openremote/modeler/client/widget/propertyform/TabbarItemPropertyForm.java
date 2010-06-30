@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import java.util.ArrayList;
 
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
@@ -131,7 +132,7 @@ public class TabbarItemPropertyForm extends PropertyForm {
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
-            String backgroundImgURL = be.getResultHtml();
+            String backgroundImgURL = ImageSourceValidator.validate(be.getResultHtml());
             boolean success = !"".equals(backgroundImgURL);
             if (success) {
                screenTabbarItem.setImageSource(new ImageSource(backgroundImgURL));

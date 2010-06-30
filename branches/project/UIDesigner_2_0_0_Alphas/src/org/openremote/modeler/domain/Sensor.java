@@ -115,8 +115,17 @@ public class Sensor extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Sensor other = (Sensor) obj;
-      if (! equalsWithoutCompareOid(other)) return false;
-      return getOid() == other.getOid();
+      if (this.getOid() != other.getOid()) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (sensorCommandRef == null) {
+         if (other.sensorCommandRef != null) return false;
+      } else if (!sensorCommandRef.equals(other.sensorCommandRef)) return false;
+      if (type == null) {
+         if (other.type != null) return false;
+      } else if (!type.equals(other.type)) return false;
+      return true;
    }
    
    public boolean equalsWithoutCompareOid(Sensor other) {
@@ -126,9 +135,12 @@ public class Sensor extends BusinessEntity {
       if (type == null) {
          if (other.type != null) return false;
       } else if (!type.equals(other.type)) return false;
+      if (device == null) {
+         if (other.device != null) return false;
+      } else if (!device.equals(other.device)) return false;
       if (sensorCommandRef == null) {
          if (other.sensorCommandRef != null) return false;
-      } else if (!sensorCommandRef.equalsWithoutCompareOid(other.sensorCommandRef)) return false;
+      } else if (other.sensorCommandRef != null && !sensorCommandRef.equalsWithoutCompareOid(other.sensorCommandRef)) return false;
       return true;
    }
 }

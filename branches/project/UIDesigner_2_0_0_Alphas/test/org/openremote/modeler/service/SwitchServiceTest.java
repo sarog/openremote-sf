@@ -12,7 +12,6 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
-import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.testng.Assert;
@@ -24,16 +23,16 @@ public class SwitchServiceTest {
    private DeviceCommandService deviceCommandService;
 
    private SensorService sensorService = null;
-
+   private UserService userService = null;
    @BeforeClass
    public void setUp() {
+      userService = (UserService)SpringTestContext.getInstance().getBean("userService");
       service = (SwitchService) SpringTestContext.getInstance().getBean("switchService");
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
-
       sensorService = (SensorService)SpringTestContext.getInstance().getBean("sensorService");
-      Authentication authentication = new UsernamePasswordAuthenticationToken("javen","javen");
-
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+      
+      userService.createUserAccount("test", "test", "test@email.com", "role_bm");
+      SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
    }
 
    @Test
@@ -74,6 +73,7 @@ public class SwitchServiceTest {
 
       swh.setSwitchCommandOnRef(swhOnCmdRef);
       swh.setSwitchCommandOffRef(swhOffCmdRef);
+      swh.setAccount(userService.getAccount());
 
       // swh.setOffDeviceCommandRef(cmdRef);
 
@@ -84,6 +84,7 @@ public class SwitchServiceTest {
       
       swh2.setSwitchCommandOnRef(swhOnCmdRef);
       swh2.setSwitchCommandOffRef(swhOffCmdRef);
+      swh2.setAccount(userService.getAccount());
       
       service.save(swh);
       service.save(swh2);

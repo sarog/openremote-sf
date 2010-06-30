@@ -180,7 +180,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
 
       log.debug("save Template Ok!");
@@ -1060,6 +1060,7 @@ public class TemplateServiceImpl implements TemplateService {
       private String content;
       private String name;
       private String keywords;
+      private boolean shared = false;
 
       public int getId() {
          return id;
@@ -1093,6 +1094,14 @@ public class TemplateServiceImpl implements TemplateService {
       public void setKeywords(String keywords) {
          this.keywords = keywords;
       }
+      
+      public boolean isShared() {
+         return shared;
+      }
+
+      public void setShared(boolean shared) {
+         this.shared = shared;
+      }
 
       public Template toTemplate() {
          Template template = new Template();
@@ -1100,6 +1109,7 @@ public class TemplateServiceImpl implements TemplateService {
          template.setContent(content);
          template.setOid(id);
          template.setKeywords(keywords);
+         template.setShared(shared);
          return template;
       }
    }
@@ -1161,7 +1171,7 @@ public class TemplateServiceImpl implements TemplateService {
             throw new BeehiveNotAvailableException();
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getLocalizedMessage()==null?"":e.getLocalizedMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
 
       log.debug("update Template Ok!");

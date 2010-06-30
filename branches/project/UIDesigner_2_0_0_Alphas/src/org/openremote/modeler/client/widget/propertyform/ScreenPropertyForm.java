@@ -26,6 +26,7 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.uidesigner.GestureWindow;
@@ -38,6 +39,7 @@ import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 
+import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -49,14 +51,15 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
-import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.ColumnLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 /**
  * A property form for editing the screen's property . 
@@ -68,7 +71,9 @@ public class ScreenPropertyForm extends PropertyForm {
 
    public static final String SCREEN_BACKGROUND = "background";
    
-   public static final String SCREEN_RELETIVE = "relative";
+   public static final String SCREEN_RELATIVE = "relative";
+   
+   public static final String SCREEN_ABSOLUTE = "absolute";
    
    public static final String FILL_SCREEN = "Fill screen ";
    
@@ -95,30 +100,20 @@ public class ScreenPropertyForm extends PropertyForm {
       positionSet.setHeading("Position");
 
       setLabelWidth(80);
-     // TextField<String> screenNameField = createNameField();
       
       ImageUploadAdapterField background = createBackgroundField();
       
       whetherFillScreen = createScreenFillerField(positionSet);
       
-      
-      
       TextField<String> posLeftField = createLeftSetField();
       TextField<String> posTopField = createTopSetField();
-//      TextField<String> widthField = createWidthSetField();
-//      TextField<String> heightField = createHeightSetField();
       
-//      createPositionField(positionSet,posLeftField,posTopField,widthField,heightField);
       createPositionField(positionSet,posLeftField,posTopField);
       positionSet.add(posLeftField);
       positionSet.add(posTopField);
-//      positionSet.add(widthField);
-//      positionSet.add(heightField);
       if(canvas.getScreen().getBackground().isFillScreen()){
          positionSet.hide();
       }
-//      whetherFillScreen.hide();
-//      this.add(screenNameField);
       this.add(background);
       this.add(whetherFillScreen);
       this.add(positionSet);
@@ -127,53 +122,13 @@ public class ScreenPropertyForm extends PropertyForm {
       addListenersToForm(whetherFillScreen);
    }
 
-  /* private TextField<String> createHeightSetField() {
-      final TextField<String> heightField = new TextField<String>();
-      heightField.setName("height");
-      heightField.setFieldLabel("Height");
-      heightField.setAllowBlank(false);
-      heightField.setRegex("^[1-9][0-9]*$");
-      heightField.getMessages().setRegexText("The height must be a positive integer");
-      heightField.addListener(Events.Blur, new Listener<BaseEvent>() {
-         @Override
-         public void handleEvent(BaseEvent be) {
-            Background bkGrd = canvas.getScreen().getBackground();
-            bkGrd.setHeight(Integer.parseInt(heightField.getValue()));
-            canvas.updateGround();
-         }
-      });
-      heightField.setLabelStyle("text-align:right;");
-      heightField.setAllowBlank(true);
-      return heightField;
-   }
-
-   private TextField<String> createWidthSetField() {
-      final TextField<String> widthField = new TextField<String>();
-      widthField.setName("width");
-      widthField.setFieldLabel("Width");
-      widthField.setAllowBlank(false);
-      widthField.setRegex("^[1-9][0-9]*$");
-      widthField.getMessages().setRegexText("The width must be a positive integer");
-      widthField.setAllowBlank(true);
-      widthField.addListener(Events.Blur, new Listener<BaseEvent>() {
-         @Override
-         public void handleEvent(BaseEvent be) {
-            Background bkGrd = canvas.getScreen().getBackground();
-            bkGrd.setWidth(Integer.parseInt(widthField.getValue()));
-            canvas.updateGround();
-         }
-      });
-      widthField.setLabelStyle("text-align:right;");
-      return widthField;
-   }*/
-
    private TextField<String> createTopSetField() {
       final TextField<String> posTopField = new TextField<String>();
       posTopField.setName("posTop");
       posTopField.setFieldLabel("Top");
       posTopField.setAllowBlank(false);
-      posTopField.setRegex(Constants.REG_NONNEGATIVEINT);
-      posTopField.getMessages().setRegexText("The top must be a nonnegative integer");
+      posTopField.setRegex(Constants.REG_INTEGER);
+      posTopField.getMessages().setRegexText("The top must be a integer");
       posTopField.setValue("0"); // temp set top 0
       posTopField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
@@ -193,8 +148,8 @@ public class ScreenPropertyForm extends PropertyForm {
       posLeftField.setName("posLeft");
       posLeftField.setFieldLabel("Left");
       posLeftField.setAllowBlank(false);
-      posLeftField.setRegex(Constants.REG_NONNEGATIVEINT);
-      posLeftField.getMessages().setRegexText("The left must be a nonnegative integer");
+      posLeftField.setRegex(Constants.REG_INTEGER);
+      posLeftField.getMessages().setRegexText("The left must be a integer");
       posLeftField.setValue("0"); // temp set left 0
       posLeftField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
@@ -210,10 +165,23 @@ public class ScreenPropertyForm extends PropertyForm {
    }
 
    private void createPositionField(FieldSet positionSet, final TextField<? extends Object>... fields) {
-      CheckBox absolute = new CheckBox();
-      absolute.setHideLabel(true);
-      absolute.setBoxLabel("Absolute");
+      LayoutContainer selectContainer = new LayoutContainer();
+      selectContainer.setLayout(new ColumnLayout());
+      
+      final RadioGroup radioGroup = new RadioGroup();
+      radioGroup.setOrientation(Orientation.VERTICAL);
+      Radio relativeRadio = new Radio();
+      relativeRadio.setBoxLabel("Relative");
+      relativeRadio.setValueAttribute(SCREEN_RELATIVE);
+      Radio absoluteRadio = new Radio();
+      absoluteRadio.setBoxLabel("Absolute");
+      absoluteRadio.setValueAttribute(SCREEN_ABSOLUTE);
+      radioGroup.add(relativeRadio);
+      radioGroup.add(absoluteRadio);
+      selectContainer.add(radioGroup);
+      
       final ComboBox<ModelData> relative = new ComboBox<ModelData>();
+      relative.setWidth(120);
       ListStore<ModelData> store = new ListStore<ModelData>();
       RelativeType[] relatedTypes  = RelativeType.values();
       for (int i = 0; i < relatedTypes.length; i++) {
@@ -223,12 +191,10 @@ public class ScreenPropertyForm extends PropertyForm {
       }
       
       relative.setStore(store);
-      relative.setFieldLabel("Relative");
-      relative.setName(SCREEN_RELETIVE);
+      relative.setName(SCREEN_RELATIVE);
       relative.setAllowBlank(false);
       relative.setEditable(false);
       relative.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
-
          @SuppressWarnings("unchecked")
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
@@ -236,22 +202,30 @@ public class ScreenPropertyForm extends PropertyForm {
             ComboBoxDataModel<RelativeType> relativeItem;
             relativeItem = (ComboBoxDataModel<RelativeType>) se.getSelectedItem();
             bkGrd.setRelatedType(relativeItem.getData());
-//            bkGrd.setAbsolute(false);
             canvas.updateGround();
          }
-         
       });
-      
       relative.setValue(new ComboBoxDataModel<RelativeType>(canvas.getScreen().getBackground().getRelatedType().toString(),canvas.getScreen().getBackground().getRelatedType()));
-      absolute.addListener(Events.Change, new Listener<FieldEvent>() {
-         @Override
+      selectContainer.add(relative);
+      
+      relative.setEnabled(!canvas.getScreen().getBackground().isAbsolute());
+     
+      relative.setDisplayField(ComboBoxDataModel.getDisplayProperty());
+      relative.setEmptyText("Please select one... ");
+      
+      relativeRadio.setValue(!canvas.getScreen().getBackground().isAbsolute());
+      absoluteRadio.setValue(canvas.getScreen().getBackground().isAbsolute());
+      enableTextField(canvas.getScreen().getBackground().isAbsolute(), fields);
+      
+      radioGroup.addListener(Events.Change, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {
+            String value = radioGroup.getValue().getValueAttribute();
             Background bkGrd = canvas.getScreen().getBackground();
-            if ("true".equals(be.getValue().toString())) {
+            if (SCREEN_ABSOLUTE.equals(value)) {
                bkGrd.setAbsolute(true);
                relative.setEnabled(false);
                enableTextField(true, fields);
-            } else {
+            } else if(SCREEN_RELATIVE.equals(value)) {
                bkGrd.setAbsolute(false);
                relative.setEnabled(true);
                enableTextField(false, fields);
@@ -259,16 +233,7 @@ public class ScreenPropertyForm extends PropertyForm {
             canvas.updateGround();
          }
       });
-      
-     
-      positionSet.add(relative);
-      positionSet.add(absolute);
-      absolute.setValue(canvas.getScreen().getBackground().isAbsolute());
-      relative.setEnabled(!canvas.getScreen().getBackground().isAbsolute());
-      enableTextField(canvas.getScreen().getBackground().isAbsolute(), fields);
-     
-      relative.setDisplayField(ComboBoxDataModel.getDisplayProperty());
-      relative.setEmptyText("Please select one... ");
+      positionSet.add(selectContainer);
    }
 
    private RadioGroup createScreenFillerField(final FieldSet positionSet) {
@@ -341,20 +306,11 @@ public class ScreenPropertyForm extends PropertyForm {
       return backgroundField;
    }
    
-   /*private TextField<String> createNameField() {
-      TextField<String> screenNameField = new TextField<String>();
-      screenNameField.setName("name");
-      screenNameField.setFieldLabel("Name");
-      screenNameField.setAllowBlank(false);
-      screenNameField.setValue(Screen.getNewDefaultName());
-      return screenNameField;
-   }*/
-   
    private void addListenersToForm(final RadioGroup whetherFillScreen) {
       addListener(Events.Submit, new Listener<FormEvent>() {
          @Override
          public void handleEvent(FormEvent be) {
-            String backgroundImgURL = be.getResultHtml();
+            String backgroundImgURL = ImageSourceValidator.validate(be.getResultHtml());
             boolean success = !"".equals(backgroundImgURL);
             if (success) {
                setBackground(backgroundImgURL);

@@ -39,7 +39,6 @@ public class ScreenPair extends RefedEntity {
    private Screen landscapeScreen;
    private TouchPanelDefinition touchPanelDefinition;   
    private Group parentGroup = null;
-   private int screenIndex;
    public ScreenPair() {
    }
    

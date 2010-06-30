@@ -84,7 +84,7 @@ public class ScreenTabItem extends TabItem {
       screenContainer.sinkEvents(Event.ONMOUSEDOWN);
       updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
-      initTabbarAndIndicatorForScreenCanvas();
+      initTabbarForScreenCanvas();
       updateScreenIndicator();
       screenContainer.add(screenCanvas);
 //      screenContainer.setBorders(false);
@@ -108,6 +108,9 @@ public class ScreenTabItem extends TabItem {
       }
       screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
       screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
+      if (screenCanvas != null) {
+         screenCanvas.setSize(touchPanelDefinition.getCanvas().getWidth(), touchPanelDefinition.getCanvas().getHeight());
+      }
    }
 
    /**
@@ -143,7 +146,7 @@ public class ScreenTabItem extends TabItem {
       }
    }
    
-   private void initTabbarAndIndicatorForScreenCanvas() {
+   private void initTabbarForScreenCanvas() {
       if (screen != null) {
          Group screenGroup = screen.getScreenPair().getParentGroup();
          if (screenGroup != null) {
