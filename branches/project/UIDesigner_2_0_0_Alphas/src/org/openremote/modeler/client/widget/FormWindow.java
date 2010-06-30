@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -45,6 +47,7 @@ public class FormWindow extends Window {
    public FormWindow() {
       setWindowStyles();
       setFormStyles();
+      enableEnterToSubmit(true);
    }
 
 
@@ -95,5 +98,17 @@ public class FormWindow extends Window {
          attrMap.put(field.getName(), field.getValue().toString());
       }
       return attrMap;
+   }
+   
+   public void enableEnterToSubmit(final boolean enableEnter) {
+      new KeyNav<ComponentEvent>(this) {
+         @Override
+         public void onEnter(ComponentEvent ce) {
+            if (enableEnter && form.isValid()) {
+               form.submit();
+            } 
+         }
+       };
+
    }
 }
