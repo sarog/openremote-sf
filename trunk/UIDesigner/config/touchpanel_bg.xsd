@@ -31,6 +31,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element ref="canvas"/>
+            <xsd:element ref="tabbar"/>
          </xsd:sequence>
          <xsd:attribute name="type" type="xsd:string" use="required"/>
          <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -46,5 +47,12 @@
 	     <xsd:attribute name="width" type="xsd:int" use="required"/>	     
 	     <xsd:attribute name="height" type="xsd:int" use="required"/>	     
 	  </xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="tabbar" >
+		<xsd:complexType>
+			<xsd:attribute name="height" type="xsd:int" use="required"/>
+			<xsd:attribute name="bgImage" type="xsd:string" use="required"/>
+		</xsd:complexType>
 	</xsd:element>
 </xsd:schema>

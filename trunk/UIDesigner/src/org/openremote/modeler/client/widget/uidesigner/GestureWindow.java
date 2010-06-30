@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.utils.DeviceAndMacroTree;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
@@ -32,6 +31,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.Gesture.GestureType;
@@ -64,21 +64,23 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 public class GestureWindow extends Dialog {
 
    private List<Gesture> gestures;
+   private List<Group> groups;
    private CheckBoxListView<BeanModel> gestureTypeListView;
    private TreePanel<BeanModel> devicesAndMacrosTree;
    private Gesture selectedGesture = new Gesture(GestureType.swipe_left_to_right);
    private Map<String, Gesture> gestureMaps = new HashMap<String, Gesture>();
    private final String SELECTED_COMMAND = "Selected command: ";
-   public GestureWindow(List<Gesture> gestures) {
+   public GestureWindow(List<Gesture> gestures, List<Group> groups) {
       this.gestures = gestures;
+      this.groups = groups;
       initial();
       show();
    }
    
    private void initial() {
       setHeading("Config gestures");
-      setMinHeight(390);
-      setMinWidth(420);
+      setMinHeight(400);
+      setMinWidth(440);
       setModal(true);
       setLayout(new BorderLayout());
       setButtons(Dialog.OKCANCEL);  
@@ -147,7 +149,7 @@ public class GestureWindow extends Dialog {
       commandTreeContainer.setHeaderVisible(false);
       commandTreeContainer.setBorders(false);
       commandTreeContainer.setBodyBorder(false);
-      commandTreeContainer.setSize(230, 150);
+      commandTreeContainer.setSize(240, 150);
       commandTreeContainer.setLayout(new FitLayout());
       commandTreeContainer.setScrollMode(Scroll.AUTO);
       if (devicesAndMacrosTree == null) {
@@ -177,7 +179,7 @@ public class GestureWindow extends Dialog {
          }
       });
       
-      final NavigateFieldSet navigateSet = new NavigateFieldSet(selectedGesture.getNavigate(), BeanModelDataBase.groupTable.loadAll());
+      final NavigateFieldSet navigateSet = new NavigateFieldSet(selectedGesture.getNavigate(), groups);
       navigateSet.setStyleAttribute("marginTop", "10px");
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {

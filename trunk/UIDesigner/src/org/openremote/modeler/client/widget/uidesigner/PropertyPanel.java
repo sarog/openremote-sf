@@ -36,7 +36,6 @@ public class PropertyPanel extends ContentPanel {
 
    private ComponentContainer currentLayoutContainer;
    private FormPanel currentPropertyForm;
-//   private static PropertyPanel propertyPanel;
    public PropertyPanel() {
       setBorders(false);
       setFooter(false);
@@ -53,13 +52,6 @@ public class PropertyPanel extends ContentPanel {
          
       });
    }
-   
-//   public static PropertyPanel getInstance() {
-//      if (propertyPanel == null) {
-//         propertyPanel = new PropertyPanel();
-//      }
-//      return propertyPanel;
-//   }
    
    /**
     * Update the panel's content follow with different component.

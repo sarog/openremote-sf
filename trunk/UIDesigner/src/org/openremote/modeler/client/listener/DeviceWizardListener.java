@@ -17,23 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.rpc;
+package org.openremote.modeler.client.listener;
 
-import org.openremote.modeler.domain.User;
+import org.openremote.modeler.client.event.DeviceWizardEvent;
 
-
+import com.extjs.gxt.ui.client.event.Listener;
 /**
- * The service for User.
+ * This listener is for passing device command or sensor to DeviceContentWizardForm.
  * 
- * @author Dan 2009-7-14
+ * @see DeviceWizardEvent
+ * 
  */
-public interface UserRPCService {
-   
-   /**
-    * Save user.
-    * 
-    * @param user the user
-    */
-   void saveUser(User user);
+public abstract class DeviceWizardListener implements Listener<DeviceWizardEvent> {
 
+   public void handleEvent(DeviceWizardEvent be) {
+      if (be.getType() == DeviceWizardEvent.ADD_CONTENT) {
+         afterAdd(be);
+      }
+   }
+   
+   public abstract void afterAdd(DeviceWizardEvent be);
 }

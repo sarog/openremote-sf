@@ -20,7 +20,7 @@
 			<validations>
 				<allowBlank>false</allowBlank>
 				<maxLength>254</maxLength>
-				<regex message="Command is necessary. ">\w+</regex>
+				<regex message="Command is necessary. ">.*\w+.*</regex>
 			</validations>
 		</attr>
 	</protocol>

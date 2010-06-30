@@ -57,7 +57,7 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.Window;
 
 /**
  * The Class UIDesignerView.
@@ -72,10 +72,10 @@ public class UIDesignerView extends TabItem {
 
    private Timer timer;
 
-   private ContentPanel profilePanel = null;
+   private ProfilePanel profilePanel = null;
    
    private PropertyPanel propertyPanel = null;
-
+   
    /**
     * Instantiates a new uI designer view.
     */
@@ -83,9 +83,10 @@ public class UIDesignerView extends TabItem {
       super();
       setText("UI Designer");
 
-      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncSuccessCallback <String>() {
          public void onFailure(Throwable caught) {
             Info.display("Error", "falid to get account path.");
+            super.checkTimeout(caught);
          }
          public void onSuccess(String result) {
             Cookies.setCookie(Constants.CURRETN_RESOURCE_PATH, result);
@@ -107,7 +108,7 @@ public class UIDesignerView extends TabItem {
       timer = new Timer() {
          @Override
          public void run() {
-//            autoSaveUiDesignerLayout();
+            autoSaveUiDesignerLayout();
          }
       };
       timer.scheduleRepeating(AUTO_SAVE_INTERVAL_MS);
@@ -117,48 +118,73 @@ public class UIDesignerView extends TabItem {
     * Auto save ui designer layout json.
     */
    public void autoSaveUiDesignerLayout() {
-      UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
-            new AsyncSuccessCallback<AutoSaveResponse>() {
-               @Override
-               public void onSuccess(AutoSaveResponse result) {
-                  if (result != null && result.isUpdated()) {
-                     Info.display("Info", "UI designer layout saved at "
+      if (profilePanel.isInitialized()) {
+         UtilsProxy.autoSaveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
+               new AsyncSuccessCallback<AutoSaveResponse>() {
+                  @Override
+                  public void onSuccess(AutoSaveResponse result) {
+                     if (result != null && result.isUpdated()) {
+                        Info.display("Info", "UI designer layout saved at "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                     }
+                     Window.setStatus("Auto-Saving: UI designer layout saved at: "
                            + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
                   }
-               }
 
-               @Override
-               public void onFailure(Throwable caught) {
-                  timer.cancel();
-                  Info.display(new InfoConfig("Error", caught.getLocalizedMessage()
-                        + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-               }
-
-            });
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     timer.cancel();
+                     boolean timeout = super.checkTimeout(caught);
+                     if (!timeout) {
+                        Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                     }
+                     Window.setStatus("Failed to save UI designer layout at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                  }
+               });
+         Window.setStatus("Saving ....");
+      } else {
+         Window.setStatus("Auto-Saving: Unable to save UI designer because panel list has not been initialized. ");
+      }
    }
 
    public void saveUiDesignerLayout() {
-      UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(), new AsyncSuccessCallback<AutoSaveResponse>() {
-         @Override
-         public void onSuccess(AutoSaveResponse result) {
-            if (result != null && result.isUpdated()) {
-               Info.display("Info", "UI designer layout saved at "
-                     + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
-            }
-         }
+      if (profilePanel.isInitialized()) {
+         UtilsProxy.saveUiDesignerLayout(getAllPanels(), IDUtil.currentID(),
+               new AsyncSuccessCallback<AutoSaveResponse>() {
+                  @Override
+                  public void onSuccess(AutoSaveResponse result) {
+                     if (result != null && result.isUpdated()) {
+                        Info.display("Info", "UI designer layout saved at "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                     }
+                     Window.setStatus("UI designer layout saved at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
+                  }
 
-         @Override
-         public void onFailure(Throwable caught) {
-            timer.cancel();
-            Info.display(new InfoConfig("Error", caught.getLocalizedMessage()+" "
-                  + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
-         }
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     timer.cancel();
+                     boolean timeout = super.checkTimeout(caught);
+                     if (!timeout) {
+                        Info.display(new InfoConfig("Error", caught.getMessage() + " "
+                              + DateTimeFormat.getFormat("HH:mm:ss").format(new Date())));
+                     }
+                     Window.setStatus("Failed to save UI designer layout at: "
+                           + DateTimeFormat.getFormat("HH:mm:ss").format(new Date()));
 
-      });
+                  }
+
+               });
+         Window.setStatus("Saving ....");
+      } else {
+         Window.setStatus("Unable to save UI designer because panel list has not been initialized. ");
+      }
    }
 
    public void restore() {
-      UtilsProxy.restore(new AsyncCallback<PanelsAndMaxOid>() {
+      UtilsProxy.restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
          @Override
          public void onSuccess(PanelsAndMaxOid panelsAndMaxOid) {
             BeanModelDataBase.panelTable.clear();
@@ -184,7 +210,8 @@ public class UIDesignerView extends TabItem {
 
          @Override
          public void onFailure(Throwable caught) {
-            MessageBox.alert("Error", "UI designer restore failed: " + caught.getLocalizedMessage(), null);
+            MessageBox.alert("Error", "UI designer restore failed: " + caught.getMessage(), null);
+            super.checkTimeout(caught);
          }
       });
    }
@@ -279,5 +306,4 @@ public class UIDesignerView extends TabItem {
       }
       return panelList;
    }
-
 }

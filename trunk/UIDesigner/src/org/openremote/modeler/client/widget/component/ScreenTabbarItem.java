@@ -51,7 +51,7 @@ public class ScreenTabbarItem extends ScreenComponent {
       
       addStyleName("tabbaritem-background");
       setStyleAttribute("position", "absolute");
-      addStyleName("move-cursor");
+      setStyleAttribute("cursor", "move");
       
       center.setStyleAttribute("color", "white");
       center.setStyleAttribute("bottom", "0");
@@ -124,5 +124,11 @@ public class ScreenTabbarItem extends ScreenComponent {
 
    public UITabbarItem getUITabbarIem() {
       return this.uiTabbarItem;
+   }
+   
+   public void removeImage() {
+      setImageSource(null);
+      this.setStyleAttribute("backgroundImage", "");
+      layout();
    }
 }

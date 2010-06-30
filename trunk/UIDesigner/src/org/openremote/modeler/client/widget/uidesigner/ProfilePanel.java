@@ -48,6 +48,7 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.PropertyEditableFactory;
 import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
+import org.openremote.modeler.client.widget.component.ScreenPropertyEditable;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.Group;
@@ -56,6 +57,7 @@ import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.exception.UIRestoreException;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ChangeEvent;
@@ -87,6 +89,7 @@ public class ProfilePanel extends ContentPanel {
    private Icons icon = GWT.create(Icons.class);
    private SelectionServiceExt<BeanModel> selectionService;
    private ScreenPanel screenPanel = null;
+   private boolean initialized = false;
    /**
     * Instantiates a new profile panel.
     */
@@ -97,7 +100,7 @@ public class ProfilePanel extends ContentPanel {
       setIcon(icon.panelIcon());
       setLayout(new FitLayout());
       createMenu();
-      createPanelTree(screenPanel);
+      createPanelTree();
       new TreePanelDragSourcePanelTreeExt(panelTree);
       new TreePanelDropTargetPanelTreeExt(panelTree);
    }
@@ -136,7 +139,7 @@ public class ProfilePanel extends ContentPanel {
    /**
     * Creates the screen tree.
     */
-   private void createPanelTree(ScreenPanel screenPanel) {
+   private void createPanelTree() {
       panelTree = TreePanelBuilder.buildPanelTree(screenPanel);
       selectionService.addListener(new SourceSelectionChangeListenerExt(panelTree.getSelectionModel()));
       selectionService.register(panelTree.getSelectionModel());
@@ -157,6 +160,9 @@ public class ProfilePanel extends ContentPanel {
             
             panelTree.addListener(PropertyEditEvent.PropertyEditEvent, new Listener<PropertyEditEvent>() {
                public void handleEvent(PropertyEditEvent be) {
+                  if (be.getPropertyEditable() instanceof ScreenPropertyEditable) {
+                     ((ScreenPropertyEditable)be.getPropertyEditable()).setScreenTab(screenPanel.getScreenItem());
+                  }
                   ProfilePanel.this.fireEvent(PropertyEditEvent.PropertyEditEvent,be);
                }
                
@@ -210,14 +216,19 @@ public class ProfilePanel extends ContentPanel {
                   if (maxID > 0) {              // set the layout component's max id after refresh page.
                      IDUtil.setCurrentID(maxID.longValue());
                   }
+                  initialized = true;
                }
                
             });
          }
          @Override
          public void onFailure(Throwable caught) {
+            if (caught instanceof UIRestoreException) {
+               initialized = true;
+            }
             panelTree.unmask();
             super.onFailure(caught);
+            super.checkTimeout(caught);
          }
 
          private void initModelDataBase(Collection<Panel> panels) {
@@ -330,7 +341,9 @@ public class ProfilePanel extends ContentPanel {
                panelTree.getStore().update(panel.getBeanModel());
                for (GroupRef groupRef : panel.getGroupRefs()) {
                   for (ScreenPairRef screenRef : groupRef.getGroup().getScreenRefs()) {
-                     BeanModelDataBase.screenTable.update(screenRef.getScreen().getBeanModel());
+                     ScreenPair screenPair = screenRef.getScreen();
+                     screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
+                     BeanModelDataBase.screenTable.update(screenPair.getBeanModel());
                   }
                }
                Info.display("Info", "Edit panel " + panel.getName() + " success.");
@@ -565,11 +578,13 @@ public class ProfilePanel extends ContentPanel {
          public void componentSelected(MenuEvent ce) {
             BeanModel selectedItem = panelTree.getSelectionModel().getSelectedItem();
             
-            if (selectedItem == null || (selectedItem.getBean() instanceof Panel)) {
-               MessageBox.alert("Warn", "A group must be selected! ", null);
+            if (selectedItem == null) {
+               MessageBox.alert("Warn", "A group should be selected! ", null);
                return;
             } else if (selectedItem.getBean() instanceof ScreenPairRef) {
                selectedItem = panelTree.getStore().getParent(selectedItem);
+            } else if (selectedItem.getBean() instanceof Panel) {
+               selectedItem = panelTree.getStore().getChild(selectedItem, 0);
             }
             final GroupRef groupRef = selectedItem.getBean();
             final NewScreenFromTemplateWindow screenWindow = new NewScreenFromTemplateWindow();
@@ -582,13 +597,14 @@ public class ProfilePanel extends ContentPanel {
                      ScreenFromTemplate screenFromTemplate = be.<ScreenFromTemplate> getData();
                      ScreenPair screen = screenFromTemplate.getScreen();
                      screen.setTouchPanelDefinition(groupRef.getPanel().getTouchPanelDefinition());
-                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
+                     screen.setParentGroup(groupRef.getGroup());
                      screenRef = new ScreenPairRef(screen);
                      screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());
                      screenRef.setOid(IDUtil.nextID());
                      groupRef.getGroup().addScreenRef(screenRef);
                      screenRef.setGroup(groupRef.getGroup());
                      updatePanelTree(screenRef);
+                     BeanModelDataBase.screenTable.insert(screen.getBeanModel());
                      // ----------rebuild command
                      Set<Device> devices = screenFromTemplate.getDevices();
                      for (Device device : devices) {
@@ -742,6 +758,9 @@ public class ProfilePanel extends ContentPanel {
             editScreen(selectedModel);
          }
       }
-   }   
-   
+   }
+
+   public boolean isInitialized() {
+      return initialized;
+   }
 }

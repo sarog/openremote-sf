@@ -579,6 +579,7 @@ public class DevicePanel extends ContentPanel {
          @Override
          public void onFailure(Throwable caught) {
            MessageBox.alert("Error", "The Switch you are deleting is being used", null);
+           super.checkTimeout(caught);
          }
       });
    }

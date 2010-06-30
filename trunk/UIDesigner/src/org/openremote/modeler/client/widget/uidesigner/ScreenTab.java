@@ -92,4 +92,11 @@ public class ScreenTab extends TabPanel {
       updateScreenTabItems();
    }
    
+   public void updateScreenIndicator() {
+      if (this.getItemByItemId(Constants.PORTRAIT) != null) {
+         ((ScreenTabItem)this.getItemByItemId(Constants.PORTRAIT)).updateScreenIndicator();
+      } if (this.getItemByItemId(Constants.LANDSCAPE) != null) {
+         ((ScreenTabItem)this.getItemByItemId(Constants.LANDSCAPE)).updateScreenIndicator();
+      }
+   }
 }

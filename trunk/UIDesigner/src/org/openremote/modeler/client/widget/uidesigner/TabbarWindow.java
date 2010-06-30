@@ -25,10 +25,10 @@ import java.util.List;
 import org.openremote.modeler.client.event.SelectEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SelectListener;
+import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.widget.CommonWindow;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
-import org.openremote.modeler.domain.GroupRef;
 import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
@@ -253,7 +253,7 @@ public class TabbarWindow extends CommonWindow {
       imageForm.addListener(Events.Submit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
             ImageSource image = selectTabbarItem.getImage();
-            String imageSrc =  be.getResultHtml();
+            String imageSrc =  ImageSourceValidator.validate(be.getResultHtml());
             if (image == null) {
                image = new ImageSource(imageSrc);
             } else {
@@ -265,11 +265,7 @@ public class TabbarWindow extends CommonWindow {
       });
       
       // initial navigate properties
-      List<BeanModel> groupModels = new ArrayList<BeanModel>();
-      for (GroupRef groupRef : panel.getGroupRefs()) {
-         groupModels.add(groupRef.getGroup().getBeanModel());
-      }
-      final NavigateFieldSet navigateSet = new NavigateFieldSet(new Navigate(), groupModels);
+      final NavigateFieldSet navigateSet = new NavigateFieldSet(new Navigate(), panel.getGroups());
       tabbarItemForm.add(nameField);
       tabbarItemForm.add(imageForm);
       tabbarItemForm.add(navigateSet);

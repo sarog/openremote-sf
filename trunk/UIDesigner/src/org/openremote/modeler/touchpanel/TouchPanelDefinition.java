@@ -57,6 +57,8 @@ public class TouchPanelDefinition implements Serializable {
    
    public TouchPanelDefinition  horizontalDefinition;
    
+   private TouchPanelTabbarDefinition tabbarDefinition = new TouchPanelTabbarDefinition();
+   
    /**
     * Instantiates a new panel definition.
     */
@@ -275,7 +277,20 @@ public class TouchPanelDefinition implements Serializable {
             horizontalDefinition.setBgImage(this.bgImage.substring(0, lastPoint) + "_h" + this.bgImage.substring(lastPoint));
          }
          horizontalDefinition.setCanvas(new TouchPanelCanvasDefinition(this.canvas.getHeight(),this.canvas.getWidth()));
+         horizontalDefinition.setTabbarDefinition(tabbarDefinition);
       }
       return horizontalDefinition;
+   }
+   
+   public void removeHorizontalDefinition() {
+      this.horizontalDefinition = null;
+   }
+
+   public TouchPanelTabbarDefinition getTabbarDefinition() {
+      return tabbarDefinition;
+   }
+
+   public void setTabbarDefinition(TouchPanelTabbarDefinition tabbarDefinition) {
+      this.tabbarDefinition = tabbarDefinition;
    }
 }
