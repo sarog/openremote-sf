@@ -81,6 +81,21 @@
             org.openremote.modeler.listener.ApplicationListener
         </listener-class>
     </listener>
+    
+    <filter>
+		<filter-name>userTimeoutFilter</filter-name>
+		<filter-class>
+			org.openremote.modeler.filter.UserTimeoutFilter
+        </filter-class>
+	</filter>
+	<filter-mapping>
+    	<filter-name>userTimeoutFilter</filter-name>
+    	<url-pattern>*.smvc</url-pattern>
+    </filter-mapping>
+	<filter-mapping>
+    	<filter-name>userTimeoutFilter</filter-name>
+    	<url-pattern>*.htm</url-pattern>
+    </filter-mapping>
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
 		<filter-class>
@@ -108,6 +123,8 @@
 			<param-value>true</param-value>
 		</init-param>
 	</filter>
+	
+	
    
    <filter>
         <filter-name>springSecurityFilterChain</filter-name>
