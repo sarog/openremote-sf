@@ -170,12 +170,19 @@ public class ScreenPair extends RefedEntity {
 
    @Transient
    @JSON(include = false)
-   public int getScreenIndex() {
-      return screenIndex;
-   }
-
-   public void setScreenIndex(int screenIndex) {
-      this.screenIndex = screenIndex;
+   public boolean hasPortraitScreen() {
+      if (orientation.equals(OrientationType.BOTH) || orientation.equals(OrientationType.PORTRAIT)) {
+         return true;
+      }
+      return false;
    }
    
+   @Transient
+   @JSON(include = false)
+   public boolean hasLandscapeScreen() {
+      if (orientation.equals(OrientationType.BOTH) || orientation.equals(OrientationType.LANDSCAPE)) {
+         return true;
+      }
+      return false;
+   }
 }

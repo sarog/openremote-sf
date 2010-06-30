@@ -21,7 +21,6 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
@@ -33,6 +32,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
@@ -107,7 +107,8 @@ public class ButtonPropertyForm extends PropertyForm {
       
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
-      navigateSet = new NavigateFieldSet(navigate, BeanModelDataBase.groupTable.loadAll());
+      Panel panel = screenButton.getScreenCanvas().getScreen().getScreenPair().getParentGroup().getParentPanel();
+      navigateSet = new NavigateFieldSet(navigate, panel.getGroups());
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override
