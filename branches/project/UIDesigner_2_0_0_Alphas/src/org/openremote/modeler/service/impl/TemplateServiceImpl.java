@@ -73,6 +73,7 @@ import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
+import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.SensorOwner;
 import org.openremote.modeler.domain.component.UIButton;
@@ -220,6 +221,7 @@ public class TemplateServiceImpl implements TemplateService {
    @Override
    public ScreenFromTemplate buildFromTemplate(Template template) {
       ScreenPair screen = buildScreen(template);
+      resetImageSourceLocationForScreen(screen);
       
       // ---------------download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getOid());
@@ -1253,5 +1255,17 @@ public class TemplateServiceImpl implements TemplateService {
          }
       }
       return gestures;
+   }
+   
+   private void resetImageSourceLocationForScreen(ScreenPair sp) {
+      String accountPath = resourceService.getRelativeResourcePathByCurrentAccount("account");
+      accountPath = accountPath.substring(0, accountPath.lastIndexOf("/") + 1);
+      Collection<ImageSource> images = sp.getAllImageSources();
+      if (images != null && images.size() >0) {
+         for(ImageSource image: images) {
+            String imageFileName = image.getImageFileName();
+            image.setSrc(accountPath+imageFileName);
+         }
+      }
    }
 }

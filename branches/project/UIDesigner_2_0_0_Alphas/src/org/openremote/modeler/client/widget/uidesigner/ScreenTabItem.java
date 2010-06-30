@@ -82,7 +82,7 @@ public class ScreenTabItem extends TabItem {
       screenContainer.sinkEvents(Event.ONMOUSEDOWN);
       updateTouchPanel();
       screenCanvas = new ScreenCanvas(screen);
-      initTabbarForScreenCanvas();
+      initTabbarAndIndicatorForScreenCanvas();
       screenContainer.add(screenCanvas);
 //      screenContainer.setBorders(false);
       screenContainer.setStyleAttribute("border", "1px dashed gray");
@@ -140,7 +140,7 @@ public class ScreenTabItem extends TabItem {
       }
    }
    
-   public void initTabbarForScreenCanvas() {
+   private void initTabbarAndIndicatorForScreenCanvas() {
       if (screen != null) {
          Group screenGroup = screen.getScreenPair().getParentGroup();
          if (screenGroup != null) {
@@ -156,7 +156,12 @@ public class ScreenTabItem extends TabItem {
             if (tabbar != null) {
                screenCanvas.addTabbar(tabbar);
             }
+            screenCanvas.updateScreenIndicator(screenGroup.getScreenRefs().size(), screen.getScreenPair().getScreenIndex());
          }
       }
+   }
+   
+   public void updateScreenIndicator(int screenCount, int screenIndex) {
+      screenCanvas.updateScreenIndicator(screenCount, screenIndex);
    }
 }

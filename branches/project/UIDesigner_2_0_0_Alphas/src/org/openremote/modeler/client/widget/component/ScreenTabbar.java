@@ -206,6 +206,9 @@ public class ScreenTabbar extends ScreenComponent {
             item.setWidth(width);
             item.setHeight(defaultHeight);
             item.setPosition(index*width+PADDING, 0);
+            if ("Tab Bar Item".equals(item.getName())) {
+               item.setName("Item");
+            }
             add(item);
             index++;
          }
@@ -281,7 +284,7 @@ public class ScreenTabbar extends ScreenComponent {
       addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             removeItself();
-            getScreenCanvas().layout();
+            getScreenCanvas().removeTabbar();
          }
       });
    }
@@ -299,7 +302,7 @@ public class ScreenTabbar extends ScreenComponent {
          item.removeFromParent();
       }
       uiTabbar.removeAll();
-      this.removeFromParent();
+//      this.removeFromParent();
    }
    
    private int getOrder(int xPosition) {

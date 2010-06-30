@@ -39,6 +39,7 @@ public class ScreenPair extends RefedEntity {
    private Screen landscapeScreen;
    private TouchPanelDefinition touchPanelDefinition;   
    private Group parentGroup = null;
+   private int screenIndex;
    public ScreenPair() {
    }
    
@@ -166,4 +167,15 @@ public class ScreenPair extends RefedEntity {
 
       return new ArrayList<ImageSource>();
    }
+
+   @Transient
+   @JSON(include = false)
+   public int getScreenIndex() {
+      return screenIndex;
+   }
+
+   public void setScreenIndex(int screenIndex) {
+      this.screenIndex = screenIndex;
+   }
+   
 }

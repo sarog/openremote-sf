@@ -1220,6 +1220,9 @@ public class ResourceServiceImpl implements ResourceService {
             if (panel.getTabbar() != null) {
                imageSources.addAll(getImageSourcesFromTabbar(panel.getTabbar()));
             }
+            if (Constants.CUSTOM_PANEL.equals(panel.getType())) {
+               imageSources.addAll(getCustomPanelImages(panel));
+            }
          }
       }
       return imageSources;
@@ -1240,13 +1243,34 @@ public class ResourceServiceImpl implements ResourceService {
       }
       return imageSources;
    }
-  static class MaxId{
+   
+   private Collection<ImageSource> getCustomPanelImages(Panel panel) {
+      Collection<ImageSource> images = new ArrayList<ImageSource>(2);
+      if (panel != null) {
+         ImageSource vBImage = new ImageSource(panel.getTouchPanelDefinition().getBgImage());
+         ImageSource hBgImage = new ImageSource(panel.getTouchPanelDefinition().getHorizontalDefinition().getBgImage());
+         ImageSource tbImage = panel.getTouchPanelDefinition().getTabbarDefinition().getBackground();
+         if (!vBImage.isEmpty()) {
+            images.add(vBImage);
+         }
+         if (!hBgImage.isEmpty()) {
+            images.add(hBgImage);
+         }
+         if (tbImage != null && !tbImage.isEmpty()) {
+            images.add(tbImage);
+         }
+      }
+      return images;
+   }
+
+   static class MaxId {
       Long maxId = 0L;
-      public MaxId(Long maxId){
+
+      public MaxId(Long maxId) {
          this.maxId = maxId;
       }
-      
-      public Long maxId(){
+
+      public Long maxId() {
          return maxId++;
       }
    }

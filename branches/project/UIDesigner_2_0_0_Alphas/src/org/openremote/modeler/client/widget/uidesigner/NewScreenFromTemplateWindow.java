@@ -173,6 +173,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    private void createTemplateView() {
       FieldSet templateFieldSet = new FieldSet();
       templateFieldSet.setHeading("Select from template");
+      templateFieldSet.setLayout(new FormLayout());
       
       LabelField keywordsLabel = new LabelField();
       keywordsLabel.setText("Keywords");
@@ -190,12 +191,10 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       searchContainerLayout.setLabelWidth(80);
       searchContainerLayout.setDefaultWidth(208);
       searchContainer.setLayout(searchContainerLayout);
-//      searchContainer.setButtonAlign(HorizontalAlignment.RIGHT);
       searchContainer.add(keywordsField);
       searchContainer.addButton(searchBtn);
       searchContainer.hide();
       
-      templateFieldSet.add(searchContainer);
       
       ContentPanel templateSelectContainer = new ContentPanel();
       templateSelectContainer.setHeaderVisible(false);
@@ -237,7 +236,9 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       
       
       shareRadioGroup.setFieldLabel("From");
-      templateSelectContainer.add(shareRadioGroup);
+      shareRadioGroup.setTitle("From");
+      templateFieldSet.add(shareRadioGroup);
+      templateFieldSet.add(searchContainer);
       templateSelectContainer.add(templateView);
       
       templateSelectContainer.addButton(previousPage);
@@ -312,11 +313,11 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       @Override
       public void componentSelected(ButtonEvent ce) {
          if (keywordsField.getValue() == null || keywordsField.getValue().trim().length()==0) {
-            MessageBox.alert("Warn", "At least, one keyword is needed!", null);
-            return; 
+           //search public templates without caring keywords.  
+           searchTemplates(null,currentPage); 
+         } else {
+            searchTemplates(keywordsField.getValue(),currentPage);
          }
-         
-         searchTemplates(keywordsField.getValue(),currentPage);
          currentPage = 0;
       }
    }
@@ -342,6 +343,8 @@ public class NewScreenFromTemplateWindow extends FormWindow {
          if (be.getSource() instanceof Radio && be.getSource().equals(shareNoneRadio)) {
             Boolean showPrivate = (Boolean) be.getValue();
             initTemplateView(showPrivate);
+            nextPage.setEnabled(false);
+            previousPage.setEnabled(false);
          }
       }
       
