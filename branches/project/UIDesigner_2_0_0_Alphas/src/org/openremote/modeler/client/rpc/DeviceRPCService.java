@@ -81,4 +81,6 @@ public interface DeviceRPCService extends RemoteService {
     * @return the list< device>
     */
    List<Device> loadAll(Account account);
+   
+   Account getAccount();
 }

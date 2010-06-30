@@ -28,6 +28,7 @@ import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.DeviceInfoForm;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
@@ -36,6 +37,7 @@ import org.openremote.modeler.domain.Switch;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -306,5 +308,35 @@ public class DeviceBeanModelProxy {
             }
          }
       }
+   }
+   
+   public static void saveDeviceWithContents(final Device device, final AsyncSuccessCallback<BeanModel> callback) {
+      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
+         public void onSuccess(Device result) {
+            BeanModel deviceModel = result.getBeanModel();
+            BeanModelDataBase.deviceTable.insert(deviceModel);
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
+            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+            List<BeanModel> sensorModels = Sensor.createModels(device.getSensors());
+            BeanModelDataBase.sensorTable.insertAll(sensorModels);
+            List<BeanModel> switchModels = Switch.createModels(device.getSwitchs());
+            BeanModelDataBase.switchTable.insertAll(switchModels);
+            List<BeanModel> sliderModels = Slider.createModels(device.getSliders());
+            BeanModelDataBase.sliderTable.insertAll(sliderModels);
+            callback.onSuccess(deviceModel);
+         }
+      });
+   }
+   
+   public static void getAccount(final AsyncCallback<Account> callback) {
+      AsyncServiceFactory.getDeviceServiceAsync().getAccount(new AsyncCallback <Account>() {
+         public void onFailure(Throwable caught) {
+            callback.onFailure(caught);
+         }
+         
+         public void onSuccess(Account result) {
+            callback.onSuccess(result);
+         }
+      });
    }
 }

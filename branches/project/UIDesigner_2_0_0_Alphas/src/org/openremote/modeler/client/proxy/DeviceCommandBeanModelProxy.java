@@ -75,7 +75,7 @@ public class DeviceCommandBeanModelProxy {
     * @param deviceCommand
     * @return
     */
-   private static Protocol careateProtocol(Map<String, String> map, DeviceCommand deviceCommand) {
+   public static Protocol careateProtocol(Map<String, String> map, DeviceCommand deviceCommand) {
       Protocol protocol = new Protocol();
       protocol.setType(map.get(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL));
       protocol.setDeviceCommand(deviceCommand);

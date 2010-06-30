@@ -25,7 +25,6 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 
-import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
@@ -42,7 +41,7 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
  */
 public class DeviceCommandSelectWindow extends Dialog{
    
-   private TreePanel<BeanModel> deviceCommandTree;
+   protected TreePanel<BeanModel> deviceCommandTree;
    
    public DeviceCommandSelectWindow(Device device){
       setHeading("Select Command");
@@ -63,12 +62,16 @@ public class DeviceCommandSelectWindow extends Dialog{
       deviceCommandPanel.setBodyBorder(false);
       deviceCommandPanel.setHeaderVisible(false);
       if (deviceCommandTree == null) {
-         deviceCommandTree = TreePanelBuilder.buildCommandTree(device);
+         createCommandTree(device);
          deviceCommandPanel.add(deviceCommandTree);
       }
       // overflow-auto style is for IE hack.
       deviceCommandPanel.addStyleName("overflow-auto");
       add(deviceCommandPanel);
+   }
+   
+   protected void createCommandTree(Device device) {
+      deviceCommandTree = TreePanelBuilder.buildCommandTree(device);
    }
    
    private void addButtonListener() {

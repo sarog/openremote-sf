@@ -20,9 +20,7 @@
 package org.openremote.modeler.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -64,11 +62,11 @@ public class Device extends BusinessEntity {
    /** The account. */
    private Account account; 
 
-   private Set<Switch> switchs = new HashSet<Switch>();
+   private List<Switch> switchs = new ArrayList<Switch>();
    
-   private Set<Slider> sliders = new HashSet<Slider>();
+   private List<Slider> sliders = new ArrayList<Slider>();
    
-   private Set<Sensor> sensors = new HashSet<Sensor>();
+   private List<Sensor> sensors = new ArrayList<Sensor>();
    /**
     * Instantiates a new device.
     */
@@ -207,27 +205,27 @@ public class Device extends BusinessEntity {
    }
    
    @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
-   public Set<Switch> getSwitchs() {
+   public List<Switch> getSwitchs() {
       return switchs;
    }
 
-   public void setSwitchs(Set<Switch> switchs) {
+   public void setSwitchs(List<Switch> switchs) {
       this.switchs = switchs;
    }
    @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
-   public Set<Slider> getSliders() {
+   public List<Slider> getSliders() {
       return sliders;
    }
 
-   public void setSliders(Set<Slider> sliders) {
+   public void setSliders(List<Slider> sliders) {
       this.sliders = sliders;
    }
    @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
-   public Set<Sensor> getSensors() {
+   public List<Sensor> getSensors() {
       return sensors;
    }
 
-   public void setSensors(Set<Sensor> sensors) {
+   public void setSensors(List<Sensor> sensors) {
       this.sensors = sensors;
    }
 
@@ -271,5 +269,33 @@ public class Device extends BusinessEntity {
       return other.getOid() == getOid();
    }
 
+   @Transient
+   @JSON(include = false)
+   public List<CommandRefItem> getCommandRefItems() {
+      List<CommandRefItem> commandRefItems = new ArrayList<CommandRefItem>();
+      for (Sensor sensor : sensors) {
+         commandRefItems.add(sensor.getSensorCommandRef());
+      }
+      for (Switch switchToggle : switchs) {
+         commandRefItems.add(switchToggle.getSwitchCommandOnRef());
+         commandRefItems.add(switchToggle.getSwitchCommandOffRef());
+      }
+      for (Slider slider : sliders) {
+         commandRefItems.add(slider.getSetValueCmd());
+      }
+      return commandRefItems;
+   }
    
+   @Transient
+   @JSON(include = false)
+   public List<SensorRefItem> getSensorRefItems() {
+      List<SensorRefItem> sensorRefItems = new ArrayList<SensorRefItem>();
+      for (Switch switchToggle : switchs) {
+         sensorRefItems.add(switchToggle.getSwitchSensorRef());
+      }
+      for (Slider slider : sliders) {
+         sensorRefItems.add(slider.getSliderSensorRef());
+      }
+      return sensorRefItems;
+   }
 }
