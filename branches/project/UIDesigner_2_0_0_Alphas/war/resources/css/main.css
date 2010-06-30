@@ -304,8 +304,7 @@ table.screen-btn-cont td.br-c{
 }
 
 .tabbaritem-background {
-	background-image: url('../../resources/images/tabbarItem.png');
-	background-position:center center;
+	background: url('../../resources/images/tabbaritem_img.png') no-repeat center 10px;
 }
 
 /**
@@ -317,4 +316,14 @@ table.screen-btn-cont td.br-c{
 
 .zero-padding {
    padding: 0px;
+}
+
+.indicator-default {
+	float: left;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat right 0;
+}
+
+.indicator-current {
+	float: left;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat 0 0;
 }

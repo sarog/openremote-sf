@@ -329,7 +329,7 @@ public class DeviceBeanModelProxy {
    }
    
    public static void getAccount(final AsyncCallback<Account> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().getAccount(new AsyncCallback <Account>() {
+      AsyncServiceFactory.getDeviceServiceAsync().getAccount(new AsyncSuccessCallback <Account>() {
          public void onFailure(Throwable caught) {
             callback.onFailure(caught);
          }
