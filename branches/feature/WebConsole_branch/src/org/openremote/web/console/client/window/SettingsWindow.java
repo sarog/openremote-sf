@@ -295,6 +295,7 @@ public class SettingsWindow extends FormWindow {
       panelListCombo.setValueField("name");
       panelListCombo.setTriggerAction(TriggerAction.ALL);
       panelListCombo.setEditable(false);
+      panelListCombo.setEmptyText("Select your panel...");
       String currentPanel = ClientDataBase.appSetting.getCurrentPanelIdentity();
       if (!"".equals(currentPanel)) {
          store.add(new StringModelData("name", currentPanel));
@@ -325,7 +326,6 @@ public class SettingsWindow extends FormWindow {
       panelListCombo.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            System.out.println("selected:" + se.getSelectedItem().get("name").toString());
             ClientDataBase.appSetting.setCurrentPanelIdentity(se.getSelectedItem().get("name").toString());
          }
 

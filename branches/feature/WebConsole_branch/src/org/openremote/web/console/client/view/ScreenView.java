@@ -28,9 +28,7 @@ import org.openremote.web.console.domain.GridLayoutContainer;
 import org.openremote.web.console.domain.LayoutContainer;
 import org.openremote.web.console.domain.Screen;
 
-import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Event;
 
 /**
  * The Class ScreenView for init screen components.
@@ -40,6 +38,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
    public ScreenView(Screen screen) {
       setStyleAttribute("backgroundColor", "white");
       setStyleAttribute("position", "relative");
+      setBorders(true);
       init(screen);
    }
    

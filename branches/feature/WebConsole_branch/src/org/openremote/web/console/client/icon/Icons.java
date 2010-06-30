@@ -29,4 +29,10 @@ public interface Icons extends ImageBundle {
    
    @Resource("add.png")
    AbstractImagePrototype add();
+   
+   @Resource("previous.png")
+   AbstractImagePrototype previous();
+   
+   @Resource("next.png")
+   AbstractImagePrototype next();
 }
