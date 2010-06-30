@@ -70,7 +70,7 @@ public class ScreenPropertyForm extends PropertyForm {
    
    public static final String SCREEN_RELETIVE = "relative";
    
-   public static final String FILL_SCREEN = "fill screen ";
+   public static final String FILL_SCREEN = "Fill screen ";
    
    public static final String yesFill = "true";
 
@@ -213,7 +213,7 @@ public class ScreenPropertyForm extends PropertyForm {
    private void createPositionField(FieldSet positionSet, final TextField<? extends Object>... fields) {
       CheckBox absolute = new CheckBox();
       absolute.setHideLabel(true);
-      absolute.setBoxLabel("absolute");
+      absolute.setBoxLabel("Absolute");
       final ComboBox<ModelData> relative = new ComboBox<ModelData>();
       ListStore<ModelData> store = new ListStore<ModelData>();
       RelativeType[] relatedTypes  = RelativeType.values();
@@ -224,7 +224,7 @@ public class ScreenPropertyForm extends PropertyForm {
       }
       
       relative.setStore(store);
-      relative.setFieldLabel("relative");
+      relative.setFieldLabel("Relative");
       relative.setName(SCREEN_RELETIVE);
       relative.setAllowBlank(false);
       relative.setEditable(false);
@@ -328,6 +328,7 @@ public class ScreenPropertyForm extends PropertyForm {
       background.setValue(canvas.getScreen().getBackground().getImageSource().getSrc());
       background.setFieldLabel("Background");
       background.setActionToForm(ScreenPropertyForm.this);
+      background.setAllowBlank(true);
       return background;
    }
    
@@ -373,7 +374,7 @@ public class ScreenPropertyForm extends PropertyForm {
       Button configGesture = new Button("Config");
       configGesture.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            GestureWindow configGestureWindow = new GestureWindow(canvas.getScreen().getGestures());
+            GestureWindow configGestureWindow = new GestureWindow(canvas.getScreen().getGestures(), canvas.getScreen().getScreenPair().getParentGroup().getParentPanel().getGroups());
             configGestureWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                @SuppressWarnings("unchecked")
                public void afterSubmit(SubmitEvent be) {

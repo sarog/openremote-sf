@@ -30,6 +30,8 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import org.openremote.modeler.touchpanel.TouchPanelCanvasDefinition;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
+import flexjson.JSON;
+
 /**
  * The Panel define the different device touch panel, such as iPhone panel, wall panel etc.
  */
@@ -114,4 +116,13 @@ public class Panel extends BusinessEntity {
       this.tabbar = tabbar;
    }
    
+   @Transient
+   @JSON(include = false)
+   public List<Group> getGroups() {
+      List<Group> groups = new ArrayList<Group>();
+      for (GroupRef groupRef : groupRefs) {
+         groups.add(groupRef.getGroup());
+      }
+      return groups;
+   }
 }

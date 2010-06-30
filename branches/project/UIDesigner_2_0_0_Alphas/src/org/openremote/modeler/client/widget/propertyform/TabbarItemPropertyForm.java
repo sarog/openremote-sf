@@ -19,11 +19,11 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
-import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.widget.ImageUploadField;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
 import org.openremote.modeler.client.widget.component.ScreenTabbarItem;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
@@ -79,7 +79,8 @@ public class TabbarItemPropertyForm extends PropertyForm {
       imageUploader.setActionToForm(this);
       // initial navigate properties
       final Navigate navigate = screenTabbarItem.getNavigate();
-      navigateSet = new NavigateFieldSet(navigate, BeanModelDataBase.groupTable.loadAll());
+      Panel panel = screenTabbarItem.getScreenCanvas().getScreen().getScreenPair().getParentGroup().getParentPanel();
+      navigateSet = new NavigateFieldSet(navigate, panel.getGroups());
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override

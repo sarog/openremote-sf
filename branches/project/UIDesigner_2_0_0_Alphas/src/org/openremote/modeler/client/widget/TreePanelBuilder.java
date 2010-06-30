@@ -460,8 +460,7 @@ public class TreePanelBuilder {
                   screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
                   screenPanel.setScreenItem(screenTabItem);
                }
-               screenTabItem.updateScreenIndicator(((ScreenPairRef) beanModel.getBean()).getGroup().getScreenRefs()
-                     .size(), panelTreeStore.getChildren(panelTreeStore.getParent(beanModel)).indexOf(beanModel));
+               screenTabItem.updateScreenIndicator();
             }
             if (beanModel != null) {
                this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory

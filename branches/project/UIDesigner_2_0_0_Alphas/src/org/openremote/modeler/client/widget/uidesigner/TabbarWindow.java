@@ -265,11 +265,7 @@ public class TabbarWindow extends CommonWindow {
       });
       
       // initial navigate properties
-      List<BeanModel> groupModels = new ArrayList<BeanModel>();
-      for (GroupRef groupRef : panel.getGroupRefs()) {
-         groupModels.add(groupRef.getGroup().getBeanModel());
-      }
-      final NavigateFieldSet navigateSet = new NavigateFieldSet(new Navigate(), groupModels);
+      final NavigateFieldSet navigateSet = new NavigateFieldSet(new Navigate(), panel.getGroups());
       tabbarItemForm.add(nameField);
       tabbarItemForm.add(imageForm);
       tabbarItemForm.add(navigateSet);

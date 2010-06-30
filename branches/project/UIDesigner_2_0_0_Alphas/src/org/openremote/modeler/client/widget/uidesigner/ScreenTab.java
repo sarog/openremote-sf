@@ -55,12 +55,6 @@ public class ScreenTab extends TabPanel {
          }
          
       });
-      if (screenPair.getParentGroup() != null) {
-         int screenSize = screenPair.getParentGroup().getScreenRefs().size();
-         updateScreenIndicator(screenSize, screenSize - 1);
-      } else {
-         updateScreenIndicator(1, 0);
-      }
    }
    
    public ScreenPair getScreenPair() {
@@ -98,12 +92,11 @@ public class ScreenTab extends TabPanel {
       updateScreenTabItems();
    }
    
-   public void updateScreenIndicator(int screenCount, int screenIndex) {
-      screenPair.setScreenIndex(screenIndex);
+   public void updateScreenIndicator() {
       if (this.getItemByItemId(Constants.PORTRAIT) != null) {
-         ((ScreenTabItem)this.getItemByItemId(Constants.PORTRAIT)).updateScreenIndicator(screenCount, screenIndex);
+         ((ScreenTabItem)this.getItemByItemId(Constants.PORTRAIT)).updateScreenIndicator();
       } if (this.getItemByItemId(Constants.LANDSCAPE) != null) {
-         ((ScreenTabItem)this.getItemByItemId(Constants.LANDSCAPE)).updateScreenIndicator(screenCount, screenIndex);
+         ((ScreenTabItem)this.getItemByItemId(Constants.LANDSCAPE)).updateScreenIndicator();
       }
    }
 }
