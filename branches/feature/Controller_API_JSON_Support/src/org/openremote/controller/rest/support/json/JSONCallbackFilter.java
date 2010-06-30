@@ -52,7 +52,7 @@ public class JSONCallbackFilter implements Filter {
 
    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
          throws IOException, ServletException {
-      String callbackName = servletRequest.getParameter(Constants.JSON_CALLBACK_PARAM_NAME);
+      String callbackName = servletRequest.getParameter(Constants.CALLBACK_PARAM_NAME);
       if (callbackName != null  && !"".equals(callbackName)) {
          JSONAcceptTypeRequestWrapper requestWrapper = new JSONAcceptTypeRequestWrapper(
                (HttpServletRequest) servletRequest, filterConfig);

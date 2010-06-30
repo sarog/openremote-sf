@@ -77,12 +77,12 @@ public class RESTfulServletJSONSupportTest extends TestCase {
 
    @Test
    public void testGetPanelsJSONData() throws SAXException, Exception {
-      doTest("/controller/rest/panels?jsoncallback=fun", "/controller/rest/panels");
+      doTest("/controller/rest/panels?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panels");
    }
    
    @Test
    public void testGetProfileJSONData() throws SAXException, Exception {
-      doTest("/controller/rest/panel/father?jsoncallback=fun", "/controller/rest/panel/father");
+      doTest("/controller/rest/panel/father?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panel/father");
    }
    
    private void doTest(String actualJSONDataURL, String expectedXMLDataURL) throws Exception, SAXException {
