@@ -38,7 +38,7 @@ public class ApplicationView {
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
       createToolBar();
-      createScreenView();
+      createGroupView();
       RootPanel.get().add(viewport);
    }
    
@@ -50,7 +50,7 @@ public class ApplicationView {
       viewport.add(toolBar, data);
    }
    
-   private void createScreenView() {
+   private void createGroupView() {
       GroupView groupView = new GroupView();
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.CENTER);
       data.setMargins(new Margins(0, 5, 0, 5));
