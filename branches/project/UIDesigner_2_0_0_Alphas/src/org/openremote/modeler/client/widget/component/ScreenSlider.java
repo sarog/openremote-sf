@@ -35,19 +35,6 @@ import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
  *
  */
 public class ScreenSlider extends ScreenComponent {
-   
-   private static final String DEFAULT_HORIZONTAL_MIN_IMAGE = "./resources/images/custom/slider/min.png";
-   private static final String DEFAULT_HORIZONTAL_MINTRACK_IMAGE = "./resources/images/custom/slider/minTrack.png";
-   private static final String DEFAULT_HORIZONTAL_THUMB_IMAGE = "./resources/images/custom/slider/thumb.png";
-   private static final String DEFAULT_HORIZONTAL_MAXTRACK_IMAGE = "./resources/images/custom/slider/maxTrack.png";
-   private static final String DEFAULT_HORIZONTAL_MAX_IMAGE = "./resources/images/custom/slider/max.png";
-   
-   private static final String DEFAULT_VERTICAL_MIN_IMAGE = "./resources/images/custom/slider/vmin.png";
-   private static final String DEFAULT_VERTICAL_MINTRACK_IMAGE = "./resources/images/custom/slider/vminTrack.png";
-   private static final String DEFAULT_VERTICAL_THUMB_IMAGE = "./resources/images/custom/slider/vthumb.png";
-   private static final String DEFAULT_VERTICAL_MAXTRACK_IMAGE = "./resources/images/custom/slider/vmaxTrack.png";
-   private static final String DEFAULT_VERTICAL_MAX_IMAGE = "./resources/images/custom/slider/vmax.png";
-   
 
    private UISlider uiSlider;
 
@@ -109,38 +96,27 @@ public class ScreenSlider extends ScreenComponent {
    }
 
    public void setMinImage(String imageURL) {
-      if (isMinImageUploaded()) {
-         ImageSource minImageSource = new ImageSource(imageURL);
-         uiSlider.setMinImage(minImageSource);
-      }
+      uiSlider.setMinImage(new ImageSource(imageURL));
       minImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMinTrackImage(String imageURL) {
-      if (isMinTrackImageUploaded()) {
-         uiSlider.setMinTrackImage(new ImageSource(imageURL));
-      }
+      uiSlider.setMinTrackImage(new ImageSource(imageURL));
       minTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setThumbImage(String imageURL) {
-      if (isThumbUploaded()) {
-         uiSlider.setThumbImage(new ImageSource(imageURL));
-      }
+      uiSlider.setThumbImage(new ImageSource(imageURL));
       thumbImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMaxTrackImage(String imageURL) {
-      if (isMaxTrackImageUploaded()) {
-         uiSlider.setMaxTrackImage(new ImageSource(imageURL));
-      }
+      uiSlider.setMaxTrackImage(new ImageSource(imageURL));
       maxTrackImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
    public void setMaxImage(String imageURL) {
-      if (isMaxImageUploaded()) {
-         uiSlider.setMaxImage(new ImageSource(imageURL));
-      }
+      uiSlider.setMaxImage(new ImageSource(imageURL));
       maxImage.setStyleAttribute("backgroundImage", "url(" + imageURL + ")");
    }
 
@@ -214,31 +190,31 @@ public class ScreenSlider extends ScreenComponent {
    
    private void updateVerticalImages() {
       if(!isMinImageUploaded()) {
-         setMinImage(DEFAULT_VERTICAL_MIN_IMAGE);
+         setMinImage(UISlider.DEFAULT_VERTICAL_MIN_IMAGE);
       } else {
          setMinImage(uiSlider.getMinImage().getSrc());
       }
       
       if(!isMinTrackImageUploaded()) {
-         setMinTrackImage(DEFAULT_VERTICAL_MINTRACK_IMAGE);
+         setMinTrackImage(UISlider.DEFAULT_VERTICAL_MINTRACK_IMAGE);
       } else {
          setMinTrackImage(uiSlider.getMinTrackImage().getSrc());
       }
       
       if(!isThumbUploaded()) {
-         setThumbImage(DEFAULT_VERTICAL_THUMB_IMAGE);
+         setThumbImage(UISlider.DEFAULT_VERTICAL_THUMB_IMAGE);
       } else {
          setThumbImage(uiSlider.getThumbImage().getSrc());
       }
       
       if(!isMaxTrackImageUploaded()) {
-         setMaxTrackImage(DEFAULT_VERTICAL_MAXTRACK_IMAGE);
+         setMaxTrackImage(UISlider.DEFAULT_VERTICAL_MAXTRACK_IMAGE);
       } else {
          setMaxTrackImage(uiSlider.getMaxTrackImage().getSrc());
       }
       
       if(!isMaxImageUploaded()) {
-         setMaxImage(DEFAULT_VERTICAL_MAX_IMAGE);
+         setMaxImage(UISlider.DEFAULT_VERTICAL_MAX_IMAGE);
       } else {
          setMaxImage(uiSlider.getMaxImage().getSrc());
       }
@@ -246,31 +222,31 @@ public class ScreenSlider extends ScreenComponent {
    
    private void updateHorizontaoImages() {
       if(!isMinImageUploaded()) {
-         setMinImage(DEFAULT_HORIZONTAL_MIN_IMAGE);
+         setMinImage(UISlider.DEFAULT_HORIZONTAL_MIN_IMAGE);
       } else {
          setMinImage(uiSlider.getMinImage().getSrc());
       }
       
       if(!isMinTrackImageUploaded()) {
-         setMinTrackImage(DEFAULT_HORIZONTAL_MINTRACK_IMAGE);
+         setMinTrackImage(UISlider.DEFAULT_HORIZONTAL_MINTRACK_IMAGE);
       } else {
          setMinTrackImage(uiSlider.getMinTrackImage().getSrc());
       }
       
       if(!isThumbUploaded()) {
-         setThumbImage(DEFAULT_HORIZONTAL_THUMB_IMAGE);
+         setThumbImage(UISlider.DEFAULT_HORIZONTAL_THUMB_IMAGE);
       } else {
          setThumbImage(uiSlider.getThumbImage().getSrc());
       }
       
       if(!isMaxTrackImageUploaded()) {
-         setMaxTrackImage(DEFAULT_HORIZONTAL_MAXTRACK_IMAGE);
+         setMaxTrackImage(UISlider.DEFAULT_HORIZONTAL_MAXTRACK_IMAGE);
       } else {
          setMaxTrackImage(uiSlider.getMaxTrackImage().getSrc());
       }
       
       if(!isMaxImageUploaded()) {
-         setMaxImage(DEFAULT_HORIZONTAL_MAX_IMAGE);
+         setMaxImage(UISlider.DEFAULT_HORIZONTAL_MAX_IMAGE);
       } else {
          setMaxImage(uiSlider.getMaxImage().getSrc());
       }
@@ -278,48 +254,23 @@ public class ScreenSlider extends ScreenComponent {
    
    
    public boolean isMinImageUploaded() {
-      ImageSource minImageSource = uiSlider.getMinImage();
-      if (minImageSource != null && minImageSource.getSrc() != null) {
-         String imageURL = uiSlider.getMinImage().getSrc();
-         return !(DEFAULT_HORIZONTAL_MIN_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MIN_IMAGE.equals(imageURL)); 
-      }
-      return false;
+      return uiSlider.isMinImageUploaded();
    }
    
    public boolean isMinTrackImageUploaded() {
-      ImageSource minTrackImageSource = uiSlider.getMinTrackImage();
-         if (minTrackImageSource != null && minTrackImageSource.getSrc() != null) {
-         String imageURL = uiSlider.getMinTrackImage().getSrc();
-         return !(DEFAULT_HORIZONTAL_MINTRACK_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MINTRACK_IMAGE.equals(imageURL));
-      }
-      return false;
+      return uiSlider.isMinTrackImageUploaded();
    }
    
    public boolean isThumbUploaded() {
-      ImageSource thumbImageSource = uiSlider.getThumbImage();
-      if (thumbImageSource !=null && thumbImageSource.getSrc() != null) {
-         String imageURL = uiSlider.getThumbImage().getSrc();
-         return !(DEFAULT_HORIZONTAL_THUMB_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_THUMB_IMAGE.equals(imageURL)); 
-      } 
-      return false;
+      return uiSlider.isThumbUploaded();
    }
    
    public boolean isMaxTrackImageUploaded() {
-      ImageSource maxTrackImageSource = uiSlider.getMaxTrackImage();
-      if (maxTrackImageSource != null && maxTrackImageSource.getSrc() != null) {
-         String imageURL = uiSlider.getMaxTrackImage().getSrc();
-         return !(DEFAULT_HORIZONTAL_MAXTRACK_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MAXTRACK_IMAGE.equals(imageURL)); 
-      }
-      return false;
+      return uiSlider.isMaxTrackImageUploaded();
    }
    
    public boolean isMaxImageUploaded() {
-      ImageSource maxImageSource = uiSlider.getMaxImage();
-      if (maxImageSource != null && maxImageSource.getSrc() != null) {
-         String imageURL = uiSlider.getMaxImage().getSrc();
-         return !(DEFAULT_HORIZONTAL_MAX_IMAGE.equals(imageURL) || DEFAULT_VERTICAL_MAX_IMAGE.equals(imageURL)); 
-      }
-      return false;
+      return uiSlider.isMaxImageUploaded();
    }
 
    public Boolean isVertical() {

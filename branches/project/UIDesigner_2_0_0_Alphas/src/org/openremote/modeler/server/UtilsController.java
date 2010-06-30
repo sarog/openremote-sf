@@ -255,32 +255,39 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    public UISlider rotateImage(UISlider uiSlider) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       String userFolderPath = pathConfig.userFolder(userService.getAccount());
-      
       File userFolder = new File(userFolderPath);
-      
-      File minImageFile = new File(uiSlider.getMinImage().getSrc());
-      File minTrackImageFile = new File(uiSlider.getMinTrackImage().getSrc());
-      File thumbImageFile = new File(uiSlider.getThumbImage().getSrc());
-      File maxTrackImageFile = new File(uiSlider.getMaxTrackImage().getSrc());
-      File maxImageFile = new File(uiSlider.getMaxImage().getSrc());
-      
-      File minImageFileInUserFolder = new File(userFolderPath + minImageFile.getName());
-      File minTrackImageFileInUserFolder = new File(userFolderPath + minTrackImageFile.getName());
-      File thumbImageFileInUserFolder = new File(userFolderPath + thumbImageFile.getName());
-      File maxTrackImageFileInUserFolder = new File(userFolderPath + maxTrackImageFile.getName());
-      File maxImageFileInUserFolder = new File(userFolderPath + maxImageFile.getName());
+      File minImageFile = null;
+      File minTrackImageFile = null;
+      File thumbImageFile = null;
+      File maxTrackImageFile = null;
+      File maxImageFile = null;
+      if (uiSlider.getMinImage() != null && !uiSlider.getMinImage().isEmpty()) {
+         minImageFile = new File(userFolder,uiSlider.getMinImage().getImageFileName());
+      }
+      if (uiSlider.getMinTrackImage() != null && !uiSlider.getMinTrackImage().isEmpty()) {
+         minTrackImageFile = new File(userFolder, uiSlider.getMinTrackImage().getImageFileName());
+      }
+      if (uiSlider.getThumbImage() != null && !uiSlider.getThumbImage().isEmpty()) {
+         thumbImageFile = new File(userFolder, uiSlider.getThumbImage().getImageFileName());
+      }
+      if (uiSlider.getMaxTrackImage() != null && !uiSlider.getMaxTrackImage().isEmpty()) {
+         maxTrackImageFile = new File(userFolder, uiSlider.getMaxTrackImage().getImageFileName());
+      }
+      if (uiSlider.getMaxImage() != null && !uiSlider.getMaxImage().isEmpty()) {
+         maxImageFile = new File(userFolder,uiSlider.getMaxImage().getImageFileName());
+      }
       double degree = uiSlider.isVertical()?90:-90;
       for (File f : userFolder.listFiles()) {
-         if (f.equals(minImageFileInUserFolder)) {
-            uiSlider.setMinImage(new ImageSource(minImageFile.getParent() + File.separator +getImageNameAfterRotate(minImageFileInUserFolder,degree)));
-         } else if (f.equals(minTrackImageFileInUserFolder)) {
-            uiSlider.setMinTrackImage(new ImageSource(minTrackImageFile.getParent() + File.separator +getImageNameAfterRotate(minTrackImageFileInUserFolder,degree)));
-         } else if (f.equals(thumbImageFileInUserFolder)) {
-            uiSlider.setThumbImage(new ImageSource(thumbImageFile.getParent() + File.separator +getImageNameAfterRotate(thumbImageFileInUserFolder,degree)));
-         } else if (f.equals(maxTrackImageFileInUserFolder)) {
-            uiSlider.setMaxTrackImage(new ImageSource(maxTrackImageFile.getParent() + File.separator +getImageNameAfterRotate(maxTrackImageFileInUserFolder,degree)));
-         } else if (f.equals(maxImageFileInUserFolder)) {
-            uiSlider.setMaxImage(new ImageSource(maxImageFile.getParent() + File.separator +getImageNameAfterRotate(maxImageFileInUserFolder,degree)));
+         if (f.equals(minImageFile)) {
+            uiSlider.setMinImage(new ImageSource(getImageNameAfterRotate(minImageFile,degree)));
+         } else if (f.equals(minTrackImageFile)) {
+            uiSlider.setMinTrackImage(new ImageSource(getImageNameAfterRotate(minTrackImageFile,degree)));
+         } else if (f.equals(thumbImageFile)) {
+            uiSlider.setThumbImage(new ImageSource(getImageNameAfterRotate(thumbImageFile,degree)));
+         } else if (f.equals(maxTrackImageFile)) {
+            uiSlider.setMaxTrackImage(new ImageSource(getImageNameAfterRotate(maxTrackImageFile,degree)));
+         } else if (f.equals(maxImageFile)) {
+            uiSlider.setMaxImage(new ImageSource(getImageNameAfterRotate(maxImageFile,degree)));
          }
       }
       return uiSlider;
@@ -290,12 +297,12 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       if (imageFileInUserFolder.getName().contains(ROTATED_FLAG)) {
          File beforeRotatedFile = new File(imageFileInUserFolder.getParent()+File.separator+(imageFileInUserFolder.getName().replace(ROTATED_FLAG, "")));
          if (beforeRotatedFile.exists()) {
-            return beforeRotatedFile.getName();
+            return getAccountPath()+beforeRotatedFile.getName();
          }
       }
       File fileAfterRotated = ImageRotateUtil.rotate(imageFileInUserFolder, imageFileInUserFolder.getParent() + File.separator + ROTATED_FLAG
             +imageFileInUserFolder.getName(), degree);
-      return fileAfterRotated==null?imageFileInUserFolder.getName():fileAfterRotated.getName();
+      return fileAfterRotated==null?getAccountPath()+imageFileInUserFolder.getName():getAccountPath()+fileAfterRotated.getName();
    }
 
    public String getAccountPath() {
