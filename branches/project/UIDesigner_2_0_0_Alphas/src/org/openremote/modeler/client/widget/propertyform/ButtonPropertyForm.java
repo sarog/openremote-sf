@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.widget.propertyform;
 
+import java.util.ArrayList;
+
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
@@ -32,7 +34,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroRef;
-import org.openremote.modeler.domain.Panel;
+import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
@@ -107,8 +109,12 @@ public class ButtonPropertyForm extends PropertyForm {
       
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
-      Panel panel = screenButton.getScreenCanvas().getScreen().getScreenPair().getParentGroup().getParentPanel();
-      navigateSet = new NavigateFieldSet(navigate, panel.getGroups());
+      Group parentGroup = screenButton.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
+      if (parentGroup != null) {
+         navigateSet = new NavigateFieldSet(navigate, parentGroup.getParentPanel().getGroups());
+      } else {
+         navigateSet = new NavigateFieldSet(navigate, new ArrayList<Group>());
+      }
       navigateSet.setCheckboxToggle(true);
       navigateSet.addListener(Events.BeforeExpand, new Listener<FieldSetEvent>() {
          @Override

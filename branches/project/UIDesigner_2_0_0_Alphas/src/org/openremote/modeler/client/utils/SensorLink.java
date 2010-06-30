@@ -101,6 +101,14 @@ public class SensorLink extends BusinessEntity {
       }
       linkerChildren.add(child);
    }
+   
+   public void removeChildForSensorLinker(String childName, Map<String, String> attrMap) {
+      LinkerChild child = new LinkerChild(childName);
+      child.setAttributes(attrMap);
+      if (linkerChildren.contains(child)) {
+         linkerChildren.remove(child);
+      }
+   }
    @JSON(include = false)
    public Sensor getSensor() {
       return sensor;
