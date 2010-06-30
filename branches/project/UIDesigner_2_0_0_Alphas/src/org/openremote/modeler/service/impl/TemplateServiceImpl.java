@@ -189,16 +189,12 @@ public class TemplateServiceImpl implements TemplateService {
    public String getTemplateContent(ScreenPair screen) {
       try {
          String[] includedPropertyNames = { 
-               "*.protocol.oid",
                "*.gestures.uiCommand",
-               "*.absolutes.uiComponent.sensor.sensorCommandRef.oid",
                "*.absolutes.uiComponent.sensorLink",
                "*.absolutes.uiComponent.oid",
                "*.grids.cells.uiComponent.sensorLink",
                "*.grids.cells.uiComponent.oid",
-               "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.oid",
                "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
-               "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs.oid",
                "*.absolutes.uiComponent.commands",
                "*.absolutes.uiComponent.slider.sliderSensorRef.sensor",
                "*.absolutes.uiComponent.switchCommand.switchSensorRef.sensor",
@@ -206,9 +202,7 @@ public class TemplateServiceImpl implements TemplateService {
                "*.grids.cells.uiComponent.slider.sliderSensorRef.sensor",
                "*.grids.cells.uiComponent.switchCommand.switchSensorRef.sensor",
                "*.grids.cells.uiComponent.uiCommand",
-               "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.oid",
                "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
-               "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs.oid",
                "*.grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
          String[] excludePropertyNames = { "grid", /* "*.touchPanelDefinition", */"*.refCount", "*.displayName",
                "*.oid", "*.proxyInformations", "*.proxyInformation", /* "gestures", */"*.panelXml", /* "*.navigate", */

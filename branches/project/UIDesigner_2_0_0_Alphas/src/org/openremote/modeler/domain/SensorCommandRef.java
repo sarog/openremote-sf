@@ -42,4 +42,23 @@ public class SensorCommandRef extends CommandRefItem {
       this.sensor = sensor;
    }
 
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      SensorCommandRef other = (SensorCommandRef) obj;
+      if (sensor == null) {
+         if (other.sensor != null) return false;
+      } else if (!sensor.equals(other.sensor)) return false;
+      return true;
+   }
+
+   public boolean equalsWithoutCompareOid(SensorCommandRef other) {
+      DeviceCommand cmd = this.getDeviceCommand();
+      if (cmd != null) {
+         return cmd.equalsWithoutCompareOid(other.getDeviceCommand());
+      }
+      else return false;
+   }
 }

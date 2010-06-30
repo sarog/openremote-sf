@@ -108,17 +108,27 @@ public class Slider extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Slider other = (Slider) obj;
+      if (!equalsWithoutCompareOid(other)) return false;
+      return other.getOid() == getOid();
+   }
+   
+   public boolean equalsWithoutCompareOid(Slider other) {
+      if (other == null) return false;
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
       
       if (this.device!=null && other.device != null) {
-         if (!this.device.equals(other.device)){
-            return false;
-         }
+         if (this.device.getOid()!=other.device.getOid())return false;
       }
-      return other.getOid() == getOid();
+      if (this.setValueCmd != null) {
+         if (other.setValueCmd == null) return false;
+         else if (!this.setValueCmd.equalsWithoutCompareOid(other.getSetValueCmd())) return false;
+      }
+      if (this.sliderSensorRef != null) {
+         if (other.sliderSensorRef == null) return false;
+         else if (!this.sliderSensorRef.equalsWithoutCompareOid(other.sliderSensorRef)) return false;
+      }
+      return true;
    }
-   
-   
 }
