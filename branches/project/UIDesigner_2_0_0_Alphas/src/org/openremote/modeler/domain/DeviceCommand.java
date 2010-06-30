@@ -144,31 +144,34 @@ public class DeviceCommand extends BusinessEntity {
       return cmdRef;
    }
 
-   @Override
+   @Override 
    public int hashCode() {
-      /*final int prime = 31;
-      int result = 1;
-      result = prime * result + ((name == null) ? 0 : name.hashCode());
-      return result ^ 0xFFFF + (int) getOid();*/
       return (int) getOid();
    }
-
    @Override
    public boolean equals(Object obj) {
       if (this == obj) return true;
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       DeviceCommand other = (DeviceCommand) obj;
-      if (name == null) {
-         if (other.name != null) return false;
-      } else if (!name.equals(other.name)) return false;
-      if (this.device!=null && other.device != null) {
-         if (!this.device.equals(other.device)){
-            return false;
-         }
-      }
+      if (! equalsWithoutCompareOid(other)) return false;
       return other.getOid() == getOid();
    }
    
-   
+   public boolean equalsWithoutCompareOid(DeviceCommand other) {
+      if (other == null) return false;
+      if (device == null) {
+         if (other.device != null) return false;
+      } else if (device.getOid() != other.getDevice().getOid()) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (protocol == null) {
+         if (other.protocol != null) return false;
+      } else if (!protocol.equalsWithoutCompareOid(other.protocol)) return false;
+      if (sectionId == null) {
+         if (other.sectionId != null) return false;
+      } else if (!sectionId.equals(other.sectionId)) return false;
+      return true;
+   }
 }

@@ -111,4 +111,26 @@ public class DeviceCommandRef extends DeviceMacroItem {
       this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
       return getDeviceCommand().getName() + " (" + this.deviceName + ")";
    }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((deviceCommand == null) ? 0 : deviceCommand.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      DeviceCommandRef other = (DeviceCommandRef) obj;
+      if (deviceCommand == null) {
+         if (other.deviceCommand != null) return false;
+      } else if (!deviceCommand.equals(other.deviceCommand)) return false;
+      return true;
+   }
+   
+   
 }
