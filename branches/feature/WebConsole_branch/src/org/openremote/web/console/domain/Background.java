@@ -19,6 +19,9 @@
 */
 package org.openremote.web.console.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,6 +35,7 @@ public class Background extends BusinessEntity {
    private int backgroundImageAbsolutePositionTop;
    private String backgroundImageRelativePosition;
    private Image backgroundImage;
+   private static Map<String, String> relativeMap;
    
    public Background() {
    }
@@ -75,5 +79,22 @@ public class Background extends BusinessEntity {
    }
    public Image getBackgroundImage() {
       return backgroundImage;
+   }
+   
+   public static Map<String, String> getRelativeMap() {
+      if (relativeMap == null) {
+         relativeMap = new HashMap<String, String>();
+         relativeMap.put("left", "center left");
+         relativeMap.put("right", "center right");
+         relativeMap.put("top", "top center");
+         relativeMap.put("bottom", "bottom center");
+         relativeMap.put("top_left", "top left");
+         relativeMap.put("bottom_left", "bottom left");
+         relativeMap.put("top_right", "top right");
+         relativeMap.put("bottom_right", "bottom right");
+         relativeMap.put("center", "center center");
+      }
+      
+      return relativeMap;
    }
 }

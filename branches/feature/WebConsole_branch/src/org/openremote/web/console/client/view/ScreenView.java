@@ -21,10 +21,16 @@ package org.openremote.web.console.client.view;
 
 import java.util.ArrayList;
 
+import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.domain.AbsoluteLayoutContainer;
+import org.openremote.web.console.domain.Background;
 import org.openremote.web.console.domain.GridLayoutContainer;
 import org.openremote.web.console.domain.LayoutContainer;
 import org.openremote.web.console.domain.Screen;
+
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Event;
 
 /**
  * The Class ScreenView for init screen components.
@@ -48,6 +54,27 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
             }
          }
       }
+      
+      if (screen.getBackground() != null) {
+         addBackground(screen.getBackground());
+      }
    }
    
+   private void addBackground(Background background) {
+      String url = ClientDataBase.appSetting.getCurrentServer() + "/resources/"
+            + URL.encode(background.getBackgroundImage().getSrc());
+      setStyleAttribute("backgroundImage", "url(" + url + ")");
+      setStyleAttribute("backgroundRepeat", "no-repeat");
+      setStyleAttribute("overflow", "hidden");
+      if (background.isFillScreen()) {
+         setStyleAttribute("backgroundPosition", "top left");
+      } else if (background.isBackgroundImageAbsolutePosition()) {
+         setStyleAttribute("backgroundPosition", background.getBackgroundImageAbsolutePositionLeft() + " "
+               + background.getBackgroundImageAbsolutePositionTop());
+      } else {
+         setStyleAttribute("backgroundPosition", Background.getRelativeMap().get(
+               background.getBackgroundImageRelativePosition()));
+      }
+   }
+
 }
