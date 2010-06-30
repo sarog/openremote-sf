@@ -134,6 +134,9 @@ public class Switch extends BusinessEntity {
             return false;
          }
       }
+      if (!name.equals(other.getName())){
+         return false;
+      }
       return other.getOid() == getOid();
    }
    
