@@ -325,6 +325,11 @@ public class TemplatePanel extends ContentPanel {
                templateInEditing.setContent(result.getContent());
                templateInEditing.setScreen(result.getScreen());
                Info.display("Success", "auto save template" + templateInEditing.getName()+" successfully !");
+               // stop auto-saving when the template preview tab has been closed. 
+               if (editTabItem != null && templateEditPanel.indexOf(editTabItem) == -1) {
+                  templateInEditing = null;
+               }
+               
             }
             
          });
