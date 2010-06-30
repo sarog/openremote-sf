@@ -157,4 +157,12 @@ public class ScreenButton extends ScreenComponent {
          setIcon(uiButton.getPressImage().getSrc());
       }
    }
+   
+   public void removeIcon() {
+      center = new Text();
+      btnTable.setWidget(1, 1, center);
+      btnTable.addStyleName("screen-btn-cont");
+      adjustTextLength();
+      image.setUrl("");
+   }
 }

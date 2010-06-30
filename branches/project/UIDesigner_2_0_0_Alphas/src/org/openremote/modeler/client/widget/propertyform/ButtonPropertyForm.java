@@ -24,6 +24,7 @@ import org.openremote.modeler.client.listener.SubmitListener;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.widget.IconPreviewWidget;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
+import org.openremote.modeler.client.widget.component.ImageSelectAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenButton;
 import org.openremote.modeler.client.widget.uidesigner.ChangeIconWindow;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -132,11 +133,11 @@ public class ButtonPropertyForm extends PropertyForm {
          navigateSet.collapse();
       }
       
-      final Button imageBtn = new Button("Select");
+      final ImageSelectAdapterField defaultImageField = new ImageSelectAdapterField("Image");
       if (uiButton.getImage() != null) {
-         imageBtn.setText(uiButton.getImage().getImageFileName());
+         defaultImageField.setText(uiButton.getImage().getImageFileName());
       }
-      imageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      defaultImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource image = uiButton.getImage();
@@ -151,19 +152,27 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else {
                      uiButton.setImage(new ImageSource(imageUrl));
                   }
-                  imageBtn.setText(uiButton.getImage().getImageFileName());
+                  defaultImageField.setText(uiButton.getImage().getImageFileName());
                }
             });
          }
       });
-      AdapterField adapterImageBtn = new AdapterField(imageBtn);
-      adapterImageBtn.setFieldLabel("Image");
+      defaultImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (uiButton.getImage() != null) {
+               defaultImageField.removeImageText();
+               uiButton.setImage(null);
+               screenButton.removeIcon();
+            }
+         }
+      });
       
-      final Button onPressImageBtn = new Button("Select");
+      final ImageSelectAdapterField pressImageField = new ImageSelectAdapterField("PressImage");
       if (uiButton.getPressImage() != null) {
-         onPressImageBtn.setText(uiButton.getPressImage().getImageFileName());
+         pressImageField.setText(uiButton.getPressImage().getImageFileName());
       }
-      onPressImageBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      pressImageField.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             final ImageSource onPressImage = uiButton.getPressImage();
@@ -177,13 +186,20 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else {
                      uiButton.setPressImage(new ImageSource(onPressImageUrl));
                   }
-                  onPressImageBtn.setText(uiButton.getPressImage().getImageFileName());
+                  pressImageField.setText(uiButton.getPressImage().getImageFileName());
                }
             });
          }
       });
-      AdapterField adapterOnPressImageBtn = new AdapterField(onPressImageBtn);
-      adapterOnPressImageBtn.setFieldLabel("PressImage");
+      pressImageField.addDeleteListener(new SelectionListener<ButtonEvent>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            if (uiButton.getPressImage() != null) {
+               pressImageField.removeImageText();
+               uiButton.setPressImage(null);
+            }
+         }
+      });
       
       CheckBoxGroup repeatCheckBoxGroup = new CheckBoxGroup();
       repeatCheckBoxGroup.setFieldLabel("Repeat");
@@ -204,8 +220,8 @@ public class ButtonPropertyForm extends PropertyForm {
       repeatCheckBoxGroup.add(repeat); 
       add(name);
       add(adapterCommand);
-      add(adapterImageBtn);
-      add(adapterOnPressImageBtn);
+      add(defaultImageField);
+      add(pressImageField);
       add(repeatCheckBoxGroup);
       add(navigateSet);
       

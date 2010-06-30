@@ -277,4 +277,45 @@ public class ScreenSlider extends ScreenComponent {
       return uiSlider.isVertical();
    }
    
+   public void removeMinImage() {
+      if(uiSlider.isVertical()) {
+         setMinImage(UISlider.DEFAULT_VERTICAL_MIN_IMAGE);
+      } else {
+         setMinImage(UISlider.DEFAULT_HORIZONTAL_MIN_IMAGE);
+      }
+      layout();
+   }
+   
+   public void removeMinTrackImage() {
+      if(uiSlider.isVertical()) {
+         setMinTrackImage(UISlider.DEFAULT_VERTICAL_MINTRACK_IMAGE);
+      } else {
+         setMinTrackImage(UISlider.DEFAULT_HORIZONTAL_MINTRACK_IMAGE);
+      }
+      layout();
+   }
+   public void removeThumbImage() {
+      if(uiSlider.isVertical()) {
+         setThumbImage(UISlider.DEFAULT_VERTICAL_THUMB_IMAGE);
+      } else {
+         setThumbImage(UISlider.DEFAULT_HORIZONTAL_THUMB_IMAGE);
+      }
+      layout();
+   }
+   public void removeMaxImage() {
+      if(uiSlider.isVertical()) {
+         setMaxImage(UISlider.DEFAULT_VERTICAL_MAX_IMAGE);
+      } else {
+         setMaxImage(UISlider.DEFAULT_HORIZONTAL_MAX_IMAGE);
+      }
+      layout();
+   }
+   public void removeMaxTrackImage() {
+      if(uiSlider.isVertical()) {
+         setMaxTrackImage(UISlider.DEFAULT_VERTICAL_MAXTRACK_IMAGE);
+      } else {
+         setMaxTrackImage(UISlider.DEFAULT_HORIZONTAL_MAXTRACK_IMAGE);
+      }
+      layout();
+   }
 }
