@@ -24,7 +24,7 @@ import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
-import org.openremote.web.console.client.view.ApplicationView;
+import org.openremote.web.console.client.view.GroupView;
 import org.openremote.web.console.client.window.LoginWindow;
 import org.openremote.web.console.client.window.SettingsWindow;
 import org.openremote.web.console.domain.AppSetting;
@@ -98,7 +98,7 @@ public class WebConsole implements EntryPoint {
                ClientDataBase.panelXmlEntity.setGroups(panelXmlEntity.getGroups());
                ClientDataBase.panelXmlEntity.setScreens(panelXmlEntity.getScreens());
                ClientDataBase.panelXmlEntity.setGlobalTabBar(panelXmlEntity.getGlobalTabBar());
-               new ApplicationView();
+               new GroupView();
             }
          }
          public void onFailure(Throwable caught) {

@@ -319,11 +319,13 @@ table.screen-btn-cont td.br-c{
 }
 
 .indicator-default {
+	cursor: pointer;
 	float: left;
    background: url('../../resources/images/indicator_sprite.png') no-repeat -16px 0;
 }
 
 .indicator-current {
+	cursor: default;
 	float: left;
    background: url('../../resources/images/indicator_sprite.png') no-repeat 0 0;
 }
