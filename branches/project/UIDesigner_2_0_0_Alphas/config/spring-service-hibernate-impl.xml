@@ -45,6 +45,7 @@
             <tx:method name="find*" propagation="REQUIRED"/>
             <tx:method name="update*" propagation="REQUIRED"/>
             <tx:method name="remove*" propagation="REQUIRED"/>
+            <tx:method name="invite*" propagation="REQUIRED"/>
         </tx:attributes>
     </tx:advice>
 

@@ -61,13 +61,6 @@ public class AccountController extends MultiActionController {
       registerMav.addObject("password", password);
       registerMav.addObject("r_password", password2);
       registerMav.addObject("email", email);
-      String roleStr = "";
-      String[] roles = request.getParameterValues("role");
-      if (roles != null) {
-         for (String role : roles) {
-            roleStr += role;
-         }
-      }
       if (StringUtils.isEmpty(username)) {
          registerMav.addObject("username_blank", true);
          return registerMav;
@@ -104,10 +97,6 @@ public class AccountController extends MultiActionController {
          registerMav.addObject("email_invalid", true);
          return registerMav;
       }
-      if (StringUtils.isEmpty(roleStr)) {
-         registerMav.addObject("role_blank", true);
-         return registerMav;
-      }
       
       //Captcha help us prevent spam and fake registrations
       Captcha captcha = (Captcha) request.getSession().getAttribute(Captcha.NAME);
@@ -118,7 +107,7 @@ public class AccountController extends MultiActionController {
          return registerMav;
       }
       
-      boolean success = userService.createUserAccount(username, password, email, roleStr);
+      boolean success = userService.createUserAccount(username, password, email);
       if (success) {
          loginMav.addObject("needActivation", true);
          loginMav.addObject("username", username);
@@ -142,6 +131,92 @@ public class AccountController extends MultiActionController {
       }
       loginMav.addObject("isActivated", success);
       return loginMav;
+   }
+   
+   public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView acceptMav = new ModelAndView("accept");
+      String userOid = request.getParameter("uid");
+      String hostOid = request.getParameter("cid");
+      String aid = request.getParameter("aid");
+      boolean success = userService.checkInvitation(userOid, hostOid, aid);
+      if (success) {
+         User u = userService.getUserById(Long.valueOf(userOid));
+         acceptMav.addObject("email", u.getEmail());
+         acceptMav.addObject("uid", u.getOid());
+      }
+      acceptMav.addObject("isChecked", success);
+      return acceptMav;
+   }
+   
+   public ModelAndView acceptInvition(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView loginMav = new ModelAndView("login");
+      ModelAndView acceptMav = new ModelAndView("accept");
+      String uid = request.getParameter("uid");
+      String username = request.getParameter("username");
+      String password = request.getParameter("password");
+      String password2 = request.getParameter("r_password");
+      String email = request.getParameter("email");
+      acceptMav.addObject("uid", uid);
+      acceptMav.addObject("username", username);
+      acceptMav.addObject("password", password);
+      acceptMav.addObject("r_password", password2);
+      acceptMav.addObject("email", email);
+      acceptMav.addObject("isChecked", true);
+      if (StringUtils.isEmpty(username)) {
+         acceptMav.addObject("username_blank", true);
+         return acceptMav;
+      }
+      if (!username.matches("^[A-Za-z0-9\\.]+$")) {
+         acceptMav.addObject("username_invalid", true);
+         return acceptMav;
+      }
+      if (username.length() < 4 || username.length() > 30) {
+         acceptMav.addObject("username_length", true);
+         return acceptMav;
+      }
+      if (StringUtils.isEmpty(password)) {
+         acceptMav.addObject("password_blank", true);
+         return acceptMav;
+      }
+      if (password.length() < 6 || password.length() > 16) {
+         acceptMav.addObject("password_length", true);
+         return acceptMav;
+      }
+      if (StringUtils.isEmpty(password2)) {
+         acceptMav.addObject("r_password_blank", true);
+         return acceptMav;
+      }
+      if (!password.equals(password2)) {
+         acceptMav.addObject("password_error", true);
+         return acceptMav;
+      }
+      if (StringUtils.isEmpty(email)) {
+         acceptMav.addObject("email_blank", true);
+         return acceptMav;
+      }
+      if (!email.matches("^[a-zA-Z0-9_\\.]+@[a-zA-Z0-9-]+\\.[a-zA-Z]+$")) {
+         acceptMav.addObject("email_invalid", true);
+         return acceptMav;
+      }
+      
+      //Captcha help us prevent spam and fake registrations
+      Captcha captcha = (Captcha) request.getSession().getAttribute(Captcha.NAME);
+      //request.setCharacterEncoding("UTF-8"); // Do this so we can capture non-Latin chars
+      String code = request.getParameter("code");
+      if (code == null || !captcha.isCorrect(code)) { 
+         acceptMav.addObject("code_dismatch", true);
+         return acceptMav;
+      }
+      
+      boolean success = userService.createInviteeAccount(uid, username, password, email);
+      if (success) {
+         loginMav.addObject("username", username);
+         loginMav.addObject("email", email);
+         return loginMav;
+      } else {
+         acceptMav.addObject("success", success);
+         return acceptMav;
+      }
    }
    
 

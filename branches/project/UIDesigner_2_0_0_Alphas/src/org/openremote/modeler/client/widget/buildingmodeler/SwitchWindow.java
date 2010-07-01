@@ -31,7 +31,7 @@ import org.openremote.modeler.client.proxy.SwitchBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.client.widget.SimpleComboBox;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -68,7 +68,7 @@ public class SwitchWindow extends FormWindow {
    protected Switch switchToggle = null;
    
    private TextField<String> nameField = new TextField<String>();
-   protected ComboBox<ModelData> sensorField = new SimpleComboBox();
+   protected ComboBox<ModelData> sensorField = new ComboBoxExt();
    protected Button switchOnBtn = new Button("select");
    protected Button switchOffBtn = new Button("select");
    
