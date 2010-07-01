@@ -76,7 +76,7 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
       if (caught instanceof StatusCodeException) {
          StatusCodeException sce = (StatusCodeException) caught;
          if (sce.getStatusCode() == 401) {
-            MessageBox.confirm("Timeout", "Your session is timeout, please login again. ", new Listener<MessageBoxEvent>() {
+            MessageBox.confirm("Timeout", "Your session has timeout, please login again. ", new Listener<MessageBoxEvent>() {
                @Override
                public void handleEvent(MessageBoxEvent be) {
                   if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {

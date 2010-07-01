@@ -37,7 +37,7 @@ public class ImageSourceValidator {
          result = resultHtml.replaceAll("^<pre[^>]*>", "").replaceAll("</pre>$", "");
          //Timeout
          if (! result.matches(".+?\\.(png|gif|jpg|jpeg|PNG|GIF|JPG|GPEG)") && result.contains("401")) {
-            MessageBox.confirm("Timeout", "Your session is timeout, please login again. ", new Listener<MessageBoxEvent>() {
+            MessageBox.confirm("Timeout", "Your session has timeout, please login again. ", new Listener<MessageBoxEvent>() {
 
                @Override
                public void handleEvent(MessageBoxEvent be) {

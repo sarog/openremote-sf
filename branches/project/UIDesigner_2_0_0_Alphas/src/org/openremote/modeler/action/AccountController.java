@@ -212,6 +212,7 @@ public class AccountController extends MultiActionController {
       if (success) {
          loginMav.addObject("username", username);
          loginMav.addObject("email", email);
+         loginMav.addObject("isAccepted", true);
          return loginMav;
       } else {
          acceptMav.addObject("success", success);
