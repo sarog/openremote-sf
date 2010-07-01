@@ -29,7 +29,7 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.client.widget.SimpleComboBox;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.TreePanelBuilder;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
@@ -80,7 +80,7 @@ public class SensorWindow extends FormWindow {
    private BeanModel sensorModel = null;
    protected TextField<String> nameField = new TextField<String>();
    protected TreePanel<BeanModel> commandSelectTree = null;
-   protected SimpleComboBox typeList = new SimpleComboBox();
+   protected ComboBoxExt typeList = new ComboBoxExt();
    private FieldSet customFieldSet = null;
    protected TextField<Integer> minField = new TextField<Integer>();
    protected TextField<Integer> maxField = new TextField<Integer>();

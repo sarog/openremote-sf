@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -40,8 +39,8 @@ public class Account extends BusinessEntity {
 
    private static final long serialVersionUID = 4565186362957664336L;
 
-   /** The user. */
-   private User user;
+   /** The users. */
+   private List<User> users;
    
    /** The devices. */
    private List<Device> devices;
@@ -67,24 +66,16 @@ public class Account extends BusinessEntity {
       configs = new ArrayList<ControllerConfig>();
    }
 
-   /**
-    * Gets the user.
-    * 
-    * @return the user
-    */
-   @OneToOne
-   public User getUser() {
-      return user;
+   @OneToMany(mappedBy = "account")
+   public List<User> getUsers() {
+      return users;
    }
 
-   /**
-    * Sets the user.
-    * 
-    * @param user the new user
-    */
-   public void setUser(User user) {
-      this.user = user;
+
+   public void setUsers(List<User> users) {
+      this.users = users;
    }
+
 
    /**
     * Gets the devices.

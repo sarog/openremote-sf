@@ -320,7 +320,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
-               throw new NotAuthenticatedException("User "+userService.getAccount().getUser().getUsername() + " not authenticated! ");
+               throw new NotAuthenticatedException("User "+userService.getCurrentUser().getUsername() + " not authenticated! ");
             }
             throw new BeehiveNotAvailableException("Beehive is not available right now! ");
          }
@@ -368,7 +368,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
-               throw new NotAuthenticatedException("User "+userService.getAccount().getUser().getUsername() + " not authenticated! ");
+               throw new NotAuthenticatedException("User "+userService.getCurrentUser().getUsername() + " not authenticated! ");
             }
             throw new BeehiveNotAvailableException("Beehive is not available right now! ");
          }
@@ -895,7 +895,7 @@ public class TemplateServiceImpl implements TemplateService {
       account.setSliders(new ArrayList<Slider>());
       account.setSwitches(new ArrayList<Switch>());
       account.setDevices(new ArrayList<Device>());
-      account.getUser().setRoles(new ArrayList<Role>());
+      userService.getCurrentUser().setRoles(new ArrayList<Role>());
 
       for (Device device : devices ) {
          device.setAccount(null);
@@ -950,8 +950,8 @@ public class TemplateServiceImpl implements TemplateService {
    
    private void addAuthentication(AbstractHttpMessage httpMessage) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername() + ":"
-                  + userService.getAccount().getUser().getPassword()));
+            + encode(userService.getCurrentUser().getUsername() + ":"
+                  + userService.getCurrentUser().getPassword()));
    }
    
    private TemplateList buildTemplateListFromJson(String templatesJson) {

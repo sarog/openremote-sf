@@ -31,7 +31,7 @@ public class SwitchServiceTest {
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       sensorService = (SensorService)SpringTestContext.getInstance().getBean("sensorService");
       
-      userService.createUserAccount("test", "test", "test@email.com", "role_bm");
+      userService.createUserAccount("test", "test", "test@email.com");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
    }
 
