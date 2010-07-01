@@ -183,27 +183,22 @@ public class SensorWindow extends FormWindow {
       
       if (sensorModel != null) {
          Sensor sensor = sensorModel.getBean();
-//         if (sensor.getDeviceCommandRef() != null) {
-//            BeanModel selectedCommandModel = sensor.getDeviceCommandRef().getDeviceCommand().getBeanModel();
-//            commandSelectTree.setExpanded(selectedCommandModel, true);
-//            commandSelectTree.getSelectionModel().select(selectedCommandModel, false);
-//         }
          if (sensor.getType() != null) {
             typeList.setValue(new ComboBoxDataModel<SensorType>(sensor.getType().toString(), sensor.getType()));
             if (sensor.getType() == SensorType.RANGE) {
                minField.setValue(((RangeSensor) sensor).getMin());
                maxField.setValue(((RangeSensor) sensor).getMax());
-               minField.disable();
-               maxField.disable();
+//               minField.disable();
+//               maxField.disable();
             } else if (sensor.getType() == SensorType.CUSTOM) {
                List<State> states = ((CustomSensor) sensor).getStates();
                for (State state : states) {
                   grid.getStore().add(state.getBeanModel());
                }
-               customFieldSet.disable();
+//               customFieldSet.disable();
             }
          }
-         commandSelectTree.disable();
+//         commandSelectTree.disable();
          typeList.disable();
          
       }
@@ -218,14 +213,20 @@ public class SensorWindow extends FormWindow {
       deviceCommandTreeContainer.setStyleAttribute("backgroundColor", "white");
       
       buildCommandSelectTree(device);
-      commandSelectTree.getSelectionModel().deselectAll();
       deviceCommandTreeContainer.add(commandSelectTree);
       
       return deviceCommandTreeContainer;
    }
    
    protected void buildCommandSelectTree(Device device) {
-      commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice());
+      BeanModel selectedCommandModel = null;
+      if (sensorModel != null) {
+         Sensor sensor = sensorModel.getBean();
+         if (sensor.getSensorCommandRef() != null) {
+            selectedCommandModel = sensor.getSensorCommandRef().getDeviceCommand().getBeanModel();
+         }
+      }
+      commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice(), selectedCommandModel);
    }
    private FieldSet createRangeSet() {
       FieldSet rangeSet = new FieldSet();
@@ -350,52 +351,72 @@ public class SensorWindow extends FormWindow {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
          public void handleEvent(FormEvent be) {
+            BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
+            if (typeList.getValue() == null) {
+               MessageBox.alert("Warn", "A sensor must have a type", null);
+               typeList.focus();
+               return;
+            }
+            if (selectedCommand == null || !(selectedCommand.getBean() instanceof DeviceCommand)) {
+               MessageBox.alert("Warn", "A sensor must have a device command", null);
+               commandSelectTree.focus();
+               return;
+            }
+            
+            // The duplicate code bellow is for transforming custom sensor  to server completely.
+            SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();
             if (null == sensorModel) {
                Sensor sensor = new Sensor();
-               if (typeList.getValue() != null) {
-                  SensorType type = ((ComboBoxDataModel<SensorType>) typeList.getValue()).getData();
-                  if (type == SensorType.RANGE) {
-                     sensor = new RangeSensor();
-                     ((RangeSensor) sensor).setMin(Integer.valueOf(minField.getRawValue()));
-                     ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
-                  } else if (type == SensorType.CUSTOM) {
-                     sensor = new CustomSensor();
-                     List<BeanModel> states = grid.getStore().getModels();
-                     for (BeanModel stateModel : states) {
-                        State state = stateModel.getBean();
-                        state.setSensor((CustomSensor) sensor);
-                        ((CustomSensor) sensor).addState(state);
-                     }
+               if (type == SensorType.RANGE) {
+                   sensor = new RangeSensor();
+                  ((RangeSensor) sensor).setMin(Integer.valueOf(minField.getRawValue()));
+                  ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
+               } else if (type == SensorType.CUSTOM) {
+                  sensor = new CustomSensor();
+                  List<BeanModel> states = grid.getStore().getModels();
+                  for (BeanModel stateModel : states) {
+                     State state = stateModel.getBean();
+                     state.setSensor((CustomSensor) sensor);
+                     ((CustomSensor) sensor).addState(state);
                   }
-                  sensor.setType(type);
-               }else {
-                  MessageBox.alert("Warn", "A sensor must have a type", null);
-                  typeList.focus();
-                  return;
                }
-               sensor.setDevice(device);
+               sensor.setType(type);
                sensor.setName(nameField.getValue());
-               BeanModel selectedCommand = commandSelectTree.getSelectionModel().getSelectedItem();
-               if (selectedCommand != null && selectedCommand.getBean() instanceof DeviceCommand) {
-                  DeviceCommand cmd = selectedCommand.getBean();
-                  SensorCommandRef sensorCommandRef = new SensorCommandRef();
-                  sensorCommandRef.setDeviceCommand(cmd);
-                  sensorCommandRef.setSensor(sensor);
-                  sensor.setSensorCommandRef(sensorCommandRef);
-               } else {
-                  MessageBox.alert("Warn", "A sensor must have a device command", null);
-                  commandSelectTree.focus();
-                  return;
-               }
+               
+               DeviceCommand cmd = selectedCommand.getBean();
+               SensorCommandRef sensorCommandRef = new SensorCommandRef();
+               sensorCommandRef.setDeviceCommand(cmd);
+               sensorCommandRef.setSensor(sensor);
+               sensor.setSensorCommandRef(sensorCommandRef);
+               
+               sensor.setDevice(device);
                SensorBeanModelProxy.saveSensor(sensor, new AsyncSuccessCallback<Sensor>() {
                   public void onSuccess(Sensor result) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
                   }
-
                });
             } else if (null != sensorModel) {
                Sensor sensor = sensorModel.getBean();
+               if (type == SensorType.RANGE) {
+                  ((RangeSensor) sensor).setMin(Integer.valueOf(minField.getRawValue()));
+                  ((RangeSensor) sensor).setMax(Integer.valueOf(maxField.getRawValue()));
+               } else if (type == SensorType.CUSTOM) {
+                  ((CustomSensor) sensor).getStates().clear();
+                  List<BeanModel> states = grid.getStore().getModels();
+                  for (BeanModel stateModel : states) {
+                     State state = stateModel.getBean();
+                     state.setOid(0);
+                     state.setSensor((CustomSensor) sensor);
+                     ((CustomSensor) sensor).addState(state);
+                  }
+               }
                sensor.setName(nameField.getValue());
+               
+               DeviceCommand cmd = selectedCommand.getBean();
+               SensorCommandRef sensorCommandRef = new SensorCommandRef();
+               sensorCommandRef.setDeviceCommand(cmd);
+               sensorCommandRef.setSensor(sensor);
+               sensor.setSensorCommandRef(sensorCommandRef);
                SensorBeanModelProxy.updateSensor(sensor, new AsyncSuccessCallback<Sensor>() {
                   public void onSuccess(Sensor result) {
                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
@@ -406,5 +427,6 @@ public class SensorWindow extends FormWindow {
 
       });
    }
+   
    
 }
