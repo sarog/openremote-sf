@@ -111,5 +111,33 @@ public class DeviceMacroItem extends UICommand {
       }
       return null;
    }
+   
+   public boolean equalsWithoutCompareOid(DeviceMacroItem macroItemB) {
+      DeviceMacroItem macroItemA = this;
+      if (macroItemA != null && macroItemB != null) {
+         if (macroItemA instanceof DeviceMacroRef && macroItemB instanceof DeviceMacroRef) {
+            DeviceMacroRef macroRefA = (DeviceMacroRef) macroItemA;
+            DeviceMacroRef macroRefB = (DeviceMacroRef) macroItemB;
+            if (macroRefA.getTargetDeviceMacro().equalsWitoutCompareOid(macroRefB.getTargetDeviceMacro())) {
+               return true;
+            }
+         } else if (macroItemA instanceof DeviceCommandRef && macroItemB instanceof DeviceCommandRef) {
+            DeviceCommandRef cmdRefA = (DeviceCommandRef) macroItemA;
+            DeviceCommandRef cmdRefB = (DeviceCommandRef) macroItemB;
+            if (cmdRefA.getDeviceCommand().equalsWithoutCompareOid(cmdRefB.getDeviceCommand())) {
+               return true;
+            }
+         } else if (macroItemA instanceof CommandDelay && macroItemB instanceof CommandDelay) {
+            CommandDelay delayA = (CommandDelay) macroItemA;
+            CommandDelay delayB = (CommandDelay) macroItemB;
+            if (delayA.getDelaySecond().equals(delayB.getDelaySecond())) {
+               return true;
+            }
+         }
+         return false;
+      } else {
+         return macroItemA == null && macroItemB == null;
+      }
+    }
 
 }
