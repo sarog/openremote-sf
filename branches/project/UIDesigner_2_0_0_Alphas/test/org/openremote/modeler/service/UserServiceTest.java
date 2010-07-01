@@ -182,7 +182,7 @@ public class UserServiceTest {
       Assert.assertTrue(userService.checkInvitation(""+2, ""+1, new Md5PasswordEncoder().encodePassword(TEST_EMAIL, currentUser.getPassword())));
    }
    
-   @Test(dependsOnMethods = { "getPendingInviteesByAccount" })
+   @Test(dependsOnMethods = { "checkInvitation" })
    public void updateUserRoles() {
       User user = userService.updateUserRoles(2, Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
       Assert.assertEquals(user.getRole(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);

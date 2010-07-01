@@ -349,10 +349,13 @@ public class TreePanelBuilder {
                @Override
                public void handleInsert(BeanModel beanModel) {
                   if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
-                     if (!macroTreeStore.contains(beanModel)) {
-                        macroTreeStore.add(beanModel, false);
-                        tree.getSelectionModel().select(beanModel, true);
+                     if (macroTreeStore.contains(beanModel)) {
+                        tree.getStore().removeAll(beanModel);
+                        tree.getStore().remove(beanModel);
                      }
+                     macroTreeStore.add(beanModel, false);
+                     tree.getSelectionModel().select(beanModel, true);
+                     tree.getStore().getLoader().load();
                   }
                }
 
@@ -640,7 +643,9 @@ public class TreePanelBuilder {
       if (templateTreeStore == null) {
          templateTreeStore = new TreeStore<BeanModel>(templateLoader);
       }
+      //set private template folder as the first node
       templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
+      //set public template folder as the second node. 
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
       TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
          @Override

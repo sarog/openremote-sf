@@ -28,6 +28,7 @@ import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.BeanModelDataBase;
+import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.TouchPanels;
 import org.openremote.modeler.client.widget.FormWindow;
@@ -45,6 +46,7 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -161,6 +163,11 @@ public class PanelWindow extends FormWindow {
          @Override
          public void handleEvent(FormEvent be) {
             Panel panel = new Panel();
+            String panelName = panelNameField.getValue();
+            if (!UtilsProxy.isPanelNameAvailable(panelName)) {
+               MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
+               return;
+            }
             if (panelModel == null) {
                panel.setOid(IDUtil.nextID());
                Panel.increaseDefaultNameIndex();
@@ -195,7 +202,7 @@ public class PanelWindow extends FormWindow {
             } else {
                panel = panelModel.getBean();
             }
-            panel.setName(panelNameField.getValue());
+            panel.setName(panelName);
             BeanModelDataBase.panelTable.insert(panel.getBeanModel());
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(panel));
          }
