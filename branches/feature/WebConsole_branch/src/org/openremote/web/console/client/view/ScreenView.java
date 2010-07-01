@@ -60,7 +60,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
    }
    
    private void addBackground(Background background) {
-      String url = ClientDataBase.appSetting.getCurrentServer() + "/resources/"
+      String url = ClientDataBase.appSetting.getResourceRootPath()
             + URL.encode(background.getBackgroundImage().getSrc());
       setStyleAttribute("backgroundImage", "url(" + url + ")");
       setStyleAttribute("backgroundRepeat", "no-repeat");

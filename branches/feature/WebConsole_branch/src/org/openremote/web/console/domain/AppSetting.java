@@ -134,4 +134,12 @@ public class AppSetting implements Serializable {
         }
       }
    }
+   
+   public String getResourceRootPath() {
+      return currentServer + "/resources/";
+   }
+   
+   public String getControlPath() {
+      return currentServer + "/rest/control/";
+   }
 }
