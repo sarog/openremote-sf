@@ -426,14 +426,15 @@ public class DevicePanel extends ContentPanel {
       });
    }
    
-   private void editSensor(BeanModel selectedModel) {
+   private void editSensor(final BeanModel selectedModel) {
       final SensorWindow deviceCommandWindow = new SensorWindow(selectedModel);
       deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             Sensor sensor = be.getData();
-            tree.getStore().update(sensor.getBeanModel());
-            Info.display("Info", "Edit device command " + sensor.getBeanModel().get("name") + " success.");
+            tree.getStore().removeAll(selectedModel);
+            tree.getStore().add(selectedModel, sensor.getSensorCommandRef().getBeanModel(), false);
+            Info.display("Info", "Edit sensor " + sensor.getBeanModel().get("name") + " success.");
             deviceCommandWindow.hide();
          }
       });

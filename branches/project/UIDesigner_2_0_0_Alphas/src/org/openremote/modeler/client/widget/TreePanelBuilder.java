@@ -86,9 +86,11 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -258,7 +260,7 @@ public class TreePanelBuilder {
       return tree;
    }
 
-   public static TreePanel<BeanModel> buildCommandTree(final Device device) {
+   public static TreePanel<BeanModel> buildCommandTree(final Device device, final BeanModel selectedCommandModel) {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
@@ -281,9 +283,19 @@ public class TreePanelBuilder {
             }
             return false;
          }
+
       };
       TreeStore<BeanModel> commandTree = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandTree);
+      loadDeviceTreeLoader.addLoadListener(new LoadListener() {
+         public void loaderLoad(LoadEvent le) {
+            super.loaderLoad(le);
+            if (selectedCommandModel != null) {
+               tree.getSelectionModel().select(selectedCommandModel, false);
+            }
+         }
+         
+      });
 
       tree.setBorders(false);
       tree.setStateful(true);
