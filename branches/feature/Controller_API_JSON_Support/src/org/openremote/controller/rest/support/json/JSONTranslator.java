@@ -43,7 +43,11 @@ public class JSONTranslator {
    
    public static String doTransalteXMLToJSONString(String acceptTypeInHeader, String xml) {
       if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader)) {
-         XMLSerializer xmlSerializer = new XMLSerializer();   
+         xml = xml.replaceAll("<openremote.*", "<openremote>");
+         XMLSerializer xmlSerializer = new XMLSerializer(); 
+         xmlSerializer.setTypeHintsEnabled(false);
+         xmlSerializer.setTypeHintsCompatibility(false);
+         xmlSerializer.setSkipNamespaces(true);
          JSON json = xmlSerializer.read(xml);
          return json.toString(3);
       } else {
