@@ -220,7 +220,101 @@ public class AccountController extends MultiActionController {
       }
    }
    
-
+   public ModelAndView forgetPassword(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView forgetMav = new ModelAndView("forget");
+      String username = request.getParameter("username");
+      if (StringUtils.isEmpty(username)) {
+         forgetMav.addObject("username_blank", true);
+         return forgetMav;
+      }
+      if (userService.isUsernameAvailable(username)) {
+         forgetMav.addObject("isUserAvailable", false);
+         return forgetMav;
+      }
+      User user = userService.forgetPassword(username);
+      if (user != null) {
+         forgetMav.addObject("needReset", true);
+         forgetMav.addObject("email", user.getEmail());
+      }
+      return forgetMav;
+   }
+   
+   public ModelAndView resetPassword(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView resetMav = new ModelAndView("reset_password");
+      ModelAndView loginMav = new ModelAndView("login");
+      
+      String uid = request.getParameter("uid");
+      String aid = request.getParameter("aid");
+      
+      if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(aid)) {
+         return loginMav;
+      }
+      
+      User user = userService.checkPasswordToken(Long.valueOf(uid), aid);
+      if (user != null) {
+         resetMav.addObject("hasReset", false);
+         resetMav.addObject("aid", aid);
+         resetMav.addObject("username", user.getUsername());
+         resetMav.addObject("uid", uid);
+         
+      } else {
+         return loginMav;
+      }
+      return resetMav;
+   }
+   
+   public ModelAndView changePassword(HttpServletRequest request, HttpServletResponse response) {
+      ModelAndView resetMav = new ModelAndView("reset_password");
+      ModelAndView loginMav = new ModelAndView("login");
+      resetMav.addObject("hasReset", false);
+      
+      String uid = request.getParameter("uid");
+      String password = request.getParameter("new_password");
+      String password2 = request.getParameter("r_password");
+      String aid = request.getParameter("aid");
+      String username = request.getParameter("reset_username");
+      
+      if (StringUtils.isEmpty(aid)) {
+         return loginMav;
+      }
+      
+      resetMav.addObject("uid", uid);
+      resetMav.addObject("password", password);
+      resetMav.addObject("r_password", password2);
+      resetMav.addObject("aid", aid);
+      resetMav.addObject("username", username);
+      
+      if (StringUtils.isEmpty(password)) {
+         resetMav.addObject("password_blank", true);
+         return resetMav;
+      }
+      if (password.length() < 6 || password.length() > 16) {
+         resetMav.addObject("password_length", true);
+         return resetMav;
+      }
+      if (StringUtils.isEmpty(password2)) {
+         resetMav.addObject("r_password_blank", true);
+         return resetMav;
+      }
+      if (!password.equals(password2)) {
+         resetMav.addObject("password_error", true);
+         return resetMav;
+      }
+      
+      if (userService.getUserById(Long.valueOf(uid)) == null) {
+         resetMav.addObject("isUserExist", false);
+         return resetMav;
+      }
+      
+      if (userService.resetPassword(Long.valueOf(uid), password, aid)) {
+         resetMav.addObject("hasReset", true);
+      } else {
+         resetMav.addObject("isUserExist", false);
+      }
+      
+      return resetMav;
+   }
+   
    public void setUserService(UserServiceImpl userService) {
       this.userService = userService;
    }

@@ -23,6 +23,7 @@ import org.openremote.modeler.client.widget.propertyform.ButtonPropertyForm;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
+import org.openremote.modeler.utils.StringUtils;
 
 import com.google.gwt.user.client.ui.FlexTable;
 
@@ -64,7 +65,6 @@ public class ScreenButton extends ScreenComponent {
    public ScreenButton(ScreenCanvas canvas, UIButton uiButton) {
       this(canvas);
       this.uiButton = uiButton;
-      setText(uiButton.getName());
       adjustTextLength();
       if (uiButton.getImage() != null) {
          setIcon(uiButton.getImage().getSrc());
@@ -78,7 +78,7 @@ public class ScreenButton extends ScreenComponent {
    protected void initial() {
       addStyleName("screen-btn");
       setStyleAttribute("backgroundRepeat", "no-repeat");
-      setStyleAttribute("backgroundPosition", "center center");
+      setStyleAttribute("backgroundPosition", "0 0");
       setText("Button");
       add(btnTable);
    }
@@ -133,7 +133,11 @@ public class ScreenButton extends ScreenComponent {
       if (uiButton.getName() != null && ajustLength < uiButton.getName().length()) {
          setText(uiButton.getName().substring(0, ajustLength) + "..");
       } else {
-         setText(uiButton.getName());
+         if (StringUtils.isEmpty(uiButton.getName())) {
+            setText(" ");
+         } else {
+            setText(uiButton.getName());
+         }
       }
    }
 
@@ -158,4 +162,5 @@ public class ScreenButton extends ScreenComponent {
    private void setText(String text) {
       btnTable.setText(1, 1, text);
    }
+   
 }

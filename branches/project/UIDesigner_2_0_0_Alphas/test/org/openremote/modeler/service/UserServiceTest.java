@@ -194,4 +194,13 @@ public class UserServiceTest {
    public void createInviteeAccount() {
       Assert.assertTrue(userService.createInviteeAccount(String.valueOf(invitee.getOid()), "tomsky", "hahahaha", TEST_EMAIL));
    }
+   
+   @Test(dependsOnMethods = { "initRoles" })
+   public void resetPassword() {
+      String username = "tomsky.wang";
+      Assert.assertTrue(userService.createUserAccount(username, "firstcreate", TEST_EMAIL));
+      User user = userService.forgetPassword(username);
+      Assert.assertNotNull(user);
+      Assert.assertTrue(userService.resetPassword(user.getOid(), "finalist", user.getToken()));
+   }
 }

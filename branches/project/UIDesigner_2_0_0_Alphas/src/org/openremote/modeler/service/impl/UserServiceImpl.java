@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
 
@@ -402,6 +403,58 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          }
       }
       return accessUsers;
+   }
+
+   public User forgetPassword(String username) {
+      final User user = genericDAO.getByNonIdField(User.class, "username", username);
+      final String passwordToken = UUID.randomUUID().toString();
+      
+      MimeMessagePreparator preparator = new MimeMessagePreparator() {
+         @SuppressWarnings("unchecked")
+         public void prepare(MimeMessage mimeMessage) throws Exception {
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            message.setSubject("OpenRemote Password Assistance");
+            message.setTo(user.getEmail());
+            message.setFrom(mailSender.getUsername());
+            Map model = new HashMap();
+            model.put("webapp", configuration.getWebappServerRoot());
+            model.put("username", user.getUsername());
+            model.put("uid", user.getOid());
+            model.put("aid", passwordToken);
+            String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                 Constants.FORGET_PASSWORD_EMAIL_VM_NAME, "UTF-8", model);
+            message.setText(text, true);
+         }
+      };
+      try {
+         this.mailSender.send(preparator);
+         log.info("Sent 'Reset password' email to " + user.getEmail());
+         user.setToken(passwordToken);
+         updateUser(user);
+         return user;
+      } catch (MailException e) {
+         log.error("Can't send 'Reset password' email", e);
+         return null;
+      }
+   }
+
+   public User checkPasswordToken(long uid, String passwordToken) {
+      User user = getUserById(uid);
+      if (user != null && passwordToken.equals(user.getToken())) {
+         return user;
+      }
+      return null;
+   }
+
+   public boolean resetPassword(long uid, String password, String passwordToken) {
+      User user = getUserById(uid);
+      if (user != null && passwordToken.equals(user.getToken())) {
+         user.setPassword(new Md5PasswordEncoder().encodePassword(password, user.getUsername()));
+         user.setToken(null);
+         updateUser(user);
+         return true;
+      }
+      return false;
    }
    
 }

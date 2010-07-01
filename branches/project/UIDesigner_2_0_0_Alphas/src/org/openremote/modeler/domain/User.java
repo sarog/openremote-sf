@@ -64,6 +64,7 @@ public class User extends BusinessEntity {
    
    private List<Role> roles;
    
+   private String token;
    
    /**
     * Instantiates a new user.
@@ -206,6 +207,15 @@ public class User extends BusinessEntity {
 
    public void setRawPassword(String rawPassword) {
       this.rawPassword = rawPassword;
+   }
+   
+   @Column(name = "token")
+   public String getToken() {
+      return token;
+   }
+
+   public void setToken(String token) {
+      this.token = token;
    }
 
    @Transient

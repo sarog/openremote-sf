@@ -70,6 +70,9 @@
 		color:red;
 		text-align: left;
 	}
+	.forget_btn {
+	   margin-left: 10px;
+	}
 </style>
 </head>
 <body>
@@ -107,7 +110,10 @@
 	                	<input id="rememberme" type="checkbox" name="_spring_security_remember_me"><label for="rememberme">Remember Me</label>
 	                	<a class="register_btn" href="register.jsp">Create a New Account</a>
 	                </p> 
-		            <div><input class="login_submit" type="submit" value="Login"></div>
+		            <div>
+                     <input class="login_submit" type="submit" value="Login">
+                     <a class="forget_btn" href="forget.jsp">Forget password?</a>
+                  </div>
 	            </div>
             </c:if>                    
 	        <p class="copyright">Copyright &copy; 2008-<fmt:formatDate value="${now}"pattern="yyyy" />  
