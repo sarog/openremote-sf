@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openremote>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <panels>
     <panel id="1" name="NoTab">
       <include type="group" ref="2" />
