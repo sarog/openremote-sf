@@ -41,9 +41,9 @@ public class SelectCommandWindow extends Dialog {
    private TreePanel<BeanModel> devicesAndMacrosTree;
    public SelectCommandWindow() {
       setHeading("Select Command");
-      setHeight(260);
-      setWidth(200);
-//      setLayout(new FitLayout());
+      setHeight(300);
+      setWidth(260);
+      setLayout(new FitLayout());
       setModal(true);
       initDevicesAndMacrosTree();
       setButtons(Dialog.OKCANCEL);
@@ -54,7 +54,6 @@ public class SelectCommandWindow extends Dialog {
 
    private void initDevicesAndMacrosTree() {
       ContentPanel devicesAndMacrosTreeContainer = new ContentPanel();
-      devicesAndMacrosTreeContainer.setSize(180, 240);
       devicesAndMacrosTreeContainer.setBorders(false);
       devicesAndMacrosTreeContainer.setBodyBorder(false);
       devicesAndMacrosTreeContainer.setHeaderVisible(false);
@@ -63,6 +62,7 @@ public class SelectCommandWindow extends Dialog {
          devicesAndMacrosTree = DeviceAndMacroTree.getInstance();
          devicesAndMacrosTreeContainer.add(devicesAndMacrosTree);
       }
+      
       // overflow-auto style is for IE hack.
       devicesAndMacrosTreeContainer.addStyleName("overflow-auto");
       add(devicesAndMacrosTreeContainer);

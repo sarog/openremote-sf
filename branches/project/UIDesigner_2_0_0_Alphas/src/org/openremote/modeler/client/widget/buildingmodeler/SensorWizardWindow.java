@@ -43,6 +43,7 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.TreeStore;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
@@ -148,7 +149,7 @@ public class SensorWizardWindow extends SensorWindow {
    private final class NewCommandListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow(device);
+         DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow(device);
          deviceCommandWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -157,8 +158,8 @@ public class SensorWizardWindow extends SensorWindow {
                BeanModel deviceCommandModel = deviceCommand.getBeanModel();
                commandSelectTree.getStore().add(deviceCommandModel, false);
                commandSelectTree.getSelectionModel().select(deviceCommandModel, false);
-               deviceCommandWizardWindow.hide();
                fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(deviceCommandModel));
+               Info.display("Info", "Create command " + deviceCommand.getName() + " success");
             }
          });
       }
