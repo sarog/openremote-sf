@@ -251,6 +251,7 @@ public class CustomPanelWindow extends FormWindow {
          }
       };
       panelImage.setFieldLabel("Panel Image");
+      panelImage.setAllowBlank(true);
    }
    private void initIntegerFieldStyle(TextField<?>... fields) {
       for (TextField<?> field : fields) {

@@ -41,6 +41,8 @@ public class UserServiceTest {
    private UserService userService = (UserService) SpringTestContext.getInstance().getBean("userService");
    private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
    
+   private User invitee;
+   
    public static final String TEST_EMAIL = "openremote@163.com";
    
    @Test
@@ -170,26 +172,26 @@ public class UserServiceTest {
    @Test(dependsOnMethods = { "createAccountSuccessfully" })
    public void inviteUser() {
       User currentUser = userService.getUserById(1L);
-      User invitee = userService.inviteUser(TEST_EMAIL, Constants.ROLE_MODELER_DISPLAYNAME, currentUser);
-      Assert.assertEquals(invitee.getRole(), Constants.ROLE_MODELER_DISPLAYNAME);
-      Assert.assertEquals(invitee.getOid(), 2);
-      Assert.assertFalse(invitee.isValid());
+      User newInvitee = userService.inviteUser(TEST_EMAIL, Constants.ROLE_MODELER_DISPLAYNAME, currentUser);
+      Assert.assertEquals(newInvitee.getRole(), Constants.ROLE_MODELER_DISPLAYNAME);
+      Assert.assertFalse(newInvitee.isValid());
+      invitee = newInvitee; 
    }
    
    @Test(dependsOnMethods = { "inviteUser" })
    public void checkInvitation() {
       User currentUser = userService.getUserById(1L);
-      Assert.assertTrue(userService.checkInvitation(""+2, ""+1, new Md5PasswordEncoder().encodePassword(TEST_EMAIL, currentUser.getPassword())));
+      Assert.assertTrue(userService.checkInvitation(String.valueOf(invitee.getOid()), ""+1, new Md5PasswordEncoder().encodePassword(TEST_EMAIL, currentUser.getPassword())));
    }
    
    @Test(dependsOnMethods = { "checkInvitation" })
    public void updateUserRoles() {
-      User user = userService.updateUserRoles(2, Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+      User user = userService.updateUserRoles(invitee.getOid(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
       Assert.assertEquals(user.getRole(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
    }
    
    @Test(dependsOnMethods = { "updateUserRoles" })
    public void createInviteeAccount() {
-      Assert.assertTrue(userService.createInviteeAccount(""+2, "tomsky", "hahahaha", TEST_EMAIL));
+      Assert.assertTrue(userService.createInviteeAccount(String.valueOf(invitee.getOid()), "tomsky", "hahahaha", TEST_EMAIL));
    }
 }
