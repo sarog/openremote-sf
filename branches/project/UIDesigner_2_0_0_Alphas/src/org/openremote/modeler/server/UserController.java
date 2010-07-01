@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.openremote.modeler.client.rpc.UserRPCService;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.UserService;
 
 public class UserController extends BaseGWTSpringControllerWithHibernateSupport implements UserRPCService {
@@ -31,9 +32,9 @@ public class UserController extends BaseGWTSpringControllerWithHibernateSupport 
    private static final long serialVersionUID = -3486307399647834562L;
 
    private UserService userService;
-   public User inviteUser(String email, String role) {
+   public User inviteUser(String email, String role) throws UserInvitationException{
       if (StringUtils.isEmpty(email) || StringUtils.isEmpty(role)) {
-         return null;
+         throw new UserInvitationException("Failed to send invitation");
       }
       return userService.inviteUser(email, role, userService.getCurrentUser());
    }

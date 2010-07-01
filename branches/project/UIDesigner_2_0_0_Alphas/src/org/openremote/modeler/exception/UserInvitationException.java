@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2009, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -17,28 +17,30 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.rpc;
+package org.openremote.modeler.exception;
 
-import java.util.List;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-import org.openremote.modeler.domain.User;
-import org.openremote.modeler.exception.UserInvitationException;
+/**
+ * If the invitation failed, throw this exception. 
+ * 
+ * @author tomsky 
+ */
+@SuppressWarnings("serial")
+public class UserInvitationException extends RuntimeException implements IsSerializable{
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+   /**
+    * This constructor is necessary for GWT to serialize to client. 
+    */
+   public UserInvitationException() {
+      super();
+   }
 
-@RemoteServiceRelativePath("user.smvc")
-public interface UserRPCService extends RemoteService {
+   public UserInvitationException(String s) {
+      super(s);
+   }
 
-   User inviteUser(String email, String role) throws UserInvitationException;
-   
-   List<User> getPendingInviteesByAccount();
-   
-   User updateUserRoles(long uid, String roles);
-   
-   void deleteUser(long uid);
-   
-   List<User> getAccountAccessUsers();
-   
-   Long getUserId();
+   public UserInvitationException(String s, Throwable throwable) {
+      super(s, throwable);
+   }
 }

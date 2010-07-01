@@ -39,6 +39,7 @@ import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
@@ -248,16 +249,25 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
 
    public User inviteUser(String email, String role, User currentUser) {
-      User invitee = new User(currentUser.getAccount());
-      invitee.setEmail(email);
-      invitee.setUsername(email);
-      invitee.setPassword("pending password");
-      convertRoleStringToRole(role, invitee, genericDAO.loadAll(Role.class));
-      genericDAO.save(invitee);
-      if (!sendInvitation(invitee, currentUser)) {
+      User invitee = null;
+      if (isUsernameAvailable(email)) {
+         invitee = new User(currentUser.getAccount());
+         invitee.setEmail(email);
+         invitee.setUsername(email);
+         invitee.setPassword("pending password");
+         convertRoleStringToRole(role, invitee, genericDAO.loadAll(Role.class));
+         genericDAO.save(invitee);
+         if (!sendInvitation(invitee, currentUser)) {
+            throw new UserInvitationException("Failed to send invitation.");
+         }
+         return invitee;
+      } else {
+         invitee = genericDAO.getByNonIdField(User.class, "username", email);
+         if (!sendInvitation(invitee, currentUser)) {
+            throw new UserInvitationException("Failed to send invitation.");
+         }
          return null;
       }
-      return invitee;
    }
 
    public boolean sendInvitation(final User invitee, final User currentUser) {
