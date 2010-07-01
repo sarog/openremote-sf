@@ -105,11 +105,13 @@ public class DelayWindow extends FormWindow {
    private void createField() {
       NumberField delayField = new NumberField();
       delayField.setName(DELAY);
-      delayField.setFieldLabel("Delay(second)");
+      delayField.setFieldLabel("Delay(ms)");
       delayField.setAllowBlank(false);
       delayField.setAutoWidth(true);
+      delayField.setRegex("^[1-9][0-9]*$");
+      delayField.getMessages().setRegexText("The delay must be a positive integer");
       if (commandDelayModel != null) {
-         delayField.setValue(Float.valueOf(commandDelayModel.get("delaySecond").toString()));
+         delayField.setValue(Integer.valueOf(commandDelayModel.get("delaySecond").toString()));
       }
       form.add(delayField);
    }

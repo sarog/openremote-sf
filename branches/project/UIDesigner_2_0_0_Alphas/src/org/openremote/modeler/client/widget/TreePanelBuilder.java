@@ -154,7 +154,14 @@ public class TreePanelBuilder {
       };
       deviceAndCmdTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       // }
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceAndCmdTreeStore);
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceAndCmdTreeStore) {
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            mask("Loading...");
+            removeStyleName("x-masked");
+         }
+      };
 
       tree.setBorders(false);
       tree.setStateful(true);
