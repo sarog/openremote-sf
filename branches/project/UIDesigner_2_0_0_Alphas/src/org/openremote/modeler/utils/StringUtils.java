@@ -70,4 +70,8 @@ public class StringUtils {
       }
       return input.replace("&quot;", "\"").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
    }
+   
+   public static boolean isEmpty(String str) {
+      return str == null || "".equals(str.trim());
+   }
 }
