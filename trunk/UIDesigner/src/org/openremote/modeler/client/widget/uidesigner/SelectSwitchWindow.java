@@ -72,6 +72,7 @@ public class SelectSwitchWindow extends Dialog {
       switchList.setDisplayProperty("displayName");
       switchList.setStyleAttribute("overflow", "auto");
       switchList.setBorders(false);
+      switchList.setHeight(150);
       switchListContainer.add(switchList);
       add(switchListContainer, new RowData(1, -1, new Margins(4)));
    }

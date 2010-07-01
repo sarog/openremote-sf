@@ -31,7 +31,7 @@ public class TemplateServiceTest {
       /*
        * initialize user information :
        */
-      userServiceImpl.createUserAccount("test", "test", "test", "role_bm");
+      userServiceImpl.createUserAccount("test", "test", "test");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
    }
 

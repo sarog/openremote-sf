@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.IllegalRestUrlException;
+import org.openremote.modeler.exception.ResourceFileLostException;
 import org.openremote.modeler.exception.UIRestoreException;
 import org.openremote.modeler.exception.XmlExportException;
 
@@ -56,7 +57,7 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the string
     */
-   String exportFiles(long maxId, List<Panel> panelList) throws XmlExportException,FileOperationException;
+   String exportFiles(long maxId, List<Panel> panelList) throws XmlExportException,FileOperationException,ResourceFileLostException;
    
    /**
     * Beehive rest icon url.
@@ -72,9 +73,9 @@ public interface UtilsRPCService extends RemoteService {
     * 
     * @return the auto save response
     */
-   AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException;
+   AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException,ResourceFileLostException;
    
-   AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException;
+   AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException,ResourceFileLostException;
    
    PanelsAndMaxOid restore() throws UIRestoreException,BeehiveNotAvailableException;
    

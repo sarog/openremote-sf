@@ -24,7 +24,7 @@ public class SliderServiceTest {
       userService = (UserService)SpringTestContext.getInstance().getBean("userService");
       sliderService = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
       
-      userService.createUserAccount("test", "test", "test@email.com", "role_bm");
+      userService.createUserAccount("test", "test", "test@email.com");
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
    }

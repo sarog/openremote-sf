@@ -59,7 +59,7 @@ public class StringUtils {
    
    public static String escapeXml(String input) {
       if (input == null) {
-         return input;
+         return "";
       }
       return input.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
    }
@@ -69,5 +69,9 @@ public class StringUtils {
          return input;
       }
       return input.replace("&quot;", "\"").replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
+   }
+   
+   public static boolean isEmpty(String str) {
+      return str == null || "".equals(str.trim());
    }
 }

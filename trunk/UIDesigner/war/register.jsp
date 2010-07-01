@@ -108,6 +108,7 @@
 	                <c:if test="${email_invalid ne null}">
 		                <p class="fail">Invalid email format.</p>
 	                </c:if>
+	                <!--  
 	                <p>
 	                	<b class="form_label">Choose your role(s)</b>
 	                	<input id="role_bm" type="checkbox" name="role" value="role_bm" checked>
@@ -118,6 +119,7 @@
 	                <c:if test="${role_blank ne null}">
 		                <p class="fail">You must choose at least one role.</p>
 	                </c:if>
+	                -->
 	                <p class="input"><b class="form_label">Type code below</b><input name="code" style="width:150px" /> </p>
 	                <c:if test="${code_dismatch ne null}">
 		                <p class="fail">The code you entered didn't match the verification.</p>

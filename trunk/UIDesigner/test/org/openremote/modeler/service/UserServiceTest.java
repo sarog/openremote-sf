@@ -22,6 +22,7 @@ package org.openremote.modeler.service;
 import java.util.List;
 
 import org.openremote.modeler.SpringTestContext;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
@@ -40,6 +41,8 @@ public class UserServiceTest {
    private UserService userService = (UserService) SpringTestContext.getInstance().getBean("userService");
    private GenericDAO genericDAO = (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
    
+   private User invitee;
+   
    public static final String TEST_EMAIL = "openremote@163.com";
    
    @Test
@@ -49,11 +52,11 @@ public class UserServiceTest {
       
       userService.initRoles();
       allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 2);
+      Assert.assertEquals(allRoles.size(), 3);
       
       userService.initRoles();
       allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 2);
+      Assert.assertEquals(allRoles.size(), 3);
       
    }
    
@@ -111,12 +114,12 @@ public class UserServiceTest {
    
    @Test
    public void createNullAccount() {
-      Assert.assertFalse(userService.createUserAccount(null, null, null, null));
+      Assert.assertFalse(userService.createUserAccount(null, null, null));
    }
    
-   @Test
+   @Test(dependsOnMethods = { "initRoles" })
    public void createAccountSuccessfully() {
-      Assert.assertTrue(userService.createUserAccount("dan.cong", "finalist", TEST_EMAIL, "role_bm,role_ud"));
+      Assert.assertTrue(userService.createUserAccount("dan.cong", "finalist", TEST_EMAIL));
    }
    
    @Test(dependsOnMethods = { "createAccountSuccessfully" })
@@ -166,6 +169,38 @@ public class UserServiceTest {
       Assert.assertTrue(u.isValid());
    }
    
+   @Test(dependsOnMethods = { "createAccountSuccessfully" })
+   public void inviteUser() {
+      User currentUser = userService.getUserById(1L);
+      User newInvitee = userService.inviteUser(TEST_EMAIL, Constants.ROLE_MODELER_DISPLAYNAME, currentUser);
+      Assert.assertEquals(newInvitee.getRole(), Constants.ROLE_MODELER_DISPLAYNAME);
+      Assert.assertFalse(newInvitee.isValid());
+      invitee = newInvitee; 
+   }
    
-
+   @Test(dependsOnMethods = { "inviteUser" })
+   public void checkInvitation() {
+      User currentUser = userService.getUserById(1L);
+      Assert.assertTrue(userService.checkInvitation(String.valueOf(invitee.getOid()), ""+1, new Md5PasswordEncoder().encodePassword(TEST_EMAIL, currentUser.getPassword())));
+   }
+   
+   @Test(dependsOnMethods = { "checkInvitation" })
+   public void updateUserRoles() {
+      User user = userService.updateUserRoles(invitee.getOid(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+      Assert.assertEquals(user.getRole(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+   }
+   
+   @Test(dependsOnMethods = { "updateUserRoles" })
+   public void createInviteeAccount() {
+      Assert.assertTrue(userService.createInviteeAccount(String.valueOf(invitee.getOid()), "tomsky", "hahahaha", TEST_EMAIL));
+   }
+   
+   @Test(dependsOnMethods = { "initRoles" })
+   public void resetPassword() {
+      String username = "tomsky.wang";
+      Assert.assertTrue(userService.createUserAccount(username, "firstcreate", TEST_EMAIL));
+      User user = userService.forgetPassword(username);
+      Assert.assertNotNull(user);
+      Assert.assertTrue(userService.resetPassword(user.getOid(), "finalist", user.getToken()));
+   }
 }

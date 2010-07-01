@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -130,9 +131,19 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
 
    public List<DeviceMacro> loadSameMacro(DeviceMacro macro) {
+      List<DeviceMacro> results = null;
       DetachedCriteria critera = DetachedCriteria.forClass(DeviceMacro.class);
       critera.add(Restrictions.eq("account.oid", macro.getAccount().getOid()));
       critera.add(Restrictions.eq("name", macro.getName()));
-      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      results = genericDAO.findByDetachedCriteria(critera);
+      if (results != null && results.size() >0) {
+         for (Iterator<DeviceMacro> iterator = results.iterator();iterator.hasNext(); ) {
+            DeviceMacro m = iterator.next();
+            if (! m.equalsWitoutCompareOid(macro)) {
+               iterator.remove();
+            }
+         }
+      }
+      return results;
    }
 }

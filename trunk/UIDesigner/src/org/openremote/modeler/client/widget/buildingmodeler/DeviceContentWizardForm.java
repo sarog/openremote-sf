@@ -48,6 +48,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Component;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Window;
@@ -186,14 +187,14 @@ public class DeviceContentWizardForm extends CommonForm {
    private final class AddCommandListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow(device);
+         DeviceCommandWizardWindow deviceCommandWizardWindow = new DeviceCommandWizardWindow(device);
          deviceCommandWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                DeviceCommand deviceCommand = be.getData();
                device.getDeviceCommands().add(deviceCommand);
                deviceContentTree.getStore().add(deviceCommand.getBeanModel(), false);
-               deviceCommandWizardWindow.hide();
+               Info.display("Info", "Create command " + deviceCommand.getName() + " success");
             }
          });
       }

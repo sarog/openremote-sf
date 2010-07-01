@@ -30,7 +30,7 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.utils.ImageSourceValidator;
 import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.SimpleComboBox;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.component.ImageUploadAdapterField;
 import org.openremote.modeler.client.widget.component.ScreenImage;
 import org.openremote.modeler.client.widget.uidesigner.PropertyPanel;
@@ -95,7 +95,7 @@ public class ImagePropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
                   Sensor sensor = dataModel.getBean();
-                  uiImage.setSensor(sensor);
+                  uiImage.setSensorAndInitSensorLink(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
                   if (sensor.getType() == SensorType.SWITCH || sensor.getType()==SensorType.CUSTOM) {
                      statesPanel.show();
@@ -135,7 +135,7 @@ public class ImagePropertyForm extends PropertyForm {
    }
    @SuppressWarnings("unchecked")
    private ComboBox<ModelData> createLabelSelector() {
-      ComboBox<ModelData> labelBox = new SimpleComboBox();
+      ComboBox<ModelData> labelBox = new ComboBoxExt();
       labelBox.setFieldLabel("FallbackLabel");
       Collection<UILabel> labelsonScreen = (Collection<UILabel>) screenImage.getScreenCanvas().getScreen().getAllUIComponentByType(UILabel.class);
       ListStore<ModelData> labelStore = new ListStore<ModelData>();
