@@ -35,6 +35,8 @@ public class State extends BusinessEntity {
    private static final long serialVersionUID = -4878125106767971531L;
    
    private String name = "state1";
+   private String value = "";
+   
    private CustomSensor sensor;
    
    public String getName() {
@@ -43,6 +45,14 @@ public class State extends BusinessEntity {
 
    public void setName(String name) {
       this.name = name;
+   }
+
+   public String getValue() {
+      return value;
+   }
+
+   public void setValue(String value) {
+      this.value = value;
    }
 
    @ManyToOne(fetch = FetchType.LAZY)

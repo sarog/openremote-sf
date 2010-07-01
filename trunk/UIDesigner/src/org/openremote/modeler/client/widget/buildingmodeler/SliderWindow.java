@@ -31,7 +31,7 @@ import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.DeviceCommandSelectWindow;
 import org.openremote.modeler.client.widget.FormWindow;
-import org.openremote.modeler.client.widget.SimpleComboBox;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
@@ -70,7 +70,7 @@ public class SliderWindow extends FormWindow {
    protected Slider slider = null;
    
    private TextField<String> nameField = new TextField<String>();
-   protected ComboBox<ModelData> sensorField = new SimpleComboBox();
+   protected ComboBox<ModelData> sensorField = new ComboBoxExt();
    protected Button setValueBtn = new Button("select");
    
    private boolean edit = false;

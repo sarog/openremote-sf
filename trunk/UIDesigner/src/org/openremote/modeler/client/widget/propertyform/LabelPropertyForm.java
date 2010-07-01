@@ -104,7 +104,7 @@ public class LabelPropertyForm extends PropertyForm {
                public void afterSubmit(SubmitEvent be) {
                   BeanModel dataModel = be.<BeanModel> getData();
                   Sensor sensor = dataModel.getBean();
-                  uiLabel.setSensor(sensor);
+                  uiLabel.setSensorAndInitSensorLink(sensor);
                   sensorSelectBtn.setText(sensor.getDisplayName());
                   if (sensor.getType() == SensorType.SWITCH || sensor.getType() == SensorType.CUSTOM) {
                      statesPanel.show();

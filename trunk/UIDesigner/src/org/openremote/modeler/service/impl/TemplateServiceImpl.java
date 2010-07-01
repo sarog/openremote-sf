@@ -71,6 +71,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.ScreenPair.OrientationType;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
@@ -320,7 +321,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
-               throw new NotAuthenticatedException("User "+userService.getAccount().getUser().getUsername() + " not authenticated! ");
+               throw new NotAuthenticatedException("User "+userService.getCurrentUser().getUsername() + " not authenticated! ");
             }
             throw new BeehiveNotAvailableException("Beehive is not available right now! ");
          }
@@ -368,7 +369,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
-               throw new NotAuthenticatedException("User "+userService.getAccount().getUser().getUsername() + " not authenticated! ");
+               throw new NotAuthenticatedException("User "+userService.getCurrentUser().getUsername() + " not authenticated! ");
             }
             throw new BeehiveNotAvailableException("Beehive is not available right now! ");
          }
@@ -895,7 +896,8 @@ public class TemplateServiceImpl implements TemplateService {
       account.setSliders(new ArrayList<Slider>());
       account.setSwitches(new ArrayList<Switch>());
       account.setDevices(new ArrayList<Device>());
-      account.getUser().setRoles(new ArrayList<Role>());
+      account.setUsers(new ArrayList<User>());
+      userService.getCurrentUser().setRoles(new ArrayList<Role>());
 
       for (Device device : devices ) {
          device.setAccount(null);
@@ -907,7 +909,11 @@ public class TemplateServiceImpl implements TemplateService {
 
       for (DeviceMacro macro : macros) {
          macro.setAccount(null);
-         macro.setDeviceMacroItems(new ArrayList<DeviceMacroItem>());
+         List<DeviceMacroItem> items = new ArrayList<DeviceMacroItem>();
+         for (DeviceMacroItem item: macro.getDeviceMacroItems()) {
+            items.add(item);
+         }
+         macro.setDeviceMacroItems(items);
       }
    }
    
@@ -930,6 +936,7 @@ public class TemplateServiceImpl implements TemplateService {
 
          // second, save the macro itself. 
          if (! createNew) {
+            macro.setAccount(userService.getAccount());
             List<DeviceMacro> sameMacro = deviceMacroService.loadSameMacro(macro);
             if (sameMacro != null && sameMacro.size() >0) {
                macro.setOid(sameMacro.get(0).getOid());
@@ -950,8 +957,8 @@ public class TemplateServiceImpl implements TemplateService {
    
    private void addAuthentication(AbstractHttpMessage httpMessage) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getAccount().getUser().getUsername() + ":"
-                  + userService.getAccount().getUser().getPassword()));
+            + encode(userService.getCurrentUser().getUsername() + ":"
+                  + userService.getCurrentUser().getPassword()));
    }
    
    private TemplateList buildTemplateListFromJson(String templatesJson) {
@@ -1116,8 +1123,6 @@ public class TemplateServiceImpl implements TemplateService {
 
    @Override
    public Template updateTemplate(Template template) {
-      log.debug("update Template Name: " + template.getName());
-
       template.setContent(getTemplateContent(template.getScreen()));
       List<NameValuePair> params = new ArrayList<NameValuePair>();
       params.add(new BasicNameValuePair("name", template.getName()));
@@ -1125,56 +1130,27 @@ public class TemplateServiceImpl implements TemplateService {
       params.add(new BasicNameValuePair("shared",template.isShared()+""));
       params.add(new BasicNameValuePair("keywords",template.getKeywords()));
       
-      log.debug("TemplateContent" + template.getContent());
-
       try {
          String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
-               + "/template/"+template.getOid();
-
-         /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
-            saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/0" + "/template/";
-         }*/
-
+               + "/template/" + template.getOid();
          HttpPut httpPut = new HttpPut(saveRestUrl);
          addAuthentication(httpPut);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
          httpPut.setEntity(formEntity);
+
          HttpClient httpClient = new DefaultHttpClient();
-
-         String result = httpClient.execute(httpPut, new ResponseHandler<String>() {
-
-            @Override
-            public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-
-               InputStreamReader reader = new InputStreamReader(response.getEntity().getContent());
-               BufferedReader buffReader = new BufferedReader(reader);
-               StringBuilder sb = new StringBuilder();
-               String line = "";
-
-               while ((line = buffReader.readLine()) != null) {
-                  sb.append(line);
-                  sb.append("\n");
-               }
-
-               return sb.toString();
-            }
-
-         });
-
-         if (result.indexOf("<id>") != -1 && result.indexOf("</id>") != -1) {
-            long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
-                  .indexOf("</id>")));
-            template.setOid(templateOid);
-            // save the resources (eg:images) to beehive.
+         HttpResponse response = httpClient.execute(httpPut);
+         if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
             resourceService.saveTemplateResourcesToBeehive(template);
+         } else if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
+            return null;
          } else {
-            throw new BeehiveNotAvailableException();
+            throw new BeehiveNotAvailableException("Failed to update template:"+template.getName()+", Status code: "+response.getStatusLine().getStatusCode());
          }
       } catch (Exception e) {
-         throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
+         throw new BeehiveNotAvailableException("Failed to save screen as a template: "
+               + (e.getMessage() == null ? "" : e.getMessage()), e);
       }
-
-      log.debug("update Template Ok!");
       return template;
    }
    

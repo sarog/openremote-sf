@@ -190,7 +190,7 @@ public class MacroWindow extends FormWindow {
       AdapterField adapterField = new AdapterField(addMacroItemContainer);
       adapterField.setAutoWidth(true);
       fieldSet.add(adapterField);
-      fieldSet.setHeading("Add Macro Item");
+      fieldSet.setHeading("Add Macro Item(drag from left to right)");
 
       form.add(fieldSet);
 
@@ -419,6 +419,7 @@ public class MacroWindow extends FormWindow {
       rightMacroItemListView.setHeight(203);
 
       if (deviceMacroBeanModel != null) {
+         rightMacroItemListView.mask("Loading...");
          DeviceMacroBeanModelProxy.loadDeviceMaro(deviceMacroBeanModel,
                new AsyncSuccessCallback<List<BeanModel>>() {
                   @Override
@@ -426,6 +427,12 @@ public class MacroWindow extends FormWindow {
                      for (BeanModel beanModel : result) {
                         rightMacroItemListView.getStore().add(beanModel);
                      }
+                     rightMacroItemListView.unmask();
+                  }
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     super.onFailure(caught);
+                     rightMacroItemListView.unmask();
                   }
                });
 

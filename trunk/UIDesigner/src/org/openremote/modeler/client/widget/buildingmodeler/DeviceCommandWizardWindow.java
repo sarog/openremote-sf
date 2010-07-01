@@ -65,6 +65,11 @@ public class DeviceCommandWizardWindow extends DeviceCommandWindow {
             deviceCommand.setDevice(device);
             deviceCommand.setProtocol(DeviceCommandBeanModelProxy.careateProtocol(attrMap, deviceCommand));
             fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommand));
+            if (hideWindow) {
+               hide();
+            } else {
+               hideWindow = true;
+            }
          }
       });
    }

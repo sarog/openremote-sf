@@ -86,9 +86,11 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.data.LoadEvent;
 import com.extjs.gxt.ui.client.data.ModelIconProvider;
 import com.extjs.gxt.ui.client.data.RpcProxy;
 import com.extjs.gxt.ui.client.data.TreeLoader;
+import com.extjs.gxt.ui.client.event.LoadListener;
 import com.extjs.gxt.ui.client.event.TreePanelEvent;
 import com.extjs.gxt.ui.client.store.TreeStore;
 import com.extjs.gxt.ui.client.widget.TabPanel;
@@ -152,7 +154,14 @@ public class TreePanelBuilder {
       };
       deviceAndCmdTreeStore = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       // }
-      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceAndCmdTreeStore);
+      final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(deviceAndCmdTreeStore) {
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            mask("Loading...");
+            removeStyleName("x-masked");
+         }
+      };
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -258,7 +267,7 @@ public class TreePanelBuilder {
       return tree;
    }
 
-   public static TreePanel<BeanModel> buildCommandTree(final Device device) {
+   public static TreePanel<BeanModel> buildCommandTree(final Device device, final BeanModel selectedCommandModel) {
       RpcProxy<List<BeanModel>> loadDeviceRPCProxy = new RpcProxy<List<BeanModel>>() {
          @Override
          protected void load(Object o, final AsyncCallback<List<BeanModel>> listAsyncCallback) {
@@ -281,9 +290,19 @@ public class TreePanelBuilder {
             }
             return false;
          }
+
       };
       TreeStore<BeanModel> commandTree = new TreeStore<BeanModel>(loadDeviceTreeLoader);
       final TreePanel<BeanModel> tree = new TreePanel<BeanModel>(commandTree);
+      loadDeviceTreeLoader.addLoadListener(new LoadListener() {
+         public void loaderLoad(LoadEvent le) {
+            super.loaderLoad(le);
+            if (selectedCommandModel != null) {
+               tree.getSelectionModel().select(selectedCommandModel, false);
+            }
+         }
+         
+      });
 
       tree.setBorders(false);
       tree.setStateful(true);
@@ -349,10 +368,13 @@ public class TreePanelBuilder {
                @Override
                public void handleInsert(BeanModel beanModel) {
                   if (beanModel != null && beanModel.getBean() instanceof DeviceMacro) {
-                     if (!macroTreeStore.contains(beanModel)) {
-                        macroTreeStore.add(beanModel, false);
-                        tree.getSelectionModel().select(beanModel, true);
+                     if (macroTreeStore.contains(beanModel)) {
+                        tree.getStore().removeAll(beanModel);
+                        tree.getStore().remove(beanModel);
                      }
+                     macroTreeStore.add(beanModel, false);
+                     tree.getSelectionModel().select(beanModel, true);
+                     tree.getStore().getLoader().load();
                   }
                }
 
@@ -640,7 +662,9 @@ public class TreePanelBuilder {
       if (templateTreeStore == null) {
          templateTreeStore = new TreeStore<BeanModel>(templateLoader);
       }
+      //set private template folder as the first node
       templateTreeStore.add(privateTemplatesBean.getBeanModel(), false);
+      //set public template folder as the second node. 
       templateTreeStore.add(publicTemplatesBean.getBeanModel(), false);
       TreePanel<BeanModel> tree = new TreePanel<BeanModel>(templateTreeStore) {
          @Override

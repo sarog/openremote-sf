@@ -27,10 +27,6 @@ public class Configuration {
 
    private String beehiveRESTRootUrl;
 
-   private String beehiveLircdConfRESTUrl;
-
-   private String beehiveRestIconUrl;
-
    private String panelXsdPath;
 
    private String controllerXsdPath;
@@ -74,19 +70,11 @@ public class Configuration {
    }
 
    public String getBeehiveLircdConfRESTUrl() {
-      return beehiveLircdConfRESTUrl;
-   }
-
-   public void setBeehiveLircdConfRESTUrl(String beehiveLircdConfRESTUrl) {
-      this.beehiveLircdConfRESTUrl = beehiveLircdConfRESTUrl;
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "lirc.conf" : beehiveRESTRootUrl + "/lirc.conf";
    }
 
    public String getBeehiveRestIconUrl() {
-      return beehiveRestIconUrl;
-   }
-
-   public void setBeehiveRestIconUrl(String beehiveRestIconUrl) {
-      this.beehiveRestIconUrl = beehiveRestIconUrl;
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "icons/" : beehiveRESTRootUrl + "/icons/";
    }
 
    public String getControllerConfigPath() {

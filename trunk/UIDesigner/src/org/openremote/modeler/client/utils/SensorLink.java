@@ -79,13 +79,17 @@ public class SensorLink extends BusinessEntity {
     */
    @JSON(include=false)
    public String getXMLString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\">");
-      for (LinkerChild child : linkerChildren) {
-         sb.append(child.toString());
+      if (sensor != null) {
+         StringBuilder sb = new StringBuilder();
+         sb.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\">");
+         for (LinkerChild child : linkerChildren) {
+            sb.append(child.toString());
+         }
+         sb.append("</link>");
+         return sb.toString();
+      } else {
+         return "";
       }
-      sb.append("</link>");
-      return sb.toString();
    }
    
    /**
