@@ -162,5 +162,11 @@ public class ScreenButton extends ScreenComponent {
    private void setText(String text) {
       btnTable.setText(1, 1, text);
    }
+
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      adjustTextLength();
+   }
    
 }
