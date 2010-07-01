@@ -31,6 +31,8 @@ import org.openremote.web.console.domain.AppSetting;
 import org.openremote.web.console.domain.PanelXmlEntity;
 import org.openremote.web.console.exception.NotAuthenticatedException;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.http.client.URL;
@@ -90,6 +92,7 @@ public class WebConsole implements EntryPoint {
    private void readPanelXmlEntity() {
       final String url = ClientDataBase.appSetting.getCurrentServer() + "/rest/panel/"
             + URL.encode(ClientDataBase.appSetting.getCurrentPanelIdentity());
+      DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
       
       AsyncSuccessCallback<PanelXmlEntity> callback = new AsyncSuccessCallback<PanelXmlEntity>() {
          public void onSuccess(PanelXmlEntity panelXmlEntity) {
@@ -104,6 +107,7 @@ public class WebConsole implements EntryPoint {
          public void onFailure(Throwable caught) {
             if (caught instanceof NotAuthenticatedException) {
                final AsyncSuccessCallback<PanelXmlEntity> callback = this;
+               DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
                LoginWindow loginWindow = new LoginWindow();
                loginWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                   public void afterSubmit(SubmitEvent be) {
@@ -113,7 +117,12 @@ public class WebConsole implements EntryPoint {
                   }
                });
             } else {
-               MessageBox.alert("ERROR", caught.getMessage(), null);
+               DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
+               MessageBox.alert("ERROR", caught.getMessage(), new Listener<MessageBoxEvent>() {
+                  public void handleEvent(MessageBoxEvent be) {
+                     toSetting();
+                  }
+               });
             }
          }
       };

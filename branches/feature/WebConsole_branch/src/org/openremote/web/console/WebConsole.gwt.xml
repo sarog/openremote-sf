@@ -20,6 +20,9 @@
   <source path='client'/>
   <source path='domain'/>
   <source path="exception"/>
+  <source path='utils'>
+     <include name="String*"/>
+   </source>
   <!-- Specify the app entry point class.                         -->
   <entry-point class='org.openremote.web.console.client.WebConsole'/>
 </module>
