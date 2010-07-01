@@ -24,9 +24,7 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.uidesigner.ScreenCanvas;
 import org.openremote.modeler.domain.component.UIButton;
 
-import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
 
 /**
  * The Class ScreenButton. It display as a style box, can be adjust size.
@@ -34,12 +32,6 @@ import com.google.gwt.user.client.ui.Image;
 public class ScreenButton extends ScreenComponent {
 
    private FlexTable btnTable = new FlexStyleBox();
-
-   /** The btnTable center text. */
-   protected Text center = new Text("Button");
-
-   /** The btnTable center image. */
-   protected Image image = new Image();
 
    private UIButton uiButton = new UIButton();
 
@@ -53,7 +45,7 @@ public class ScreenButton extends ScreenComponent {
 
    public ScreenButton(ScreenCanvas canvas, String text) {
       super(canvas);
-      center.setText(text);
+      setText(text);
    }
 
    /**
@@ -72,7 +64,7 @@ public class ScreenButton extends ScreenComponent {
    public ScreenButton(ScreenCanvas canvas, UIButton uiButton) {
       this(canvas);
       this.uiButton = uiButton;
-      center.setText(uiButton.getName());
+      setText(uiButton.getName());
       adjustTextLength();
       if (uiButton.getImage() != null) {
          setIcon(uiButton.getImage().getSrc());
@@ -85,7 +77,9 @@ public class ScreenButton extends ScreenComponent {
     */
    protected void initial() {
       addStyleName("screen-btn");
-      btnTable.setWidget(1, 1, center);
+      setStyleAttribute("backgroundRepeat", "no-repeat");
+      setStyleAttribute("backgroundPosition", "center center");
+      setText("Button");
       add(btnTable);
    }
 
@@ -105,9 +99,8 @@ public class ScreenButton extends ScreenComponent {
     * 
     */
    public void setIcon(String icon) {
-      image.setUrl(icon);
       btnTable.removeStyleName("screen-btn-cont");
-      btnTable.setWidget(1, 1, image);
+      setStyleAttribute("backgroundImage", "url(" + icon + ")");
    }
 
    @Override
@@ -136,13 +129,11 @@ public class ScreenButton extends ScreenComponent {
    }
 
    private void adjustTextLength(int width) {
-      if (center.isVisible()) {
-         int ajustLength = (width - 6) / 7;
-         if (ajustLength < uiButton.getName().length()) {
-            center.setText(uiButton.getName().substring(0, ajustLength) + "..");
-         } else {
-            center.setText(uiButton.getName());
-         }
+      int ajustLength = (width - 6) / 7;
+      if (uiButton.getName() != null && ajustLength < uiButton.getName().length()) {
+         setText(uiButton.getName().substring(0, ajustLength) + "..");
+      } else {
+         setText(uiButton.getName());
       }
    }
 
@@ -159,10 +150,12 @@ public class ScreenButton extends ScreenComponent {
    }
    
    public void removeIcon() {
-      center = new Text();
-      btnTable.setWidget(1, 1, center);
       btnTable.addStyleName("screen-btn-cont");
       adjustTextLength();
-      image.setUrl("");
+      setStyleAttribute("backgroundImage", "url()");
+   }
+   
+   private void setText(String text) {
+      btnTable.setText(1, 1, text);
    }
 }

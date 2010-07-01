@@ -34,6 +34,8 @@ import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
 import org.openremote.modeler.domain.Background;
 import org.openremote.modeler.domain.GridCellBounds;
+import org.openremote.modeler.domain.Group;
+import org.openremote.modeler.domain.Panel;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.Background.RelativeType;
 import org.openremote.modeler.domain.component.UIComponent;
@@ -191,9 +193,9 @@ public class ScreenCanvas extends ComponentContainer {
                MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                   public void handleEvent(MessageBoxEvent be) {
                      if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                        cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell());
                         WidgetSelectionUtil.setSelectWidget(null);
                      } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                        cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
                         cellContainer.getGridContainer().addGridCellContainer(cellContainer);
                      }
                   }
@@ -246,9 +248,9 @@ public class ScreenCanvas extends ComponentContainer {
                   MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                      public void handleEvent(MessageBoxEvent be) {
                         if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           controlContainer.getGridContainer().getGrid().removeCell(controlContainer.getCell());
                            WidgetSelectionUtil.setSelectWidget(null);
                         } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                           controlContainer.getGridContainer().getGrid().addCell(controlContainer.getCell());
                            controlContainer.getGridContainer().addGridCellContainer(controlContainer);
                         }
                      }
@@ -525,7 +527,6 @@ public class ScreenCanvas extends ComponentContainer {
 
    private AbsoluteLayoutContainer dragComponentFromGrid(Screen screen, GridCellContainer cellContainer,
          GridCellBounds recorder) {
-      cellContainer.getGridContainer().getGrid().removeCell(cellContainer.getCell()); // remove the old cell from grid.
 
       UIComponent uiComponent = cellContainer.getCell().getUiComponent();
       AbsoluteLayoutContainer controlContainer = null;
@@ -744,5 +745,23 @@ public class ScreenCanvas extends ComponentContainer {
          screenIndicator = null;
       }
       layout();
+   }
+   
+   public void initTabbarContainer() {
+      Group screenGroup = screen.getScreenPair().getParentGroup();
+      if (screenGroup != null) {
+         Panel groupPanel = screenGroup.getParentPanel();
+         ScreenTabbar tabbar = null;
+         if (screenGroup.getTabbar() != null) {
+            tabbar = new ScreenTabbar(this, screenGroup.getTabbar());
+         } else if (groupPanel != null && groupPanel.getTabbar() != null) {
+            tabbar = new ScreenTabbar(this, groupPanel.getTabbar());
+            tabbar.setToPanel();
+         }
+
+         if (tabbar != null) {
+            addTabbar(tabbar);
+         }
+      }
    }
 }

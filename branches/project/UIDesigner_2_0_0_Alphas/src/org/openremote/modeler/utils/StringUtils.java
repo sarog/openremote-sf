@@ -59,7 +59,7 @@ public class StringUtils {
    
    public static String escapeXml(String input) {
       if (input == null) {
-         return input;
+         return "";
       }
       return input.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
    }

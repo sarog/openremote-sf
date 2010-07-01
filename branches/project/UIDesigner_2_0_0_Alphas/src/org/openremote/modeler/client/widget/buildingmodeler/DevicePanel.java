@@ -288,14 +288,14 @@ public class DevicePanel extends ContentPanel {
    private void createDeviceCommand() {
       final BeanModel deviceModel = getDeviceModel();
       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-         final DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
+         DeviceCommandWindow deviceCommandWindow = new DeviceCommandWindow((Device) deviceModel.getBean());
          deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
                BeanModel deviceCommandModel = be.getData();
                tree.getStore().add(deviceModel, deviceCommandModel, false);
                tree.setExpanded(deviceModel, true);
-               deviceCommandWindow.hide();
+               Info.display("Info", "Create command " + deviceCommandModel.get("name") + " success");
             }
          });
       }

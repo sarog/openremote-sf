@@ -909,7 +909,11 @@ public class TemplateServiceImpl implements TemplateService {
 
       for (DeviceMacro macro : macros) {
          macro.setAccount(null);
-         macro.setDeviceMacroItems(new ArrayList<DeviceMacroItem>());
+         List<DeviceMacroItem> items = new ArrayList<DeviceMacroItem>();
+         for (DeviceMacroItem item: macro.getDeviceMacroItems()) {
+            items.add(item);
+         }
+         macro.setDeviceMacroItems(items);
       }
    }
    
