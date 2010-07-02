@@ -62,6 +62,17 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
       addCredential(mockHttpRequest);
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+      assertEquals(400, mockHttpResponse.getStatus());
+   }
+   
+   public void testGetTemplatesByAccountInXMLWithOtherAccountId() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(TemplateRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/account/2/templates/public");
+      mockHttpRequest.accept(MediaType.APPLICATION_XML);
+      addCredential(mockHttpRequest);
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+      assertEquals(401, mockHttpResponse.getStatus());
    }
 
    public void testGetTemplatesByAccountInJSON() throws URISyntaxException {
@@ -82,7 +93,7 @@ public class TemplateRESTServiceTest  extends TemplateTestBase {
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockHttpResponse);
       
-      System.out.println(mockHttpResponse.getContentAsString());
+      assertEquals(400, mockHttpResponse.getStatus());
    }
 
    public void testGetTemplateByIdInXML() throws URISyntaxException {

@@ -458,6 +458,21 @@ public class FileUtil {
    }
 
    /**
+    * Ignore the tomcat launch path when committing file. e.g.:
+    * "/usr/share/apache-tomcat-5.5.27/bin/home/openremote/work/workCopy/holtek" will be fixed to be
+    * "/home/openremote/work/workCopy/holtek".
+    * 
+    * @param file
+    *           the committing file
+    * @return fixed file
+    */
+   public static File fixCommitFilePath(File file) {
+      String wc = new File(configuration.getWorkCopyDir()).getPath();
+      String absolutePath = file.getAbsolutePath();
+      return new File(absolutePath.substring(absolutePath.indexOf(wc)));
+   }
+   
+   /**
     * Relative workcopy path.
     * 
     * @param path
