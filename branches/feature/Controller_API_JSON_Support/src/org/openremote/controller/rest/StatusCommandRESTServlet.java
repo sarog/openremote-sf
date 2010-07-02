@@ -100,6 +100,5 @@ public class StatusCommandRESTServlet extends HttpServlet {
             printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
         }
         printWriter.flush();
-        printWriter.close();
     }
 }

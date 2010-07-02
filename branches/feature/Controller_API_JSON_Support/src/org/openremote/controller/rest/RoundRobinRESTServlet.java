@@ -82,7 +82,6 @@ public class RoundRobinRESTServlet extends HttpServlet {
          printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url)));
       }
       printWriter.flush();
-      printWriter.close();
 	}
 
 }
