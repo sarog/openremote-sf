@@ -165,7 +165,9 @@ public class SettingsWindow extends FormWindow {
      customServerGrid.setHideHeaders(true);
      customServerGrid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<StringModelData>() {
       public void selectionChanged(SelectionChangedEvent<StringModelData> se) {
-         ClientDataBase.appSetting.setCurrentServer(se.getSelectedItem().getValue());
+         if (se.getSelectedItem() != null) {
+            ClientDataBase.appSetting.setCurrentServer(se.getSelectedItem().getValue());
+         }
       }
      });
      
@@ -241,7 +243,9 @@ public class SettingsWindow extends FormWindow {
       
       autoServerGrid.getSelectionModel().addSelectionChangedListener(new SelectionChangedListener<StringModelData>() {
          public void selectionChanged(SelectionChangedEvent<StringModelData> se) {
-            ClientDataBase.appSetting.setCurrentServer(se.getSelectedItem().getValue());
+            if (se.getSelectedItem() != null) {
+               ClientDataBase.appSetting.setCurrentServer(se.getSelectedItem().getValue());
+            }
          }
         });
       
@@ -250,21 +254,22 @@ public class SettingsWindow extends FormWindow {
          public void show() {
             super.show();
             this.mask("Loading auto discovery servers...");
-            autoServersStore.removeAll();
             autoButton.disable();
             AsyncServiceFactory.getIPAutoDiscoveryServiceAsync().getAutoDiscoveryServers(new AsyncCallback<List<String>>() {
                public void onFailure(Throwable caught) {
                   autoServerContainer.unmask();
                   autoButton.enable();
+                  autoServersStore.removeAll();
                }
 
                public void onSuccess(List<String> autoServers) {
+                  autoServerContainer.unmask();
+                  autoButton.enable();
+                  autoServersStore.removeAll();
                   for (String autoServer : autoServers) {
                      autoServersStore.add(new StringModelData("autoServer", autoServer));
                   }
                   autoServerGrid.getSelectionModel().select(0, false);
-                  autoServerContainer.unmask();
-                  autoButton.enable();
                }
             });
          }

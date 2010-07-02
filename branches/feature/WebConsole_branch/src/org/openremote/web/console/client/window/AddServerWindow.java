@@ -39,7 +39,7 @@ public class AddServerWindow extends FormWindow {
    public AddServerWindow() {
       super();
       setHeading("Add Server");
-      setSize(320, 150);
+      setSize(350, 150);
       form.setLabelAlign(LabelAlign.TOP);
       form.setLabelWidth(280);
       form.setFieldWidth(280);
