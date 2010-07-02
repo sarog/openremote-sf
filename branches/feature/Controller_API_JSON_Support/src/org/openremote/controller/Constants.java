@@ -89,4 +89,6 @@ public class Constants {
 
    public static final String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
 
+   public static final int RESPONSE_SUCCESS = 200;
+
 }
