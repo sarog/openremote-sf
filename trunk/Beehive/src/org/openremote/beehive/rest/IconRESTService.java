@@ -25,7 +25,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.IconDTO;
@@ -50,15 +49,15 @@ public class IconRESTService extends RESTBaseService {
    @GET
    @Produces( { "application/xml", "application/json" })
    @Path("{icon_name}")
-   public IconListing getIcons(@PathParam("icon_name") String iconName) {
+   public Response getIcons(@PathParam("icon_name") String iconName) {
       List<IconDTO> list = getIconService().findIconsByName(iconName);
       if (list == null) {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         return resourceNotFoundResponse();
       }
       if (list.size() == 0) {
-         throw new WebApplicationException(Response.Status.NO_CONTENT);
+         return buildResponse(null);
       }
-      return new IconListing(list);
+      return buildResponse(new IconListing(list));
    }
 
    /**
@@ -68,15 +67,15 @@ public class IconRESTService extends RESTBaseService {
     */
    @GET
    @Produces( { "application/xml", "application/json" })
-   public IconListing getAllIcons() {
+   public Response getAllIcons() {
       List<IconDTO> list = getIconService().loadAllIcons();
       if (list == null) {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         return resourceNotFoundResponse();
       }
       if (list.size() == 0) {
-         throw new WebApplicationException(Response.Status.NO_CONTENT);
+         return buildResponse(null);
       }
-      return new IconListing(list);
+      return buildResponse(new IconListing(list));
    }
 
    public IconService getIconService() {
