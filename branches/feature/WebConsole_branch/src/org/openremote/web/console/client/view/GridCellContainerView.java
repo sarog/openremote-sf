@@ -19,7 +19,7 @@
 */
 package org.openremote.web.console.client.view;
 
-import org.openremote.web.console.domain.Button;
+import org.openremote.web.console.client.widget.ScreenComponent;
 import org.openremote.web.console.domain.Component;
 import org.openremote.web.console.domain.GridCell;
 
@@ -37,12 +37,11 @@ public class GridCellContainerView extends LayoutContainer {
       setPosition(cellWidth * gridCell.getX(), cellHeight * gridCell.getY());
       setSize(cellWidth * gridCell.getColspan(), cellHeight * gridCell.getRowspan());
       Component component = gridCell.getComponent();
-      if (component instanceof Button) {
-         // temp display button.
-         Button uiButton = (Button)component;
-         com.extjs.gxt.ui.client.widget.button.Button btn = new com.extjs.gxt.ui.client.widget.button.Button();
-         btn.setText(uiButton.getName());
-         add(btn);
+      component.setFrameWidth(cellWidth * gridCell.getColspan());
+      component.setFrameHeight(cellHeight * gridCell.getRowspan());
+      ScreenComponent screenComponent = ScreenComponent.buildWithComponent(component);
+      if (screenComponent != null) {
+         add(screenComponent);
       }
    }
 }

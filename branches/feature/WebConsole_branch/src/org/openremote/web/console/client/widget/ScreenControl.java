@@ -24,6 +24,7 @@ import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.domain.Button;
 import org.openremote.web.console.domain.Component;
+import org.openremote.web.console.domain.Switch;
 
 /**
  * The Class ScreenControl.
@@ -41,12 +42,15 @@ public class ScreenControl extends ScreenComponent {
       ScreenControl screenControl = null;
       if (control instanceof Button) {
          screenControl = new ScreenButton((Button) control);
+      } else if (control instanceof Switch) {
+         screenControl = new ScreenSwitch((Switch) control);
       }
       return screenControl;
    }
    
-   public void sendCommand(String url, AsyncSuccessCallback<Void> callback) {
-      AsyncServiceFactory.getCommandServiceAsync().sendCommand(url, ClientDataBase.userInfo.getUsername(),
-            ClientDataBase.userInfo.getPassword(), callback);
+   public void sendCommand(String commandType, AsyncSuccessCallback<Void> callback) {
+      AsyncServiceFactory.getCommandServiceAsync().sendCommand(
+            ClientDataBase.appSetting.getControlPath() + getComponent().getComponentId() + "/" + commandType,
+            ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), callback);
    }
 }

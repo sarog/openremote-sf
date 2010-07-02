@@ -43,12 +43,5 @@ public class AbsolutLayoutContainerView extends LayoutContainer {
       if (screenComponent != null) {
          add(screenComponent);
       }
-//      if (component instanceof Button) {
-//         // temp display button.
-//         Button uiButton = (Button)component;
-//         com.extjs.gxt.ui.client.widget.button.Button btn = new com.extjs.gxt.ui.client.widget.button.Button();
-//         btn.setText(uiButton.getName());
-//         add(btn);
-//      }
    }
 }

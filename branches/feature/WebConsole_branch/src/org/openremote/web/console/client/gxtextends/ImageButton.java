@@ -39,7 +39,6 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
    private Button uiButton;
    private String defaultImage;
    private String pressedImage;
-   private String commandUrl;
    private final static int REPEAT_CMD_INTERVAL = 300;
    private Timer timer;
    
@@ -54,9 +53,6 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       }
       if (uiButton.getPressedImage() != null) {
          pressedImage = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiButton.getPressedImage().getSrc());
-      }
-      if (uiButton.isHasControlCommand()) {
-         commandUrl = ClientDataBase.appSetting.getControlPath() + uiButton.getComponentId() + "/click";
       }
       setSize(uiButton.getFrameWidth(), uiButton.getFrameHeight());
       setText(uiButton.getName());
@@ -82,9 +78,11 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       } else if (hasIcon) {
          addStyleName("pressed");
       }
-      sendCommand();
-      if (uiButton.isRepeat()) {
-         startTimer();
+      if (uiButton.isHasControlCommand()) {
+         sendCommand();
+         if (uiButton.isRepeat()) {
+            startTimer();
+         }
       }
    }
 
@@ -96,21 +94,20 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
    }
 
    private void sendCommand() {
-      if (commandUrl != null) {
-         ((ScreenButton)getParent()).sendCommand(commandUrl, new AsyncSuccessCallback<Void>() {
-            public void onSuccess(Void result) {
-               // do nothing.
+      ((ScreenButton) getParent()).sendCommand("click", new AsyncSuccessCallback<Void>() {
+         public void onSuccess(Void result) {
+            // do nothing.
+         }
+
+         public void onFailure(Throwable caught) {
+            failedTimes = failedTimes + 1;
+            if (failedTimes == 1) {
+               cancelTimer();
+               resetIcon();
+               super.onFailure(caught);
             }
-            public void onFailure(Throwable caught) {
-               failedTimes = failedTimes + 1;
-               if (failedTimes == 1) {
-                  cancelTimer();
-                  resetIcon();
-                  super.onFailure(caught);
-               }
-            }
-         });
-      }
+         }
+      });
    }
    
    private void startTimer() {
