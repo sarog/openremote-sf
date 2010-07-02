@@ -59,6 +59,8 @@ public class JSONCallbackFilter implements Filter {
          JSONAcceptTypeRequestWrapper requestWrapper = new JSONAcceptTypeRequestWrapper((HttpServletRequest) servletRequest, filterConfig);
          filterChain.doFilter(requestWrapper, servletResponse);
          printWriter.print(")");
+         printWriter.flush();
+         printWriter.close();
       } else {
          filterChain.doFilter(servletRequest, servletResponse);
       }

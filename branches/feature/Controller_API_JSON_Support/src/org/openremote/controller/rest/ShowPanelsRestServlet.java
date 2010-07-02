@@ -71,7 +71,6 @@ public class ShowPanelsRestServlet extends HttpServlet {
             out.write(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          } finally {
             out.flush();
-            out.close();
          }
       }
    }

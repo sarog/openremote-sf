@@ -58,7 +58,6 @@ public class GetProfileRestServlet extends HttpServlet {
          out.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
       }
       out.flush();
-      out.close();
 	}
 
 }

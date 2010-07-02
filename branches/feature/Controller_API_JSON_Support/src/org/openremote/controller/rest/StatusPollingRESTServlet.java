@@ -113,7 +113,6 @@ public class StatusPollingRESTServlet extends HttpServlet {
          printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url)));
       }
       printWriter.flush();
-      printWriter.close();
    }
    
    /**

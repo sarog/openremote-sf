@@ -92,7 +92,6 @@ public class ControlCommandRESTServlet extends HttpServlet {
          output.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
       }
       output.flush();
-      output.close();
    }
    
    /**
