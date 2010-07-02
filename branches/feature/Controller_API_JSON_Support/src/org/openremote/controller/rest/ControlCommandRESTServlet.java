@@ -20,6 +20,7 @@
 package org.openremote.controller.rest;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -68,6 +71,8 @@ public class ControlCommandRESTServlet extends HttpServlet {
       String controlID = null;
       String commandParam = null;
       
+      PrintWriter output = response.getWriter();
+      
       if (matcher.find()) {
          controlID = matcher.group(1);
          commandParam = matcher.group(2);
@@ -79,11 +84,15 @@ public class ControlCommandRESTServlet extends HttpServlet {
                }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            response.sendError(e.getErrorCode(),e.getMessage());
+            response.setStatus(e.getErrorCode());
+            output.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
       } else {
-         response.sendError(400,"Bad REST Request, should be /rest/control/{control_id}/{commandParam}");
+         response.setStatus(400);
+         output.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
       }
+      output.flush();
+      output.close();
    }
    
    /**
