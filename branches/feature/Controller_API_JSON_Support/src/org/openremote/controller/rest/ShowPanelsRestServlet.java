@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 /**
@@ -64,11 +65,13 @@ public class ShowPanelsRestServlet extends HttpServlet {
          try {
             String panlesXML = profileService.getAllPanels();
             out.print(JSONTranslator.toDesiredData(request, panlesXML));
-            out.flush();
-            out.close();
          } catch (ControlCommandException e) {
             logger.error("failed to get all the panels", e);
-            response.sendError(e.getErrorCode(), e.getMessage());
+            response.setStatus(e.getErrorCode());
+            out.write(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+         } finally {
+            out.flush();
+            out.close();
          }
       }
    }
