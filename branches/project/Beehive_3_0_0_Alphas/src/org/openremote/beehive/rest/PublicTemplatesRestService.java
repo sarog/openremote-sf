@@ -32,7 +32,12 @@ import javax.ws.rs.core.Response;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.dto.TemplateDTO;
 import org.openremote.beehive.api.service.TemplateService;
-
+/**
+ * Search Public Templates by keywords.
+ * 
+ * @author Javen
+ *
+ */
 @Path("/templates")
 public class PublicTemplatesRestService extends RESTBaseService {
    

@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -178,14 +179,17 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
 
    @Override
    public TemplateDTO updateTemplate(Template t) {
-      Template oldTemplate = genericDAO.loadById(Template.class, t.getOid());
-      oldTemplate.setContent(t.getContent());
-      oldTemplate.setName(t.getName());
-      oldTemplate.setKeywords(t.getKeywords());
-      oldTemplate.setShared(t.isShared());
-      
-      return oldTemplate.toDTO();
-      
+      try {
+         Template oldTemplate = genericDAO.loadById(Template.class, t.getOid());
+         oldTemplate.setContent(t.getContent());
+         oldTemplate.setName(t.getName());
+         oldTemplate.setKeywords(t.getKeywords());
+         oldTemplate.setShared(t.isShared());
+
+         return oldTemplate.toDTO();
+      } catch (ObjectNotFoundException e) {
+         return null;
+      }
    }
 
 }

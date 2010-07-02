@@ -46,6 +46,7 @@ import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.domain.User;
 import org.openremote.beehive.exception.InvalidPanelXMLException;
+import org.openremote.beehive.exception.NoSuchAccountException;
 import org.openremote.beehive.exception.NoSuchPanelException;
 import org.openremote.beehive.exception.PanelXMLNotFoundException;
 import org.openremote.beehive.utils.PathUtil;
@@ -139,20 +140,31 @@ public class ResourceServiceImpl implements ResourceService {
       return dir;
    }
    
-   private void makeSurePanelXMLExist(long accountOid) {
+   private boolean makeSurePanelXMLExist(long accountOid) {
       File dir = makeSureDir(accountOid);
       if (!new File(dir, Constant.PANEL_XML).exists()) {
          File zipFile = new File(dir, Constant.ACCOUNT_RESOURCE_ZIP_NAME);
-         ZipUtil.unzip(zipFile, dir.getAbsolutePath(), Constant.PANEL_XML);
+         if (zipFile.exists()) {
+            ZipUtil.unzip(zipFile, dir.getAbsolutePath(), Constant.PANEL_XML);
+            return true;
+         } else {
+            return false;
+         }
       }
+      return true;
    }
 
 
    @Override
    public String getPanelXMLByPanelNameFromAccount(String username, String panelName) {
       long accountId = accountService.queryAccountIdByUsername(username);
+      if (accountId == 0L) {
+         throw new NoSuchAccountException();
+      }
       String xmlPath = PathUtil.addSlashSuffix(makeSureDir(accountId).getAbsolutePath()) + Constant.PANEL_XML;
-      makeSurePanelXMLExist(accountId);
+      if (!makeSurePanelXMLExist(accountId)) {
+         throw new PanelXMLNotFoundException();
+      }
       String decodedName = null;
       try {
          decodedName = URLDecoder.decode(panelName, "UTF-8");
@@ -166,8 +178,13 @@ public class ResourceServiceImpl implements ResourceService {
    @Override
    public String getAllPanelsXMLFromAccount(String username) {
       long accountId = accountService.queryAccountIdByUsername(username);
+      if (accountId == 0L) {
+         throw new NoSuchAccountException();
+      }
       String xmlPath = PathUtil.addSlashSuffix(makeSureDir(accountId).getAbsolutePath()) + Constant.PANEL_XML;
-      makeSurePanelXMLExist(accountId);
+      if (!makeSurePanelXMLExist(accountId)) {
+         throw new PanelXMLNotFoundException();
+      }
       Document doc = getAllPanelsDocument(xmlPath);
       return output(doc);
    }
@@ -291,7 +308,8 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    private Element queryPanelByName(String xmlPath, String name) {
-      return queryElementFromXML(xmlPath, "//" + Constant.OPENREMOTE_NAMESPACE + ":panel[@name='" + name + "']");
+      return queryElementFromXML(xmlPath, "//" + Constant.OPENREMOTE_NAMESPACE + ":panel[@name=\"" + escapeQuotes(name)
+            + "\"]");
    }
 
    private List<Element> queryElementByElementName(Document doc, String eleName) {
@@ -322,7 +340,7 @@ public class ResourceServiceImpl implements ResourceService {
          Document doc = sb.build(new File(xmlPath));
          return doc;
       } catch (JDOMException e) {
-         throw new InvalidPanelXMLException(e.getLocalizedMessage() +
+         throw new InvalidPanelXMLException(e.getMessage() +
                "check the version of schema or structure of panel.xml with its dtd or schema : ");
       } catch (IOException e) {
          String msg = " An I/O error prevents a " + Constant.PANEL_XML + " from being fully parsed";
@@ -336,6 +354,9 @@ public class ResourceServiceImpl implements ResourceService {
       return results.size() > 0 ? results.get(0) : null;
    }
    
+   private String escapeQuotes(String xpath) {
+      return xpath.replaceAll("\"", "");
+   }
    
    @Override
    public File getResource(String username, String fileName) throws FileNotFoundException {
