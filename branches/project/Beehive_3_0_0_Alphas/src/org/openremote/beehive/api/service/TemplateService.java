@@ -36,7 +36,7 @@ public interface TemplateService {
    String KEYWORDS_SEPERATOR = ",";
    String NO_KEYWORDS = "any"; 
    String TEMPLATE_RESOURCE_ZIP_FILE_NAME = "template.zip";
-   int TEMPLATE_SIZE_PER_PAGE = 5;
+   int TEMPLATE_SIZE_PER_PAGE = 10;
    
    long save(Template t);
    
