@@ -25,7 +25,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.CodeDTO;
@@ -47,13 +46,13 @@ public class CodeRESTService extends RESTBaseService {
     */
    @GET
    @Produces( { "application/xml", "application/json" })
-   public CodeListing getRemoteOptions(@PathParam("vendor_name") String vendorName,
+   public Response getRemoteOptions(@PathParam("vendor_name") String vendorName,
          @PathParam("model_name") String modelName, @PathParam("section_id") long sectionId) {
       List<CodeDTO> list = getCodeService().findByRemoteSectionId(sectionId);
       if (list.size() == 0) {
-         throw new WebApplicationException(Response.Status.NO_CONTENT);
+         return buildResponse(null);
       }
-      return new CodeListing(list);
+      return buildResponse(new CodeListing(list));
    }
 
    /**

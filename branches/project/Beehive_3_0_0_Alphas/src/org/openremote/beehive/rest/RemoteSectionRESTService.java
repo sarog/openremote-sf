@@ -23,7 +23,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.api.dto.ModelDTO;
@@ -45,13 +44,13 @@ public class RemoteSectionRESTService extends RESTBaseService {
     */
    @GET
    @Produces( { "application/xml", "application/json" })
-   public RemoteSectionListing getRemoteSections(@PathParam("vendor_name") String vendorName,
+   public Response getRemoteSections(@PathParam("vendor_name") String vendorName,
          @PathParam("model_name") String modelName) {
       ModelDTO model = getModelService().loadByVendorNameAndModelName(vendorName, modelName);
       if (model == null) {
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         return resourceNotFoundResponse();
       }
-      return new RemoteSectionListing(getRemoteSectionService().findByModelId(model.getOid()));
+      return buildResponse(new RemoteSectionListing(getRemoteSectionService().findByModelId(model.getOid())));
    }
 
    /**
