@@ -47,6 +47,9 @@ import org.openremote.beehive.exception.PanelXMLNotFoundException;
 @Path("/user/{username}")
 public class ResourceRESTService extends RESTBaseService{
    
+   public static final int TIMEOUT_CODE = 504;
+   public static final int TIMEOUT_MILLISECOND = 45000;
+   
    
    /**
     * Controller will use this method to download openremote.zip online.
@@ -161,6 +164,28 @@ public class ResourceRESTService extends RESTBaseService{
    @GET
    public String getGroupMemberServers() {
       return "<openremote></openremote>";
+   }
+   
+   @Path("rest/status/{component_ids}")
+   @GET
+   public Response getComponentStatus() {
+      try {
+         Thread.sleep(TIMEOUT_MILLISECOND);
+      } catch (InterruptedException e) {
+         throw new WebApplicationException(e);
+      }
+      return Response.status(TIMEOUT_CODE).build();
+   }
+   
+   @Path("rest/polling/{panel_id}/{component_ids}")
+   @GET
+   public Response getComponentPolling() {
+      try {
+         Thread.sleep(TIMEOUT_MILLISECOND);
+      } catch (InterruptedException e) {
+         throw new WebApplicationException(e);
+      }
+      return Response.status(TIMEOUT_CODE).build();
    }
    
    
