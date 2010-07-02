@@ -20,6 +20,7 @@
 package org.openremote.controller.rest.support.json;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSON;
 import net.sf.json.xml.XMLSerializer;
@@ -36,23 +37,45 @@ import org.openremote.controller.Constants;
 public class JSONTranslator {
 
    // translate xml data to json object with HTTPServletRequest.
-   public static String toDesiredData(HttpServletRequest request, String xml) {
+   public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, String xml) {
       String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER_NAME);
-      return doTransalteXMLToJSONString(acceptTypeInHeader, xml);
+      return doTransalteXMLToJSONString(acceptTypeInHeader, response, xml);
    }
    
-   public static String doTransalteXMLToJSONString(String acceptTypeInHeader, String xml) {
+   public static String doTransalteXMLToJSONString(String acceptTypeInHeader, HttpServletResponse response, String xml) {
       if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader)) {
-         xml = xml.replaceAll("xsi:schemaLocation=\".*\"", " ");
-         XMLSerializer xmlSerializer = new XMLSerializer(); 
-         xmlSerializer.setTypeHintsEnabled(false);
-         xmlSerializer.setTypeHintsCompatibility(false);
-         xmlSerializer.setSkipNamespaces(true);
-         JSON json = xmlSerializer.read(xml);
-         return json.toString(3);
+         return translate(response, xml);
       } else {
          return xml;
       }
+   }
+   
+   public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, int errorCode, String xml) {
+      String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER_NAME);
+      return doTransalteXMLToJSONString(acceptTypeInHeader, response, errorCode, xml);
+   }
+   
+   private static String doTransalteXMLToJSONString(String acceptTypeInHeader, HttpServletResponse response, int errorCode, String xml) {
+      if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader)) {
+         return translate(response, xml);
+      } else {
+         response.setStatus(errorCode);
+         return xml;
+      }
+   }
+   
+
+   private static String translate(HttpServletResponse response, String xml) {
+      if (response != null) {
+         response.setStatus(Constants.RESPONSE_SUCCESS);
+      }
+      xml = xml.replaceAll("xsi:schemaLocation=\".*\"", " ");
+      XMLSerializer xmlSerializer = new XMLSerializer(); 
+      xmlSerializer.setTypeHintsEnabled(false);
+      xmlSerializer.setTypeHintsCompatibility(false);
+      xmlSerializer.setSkipNamespaces(true);
+      JSON json = xmlSerializer.read(xml);
+      return json.toString(3);
    }
    
 }

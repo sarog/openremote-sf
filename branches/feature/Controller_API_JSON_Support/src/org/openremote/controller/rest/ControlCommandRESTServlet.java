@@ -84,12 +84,10 @@ public class ControlCommandRESTServlet extends HttpServlet {
                }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            response.setStatus(e.getErrorCode());
-            output.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+            output.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
       } else {
-         response.setStatus(400);
-         output.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
+         output.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
       }
       output.flush();
    }

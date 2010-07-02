@@ -64,11 +64,10 @@ public class ShowPanelsRestServlet extends HttpServlet {
       if (matcher.find()) {
          try {
             String panlesXML = profileService.getAllPanels();
-            out.print(JSONTranslator.toDesiredData(request, panlesXML));
+            out.print(JSONTranslator.toDesiredData(request, response, panlesXML));
          } catch (ControlCommandException e) {
             logger.error("failed to get all the panels", e);
-            response.setStatus(e.getErrorCode());
-            out.write(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+            out.write(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          } finally {
             out.flush();
          }

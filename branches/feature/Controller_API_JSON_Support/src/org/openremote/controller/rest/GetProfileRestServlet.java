@@ -47,15 +47,15 @@ public class GetProfileRestServlet extends HttpServlet {
             String decodedPanelName = panelName;
             decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
             String panleXML = profileService.getProfileByPanelName(decodedPanelName);
-            out.print(JSONTranslator.toDesiredData(request, panleXML));
+            out.print(JSONTranslator.toDesiredData(request, response, panleXML));
          } catch (NoSuchPanelException e) {
             logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage());
             response.setStatus(e.getErrorCode());
-            out.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+            out.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
       } else {
          response.setStatus(400);
-         out.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
+         out.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
       }
       out.flush();
 	}
