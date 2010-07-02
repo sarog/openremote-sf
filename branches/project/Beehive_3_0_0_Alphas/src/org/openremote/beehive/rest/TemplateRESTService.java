@@ -43,7 +43,6 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.util.GenericType;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.dto.TemplateDTO;
-import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.ResourceService;
 import org.openremote.beehive.api.service.TemplateService;
 import org.openremote.beehive.domain.Account;
@@ -76,10 +75,10 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("templates/{shared}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateListing getTemplates(@PathParam("account_id") long accountId,@PathParam("shared") String shared, 
+   public Response getTemplates(@PathParam("account_id") long accountId,@PathParam("shared") String shared, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       List<TemplateDTO> list = null;
       if ("public".equalsIgnoreCase(shared)) {
          list = getTemplateService().loadAllPublicTemplatesByAccountOid(accountId);
@@ -87,9 +86,9 @@ public class TemplateRESTService extends RESTBaseService {
          list = getTemplateService().loadAllPrivateTemplatesByAccountOid(accountId);
       }
       if (list != null) {
-         return new TemplateListing(list);
+         return buildResponse(new TemplateListing(list));
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
 
    /**
@@ -104,15 +103,15 @@ public class TemplateRESTService extends RESTBaseService {
    @GET
    @Produces( { "application/zip"})
    @Path("template/{template_id}/resource")
-   public File getTemplateResources(@PathParam("template_id") long templateId,
+   public Response getTemplateResources(@PathParam("template_id") long templateId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       File templateZip = getTemplateService().getTemplateResourceZip(templateId);
       if (templateZip != null) {
-         return templateZip;
+         return buildResponse(templateZip);
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
    
    /**
@@ -127,15 +126,15 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template/{template_id}")
    @GET
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateDTO getTemplateById(@PathParam("template_id") long templateId, 
+   public Response getTemplateById(@PathParam("template_id") long templateId, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       TemplateDTO t = getTemplateService().loadTemplateByOid(templateId);
       if (t != null) {
-         return t;
+         return buildResponse(t);
       }
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      return resourceNotFoundResponse();
    }
 
    /**
@@ -154,9 +153,9 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template")
    @POST
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateDTO addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
+   public Response addTemplateIntoAccount(@PathParam("account_id") long accountId, @FormParam("name") String name,
          @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       Template t = new Template();
       if (accountId > 0) {
          Account a = new Account();
@@ -170,7 +169,7 @@ public class TemplateRESTService extends RESTBaseService {
       long newId = getTemplateService().save(t);
       TemplateDTO newTemp = getTemplateService().loadTemplateByOid(newId);
       if (newTemp != null) {
-         return newTemp;
+         return buildResponse(newTemp);
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 
@@ -179,9 +178,9 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template/{template_id}")
    @PUT
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-   public TemplateDTO updateTemplate(@PathParam("account_id") long accountId,@PathParam("template_id") long templateID, @FormParam("name") String name,
+   public Response updateTemplate(@PathParam("account_id") long accountId,@PathParam("template_id") long templateID, @FormParam("name") String name,
          @FormParam("content") String content, @FormParam("keywords") String keywords,@FormParam("shared") boolean shared,@HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       Template t = new Template();
       if (templateID > 0) {
          Account a = new Account();
@@ -195,7 +194,7 @@ public class TemplateRESTService extends RESTBaseService {
       } 
       TemplateDTO newTemplate = getTemplateService().updateTemplate(t);
       if (newTemplate != null) {
-         return newTemplate;
+         return buildResponse(newTemplate);
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 
@@ -214,12 +213,12 @@ public class TemplateRESTService extends RESTBaseService {
    
    @Path("template/{template_id}")
    @DELETE
-   public boolean deleteTemplate(@PathParam("template_id") long templateId,
+   public Response deleteTemplate(@PathParam("template_id") long templateId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       if (templateId > 0) {
-         return getTemplateService().delete(templateId);
+         return buildResponse(getTemplateService().delete(templateId));
       }
       throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
@@ -240,32 +239,31 @@ public class TemplateRESTService extends RESTBaseService {
    @Path("template/{template_id}/resource")
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public boolean saveTemplateResource(@PathParam("account_id") long accountId,
+   public Response saveTemplateResource(@PathParam("account_id") long accountId,
          @PathParam("template_id") long templateId, MultipartFormDataInput input, 
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
          if (parts.size() > 0) {
             in = parts.get(0).getBody(new GenericType<InputStream>() {});
-            return getTemplateService().saveTemplateResourceZip(templateId, in);
+            return buildResponse(getTemplateService().saveTemplateResourceZip(templateId, in));
          } else {
-            throw new WebApplicationException(Response.Status.NO_CONTENT);
+            return buildResponse(false);
          }
       } catch (IOException e) {
-         e.printStackTrace();
+         throw new WebApplicationException(e,Response.Status.INTERNAL_SERVER_ERROR);
       } finally {
          if (in != null) {
             try {
                in.close();
             } catch (Exception e) {
-               e.printStackTrace();
+               throw new WebApplicationException(e,Response.Status.INTERNAL_SERVER_ERROR);
             }
          }
       }
-      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
    
    /**
@@ -282,46 +280,34 @@ public class TemplateRESTService extends RESTBaseService {
    @Path(Constant.ACCOUNT_RESOURCE_ZIP_NAME)
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
-   public boolean saveResource(@PathParam("account_id") long accountId, 
+   public Response saveResource(@PathParam("account_id") long accountId, 
          MultipartFormDataInput input,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       
-      authorize(credentials);
+      if (!authorize(credentials)) return unAuthorizedResponse();
       List<InputPart> parts = input.getParts();
       InputStream in = null;
       try {
          if (parts.size() > 0) {
             in = parts.get(0).getBody(new GenericType<InputStream>() {});
-            return getResourceService().saveResource(accountId, in);
+            boolean successed = getResourceService().saveResource(accountId, in);
+            return buildResponse(successed);
          } else {
-            throw new WebApplicationException(Response.Status.NO_CONTENT);
+            return buildResponse(false);
          }
       } catch (IOException e) {
-         e.printStackTrace();
+         throw new WebApplicationException(e,Response.Status.INTERNAL_SERVER_ERROR);
       } finally {
          if (in != null) {
             try {
                in.close();
             } catch (Exception e) {
-               e.printStackTrace();
+               throw new WebApplicationException(e,Response.Status.INTERNAL_SERVER_ERROR);
             }
          }
       }
-      throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
    }
    
-   /*
-    * If the user was not validated, fail with a
-    * 401 status code (UNAUTHORIZED) and
-    * pass back a WWW-Authenticate header for
-    * this servlet.
-    *  
-    */
-   private void authorize(String credentials) {
-      if (!getAccountService().isHTTPBasicAuthorized(credentials)) {
-         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
-   }
    
    
    protected ResourceService getResourceService() {
@@ -331,10 +317,4 @@ public class TemplateRESTService extends RESTBaseService {
    protected TemplateService getTemplateService() {
       return (TemplateService) getSpringContextInstance().getBean("templateService");
    }
-   
-   protected AccountService getAccountService() {
-      return (AccountService) getSpringContextInstance().getBean("accountService");
-   }
-   
-   
 }

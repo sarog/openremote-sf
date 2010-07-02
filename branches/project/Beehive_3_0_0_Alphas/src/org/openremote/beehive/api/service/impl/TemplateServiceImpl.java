@@ -58,14 +58,13 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
    public List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords, int page) {
       List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
       DetachedCriteria critera = DetachedCriteria.forClass(Template.class);
+      critera.add(Restrictions.eq("shared", true));
       if (keywords != null && keywords.trim().length() > 0) {
          String[] kwords = keywords.split(KEYWORDS_SEPERATOR);
          for (String keyword : kwords) {
-            critera.add(Restrictions.eq("shared", true));
             critera.add(Restrictions.like("keywords", keyword, MatchMode.ANYWHERE));
          }
       }
-      genericDAO.loadAll(Template.class);
       List<Template> templates = genericDAO.findPagedDateByDetachedCriteria(critera, TEMPLATE_SIZE_PER_PAGE,
             (TEMPLATE_SIZE_PER_PAGE) * page);
       if (templates != null && templates.size() > 0) {
