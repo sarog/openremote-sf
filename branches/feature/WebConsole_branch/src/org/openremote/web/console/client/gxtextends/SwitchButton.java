@@ -19,10 +19,13 @@
 */
 package org.openremote.web.console.client.gxtextends;
 
+import org.openremote.web.console.client.Constants;
+import org.openremote.web.console.client.event.OREvent;
+import org.openremote.web.console.client.listener.OREventListener;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
+import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.client.widget.ScreenSwitch;
-import org.openremote.web.console.domain.BusinessEntity;
 import org.openremote.web.console.domain.Switch;
 
 import com.extjs.gxt.ui.client.core.Template;
@@ -51,7 +54,6 @@ public class SwitchButton extends Button {
          offImageUrl = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiSwitch.getOffImage().getSrc());
       }
       setSize(uiSwitch.getFrameWidth(), uiSwitch.getFrameHeight());
-//      String jSessionId = Cookies.getCookie("JSESSIONID");
    }
    
    @Override
@@ -60,7 +62,7 @@ public class SwitchButton extends Button {
       if (hasIcon) {
          buttonSelector = "div";
          template = new Template("<div style=\"height:100%; background: url(" + offImageUrl
-               + ") no-repeat 0 0;\"><div></div></div>");
+               + ") no-repeat 0 0;\"><div style=\"outline:none;\"></div></div>");
       } else {
          setText("OFF");
       }
@@ -86,7 +88,6 @@ public class SwitchButton extends Button {
       } else {
          sendCommand(Switch.ON);
       }
-      isOn = !isOn;
    }
    
    private void sendCommand(String commandType) {
@@ -95,5 +96,32 @@ public class SwitchButton extends Button {
             // do nothing.
          }
       });
+   }
+   
+   public void addPollingSensoryListener() {
+      final Integer sensorId = uiSwitch.getSensor().getSensorId();
+      if (sensorId > 0) {
+         ORListenerManager.getInstance().addOREventListener(Constants.ListenerPollingStatusIdFormat + sensorId, new OREventListener() {
+            public void handleEvent(OREvent event) {
+               String value = ClientDataBase.statusMap.get(sensorId.toString()).toLowerCase();
+               if (isOn && Switch.OFF.equals(value)) {
+                  isOn = false;
+                  if (hasIcon) {
+                     setStyleAttribute("backgroundImage", "url(" + offImageUrl + ")");
+                  } else {
+                     setText("OFF");
+                  }
+               } else if (!isOn && Switch.ON.equals(value)) {
+                  isOn = true;
+                  if (hasIcon) {
+                     setStyleAttribute("backgroundImage", "url(" + onImageUrl + ")");
+                  } else {
+                     setText("ON");
+                  }
+               }
+               
+            }
+         });
+      }
    }
 }

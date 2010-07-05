@@ -95,6 +95,7 @@ public class ORConnection {
          log.error("ClientProtocolException", e);
       } catch (IOException e) {
          log.error("IOException", e);
+         throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(0));
       }
       
       statusCode = httpResponse.getStatusLine().getStatusCode();

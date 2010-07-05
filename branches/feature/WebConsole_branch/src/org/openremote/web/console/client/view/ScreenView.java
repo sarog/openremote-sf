@@ -21,6 +21,7 @@ package org.openremote.web.console.client.view;
 
 import java.util.ArrayList;
 
+import org.openremote.web.console.client.polling.PollingHelper;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.domain.AbsoluteLayoutContainer;
 import org.openremote.web.console.domain.Background;
@@ -35,7 +36,11 @@ import com.google.gwt.http.client.URL;
  */
 public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
 
+   private Screen screen;
+   private PollingHelper polling;
+   
    public ScreenView(Screen screen) {
+      this.screen = screen;
       setStyleAttribute("backgroundColor", "white");
       setStyleAttribute("position", "relative");
       setBorders(true);
@@ -73,6 +78,19 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       } else {
          setStyleAttribute("backgroundPosition", Background.getRelativeMap().get(
                background.getBackgroundImageRelativePosition()));
+      }
+   }
+
+   public void startPolling() {
+      if (!screen.getPollingComponentsIds().isEmpty()) {
+         polling = new PollingHelper(screen.getPollingComponentsIds());
+         polling.requestCurrentStatusAndStartPolling();
+      }
+   }
+   
+   public void cancelPolling() {
+      if (polling != null) {
+         polling.cancelPolling();
       }
    }
 

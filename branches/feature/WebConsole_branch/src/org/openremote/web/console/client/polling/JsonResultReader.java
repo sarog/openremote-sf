@@ -17,29 +17,14 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.widget;
+package org.openremote.web.console.client.polling;
 
-import org.openremote.web.console.client.gxtextends.SwitchButton;
-import org.openremote.web.console.domain.Switch;
+import com.google.gwt.json.client.JSONObject;
 
 /**
- * The Class ScreenSwitch.
+ * The Interface JsonResultReader is for read json object.
  */
-public class ScreenSwitch extends ScreenControl implements SensoryDelegate {
+public interface JsonResultReader {
 
-   private SwitchButton switchButton;
-   
-   public ScreenSwitch(Switch uiSwitch) {
-      setComponent(uiSwitch);
-      switchButton = new SwitchButton(uiSwitch);
-      add(switchButton);
-      if (uiSwitch.getSensor() != null) {
-         addPollingSensoryListener();
-      }
-   }
-   
-   public void addPollingSensoryListener() {
-      switchButton.addPollingSensoryListener();
-   }
-
+   void read(JSONObject jsonObj);
 }

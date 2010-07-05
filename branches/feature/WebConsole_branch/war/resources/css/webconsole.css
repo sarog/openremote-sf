@@ -29,5 +29,5 @@
 
 .pressed {
 	opacity: 0.8;
-   filter: alpha(opacity:80);
+	*margin: 1px; /* for IE*/
 }
