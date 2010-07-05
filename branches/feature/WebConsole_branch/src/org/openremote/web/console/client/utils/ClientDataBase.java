@@ -19,6 +19,7 @@
 */
 package org.openremote.web.console.client.utils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.openremote.web.console.domain.AppSetting;
@@ -37,6 +38,8 @@ public class ClientDataBase {
    public static AppSetting appSetting = new AppSetting();
    
    public static final PanelXmlEntity panelXmlEntity = new PanelXmlEntity();
+   
+   public static final Map<String, String> statusMap = new HashMap<String, String>();
    
    private ClientDataBase() {
    }

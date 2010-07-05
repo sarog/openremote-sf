@@ -17,29 +17,26 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.widget;
+package org.openremote.web.console.client.event;
 
-import org.openremote.web.console.client.gxtextends.SwitchButton;
-import org.openremote.web.console.domain.Switch;
+import java.io.Serializable;
 
 /**
- * The Class ScreenSwitch.
+ * The Class OREvent is used by ORListener.
  */
-public class ScreenSwitch extends ScreenControl implements SensoryDelegate {
+public class OREvent  implements Serializable{
 
-   private SwitchButton switchButton;
+   private static final long serialVersionUID = -6105383614180080369L;
    
-   public ScreenSwitch(Switch uiSwitch) {
-      setComponent(uiSwitch);
-      switchButton = new SwitchButton(uiSwitch);
-      add(switchButton);
-      if (uiSwitch.getSensor() != null) {
-         addPollingSensoryListener();
-      }
-   }
+   private Object data;
    
-   public void addPollingSensoryListener() {
-      switchButton.addPollingSensoryListener();
+   public OREvent(Object data) {
+      if (data != null) {
+         this.data = data;
+     }
    }
 
+   public Object getData() {
+      return data;
+  }
 }

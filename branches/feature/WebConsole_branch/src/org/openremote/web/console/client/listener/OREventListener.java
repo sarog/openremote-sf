@@ -17,29 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.client.widget;
+package org.openremote.web.console.client.listener;
 
-import org.openremote.web.console.client.gxtextends.SwitchButton;
-import org.openremote.web.console.domain.Switch;
+import org.openremote.web.console.client.event.OREvent;
 
 /**
- * The Class ScreenSwitch.
+ * The listener interface for receiving OREvent events.
+ * The class that is interested in processing a OREvent
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addOREventListener<code> method. When
+ * the OREvent event occurs, that object's appropriate
+ * method is invoked.
+ * 
+ * @see OREventEvent
  */
-public class ScreenSwitch extends ScreenControl implements SensoryDelegate {
+public interface OREventListener {
 
-   private SwitchButton switchButton;
-   
-   public ScreenSwitch(Switch uiSwitch) {
-      setComponent(uiSwitch);
-      switchButton = new SwitchButton(uiSwitch);
-      add(switchButton);
-      if (uiSwitch.getSensor() != null) {
-         addPollingSensoryListener();
-      }
-   }
-   
-   public void addPollingSensoryListener() {
-      switchButton.addPollingSensoryListener();
-   }
-
+   void handleEvent(OREvent event);
 }

@@ -96,7 +96,7 @@ public class GroupView extends LayoutContainer {
       screenData = new BorderLayoutData(Style.LayoutRegion.CENTER);
       screenData.setMargins(new Margins(0, 5, 0, 5));
       viewport.add(currentScreenView, screenData);
-      
+      currentScreenView.startPolling();
    }
 
    private void createSouth() {
@@ -168,6 +168,7 @@ public class GroupView extends LayoutContainer {
       int index = screens.indexOf(currentScreen);
       if (index > 0) {
          currentScreen = screens.get(index - 1);
+         currentScreenView.cancelPolling();
          currentScreenView.removeFromParent();
          currentScreenView = new ScreenView(currentScreen);
          if (index == 1) {
@@ -182,6 +183,7 @@ public class GroupView extends LayoutContainer {
          viewport.add(currentScreenView, screenData);
          saveGroupAndScreenToCookie();
          viewport.layout();
+         currentScreenView.startPolling();
       }
    }
 
@@ -194,6 +196,7 @@ public class GroupView extends LayoutContainer {
       int index = screens.indexOf(currentScreen);
       if (index < screenSize - 1) {
          currentScreen = screens.get(index + 1);
+         currentScreenView.cancelPolling();
          currentScreenView.removeFromParent();
          currentScreenView = new ScreenView(currentScreen);
          if (index == screenSize - 2) {
@@ -208,6 +211,7 @@ public class GroupView extends LayoutContainer {
          viewport.add(currentScreenView, screenData);
          saveGroupAndScreenToCookie();
          viewport.layout();
+         currentScreenView.startPolling();
       }
    }
    
