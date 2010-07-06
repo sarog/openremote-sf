@@ -65,6 +65,7 @@ public class ScreenIndicator extends LayoutContainer {
             indicatorContainer.getItem(currentScreenIndex).setStyleName("indicator-current");
             indicatorContainer.getItem(currentScreenIndex).unsinkEvents(Event.ONMOUSEDOWN);
          } else if (screenSize > 1) {
+            currentGroupId = groupId;
             currentScreenIndex = screenIndex;
             indicatorContainer.removeAll();
             indicatorContainer.setWidth(15 * screenSize);
