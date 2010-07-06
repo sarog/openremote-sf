@@ -19,8 +19,17 @@
 */
 package org.openremote.web.console.client.widget;
 
+import java.util.List;
+
+import org.openremote.web.console.client.Constants;
+import org.openremote.web.console.client.utils.ORListenerManager;
+import org.openremote.web.console.domain.Navigate;
+import org.openremote.web.console.domain.Screen;
+
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
+import com.google.gwt.user.client.Event;
 
 /**
  * The Class ScreenIndicator is for show the screen page control.
@@ -28,35 +37,71 @@ import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 public class ScreenIndicator extends LayoutContainer {
 
    private LayoutContainer indicatorContainer;
+   private int currentGroupId;
    private int currentScreenIndex = -1;
+   private static final String NAVIGATETOSCREEN = "navigateToScreen";
    
-   public ScreenIndicator(int screenCount, int screenIndex) {
+   public ScreenIndicator(int groupId, int screenIndex, List<Screen> screens) {
+      this.currentGroupId = groupId;
+      int screenCount = screens.size();
       setLayout(new CenterLayout());
       if (screenCount > 1) {
          setStyleAttribute("backgroundColor", "gray");
          currentScreenIndex = screenIndex;
          indicatorContainer = new LayoutContainer();
-         indicatorContainer.setSize(14 * screenCount, 14);
-         for (int i = 0; i < screenCount; i++) {
-            LayoutContainer indicator = new LayoutContainer();
-            indicator.setSize(14, 14);
-            if (i != screenIndex) {
-               indicator.setStyleName("indicator-default");
-            } else {
-               indicator.setStyleName("indicator-current");
-            }
-            indicatorContainer.add(indicator);
-         }
+         indicatorContainer.setSize(15 * screenCount, 14);
+         initialIndicatorContainer(groupId, screenIndex, screens, screenCount);
          add(indicatorContainer);
       }
    }
    
-   public void updateCurrentPageControl(int screenIndex) {
+   public void updateCurrentPageControl(int groupId, int screenIndex, List<Screen> screens) {
       if (indicatorContainer != null) {
-         indicatorContainer.getItem(currentScreenIndex).setStyleName("indicator-default");
-         currentScreenIndex = screenIndex;
-         indicatorContainer.getItem(currentScreenIndex).setStyleName("indicator-current");
-         layout();
+         int screenSize = screens.size();
+         if (currentGroupId == groupId) {
+            indicatorContainer.getItem(currentScreenIndex).setStyleName("indicator-default");
+            indicatorContainer.getItem(currentScreenIndex).sinkEvents(Event.ONMOUSEDOWN);
+            currentScreenIndex = screenIndex;
+            indicatorContainer.getItem(currentScreenIndex).setStyleName("indicator-current");
+            indicatorContainer.getItem(currentScreenIndex).unsinkEvents(Event.ONMOUSEDOWN);
+         } else if (screenSize > 1) {
+            currentScreenIndex = screenIndex;
+            indicatorContainer.removeAll();
+            indicatorContainer.setWidth(15 * screenSize);
+            initialIndicatorContainer(groupId, screenIndex, screens, screenSize);
+            layout(true);
+         }
+      }
+   }
+   
+   /**
+    * @param groupId
+    * @param screenIndex
+    * @param screens
+    * @param screenCount
+    */
+   private void initialIndicatorContainer(int groupId, int screenIndex, List<Screen> screens, int screenCount) {
+      for (int i = 0; i < screenCount; i++) {
+         LayoutContainer indicator = new LayoutContainer() {
+            @Override
+            public void onComponentEvent(ComponentEvent ce) {
+               super.onComponentEvent(ce);
+               if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
+                  ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, getData(NAVIGATETOSCREEN));
+               }
+            }
+         };
+         
+         indicator.setData(NAVIGATETOSCREEN, new Navigate(groupId, screens.get(i).getScreenId()));
+         indicator.setSize(13, 14);
+         if (i != screenIndex) {
+            indicator.sinkEvents(Event.ONMOUSEDOWN);
+            indicator.setStyleName("indicator-default");
+         } else {
+            indicator.setStyleName("indicator-current");
+            indicator.unsinkEvents(Event.ONMOUSEDOWN);
+         }
+         indicatorContainer.add(indicator);
       }
    }
 }

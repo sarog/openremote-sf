@@ -18,12 +18,14 @@
 .indicator-default {
 	cursor: pointer;
 	float: left;
+	margin-right: 2px;
    background: url('../../resources/images/indicator_sprite.png') no-repeat -16px 0;
 }
 
 .indicator-current {
 	cursor: default;
 	float: left;
+	margin-right: 2px;
    background: url('../../resources/images/indicator_sprite.png') no-repeat 0 0;
 }
 

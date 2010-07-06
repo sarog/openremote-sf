@@ -34,5 +34,5 @@ public class Constants {
    public static final String CONSOLE_SETTINGS = "console_settings";
    
    public static final String ListenerPollingStatusIdFormat = "polling_status_";
-   
+   public static final String ListenerNavigateTo = "navigateToListener";
 }
