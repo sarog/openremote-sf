@@ -19,8 +19,10 @@
 */
 package org.openremote.web.console.client.gxtextends;
 
+import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
+import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.client.widget.ScreenButton;
 import org.openremote.web.console.domain.Button;
 
@@ -91,6 +93,10 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       super.onMouseUp(ce);
       cancelTimer();
       resetIcon();
+      if (uiButton.getNavigate() != null) {
+         removeStyleName("x-btn-over");
+         ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, uiButton.getNavigate());
+      }
    }
 
    private void sendCommand() {

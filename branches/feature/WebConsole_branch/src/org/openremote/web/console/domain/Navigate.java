@@ -45,6 +45,11 @@ public class Navigate extends BusinessEntity {
       }
    }
 
+   public Navigate(int toGroup, int toScreen) {
+      this.toGroup = toGroup;
+      this.toScreen = toScreen;
+   }
+   
    public boolean isPreviousScreen() {
       return previousScreen;
    }

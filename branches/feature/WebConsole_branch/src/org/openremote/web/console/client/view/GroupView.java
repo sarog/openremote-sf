@@ -19,13 +19,19 @@
 */
 package org.openremote.web.console.client.view;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openremote.web.console.client.Constants;
+import org.openremote.web.console.client.event.OREvent;
 import org.openremote.web.console.client.icon.Icons;
+import org.openremote.web.console.client.listener.OREventListener;
 import org.openremote.web.console.client.utils.ClientDataBase;
+import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.client.widget.ScreenIndicator;
 import org.openremote.web.console.domain.Group;
+import org.openremote.web.console.domain.Navigate;
 import org.openremote.web.console.domain.Screen;
 
 import com.extjs.gxt.ui.client.Style;
@@ -56,20 +62,27 @@ public class GroupView extends LayoutContainer {
    private BorderLayout layout;
    private Group currentGroup;
    private Screen currentScreen;
-   private int screenSize;
    private ScreenView currentScreenView;
    private BorderLayoutData screenData;
    private ScreenIndicator screenIndicator;
+   private Button previousButton;
+   private Button nextButton;
+   private Map<Integer, ScreenView> screenViews;
    
    public GroupView() {
       viewport = new Viewport();
       layout = new BorderLayout();
       viewport.setLayout(layout);
+      if (screenViews == null) {
+         screenViews = new HashMap<Integer, ScreenView>();
+      }
+      
       if (hasDefaultGroupAndScreen()) {
          createToolBar();
          createScreenView();
          createSouth();
          RootPanel.get().add(viewport);
+         addNaviagateListener();
       }
    }
    
@@ -93,10 +106,11 @@ public class GroupView extends LayoutContainer {
    
    private void createScreenView() {
       currentScreenView = new ScreenView(currentScreen);
+      screenViews.put(currentScreen.getScreenId(), currentScreenView);
       screenData = new BorderLayoutData(Style.LayoutRegion.CENTER);
       screenData.setMargins(new Margins(0, 5, 0, 5));
       viewport.add(currentScreenView, screenData);
-      currentScreenView.startPolling();
+      startCurrentPolling();
    }
 
    private void createSouth() {
@@ -107,34 +121,34 @@ public class GroupView extends LayoutContainer {
       BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.SOUTH, 30);
       data.setMargins(new Margins(5));
       
-      final Button previousButton = new Button();
+      previousButton = new Button();
       previousButton.setScale(ButtonScale.MEDIUM);
       previousButton.setIcon(icons.previous());
-      final Button nextButton = new Button();
+      nextButton = new Button();
       nextButton.setScale(ButtonScale.MEDIUM);
       nextButton.setIcon(icons.next());
       int screenIndex = currentGroup.getScreens().indexOf(currentScreen);
       if (screenIndex == 0) {
          previousButton.disable();
       }
-      if (screenIndex == screenSize - 1) {
+      if (screenIndex == currentGroup.getScreens().size() - 1) {
          nextButton.disable();
       }
       
       previousButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
-            toNextScreen(previousButton, nextButton);
+            toPreviousScreen();
          }
       });
       
       nextButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            toPreviousScreen(previousButton, nextButton);
+            toNextScreen();
          }
       });
       
-      screenIndicator = new ScreenIndicator(currentGroup.getScreens().size(), screenIndex);
+      screenIndicator = new ScreenIndicator(currentGroup.getGroupId(), screenIndex, currentGroup.getScreens());
       southContainer.add(previousButton, new RowData(-1, 1));
       southContainer.add(screenIndicator, new RowData(1, 1));
       southContainer.add(nextButton, new RowData(-1, 1));
@@ -151,7 +165,6 @@ public class GroupView extends LayoutContainer {
          // TODO: group not found or no screens, forward to settings.
          return false;
       }
-      screenSize = currentGroup.getScreens().size();
       currentScreen = ClientDataBase.getLastTimeScreen();
       if (currentScreen == null) {
          currentScreen = currentGroup.getScreens().get(0);
@@ -160,58 +173,88 @@ public class GroupView extends LayoutContainer {
    }
 
    /**
-    * @param previousButton
-    * @param nextButton
+    * To next screen.
+    * 
+    * @return true, if successful
     */
-   private void toNextScreen(final Button previousButton, final Button nextButton) {
+   private boolean toNextScreen() {
+      List<Screen> screens = currentGroup.getScreens();
+      int index = screens.indexOf(currentScreen);
+      if (index < screens.size() - 1) {
+         currentScreen = screens.get(index + 1);
+         cancelCurrentPolling();
+         currentScreenView.removeFromParent();
+         
+         initCurrentScreenView();
+         updateSouth(screens.size(), index + 1);
+         viewport.add(currentScreenView, screenData);
+         saveGroupAndScreenToCookie();
+         viewport.layout();
+         startCurrentPolling();
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * To previous screen.
+    * 
+    * @return true, if successful
+    */
+   private boolean toPreviousScreen() {
       List<Screen> screens = currentGroup.getScreens();
       int index = screens.indexOf(currentScreen);
       if (index > 0) {
          currentScreen = screens.get(index - 1);
-         currentScreenView.cancelPolling();
+         cancelCurrentPolling();
          currentScreenView.removeFromParent();
-         currentScreenView = new ScreenView(currentScreen);
-         if (index == 1) {
-            previousButton.disable();
-         }
-         if (!nextButton.isEnabled()) {
+         
+         initCurrentScreenView();
+         updateSouth(screens.size(), index - 1);
+         viewport.add(currentScreenView, screenData);
+         saveGroupAndScreenToCookie();
+         viewport.layout();
+         startCurrentPolling();
+         return true;
+      }
+      return false;
+   }
+   
+   private void updateSouth(int screenSize, int screenIndex) {
+      if (screenSize == 1) {
+         layout.hide(Style.LayoutRegion.SOUTH);
+         return;
+      } else {
+         layout.show(Style.LayoutRegion.SOUTH);
+      }
+      
+      // update next button and previous button.
+      if (nextButton != null) {
+         if (screenIndex == screenSize - 1) {
+            nextButton.disable();
+         } else if (!nextButton.isEnabled()) {
             nextButton.enable();
          }
-         if (screenIndicator != null) {
-            screenIndicator.updateCurrentPageControl(index - 1);
-         }
-         viewport.add(currentScreenView, screenData);
-         saveGroupAndScreenToCookie();
-         viewport.layout();
-         currentScreenView.startPolling();
       }
-   }
-
-   /**
-    * @param previousButton
-    * @param nextButton
-    */
-   private void toPreviousScreen(final Button previousButton, final Button nextButton) {
-      List<Screen> screens = currentGroup.getScreens();
-      int index = screens.indexOf(currentScreen);
-      if (index < screenSize - 1) {
-         currentScreen = screens.get(index + 1);
-         currentScreenView.cancelPolling();
-         currentScreenView.removeFromParent();
-         currentScreenView = new ScreenView(currentScreen);
-         if (index == screenSize - 2) {
-            nextButton.disable();
-         }
-         if (!previousButton.isEnabled()) {
+      if (previousButton != null) {
+         if (screenIndex == 0) {
+            previousButton.disable();
+         } else if (!previousButton.isEnabled()) {
             previousButton.enable();
          }
-         if (screenIndicator != null) {
-            screenIndicator.updateCurrentPageControl(index + 1);
-         }
-         viewport.add(currentScreenView, screenData);
-         saveGroupAndScreenToCookie();
-         viewport.layout();
-         currentScreenView.startPolling();
+      }
+      
+      if (screenIndicator != null) {
+         screenIndicator.updateCurrentPageControl(currentGroup.getGroupId(), screenIndex, currentGroup.getScreens());
+         
+      }
+   }
+   
+   private void initCurrentScreenView() {
+      currentScreenView = screenViews.get(currentScreen.getScreenId());
+      if (currentScreenView == null) {
+         currentScreenView = new ScreenView(currentScreen);
+         screenViews.put(currentScreen.getScreenId(), currentScreenView);
       }
    }
    
@@ -219,5 +262,76 @@ public class GroupView extends LayoutContainer {
       ClientDataBase.userInfo.setLastGroupId(currentGroup.getGroupId());
       ClientDataBase.userInfo.setLastScreenId(currentScreen.getScreenId());
       Cookies.setCookie(Constants.CONSOLE_USERINFO, ClientDataBase.userInfo.toJson());
+   }
+   
+   private void startCurrentPolling() {
+      if (currentScreenView != null) {
+         currentScreenView.startPolling();
+      }
+   }
+   
+   private void cancelCurrentPolling() {
+      if (currentScreenView != null) {
+         currentScreenView.cancelPolling();
+      }
+   }
+   private void addNaviagateListener() {
+      ORListenerManager.getInstance().addOREventListener(Constants.ListenerNavigateTo, new OREventListener() {
+         public void handleEvent(OREvent event) {
+            Navigate navigate = (Navigate) event.getData();
+            if (navigate != null) {
+               navigateTo(navigate);
+            }
+         }
+      });
+   }
+   
+   private boolean navigateTo(Navigate navigate) {
+      if (navigate.isNextScreen()) {
+         return toNextScreen();
+      } else if (navigate.isPreviousScreen()) {
+         return toPreviousScreen();
+      } else if (navigate.getToGroup() > 0) {
+         return navigateToGroup(navigate.getToGroup(), navigate.getToScreen());
+      }
+      return false;
+   }
+   
+   private boolean navigateToGroup(int toGroupId, int toScreenId) {
+      Group targetGroup = ClientDataBase.getGroupById(toGroupId);
+      if (targetGroup != null) {
+         if (currentGroup.getGroupId() != toGroupId) {
+            if (targetGroup.getScreens().size() == 0) {
+               return false;
+            }
+            cancelCurrentPolling();
+            currentGroup = targetGroup;
+            currentScreen = targetGroup.getScreens().get(0);
+            if (toScreenId > 0) {
+               Screen screen = ClientDataBase.getScreenById(toScreenId);
+               if (screen != null && targetGroup.getScreens().indexOf(screen) > -1) {
+                  currentScreen = screen;
+               }
+            }
+         } else if (toScreenId > 0) {
+            // in same group.
+            Screen screen = ClientDataBase.getScreenById(toScreenId);
+            if (screen != null && targetGroup.getScreens().indexOf(screen) > -1) {
+               cancelCurrentPolling();
+               currentScreen = screen;
+            } else {
+               return false;
+            }
+         }
+         currentScreenView.removeFromParent();
+         initCurrentScreenView();
+         viewport.add(currentScreenView, screenData);
+         saveGroupAndScreenToCookie();
+         updateSouth(currentGroup.getScreens().size(), currentGroup.getScreens().indexOf(currentScreen));
+         viewport.layout();
+         startCurrentPolling();
+         return true;
+      }
+      return false;
    }
 }
