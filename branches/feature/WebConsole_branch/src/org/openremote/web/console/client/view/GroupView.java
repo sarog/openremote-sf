@@ -19,17 +19,22 @@
 */
 package org.openremote.web.console.client.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.event.OREvent;
+import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.icon.Icons;
 import org.openremote.web.console.client.listener.OREventListener;
+import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.client.widget.ScreenIndicator;
+import org.openremote.web.console.client.window.LoginWindow;
+import org.openremote.web.console.client.window.SettingsWindow;
 import org.openremote.web.console.domain.Group;
 import org.openremote.web.console.domain.Navigate;
 import org.openremote.web.console.domain.Screen;
@@ -38,9 +43,13 @@ import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
@@ -50,12 +59,13 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * The Class GroupView for init group and screens.
  */
-public class GroupView extends LayoutContainer {
+public class GroupView {
 
    private Icons icons = GWT.create(Icons.class);
    private Viewport viewport;
@@ -68,6 +78,7 @@ public class GroupView extends LayoutContainer {
    private Button previousButton;
    private Button nextButton;
    private Map<Integer, ScreenView> screenViews;
+   private List<Navigate> navigationHistory;
    
    public GroupView() {
       viewport = new Viewport();
@@ -75,6 +86,9 @@ public class GroupView extends LayoutContainer {
       viewport.setLayout(layout);
       if (screenViews == null) {
          screenViews = new HashMap<Integer, ScreenView>();
+      }
+      if (navigationHistory == null) {
+         navigationHistory = new ArrayList<Navigate>();
       }
       
       if (hasDefaultGroupAndScreen()) {
@@ -111,6 +125,7 @@ public class GroupView extends LayoutContainer {
       screenData.setMargins(new Margins(0, 5, 0, 5));
       viewport.add(currentScreenView, screenData);
       startCurrentPolling();
+      saveGroupAndScreenToCookie();
    }
 
    private void createSouth() {
@@ -162,7 +177,12 @@ public class GroupView extends LayoutContainer {
    private boolean hasDefaultGroupAndScreen() {
       currentGroup = ClientDataBase.getDefaultGroup();
       if (currentGroup == null || currentGroup.getScreens().isEmpty()) {
-         // TODO: group not found or no screens, forward to settings.
+         SettingsWindow settingWindow = new SettingsWindow();
+         settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            public void afterSubmit(SubmitEvent be) {
+               Window.Location.reload();
+            }
+         });
          return false;
       }
       currentScreen = ClientDataBase.getLastTimeScreen();
@@ -246,7 +266,6 @@ public class GroupView extends LayoutContainer {
       
       if (screenIndicator != null) {
          screenIndicator.updateCurrentPageControl(currentGroup.getGroupId(), screenIndex, currentGroup.getScreens());
-         
       }
    }
    
@@ -280,10 +299,21 @@ public class GroupView extends LayoutContainer {
          public void handleEvent(OREvent event) {
             Navigate navigate = (Navigate) event.getData();
             if (navigate != null) {
-               navigateTo(navigate);
+               handleNavigate(navigate);
             }
          }
       });
+   }
+   
+   private void handleNavigate(Navigate navigate) {
+      if (currentGroup == null || currentScreen == null) {
+         return;
+      }
+      
+      Navigate historyNavigate = new Navigate(currentGroup.getGroupId(), currentScreen.getScreenId());
+      if (navigateTo(navigate)) {
+         navigationHistory.add(historyNavigate);
+      }
    }
    
    private boolean navigateTo(Navigate navigate) {
@@ -293,6 +323,25 @@ public class GroupView extends LayoutContainer {
          return toPreviousScreen();
       } else if (navigate.getToGroup() > 0) {
          return navigateToGroup(navigate.getToGroup(), navigate.getToScreen());
+      } else if (navigate.isBack()) {
+         if (navigationHistory.size() > 0) {
+            Navigate backward = navigationHistory.get(navigationHistory.size() - 1);
+            if (backward.getToGroup() > 0 && backward.getToScreen() > 0) {
+               navigateToGroup(backward.getToGroup(), backward.getToScreen());
+               navigationHistory.remove(backward);
+            }
+         }
+      } else if (navigate.isSetting()) {
+         SettingsWindow settingWindow = new SettingsWindow();
+         settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+            public void afterSubmit(SubmitEvent be) {
+               Window.Location.reload();
+            }
+         });
+      } else if (navigate.isLogin()) {
+         new LoginWindow();
+      } else if (navigate.isLogout()) {
+         doLogout();
       }
       return false;
    }
@@ -333,5 +382,16 @@ public class GroupView extends LayoutContainer {
          return true;
       }
       return false;
+   }
+   
+   private void doLogout() {
+      MessageBox.confirm("Logout", "Are you sure you want to logout?", new Listener<MessageBoxEvent>() {
+         public void handleEvent(MessageBoxEvent be) {
+            if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+               ClientDataBase.userInfo.setPassword("");
+               Cookies.setCookie(Constants.CONSOLE_USERINFO, ClientDataBase.userInfo.toJson());;
+            }
+         }
+      });
    }
 }
