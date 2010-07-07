@@ -4,11 +4,23 @@
   <head>
     <title>OpenRemote Boss 2.0 WebConsole</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link type="text/css" rel="stylesheet" href="resources/css/gxt-all.css" />
-    <link type="text/css" rel="stylesheet" href="resources/css/webconsole.css" />
+    <link type="text/css" rel="stylesheet" href="./mobile/css/jquery/jquery-ui-1.8.2.custom.css" />
+    <link type="text/css" rel="stylesheet" href="./mobile/css/AppSettings.css" />
 
-    <script type="text/javascript" language="javascript" src="./restricted_html_client/jslib/jquery/jquery-core-1.4.2.js"></script>    
-    <script type="text/javascript" language="javascript" src="./restricted_html_client/js/boot.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/jslib/uuid/Math.uuid.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/jslib/jquery/jquery-core-1.4.2.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/jslib/jquery/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/jslib/ejs/ejs_production.js"></script>
+  
+  
+    <script type="text/javascript" language="javascript" src="./mobile/js/AjaxUtils.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/ControllerServer.js"></script>   
+    <script type="text/javascript" language="javascript" src="./mobile/js/AppSettings.js"></script>   
+    <script type="text/javascript" language="javascript" src="./mobile/js/boot.js"></script>
+    <style type="text/css">
+			body{ font: 70% "Trebuchet MS", sans-serif; margin: 50px;}
+		</style>
+		
     <style type="text/css">
       #welcome-content {
          border: 1px solid #CCCCCC;
@@ -43,12 +55,14 @@
     </style>
   </head>
 
-  <body>
+  <body class="smoothness">
+    <button id="settings" >Settings</button>
     <div id="welcome-content">
       <div class="loading-indicator-img">
           <img width="32" height="32" src="resources/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
           <span id="loading-msg">Loading resources, please wait...</span>
       </div>
     </div>
+    <div id="appSettingsDialog" title="AppSettings" />
   </body>
 </html>
