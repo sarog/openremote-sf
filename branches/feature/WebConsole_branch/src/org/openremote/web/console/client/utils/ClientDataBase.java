@@ -61,11 +61,14 @@ public class ClientDataBase {
    }
    
    public static Group getDefaultGroup() {
+      Group group = null;
       if (userInfo.getLastGroupId() > 0) {
-         return getGroupById(userInfo.getLastGroupId());
-      } else {
-         return getFirstGroup();
+         group = getGroupById(userInfo.getLastGroupId());
       }
+      if (group == null) {
+         group = getFirstGroup();
+      }
+      return group;
    }
    
    public static Screen getScreenById(int screenId) {

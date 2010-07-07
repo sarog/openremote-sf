@@ -300,10 +300,13 @@ public class SettingsWindow extends FormWindow {
       panelListCombo.setValueField("name");
       panelListCombo.setTriggerAction(TriggerAction.ALL);
       panelListCombo.setEditable(false);
+      panelListCombo.setAllowBlank(false);
       panelListCombo.setEmptyText("Select your panel...");
       String currentPanel = ClientDataBase.appSetting.getCurrentPanelIdentity();
       if (!"".equals(currentPanel)) {
-         store.add(new StringModelData("name", currentPanel));
+         StringModelData value = new StringModelData("name", currentPanel);
+         store.add(value);
+         panelListCombo.setValue(value);
       }
       panelListCombo.addListener(Events.TriggerClick, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {

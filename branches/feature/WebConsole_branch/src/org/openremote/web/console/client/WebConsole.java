@@ -129,4 +129,5 @@ public class WebConsole implements EntryPoint {
       AsyncServiceFactory.getPanelIdentityServiceAsync().getPanelXmlEntity(url,
             ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), callback);
    }
+   
 }

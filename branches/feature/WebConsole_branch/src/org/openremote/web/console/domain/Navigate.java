@@ -14,8 +14,6 @@ public class Navigate extends BusinessEntity {
    private boolean setting;
    private boolean login;
    private boolean logout;
-   private int fromScreen;
-   private int fromGroup;
 
    public Navigate() {
    }
@@ -82,28 +80,12 @@ public class Navigate extends BusinessEntity {
       return toGroup;
    }
 
-   public int getFromScreen() {
-      return fromScreen;
-   }
-
-   public int getFromGroup() {
-      return fromGroup;
-   }
-
    public void setToScreen(int toScreen) {
       this.toScreen = toScreen;
    }
 
    public void setToGroup(int toGroup) {
       this.toGroup = toGroup;
-   }
-
-   public void setFromScreen(int fromScreen) {
-      this.fromScreen = fromScreen;
-   }
-
-   public void setFromGroup(int fromGroup) {
-      this.fromGroup = fromGroup;
    }
 
 }
