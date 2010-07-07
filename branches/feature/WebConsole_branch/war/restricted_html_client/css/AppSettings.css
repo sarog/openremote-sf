@@ -1,0 +1,9 @@
+.ui-selected { background: #F39814; color: white; }
+
+#controllerURLList { font-size: 12px; }
+#controllerURLList .ui-selecting { background: #FECA40; }
+#controllerURLList .ui-selected { background: #F39814; color: white; }
+#controllerURLList { list-style-type: none; margin: 0; padding: 0; width: 100%; border: 1px solid #CCCCCC; height:60%; overflow:auto}
+#controllerURLList span[name|="controllerServer"] { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
+#contextURLInput {width:60%; height:28px; border: 1px solid #CCCCCC; font-size: 12px;}
+#controllerPanelSelect {width:40%; height:28px; border: 1px solid #CCCCCC; font-size: 12px;}
