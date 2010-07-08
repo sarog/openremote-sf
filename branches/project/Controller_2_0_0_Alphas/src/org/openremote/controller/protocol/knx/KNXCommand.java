@@ -36,6 +36,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
     }
  */
 
+  /*
     public KNXConnectionManager getConnectionManager() {
         return connectionManager;
     }
@@ -44,6 +45,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
         this.connectionManager = connectionManager;
     }
 
+*/
   /*
     public KNXCommandType getKnxCommandType() {
         return knxCommandType;
@@ -60,7 +62,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
     @Override public void send() {
       try
       {
-        KNXConnection connection = getConnectionManager().getConnection();    
+        KNXConnection connection = connectionManager.getConnection();
         connection.send(groupAddress, knxCommandType);
       }
       catch (ConnectionException e)
