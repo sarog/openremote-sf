@@ -172,11 +172,6 @@ public class KNXCommandBuilder implements CommandBuilder
      * TODO : DPT to be added.
      */
 
-    final String XML_ELEMENT_PROPERTY       = "property";
-
-    final String XML_ATTRIBUTENAME_NAME     = "name";
-    final String XML_ATTRIBUTENAME_VALUE    = "value";
-
 
     String groupAddress = null;
     String commandAsString = null;
