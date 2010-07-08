@@ -1,4 +1,5 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2010, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
@@ -205,6 +206,8 @@ public class KNXCommandBuilder implements CommandBuilder
   public Command build(Element element)
   {
     /*
+     * TODO : ${param} handling
+     * 
      * TODO : DPT to be added. Modify class javadoc with this change.
      *
      * TODO : should attempt to validate group address values defensively
