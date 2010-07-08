@@ -11,6 +11,8 @@ ControllerServer = (function(){
     var id = Math.uuid();
     var url = "";
     var panelIdentities = [];
+    var selectedPanelIdentity = "";
+    var panelXML = "";
     
     // Instance methods
     this.setUrl = function(urlParam) {
@@ -24,22 +26,21 @@ ControllerServer = (function(){
       return url;
     };
     
+    this.setSelectedPanelIdentity = function(selectedPanelIdentityParam) {
+      selectedPanelIdentity = selectedPanelIdentityParam;
+    };
+    
+    this.getSelectedPanelIdentity = function() {
+      return selectedPanelIdentity;
+    };
+    
     this.getID = function() {
       return id;
     };
     
-    this.getPanelIdentities = function() {
-      var successCallback = function(panelIdentitiesJSON) {
-        alert("success");
-      };
-      var errorCallback = function(xmlHttpRequest, textStatus, errorThrown) {
-        alert("fail");
-      };
-      
+    this.loadPanelIdentities = function(successCallback, errorCallback) {
       panelIdentities = [];
-      //AjaxUtils.sendAjaxJson(url, successCallback, errorCallback);
-      panelIdentities.splice(0,3,"Dan", "Tomsky", "Handy", "Javen");
-      return panelIdentities;
+      ConnnectionUtils.sendAjaxJson(url+"/rest/panels?callback=?", successCallback, errorCallback);
     };
     
     // Init jobs

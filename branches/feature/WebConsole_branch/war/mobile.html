@@ -10,46 +10,49 @@
     <script type="text/javascript" language="javascript" src="./mobile/jslib/uuid/Math.uuid.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/jslib/jquery/jquery-core-1.4.2.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/jslib/jquery/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/jslib/jquery-jsonp/jquery.jsonp-2.1.2.min.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/jslib/ejs/ejs_production.js"></script>
   
   
-    <script type="text/javascript" language="javascript" src="./mobile/js/AjaxUtils.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/utils/ConnnectionUtils.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/utils/MessageUtils.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/ControllerServer.js"></script>   
     <script type="text/javascript" language="javascript" src="./mobile/js/AppSettings.js"></script>   
     <script type="text/javascript" language="javascript" src="./mobile/js/boot.js"></script>
-    <style type="text/css">
-			body{ font: 70% "Trebuchet MS", sans-serif; margin: 50px;}
-		</style>
 		
     <style type="text/css">
-      #welcome-content {
+      div[name="loading"] {
          border: 1px solid #CCCCCC;
          height: auto;
-         left: 50%;
-         margin-left: -147px;
-         padding: 2px;
+         width: 100%;
+/*         left: 47%;*/
+/*         margin-left: -147px;*/
+/*         padding: 2px;*/
          position: absolute;
          top: 40%;
          z-index: 20001;
+         margin: -7px;
+/*         margin-right: 10px;*/
+         text-align: center;
       }
       
-      #welcome-content .loading-indicator-img {
+      div[name="loading"] .loading-indicator-img {
          background: none repeat scroll 0 0 white;
          color: #444444;
-         font: bold 13px tahoma, arial, helvetica;
+         font: bold 100% tahoma, arial, helvetica;
          height: auto;
-         margin: 0;
+/*         margin: 0;*/
          padding: 10px;
       }
       
-      #welcome-content .loading-indicator-img img {
+      div[name="loading"] .loading-indicator-img img {
          float: left;
-         margin-right: 8px;
-         vertical-align: top;
+/*         margin-right: 8px;*/
+/*         vertical-align: top;*/
       }
       
-      #welcome-content #loading-msg {
-         font: 10px arial, tahoma, sans-serif;
+      div[name="loading"] #loading-msg,#loading-info {
+         font: 100% arial, tahoma, sans-serif;
       }
     
     </style>
@@ -57,12 +60,23 @@
 
   <body class="smoothness">
     <button id="settings" >Settings</button>
-    <div id="welcome-content">
+    
+    <div id="welcome-content-loading" name="loading">
       <div class="loading-indicator-img">
-          <img width="32" height="32" src="resources/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
+          <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
           <span id="loading-msg">Loading resources, please wait...</span>
       </div>
     </div>
-    <div id="appSettingsDialog" title="AppSettings" />
+    <!-- <div class="ui-widget-overlay" style="width: 1280px; height: 390px; z-index: 1001;"></div> -->
+    <div id="grayMask" class="ui-widget-overlay" style="width:100%; height: 100%; opacity:0.5; display:none; position:absolute; z-index: 20001; top: 0px;"></div>
+      <div id="process-loading" style="display:none;" name="loading">
+        <div class="loading-indicator-img" style="opacity:1;">
+            <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
+            <span id="loading-info"></span>
+        </div>
+      </div>
+    <!-- The div with id "messageDialog" must locate before div with "appSettingsDialog", otherwise the div with id "messageDialog" can't be rendered.  -->
+    <div id="messageDialog" />
+    <div id="appSettingsDialog" style="height:100%;" title="AppSettings" />
   </body>
 </html>
