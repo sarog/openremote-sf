@@ -25,9 +25,12 @@ import java.util.Iterator;
 import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.utils.ORListenerManager;
+import org.openremote.web.console.client.utils.ORRoundRobin;
 import org.openremote.web.console.client.window.LoginWindow;
 import org.openremote.web.console.exception.ControllerExceptionMessage;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
@@ -98,7 +101,11 @@ public class PollingHelper {
                   new LoginWindow();
                } else {
                   cancelPolling();
-                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(), null);
+                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(), new Listener<MessageBoxEvent>(){
+                     public void handleEvent(MessageBoxEvent be) {
+                        ORRoundRobin.doSwitch();
+                     }
+                  });
                }
             }
          }

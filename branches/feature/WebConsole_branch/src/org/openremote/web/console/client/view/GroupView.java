@@ -43,9 +43,11 @@ import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
@@ -97,6 +99,18 @@ public class GroupView {
          createSouth();
          RootPanel.get().add(viewport);
          addNaviagateListener();
+         // only useful in IE.
+         KeyNav<ComponentEvent> keyNav = new KeyNav<ComponentEvent>(viewport) {
+            public void onEsc(ComponentEvent ce) {
+               SettingsWindow settingWindow = new SettingsWindow();
+               settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+                  public void afterSubmit(SubmitEvent be) {
+                     Window.Location.reload();
+                  }
+               });
+            }
+         };
+         keyNav.setCancelBubble(true);
       }
    }
    
@@ -137,9 +151,11 @@ public class GroupView {
       data.setMargins(new Margins(5));
       
       previousButton = new Button();
+      previousButton.setToolTip("Previous screen");
       previousButton.setScale(ButtonScale.MEDIUM);
       previousButton.setIcon(icons.previous());
       nextButton = new Button();
+      nextButton.setToolTip("Next screen");
       nextButton.setScale(ButtonScale.MEDIUM);
       nextButton.setIcon(icons.next());
       int screenIndex = currentGroup.getScreens().indexOf(currentScreen);

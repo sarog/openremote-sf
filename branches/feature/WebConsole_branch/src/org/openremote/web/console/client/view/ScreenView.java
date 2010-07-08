@@ -43,6 +43,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       this.screen = screen;
       setStyleAttribute("backgroundColor", "white");
       setStyleAttribute("position", "relative");
+      setStyleAttribute("overflow", "auto");
       setBorders(true);
       init(screen);
    }
@@ -69,7 +70,6 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
             + URL.encode(background.getBackgroundImage().getSrc());
       setStyleAttribute("backgroundImage", "url(" + url + ")");
       setStyleAttribute("backgroundRepeat", "no-repeat");
-      setStyleAttribute("overflow", "hidden");
       if (background.isFillScreen()) {
          setStyleAttribute("backgroundPosition", "top left");
       } else if (background.isBackgroundImageAbsolutePosition()) {
