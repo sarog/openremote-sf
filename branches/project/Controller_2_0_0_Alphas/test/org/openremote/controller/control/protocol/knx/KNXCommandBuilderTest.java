@@ -84,12 +84,36 @@ public class KNXCommandBuilderTest
   }
 
 
-
+  /**
+   * Test KNX command parsing with "OFF" as the command string and 1/1/1 as group address.
+   */
   @Test public void testKNXOff()
   {
-    Command cmd = getCommand("OFF", "testGroupAddress");
+    Command cmd = getCommand("OFF", "1/1/1");
+
     assertTrue(cmd instanceof KNXCommand);
   }
+
+  /**
+   * Test KNX command parsing with "off", "Off" and "oFf" as the command string and 1/1/1 as
+   * group address.
+   */
+  @Test public void testKNXOffMixedCase()
+  {
+    Command cmd1 = getCommand("off", "1/1/1");
+
+    assertTrue(cmd1 instanceof KNXCommand);
+
+    Command cmd2 = getCommand("Off", "1/1/1");
+
+    assertTrue(cmd2 instanceof KNXCommand);
+
+    Command cmd3 = getCommand("oFf", "1/1/1");
+
+    assertTrue(cmd3 instanceof KNXCommand);
+  }
+
+
 
    @Test
    public void testKNXStatus() {
@@ -109,24 +133,25 @@ public class KNXCommandBuilderTest
 
   // Helpers --------------------------------------------------------------------------------------
   
-   private Command getCommand(String cmd, String groupAddress) {
-      Element ele = new Element("command");
-      ele.setAttribute("id", "test");
-      ele.setAttribute("protocol", "knx");
-      //ele.setAttribute("value", cmd);
+  private Command getCommand(String cmd, String groupAddress)
+  {
+    Element ele = new Element("command");
+    ele.setAttribute("id", "test");
+    ele.setAttribute("protocol", "knx");
 
-      Element propAddr = new Element("property");
-      propAddr.setAttribute("name", KNXCommandBuilder.KNX_XMLPROPERTY_GROUPADDRESS);
-      propAddr.setAttribute("value", groupAddress);
+    Element propAddr = new Element("property");
+    propAddr.setAttribute("name", KNXCommandBuilder.KNX_XMLPROPERTY_GROUPADDRESS);
+    propAddr.setAttribute("value", groupAddress);
 
-      ele.addContent(propAddr);
+    ele.addContent(propAddr);
 
-      Element propAddr2 = new Element("property");
-      propAddr2.setAttribute("name", "command");
-      propAddr2.setAttribute("value", cmd);
+    Element propAddr2 = new Element("property");
+    propAddr2.setAttribute("name", KNXCommandBuilder.KNX_XMLPROPERTY_COMMAND);
+    propAddr2.setAttribute("value", cmd);
 
-      ele.addContent(propAddr2);
+    ele.addContent(propAddr2);
 
-      return builder.build(ele);
-   }
+    return builder.build(ele);
+  }
+
 }
