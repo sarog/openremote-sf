@@ -112,21 +112,38 @@ public class KNXCommandBuilderTest
   }
 
 
+  /**
+   * Test KNX command parsing with "STATUS" as the command string and 1/1/1 as
+   * group address.
+   */
+  @Test public void testKNXStatus() {
+    Command cmd = getCommand("STATUS", "1/1/1");
+    assertTrue(cmd instanceof KNXCommand);
+  }
 
-   @Test
-   public void testKNXStatus() {
-      Command cmd = getCommand("STATUS", "testGroupAddress");
-      assertTrue(cmd instanceof KNXCommand);
-   }
+  /**
+   * Test KNX command parsing with "Status", "status" and "STatus" as the command string and
+   * 1/1/1 as group address.
+   */
+  @Test public void testKNXStatusMixedCase() {
+    Command cmd1 = getCommand("status", "1/1/1");
+    assertTrue(cmd1 instanceof KNXCommand);
 
-   @Test
-   public void testNoSuchCommand() {
-      try {
-         getCommand(" ", "testGroupAddress");
-         fail();
-      } catch (NoSuchCommandException e) {
-      }
-   }
+    Command cmd2 = getCommand("Status", "1/1/1");
+    assertTrue(cmd2 instanceof KNXCommand);
+
+    Command cmd3 = getCommand("STatus", "1/1/1");
+    assertTrue(cmd3 instanceof KNXCommand);
+  }
+
+  /**
+   * Test KNX command parsing with invalid command name and 1/2/2 as group address.
+   */
+  @Test(expected=NoSuchCommandException.class)
+  public void testNoSuchCommand()
+  {
+    getCommand(" ", "1/2/2");
+  }
 
 
   // Helpers --------------------------------------------------------------------------------------
