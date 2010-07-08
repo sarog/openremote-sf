@@ -13,5 +13,5 @@ $().ready(function() {
           })
   
   AppSettings.getInstance().show();
-  $("#welcome-content").hide();
+  $("#welcome-content-loading").hide();
 });

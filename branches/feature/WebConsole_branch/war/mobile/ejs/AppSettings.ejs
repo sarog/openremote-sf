@@ -1,18 +1,19 @@
-<p class="validateTips">
-<span style="float: left; margin-right: 0.3em;" class="ui-icon ui-icon-info"></span>
-<span id="appSettingsTips">Please input valid url, like http://10.10.10.101:8080/controller.</span>
-</p>
-<p>
-  <div>
-    <div style="float:left; margin-top:5px;">URL: </div>
-    <input id="contextURLInput" type="text" />
-    <button id="addControllerURLBtn" >Add conroller url</button>
-  </div>
-</p>
+<div>
+  <div style="margin-top:5px;">URL, <span style="font-size:80%;">eg: http://10.10.10.100:8080/controller</span></div>
+  <label><input name="protocol" type="radio" style="font-size:100%;" value="http://" >HTTP</input></label><br />
+  <label><input name="protocol" type="radio" style="font-size:100%;" value="https://" >HTTPS</input></label>
+  <div><input id="controllerURLInput" type="text" /></div>
+  <div><button id="addControllerURLBtn">Add</button><span id="appSettingsTips" /></div>
+</div>
+<hr />
+Select a controller url:
 <div id="controllerURLList" />
-<div id="controllerPanelSelectContainer" style="padding:0.4em">
-  <div style="float:left; margin-top:5px;">Select a panel from selected controller: </div>
+<hr />
+<div id="controllerPanelSelectContainer">
+  <div>Select a panel identity: </div>
+  <div>
   <select id="controllerPanelSelect">
     <option>none</option>
   </select>
+  </div>
 </div>
