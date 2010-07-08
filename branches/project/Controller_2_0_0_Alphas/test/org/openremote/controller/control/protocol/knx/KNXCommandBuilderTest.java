@@ -1,4 +1,5 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2010, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
@@ -207,7 +208,7 @@ public class KNXCommandBuilderTest
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "knx");
+    ele.setAttribute(Command.PROTOCOL_ATTRIBUTE_NAME, "knx");
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
@@ -232,7 +233,7 @@ public class KNXCommandBuilderTest
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "knx");
+    ele.setAttribute(Command.PROTOCOL_ATTRIBUTE_NAME, "knx");
 
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
@@ -259,7 +260,7 @@ public class KNXCommandBuilderTest
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "knx");
+    ele.setAttribute(Command.PROTOCOL_ATTRIBUTE_NAME, "knx");
 
     Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
@@ -276,7 +277,7 @@ public class KNXCommandBuilderTest
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "knx");
+    ele.setAttribute(Command.PROTOCOL_ATTRIBUTE_NAME, "knx");
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
@@ -293,7 +294,7 @@ public class KNXCommandBuilderTest
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
-    ele.setAttribute("protocol", "knx");
+    ele.setAttribute(Command.PROTOCOL_ATTRIBUTE_NAME, "knx");
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
