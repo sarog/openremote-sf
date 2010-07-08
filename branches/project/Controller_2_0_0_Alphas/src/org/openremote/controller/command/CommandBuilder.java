@@ -31,7 +31,7 @@ import org.jdom.Element;
  *
  * The generic structure of all command XML definitions is following:
  *
- * <pre>{@link
+ * <pre>{@code
  * <command protocol = "protocol-id" >
  *   <property name = "argname1" value = "..."/>
  *   <property name = "argname2" value = "..."/>
@@ -55,7 +55,12 @@ public interface CommandBuilder
   // Constants ------------------------------------------------------------------------------------
 
   /**
-   * String constant for the child property list elements: ("{@link}")
+   * String constant for the top level command element protocol attribute: ("{@value}")
+   */
+  public final static String PROTOCOL_ATTRIBUTE_NAME = "protocol";
+
+  /**
+   * String constant for the child property list elements: ("{@value}")
    */
   public final String XML_ELEMENT_PROPERTY       = "property";
 
