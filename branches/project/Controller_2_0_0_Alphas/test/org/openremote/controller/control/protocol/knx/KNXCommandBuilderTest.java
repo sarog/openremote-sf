@@ -19,18 +19,16 @@
  */
 package org.openremote.controller.control.protocol.knx;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.KNXCommand;
 import org.openremote.controller.protocol.knx.KNXCommandBuilder;
-import org.openremote.controller.protocol.knx.KNXCommandType;
 
 /**
  * Basic unit tests for parsing XML elements in
@@ -139,15 +137,19 @@ public class KNXCommandBuilderTest
     ele.setAttribute("id", "test");
     ele.setAttribute("protocol", "knx");
 
-    Element propAddr = new Element("property");
-    propAddr.setAttribute("name", KNXCommandBuilder.KNX_XMLPROPERTY_GROUPADDRESS);
-    propAddr.setAttribute("value", groupAddress);
+    Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                          KNXCommandBuilder.KNX_XMLPROPERTY_GROUPADDRESS);
+    propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                          groupAddress);
 
     ele.addContent(propAddr);
 
-    Element propAddr2 = new Element("property");
-    propAddr2.setAttribute("name", KNXCommandBuilder.KNX_XMLPROPERTY_COMMAND);
-    propAddr2.setAttribute("value", cmd);
+    Element propAddr2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                           KNXCommandBuilder.KNX_XMLPROPERTY_COMMAND);
+    propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                           cmd);
 
     ele.addContent(propAddr2);
 
