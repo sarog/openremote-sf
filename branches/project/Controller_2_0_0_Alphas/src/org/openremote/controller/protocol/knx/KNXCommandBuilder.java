@@ -85,8 +85,37 @@ public class KNXCommandBuilder implements CommandBuilder
 
   // Constants ------------------------------------------------------------------------------------
 
-  public final static String KNX_LOG_CATEGORY  = "KNX";   // TODO : externalize user-friendly log category constants
-  public final static String GROUP_ADDRESS_XML_ATTRIBUTE = "groupAddress";
+  public final static String KNX_LOG_CATEGORY  = "KNX";
+  // TODO : externalize user-friendly log category constants
+
+  /**
+   * String constant for parsing KNX protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for KNX group addresses
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "knx" >
+   *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "command" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String KNX_XMLPROPERTY_GROUPADDRESS  = "groupAddress";
+
+  /**
+   * String constant for parsing KNX protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for KNX commands ({@value}):
+   *
+   * <pre>{@code
+   * <command protocol = "knx" >
+   *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "command" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String KNX_XMLPROPERTY_COMMAND       = "command";
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -130,28 +159,66 @@ public class KNXCommandBuilder implements CommandBuilder
    * {@inheritDoc}
    */
   @SuppressWarnings("unchecked")
-public Command build(Element element)
+  public Command build(Element element)
   {
-     String groupAddress = null;
-     String knxCommandStr = element.getAttributeValue("value");
-     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-     for(Element ele : propertyEles){
-        if(GROUP_ADDRESS_XML_ATTRIBUTE.equals(ele.getAttributeValue("name"))){
-           groupAddress = ele.getAttributeValue("value");
-           break;
-        } 
-     }
+    /*
+     *    An example KNX command configuration in controller.xml looks like this:
+     *
+     *    <command protocol = "knx" >
+     *      <property name = "groupAddress" value = "x/x/x"/>
+     *      <property name = "command" value = "ON"/>
+     *    </command>
+     *
+     * TODO : DPT to be added.
+     */
+
+    final String XML_ELEMENT_PROPERTY       = "property";
+
+    final String XML_ATTRIBUTENAME_NAME     = "name";
+    final String XML_ATTRIBUTENAME_VALUE    = "value";
+
+
+    String groupAddress = null;
+    String commandAsString = null;
+
+    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
+
+    for (Element el : propertyElements)
+    {
+      String knxPropertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
+      String knxPropertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
+
+      if (KNX_XMLPROPERTY_GROUPADDRESS.equalsIgnoreCase(knxPropertyName))
+      {
+        groupAddress = knxPropertyValue;
+      }
+      else if (KNX_XMLPROPERTY_COMMAND.equalsIgnoreCase(knxPropertyName))
+      {
+        commandAsString = knxPropertyValue;
+      }
+      else
+      {
+        log.error(
+            "Unknown KNX property '<" + XML_ELEMENT_PROPERTY + " " +
+            XML_ATTRIBUTENAME_NAME + " = \"" + knxPropertyName + "\" " +
+            XML_ATTRIBUTENAME_VALUE + " = \"" + knxPropertyValue + "\"/>'."
+        );
+
+        return null;
+      }
+    }
+
 
     KNXCommandType knxCommand = null;
 
-    if (KNXCommandType.SWITCH_ON.isEqual(knxCommandStr))
+    if (KNXCommandType.SWITCH_ON.isEqual(commandAsString))
       knxCommand = KNXCommandType.SWITCH_ON;
-    else if (KNXCommandType.SWITCH_OFF.isEqual(knxCommandStr))
+    else if (KNXCommandType.SWITCH_OFF.isEqual(commandAsString))
       knxCommand = KNXCommandType.SWITCH_OFF;
-    else if (KNXCommandType.STATUS.isEqual(knxCommandStr)) {
+    else if (KNXCommandType.STATUS.isEqual(commandAsString)) {
        knxCommand = KNXCommandType.STATUS;
     } else {
-       throw new NoSuchCommandException("Couldn't find command " + knxCommandStr + " in KNXCommandType.");
+       throw new NoSuchCommandException("Unknown command '" + commandAsString + "'.");
     }
 
     Command command = new KNXCommand(connectionManager, groupAddress, knxCommand);
