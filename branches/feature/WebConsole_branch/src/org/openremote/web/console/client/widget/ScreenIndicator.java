@@ -95,6 +95,7 @@ public class ScreenIndicator extends LayoutContainer {
          
          indicator.setData(NAVIGATETOSCREEN, new Navigate(groupId, screens.get(i).getScreenId()));
          indicator.setSize(13, 14);
+         indicator.setToolTip("To " + screens.get(i).getName());
          if (i != screenIndex) {
             indicator.sinkEvents(Event.ONMOUSEDOWN);
             indicator.setStyleName("indicator-default");

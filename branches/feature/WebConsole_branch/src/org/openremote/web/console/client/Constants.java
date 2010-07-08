@@ -32,6 +32,7 @@ public class Constants {
 
    public static final String CONSOLE_USERINFO = "console_userinfo";
    public static final String CONSOLE_SETTINGS = "console_settings";
+   public static final String GROUP_MEMBERS = "group_members";
    
    public static final String ListenerPollingStatusIdFormat = "polling_status_";
    public static final String ListenerNavigateTo = "navigateToListener";

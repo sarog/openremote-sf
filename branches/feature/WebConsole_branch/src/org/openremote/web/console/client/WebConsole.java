@@ -24,6 +24,7 @@ import org.openremote.web.console.client.listener.SubmitListener;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
+import org.openremote.web.console.client.utils.ORRoundRobin;
 import org.openremote.web.console.client.view.GroupView;
 import org.openremote.web.console.client.window.LoginWindow;
 import org.openremote.web.console.client.window.SettingsWindow;
@@ -90,6 +91,7 @@ public class WebConsole implements EntryPoint {
     * read panel entity from server.
     */
    private void readPanelXmlEntity() {
+      ORRoundRobin.detectGroupMembers();
       final String url = ClientDataBase.appSetting.getCurrentServer() + "/rest/panel/"
             + URL.encode(ClientDataBase.appSetting.getCurrentPanelIdentity());
       DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
