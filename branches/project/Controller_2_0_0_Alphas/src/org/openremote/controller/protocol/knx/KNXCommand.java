@@ -26,6 +26,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
         this.groupAddress = groupAddress;
     }
 
+  /*
     public String getGroupAddress() {
         return groupAddress;
     }
@@ -33,6 +34,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
     public void setGroupAddress(String groupAddress) {
         this.groupAddress = groupAddress;
     }
+ */
 
     public KNXConnectionManager getConnectionManager() {
         return connectionManager;
@@ -41,7 +43,8 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
     public void setConnectionManager(KNXConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
     }
-    
+
+  /*
     public KNXCommandType getKnxCommandType() {
         return knxCommandType;
     }
@@ -49,7 +52,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
     public void setKnxCommandType(KNXCommandType knxCommandType) {
         this.knxCommandType = knxCommandType;
     }
-    
+  */
 
     /**
      * {@inheritDoc}
@@ -58,7 +61,7 @@ public class KNXCommand implements ExecutableCommand, StatusCommand {
       try
       {
         KNXConnection connection = getConnectionManager().getConnection();    
-        connection.send(getGroupAddress(), getKnxCommandType());
+        connection.send(groupAddress, knxCommandType);
       }
       catch (ConnectionException e)
       {
