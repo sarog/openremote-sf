@@ -88,4 +88,24 @@ public class Navigate extends BusinessEntity {
       this.toGroup = toGroup;
    }
 
+   public void setPreviousScreen(boolean previousScreen) {
+      this.previousScreen = previousScreen;
+   }
+
+   public void setNextScreen(boolean nextScreen) {
+      this.nextScreen = nextScreen;
+   }
+
+   public void setBack(boolean back) {
+      this.back = back;
+   }
+
+   public void setLogin(boolean login) {
+      this.login = login;
+   }
+
+   public void setLogout(boolean logout) {
+      this.logout = logout;
+   }
+
 }
