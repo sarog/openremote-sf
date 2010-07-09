@@ -21,6 +21,7 @@ package org.openremote.modeler;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -34,6 +35,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author Dan 2009-7-31
  */
 public abstract class TestBase extends TestCase {
+   
+   private static final Logger log = Logger.getLogger(TestBase.class);
    
    /** The session factory. */
    private SessionFactory sessionFactory;
@@ -62,7 +65,7 @@ public abstract class TestBase extends TestCase {
       try {
          s.flush();
       } catch (Throwable e) {
-         e.printStackTrace();
+         log.error("Can not flush session", e);
       }
 
       TransactionSynchronizationManager.unbindResource(sessionFactory);
