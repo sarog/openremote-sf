@@ -91,8 +91,10 @@ public class ORConnection {
          httpResponse = httpClient.execute(httpRequest);
       } catch (SocketTimeoutException e) {
          log.error("SocketTimeoutException", e);
+         throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(0));
       } catch (ClientProtocolException e) {
          log.error("ClientProtocolException", e);
+         throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(0));
       } catch (IOException e) {
          log.error("IOException", e);
          throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(0));

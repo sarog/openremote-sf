@@ -33,3 +33,13 @@
 	opacity: 0.8;
 	*margin: 1px; /* for IE*/
 }
+
+.label-style {
+   text-align: center;
+   font-family: tahoma,arial,verdana,sans-serif;	
+}
+
+.image-style {
+   background-repeat: no-repeat;
+   background-position: 0 0;	
+}

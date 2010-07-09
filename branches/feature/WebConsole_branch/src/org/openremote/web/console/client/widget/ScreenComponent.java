@@ -39,7 +39,9 @@ public class ScreenComponent extends LayoutContainer {
    public static ScreenComponent buildWithComponent(Component component) {
       ScreenComponent screenComponent = null;
       if (component instanceof Label) {
+         screenComponent = new ScreenLabel((Label) component);
       } else if (component instanceof Image) {
+         screenComponent = new ScreenImage((Image) component);
       } else {
          screenComponent = ScreenControl.buildWithControl(component);
       }

@@ -20,9 +20,13 @@
 package org.openremote.web.console.client.rpc;
 
 
+import org.openremote.web.console.client.utils.ORRoundRobin;
 import org.openremote.web.console.client.window.LoginWindow;
+import org.openremote.web.console.exception.ControllerExceptionMessage;
 import org.openremote.web.console.exception.NotAuthenticatedException;
 
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -48,7 +52,15 @@ public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
       if (caught instanceof NotAuthenticatedException) {
          new LoginWindow();
       } else {
-         MessageBox.alert("ERROR", caught.getMessage(), null);
+         if (ControllerExceptionMessage.exceptionMessageOfCode(0).equals(caught.getMessage())) {
+            MessageBox.alert("ERROR", caught.getMessage(), new Listener<MessageBoxEvent>(){
+               public void handleEvent(MessageBoxEvent be) {
+                  ORRoundRobin.doSwitch();
+               }
+            });
+         } else {
+            MessageBox.alert("ERROR", caught.getMessage(), null);
+         }
       }
    }
 

@@ -80,7 +80,8 @@ public class PollingHelper {
       });
       requestStatusProxy.load();
       
-      final SimpleScriptTagProxy pollingStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/polling/" + sessionId + "/"+ pollingStatusIds, new JsonResultReader() {
+      final SimpleScriptTagProxy pollingStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/polling/" + sessionId
+            + "/" + pollingStatusIds, new JsonResultReader() {
          public void read(JSONObject jsonObj) {
             if (jsonObj.containsKey("status")) {
                readStatus(jsonObj);
@@ -101,11 +102,12 @@ public class PollingHelper {
                   new LoginWindow();
                } else {
                   cancelPolling();
-                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(), new Listener<MessageBoxEvent>(){
-                     public void handleEvent(MessageBoxEvent be) {
-                        ORRoundRobin.doSwitch();
-                     }
-                  });
+                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),
+                        new Listener<MessageBoxEvent>() {
+                           public void handleEvent(MessageBoxEvent be) {
+                              ORRoundRobin.doSwitch();
+                           }
+                        });
                }
             }
          }
@@ -116,6 +118,13 @@ public class PollingHelper {
          public void run() {
             pollingStatusProxy.load();
          }
+
+         @Override
+         public void cancel() {
+            super.cancel();
+            pollingStatusProxy.cancel();
+         }
+         
       };
       pollingTimer.run();
    }
