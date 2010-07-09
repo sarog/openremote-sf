@@ -56,7 +56,6 @@ public class Protocols {
       if (instanceMap == null) {
          protocolService.getProtocols(new AsyncCallback<Map<String, ProtocolDefinition>>() {
             public void onFailure(Throwable caught) {
-               caught.printStackTrace();
                MessageBox.info("Error", "Can't get protocols from xml file!", null);
             }
             public void onSuccess(Map<String, ProtocolDefinition> protocols) {
