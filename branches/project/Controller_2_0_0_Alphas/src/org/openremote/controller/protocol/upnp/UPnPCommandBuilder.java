@@ -22,7 +22,6 @@ package org.openremote.controller.protocol.upnp;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Map;
 
 import org.cybergarage.upnp.ControlPoint;
@@ -102,7 +101,7 @@ public class UPnPCommandBuilder implements CommandBuilder
    *
    * Properties other than 'device' and 'action' are passed on as UPnP event arguments.
    *
-   * @see UPnPEvent
+   * @see UPnPCommand
    * @see org.openremote.controller.command.CommandBuilder#build(org.jdom.Element)
    *
    * @throws org.openremote.controller.exception.NoSuchCommandException
@@ -144,7 +143,7 @@ public class UPnPCommandBuilder implements CommandBuilder
       }
     }
 
-		return new UPnPEvent(this.controlPoint, upnpDevice, upnpAction, upnpEventArguments);
+		return new UPnPCommand(this.controlPoint, upnpDevice, upnpAction, upnpEventArguments);
 	}
 
 }
