@@ -31,7 +31,7 @@ import org.openremote.controller.command.Command;
 import org.jdom.Element;
 
 /**
- * UPnPEventBuilder class
+ * UPnPCommandBuilder class
  *
  * @author Mathieu Gallissot
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
