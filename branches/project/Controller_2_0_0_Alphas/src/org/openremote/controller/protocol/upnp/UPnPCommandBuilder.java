@@ -103,7 +103,7 @@ public class UPnPCommandBuilder implements CommandBuilder
    * Properties other than 'device' and 'action' are passed on as UPnP event arguments.
    *
    * @see UPnPEvent
-   * @see org.openremote.controller.command.CommandBuilder#build(org.w3c.dom.Element)
+   * @see org.openremote.controller.command.CommandBuilder#build(org.jdom.Element)
    *
    * @throws org.openremote.controller.exception.NoSuchCommandException
    *            if the UPnP command instance cannot be constructed from the XML snippet
