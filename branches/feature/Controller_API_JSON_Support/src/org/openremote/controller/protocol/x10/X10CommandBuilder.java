@@ -23,13 +23,13 @@ package org.openremote.controller.protocol.x10;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.utils.CommandUtil;
 
 /**
- * The Class X10EventBuilder.
+ * X10CommandBuilder.
  * 
  * @author Dan 2009-4-30
  * @author Jerome Velociter
@@ -47,7 +47,7 @@ public class X10CommandBuilder implements CommandBuilder {
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public ExecutableCommand build(Element element)
+   public Command build(Element element)
    {
       String address = null;
       String commandAsString = null;
