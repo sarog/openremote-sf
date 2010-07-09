@@ -30,7 +30,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
- * KNXEventBuilder is responsible for parsing the XML model from controller.xml and create
+ * KNXCommandBuilder is responsible for parsing the XML model from controller.xml and create
  * appropriate Command objects for it. <p>
  *
  * The structure of a KNX command XML snippet from controller.xml is shown below:
