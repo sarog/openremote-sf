@@ -21,14 +21,23 @@ package org.openremote.web.console.client.view;
 
 import java.util.ArrayList;
 
+import org.openremote.web.console.client.Constants;
+import org.openremote.web.console.client.icon.Icons;
 import org.openremote.web.console.client.polling.PollingHelper;
 import org.openremote.web.console.client.utils.ClientDataBase;
+import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.domain.AbsoluteLayoutContainer;
 import org.openremote.web.console.domain.Background;
 import org.openremote.web.console.domain.GridLayoutContainer;
 import org.openremote.web.console.domain.LayoutContainer;
+import org.openremote.web.console.domain.Navigate;
 import org.openremote.web.console.domain.Screen;
 
+import com.extjs.gxt.ui.client.event.MenuEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.menu.Menu;
+import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 
 /**
@@ -36,6 +45,7 @@ import com.google.gwt.http.client.URL;
  */
 public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
 
+   private Icons icons = GWT.create(Icons.class);
    private Screen screen;
    private PollingHelper polling;
    
@@ -46,6 +56,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       setStyleAttribute("overflow", "auto");
       setBorders(true);
       init(screen);
+      addContextMenu();
    }
    
    private void init(Screen screen) {
@@ -94,4 +105,80 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       }
    }
 
+   private void addContextMenu() {
+      Menu contextMenu = new Menu();
+      contextMenu.setWidth(140);
+
+      MenuItem setting = new MenuItem();
+      setting.setIcon(icons.setting());
+      setting.setText("Setting...");
+      setting.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerToPopSetting, null);
+         }
+      });
+      contextMenu.add(setting);
+      
+      MenuItem login = new MenuItem();
+      login.setIcon(icons.login());
+      login.setText("Login...");
+      login.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            Navigate loginNavigate = new Navigate();
+            loginNavigate.setLogin(true);
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, loginNavigate);
+         }
+      });
+      contextMenu.add(login);
+      
+      MenuItem logout = new MenuItem();
+      logout.setIcon(icons.logout());
+      logout.setText("Logout");
+      logout.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            Navigate logoutNavigate = new Navigate();
+            logoutNavigate.setLogout(true);
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, logoutNavigate);
+         }
+      });
+      contextMenu.add(logout);
+      
+      MenuItem back = new MenuItem();
+      back.setIcon(icons.back());
+      back.setText("Back");
+      back.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            Navigate backNavigate = new Navigate();
+            backNavigate.setBack(true);
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, backNavigate);
+         }
+      });
+      contextMenu.add(back);
+      
+      MenuItem previous = new MenuItem();
+      previous.setIcon(icons.left());
+      previous.setText("Previous screen");
+      previous.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            Navigate previousNavigate = new Navigate();
+            previousNavigate.setPreviousScreen(true);
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, previousNavigate);
+         }
+      });
+      contextMenu.add(previous);
+      
+      MenuItem next = new MenuItem();
+      next.setIcon(icons.right());
+      next.setText("Next screen");
+      next.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            Navigate nextNavigate = new Navigate();
+            nextNavigate.setNextScreen(true);
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, nextNavigate);
+         }
+      });
+      contextMenu.add(next);
+      
+      setContextMenu(contextMenu);
+   }
 }

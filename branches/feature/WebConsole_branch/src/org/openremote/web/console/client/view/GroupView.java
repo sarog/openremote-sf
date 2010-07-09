@@ -101,13 +101,12 @@ public class GroupView {
          addPopSettingListener();
          addNaviagateListener();
          KeyNav<ComponentEvent> keyNav = new KeyNav<ComponentEvent>(viewport) {
-            // only useful in IE.
-            public void onEsc(ComponentEvent ce) {
-               ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerToPopSetting, null);
-            }
 
-            public void onEnter(ComponentEvent ce) {
-               ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerToPopSetting, null);
+            public void onRight(ComponentEvent ce) {
+               toNextScreen();
+            }
+            public void onLeft(ComponentEvent ce) {
+               toPreviousScreen();
             }
          };
          keyNav.setCancelBubble(true);

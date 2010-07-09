@@ -35,4 +35,22 @@ public interface Icons extends ImageBundle {
    
    @Resource("next.png")
    AbstractImagePrototype next();
+   
+   @Resource("login.png")
+   AbstractImagePrototype login();
+   
+   @Resource("logout.png")
+   AbstractImagePrototype logout();
+   
+   @Resource("left.png")
+   AbstractImagePrototype left();
+   
+   @Resource("right.png")
+   AbstractImagePrototype right();
+   
+   @Resource("setting.png")
+   AbstractImagePrototype setting();
+   
+   @Resource("back.png")
+   AbstractImagePrototype back();
 }
