@@ -35,6 +35,7 @@ public class SimpleScriptTagProxy {
    private String url;
    private Element head = XDOM.getHead();
    private JsonResultReader reader;
+   private String transId;
    
    public SimpleScriptTagProxy(String url, JsonResultReader reader) {
      this.url = url;
@@ -46,7 +47,7 @@ public class SimpleScriptTagProxy {
     */
    public void load() {
 
-     String transId = "transId" + ID++;
+     transId = "transId" + ID++;
      String prepend = url.indexOf("?") != -1 ? "&" : "?";
      String u = url + prepend + "callback=" + transId;
 
@@ -61,6 +62,14 @@ public class SimpleScriptTagProxy {
      head.appendChild(script);
    }
 
+   /**
+    * Cancel the current jsonp request.
+    */
+   public void cancel() {
+      stopProcess(transId);
+      destroyTrans(transId);
+   }
+   
    protected void destroyTrans(String id) {
      head.removeChild(DOM.getElementById(id));
    }
@@ -77,4 +86,18 @@ public class SimpleScriptTagProxy {
        $wnd[transId]=cb;
        }-*/;
 
+   /**
+    * Stop all window process.
+    * As we can not stop the jsonp request process, so we stop all window processes.
+    * 
+    * @param transId the script id
+    */
+   private native void stopProcess(String transId) /*-{
+      $wnd[transId] = null;
+      if(navigator.appName == "Microsoft Internet Explorer") { 
+         $doc.execCommand('Stop'); 
+      } else {
+         $wnd.stop(); 
+      }
+   }-*/;
 }

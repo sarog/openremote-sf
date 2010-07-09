@@ -69,9 +69,6 @@ public class LoginWindow extends FormWindow {
       passwordField.setFieldLabel("Passowrd");
       passwordField.setName(PASSWORD);
       passwordField.setPassword(true);
-      if (!"".equals(userInfo.getPassword())) {
-         passwordField.setValue(userInfo.getPassword());
-      }
       
       form.add(usernameField);
       form.add(passwordField);

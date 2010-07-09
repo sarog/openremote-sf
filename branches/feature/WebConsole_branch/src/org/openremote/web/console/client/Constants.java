@@ -36,4 +36,5 @@ public class Constants {
    
    public static final String ListenerPollingStatusIdFormat = "polling_status_";
    public static final String ListenerNavigateTo = "navigateToListener";
+   public static final String ListenerToPopSetting = "listenerToPopSetting";
 }

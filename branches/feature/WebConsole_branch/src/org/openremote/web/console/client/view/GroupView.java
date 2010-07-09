@@ -98,16 +98,16 @@ public class GroupView {
          createScreenView();
          createSouth();
          RootPanel.get().add(viewport);
+         addPopSettingListener();
          addNaviagateListener();
-         // only useful in IE.
          KeyNav<ComponentEvent> keyNav = new KeyNav<ComponentEvent>(viewport) {
+            // only useful in IE.
             public void onEsc(ComponentEvent ce) {
-               SettingsWindow settingWindow = new SettingsWindow();
-               settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-                  public void afterSubmit(SubmitEvent be) {
-                     Window.Location.reload();
-                  }
-               });
+               ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerToPopSetting, null);
+            }
+
+            public void onEnter(ComponentEvent ce) {
+               ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerToPopSetting, null);
             }
          };
          keyNav.setCancelBubble(true);
@@ -348,12 +348,7 @@ public class GroupView {
             }
          }
       } else if (navigate.isSetting()) {
-         SettingsWindow settingWindow = new SettingsWindow();
-         settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            public void afterSubmit(SubmitEvent be) {
-               Window.Location.reload();
-            }
-         });
+         ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerToPopSetting, null);
       } else if (navigate.isLogin()) {
          new LoginWindow();
       } else if (navigate.isLogout()) {
@@ -407,6 +402,19 @@ public class GroupView {
                ClientDataBase.userInfo.setPassword("");
                Cookies.setCookie(Constants.CONSOLE_USERINFO, ClientDataBase.userInfo.toJson());;
             }
+         }
+      });
+   }
+   
+   private void addPopSettingListener() {
+      ORListenerManager.getInstance().addOREventListener(Constants.ListenerToPopSetting, new OREventListener() {
+         public void handleEvent(OREvent event) {
+            SettingsWindow settingWindow = new SettingsWindow();
+            settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               public void afterSubmit(SubmitEvent be) {
+                  Window.Location.reload();
+               }
+            });
          }
       });
    }
