@@ -28,6 +28,7 @@ import org.cybergarage.upnp.ControlPoint;
 import org.cybergarage.upnp.UPnP;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.jdom.Element;
 
 /**
@@ -54,7 +55,6 @@ import org.jdom.Element;
  */
 public class UPnPCommandBuilder implements CommandBuilder
 {
-
   /*
    * NOTE:
    *
@@ -62,8 +62,46 @@ public class UPnPCommandBuilder implements CommandBuilder
    *                                                          [JPL]
    */
 
+  // Constants ------------------------------------------------------------------------------------
+
+
+  /**
+   * String constant for parsing UPnP protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for UPnP device
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "upnp" >
+   *   <property name = "device" value = "..."/>
+   *   <property name = "action" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String UPNP_XMLPROPERTY_DEVICE = "device";
+
+  /**
+   * String constant for parsing UPnP protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for UPnP action
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "upnp" >
+   *   <property name = "device" value = "..."/>
+   *   <property name = "action" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String UPNP_XMLPROPERTY_ACTION = "action";
+
+
+  // Instance Fields ------------------------------------------------------------------------------
 
 	private ControlPoint controlPoint;
+
+
+  // Constructors ---------------------------------------------------------------------------------
 
 	/**
 	 * Constructor of the UPnP Event. It initialize the UPnP stack by :
@@ -83,6 +121,9 @@ public class UPnPCommandBuilder implements CommandBuilder
 		this.controlPoint = new ControlPoint();
 		this.controlPoint.start();
 	}
+
+
+  // Implements CommandBuilder --------------------------------------------------------------------
 
   /**
    * Parses the UPnP command XML snippets and builds a corresponding UPnP command instance.  <p>
@@ -112,15 +153,12 @@ public class UPnPCommandBuilder implements CommandBuilder
    */
 	public Command build(Element element)
   {
-
-    final String UPNP_PROPERTY_DEVICE = "device";
-    final String UPNP_PROPERTY_ACTION = "action";
-
-
     String upnpDevice = null;
     String upnpAction = null;
     Map<String, String> upnpEventArguments = new HashMap<String, String>(3);
 
+
+    // grab all the properties which are child elements...
 
     List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
 
@@ -129,20 +167,41 @@ public class UPnPCommandBuilder implements CommandBuilder
       String upnpPropertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
       String upnpPropertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
 
-      if (UPNP_PROPERTY_DEVICE.equalsIgnoreCase(upnpPropertyName))
+      if (UPNP_XMLPROPERTY_DEVICE.equalsIgnoreCase(upnpPropertyName))
       {
         upnpDevice = upnpPropertyValue;
       }
-      else if (UPNP_PROPERTY_ACTION.equalsIgnoreCase(upnpPropertyName))
+      else if (UPNP_XMLPROPERTY_ACTION.equalsIgnoreCase(upnpPropertyName))
       {
         upnpAction = upnpPropertyValue;
       }
       else
       {
+        // anything that's not a device or action property will be taken as an event argument...
+
         upnpEventArguments.put(upnpPropertyName, upnpPropertyValue);
       }
     }
 
+
+    // sanity checks...
+
+    if (upnpDevice == null || "".equals(upnpDevice))
+    {
+      throw new NoSuchCommandException(
+          "UPnP command must have a '" + UPNP_XMLPROPERTY_DEVICE + "' property."
+      );
+    }
+
+    if (upnpAction == null || "".equals(upnpAction))
+    {
+      throw new NoSuchCommandException(
+          "UPnP command must have a '" + UPNP_XMLPROPERTY_ACTION + "' property."
+      );
+    }
+
+    // done!
+    
 		return new UPnPCommand(this.controlPoint, upnpDevice, upnpAction, upnpEventArguments);
 	}
 
