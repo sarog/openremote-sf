@@ -1,4 +1,5 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2010, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
@@ -21,84 +22,143 @@ package org.openremote.controller.protocol.upnp;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Map;
 
 import org.cybergarage.upnp.ControlPoint;
 import org.cybergarage.upnp.UPnP;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.jdom.Element;
 
 /**
- * UPnPEventBuilder class
+ * UPnPCommandBuilder is responsible for parsing the XML model from controller.xml and create
+ * appropriate Command objects for it. <p>
+ *
+ * The structure of a UPnP command XML snippet from controller.xml is shown below:
+ *
+ * <pre>{@code
+ * <command protocol = "upnp" >
+ *   <property name = "device" value = "xxx"/>
+ *   <property name = "action" value = "yyy"/>
+ *   <property name = "argname1" value = "..."/>
+ *   <property name = "argname2" value = "..."/>
+ *   <property name = "argnameX" value = "..."/>
+ * </command>
+ * }</pre>
+ *
+ * Properties 'device' and 'action' are mandatory. Any other property name is considered
+ * an UPnP Event argument.
  *
  * @author Mathieu Gallissot
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class UPnPCommandBuilder implements CommandBuilder {
+public class UPnPCommandBuilder implements CommandBuilder
+{
+  /*
+   * NOTE:
+   *
+   *   UPnP implementation has not been tested completely.
+   *                                                          [JPL]
+   */
+
+  // Constants ------------------------------------------------------------------------------------
+
+
+  /**
+   * String constant for parsing UPnP protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for UPnP device
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "upnp" >
+   *   <property name = "device" value = "..."/>
+   *   <property name = "action" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String UPNP_XMLPROPERTY_DEVICE = "device";
+
+  /**
+   * String constant for parsing UPnP protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for UPnP action
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "upnp" >
+   *   <property name = "device" value = "..."/>
+   *   <property name = "action" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String UPNP_XMLPROPERTY_ACTION = "action";
+
+
+  // Instance Fields ------------------------------------------------------------------------------
 
 	private ControlPoint controlPoint;
 
+
+  // Constructors ---------------------------------------------------------------------------------
+
 	/**
 	 * Constructor of the UPnP Event. It initialize the UPnP stack by :
+   *
 	 * <ul>
 	 * <li>Initializing a proper parser (UPnPParser.class) and setting this
 	 * parser for the stack</li>
 	 * <li>Initializing the UPnP control point and starting it. It will start
 	 * the discovery of compatible devices on the network</li>
 	 * </ul>
+   *
 	 * No other configuration parameters are handled here.
 	 */
-	public UPnPCommandBuilder() {
+	public UPnPCommandBuilder()
+  {
 		UPnP.setXMLParser(new UPnPParser());
 		this.controlPoint = new ControlPoint();
 		this.controlPoint.start();
 	}
 
-  /*
-    * (non-Javadoc)
-    *
-    * @see
-    * org.openremote.controller.event.EventBuilder#build(org.w3c.dom.Element)
-    */
-	@Override
-	public Command build(Element element) {
 
-    /*
-     * NOTE:
-     *    ported the API from Boss 1.0 to Boss 2.0 which changes the XML schema.
-     *
-     *    An example UPnP configuration in controller.xml looks like this:
-     *
-     *    <command protocol = "upnp" >
-     *      <property name = "device" value = "xxx"/>
-     *      <property name = "action" value = "yyy"/>
-     *      <property name = "argname1" value = "..."/>
-     *      <property name = "argname2" value = "..."/>
-     *      <property name = "argnameX" value = "..."/>
-     *    </command>
-     *
-     * Note that this is structured quite different from 1.0 API. Also, any property name
-     * that is *not* "device" or "action" is considered as an UPnP Event argument.
-     *
-     * Actual implementation is so far untested.
-     *                                                          [JPL]
-     */
+  // Implements CommandBuilder --------------------------------------------------------------------
 
-    final String XML_ELEMENT_PROPERTY = "property";
-
-    final String XML_ATTRIBUTENAME_NAME = "name";
-    final String XML_ATTRIBUTENAME_VALUE = "value";
-
-    final String UPNP_PROPERTY_DEVICE = "device";
-    final String UPNP_PROPERTY_ACTION = "action";
-
-
+  /**
+   * Parses the UPnP command XML snippets and builds a corresponding UPnP command instance.  <p>
+   *
+   * The expected XML structure is:
+   *
+   * <pre>{@code
+   * <command protocol = "upnp" >
+   *   <property name = "device" value = "xxx"/>
+   *   <property name = "action" value = "yyy"/>
+   *   <property name = "argname1" value = "..."/>
+   *   <property name = "argname2" value = "..."/>
+   *   <property name = "argnameX" value = "..."/>
+   * </command>
+   * }</pre>
+   *
+   * Properties other than 'device' and 'action' are passed on as UPnP event arguments.
+   *
+   * @see UPnPCommand
+   * @see org.openremote.controller.command.CommandBuilder#build(org.jdom.Element)
+   *
+   * @throws org.openremote.controller.exception.NoSuchCommandException
+   *            if the UPnP command instance cannot be constructed from the XML snippet
+   *            for any reason
+   *
+   * @return an immutable UPnP command instance with configured properties set
+   */
+	public Command build(Element element)
+  {
     String upnpDevice = null;
     String upnpAction = null;
     Map<String, String> upnpEventArguments = new HashMap<String, String>(3);
 
+
+    // grab all the properties which are child elements...
 
     List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
 
@@ -107,21 +167,42 @@ public class UPnPCommandBuilder implements CommandBuilder {
       String upnpPropertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
       String upnpPropertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
 
-      if (UPNP_PROPERTY_DEVICE.equalsIgnoreCase(upnpPropertyName))
+      if (UPNP_XMLPROPERTY_DEVICE.equalsIgnoreCase(upnpPropertyName))
       {
         upnpDevice = upnpPropertyValue;
       }
-      else if (UPNP_PROPERTY_ACTION.equalsIgnoreCase(upnpPropertyName))
+      else if (UPNP_XMLPROPERTY_ACTION.equalsIgnoreCase(upnpPropertyName))
       {
         upnpAction = upnpPropertyValue;
       }
       else
       {
+        // anything that's not a device or action property will be taken as an event argument...
+
         upnpEventArguments.put(upnpPropertyName, upnpPropertyValue);
       }
     }
 
-		return new UPnPEvent(this.controlPoint, upnpDevice, upnpAction, upnpEventArguments);
+
+    // sanity checks...
+
+    if (upnpDevice == null || "".equals(upnpDevice))
+    {
+      throw new NoSuchCommandException(
+          "UPnP command must have a '" + UPNP_XMLPROPERTY_DEVICE + "' property."
+      );
+    }
+
+    if (upnpAction == null || "".equals(upnpAction))
+    {
+      throw new NoSuchCommandException(
+          "UPnP command must have a '" + UPNP_XMLPROPERTY_ACTION + "' property."
+      );
+    }
+
+    // done!
+    
+		return new UPnPCommand(this.controlPoint, upnpDevice, upnpAction, upnpEventArguments);
 	}
 
 }

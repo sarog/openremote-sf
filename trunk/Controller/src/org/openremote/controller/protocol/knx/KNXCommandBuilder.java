@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2010, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.knx;
 
 import java.util.List;
@@ -29,9 +30,29 @@ import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
- * TODO :
- *   KNXEventBuilder is responsible for mapping the XML configuration model to Java object
- *   model
+ * KNXCommandBuilder is responsible for parsing the XML model from controller.xml and create
+ * appropriate Command objects for it. <p>
+ *
+ * The structure of a KNX command XML snippet from controller.xml is shown below:
+ *
+ * <pre>{@code
+ * <command protocol = "knx" >
+ *   <property name = "groupAddress" value = "x/x/x"/>
+ *   <property name = "command" value = "ON|OFF|STATUS"/>
+ * </command>
+ * }</pre>
+ *
+ * The protocol identifier is "knx" as is shown in the command element's protocol attribute. <p>
+ *
+ * Nested are a number of properties to be included with the KNX command. Properties named
+ * {@link #KNX_XMLPROPERTY_COMMAND} and {@link #KNX_XMLPROPERTY_GROUPADDRESS} are mandatory. <p>
+ *
+ * KNX group address values should follow the established convention of three level addressing
+ * with a forward slash as separator character for the digits. The valid values for command
+ * property are implemented in {@link KNXCommandType} -- command values can be localized.
+ *
+ * @see org.openremote.controller.command.CommandBuilder
+ * @see KNXCommandType
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -83,14 +104,51 @@ public class KNXCommandBuilder implements CommandBuilder
    *
    */
 
+
   // Constants ------------------------------------------------------------------------------------
 
-  public final static String KNX_LOG_CATEGORY  = "KNX";   // TODO : externalize user-friendly log category constants
-  public final static String GROUP_ADDRESS_XML_ATTRIBUTE = "groupAddress";
+
+  /**
+   * A common log category name intended to be used across all classes related to
+   * KNX implementation.
+   */
+  public final static String KNX_LOG_CATEGORY  = "KNX";
+
+  /**
+   * String constant for parsing KNX protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for KNX group addresses
+   * (<code>{@value}</code>):
+   *
+   * <pre>{@code
+   * <command protocol = "knx" >
+   *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "command" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String KNX_XMLPROPERTY_GROUPADDRESS  = "groupAddress";
+
+  /**
+   * String constant for parsing KNX protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for KNX commands ({@value}):
+   *
+   * <pre>{@code
+   * <command protocol = "knx" >
+   *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "command" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String KNX_XMLPROPERTY_COMMAND       = "command";
 
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * Logging. Use common KNX log category for all KNX related classes.
+   */
   private static Logger log = Logger.getLogger(KNX_LOG_CATEGORY);
 
 
@@ -122,37 +180,114 @@ public class KNXCommandBuilder implements CommandBuilder
 
   // Implements EventBuilder ----------------------------------------------------------------------
 
-  // TODO: could use JAXB instead since its included in JDK
 
   /**
-   * TODO
+   * Parses the KNX command XML snippets and builds a corresponding KNX command instance.  <p>
    *
-   * {@inheritDoc}
+   * The expected XML structure is:
+   *
+   * <pre>{@code
+   * <command protocol = "knx" >
+   *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "command" value = "ON"/>
+   * </command>
+   * }</pre>
+   *
+   * Additional properties not listed here are ignored.
+   *
+   * @see KNXCommand
+   *
+   * @throws NoSuchCommandException
+   *            if the KNX command instance cannot be constructed from the XML snippet
+   *            for any reason
+   *
+   * @return an immutable KNX command instance with known configured properties set
    */
-  @SuppressWarnings("unchecked")
-public Command build(Element element)
+  public Command build(Element element)
   {
-     String groupAddress = null;
-     String knxCommandStr = element.getAttributeValue("value");
-     List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-     for(Element ele : propertyEles){
-        if(GROUP_ADDRESS_XML_ATTRIBUTE.equals(ele.getAttributeValue("name"))){
-           groupAddress = ele.getAttributeValue("value");
-           break;
-        } 
-     }
+    /*
+     * TODO : ${param} handling
+     * 
+     * TODO : DPT to be added. Modify class javadoc with this change.
+     *
+     * TODO : should attempt to validate group address values defensively
+     *
+     * TODO : could use JAXB instead JDOM since its included in JDK
+     *
+     * TODO : NoSuchCommandException should be a checked exception
+     */
+
+    String groupAddress = null;
+    String commandAsString = null;
+
+    // Get the list of properties from XML...
+
+    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
+
+    for (Element el : propertyElements)
+    {
+      String knxPropertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
+      String knxPropertyValue = el.getAttributeValue(XML_ATTRIBUTENAME_VALUE);
+
+      if (KNX_XMLPROPERTY_GROUPADDRESS.equalsIgnoreCase(knxPropertyName))
+      {
+        groupAddress = knxPropertyValue;
+      }
+      else if (KNX_XMLPROPERTY_COMMAND.equalsIgnoreCase(knxPropertyName))
+      {
+        commandAsString = knxPropertyValue;
+      }
+      else
+      {
+        log.warn(
+            "Unknown KNX property '<" + XML_ELEMENT_PROPERTY + " " +
+            XML_ATTRIBUTENAME_NAME + " = \"" + knxPropertyName + "\" " +
+            XML_ATTRIBUTENAME_VALUE + " = \"" + knxPropertyValue + "\"/>'."
+        );
+      }
+    }
+
+
+    // Sanity check on mandatory properties 'command' and 'groupAddress'...
+
+    if (groupAddress == null || "".equals(groupAddress))
+    {
+      throw new NoSuchCommandException(
+          "KNX command must have a '" + KNX_XMLPROPERTY_GROUPADDRESS + "' property."
+      );
+    }
+
+    if (commandAsString == null || "".equals(commandAsString))
+    {
+      throw new NoSuchCommandException(
+          "KNX command must have a '" + KNX_XMLPROPERTY_COMMAND + "' property."
+      );
+    }
+
+
+    // Translate the command string to a type safe KNXCommandType enum...
 
     KNXCommandType knxCommand = null;
 
-    if (KNXCommandType.SWITCH_ON.isEqual(knxCommandStr))
+    if (KNXCommandType.SWITCH_ON.isEqual(commandAsString))
+    {
       knxCommand = KNXCommandType.SWITCH_ON;
-    else if (KNXCommandType.SWITCH_OFF.isEqual(knxCommandStr))
-      knxCommand = KNXCommandType.SWITCH_OFF;
-    else if (KNXCommandType.STATUS.isEqual(knxCommandStr)) {
-       knxCommand = KNXCommandType.STATUS;
-    } else {
-       throw new NoSuchCommandException("Couldn't find command " + knxCommandStr + " in KNXCommandType.");
     }
+    else if (KNXCommandType.SWITCH_OFF.isEqual(commandAsString))
+    {
+      knxCommand = KNXCommandType.SWITCH_OFF;
+    }
+    else if (KNXCommandType.STATUS.isEqual(commandAsString))
+    {
+      knxCommand = KNXCommandType.STATUS;
+    }
+    else
+    {
+      throw new NoSuchCommandException("Unknown command '" + commandAsString + "'.");
+    }
+
+
+    // Parsing done...
 
     Command command = new KNXCommand(connectionManager, groupAddress, knxCommand);
     
