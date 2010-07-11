@@ -1,4 +1,5 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2010, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
@@ -19,7 +20,6 @@
  */
 package org.openremote.controller.protocol.upnp;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -35,15 +35,16 @@ import org.openremote.controller.component.EnumSensorType;
 
 /**
  * UPnP Event class
+ *
  * @author Mathieu Gallissot
  */
-public class UPnPEvent implements ExecutableCommand, StatusCommand {
+public class UPnPCommand implements ExecutableCommand, StatusCommand {
 
 	private String device;
 	private String action;
 	private Map<String, String> args;
 	private ControlPoint controlPoint;
-	private static Logger logger = Logger.getLogger(UPnPEvent.class.getName());
+	private static Logger logger = Logger.getLogger(UPnPCommand.class.getName());
 
 	/**
 	 * Constructor of the UPnP event.
@@ -62,7 +63,7 @@ public class UPnPEvent implements ExecutableCommand, StatusCommand {
 	 *            action specific. An external tool may be used in order to
 	 *            discover actions requirements.
 	 */
-	public UPnPEvent(ControlPoint controlPoint, String device,
+	public UPnPCommand(ControlPoint controlPoint, String device,
                    String action, Map<String, String> args)
   {
 		this.device = device;
@@ -72,7 +73,7 @@ public class UPnPEvent implements ExecutableCommand, StatusCommand {
 
 	}
 
-	@SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked")
 	@Override
 	public void send() {
 		//First, let's grab the device corresponding to the event's id
