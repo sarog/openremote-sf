@@ -24,8 +24,12 @@ import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.CommandBuildException;
+import org.openremote.controller.exception.NoSuchCommandException;
+import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * X10CommandBuilder is responsible for parsing the XML model from controller.xml and create
@@ -96,6 +100,14 @@ public class X10CommandBuilder implements CommandBuilder
   public final static String X10_XMLPROPERTY_COMMAND = "command";
 
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Logging. Use common X10 log category for all X10 related classes.
+   */
+  private static Logger log = Logger.getLogger(X10_LOG_CATEGORY);
+
+
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -127,66 +139,107 @@ public class X10CommandBuilder implements CommandBuilder
    *
    * @return an X10 command instance with known configured properties set
    */
-   public Command build(Element element)
-   {
-     /*
-      * TODO : ${param} handling
-      *
-      */
+  public Command build(Element element)
+  {
+    /*
+     * TODO : ${param} handling
+     *
+     */
 
-     String address = null;
-     String commandAsString = null;
+    String address = null;
+    String commandAsString = null;
 
-     List<Element> propertyElements = element.getChildren("property", element.getNamespace());
+    // Properties come in as child elements...
 
-     for (Element el : propertyElements)
-     {
-       String x10CommandPropertyName = el.getAttributeValue("name");
+    List<Element> propertyElements = element.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY,
+                                                         element.getNamespace());
 
-       if (X10_XMLPROPERTY_ADDRESS.equals(x10CommandPropertyName))
-       {
-         address = el.getAttributeValue("value");
-       }
-       else if (X10_XMLPROPERTY_COMMAND.equals(x10CommandPropertyName))
-       {
-         commandAsString = el.getAttributeValue("value");
-       }
-     }
+    for (Element el : propertyElements)
+    {
+      String x10CommandPropertyName = el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
+      String x10CommandPropertyValue = el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
 
-     if (commandAsString == null || commandAsString.trim().equals("") ||
-         address == null || address.trim().equals(""))
-     {
-       throw new CommandBuildException(
-          "Can not build a X10Command with empty command: " + commandAsString +
-          " or address: " + address
-       );
-     }
+      if (X10_XMLPROPERTY_ADDRESS.equalsIgnoreCase(x10CommandPropertyName))
+      {
+        address = x10CommandPropertyValue;
+      }
+      else if (X10_XMLPROPERTY_COMMAND.equalsIgnoreCase(x10CommandPropertyName))
+      {
+        commandAsString = x10CommandPropertyValue;
+      }
+      else
+      {
+        log.warn(
+            "Unknown KNX property '<" + XML_ELEMENT_PROPERTY + " " +
+            XML_ATTRIBUTENAME_NAME + " = \"" + x10CommandPropertyName + "\" " +
+            XML_ATTRIBUTENAME_VALUE + " = \"" + x10CommandPropertyValue + "\"/>'."
+        );
+      }
+    }
 
-     //String address = element.getAttributeValue(ADDRESS_XML_ATTRIBUTE);
-     //String commandAsString = element.getAttributeValue(COMMAND_XML_ATTRIBUTE);
+    // sanity checks...
 
-     X10CommandType commandType = null;
+    if (commandAsString == null || ("").equals(commandAsString))
+    {
+      throw new NoSuchCommandException(
+         "X10 command is missing a mandatory '" + X10_XMLPROPERTY_COMMAND + "' property"
+      );
+    }
 
-     if (X10CommandType.ALL_UNITS_OFF.isEqual(commandAsString))
-     {
-       commandType = X10CommandType.ALL_UNITS_OFF;
-     }
-     else if (X10CommandType.SWITCH_ON.isEqual(commandAsString))
-     {
-       commandType = X10CommandType.SWITCH_ON;
-     }
-     else if (X10CommandType.SWITCH_OFF.isEqual(commandAsString))
-     {
-       commandType = X10CommandType.SWITCH_OFF;
-     }
+    if (address == null || ("").equals(address))
+    {
+      throw new NoSuchCommandException(
+         "X10 command is missing a mandatory '" + X10_XMLPROPERTY_ADDRESS + "' property"
+      );
+    }
 
-// TODO : integrate ${param} handling
-//        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
 
-     X10Command event = new X10Command(connectionManager, address, commandType);
+    // Translate the command string to a type safe KNXCommandType enum...
 
-     return event;
-   }
+    X10CommandType commandType = null;
+
+    if (X10CommandType.ALL_UNITS_OFF.isEqual(commandAsString))
+    {
+      commandType = X10CommandType.ALL_UNITS_OFF;
+    }
+    else if (X10CommandType.SWITCH_ON.isEqual(commandAsString))
+    {
+      commandType = X10CommandType.SWITCH_ON;
+    }
+    else if (X10CommandType.SWITCH_OFF.isEqual(commandAsString))
+    {
+      commandType = X10CommandType.SWITCH_OFF;
+    }
+    else
+    {
+      throw new NoSuchCommandException("X10 command '" + commandAsString + "' is not recognized.");
+    }
+
+    // Validate X10 addressing...
+
+    String houseCodes = "[A-Pa-p]";           // characters A to P
+    String deviceCodes = "([1-9]|(1[0-6]))";  // single digit 0-9 or double digit 10-16
+
+    Pattern regex = Pattern.compile(houseCodes + "" + deviceCodes);
+    Matcher match = regex.matcher(address);
+
+    if (!match.matches())
+    {
+      throw new NoSuchCommandException("X10 address '" + address + "' is not recognized.");
+    }
+
+    
+    // TODO : integrate ${param} handling
+    //        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
+    String commandParam = null;
+
+
+    // Done!
+
+    X10Command event = new X10Command(connectionManager, address, commandType/*, commandParam*/);
+
+    return event;
+  }
 
 }
        
