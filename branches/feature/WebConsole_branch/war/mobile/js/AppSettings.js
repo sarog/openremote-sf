@@ -237,14 +237,8 @@ AppSettings = (function(){
       
       MessageUtils.showLoading("Loading panel.");
       
-      //removeControllerServerByID(selectedControllerServer.getID());
-      //addControllerServer(selectedControllerServer);
-      
-      // var tempControllerServer = findControllerServerByID(selectedControllerServer.getID());
-      // tempControllerServer.setSelectedPanelIdentity(selectedControllerServer.getSelectedPanelIdentity());
-
+      // Save selectedPanelIdentity for selectedController server.
       replaceControllerServer(selectedControllerServer.getID(), selectedControllerServer);
-      
       ConnnectionUtils.getJson(selectedControllerServer.getUrl() + "/rest/panel/" + selectedControllerServer.getSelectedPanelIdentity() + "?callback=?", successCallback, errorCallback);
     }
     
@@ -289,10 +283,10 @@ AppSettings = (function(){
       CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
     }
     
-    function addControllerServer(controllerServerObj) {
-      controllerServers.push(controllerServerObj);
-      CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
-    }
+    // function addControllerServer(controllerServerObj) {
+    //   controllerServers.push(controllerServerObj);
+    //   CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
+    // }
     
     function findControllerServerByID(id) {
       if (id == null || id == "" || id == undefined) {
