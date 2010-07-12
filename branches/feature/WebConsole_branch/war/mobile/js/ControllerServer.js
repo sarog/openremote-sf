@@ -8,39 +8,45 @@ ControllerServer = (function(){
   
   // Constructor
   return function(urlParam) {
-    var id = Math.uuid();
-    var url = "";
-    var panelIdentities = [];
-    var selectedPanelIdentity = "";
-    var panelXML = "";
+    this.id = Math.uuid();
+    this.url = "";
+    this.panelIdentities = [];
+    this.selectedPanelIdentity = "";
     
     // Instance methods
     this.setUrl = function(urlParam) {
       if (urlParam == "" || urlParam == undefined) {
         throw new Error("ControllerServer constructor requires an url.");
       }
-      url = urlParam;
+      this.url = urlParam;
     };
     
     this.getUrl = function() {
-      return url;
+      return this.url;
+    };
+    
+    this.addPanelIdentities = function(panelIdentity) {
+      this.panelIdentities.push(panelIdentity);
+    };
+    
+    this.setPanelIdentities = function(panelIdentitiesArray) {
+      this.panelIdentities = panelIdentitiesArray || [];
+    };
+    
+    this.getPanelIdentities = function() {
+      return this.panelIdentities;
     };
     
     this.setSelectedPanelIdentity = function(selectedPanelIdentityParam) {
-      selectedPanelIdentity = selectedPanelIdentityParam;
+      this.selectedPanelIdentity = selectedPanelIdentityParam;
     };
     
     this.getSelectedPanelIdentity = function() {
-      return selectedPanelIdentity;
+      return this.selectedPanelIdentity;
     };
     
     this.getID = function() {
-      return id;
-    };
-    
-    this.loadPanelIdentities = function(successCallback, errorCallback) {
-      panelIdentities = [];
-      ConnnectionUtils.sendAjaxJson(url+"/rest/panels?callback=?", successCallback, errorCallback);
+      return this.id;
     };
     
     // Init jobs
@@ -48,36 +54,3 @@ ControllerServer = (function(){
   }
   
 })();
-
-// Public static methods
-// Find ControllerServer model by id.
-ControllerServer.findByID = function(id) {
-  if (id == "" || id == undefined) {
-    return null;
-  }
-  var controllerServers = AppSettings.getInstance().getControllerServers();
-  for (var i = 0; i < controllerServers.length; i++) {
-    if (id == controllerServers[i].getID()) {
-      return controllerServers[i];
-    }
-  }
-  return null;
-};
-
-// Remove ControllerServer model by id.
-ControllerServer.removeByID = function(id) {
-  if (id == "" || id == undefined) {
-    return false;
-  }
-  var controllerServers = AppSettings.getInstance().getControllerServers();
-  for (var i = 0; i < controllerServers.length; i++) {
-    if (id == controllerServers[i].getID()) {
-      // splice is a good method for adding and removing element into and from array.
-      // add: [].splice(startAtIndex, 0, element1, element2,...);
-      // remove: [].splice(indexInArray, howManyElementsTobeRemoved);
-      controllerServers.splice(controllerServers.indexOf(controllerServers[i]),1);
-      return true;
-    }
-  }
-  return false;
-};
