@@ -325,7 +325,7 @@ public class X10CommandBuilderTest
    */
   @Test public void testX10SuperfluousProperties()
   {
-    Command cmd = getCommandWithExtraProperties("on", "1/1/1") ;
+    Command cmd = getCommandWithExtraProperties("on", "P16") ;
     assertTrue(cmd instanceof X10Command);
   }
 
@@ -335,7 +335,7 @@ public class X10CommandBuilderTest
   @Test (expected = NoSuchCommandException.class)
   public void testX10WithMissingCommandProperty()
   {
-    getCommandMissingCommandProperty("1/1/1") ;
+    getCommandMissingCommandProperty("A16") ;
   }
 
 
@@ -354,7 +354,7 @@ public class X10CommandBuilderTest
    */
   @Test public void testX10WithArbitraryPropertyOrder()
   {
-    Command cmd = getCommandArbitraryPropertyOrder("on", "1/1/1");
+    Command cmd = getCommandArbitraryPropertyOrder("on", "H10");
     assertTrue(cmd instanceof X10Command);
   }
 
@@ -467,12 +467,12 @@ public class X10CommandBuilderTest
     // add some extra properties
 
     Element propExtra1 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
-    propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "");
-    propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "");
+    propExtra1.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "");
+    propExtra1.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "");
 
     Element propExtra2 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
-    propCommand.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "to be ignored");
-    propCommand.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "true");
+    propExtra2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "to be ignored");
+    propExtra2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "true");
 
     ele.addContent(propExtra1);
     ele.addContent(propExtra2);
