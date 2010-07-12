@@ -24,21 +24,28 @@ import java.util.ArrayList;
 import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.icon.Icons;
 import org.openremote.web.console.client.polling.PollingHelper;
+import org.openremote.web.console.client.rpc.AsyncServiceFactory;
+import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.domain.AbsoluteLayoutContainer;
 import org.openremote.web.console.domain.Background;
+import org.openremote.web.console.domain.Gesture;
 import org.openremote.web.console.domain.GridLayoutContainer;
 import org.openremote.web.console.domain.LayoutContainer;
 import org.openremote.web.console.domain.Navigate;
 import org.openremote.web.console.domain.Screen;
 
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.util.Point;
 import com.extjs.gxt.ui.client.widget.menu.Menu;
 import com.extjs.gxt.ui.client.widget.menu.MenuItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Event;
 
 /**
  * The Class ScreenView for init screen components.
@@ -48,6 +55,8 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
    private Icons icons = GWT.create(Icons.class);
    private Screen screen;
    private PollingHelper polling;
+   private Point startPoint;
+   private static final int SWIPE_MIN_DISTANCE = 200;
    
    public ScreenView(Screen screen) {
       this.screen = screen;
@@ -57,6 +66,9 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       setBorders(true);
       init(screen);
       addContextMenu();
+      if (screen.getGestures().size() > 0) {
+         sinkEvents(Event.ONMOUSEDOWN | Event.ONMOUSEUP);
+      }
    }
    
    private void init(Screen screen) {
@@ -180,5 +192,50 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       contextMenu.add(next);
       
       setContextMenu(contextMenu);
+   }
+   
+   @Override
+   public void onComponentEvent(ComponentEvent ce) {
+      super.onComponentEvent(ce);
+      if (!ce.isRightClick()) {
+         if (ce.getType().equals(Events.OnMouseDown)) {
+            startPoint = ce.getXY();
+         } else if (ce.getType().equals(Events.OnMouseUp)) {
+            if (startPoint != null) {
+               Point endPoint = ce.getXY();
+               if (endPoint.x - startPoint.x > SWIPE_MIN_DISTANCE) {
+                  // left to right
+                  onGesture(screen.getGestureByType(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT));
+               } else if (startPoint.x - endPoint.x > SWIPE_MIN_DISTANCE) {
+                  // right to left
+                  onGesture(screen.getGestureByType(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT));
+               } else if (endPoint.y - startPoint.y > SWIPE_MIN_DISTANCE) {
+                  // top to bottom
+                  onGesture(screen.getGestureByType(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM));
+               } else if (startPoint.y - endPoint.y > SWIPE_MIN_DISTANCE) {
+                  // bottom to top
+                  onGesture(screen.getGestureByType(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP));
+               }
+            }
+         }
+      }
+   }
+   
+   private void onGesture(Gesture gesture) {
+      if (gesture != null) {
+         if (gesture.isHasControlCommand()) {
+            AsyncServiceFactory.getCommandServiceAsync().sendCommand(
+                  ClientDataBase.appSetting.getControlPath() + gesture.getComponentId() + "/swipe",
+                  ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), new AsyncSuccessCallback<Void>() {
+                     public void onSuccess(Void result) {
+                        // do nothing.
+                     }
+                  });
+         }
+         
+         if (gesture.getNavigate() != null) {
+            ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, gesture.getNavigate());
+         }
+      }
    }
 }
