@@ -9,7 +9,7 @@ AppSettings = (function(){
   // Private static variables
   var appSettings = null;
   
-  var DIALOG_WIDHT = "100%";
+  var DIALOG_WIDHT = "97%";
   var DIALOG_HEIGHT = "auto";
   var URL_REGEX = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
   var EMPTY_CONTROLLER_URL_LIST = "<div style='text-align: center; padding: 0.4em; font-size: 100%; height: 18px;'>Currently, there is no controller url.</div>";
@@ -21,9 +21,6 @@ AppSettings = (function(){
     var appSettingsDialog = $("#appSettingsDialog");
     
     // Instatnce methods
-    this.addControllerServer = function(controllerServerParam) {
-      controllerServers.push(controllerServerParam);
-    };
     
     this.show = function() {
       if (controllerServers.length > 0) {
@@ -38,6 +35,35 @@ AppSettings = (function(){
     this.getControllerServers  = function() {
       return controllerServers;
     };
+    
+    this.recoverSettingsFromCookie = function() {
+      // Recover cookied controller servers.
+  	  var cookiedControllerServersString = CookieUtils.getCookie(Constants.CONTROLLER_SERVERS);
+  	  if (cookiedControllerServersString != null) {
+  	    MessageUtils.showLoading("Recovering controller servers...");
+  	    controllerServers = [];
+        var cookiedControllerServersObjs = JSON.parse(cookiedControllerServersString, null);
+        for (var index in cookiedControllerServersObjs) {
+          var cookiedControllerServer = cookiedControllerServersObjs[index];
+          var controllerServer = new ControllerServer(cookiedControllerServer.url);
+          controllerServer.id = cookiedControllerServer.id;
+          controllerServer.panelIdentities = cookiedControllerServer.panelIdentities;
+          controllerServer.selectedPanelIdentity = cookiedControllerServer.selectedPanelIdentity;
+          controllerServers.push(controllerServer);
+        }
+        MessageUtils.hideLoading();
+      }
+      
+      // Recover cookied selected controller server.
+      var cookiedSelectedControllerServerString = CookieUtils.getCookie(Constants.CURRENT_SERVER);
+      if (cookiedSelectedControllerServerString != null) { 
+        var cookiedSelectedControllerServerObj = JSON.parse(cookiedSelectedControllerServerString);
+        selectedControllerServer = new ControllerServer(cookiedSelectedControllerServerObj.url);
+        selectedControllerServer.id = cookiedSelectedControllerServerObj.id;
+        selectedControllerServer.panelIdentities = cookiedSelectedControllerServerObj.panelIdentities;
+        selectedControllerServer.selectedPanelIdentity = cookiedSelectedControllerServerObj.selectedPanelIdentity;
+      }
+  	};
     
     // Private methods
     function init() {
@@ -60,7 +86,20 @@ AppSettings = (function(){
     		modal: false,
     		buttons: {
     			'OK': function() {
-            closeAppSettingsDialog();
+            if (selectedControllerServer == null) {
+              MessageUtils.showMessageDialog("Please select a controller.");
+              return;
+            }
+            
+            // Save selected panel identity
+            var selectedPanelIdentity = $("#controllerPanelSelect").val();
+            if (selectedPanelIdentity != null && selectedPanelIdentity != "" && selectedPanelIdentity != undefined) {
+              selectedControllerServer.setSelectedPanelIdentity(selectedPanelIdentity);
+            } else {
+              MessageUtils.showMessageDialog("The panel identity is illegal.");
+              return;
+            }
+            loadPanelWithName();
     			},
     			Cancel: function() {
             closeAppSettingsDialog();
@@ -80,26 +119,22 @@ AppSettings = (function(){
     
     // Init the addControllerURL button.
     function initAddControllerURLBtn() {
-      $(appSettingsDialog).find("#addControllerURLBtn").button({
-                  icons: {
-                      primary: 'ui-icon-plusthick'
-                  }
-              }).click(function() {
-                var controllerURLInput = $(appSettingsDialog).find("#controllerURLInput");
-                if(checkRegexp(controllerURLInput, URL_REGEX, "Invalid URL format.")) {
-                  var controllerServer = new ControllerServer(controllerURLInput.val());
-                  controllerServers.push(controllerServer);
-                  renderControllerServers();
-                  $(appSettingsDialog).find("#controllerURLInput").val("");
-                }
-                
-              });
+      $(appSettingsDialog).find("#addControllerURLBtn").button({icons : {primary : 'ui-icon-plusthick'}})
+        .click(function() {
+          var controllerURLInput = $(appSettingsDialog).find("#controllerURLInput");
+          if(checkRegexp(controllerURLInput, URL_REGEX, "Invalid URL format.")) {
+            newControllerServer(controllerURLInput.val());
+            renderControllerServers();
+            $(appSettingsDialog).find("#controllerURLInput").val("");
+          }
+        }
+      );
     }
     
     function renderControllerServers() {
       $(appSettingsDialog).find("#controllerURLList").html("");
       var controllerServersDivs = "";
-      if (controllerServers.length == 0) {
+      if (controllerServers.length <= 0) {
         $(appSettingsDialog).find("#controllerURLList").html(EMPTY_CONTROLLER_URL_LIST);
         $("#controllerPanelSelectContainer").hide();
         $("#controllerPanelSelect").html("<option>none</option>");
@@ -119,7 +154,7 @@ AppSettings = (function(){
       $(appSettingsDialog).find("#controllerURLList").html(controllerServersDivs);
       
       $(appSettingsDialog).find("[name = 'controllerServer']").click(function() {
-        selectedControllerServer = ControllerServer.findByID($(this).attr("id"));
+        selectedControllerServer = findControllerServerByID($(this).attr("id"));
         $(appSettingsDialog).find("[name = 'controllerServer']").removeClass("ui-selected");
         $(this).addClass("ui-selected");
         loadPanelIdentities();
@@ -133,18 +168,22 @@ AppSettings = (function(){
           text:false
         }).click(function() {
           var controllerServerID = $(this).attr("value");
-          ControllerServer.removeByID(controllerServerID);
+          removeControllerServerByID(controllerServerID);
           renderControllerServers();
       });
+      
+      if (selectedControllerServer != null) {
+        // click the selected controller item in the list.
+        $("#" + selectedControllerServer.getID()).click();
+      }
     }
     
     function loadPanelIdentities() {
-      MessageUtils.showLoading("Loading panel identities with url <b>" + selectedControllerServer.getUrl() + "</b>");
+      MessageUtils.showLoading("Loading panel identities.");
       
       $("#controllerPanelSelect").children().remove();
       $("#controllerPanelSelect").html("<option>none</option>");
 
-      
       var successCallback = function(data, textStatus) {
         var panelIdentities = [];
         if (data != null) {
@@ -155,15 +194,21 @@ AppSettings = (function(){
             panelIdentities.push(panelName);
           }
         } else {
-          alert("There is no panel identities.");
+          MessageUtils.showMessageDialog("There is no panel identities.");
         }
         
         if (panelIdentities.length != 0) {
+          selectedControllerServer.setPanelIdentities(panelIdentities);
           $("#controllerPanelSelect").children().remove();
           for (var index in panelIdentities) {
-            $("#controllerPanelSelect").append("<option>" + panelIdentities[index] + "</option>");
+            if (selectedControllerServer.getSelectedPanelIdentity() == panelIdentities[index]) {
+              $("#controllerPanelSelect").append("<option selected>" + panelIdentities[index] + "</option>");
+            } else {
+              $("#controllerPanelSelect").append("<option>" + panelIdentities[index] + "</option>");
+            }
           }
         }
+
         $("#controllerPanelSelectContainer").show();
         MessageUtils.hideLoading();
       };
@@ -171,10 +216,36 @@ AppSettings = (function(){
       var errorCallback = function(xOptions, textStatus) {
         $("#controllerPanelSelectContainer").hide();
         MessageUtils.hideLoading();
-        MessageUtils.showMessageDialog("Can't load panels with url " + selectedControllerServer.getUrl());
-      }
+        MessageUtils.showMessageDialog("Failed to load panels.");
+      };
       
-      selectedControllerServer.loadPanelIdentities(successCallback, errorCallback);
+      ConnnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);
+    }
+    
+    function loadPanelWithName() {
+      var successCallback = function(data, textStatus) {
+        MessageUtils.hideLoading();
+  		  CookieUtils.setCookie(Constants.CURRENT_SERVER, selectedControllerServer);
+  		  
+  		  closeAppSettingsDialog();
+      };
+      
+      var errorCallback = function(xOptions, textStatus) {
+        MessageUtils.hideLoading();
+        MessageUtils.showMessageDialog("Failed to load panel.");  
+      };
+      
+      MessageUtils.showLoading("Loading panel.");
+      
+      //removeControllerServerByID(selectedControllerServer.getID());
+      //addControllerServer(selectedControllerServer);
+      
+      // var tempControllerServer = findControllerServerByID(selectedControllerServer.getID());
+      // tempControllerServer.setSelectedPanelIdentity(selectedControllerServer.getSelectedPanelIdentity());
+
+      replaceControllerServer(selectedControllerServer.getID(), selectedControllerServer);
+      
+      ConnnectionUtils.getJson(selectedControllerServer.getUrl() + "/rest/panel/" + selectedControllerServer.getSelectedPanelIdentity() + "?callback=?", successCallback, errorCallback);
     }
     
     function initProtocolRadioBtns() {
@@ -187,31 +258,7 @@ AppSettings = (function(){
     function initControllerPanelSelect() {
       $("#controllerPanelSelectContainer").hide();
       $("#controllerPanelSelect").change(function(){
-        selectedControllerServer.setSelectedPanelIdentity($(this).val());
-        alert(selectedControllerServer.getSelectedPanelIdentity());
-        // var panelIdentities = selectedControllerServer.getPanelIdentities();
-        // if (panelIdentities.length == 0) {
-        //   $(this).html("<option>none</option>");
-        //   return;  
-        // }
-        // $(this).children().remove();
-        // for (var index in panelIdentities) {
-        //   $(this).append("<option index=" + index + ">" + panelIdentities[index] + "</option>");
-        // }
       });
-      
-      // $("#controllerPanelSelect").click(function(){
-      //   var panelIdentities = selectedControllerServer.getPanelIdentities();
-      //   if (panelIdentities.length == 0) {
-      //     $(this).html("<option>none</option>");
-      //     return;  
-      //   }
-      //   $(this).children().remove();
-      //   for (var index in panelIdentities) {
-      //     $(this).append("<option index=" + index + ">" + panelIdentities[index] + "</option>");
-      //   }
-      // });
-      
     }
 
     function updateTips(t) {
@@ -227,7 +274,7 @@ AppSettings = (function(){
 
     function checkRegexp(o,regexp,n) {
       o.removeClass('ui-state-error');
-  		if ( !( regexp.test( o.val() ) ) ) {
+  		if (!( regexp.test(o.val()))) {
   			o.addClass('ui-state-error');
   			updateTips(n);
   			return false;
@@ -235,6 +282,53 @@ AppSettings = (function(){
   			return true;
   		}
   	}
+  	
+  	function newControllerServer(urlParam) {
+      var controllerServer = new ControllerServer(urlParam);
+      controllerServers.push(controllerServer);
+      CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
+    }
+    
+    function addControllerServer(controllerServerObj) {
+      controllerServers.push(controllerServerObj);
+      CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
+    }
+    
+    function findControllerServerByID(id) {
+      if (id == null || id == "" || id == undefined) {
+        return null;
+      }
+      for (var i = 0; i < controllerServers.length; i++) {
+        if (id == controllerServers[i].getID()) {
+          return controllerServers[i];
+        }
+      }
+      return null;
+    }
+    
+    function removeControllerServerByID(id) {
+      if (id == "" || id == undefined) {
+        return false;
+      }
+      for (var i = 0; i < controllerServers.length; i++) {
+        if (id == controllerServers[i].getID()) {
+          // splice is a good method for adding and removing element into and from array.
+          // add: [].splice(startAtIndex, 0, element1, element2,...);
+          // remove: [].splice(indexInArray, howManyElementsTobeRemoved);
+          controllerServers.splice(controllerServers.indexOf(controllerServers[i]),1);
+          CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    function replaceControllerServer(id, controllerServerObj) {
+      var controllerServer = findControllerServerByID(id);
+      controllerServers.splice(controllerServers.indexOf(controllerServer), 0, controllerServerObj);
+      removeControllerServerByID(id);
+      CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
+    }
     
     // Call initializing jobs
     init();
@@ -246,6 +340,7 @@ AppSettings = (function(){
        if (!appSettings) {
          appSettings = new AppSettings();
        }
+       appSettings.recoverSettingsFromCookie();
        return appSettings;
      }
    };
