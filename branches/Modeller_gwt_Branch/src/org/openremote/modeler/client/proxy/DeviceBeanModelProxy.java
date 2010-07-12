@@ -172,7 +172,7 @@ public class DeviceBeanModelProxy {
          public void onSuccess(Device result) {
             BeanModel deviceModel = result.getBeanModel();
             BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
             BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
             callback.onSuccess(deviceModel);
          }
@@ -310,18 +310,18 @@ public class DeviceBeanModelProxy {
       }
    }
    
-   public static void saveDeviceWithContents(final Device device, final AsyncSuccessCallback<BeanModel> callback) {
+   public static void saveDeviceWithContents(Device device, final AsyncSuccessCallback<BeanModel> callback) {
       AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
          public void onSuccess(Device result) {
             BeanModel deviceModel = result.getBeanModel();
             BeanModelDataBase.deviceTable.insert(deviceModel);
-            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(device.getDeviceCommands());
+            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(result.getDeviceCommands());
             BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-            List<BeanModel> sensorModels = Sensor.createModels(device.getSensors());
+            List<BeanModel> sensorModels = Sensor.createModels(result.getSensors());
             BeanModelDataBase.sensorTable.insertAll(sensorModels);
-            List<BeanModel> switchModels = Switch.createModels(device.getSwitchs());
+            List<BeanModel> switchModels = Switch.createModels(result.getSwitchs());
             BeanModelDataBase.switchTable.insertAll(switchModels);
-            List<BeanModel> sliderModels = Slider.createModels(device.getSliders());
+            List<BeanModel> sliderModels = Slider.createModels(result.getSliders());
             BeanModelDataBase.sliderTable.insertAll(sliderModels);
             callback.onSuccess(deviceModel);
          }
