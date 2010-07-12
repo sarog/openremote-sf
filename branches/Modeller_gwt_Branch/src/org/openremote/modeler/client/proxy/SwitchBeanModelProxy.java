@@ -65,14 +65,14 @@ public class SwitchBeanModelProxy {
       }
    }
    
-   public static void save(final BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
+   public static void save(BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
       if (beanModel != null && beanModel.getBean() instanceof Switch) {
          AsyncServiceFactory.getSwitchRPCServiceAsync().save((Switch) (beanModel.getBean()),
                new AsyncSuccessCallback<Switch>() {
 
                   @Override
                   public void onSuccess(Switch result) {
-                     BeanModelDataBase.switchTable.insert(beanModel);
+                     BeanModelDataBase.switchTable.insert(result.getBeanModel());
                      callback.onSuccess(result);
                   }
 
@@ -80,13 +80,13 @@ public class SwitchBeanModelProxy {
       }
    }
    
-   public static void update(final BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
+   public static void update(BeanModel beanModel, final AsyncSuccessCallback<Switch> callback) {
       if (beanModel != null && beanModel.getBean() instanceof Switch) {
          AsyncServiceFactory.getSwitchRPCServiceAsync().update((Switch) (beanModel.getBean()),
                new AsyncSuccessCallback<Switch>() {
                   @Override
                   public void onSuccess(Switch result) {
-                     BeanModelDataBase.switchTable.update(beanModel);
+                     BeanModelDataBase.switchTable.update(result.getBeanModel());
                      callback.onSuccess(result);
                   }
 

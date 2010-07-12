@@ -124,6 +124,7 @@ public class SliderWindow extends FormWindow {
       
       sensorField.setFieldLabel(SLIDER_SENSOR_FIELD_NAME);
       sensorField.setName(SLIDER_SENSOR_FIELD_NAME);
+      sensorField.setAllowBlank(false);
       
       ListStore<ModelData> sensorStore = new ListStore<ModelData>();
       List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
@@ -143,7 +144,9 @@ public class SliderWindow extends FormWindow {
             sensorField.setValue(new ComboBoxDataModel<Sensor>(
                   slider.getSliderSensorRef().getSensor().getDisplayName(), slider.getSliderSensorRef().getSensor()));
          }
-         setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
+         if (slider.getSetValueCmd() != null) {
+            setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
+         }
          
 //         sensorField.setEnabled(false);
 //         setValueBtn.setEnabled(false);
@@ -177,10 +180,6 @@ public class SliderWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-         if (slider.getSetValueCmd() == null) {
-            MessageBox.alert("Slider", "The slider must have a command to control its value", null);
-            return;
-         }
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
@@ -197,14 +196,6 @@ public class SliderWindow extends FormWindow {
                }
             });
          } else {
-            SliderCommandRef cmdRef = new SliderCommandRef(slider);
-            cmdRef.setDeviceCommand(slider.getSetValueCmd().getDeviceCommand());
-            cmdRef.setDeviceName(slider.getDevice().getName());
-            slider.setSetValueCmd(cmdRef);
-            SliderSensorRef sensorRef = new SliderSensorRef(slider);
-            sensorRef.setSensor(slider.getSliderSensorRef().getSensor());
-            
-            slider.setSliderSensorRef(sensorRef);
             SliderBeanModelProxy.update(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
                @Override
                public void onSuccess(Slider result) {
@@ -239,6 +230,7 @@ public class SliderWindow extends FormWindow {
                command.setText(deviceCommandRef.getDeviceCommand().getDisplayName());
                SliderCommandRef sliderCommandRef = new SliderCommandRef(slider);
                sliderCommandRef.setDeviceCommand(deviceCommandRef.getDeviceCommand());
+               sliderCommandRef.setDeviceName(slider.getDevice().getName());
                slider.setSetValueCmd(sliderCommandRef);
             }
          });

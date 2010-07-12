@@ -95,6 +95,7 @@ public class SelectSwitchWindow extends Dialog {
                if (switchToggle.getSwitchSensorRef() != null) {
                   switchInfo = switchInfo + "<p>Sensor: " + switchToggle.getSwitchSensorRef().getDisplayName() + "</p>";
                }
+               switchInfo = switchInfo + "<p>Device: " + switchToggle.getDevice().getDisplayName() + "</p>";
                switchInfoHtml.setHtml(switchInfo);
             }
          }

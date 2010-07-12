@@ -84,10 +84,6 @@ public class SliderWizardWindow extends SliderWindow {
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            if (slider.getSetValueCmd() == null) {
-               MessageBox.alert("Slider", "The slider must have a command to control its value", null);
-               return;
-            }
             List<Field<?>> fields = form.getFields();
             for (Field<?> field : fields) {
                if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
