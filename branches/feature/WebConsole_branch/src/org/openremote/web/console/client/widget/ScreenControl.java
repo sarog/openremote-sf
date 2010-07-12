@@ -24,6 +24,7 @@ import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.domain.Button;
 import org.openremote.web.console.domain.Component;
+import org.openremote.web.console.domain.Slider;
 import org.openremote.web.console.domain.Switch;
 
 /**
@@ -44,6 +45,8 @@ public class ScreenControl extends ScreenComponent {
          screenControl = new ScreenButton((Button) control);
       } else if (control instanceof Switch) {
          screenControl = new ScreenSwitch((Switch) control);
+      } else if (control instanceof Slider) {
+         screenControl = new ScreenSlider((Slider) control);
       }
       return screenControl;
    }
