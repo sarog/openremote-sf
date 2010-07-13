@@ -60,21 +60,22 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
       if (oldSlider.getSliderSensorRef() != null) {
          genericDAO.delete(oldSlider.getSliderSensorRef());
-         if (slider.getSliderSensorRef().getOid() != oldSlider.getSliderSensorRef().getOid()) {
-            slider.getSliderSensorRef().setSlider(oldSlider);
-            oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
-         }
       }
+      if (slider.getSliderSensorRef() == null) {
+         oldSlider.setSliderSensorRef(null);
+      } else if (slider.getSliderSensorRef() != null) {
+         slider.getSliderSensorRef().setSlider(oldSlider);
+         oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
+      }
+      
       oldSlider.setName(slider.getName());
+      
+      if (oldSlider.getSetValueCmd() != null) {
+         genericDAO.delete(oldSlider.getSetValueCmd());
+      }
       if (slider.getSetValueCmd() == null) {
-         if (oldSlider.getSetValueCmd() != null) {
-            genericDAO.delete(oldSlider.getSetValueCmd());
-         }
          oldSlider.setSetValueCmd(null);
       } else if (slider.getSetValueCmd() != null) {
-         if (oldSlider.getSetValueCmd() != null) {
-            genericDAO.delete(oldSlider.getSetValueCmd());
-         }
          slider.getSetValueCmd().setSlider(oldSlider);
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
       }
