@@ -52,6 +52,8 @@ public class SwitchButton extends Button {
       if (hasIcon) {
          onImageUrl = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiSwitch.getOnImage().getSrc());
          offImageUrl = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiSwitch.getOffImage().getSrc());
+      } else {
+         setText("OFF");
       }
       setSize(uiSwitch.getFrameWidth(), uiSwitch.getFrameHeight());
    }
@@ -63,8 +65,6 @@ public class SwitchButton extends Button {
          buttonSelector = "div";
          template = new Template("<div style=\"height:100%; background: url(" + offImageUrl
                + ") no-repeat 0 0;\"><div style=\"outline:none;\"></div></div>");
-      } else {
-         setText("OFF");
       }
       super.onRender(target, index);
    }

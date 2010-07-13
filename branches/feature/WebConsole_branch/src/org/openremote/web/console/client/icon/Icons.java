@@ -53,4 +53,8 @@ public interface Icons extends ImageBundle {
    
    @Resource("back.png")
    AbstractImagePrototype back();
+   
+   @Resource("default.png")
+   AbstractImagePrototype defaultIcon();
+   
 }

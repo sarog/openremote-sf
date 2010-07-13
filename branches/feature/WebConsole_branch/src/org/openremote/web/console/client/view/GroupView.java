@@ -38,15 +38,19 @@ import org.openremote.web.console.client.window.SettingsWindow;
 import org.openremote.web.console.domain.Group;
 import org.openremote.web.console.domain.Navigate;
 import org.openremote.web.console.domain.Screen;
+import org.openremote.web.console.domain.TabBar;
+import org.openremote.web.console.domain.TabBarItem;
 
 import com.extjs.gxt.ui.client.Style;
 import com.extjs.gxt.ui.client.Style.ButtonScale;
+import com.extjs.gxt.ui.client.Style.IconAlign;
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.util.IconHelper;
 import com.extjs.gxt.ui.client.util.KeyNav;
 import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Dialog;
@@ -81,6 +85,7 @@ public class GroupView {
    private Button nextButton;
    private Map<Integer, ScreenView> screenViews;
    private List<Navigate> navigationHistory;
+   private ToolBar toolBar;
    
    public GroupView() {
       viewport = new Viewport();
@@ -100,6 +105,7 @@ public class GroupView {
          RootPanel.get().add(viewport);
          addPopSettingListener();
          addNaviagateListener();
+         // useful in IE
          KeyNav<ComponentEvent> keyNav = new KeyNav<ComponentEvent>(viewport) {
 
             public void onRight(ComponentEvent ce) {
@@ -117,18 +123,63 @@ public class GroupView {
     * The tool bar is for show the panel or group tabbar.
     */
    private void createToolBar() {
-      ToolBar toolBar = new ToolBar() {
+      toolBar = new ToolBar() {
          protected void afterRender() {
             super.afterRender();
-            layout.hide(Style.LayoutRegion.NORTH);
-            // TODO: add global tabbar items.
+            if (this.getItemCount() == 0) {
+               layout.hide(Style.LayoutRegion.NORTH);
+            }
          }
       };
-      
-      BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 25);
+      initTabBar();
+      BorderLayoutData data = new BorderLayoutData(Style.LayoutRegion.NORTH, 52);
       data.setMargins(new Margins(0, 5, 0, 5));
       data.setCollapsible(true);
       viewport.add(toolBar, data);
+   }
+
+   private void initTabBar() {
+      TabBar tabbar = currentGroup.getTabBar();
+      if (tabbar == null) {
+         tabbar = ClientDataBase.panelXmlEntity.globalTabBar;
+      }
+      
+      if (tabbar != null && tabbar.getTabBarItems().size() > 0) {
+         List<TabBarItem> tabbarItems = tabbar.getTabBarItems();
+         for (TabBarItem tabbarItem : tabbarItems) {
+            addTabBarButtons(tabbarItem);
+         }
+      }
+   }
+
+   /**
+    * @param tabbarItem
+    */
+   private void addTabBarButtons(final TabBarItem tabbarItem) {
+      Button btn = new Button();
+      String name = tabbarItem.getName();
+      btn.setToolTip(name);
+      if (name.length() > 10) {
+         btn.setText(name.substring(0, 10) + "...");
+      } else {
+         btn.setText(name);
+      }
+      btn.setWidth(50);
+      btn.setIconAlign(IconAlign.TOP);
+      btn.setScale(ButtonScale.MEDIUM);
+      if (tabbarItem.getImage() != null) {
+         btn.setIcon(IconHelper.create(ClientDataBase.appSetting.getResourceRootPath() + tabbarItem.getImage().getSrc(), 24, 24));
+      } else {
+         btn.setIcon(icons.defaultIcon());
+      }
+      if (tabbarItem.getNavigate() != null) {
+         btn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+            public void componentSelected(ButtonEvent ce) {
+               ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerNavigateTo, tabbarItem.getNavigate());
+            }
+         });
+      }
+      toolBar.add(btn);
    }
    
    private void createScreenView() {
@@ -371,6 +422,12 @@ public class GroupView {
                if (screen != null && targetGroup.getScreens().indexOf(screen) > -1) {
                   currentScreen = screen;
                }
+            }
+            
+            toolBar.removeAll();
+            initTabBar();
+            if (toolBar.getItemCount() == 0) {
+               layout.hide(Style.LayoutRegion.NORTH);
             }
          } else if (toScreenId > 0) {
             // in same group.
