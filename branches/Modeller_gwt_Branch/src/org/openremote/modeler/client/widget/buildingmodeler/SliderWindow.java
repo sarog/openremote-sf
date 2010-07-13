@@ -124,7 +124,6 @@ public class SliderWindow extends FormWindow {
       
       sensorField.setFieldLabel(SLIDER_SENSOR_FIELD_NAME);
       sensorField.setName(SLIDER_SENSOR_FIELD_NAME);
-      sensorField.setAllowBlank(false);
       
       ListStore<ModelData> sensorStore = new ListStore<ModelData>();
       List<BeanModel> sensors = BeanModelDataBase.sensorTable.loadAll();
