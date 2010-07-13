@@ -15,7 +15,10 @@ AppSettings = (function(){
   var EMPTY_CONTROLLER_URL_LIST = "<div style='text-align: center; padding: 0.4em; font-size: 100%; height: 18px;'>Currently, there is no controller url.</div>";
    
   // Constructor
-  function AppSettings() {
+  function AppSettings(delegateParam) {
+    var self = this;
+    var delegate = delegateParam;
+    
     var controllerServers = [];
     var selectedControllerServer = null;
     var appSettingsDialog = $("#appSettingsDialog");
@@ -64,6 +67,15 @@ AppSettings = (function(){
         selectedControllerServer.selectedPanelIdentity = cookiedSelectedControllerServerObj.selectedPanelIdentity;
       }
   	};
+  	
+  	
+    // this.didFinishAppSettings = function() {
+    //   MessageUtils.showLoading("Rendering......");
+    //   var rootViewController = new RootViewController();
+    //   $(rootViewController.getView().getCanvas()).insertBefore($("body").children().first());
+    //   
+    //   var updateController = new UpdateController(rootViewController);
+    // };
     
     // Private methods
     function init() {
@@ -95,11 +107,15 @@ AppSettings = (function(){
             var selectedPanelIdentity = $("#controllerPanelSelect").val();
             if (selectedPanelIdentity != null && selectedPanelIdentity != "" && selectedPanelIdentity != undefined) {
               selectedControllerServer.setSelectedPanelIdentity(selectedPanelIdentity);
+              replaceControllerServer(selectedControllerServer.getID(), selectedControllerServer);
+              CookieUtils.setCookie(Constants.CURRENT_SERVER, selectedControllerServer);
             } else {
               MessageUtils.showMessageDialog("The panel identity is illegal.");
               return;
             }
-            loadPanelWithName();
+            MessageUtils.hideLoading();
+            closeAppSettingsDialog();
+            delegate.beginUpdate();
     			},
     			Cancel: function() {
             closeAppSettingsDialog();
@@ -222,26 +238,6 @@ AppSettings = (function(){
       ConnnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);
     }
     
-    function loadPanelWithName() {
-      var successCallback = function(data, textStatus) {
-        MessageUtils.hideLoading();
-  		  CookieUtils.setCookie(Constants.CURRENT_SERVER, selectedControllerServer);
-  		  
-  		  closeAppSettingsDialog();
-      };
-      
-      var errorCallback = function(xOptions, textStatus) {
-        MessageUtils.hideLoading();
-        MessageUtils.showMessageDialog("Failed to load panel.");  
-      };
-      
-      MessageUtils.showLoading("Loading panel.");
-      
-      // Save selectedPanelIdentity for selectedController server.
-      replaceControllerServer(selectedControllerServer.getID(), selectedControllerServer);
-      ConnnectionUtils.getJson(selectedControllerServer.getUrl() + "/rest/panel/" + selectedControllerServer.getSelectedPanelIdentity() + "?callback=?", successCallback, errorCallback);
-    }
-    
     function initProtocolRadioBtns() {
       $("input[name = 'protocol']").click(function() {
         $("#controllerURLInput").val($(this).val());
@@ -326,13 +322,13 @@ AppSettings = (function(){
     
     // Call initializing jobs
     init();
-    
+
    }
    
    return {
-     getInstance: function() {
+     getInstance: function(delegateParam) {
        if (!appSettings) {
-         appSettings = new AppSettings();
+         appSettings = new AppSettings(delegateParam);
        }
        appSettings.recoverSettingsFromCookie();
        return appSettings;

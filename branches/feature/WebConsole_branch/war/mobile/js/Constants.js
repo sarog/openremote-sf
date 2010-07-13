@@ -5,6 +5,7 @@
  Constants = (function(){
    return {
      CONTROLLER_SERVERS : "controllerServers",
-     CURRENT_SERVER : "currentServer"
+     CURRENT_SERVER : "currentServer",
+     COLOR_BLACK : "#000000"
    };
  })();

@@ -1,0 +1,30 @@
+/**
+ * It's super class of related view controller.
+ * auther: handy.wang 2010-07-13
+ */
+BaseViewController = (function(){
+  
+  // Constructor
+  var BaseViewController = function() {
+    var view = null;
+    
+    // Public instance methods    
+    this.setView = function(viewParam) {
+      view = viewParam;
+    };
+    
+    this.getView = function() {
+      return view;
+    };
+    
+    // Private instance methods
+    function init() {
+      setView(null);
+    }
+    
+  };
+
+  return BaseViewController;
+  
+})();
+
