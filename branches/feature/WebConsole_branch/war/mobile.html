@@ -11,7 +11,8 @@
     <link href="./mobile/images/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
     <link href="./mobile/images/Icon.png" rel="apple-touch-icon">
     <link type="text/css" rel="stylesheet" href="./mobile/css/jquery/jquery-ui-1.8.2.custom.css" />
-    <link type="text/css" rel="stylesheet" href="./mobile/css/AppSettings.css" />
+    <link type="text/css" rel="stylesheet" href="./mobile/css/app/AppSettings.css" />
+    <link type="text/css" rel="stylesheet" href="./mobile/css/app/Views.css" />
 
     <script type="text/javascript" language="javascript" src="./mobile/jslib/uuid/Math.uuid.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/jslib/jquery/jquery-core-1.4.2.js"></script>
@@ -25,11 +26,19 @@
     <script type="text/javascript" language="javascript" src="./mobile/js/utils/MessageUtils.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/utils/SecurityUtils.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/utils/CookieUtils.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/utils/ClassUtils.js"></script>
     
     <script type="text/javascript" language="javascript" src="./mobile/js/Constants.js"></script>
-    <script type="text/javascript" language="javascript" src="./mobile/js/ControllerServer.js"></script>
-    <script type="text/javascript" language="javascript" src="./mobile/js/AppSettings.js"></script>
-    <script type="text/javascript" language="javascript" src="./mobile/js/UserInfo.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/ControllerServer.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/AppSettings.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/UserInfo.js"></script>
+    
+    <script type="text/javascript" language="javascript" src="./mobile/js/views/RootView.js"></script>
+    
+    <script type="text/javascript" language="javascript" src="./mobile/js/controllers/BaseViewController.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/controllers/RootViewController.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/controllers/UpdateController.js"></script>
+  
     <script type="text/javascript" language="javascript" src="./mobile/js/AppBoot.js"></script>
 		
     <style type="text/css">
@@ -70,25 +79,25 @@
     </style>
   </head>
 
-  <body class="smoothness">
+  <body class="smoothness" style="margin : 0px;">
     <button id="settings" >Settings</button>
-    
     <div id="welcome-content-loading" name="loading">
       <div class="loading-indicator-img">
           <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
           <span id="loading-msg">Loading resources, please wait...</span>
       </div>
     </div>
-    <!-- <div class="ui-widget-overlay" style="width: 1280px; height: 390px; z-index: 1001;"></div> -->
+    
     <div id="grayMask" class="ui-widget-overlay" style="width:100%; height: 100%; opacity:0.5; display:none; position:absolute; z-index: 20001; top: 0px;"></div>
-      <div id="process-loading" style="display:none;" name="loading">
-        <div class="loading-indicator-img" style="opacity:1;">
-            <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
-            <span id="loading-info"></span>
-        </div>
+    <div id="process-loading" style="display:none;" name="loading">
+      <div class="loading-indicator-img" style="opacity:1;">
+          <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
+          <span id="loading-info"></span>
       </div>
+    </div>
+    
     <!-- The div with id "messageDialog" must locate before div with "appSettingsDialog", otherwise the div with id "messageDialog" can't be rendered.  -->
-    <div id="messageDialog" />
-    <div id="appSettingsDialog" style="height:100%;" title="AppSettings" />
+    <div id="messageDialog" style="display:none;"></div>
+    <div id="appSettingsDialog" style="height:100%; display:none;" title="AppSettings"></div>
   </body>
 </html>

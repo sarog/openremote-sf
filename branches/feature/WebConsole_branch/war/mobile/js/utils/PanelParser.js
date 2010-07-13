@@ -4,4 +4,10 @@
  */
 PanelParser = (function(){
   
+  return {
+    parse : function() {
+      
+    }
+  };
+  
 })();

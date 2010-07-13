@@ -17,12 +17,12 @@ MessageUtils = (function(){
     showLoading:function(message) {
       $("#grayMask").show();
       $("#process-loading").show();
-      // $("#loading-info").html(message);
+      $("#loading-info").html(message);
     },
     hideLoading:function() {
       $("#grayMask").hide();
       $("#process-loading").hide();
-      // $("#loading-info").html("");
+      $("#loading-info").html("");
     },
     showMessageDialog:function(message) {
       $("#messageDialog").dialog("destroy");
