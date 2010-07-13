@@ -211,6 +211,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 	
 	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+	[self.superview.superview bringSubviewToFront:self.superview];
 	UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
 	tipText.font = [UIFont systemFontOfSize:40];
 	tipText.backgroundColor = [UIColor clearColor];
