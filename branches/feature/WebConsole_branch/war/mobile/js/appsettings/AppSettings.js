@@ -11,7 +11,17 @@ AppSettings = (function(){
   
   var DIALOG_WIDHT = "97%";
   var DIALOG_HEIGHT = "auto";
-  var URL_REGEX = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+  var HTTP_PROTOCOL = "http://";
+  /* 
+   * NOTE: This variable is for the situation of that : 
+   * App wont alert "Failed to load panels" when user clicked a bad controller url then add a available controller url.
+   * This time the "add" action will trigger "$("#" + selectedControllerServer.getID()).click();" 
+   * at the bottom of method "renderControllerServers". 
+   * So, if don't use variable "dontShowMsgWhenAdd" to control, while repeat the "Add" action, the selected bad controller url
+   * will be clicked and then popup alert window.
+   */
+  var dontShowMsgWhenAdd = false;
+  var URL_REGEX = /(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
   var EMPTY_CONTROLLER_URL_LIST = "<div style='text-align: center; padding: 0.4em; font-size: 100%; height: 18px;'>Currently, there is no controller url.</div>";
    
   // Constructor
@@ -94,7 +104,8 @@ AppSettings = (function(){
     		height: DIALOG_HEIGHT,
     		width: DIALOG_WIDHT,
     		position: "top",
-    		resizable: true,
+    		resizable: false,
+    		draggable: false,
     		modal: false,
     		buttons: {
     			'OK': function() {
@@ -105,20 +116,28 @@ AppSettings = (function(){
             
             // Save selected panel identity
             var selectedPanelIdentity = $("#controllerPanelSelect").val();
-            if (selectedPanelIdentity != null && selectedPanelIdentity != "" && selectedPanelIdentity != undefined) {
+            if (selectedPanelIdentity != null && selectedPanelIdentity != "" && selectedPanelIdentity != "none") {
               selectedControllerServer.setSelectedPanelIdentity(selectedPanelIdentity);
               replaceControllerServer(selectedControllerServer.getID(), selectedControllerServer);
               CookieUtils.setCookie(Constants.CURRENT_SERVER, selectedControllerServer);
+            } else if (selectedPanelIdentity == null && selectedPanelIdentity == "") {
+              MessageUtils.showMessageDialog("The panel identity is empty.");
+              return;
+            } else if (selectedPanelIdentity == "none") {
+              MessageUtils.showMessageDialog("Currently, there is no available panels for selected controller.");
+              return;
             } else {
               MessageUtils.showMessageDialog("The panel identity is illegal.");
               return;
             }
             MessageUtils.hideLoading();
-            closeAppSettingsDialog();
+            resetControllerPanelSelectContainer();
+      			$(appSettingsDialog).dialog('close');
             delegate.beginUpdate();
     			},
     			Cancel: function() {
-            closeAppSettingsDialog();
+            resetControllerPanelSelectContainer();
+      			$(appSettingsDialog).dialog('close');
     			}
     		},
     		close: function() {
@@ -126,11 +145,10 @@ AppSettings = (function(){
     	});
     }
     
-    function closeAppSettingsDialog() {
+    function resetControllerPanelSelectContainer() {
 		  $("#controllerPanelSelectContainer").hide();
       $("#controllerPanelSelect").children().remove();
       $("#controllerPanelSelect").html("<option>none</option>");
-			$(appSettingsDialog).dialog('close');
     }
     
     // Init the addControllerURL button.
@@ -139,7 +157,7 @@ AppSettings = (function(){
         .click(function() {
           var controllerURLInput = $(appSettingsDialog).find("#controllerURLInput");
           if(checkRegexp(controllerURLInput, URL_REGEX, "Invalid URL format.")) {
-            newControllerServer(controllerURLInput.val());
+            newControllerServer(HTTP_PROTOCOL + controllerURLInput.val().trim());
             renderControllerServers();
             $(appSettingsDialog).find("#controllerURLInput").val("");
           }
@@ -170,6 +188,7 @@ AppSettings = (function(){
       $(appSettingsDialog).find("#controllerURLList").html(controllerServersDivs);
       
       $(appSettingsDialog).find("[name = 'controllerServer']").click(function() {
+        resetControllerPanelSelectContainer();
         selectedControllerServer = findControllerServerByID($(this).attr("id"));
         $(appSettingsDialog).find("[name = 'controllerServer']").removeClass("ui-selected");
         $(this).addClass("ui-selected");
@@ -189,8 +208,10 @@ AppSettings = (function(){
       });
       
       if (selectedControllerServer != null) {
+        dontShowMsgWhenAdd = true;
         // click the selected controller item in the list.
         $("#" + selectedControllerServer.getID()).click();
+
       }
     }
     
@@ -227,12 +248,16 @@ AppSettings = (function(){
 
         $("#controllerPanelSelectContainer").show();
         MessageUtils.hideLoading();
+        dontShowMsgWhenAdd = false;
       };
       
       var errorCallback = function(xOptions, textStatus) {
         $("#controllerPanelSelectContainer").hide();
         MessageUtils.hideLoading();
-        MessageUtils.showMessageDialog("Failed to load panels.");
+        if(!dontShowMsgWhenAdd) {
+          MessageUtils.showMessageDialog("Failed to load panels.");
+        }
+        dontShowMsgWhenAdd = false;
       };
       
       ConnnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);
@@ -264,7 +289,7 @@ AppSettings = (function(){
 
     function checkRegexp(o,regexp,n) {
       o.removeClass('ui-state-error');
-  		if (!( regexp.test(o.val()))) {
+  		if (!( regexp.test(o.val().trim()))) {
   			o.addClass('ui-state-error');
   			updateTips(n);
   			return false;
