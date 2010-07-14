@@ -26,6 +26,7 @@
 #define AUTO_DISCOVERY_URLS_INDEX 1
 #define CUSOMIZED_URLS_INDEX 2
 #define PANEL_IDENTITY_INDEX 3
+#define SECURITY_INDEX 5
 
 @interface AppSettingsDefinition : NSObject {
 
@@ -52,6 +53,11 @@
 + (NSString *)getCurrentPanelIdentity;
 + (NSString *)getUnsavedChosenServerUrl;
 + (void)setUnsavedChosenServerUrl:(NSString *)url;
++ (NSMutableDictionary *)getSecurityDic;
++ (BOOL)useSSL;
++ (int)sslPort;
++ (void)setUseSSL:(BOOL)on;
++ (void)setSslPort:(int)port;
 
 
 @end

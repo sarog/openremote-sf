@@ -29,15 +29,16 @@
 - (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithFrame:frame reuseIdentifier:reuseIdentifier]) {
 			textField = [[UITextField alloc] initWithFrame:CGRectZero];
-			textField.contentVerticalAlignment = UIControlContentHorizontalAlignmentCenter;
+			textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 			textField.font = [UIFont systemFontOfSize:22];
 			textField.keyboardType = UIKeyboardTypeURL;
-			//textField.adjustsFontSizeToFitWidth = YES;
-			textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-			textField.autocorrectionType = UITextAutocorrectionTypeNo;
+			textField.adjustsFontSizeToFitWidth = YES;
+			//textField.clearButtonMode = UITextFieldViewModeWhileEditing;// has a clear 'x' button to the right
+			textField.autocapitalizationType = UITextAutocapitalizationTypeNone;// no auto capitalization support
+			textField.autocorrectionType = UITextAutocorrectionTypeNo;// no auto correction support
 			textField.textColor = [UIColor darkGrayColor];
 			textField.returnKeyType = UIReturnKeyDone;
-			self.textLabel.text = @"111";
+			self.selectionStyle = UITableViewCellSelectionStyleNone;
 			[self addSubview:textField];
     }
     return self;
@@ -58,9 +59,10 @@
 	}
 }
 
+
 - (void)dealloc {
 	[textField release];
-    [super dealloc];
+	[super dealloc];
 }
 
 
