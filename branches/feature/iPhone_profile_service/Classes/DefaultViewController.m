@@ -412,6 +412,7 @@
 
 - (void)onSignin {
 	[currentGroupController stopPolling];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	[theDelegate performSelector:@selector(checkConfigAndUpdate)];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 }

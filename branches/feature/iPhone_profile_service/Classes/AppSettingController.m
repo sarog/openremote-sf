@@ -55,7 +55,10 @@
 
 #define CLEAR_CACHE_SECTION 3
 
+#define SECURITY_SECTION 4
+
 #define AUTO_DISCOVERY_TIMER_INTERVAL 1
+#define SECURITY_PORT 8443
 
 @implementation AppSettingController
 
@@ -171,6 +174,103 @@
 		
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	NSScanner* scan = [NSScanner scannerWithString:textField.text]; 
+	int val; 
+	BOOL isInt = [scan scanInt:&val] && [scan isAtEnd];
+	if (isInt) {
+		[textField resignFirstResponder];
+		return YES;
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"" Message:@"Port must be a number"];
+		return NO;		
+	}
+}
+
+// To be link with your TextField event "Editing Did Begin"
+//  memoryze the current TextField
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:SECURITY_SECTION] 
+												atScrollPosition:UITableViewScrollPositionMiddle 
+																animated:NO];
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+	isEditing = YES;
+	return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	isEditing = NO;
+}
+
+//don't let keyboard hide port field, add space to scroll
+-(void) keyboardWillShow:(NSNotification *)note {
+	if (!isEditing) {
+		return;
+	}
+	// Get the keyboard size
+	CGRect keyboardBounds;
+	[[note.userInfo valueForKey:UIKeyboardBoundsUserInfoKey] getValue: &keyboardBounds];
+	
+	CGRect frame = self.tableView.frame;
+	
+	// Start animation
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationBeginsFromCurrentState:YES];
+	[UIView setAnimationDuration:0.3f];
+	
+	// Reduce size of the Table view 
+	frame.size.height -= keyboardBounds.size.height;
+	
+	// Apply new size of table view
+	self.tableView.frame = frame;
+	
+	// Scroll the table view to see the TextField just above the keyboard
+	if (portField) {
+		CGRect textFieldRect = [self.tableView convertRect:portField.bounds fromView:portField];
+		[self.tableView scrollRectToVisible:textFieldRect animated:NO];
+	}
+	
+	[UIView commitAnimations];
+}
+
+//remove the space for scroll
+-(void) keyboardWillHide:(NSNotification *)note {
+	// Get the keyboard size
+	CGRect keyboardBounds;
+	[[note.userInfo valueForKey:UIKeyboardBoundsUserInfoKey] getValue: &keyboardBounds];
+	
+	// Detect orientation
+	CGRect frame = self.tableView.frame;
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationBeginsFromCurrentState:YES];
+	[UIView setAnimationDuration:0.3f];
+	
+	// Reduce size of the Table view 
+	frame.size.height += keyboardBounds.size.height;
+	
+	// Apply new size of table view
+	self.tableView.frame = frame;
+	
+	[UIView commitAnimations];
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	// Register notification when the keyboard will be show
+	[[NSNotificationCenter defaultCenter] addObserver:self
+																					 selector:@selector(keyboardWillShow:)
+																							 name:UIKeyboardWillShowNotification
+																						 object:nil];
+	
+	// Register notification when the keyboard will be hide
+	[[NSNotificationCenter defaultCenter] addObserver:self
+																					 selector:@selector(keyboardWillHide:)
+																							 name:UIKeyboardWillHideNotification
+																						 object:nil];
+}
 
 - (void)deleteAllRow {
 	UITableView *tv = (UITableView *)self.view;
@@ -226,7 +326,7 @@
 - (void)saveSettings {
 	if (serverArray.count == 0) {
 		[ViewHelper showAlertViewWithTitle:@"Warning" 
-								   Message:@"No Controller. Please configure Controller URL manually."];
+															 Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		done.enabled = NO;
@@ -243,21 +343,16 @@
 	}	
 }
 
-- (void)editSettings {
-	isEditing = !isEditing;
-	if (isEditing) {
-		self.navigationItem.leftBarButtonItem.title = @"Done";
-		self.navigationItem.rightBarButtonItem = nil;
-		[[self tableView] setEditing:YES animated:YES];
-	} else {
-		[AppSettingsDefinition writeToFile];
-		self.navigationItem.leftBarButtonItem = edit;
-		self.navigationItem.leftBarButtonItem.title = @"Edit";
-		self.navigationItem.rightBarButtonItem = done;
-		[[self tableView] setEditing:NO animated:YES];
-	}
-	
-	
+- (void)saveUseSSL:(id)sender {
+	UISwitch *s = (UISwitch *)sender;
+	[AppSettingsDefinition setUseSSL:s.on];
+	[AppSettingsDefinition writeToFile];
+}
+
+- (void)saveSslPort:(id)sender {
+	UITextField *t = (UITextField *)sender;
+	[AppSettingsDefinition setSslPort:[t.text intValue]];
+	[AppSettingsDefinition writeToFile];
 }
 
 #pragma mark Delegate method of ServerAutoDiscoveryController
@@ -298,9 +393,6 @@
 - (void)viewWillAppear:(BOOL)animated {
 	
 	self.navigationItem.rightBarButtonItem = done;
-	if (!autoDiscovery) {
-		//self.navigationItem.leftBarButtonItem = edit;
-	}
 	self.navigationItem.leftBarButtonItem = cancel;
 	
 	if (serverArray) {
@@ -318,23 +410,20 @@
 }
 
 #pragma mark Table view methods
-
+// 'auto-discovery URLs' share one section with 'custom URLs', -1
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return [AppSettingsDefinition getAppSettings].count - 1 + 1;
+	return [AppSettingsDefinition getAppSettings].count - 1;
 }
 
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == AUTO_DISCOVERY_SWITCH_SECTION || section == PANEL_IDENTITY_SECTION 
-			|| section == CLEAR_CACHE_SECTION) {
-		return 1;
-	} else {
-		if (!autoDiscovery) {
-			return serverArray.count + 1;
-		}
-		return serverArray.count;
+	if (section == CONTROLLER_URLS_SECTION){
+		return autoDiscovery ? serverArray.count : serverArray.count + 1;// custom URLs need extra cell 'Add url >'
+	} else if (section == SECURITY_SECTION){
+		return 2;
 	}
+	return 1;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
@@ -345,30 +434,34 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	if (section == CLEAR_CACHE_SECTION) {
-		return nil;
-	}
-	if (section == PANEL_IDENTITY_SECTION) {
-		return [AppSettingsDefinition getSectionHeaderWithIndex:PANEL_IDENTITY_INDEX];
-	}
+
+	if(section >= PANEL_IDENTITY_SECTION) {
+		section++;
+	} 
 	return [AppSettingsDefinition getSectionHeaderWithIndex:section];
 }
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	static NSString *autoCellIdentifier = @"autoCell";
+	static NSString *switchCellIdentifier = @"switchCell";
 	static NSString *serverCellIdentifier = @"serverCell";
 	static NSString *panelCellIdentifier = @"panelCell";
 	static NSString *buttonCellIdentifier = @"buttonCell";
+	static NSString *inputCellIdentifier = @"inputCell";
 	
-	UITableViewCell *autoCell = [tableView dequeueReusableCellWithIdentifier:autoCellIdentifier];
+	UITableViewCell *switchCell = [tableView dequeueReusableCellWithIdentifier:switchCellIdentifier];
 	UITableViewCell *serverCell = [tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
 	UITableViewCell *panelCell = [tableView dequeueReusableCellWithIdentifier:panelCellIdentifier];
 	UITableViewCell *buttonCell = [tableView dequeueReusableCellWithIdentifier:buttonCellIdentifier];
+	UITableViewCell *inputCell = [tableView dequeueReusableCellWithIdentifier:inputCellIdentifier];
 	
-	if (autoCell == nil) {
-		autoCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:autoCellIdentifier] autorelease];
+	if (switchCell == nil) {
+		switchCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:switchCellIdentifier] autorelease];
+		switchCell.selectionStyle = UITableViewCellSelectionStyleNone;
+		UISwitch *switchView = [[UISwitch alloc]init];
+		switchCell.accessoryView = switchView;
+		[switchView release];
 	}
 	if (serverCell == nil) {
 		serverCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:serverCellIdentifier] autorelease];
@@ -379,16 +472,34 @@
 	if (buttonCell == nil) {
 		buttonCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:buttonCellIdentifier] autorelease];
 	}
+	if (inputCell == nil) {
+		inputCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:inputCellIdentifier] autorelease];
+		inputCell.selectionStyle = UITableViewCellSelectionStyleNone;
+		
+		UITextField *textField = [[UITextField alloc] init];
+		textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+		textField.textAlignment = UITextAlignmentRight;
+		textField.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+		textField.returnKeyType = UIReturnKeyDone;
+		textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
+		textField.clearButtonMode = UITextFieldViewModeWhileEditing;// has a clear 'x' button to the right
+		textField.autocapitalizationType = UITextAutocapitalizationTypeNone;// no auto capitalization support
+		textField.autocorrectionType = UITextAutocorrectionTypeNo;// no auto correction support
+		textField.textColor = [UIColor darkGrayColor];
+		CGFloat w = inputCell.bounds.size.width;
+		CGFloat h = inputCell.bounds.size.height;
+		textField.frame = CGRectInset(CGRectMake(w/2, (h - 26)/2.0, w/2,26),20,0);
+		portField = textField;
+		[textField setDelegate:self];		
+		[inputCell setAccessoryView:textField];
+	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {
-		autoCell.textLabel.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
-		autoCell.selectionStyle = UITableViewCellSelectionStyleNone;
-		UISwitch *switchView = [[UISwitch alloc]init];
+		switchCell.textLabel.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
+		UISwitch *switchView = (UISwitch *)switchCell.accessoryView;
 		[switchView setOn:autoDiscovery];
 		[switchView addTarget:self action:@selector(autoDiscoverChanged:) forControlEvents:UIControlEventValueChanged];
-		autoCell.accessoryView = switchView;
-		[switchView release];
-		return autoCell;
+		return switchCell;
 	} else if (indexPath.section == CONTROLLER_URLS_SECTION) {
 		if ([self isAddCustomServerRow:indexPath]) {
 			serverCell.textLabel.text = @"Add New Controller...";
@@ -411,8 +522,24 @@
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
+	} else if (indexPath.section == SECURITY_SECTION) {
+		if (indexPath.row == 0) {
+			switchCell.textLabel.text = @"Use SSL";
+			UISwitch *switchView = (UISwitch *)switchCell.accessoryView;
+			[switchView setOn:[AppSettingsDefinition useSSL]];
+			[switchView addTarget:self action:@selector(saveUseSSL:) forControlEvents:UIControlEventValueChanged];
+			return switchCell;
+		} else {
+			inputCell.textLabel.text = @"SSL Port";
+			portField.text = [NSString stringWithFormat:@"%d", [AppSettingsDefinition sslPort]];
+			portField.placeholder = [NSString stringWithFormat:@"%d", SECURITY_PORT];
+			[portField addTarget:self action:@selector(saveSslPort:) forControlEvents:UIControlEventEditingDidEnd];
+			return inputCell;
+		}
+		
 	} else if (indexPath.section == CLEAR_CACHE_SECTION) {
 		buttonCell.textLabel.text = @"Clear Image Cache";
+		buttonCell.textLabel.textAlignment = UITextAlignmentCenter;
 		buttonCell.selectionStyle = UITableViewCellSelectionStyleGray;
 		return buttonCell;
 	}
@@ -458,7 +585,11 @@
 	} 
 	
 	if (indexPath.section == CLEAR_CACHE_SECTION) {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"Are you sure you want to clear image cache?" delegate:self cancelButtonTitle:@"NO" otherButtonTitles:nil];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil 
+																										message:@"Are you sure you want to clear image cache?" 
+																									 delegate:self 
+																					cancelButtonTitle:@"NO" 
+																					otherButtonTitles:nil];
 		[alert addButtonWithTitle:@"YES"];
 		[alert show];
 		[alert autorelease];
@@ -489,21 +620,22 @@
 	}
 	
 	
-	
-
-	if (currentSelectedServerIndex) {
-		UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
-		if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
-			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
-			oldCell.accessoryType = UITableViewCellAccessoryNone;
+	if (indexPath.section == CONTROLLER_URLS_SECTION) {
+		if (currentSelectedServerIndex) {
+			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
+			if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
+				[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
+				oldCell.accessoryType = UITableViewCellAccessoryNone;
+			} 
 		} 
-	} 
-	if (cell.accessoryType == UITableViewCellAccessoryNone) {
-		[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-		cell.accessoryType = UITableViewCellAccessoryCheckmark;
-	} 
+		if (cell.accessoryType == UITableViewCellAccessoryNone) {
+			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
+			cell.accessoryType = UITableViewCellAccessoryCheckmark;
+		} 
+		
+		currentSelectedServerIndex = indexPath;
+	}
 	
-	currentSelectedServerIndex = indexPath;
 }
 
 #pragma mark alert delegate
@@ -517,16 +649,15 @@
 	return YES;
 }
 
-
 - (void)dealloc {
 	if (autoDiscoverController) {
 		[autoDiscoverController release];
 	}
 	[updateController release];
-	[edit release];
 	[done release];
 	[cancel release];
 	[serverArray release];
+	[portField release];
 	
 	[super dealloc];
 }
