@@ -32,10 +32,15 @@
     <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/ControllerServer.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/AppSettings.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/UserInfo.js"></script>
-    
+
+    <script type="text/javascript" language="javascript" src="./mobile/js/views/BaseView.js"></script>    
     <script type="text/javascript" language="javascript" src="./mobile/js/views/RootView.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/views/ErrorView.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/views/InitView.js"></script>
     
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/BaseViewController.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/controllers/ErrorViewController.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/controllers/InitViewController.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/RootViewController.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/UpdateController.js"></script>
   
@@ -45,16 +50,16 @@
       div[name="loading"] {
          border: 1px solid #CCCCCC;
          height: auto;
-         width: 100%;
+         width: 90%;
 /*         left: 47%;*/
-/*         margin-left: -147px;*/
-/*         padding: 2px;*/
+/*         margin: 4px;*/
          position: absolute;
          top: 40%;
          z-index: 20001;
-         margin: -7px;
+/*         margin: -7px;*/
 /*         margin-right: 10px;*/
          text-align: center;
+         left: 5%;
       }
       
       div[name="loading"] .loading-indicator-img {
@@ -62,7 +67,7 @@
          color: #444444;
          font: bold 100% tahoma, arial, helvetica;
          height: auto;
-/*         margin: 0;*/
+/*         margin: 2px;*/
          padding: 10px;
       }
       
@@ -80,7 +85,6 @@
   </head>
 
   <body class="smoothness" style="margin : 0px;">
-    <button id="settings" >Settings</button>
     <div id="welcome-content-loading" name="loading">
       <div class="loading-indicator-img">
           <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
@@ -98,6 +102,6 @@
     
     <!-- The div with id "messageDialog" must locate before div with "appSettingsDialog", otherwise the div with id "messageDialog" can't be rendered.  -->
     <div id="messageDialog" style="display:none;"></div>
-    <div id="appSettingsDialog" style="height:100%; display:none;" title="AppSettings"></div>
+    <div id="appSettingsDialog" style="height:100%; display:none; background-color:#EEEEEE; padding:0.1em 0.2em;" title="Settings"></div>
   </body>
 </html>

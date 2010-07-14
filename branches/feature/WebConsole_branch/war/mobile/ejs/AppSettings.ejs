@@ -1,20 +1,28 @@
 <div>
-  <div style="margin-top:5px;font-size:80%;">URL eg: http://10.10.10.100:8080/controller</div>
-  <span style="margin-top:5px;font-size:80%;">URL protocol:</span>
-  <label><input name="protocol" type="radio" style="font-size:100%;" value="http://" >HTTP</input></label>
-  <label><input name="protocol" type="radio" style="font-size:100%;" value="https://" >HTTPS</input></label>
-  <div><input id="controllerURLInput" type="text" /></div>
-  <div><button id="addControllerURLBtn">Add</button><span id="appSettingsTips" /></div>
+  <div class="segmentTitle">Add a controller url:</div>
+  <div class="segment"> 
+    <div>
+      <input style="width:70%;" id="controllerURLInput" type="text" />
+      <button id="addControllerURLBtn" style="width:25%;">Add</button><span id="appSettingsTips" />
+    </div>
+    <div class="segmentSubTitle">
+      Sample:10.10.10.102:8080/controller
+    </div>
+  </div>
 </div>
-<hr />
-<span style="margin-top:5px;font-size:80%;">Select a controller url:</span>
+
+<br />
+<span class="segmentTitle">
+  Select a controller url:
+</span>
+
 <div id="controllerURLList" />
-<hr />
+<br />
 <div id="controllerPanelSelectContainer">
-  <div>Select a panel identity: </div>
+  <div class="segmentTitle">Select a panel identity: </div>
   <div>
-  <select id="controllerPanelSelect" style="width:100%;">
-    <option>none</option>
-  </select>
+    <select id="controllerPanelSelect" style="width:100%;">
+      <option>none</option>
+    </select>
   </div>
 </div>
