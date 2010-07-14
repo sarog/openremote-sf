@@ -139,6 +139,10 @@
 																				 otherButtonTitles:@"OK", nil];
 	
 	textField = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 50.0, 240.0, 25.0)]; 
+	textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+	textField.autocorrectionType = UITextAutocorrectionTypeNo;
+	textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+	textField.returnKeyType = UIReturnKeyDone;
 	[textField setBackgroundColor:[UIColor whiteColor]];
 	if ([Definition sharedDefinition].username == nil) {
 		[textField setPlaceholder:@"username"];
@@ -150,8 +154,12 @@
 	
 	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 85.0, 240.0, 25.0)]; 
 	[textField2 setBackgroundColor:[UIColor whiteColor]];
+	textField2.autocapitalizationType = UITextAutocapitalizationTypeNone;
+	textField2.autocorrectionType = UITextAutocorrectionTypeNo;
+	textField2.clearButtonMode = UITextFieldViewModeWhileEditing;
 	[textField2 setPlaceholder:@"password"];
 	[textField2 setSecureTextEntry:YES];
+	textField2.returnKeyType = UIReturnKeyDone;
 	[prompt addSubview:textField2];
 	
 	// set place
@@ -237,6 +245,10 @@
 		NSLog(@"panel logical id : %@",[attributeDict valueForKey:@"name"]);
 		[panels addObject:[attributeDict valueForKey:@"name"]]; 
 	}
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	return YES;
 }
 
 
