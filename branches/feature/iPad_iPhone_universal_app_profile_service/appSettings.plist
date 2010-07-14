@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>	
-	<dict> <!-- Auto Discovery switch, section 0 -->
+	<dict> <!-- [0] Auto Discovery switch, tabel view section 0 -->
 		<key>header</key>
 		<string></string>
 		<key>item</key>
@@ -15,7 +15,7 @@
 		<key>footer</key>
 		<string>Turn off auto-discovery to input controller URL manually.</string>
 	</dict>
-	<dict> <!-- Auto Discovery server URLs, section 1 -->
+	<dict> <!-- [1] Auto Discovery server URLs, tabel view section 1 (shared)-->
 		<key>header</key>
 		<string>Choose Controller:</string>
 		<key>servers</key>
@@ -23,7 +23,7 @@
 		<key>footer</key>
 		<string></string>
 	</dict>
-	<dict> <!-- Customized server URLs, section 2 -->
+	<dict> <!-- [2] Customized server URLs, tabel view section 1 (shared)-->
 		<key>header</key>
 		<string>Choose Controller:</string>
 		<key>servers</key>
@@ -38,7 +38,7 @@
 		<key>footer</key>
 		<string></string>
 	</dict>
-	<dict> <!-- Panel Identity, section 3 -->
+	<dict> <!-- [3] Panel Identity, tabel view section 2 -->
 		<key>header</key>
 		<string>Choose Panel Identity:</string>
 		<key>item</key>
@@ -47,6 +47,25 @@
 			<string>Panel</string>
 			<key>identity</key>
 			<string>None</string>
+		</dict>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict> <!-- [4] Clear Image Cache, tabel view section 3 -->
+		<key>header</key>
+		<string></string>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict> <!-- [5] Security, tabel view section 4 -->
+		<key>header</key>
+		<string>Security:</string>
+		<key>item</key>
+		<dict>
+			<key>useSSL</key>
+			<false/>
+			<key>port</key>
+			<real>8443</real>
 		</dict>
 		<key>footer</key>
 		<string></string>

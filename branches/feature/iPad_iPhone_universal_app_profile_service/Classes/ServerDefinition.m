@@ -23,7 +23,6 @@
 #import "AppSettingsDefinition.h"
 #import "StringUtils.h"
 
-#define SECURITY_PORT 8443
 
 @implementation ServerDefinition
 
@@ -40,7 +39,8 @@
 	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
 	
 	NSString *port = [StringUtils parsePortFromServerUrl:serverUrl];
-	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:port withString:[NSString stringWithFormat:@"%d", SECURITY_PORT]];
+	NSString *securedPort = [NSString stringWithFormat:@"%d", [AppSettingsDefinition sslPort]];
+	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:port withString:securedPort];
 	
 	return  serverUrl;
 }
@@ -71,7 +71,7 @@
 }
 
 + (NSString *)securedControlRESTUrl {
-	return [[self securedServerUrl] stringByAppendingPathComponent:@"rest/control"];
+	return [[AppSettingsDefinition useSSL] ? [self securedServerUrl] : [self serverUrl] stringByAppendingPathComponent:@"rest/control"];
 }
 
 + (NSString *)statusRESTUrl {

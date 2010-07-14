@@ -25,19 +25,20 @@
 #import "UpdateController.h"
 #import "FileUtils.h"
 
-@interface AppSettingController : UITableViewController {
+@interface AppSettingController : UITableViewController <UITextFieldDelegate> {
 	NSString *pathToUserCopyOfPlist;
 	BOOL autoDiscovery;
 	NSMutableArray *serverArray;
 	NSIndexPath *currentSelectedServerIndex;
 	ServerAutoDiscoveryController *autoDiscoverController;
 	UIBarButtonItem *done;
-	UIBarButtonItem *edit;
 	UIBarButtonItem *cancel;
 	BOOL isEditing;
 	UIActivityIndicatorView *loadingView;
 	UpdateController *updateController;
 	NSTimer *getAutoServersTimer;
 	UIActivityIndicatorView *spinner;
+	UITextField *portField;
+	
 }
 @end

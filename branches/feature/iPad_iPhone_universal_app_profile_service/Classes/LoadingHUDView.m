@@ -150,7 +150,7 @@
 	[[UIColor colorWithRed:0 green:0 blue:0 alpha:0.9] set];
 	CGRect r = CGRectMake(x, _activity.frame.origin.y - (rHeight)/2 + 18, rWidth,rHeight);
 	[UIView drawRoundRectangleInRect:r 
-						  withRadius:10.0 
+						  withRadius:20.0 
 							   color:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.75]];
 	
 	
