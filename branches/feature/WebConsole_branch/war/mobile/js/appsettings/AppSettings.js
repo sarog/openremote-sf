@@ -12,15 +12,6 @@ AppSettings = (function(){
   var DIALOG_WIDHT = "97%";
   var DIALOG_HEIGHT = "auto";
   var HTTP_PROTOCOL = "http://";
-  /* 
-   * NOTE: This variable is for the situation of that : 
-   * App wont alert "Failed to load panels" when user clicked a bad controller url then add a available controller url.
-   * This time the "add" action will trigger "$("#" + selectedControllerServer.getID()).click();" 
-   * at the bottom of method "renderControllerServers". 
-   * So, if don't use variable "dontShowMsgWhenAdd" to control, while repeat the "Add" action, the selected bad controller url
-   * will be clicked and then popup alert window.
-   */
-  var dontShowMsgWhenAdd = false;
   var URL_REGEX = /(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
   var EMPTY_CONTROLLER_URL_LIST = "<div style='text-align: center; padding: 0.4em; font-size: 100%; height: 18px;'>Currently, there is no controller url.</div>";
    
@@ -110,7 +101,7 @@ AppSettings = (function(){
     		buttons: {
     			'OK': function() {
             if (selectedControllerServer == null) {
-              MessageUtils.showMessageDialog("Please select a controller.");
+              MessageUtils.showMessageDialog("Message", "Please select a controller.");
               return;
             }
             
@@ -121,13 +112,13 @@ AppSettings = (function(){
               replaceControllerServer(selectedControllerServer.getID(), selectedControllerServer);
               CookieUtils.setCookie(Constants.CURRENT_SERVER, selectedControllerServer);
             } else if (selectedPanelIdentity == null && selectedPanelIdentity == "") {
-              MessageUtils.showMessageDialog("The panel identity is empty.");
+              MessageUtils.showMessageDialog("Message", "The panel identity is empty.");
               return;
             } else if (selectedPanelIdentity == "none") {
-              MessageUtils.showMessageDialog("Currently, there is no available panels for selected controller.");
+              MessageUtils.showMessageDialog("Message", "Currently, there is no available panels for selected controller.");
               return;
             } else {
-              MessageUtils.showMessageDialog("The panel identity is illegal.");
+              MessageUtils.showMessageDialog("Message", "The panel identity is illegal.");
               return;
             }
             MessageUtils.hideLoading();
@@ -208,7 +199,6 @@ AppSettings = (function(){
       });
       
       if (selectedControllerServer != null) {
-        dontShowMsgWhenAdd = true;
         // click the selected controller item in the list.
         $("#" + selectedControllerServer.getID()).click();
 
@@ -231,7 +221,7 @@ AppSettings = (function(){
             panelIdentities.push(panelName);
           }
         } else {
-          MessageUtils.showMessageDialog("There is no panel identities.");
+          MessageUtils.showMessageDialog("Message", "There is no panel identities.");
         }
         
         if (panelIdentities.length != 0) {
@@ -248,16 +238,12 @@ AppSettings = (function(){
 
         $("#controllerPanelSelectContainer").show();
         MessageUtils.hideLoading();
-        dontShowMsgWhenAdd = false;
       };
       
       var errorCallback = function(xOptions, textStatus) {
         $("#controllerPanelSelectContainer").hide();
         MessageUtils.hideLoading();
-        if(!dontShowMsgWhenAdd) {
-          MessageUtils.showMessageDialog("Failed to load panels.");
-        }
-        dontShowMsgWhenAdd = false;
+        MessageUtils.showMessageDialog("Message", "Failed to load panels.");
       };
       
       ConnnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);

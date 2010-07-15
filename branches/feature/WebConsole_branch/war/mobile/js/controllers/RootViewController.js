@@ -2,41 +2,35 @@
  * It's for controlling all views render.
  * auther: handy.wang 2010-07-13
  */
- RootViewController = (function(){
-   
-   // Constructor
-   return function() {
-     var self = this;
-     
-     // For extends
-     RootViewController.superClass.constructor.call(this);
-     
-     // properties
-     //var ErrorViewController = new ErrorViewController();
-
-     // Public instance methods
-     //TODO....
-
-     // Private instance methods
-     function initView() {
-       self.setView(RootView.getInstance());
-       var cssStyle = {
-         "background-color":Constants.COLOR_BLACK,
-         "color":"#FF0000",
-         "width":"100%",
-         "height":"100%",
-         "position":"absolute",
-         "float":"left"
-       };
-       self.getView().setCss(cssStyle);
-     }
-     
-     // Init jobs
-     initView();
-     
-     
-   };
- })();
+RootViewController = (function(){
  
- // For extends
- ClassUtils.extend(RootViewController, BaseViewController);
+ // Constructor
+ return function() {
+   // For extends
+   RootViewController.superClass.constructor.call(this);
+   
+   var self = this;
+   var errorViewController = null;
+   var initViewController = null;
+   
+   // properties
+   //var ErrorViewController = new ErrorViewController();
+
+   // Public instance methods
+
+   // Private instance methods
+   function initView() {
+     self.setView(new RootView());
+     errorViewController = new ErrorViewController("No Group Found", "Please check your setting or define a group with screens first.");
+     initViewController = new InitViewController();
+     self.getView().addSubView(errorViewController.getView());
+     self.getView().addSubView(initViewController.getView());
+   }
+   
+   // Init jobs
+   initView();
+ };
+})();
+ 
+// For extends
+ClassUtils.extend(RootViewController, BaseViewController);

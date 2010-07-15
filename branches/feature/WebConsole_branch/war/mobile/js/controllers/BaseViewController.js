@@ -6,7 +6,7 @@ BaseViewController = (function(){
   
   // Constructor
   var BaseViewController = function() {
-    var view = null;
+    var view = new BaseView();
     
     // Public instance methods    
     this.setView = function(viewParam) {
@@ -18,8 +18,7 @@ BaseViewController = (function(){
     };
     
     // Private instance methods
-    function init() {
-      setView(null);
+    function initView() {
     }
     
   };

@@ -14,12 +14,9 @@ AppBoot = (function() {
   function AppBoot() {
     var self = this;
     
-    // Public instance methods
-    this.beginUpdate = function() {
-      MessageUtils.showLoading("Rendering......");
-      var updateController = new UpdateController(self);
-      updateController.update();
-    }
+    this.didUpdateFinished = function() {
+      // TODO: if groups > 0 then initGroups.
+    };
     
     // Following methods are delegate methods should defined in UpdateController.
     this.didUpdateSuccess = function() {
@@ -28,6 +25,7 @@ AppBoot = (function() {
     
     this.didUpdateFail = function(error) {
       MessageUtils.hideLoading();
+      MessageUtils.showMessageDialogWithSettings("Update fail", error);
     }
     
     // Private instance method
@@ -36,15 +34,25 @@ AppBoot = (function() {
       var rootViewController = new RootViewController();
       $(rootViewController.getView().getCanvas()).insertBefore($("body").children().first());
       
-      // This is for testing callout AppSettings dialog.
-      $("#settings").button({icons: {primary: 'ui-icon-gear'}}).click(function() {AppSettings.getInstance(self).show();})
+      // This is for callout AppSettings dialog.
+      $("#errorViewSettingsBtn").button({icons: {primary: 'ui-icon-gear'}}).click(function() {AppSettings.getInstance(self).show();})
       
-      if (CookieUtils.getCookie(Constants.CURRENT_SERVER) == null) {
-        AppSettings.getInstance(self).show();
-      } else {
-        self.beginUpdate();
-      }
-      $("#welcome-content-loading").hide();
+      self.beginUpdate();
+      
+      // if (CookieUtils.getCookie(Constants.CURRENT_SERVER) == null) {
+      //         AppSettings.getInstance(self).show();
+      //       } else {
+      //         // self.beginUpdate();
+      //       }
+      //       $("#welcome-content-loading").hide();
+    }
+    
+    // Public instance methods
+    this.beginUpdate = function() {
+      MessageUtils.showLoading("Rendering......");
+      var updateController = new UpdateController(self);
+      updateController.update();
+
     }
     
     // Init jobs and the entrance of current client.

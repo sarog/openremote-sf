@@ -1,36 +1,34 @@
 /**
- * It's root view for all views.
+ * It's container of all views.
  * auther: handy.wang 2010-07-13
  */
 RootView = (function() {
   
-  var rootView = null;
+  var ID = "#rootView";
+  var DEFAULT_CSS_STYLE = {
+     "background-color":"white",
+     "color":"#FF0000",
+     "width":"100%",
+     "height":"100%",
+     "position":"absolute"
+   };
+  // var rootView = null;
   
   // Constructor
-  function RootView() {
-    this.id = "#rootView"; // This id format is in order to identify to others.
-    var canvas = null;
+  var RootView = function(id) {
+    // For extends
+    RootView.superClass.constructor.call(this);
     
-    // Pubilc instance methods
-    this.getCanvas = function() {
-      return canvas;
-    };
-    
-    // The parameter's format as {'background-color' : '#0000FF', 'color' : 'FF000000' }
-    // So, the background color is black and text colorr is red.
-    this.setCss = function(cssParam) {
-      $(canvas).css(cssParam);
-    };
-    
-    this.addSubView = function() {
-    };
-    
+    var self = this;
+
     // Private instance methods
     function initView() {
-      canvas = $("<div />", {
-        "id" : this.id,
-        "text" : "handy is here."
+      self.setID(id || ID);
+      var canvas = $("<div />", {
+        "id" : ID
       });
+      self.setCanvas(canvas);
+      self.setCss(DEFAULT_CSS_STYLE);
     }
     
     // init jobs
@@ -38,13 +36,15 @@ RootView = (function() {
     
   }
   
-  return {
-    getInstance:function() {
-      if (rootView == null) {
-        rootView = new RootView();
-      }
-      return rootView;
-    }
-  };
+  return RootView;// {
+   //    getInstance:function() {
+   //      if (rootView == null) {
+   //        rootView = new RootView();
+   //      }
+   //      return rootView;
+   //    }
+   //  };
   
 })();
+
+ClassUtils.extend(RootView, BaseView);
