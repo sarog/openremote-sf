@@ -74,12 +74,18 @@ public class ORConnection {
     * Instantiates a new connection.
     * if sslPort is 0, not use https.
     * 
+    * Please note the host name verification and SSL certificate trust are not
+    * the same thing. The host name verification is an additional safeguard
+    * one may want to execute in order to make sure the CN (common name) of
+    * the certificate matches that of the target host. 
+    * 
     * @param url the url
     * @param httpMethod the http method
     * @param username the username
     * @param password the password
     * @param sslPort the ssl port
     */
+   @SuppressWarnings("deprecation")
    public ORConnection(String url, ORHttpMethod httpMethod, String username, String password, int sslPort) {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
@@ -90,6 +96,7 @@ public class ORConnection {
       if (sslPort != 0) {
          try {
             SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustSelfSignedStrategy());
+            socketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
             Scheme sch = new Scheme(HTTPS, sslPort, socketFactory);
             httpClient.getConnectionManager().getSchemeRegistry().register(sch);
          } catch (KeyManagementException e) {

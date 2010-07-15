@@ -245,12 +245,14 @@ public class GroupView {
    private boolean hasDefaultGroupAndScreen() {
       currentGroup = ClientDataBase.getDefaultGroup();
       if (currentGroup == null) {
-         ((Text)RootPanel.get("error-content").getWidget(0)).setText("Group not found");
+         ((Text)RootPanel.get("error-content").getWidget(0)).setText("No Group Found");
+         ((Text)RootPanel.get("error-content").getWidget(1)).setText("Please check your setting or define a group with screens first.");
          DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "block");
          return false;
       }
       if (currentGroup.getScreens().isEmpty()) {
-         ((Text)RootPanel.get("error-content").getWidget(0)).setText("Screen not found");
+         ((Text)RootPanel.get("error-content").getWidget(0)).setText("No Screen Found");
+         ((Text)RootPanel.get("error-content").getWidget(1)).setText("Please associate screens with this group");
          DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "block");
          return false;
       }

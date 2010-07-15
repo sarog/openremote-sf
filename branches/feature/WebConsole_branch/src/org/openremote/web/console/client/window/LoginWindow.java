@@ -44,7 +44,7 @@ public class LoginWindow extends FormWindow {
    public LoginWindow() {
       super();
       setHeading("Login");
-      setSize(350, 150);
+      setSize(360, 150);
       
       addFields();
       addButtons();
