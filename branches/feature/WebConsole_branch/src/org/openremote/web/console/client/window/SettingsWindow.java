@@ -52,12 +52,14 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ToggleButton;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
+import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.SeparatorToolItem;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
@@ -77,7 +79,7 @@ public class SettingsWindow extends FormWindow {
       addAutoField();
       createCustomServerGrid();
       addPanelIdentityField();
-      addSSLFields();
+      addSecurityFields();
       addButtons();
       addListener();
       show();
@@ -184,7 +186,7 @@ public class SettingsWindow extends FormWindow {
      customServerContainer.setBorders(true);
      
      ToolBar toolBar = new ToolBar();
-     Button addButton = new Button("Add", icons.add());
+     Button addButton = new Button("Add server", icons.add());
      addButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
       public void componentSelected(ButtonEvent ce) {
          AddServerWindow addServerWindow = new AddServerWindow();
@@ -344,10 +346,17 @@ public class SettingsWindow extends FormWindow {
       form.add(panelListCombo);
    }
    
-   private void addSSLFields() {
+   private void addSecurityFields() {
+      FieldSet securityField = new FieldSet();
+      FormLayout layout = new FormLayout();
+      layout.setLabelWidth(85);
+      layout.setDefaultWidth(200);
+      securityField.setLayout(layout);
+      securityField.setHeading("Security");
+      
       final TextField<String> sslPortField = new TextField<String>();
       sslPortField.setFieldLabel("Port");
-      sslPortField.setEmptyText(Constants.DEFAULT_SSL_PORT);
+      sslPortField.setValue(Cookies.getCookie(Constants.SSL_PORT));
       sslPortField.setRegex(Constants.REG_POSITIVEINT);
       sslPortField.getMessages().setRegexText("The port must be a integer");
       sslPortField.addListener(Events.Blur, new Listener<BaseEvent>() {
@@ -388,8 +397,9 @@ public class SettingsWindow extends FormWindow {
       
       AdapterField sslField = new AdapterField(sslButton);
       sslField.setFieldLabel("SSL");
-      form.add(sslField);
-      form.add(sslPortField);
+      securityField.add(sslField);
+      securityField.add(sslPortField);
+      form.add(securityField);
    }
    
    /**
