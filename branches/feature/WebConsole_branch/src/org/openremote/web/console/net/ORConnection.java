@@ -22,6 +22,10 @@ package org.openremote.web.console.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -29,6 +33,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -47,6 +54,7 @@ public class ORConnection {
 
    private static Logger log = Logger.getLogger(ORConnection.class);
    public static final int HTTP_SUCCESS = 200;
+   private static final String HTTPS = "https";
    
    private HttpClient httpClient;
    private HttpRequestBase httpRequest;
@@ -58,19 +66,47 @@ public class ORConnection {
       this(url, httpMethod, null, null);
    }
    
+   public ORConnection(String url, ORHttpMethod httpMethod, String username, String password) {
+      this(url, httpMethod, username, password, 0);
+   }
+   
    /**
-    * Set up a connection, use http basic authorization.
+    * Instantiates a new connection.
+    * if sslPort is 0, not use https.
     * 
     * @param url the url
     * @param httpMethod the http method
     * @param username the username
     * @param password the password
+    * @param sslPort the ssl port
     */
-   public ORConnection(String url, ORHttpMethod httpMethod, String username, String password) {
+   public ORConnection(String url, ORHttpMethod httpMethod, String username, String password, int sslPort) {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
       HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+      
       httpClient = new DefaultHttpClient(params);
+      // if sslPort is 0, not use https.
+      if (sslPort != 0) {
+         try {
+            SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustSelfSignedStrategy());
+            Scheme sch = new Scheme(HTTPS, sslPort, socketFactory);
+            httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+         } catch (KeyManagementException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         } catch (UnrecoverableKeyException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         } catch (NoSuchAlgorithmException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         } catch (KeyStoreException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+         }
+      }
+
       if (ORHttpMethod.POST.equals(httpMethod)) {
          httpRequest = new HttpPost(url);
       } else if (ORHttpMethod.GET.equals(httpMethod)) {

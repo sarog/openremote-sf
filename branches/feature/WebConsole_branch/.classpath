@@ -14,10 +14,6 @@
 	<classpathentry kind="lib" path="lib/core/aspectjweaver/aspectjweaver.jar"/>
 	<classpathentry kind="lib" path="lib/core/gwt/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="lib/core/gxt/gxt.jar"/>
-	<classpathentry kind="lib" path="lib/core/httpclient/apache-mime4j-0.6.jar"/>
-	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/core/httpclient/httpmime-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/log4j/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring/spring-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring/spring-security-core-2.0.4.jar"/>
@@ -32,5 +28,8 @@
 	<classpathentry kind="lib" path="lib/test/spring/spring-test-2.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit/junit-4.5.jar"/>
 	<classpathentry kind="lib" path="lib/core/gwt-dom/gwt-dom-1.0.8.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.1-alpha2.jar" sourcepath="E:/src/httpcomponents-client-4.1-alpha2-src.zip"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.1-beta1.jar"/>
+	<classpathentry kind="lib" path="lib/core/httpclient/httpmime-4.1-alpha2.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

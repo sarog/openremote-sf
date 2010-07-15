@@ -226,7 +226,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
          if (gesture.isHasControlCommand()) {
             AsyncServiceFactory.getCommandServiceAsync().sendCommand(
                   ClientDataBase.appSetting.getControlPath() + gesture.getComponentId() + "/swipe",
-                  ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), new AsyncSuccessCallback<Void>() {
+                  ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), 0, new AsyncSuccessCallback<Void>() {
                      public void onSuccess(Void result) {
                         // do nothing.
                      }

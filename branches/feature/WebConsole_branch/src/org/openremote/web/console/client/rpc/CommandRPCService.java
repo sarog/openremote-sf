@@ -41,5 +41,5 @@ public interface CommandRPCService extends RemoteService {
     * @throws NotAuthenticatedException the not authenticated exception
     * @throws ORConnectionException the OR connection exception
     */
-   void sendCommand(String url, String username, String password) throws NotAuthenticatedException, ORConnectionException;
+   void sendCommand(String url, String username, String password, int sslPort) throws NotAuthenticatedException, ORConnectionException;
 }

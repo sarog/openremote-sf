@@ -33,8 +33,14 @@ public class Constants {
    public static final String CONSOLE_USERINFO = "console_userinfo";
    public static final String CONSOLE_SETTINGS = "console_settings";
    public static final String GROUP_MEMBERS = "group_members";
+   public static final String SSL_STATUS = "ssl_enabled";
+   public static final String SSL_PORT = "ssl_port";
+   public static final String SSL_DISABLED = "false";
+   public static final String DEFAULT_SSL_PORT = "8443";
    
    public static final String ListenerPollingStatusIdFormat = "polling_status_";
    public static final String ListenerNavigateTo = "navigateToListener";
    public static final String ListenerToPopSetting = "listenerToPopSetting";
+   
+   public static final String REG_POSITIVEINT = "^[1-9][0-9]*$";
 }
