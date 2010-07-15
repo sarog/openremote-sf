@@ -36,6 +36,7 @@ import org.openremote.web.console.domain.AppSetting;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.data.ModelData;
+import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FieldEvent;
@@ -51,6 +52,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ToggleButton;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
@@ -75,13 +77,14 @@ public class SettingsWindow extends FormWindow {
       addAutoField();
       createCustomServerGrid();
       addPanelIdentityField();
+      addSSLFields();
       addButtons();
       addListener();
       show();
    }
    
    private void setStyle() {
-      setHeading("AppSettings");
+      setHeading("Settings");
       setSize(400,450);
       form.setLabelWidth(100);
       form.setFieldWidth(200);
@@ -339,6 +342,54 @@ public class SettingsWindow extends FormWindow {
 
       });
       form.add(panelListCombo);
+   }
+   
+   private void addSSLFields() {
+      final TextField<String> sslPortField = new TextField<String>();
+      sslPortField.setFieldLabel("Port");
+      sslPortField.setEmptyText(Constants.DEFAULT_SSL_PORT);
+      sslPortField.setRegex(Constants.REG_POSITIVEINT);
+      sslPortField.getMessages().setRegexText("The port must be a integer");
+      sslPortField.addListener(Events.Blur, new Listener<BaseEvent>() {
+         public void handleEvent(BaseEvent be) {
+            String port = sslPortField.getValue();
+            if (port != null && !"".equals(port)) {
+               Cookies.setCookie(Constants.SSL_PORT, port);
+            }
+         }
+      });
+      
+      ToggleButton sslButton = new ToggleButton("OFF") {
+         @Override
+         protected void toggle(boolean state, boolean silent) {
+            super.toggle(state, silent);
+            if (rendered) {
+               if (state) {
+                  this.setText("ON");
+                  Cookies.setCookie(Constants.SSL_STATUS, "true");
+                  sslPortField.show();
+               } else {
+                  this.setText("OFF");
+                  Cookies.setCookie(Constants.SSL_STATUS, Constants.SSL_DISABLED);
+                  sslPortField.hide();
+               }
+            }
+         }
+      };
+      sslButton.setWidth(200);
+      
+      String sslStatus = Cookies.getCookie(Constants.SSL_STATUS);
+      if (sslStatus.equals(Constants.SSL_DISABLED)) {
+         sslButton.toggle(false);
+         sslPortField.hide();
+      } else {
+         sslButton.toggle(true);
+      }
+      
+      AdapterField sslField = new AdapterField(sslButton);
+      sslField.setFieldLabel("SSL");
+      form.add(sslField);
+      form.add(sslPortField);
    }
    
    /**

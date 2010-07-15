@@ -85,6 +85,16 @@ public class WebConsole implements EntryPoint {
       String appSettingJson = Cookies.getCookie(Constants.CONSOLE_SETTINGS);
       ClientDataBase.userInfo.initFromJson(userInfoJson);
       ClientDataBase.appSetting.initFromJson(appSettingJson);
+      
+      String sslStatus = Cookies.getCookie(Constants.SSL_STATUS);
+      if (sslStatus == null || "".equals(sslStatus)) {
+         Cookies.setCookie(Constants.SSL_STATUS, Constants.SSL_DISABLED);
+      }
+      
+      String sslPort = Cookies.getCookie(Constants.SSL_PORT);
+      if (sslPort == null || "".equals(sslPort)) {
+         Cookies.setCookie(Constants.SSL_PORT, Constants.DEFAULT_SSL_PORT);
+      }
    }
    
    /**
