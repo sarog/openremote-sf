@@ -100,7 +100,9 @@ public class DeviceBeanModelProxy {
       } else if(beanModel.getBean() instanceof Slider){
          Slider slider = beanModel.getBean();
          List<BeanModel> sliderModels = new ArrayList<BeanModel>();
-         sliderModels.add(slider.getSetValueCmd().getBeanModel());
+         if (slider.getSetValueCmd() != null) {
+            sliderModels.add(slider.getSetValueCmd().getBeanModel());
+         }
          callback.onSuccess(sliderModels);
       } else if(beanModel.getBean() instanceof Switch){
          Switch swh = beanModel.getBean();
