@@ -6,6 +6,8 @@
    return {
      CONTROLLER_SERVERS : "controllerServers",
      CURRENT_SERVER : "currentServer",
-     COLOR_BLACK : "#000000"
+     COLOR_BLACK : "#000000",
+     COLOR_WHITE : "#FFFFFF",
+     COLOR_RED : "#FF0000"
    };
  })();

@@ -5,7 +5,7 @@
     <title>OpenRemote Boss 2.0 WebConsole</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
     
     <link href="./mobile/images/OpenRemote.Logo.16x16.png" rel="shortcut icon"/>
     <link href="./mobile/images/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
@@ -27,6 +27,7 @@
     <script type="text/javascript" language="javascript" src="./mobile/js/utils/SecurityUtils.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/utils/CookieUtils.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/utils/ClassUtils.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/utils/StringUtils.js"></script>
     
     <script type="text/javascript" language="javascript" src="./mobile/js/Constants.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/appsettings/ControllerServer.js"></script>
@@ -42,8 +43,9 @@
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/ErrorViewController.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/InitViewController.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/RootViewController.js"></script>
+    <script type="text/javascript" language="javascript" src="./mobile/js/controllers/PanelWorkerController.js"></script>
     <script type="text/javascript" language="javascript" src="./mobile/js/controllers/UpdateController.js"></script>
-  
+
     <script type="text/javascript" language="javascript" src="./mobile/js/AppBoot.js"></script>
 		
     <style type="text/css">
@@ -85,7 +87,7 @@
   </head>
 
   <body class="smoothness" style="margin : 0px;">
-    <div id="welcome-content-loading" name="loading">
+    <!-- <div id="welcome-content-loading" name="loading"> -->
       <div class="loading-indicator-img">
           <img width="32" height="32" src="./mobile/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
           <span id="loading-msg">Loading resources, please wait...</span>

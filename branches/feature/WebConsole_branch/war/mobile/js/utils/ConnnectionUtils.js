@@ -51,7 +51,6 @@ ConnnectionUtils = function() {
             url: requestURL, 
             dataType: "jsonp",
             beforeSend : function(xmlHttpRequest) {
-              alert("dddd");
               SecurityUtils.getHTTPBasicAuthRequest(xmlHttpRequest);
             },
             success: successCallback,
