@@ -92,29 +92,34 @@ public class ORConnection {
             SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustSelfSignedStrategy());
             Scheme sch = new Scheme(HTTPS, sslPort, socketFactory);
             httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-         } catch (KeyManagementException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-         } catch (UnrecoverableKeyException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-         } catch (NoSuchAlgorithmException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-         } catch (KeyStoreException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+         } catch (KeyManagementException e) {
+            log.error("KeyManagementException", e);
+            throw new ORConnectionException("Request https cetificate error");
+         } catch (UnrecoverableKeyException e) {
+            log.error("UnrecoverableKeyException", e);
+            throw new ORConnectionException("Request https cetificate error");
+         } catch (NoSuchAlgorithmException e) {
+            log.error("NoSuchAlgorithmException", e);
+            throw new ORConnectionException("Request https cetificate error");
+         } catch (KeyStoreException e) {
+            log.error("KeyStoreException", e);
+            throw new ORConnectionException("Request https cetificate error");
          }
       }
 
-      if (ORHttpMethod.POST.equals(httpMethod)) {
-         httpRequest = new HttpPost(url);
-      } else if (ORHttpMethod.GET.equals(httpMethod)) {
-         httpRequest = new HttpGet(url);
+      try {
+         if (ORHttpMethod.POST.equals(httpMethod)) {
+            httpRequest = new HttpPost(url);
+         } else if (ORHttpMethod.GET.equals(httpMethod)) {
+            httpRequest = new HttpGet(url);
+         }
+      } catch (IllegalArgumentException e) {
+         log.error("Create HttpRequest fail" + url);
+         throw new ORConnectionException("Create HttpRequest fail");
       }
       
       if (httpRequest == null) {
-         log.error("Create HttpRequest fail:" + url);
+         log.error("Create HttpRequest fail" + url);
          return;
       }
       if (username != null && password != null) {
@@ -144,8 +149,10 @@ public class ORConnection {
             responseData =  httpResponse.getEntity().getContent();
          } catch (IllegalStateException e) {
             log.error("Get the entity's content of httpresponse fail.", e);
+            throw new ORConnectionException("Get the entity's content of httpresponse fail.");
          } catch (IOException e) {
             log.error("Get the entity's content of httpresponse fail.", e);
+            throw new ORConnectionException("Get the entity's content of httpresponse fail.");
          }
       } else {
          throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(statusCode));

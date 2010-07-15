@@ -32,13 +32,18 @@ import org.openremote.web.console.domain.AppSetting;
 import org.openremote.web.console.domain.PanelXmlEntity;
 import org.openremote.web.console.exception.NotAuthenticatedException;
 
+import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Text;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class WebConsole implements EntryPoint {
@@ -48,6 +53,7 @@ public class WebConsole implements EntryPoint {
     */
    public void onModuleLoad() {
       initUserCache();
+      initErrorView();
       checkSettings();
    }
    
@@ -132,6 +138,7 @@ public class WebConsole implements EntryPoint {
                DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
                MessageBox.alert("ERROR", caught.getMessage(), new Listener<MessageBoxEvent>() {
                   public void handleEvent(MessageBoxEvent be) {
+                     System.out.println("get panel xml entity");
                      toSetting();
                   }
                });
@@ -142,4 +149,21 @@ public class WebConsole implements EntryPoint {
             ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), callback);
    }
    
+   private void initErrorView() {
+      RootPanel.get("error-content").add(new Text("Display error..."));
+      Button settingBtn = new Button("Setting");
+      settingBtn.setWidth(100);
+      settingBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "none");
+            SettingsWindow settingWindow = new SettingsWindow();
+            settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+               public void afterSubmit(SubmitEvent be) {
+                  Window.Location.reload();
+               }
+            });
+         }
+      });
+      RootPanel.get("error-content").add(settingBtn);
+   }
 }

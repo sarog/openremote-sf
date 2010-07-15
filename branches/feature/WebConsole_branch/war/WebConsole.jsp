@@ -48,7 +48,13 @@
       #welcome-content #loading-msg {
          font: 10px arial, tahoma, sans-serif;
       }
-    
+      
+      #error-content {
+         left: 45%;
+         position: absolute;
+         top: 30%;
+         display:none;
+      }
     </style>
   </head>
 
@@ -62,6 +68,9 @@
           <img width="32" height="32" src="resources/images/large-loading.gif" />OpenRemote Boss 2.0 Web Console<br>
           <span id="loading-msg">Loading resources, please wait...</span>
        </div>
+    </div>
+    <div id="error-content">
+      <img width="100" height="100" src="resources/images/repair_welcome.png" />
     </div>
   </body>
 </html>

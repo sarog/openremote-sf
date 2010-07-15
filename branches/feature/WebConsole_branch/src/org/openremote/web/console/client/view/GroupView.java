@@ -56,6 +56,7 @@ import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
@@ -65,6 +66,7 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -242,15 +244,17 @@ public class GroupView {
     */
    private boolean hasDefaultGroupAndScreen() {
       currentGroup = ClientDataBase.getDefaultGroup();
-      if (currentGroup == null || currentGroup.getScreens().isEmpty()) {
-         SettingsWindow settingWindow = new SettingsWindow();
-         settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-            public void afterSubmit(SubmitEvent be) {
-               Window.Location.reload();
-            }
-         });
+      if (currentGroup == null) {
+         ((Text)RootPanel.get("error-content").getWidget(0)).setText("Group not found");
+         DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "block");
          return false;
       }
+      if (currentGroup.getScreens().isEmpty()) {
+         ((Text)RootPanel.get("error-content").getWidget(0)).setText("Screen not found");
+         DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "block");
+         return false;
+      }
+      
       currentScreen = ClientDataBase.getLastTimeScreen();
       if (currentScreen == null) {
          currentScreen = currentGroup.getScreens().get(0);
