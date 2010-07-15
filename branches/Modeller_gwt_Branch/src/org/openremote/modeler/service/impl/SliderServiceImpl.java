@@ -67,15 +67,17 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          slider.getSliderSensorRef().setSlider(oldSlider);
          oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
       }
-      
+
       oldSlider.setName(slider.getName());
-      
-      if (oldSlider.getSetValueCmd() != null) {
-         genericDAO.delete(oldSlider.getSetValueCmd());
-      }
+
       if (slider.getSetValueCmd() == null) {
+         if (oldSlider.getSetValueCmd() != null) {
+            genericDAO.delete(oldSlider.getSetValueCmd());
+         }
          oldSlider.setSetValueCmd(null);
-      } else if (slider.getSetValueCmd() != null) {
+      } else if (slider.getSetValueCmd() != null && oldSlider.getSetValueCmd() != null
+            && slider.getSetValueCmd().getOid() != oldSlider.getSetValueCmd().getOid()) {
+         genericDAO.delete(oldSlider.getSetValueCmd());
          slider.getSetValueCmd().setSlider(oldSlider);
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
       }
