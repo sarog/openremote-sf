@@ -43,3 +43,9 @@
    background-repeat: no-repeat;
    background-position: 0 0;	
 }
+
+.error-text {
+	margin-top: 5px;
+	margin-bottom: 10px;
+   font-family: tahoma,arial,verdana,sans-serif;
+}

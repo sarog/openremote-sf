@@ -50,10 +50,12 @@
       }
       
       #error-content {
-         left: 45%;
+         left: 40%;
          position: absolute;
          top: 30%;
-         display:none;
+         width: 200;
+         text-align: center;
+         display: none;
       }
     </style>
   </head>

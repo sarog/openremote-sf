@@ -126,9 +126,11 @@ public class WebConsole implements EntryPoint {
             if (caught instanceof NotAuthenticatedException) {
                final AsyncSuccessCallback<PanelXmlEntity> callback = this;
                DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "none");
+               DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "block");
                LoginWindow loginWindow = new LoginWindow();
                loginWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
                   public void afterSubmit(SubmitEvent be) {
+                     DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "none");
                      DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
                      AsyncServiceFactory.getPanelIdentityServiceAsync().getPanelXmlEntity(url,
                            ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), callback);
@@ -150,9 +152,17 @@ public class WebConsole implements EntryPoint {
    }
    
    private void initErrorView() {
-      RootPanel.get("error-content").add(new Text("Display error..."));
-      Button settingBtn = new Button("Setting");
-      settingBtn.setWidth(100);
+      Text errorTitle = new Text("No Panel Found");
+      errorTitle.addStyleName("error-text");
+      errorTitle.setStyleAttribute("fontSize", "20");
+      RootPanel.get("error-content").add(errorTitle);
+      
+      Text errorMessage = new Text("Please check your settings.");
+      errorMessage.addStyleName("error-text");
+      RootPanel.get("error-content").add(errorMessage);
+      
+      Button settingBtn = new Button("Settings...");
+      settingBtn.setWidth(200);
       settingBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
             DOM.setStyleAttribute(RootPanel.get("error-content").getElement(), "display", "none");
