@@ -33,7 +33,7 @@ CookieUtils = (function() {
     				cookie_value = unescape( a_temp_cookie[1].replace(/^\s+|\s+$/g, '') );
     			}
     			// note that in cases where cookie is initialized but no value, null is returned
-    			return cookie_value;
+    			return JSON.parse(cookie_value, null);
     			break;
     		}
     		a_temp_cookie = null;

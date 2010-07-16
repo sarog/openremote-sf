@@ -3,31 +3,62 @@
  * auther: handy.wang 2010-07-13
  */
 UpdateController = (function() {
+  var MSG_OF_NO_CONTROLLER_CONFIG = "Please enter a controller firstly in Settings panel, or leave it ?";
   
   return function(delegateParam) {
-    
+    var self = this;
     var delegate = delegateParam;
-    var panelWorkerController = new PanelWorkerController(this);
     
     this.update = function() {
-      panelWorkerController.downloadJSONDataWithURL();
-      
-      //delegate.didUpdateSuccess();
-      
-      // var panelJSONData = downloadPanelJSONData();
-      // PanelParser.parse(panelJSONData);
-      // // It's responsible for downloading panel json data.
-      // function downloadPanelJSONData() {
-      // 
-      // }
+      downloadJSONDataWithURL();
     };
     
-    this.didUpdateSuccess = function() {
-      delegate.didUpdateSuccess();
-    };
+    // It's responsible for downloading json data from controller server.
+    function downloadJSONDataWithURL() {
+      MessageUtils.updateLoadingMessage("Checking settings ...");
+      var currentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
+      
+      // User don't set the controller url and panel identity.
+      if (currentServer == null) {
+        delegate.didUpdateFail(MSG_OF_NO_CONTROLLER_CONFIG);        
+      } else {
+        var currentServerURL = currentServer.url;
+        var selectedPanelIdentity = currentServer.selectedPanelIdentity;
+        
+        if (currentServerURL == null || currentServerURL == "" || currentServerURL == undefined || 
+          selectedPanelIdentity == null || selectedPanelIdentity =="" || selectedPanelIdentity == undefined) {
+          delegate.didUpdateFail(MSG_OF_NO_CONTROLLER_CONFIG);
+        } else {
+          
+          var panelRequestURL = currentServerURL+ "/rest/panel/" + selectedPanelIdentity + "?callback=?";
+          MessageUtils.updateLoadingMessage("Downloading panel ...");
+          
+          var successCallback = function(jsonData, textStatus) {
+            MessageUtils.updateLoadingMessage("Downloading panel success ...");
+            parseJSONData(jsonData);
+          };
+          
+          var errorCallback = function(xOptions, textStatus) {
+            delegate.didUpdateFail("Download panel data fail, settings or leave it ?");
+          };
+          ConnectionUtils.getJson(panelRequestURL, successCallback, errorCallback);
+        }
+      }
+    }
     
-    this.didUpdateFail = function(error) {
-      delegate.didUpdateFail(error);
+    function parseJSONData(jsonData) {
+      MessageUtils.updateLoadingMessage("Parsing panel ...");
+      var jsonParser = new JSONParser(jsonData, self);
+      jsonParser.startParse();
+    }
+    
+    // Delegate methods of JSONParser    
+    this.didParse = function(jsonParser, nodeName, properties) {
+      if (nodeName == "screen") {
+        RenderDataDB.getInstance().addScreen(new Screen(jsonParser, properties));
+      } else if (nodeName == "group") {
+        RenderDataDB.getInstance().addGroup(new Group(jsonParser, properties));
+      }
     };
     
   }

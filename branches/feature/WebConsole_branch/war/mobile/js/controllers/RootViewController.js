@@ -17,6 +17,18 @@ RootViewController = (function(){
    //var ErrorViewController = new ErrorViewController();
 
    // Public instance methods
+   this.renderViews = function() {
+     self.getView().removeSubView(errorViewController.getView());
+     self.getView().removeSubView(initViewController.getView());
+     
+     //groups.length > 0
+     if (false) {
+       
+     } else {
+       self.getView().addSubView(errorViewController.getView());
+       $("#errorViewSettingsBtn").button({icons: {primary: 'ui-icon-gear'}}).click(function() {AppSettings.getInstance(self).show();})
+     }
+   };
 
    // Private instance methods
    function initView() {

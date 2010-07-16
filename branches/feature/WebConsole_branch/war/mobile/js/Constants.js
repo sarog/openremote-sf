@@ -8,6 +8,14 @@
      CURRENT_SERVER : "currentServer",
      COLOR_BLACK : "#000000",
      COLOR_WHITE : "#FFFFFF",
-     COLOR_RED : "#FF0000"
+     COLOR_RED : "#FF0000",
+     
+     BASE_MODEL : "baseModel",
+     SCREEN : "screen",
+     BACKGROUND : "background",
+     GROUP : "group",
+     
+     ID : "@id",
+     NAME : "@name"
    };
  })();

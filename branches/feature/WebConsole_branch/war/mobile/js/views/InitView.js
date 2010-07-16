@@ -4,7 +4,7 @@
  */
 InitView = (function() {
   
-  var ID = "#initView";
+  var ID = "initView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"black",
      "color":"#FF0000",
