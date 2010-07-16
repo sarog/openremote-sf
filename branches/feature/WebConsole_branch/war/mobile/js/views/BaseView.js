@@ -38,6 +38,10 @@ BaseView = (function() {
     this.addSubView = function(subView) {
       $(canvas).append(subView.getCanvas());
     };
+    
+    this.removeSubView = function(subView) {
+      $("#"+subView.getID()).remove();
+    };
 
   };
   

@@ -42,11 +42,10 @@ AppSettings = (function(){
     
     this.recoverSettingsFromCookie = function() {
       // Recover cookied controller servers.
-  	  var cookiedControllerServersString = CookieUtils.getCookie(Constants.CONTROLLER_SERVERS);
-  	  if (cookiedControllerServersString != null) {
+  	  var cookiedControllerServersObjs = CookieUtils.getCookie(Constants.CONTROLLER_SERVERS);
+  	  if (cookiedControllerServersObjs != null) {
   	    MessageUtils.showLoading("Recovering controller servers...");
   	    controllerServers = [];
-        var cookiedControllerServersObjs = JSON.parse(cookiedControllerServersString, null);
         for (var index in cookiedControllerServersObjs) {
           var cookiedControllerServer = cookiedControllerServersObjs[index];
           var controllerServer = new ControllerServer(cookiedControllerServer.url);
@@ -59,9 +58,8 @@ AppSettings = (function(){
       }
       
       // Recover cookied selected controller server.
-      var cookiedSelectedControllerServerString = CookieUtils.getCookie(Constants.CURRENT_SERVER);
-      if (cookiedSelectedControllerServerString != null) { 
-        var cookiedSelectedControllerServerObj = JSON.parse(cookiedSelectedControllerServerString);
+      var cookiedSelectedControllerServerObj = CookieUtils.getCookie(Constants.CURRENT_SERVER);
+      if (cookiedSelectedControllerServerObj != null) {
         selectedControllerServer = new ControllerServer(cookiedSelectedControllerServerObj.url);
         selectedControllerServer.id = cookiedSelectedControllerServerObj.id;
         selectedControllerServer.panelIdentities = cookiedSelectedControllerServerObj.panelIdentities;
@@ -69,15 +67,6 @@ AppSettings = (function(){
       }
   	};
   	
-  	
-    // this.didFinishAppSettings = function() {
-    //   MessageUtils.showLoading("Rendering......");
-    //   var rootViewController = new RootViewController();
-    //   $(rootViewController.getView().getCanvas()).insertBefore($("body").children().first());
-    //   
-    //   var updateController = new UpdateController(rootViewController);
-    // };
-    
     // Private methods
     function init() {
       renderTemplate();
@@ -124,7 +113,11 @@ AppSettings = (function(){
             MessageUtils.hideLoading();
             resetControllerPanelSelectContainer();
       			$(appSettingsDialog).dialog('close');
-            delegate.beginUpdate();
+      			
+      			// Update with controller url.
+      			MessageUtils.showLoading("Rendering......");
+      			var updateController = new UpdateController(self);
+            updateController.update();
     			},
     			Cancel: function() {
             resetControllerPanelSelectContainer();
@@ -246,7 +239,7 @@ AppSettings = (function(){
         MessageUtils.showMessageDialog("Message", "Failed to load panels.");
       };
       
-      ConnnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);
+      ConnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);
     }
     
     function initProtocolRadioBtns() {

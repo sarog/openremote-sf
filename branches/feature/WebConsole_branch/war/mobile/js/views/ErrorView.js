@@ -5,7 +5,7 @@
  
 ErrorView = (function(){
   
-  var ID = "#errorView";
+  var ID = "errorView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"white",
      "color":"black",
