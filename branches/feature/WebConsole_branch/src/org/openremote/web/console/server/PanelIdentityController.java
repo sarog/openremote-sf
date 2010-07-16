@@ -19,13 +19,18 @@
 */
 package org.openremote.web.console.server;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.openremote.web.console.client.rpc.PanelIdentityRPCService;
 import org.openremote.web.console.domain.PanelXmlEntity;
+import org.openremote.web.console.net.ORConnection;
+import org.openremote.web.console.net.ORHttpMethod;
 import org.openremote.web.console.service.PanelIdentityService;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,7 +40,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class PanelIdentityController extends BaseGWTSpringController implements PanelIdentityRPCService {
 
    private static final long serialVersionUID = -6124667768021371991L;
-
+   
+   private static Logger log = Logger.getLogger(PanelIdentityController.class);
+   
    private PanelIdentityService panelIdentityService;
    
    public void setPanelIdentityService(PanelIdentityService panelIdentityService) {
@@ -61,6 +68,21 @@ public class PanelIdentityController extends BaseGWTSpringController implements 
 
    public PanelXmlEntity getPanelXmlEntity(String url, String username, String password) {
       return panelIdentityService.getPanelXmlEntity(url, username, password);
+   }
+
+   public boolean isSupportJsonp(String url, String username, String password) {
+      boolean isSupportJsonp = false;
+      url = url + "/rest/panels?callback=jsonp";
+      ORConnection orConnection = new ORConnection(url, ORHttpMethod.GET, username, password);
+      try {
+         String result = IOUtils.toString(orConnection.getResponseData());
+         if (result.startsWith("jsonp")) {
+            isSupportJsonp = true;
+         }
+      } catch (IOException e) {
+         log.error("Parse inputstream to string error.", e);
+      }
+      return isSupportJsonp;
    }
    
 }

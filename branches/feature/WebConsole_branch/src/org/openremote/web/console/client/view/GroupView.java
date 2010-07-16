@@ -30,6 +30,8 @@ import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.icon.Icons;
 import org.openremote.web.console.client.listener.OREventListener;
 import org.openremote.web.console.client.listener.SubmitListener;
+import org.openremote.web.console.client.rpc.AsyncServiceFactory;
+import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.client.widget.ScreenIndicator;
@@ -118,6 +120,7 @@ public class GroupView {
             }
          };
          keyNav.setCancelBubble(true);
+         detectControllerIfSupportJsonp();
       }
    }
    
@@ -479,5 +482,24 @@ public class GroupView {
             });
          }
       });
+   }
+   
+   /**
+    * Detect controller if support jsonp.
+    */
+   private void detectControllerIfSupportJsonp() {
+      String currentServer = ClientDataBase.appSetting.getCurrentServer();
+      if (!"".equals(currentServer)) {
+         AsyncServiceFactory.getPanelIdentityServiceAsync().isSupportJsonp(currentServer,
+               ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(),
+               new AsyncSuccessCallback<Boolean>() {
+            public void onSuccess(Boolean support) {
+               if (!support) {
+                  MessageBox.alert("Warn", "The current controller doesn't support JSON API, " +
+                  		"polling is disabled, please upgrade the controller.", null);
+               }
+            }
+         });
+      }
    }
 }

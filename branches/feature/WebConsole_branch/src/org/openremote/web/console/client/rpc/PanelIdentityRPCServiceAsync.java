@@ -34,4 +34,6 @@ public interface PanelIdentityRPCServiceAsync {
 
    void getPanelXmlEntity(String url, String username, String password, AsyncCallback<PanelXmlEntity> callback);
 
+   void isSupportJsonp(String url, String username, String password, AsyncCallback<Boolean> callback);
+
 }
