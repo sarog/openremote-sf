@@ -37,4 +37,6 @@ public interface PanelIdentityRPCService extends RemoteService {
    List<String> getPanelNames(String serverUrl, String username, String password) throws NotAuthenticatedException, ORConnectionException;
    
    PanelXmlEntity getPanelXmlEntity(String url, String username, String password) throws NotAuthenticatedException, ORConnectionException;
+   
+   boolean isSupportJsonp(String url, String username, String password) throws NotAuthenticatedException, ORConnectionException;
 }

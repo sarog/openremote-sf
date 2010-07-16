@@ -271,10 +271,15 @@ public class SettingsWindow extends FormWindow {
                   autoServerContainer.unmask();
                   autoButton.enable();
                   autoServersStore.removeAll();
-                  for (String autoServer : autoServers) {
-                     autoServersStore.add(new StringModelData("autoServer", autoServer));
+                  String currentServer = ClientDataBase.appSetting.getCurrentServer();
+                  int currentServerIndex = 0;
+                  for (int i = 0; i < autoServers.size(); i++) {
+                     autoServersStore.add(new StringModelData("autoServer", autoServers.get(i)));
+                     if (autoServers.get(i).equals(currentServer)) {
+                        currentServerIndex = i;
+                     }
                   }
-                  autoServerGrid.getSelectionModel().select(0, false);
+                  autoServerGrid.getSelectionModel().select(currentServerIndex, false);
                }
             });
          }
