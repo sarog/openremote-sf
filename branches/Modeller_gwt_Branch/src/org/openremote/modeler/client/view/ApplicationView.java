@@ -34,20 +34,23 @@ import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Role;
-import org.openremote.modeler.domain.User;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;
+import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.MenuEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.util.Margins;
+import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
+import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.Viewport;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ToggleButton;
+import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
@@ -213,8 +216,26 @@ public class ApplicationView implements View {
             UtilsProxy.getOnTestLineURL(new AsyncSuccessCallback<String> () {
                @Override
                public void onSuccess(String result) {
-                  MessageBox.info("Test UI Online", "To test your UI without installing any Controller or deploying configuration, " +
-                  		"type the following URL into your panel setting as Controller URL :\n"+result, null);
+                  Dialog dialog = new Dialog();
+                  dialog.setHideOnButtonClick(true);
+                  dialog.setButtonAlign(HorizontalAlignment.CENTER);
+                  dialog.setClosable(false);
+                  dialog.setBodyBorder(false);
+                  dialog.setHeading("Test UI Online");
+                  dialog.setWidth(310);
+                  dialog.setAutoHeight(true);
+                  Text text = new Text();
+                  text.setWidth("100%");
+                  text.setStyleAttribute("backgroundColor", "CCD9E8");
+                  text.setText("To test your UI without installing any Controller or deploying configuration, " +
+                        "type the following URL into your panel setting as Controller URL :");
+                  TextField<String> url = new TextField<String>();
+                  url.setWidth("100%");
+                  url.setValue(result);
+                  url.setReadOnly(true);
+                  dialog.add(text);
+                  dialog.add(url);
+                  dialog.show();
                }
             });
          }
