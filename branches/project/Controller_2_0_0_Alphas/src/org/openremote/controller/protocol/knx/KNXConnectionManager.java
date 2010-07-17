@@ -1257,8 +1257,11 @@ System.out.println("--------------- NEW KNX CONNECTION CREATED");
         Byte[] cemiBytes = command.getCEMIFrame();
         byte[] cemiFrame = new byte[cemiBytes.length];
 
-        System.arraycopy(cemiBytes, 0, cemiFrame, 0, cemiBytes.length);
-
+        for (int i = 0; i < cemiBytes.length; ++i)
+        {
+          cemiFrame[i] = cemiBytes[i];
+        }
+        
         commonEMI = new CEMILData(cemiFrame, 0);
 
         log.info(printCommonEMIFrame(cemiFrame));
