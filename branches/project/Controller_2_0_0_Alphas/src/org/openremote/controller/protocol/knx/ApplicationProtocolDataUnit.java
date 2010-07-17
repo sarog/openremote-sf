@@ -22,8 +22,8 @@ package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -88,13 +88,10 @@ class ApplicationProtocolDataUnit
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * KNX logger. Uses a common category for all KNX related logging.
+   */
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
-
-
-  // Constants ------------------------------------------------------------------------------------
-
-  private final static byte DATATYPE_BOOLEAN_ONE = 0x01;
-  private final static byte DATATYPE_BOOLEAN_ZERO = 0x00;
 
 
   // Enums ----------------------------------------------------------------------------------------
