@@ -198,20 +198,25 @@ class ApplicationProtocolDataUnit
    */
   enum DataPointType
   {
-    SWITCH,         // DPT 1.001
-    BOOL,           // DPT 1.002
-    ENABLE,         // DPT 1.003
-    RAMP,           // DPT 1.004
-    ALARM,          // DPT 1.005
-    BINARY_VALUE,   // DPT 1.006
-    STEP,           // DPT 1.007
-    UPDOWN,         // DPT 1.008
-    OPENCLOSE,      // DPT 1.009
-    START,          // DPT 1.010
-    STATE,          // DPT 1.011
-    INVERT,         // DPT 1.012
-    DIM_SEND_STYLE, // DPT 1.013
-    INPUT_SOURCE    // DPT 1.014
+    SWITCH          ("1.001",   DataType.Boolean.OFF,         DataType.Boolean.OFF),
+    BOOL            ("1.002",   DataType.Boolean.FALSE,       DataType.Boolean.TRUE),
+    ENABLE          ("1.003",   DataType.Boolean.DISABLE,     DataType.Boolean.ENABLE),
+    RAMP            ("1.004",   DataType.Boolean.NO_RAMP,     DataType.Boolean.RAMP),
+    ALARM           ("1.005",   DataType.Boolean.NO_ALARM,    DataType.Boolean.ALARM),
+    BINARY_VALUE    ("1.006",   DataType.Boolean.LOW,         DataType.Boolean.HIGH),
+    STEP            ("1.007",   DataType.Boolean.DECREASE,    DataType.Boolean.INCREASE),
+    UPDOWN          ("1.008",   DataType.Boolean.UP,          DataType.Boolean.DOWN),
+    OPENCLOSE       ("1.009",   DataType.Boolean.OPEN,        DataType.Boolean.CLOSE),
+    START           ("1.010",   DataType.Boolean.STOP,        DataType.Boolean.START),
+    STATE           ("1.011",   DataType.Boolean.INACTIVE,    DataType.Boolean.ACTIVE),
+    INVERT          ("1.012",   DataType.Boolean.NOT_INVERTED,DataType.Boolean.INVERTED),
+    DIM_SEND_STYLE  ("1.013",   DataType.Boolean.START_STOP,  DataType.Boolean.CYCLICALLY),
+    INPUT_SOURCE    ("1.014",   DataType.Boolean.FIXED,       DataType.Boolean.CALCULATED);
+
+    DataPointType(String dptID, DataType.Boolean zeroEncoding, DataType.Boolean oneEncoding)
+    {
+
+    }
   }
 
 
@@ -258,13 +263,37 @@ class ApplicationProtocolDataUnit
     this.applicationLayerService = service;
   }
 
+  
+
   // Package-Private Instance Methods ------------------------------------------------------------
 
+  /**
+   * Returns the data length of the data type associated with this APDU.
+   * See {@link org.openremote.controller.protocol.knx.DataType#getDataLength()} for details.
+   *
+   * @see org.openremote.controller.protocol.knx.DataType#getDataLength()
+   *
+   * @return returns the APDU data payload length in bytes, as specified in
+   *         {@link org.openremote.controller.protocol.knx.DataType#getDataLength()}
+   */
   int getDataLength()
   {
     return datatype.getDataLength();
   }
 
+  /**
+   * Returns the application protocol data unit (APDU) including the Control Information (ACPI)
+   * bits and data value. <p>
+   *
+   * Returned byte array is at minimum 2 bytes long (for 6-bit data values), and maximum of 16
+   * bytes long (with a largest possible 14 byte data value). <p>
+   *
+   * The six most significant bits of the first byte in the array are Transport Protocol Control
+   * Information (TCPI) bits which are all set to zero.
+   *
+   *
+   * @return full APDU as byte array with APCI bits and data value set
+   */
   Byte[] getProtocolDataUnit()
   {
     final int TRANSPORT_LAYER_CONTROL_FIELDS = 0x00;
