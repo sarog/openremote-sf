@@ -28,7 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO
+ * This class is an abstract superclass for KNX protocol read/write commands.
+ *
+ * @see KNXWriteCommand
+ * @see KNXReadCommand
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -37,8 +40,28 @@ abstract class KNXCommand implements Command
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * KNX logger. Uses a common category for all KNX related logging.
+   */
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
+  /**
+   * Factory method for creating KNX command instances {@link KNXWriteCommand} and
+   * {@link KNXReadCommand} based on a human-readable configuration strings.  <p>
+   *
+   * Each KNX command instance is associated with a link to a connection manager and a
+   * destination group address.
+   *
+   * @param name      Command lookup name. This is usually a human-readable string used in
+   *                  configuration and tools. Note that multiple lookup names can be used to
+   *                  return Java equal() (but not same instance) commands.
+   * @param mgr       KNX connection manager used to transmit this command
+   * @param address   KNX destination group address.
+   *
+   * @throws NoSuchCommandException if command cannot be created by its lookup name
+   *
+   * @return  new KNX command instance
+   */
   static KNXCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
   {
     name = name.trim().toUpperCase();
@@ -60,13 +83,32 @@ abstract class KNXCommand implements Command
 
   // Private Instance Fields ----------------------------------------------------------------------
 
+  /**
+   * Destination address for this command.
+   */
   private GroupAddress address;
+
+  /**
+   * Connection manager to be used to transmit this command.
+   */
   private KNXConnectionManager connectionManager;
+
+  /**
+   * Command payload (APDU).
+   */
   private ApplicationProtocolDataUnit apdu;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Constructs a KNX command with a given connection manager, destination group address and
+   * an APDU payload.
+   *
+   * @param connectionManager KNX connection manager instance used for transmitting this commnad
+   * @param address           destination group address
+   * @param apdu              command payload
+   */
   KNXCommand(KNXConnectionManager connectionManager, GroupAddress address,
              ApplicationProtocolDataUnit apdu)
   {
@@ -79,19 +121,27 @@ abstract class KNXCommand implements Command
 
   // Package-Private Instance Methods -------------------------------------------------------------
 
-  void send(KNXWriteCommand command)
+  /**
+   * Relay a write command to an open KNX/IP connection.
+   *
+   * @param command   KNX write command
+   *
+   * @throws ConnectionException  if connection fails for any reason
+   */
+  void send(KNXWriteCommand command) throws ConnectionException
   {
-    try
-    {
       KNXConnection connection = connectionManager.getConnection();
       connection.send(command);
-    }
-    catch (ConnectionException e)
-    {
-      log.error(e);   // TODO
-    }
   }
 
+
+  /**
+   * TODO
+   *
+   * @param command
+   * @return
+   * @throws ConnectionException
+   */
   ApplicationProtocolDataUnit read(KNXReadCommand command) throws ConnectionException
   {
     KNXConnection connection = connectionManager.getConnection();
@@ -100,15 +150,15 @@ abstract class KNXCommand implements Command
   
 
   /**
-   * TODO
-   *
    * The KNX Common External Message Interface (a.k.a cEMI) frame has a variable length
    * and structure depending on the Common EMI frame message code (first byte) and additional
-   * info length (second byte).
+   * info length (second byte).   <p>
    *
    * In a very generic fashion, a Common EMI frame can be defined as follows
    * (KNX 1.1 Application Note 033 - Common EMI Specification, 2.4 Basic Message Structure,
    * page 8):
+   *
+   * <pre>{@code
    *
    * +----+----+---- ... ----+-------- ... --------+
    * | MC | AI |  Add. Info  |   Service Info      |
@@ -117,9 +167,11 @@ abstract class KNXCommand implements Command
    * MC = Message Code
    * AI = Additional Info Length (0x00 if no additional info is included)
    *
+   * }</pre>
+   *
    * KNX communication stack defines a frame transfer service (known as L_Data Service) in the
    * data link layer (KNX 1.1 -- Volume 3 System Specification, Part 2 Communication,
-   * Chapter 2 Data Link Layer General, section 2.1 L_Data Service, page 8).
+   * Chapter 2 Data Link Layer General, section 2.1 L_Data Service, page 8).  <p>
    *
    * Link layer data services are available in "normal" mode (vs. bus monitor mode). A data
    * request (known as L_Data.req primitive) is used to transmit a frame. The corresponding
@@ -127,6 +179,8 @@ abstract class KNXCommand implements Command
    * section 2.5.33 L_Data.req, page 13). Example assumes a standard (non-extended) frame with
    * no additional info fields set in the frame. The application protocol data unit (APDU) is
    * for a short data (<= 6 bits) group value write request (A_GroupValue_Write.req)
+   *
+   * <pre>{@code
    *
    * +--------+--------+--------+--------+----------------+----------------+--------+----------------+
    * |  Msg   |Add.Info| Ctrl 1 | Ctrl 2 | Source Address | Dest. Address  |  Data  |      APDU      |
@@ -136,8 +190,8 @@ abstract class KNXCommand implements Command
    *
    * Message Code    = 0x11 - a L_Data.req primitive
    * Add.Info Length = 0x00 - no additional info
-   * Control Field 1 = see the bit structure above
-   * Control Field 2 = see the bit structure above
+   * Control Field 1 = see the bit structure below
+   * Control Field 2 = see the bit structure below
    * Source Address  = 0x0000 - filled in by router/gateway with its source address which is
    *                   part of the KNX subnet
    * Dest. Address   = KNX group or individual address (2 byte)
@@ -147,49 +201,69 @@ abstract class KNXCommand implements Command
    *                   information (APCI) and data passed as an argument from higher layers of
    *                   the KNX communication stack
    *
+   * }</pre>
+   *
+   * Common External Message Interface Control Fields [KNX 1.1 Application Note 033]  <p>
+   *
+   * Common External Message Interface (EMI) defines two control fields in its frame format
+   * (one byte each). The bit structure of each control field is defined in the KNX 1.1
+   * Application Note 033: Common EMI Specification, section 2.4 Basic Message Structure:
+   *
+   *
+   * <pre>{@code
+   *
+   *        Control Field 1
+   *
+   *    Bit  |
+   *   ------+---------------------------------------------------------------
+   *     7   | Frame Type  - 0x0 for extended frame
+   *         |               0x1 for standard frame
+   *   ------+---------------------------------------------------------------
+   *     6   | Reserved
+   *         |
+   *   ------+---------------------------------------------------------------
+   *     5   | Repeat Flag - 0x0 repeat frame on medium in case of an error
+   *         |               0x1 do not repeat
+   *   ------+---------------------------------------------------------------
+   *     4   | System Broadcast - 0x0 system broadcast
+   *         |                    0x1 broadcast
+   *   ------+---------------------------------------------------------------
+   *     3   | Priority    - 0x0 system
+   *         |               0x1 normal
+   *   ------+               0x2 urgent
+   *     2   |               0x3 low
+   *         |
+   *   ------+---------------------------------------------------------------
+   *     1   | Acknowledge Request - 0x0 no ACK requested
+   *         | (L_Data.req)          0x1 ACK requested
+   *   ------+---------------------------------------------------------------
+   *     0   | Confirm      - 0x0 no error
+   *         | (L_Data.con) - 0x1 error
+   *   ------+---------------------------------------------------------------
+   *
+   *       //   Control Field 2
+   *
+   *    Bit  |
+   *   ------+---------------------------------------------------------------
+   *     7   | Destination Address Type - 0x0 individual address
+   *         |                          - 0x1 group address
+   *   ------+---------------------------------------------------------------
+   *    6-4  | Hop Count (0-7)
+   *   ------+---------------------------------------------------------------
+   *    3-0  | Extended Frame Format - 0x0 for standard frame
+   *   ------+---------------------------------------------------------------
+   *
+   * }</pre>
+   *
    */
   Byte[] getCEMIFrame()
   {
-    final int LINK_LAYER_DATA_REQUEST   = 0x11;
-    final int NO_ADDITIONAL_INFORMATION = 0x00;
-    final int SOURCE_ADDRESS_HIBYTE     = 0x00;
-    final int SOURCE_ADDRESS_LOBYTE     = 0x00;
+    final int LINK_LAYER_DATA_REQUEST   = 0x11;       // Message Code, L_Data.req primitive
+    final int NO_ADDITIONAL_INFORMATION = 0x00;       // Additional info length = 0
+    final int SOURCE_ADDRESS_HIBYTE     = 0x00;       // Source address will be filled in by
+    final int SOURCE_ADDRESS_LOBYTE     = 0x00;       // KNX gateway/router
 
-    // Common External Message Interface Control Fields [KNX 1.1 Application Note 033]
-    //
-    // Common External Message Interface (EMI) defines two control fields in its frame format
-    // (one byte each). The bit structure of each control field is defined in the KNX 1.1
-    // Application Note 033: Common EMI Specification, section 2.4 Basic Message Structure:
-    //
     //   Control Field 1
-    //
-    //    Bit  |
-    //   ------+---------------------------------------------------------------
-    //     7   | Frame Type  - 0x0 for extended frame
-    //         |               0x1 for standard frame
-    //   ------+---------------------------------------------------------------
-    //     6   | Reserved
-    //         |
-    //   ------+---------------------------------------------------------------
-    //     5   | Repeat Flag - 0x0 repeat frame on medium in case of an error
-    //         |               0x1 do not repeat
-    //   ------+---------------------------------------------------------------
-    //     4   | System Broadcast - 0x0 system broadcast
-    //         |                    0x1 broadcast
-    //   ------+---------------------------------------------------------------
-    //     3   | Priority    - 0x0 system
-    //         |               0x1 normal
-    //   ------+               0x2 urgent
-    //     2   |               0x3 low
-    //         |
-    //   ------+---------------------------------------------------------------
-    //     1   | Acknowledge Request - 0x0 no ACK requested
-    //         | (L_Data.req)          0x1 ACK requested
-    //   ------+---------------------------------------------------------------
-    //     0   | Confirm      - 0x0 no error
-    //         | (L_Data.con) - 0x1 error
-    //   ------+---------------------------------------------------------------
-    //
 
     /* A bit for standard common EMI frame type (not extended) in the first control field. */
     final int STANDARD_FRAME_TYPE = 0x01 << 7;
@@ -208,17 +282,6 @@ abstract class KNXCommand implements Command
 
 
     //   Control Field 2
-    //
-    //    Bit  |
-    //   ------+---------------------------------------------------------------
-    //     7   | Destination Address Type - 0x0 individual address
-    //         |                          - 0x1 group address
-    //   ------+---------------------------------------------------------------
-    //    6-4  | Hop Count (0-7)
-    //   ------+---------------------------------------------------------------
-    //    3-0  | Extended Frame Format - 0x0 for standard frame
-    //   ------+---------------------------------------------------------------
-    //
 
     /* Destination Address Type bit for group address in the second control field of the common
      * EMI frame - most significant bit of the byte. */
@@ -230,7 +293,6 @@ abstract class KNXCommand implements Command
     /* Non-extended frame format in the second control field of the common EMI frame
      *(four zero bits) */
     final int NON_EXTENDED_FRAME_FORMAT = 0x0;
-
 
 
     byte[] destinationAddress = address.asByteArray();
