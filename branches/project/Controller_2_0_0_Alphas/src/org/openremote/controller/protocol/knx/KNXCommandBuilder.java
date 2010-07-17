@@ -20,13 +20,13 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.jdom.Element;
-import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+
+import java.util.List;
 
 
 /**
@@ -288,46 +288,6 @@ public class KNXCommandBuilder implements CommandBuilder
 
     return cmd;
 
-//    if (WriteCommand.SWITCH_ON.isEqual(commandAsString))
-//    {
-//      WriteCommand knxCommand = WriteCommand.SWITCH_ON;
-//
-//      log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
-//
-//      return new KNXWriteCommand(connectionManager, groupAddress, knxCommand);
-//    }
-//
-//    else if (WriteCommand.SWITCH_OFF.isEqual(commandAsString))
-//    {
-//      WriteCommand knxCommand = WriteCommand.SWITCH_OFF;
-//
-//      log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
-//
-//      return new KNXWriteCommand(connectionManager, groupAddress, knxCommand);
-//    }
-//
-//    else if (ReadCommand.SWITCH_STATE.isEqual(commandAsString))
-//    {
-//      ReadCommand knxCommand = ReadCommand.SWITCH_STATE;
-//
-//      log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
-//
-//      return new KNXReadCommand(connectionManager, groupAddress, knxCommand);
-//    }
-//
-//    else
-//    {
-//      throw new NoSuchCommandException("Unknown command '" + commandAsString + "'.");
-//    }
-//
-//
-//    // Parsing done...
-//
-//    Command command = new KNXWriteCommand(connectionManager, groupAddress, knxCommand);
-//
-//    log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
-//
-//    return command;
   }
 
 
