@@ -21,13 +21,11 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.exception.NoSuchCommandException;
 
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TODO
@@ -41,33 +39,9 @@ abstract class KNXCommand implements Command
 
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
-//  private final static Map<String, ApplicationProtocolDataUnit> translations =
-//      new ConcurrentHashMap<String, ApplicationProtocolDataUnit>();
-//
-//  /*
-//   * IMPLEMENTATION NOTE:
-//   *
-//   *   if new valid values for command names are added (in 'commandTranslations'), the
-//   *   unit tests should be added accordingly into KNXCommandBuilderTest
-//   */
-//
-//  static
-//  {
-//    translations.put("STATUS", ApplicationProtocolDataUnit.READ_SWITCH_STATE);
-//    translations.put("ON", ApplicationProtocolDataUnit.WRITE_SWITCH_ON);
-//    translations.put("OFF", ApplicationProtocolDataUnit.WRITE_SWITCH_OFF);
-//  }
-
   static KNXCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
   {
-    name = name.toUpperCase();
-
-    //ApplicationProtocolDataUnit apdu = translations.get(name);
-    //
-    //if (apdu == null)
-    //{
-    //  throw new NoSuchCommandException();
-    //}
+    name = name.trim().toUpperCase();
 
     KNXWriteCommand writeCmd = KNXWriteCommand.createCommand(name, mgr, address);
 
@@ -82,6 +56,7 @@ abstract class KNXCommand implements Command
     throw new NoSuchCommandException("Unknown command '" + name + "'.");
 
   }
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -100,9 +75,10 @@ abstract class KNXCommand implements Command
     this.apdu = apdu;
   }
 
+
+
   // Package-Private Instance Methods -------------------------------------------------------------
 
-  
   void send(KNXWriteCommand command)
   {
     try
@@ -122,11 +98,6 @@ abstract class KNXCommand implements Command
     return connection.read(command);
   }
   
-
-  //byte[] getDestinationAddressBytes()
-  //{
-  //  return address.asByteArray();
-  //}
 
   /**
    * TODO
@@ -313,31 +284,5 @@ abstract class KNXCommand implements Command
     Byte[] cemiBytes = new Byte[cemi.size()];
 
     return cemi.toArray(cemiBytes);
-
-//
-//    return new byte[]
-//    {
-//      LINK_LAYER_DATA_REQUEST,
-//      NO_ADDITIONAL_INFORMATION,
-//
-//      (byte)(STANDARD_FRAME_TYPE +     // Control Field 1
-//            REPEAT_FRAME +
-//            SYSTEM_BROADCAST +
-//            NORMAL_PRIORITY +
-//            REQUEST_ACK),
-//      (byte)(GROUP_ADDRESS +           // Control Field 2
-//            HOP_COUNT +
-//            NON_EXTENDED_FRAME_FORMAT),
-//
-//      SOURCE_ADDRESS_HIBYTE,          // Source Address
-//      SOURCE_ADDRESS_LOBYTE,
-//
-//      destinationAddress[0],          // Destination Address
-//      destinationAddress[1],
-//
-//      apdu.getDataLength(),           // Data Length
-//      protocolDataUnit[0],            // TPCI/APCI high bits
-//      (byte)apduData                  // APCI low bits & Data
-//    };
   }
 }
