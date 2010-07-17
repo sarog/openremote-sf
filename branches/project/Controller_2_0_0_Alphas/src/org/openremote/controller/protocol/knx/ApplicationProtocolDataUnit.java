@@ -80,6 +80,8 @@ import java.util.List;
  *  +-----------------------------------------------------------------------++-------------....
  *
  * }</pre>
+ *
+ * @see DataType
  * 
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -168,41 +170,41 @@ class ApplicationProtocolDataUnit
     }
   }
 
-
-  enum DataTypeBoolean implements DataType
-  {
-    OFF(DATATYPE_BOOLEAN_ZERO),           ON(DATATYPE_BOOLEAN_ONE),         // DPT 1.001 - DPT_Switch
-    FALSE(DATATYPE_BOOLEAN_ZERO),         TRUE(DATATYPE_BOOLEAN_ONE),       // DPT 1.002 - DPT_Bool
-    DISABLE(DATATYPE_BOOLEAN_ZERO),       ENABLE(DATATYPE_BOOLEAN_ONE),     // DPT 1.003 - DPT_Enable
-    NO_RAMP(DATATYPE_BOOLEAN_ZERO),       RAMP(DATATYPE_BOOLEAN_ONE),       // DPT 1.004 - DPT_Ramp
-    NO_ALARM(DATATYPE_BOOLEAN_ZERO),      ALARM(DATATYPE_BOOLEAN_ONE),      // DPT 1.005 - DPT_Alarm
-    LOW(DATATYPE_BOOLEAN_ZERO),           HIGH(DATATYPE_BOOLEAN_ONE),       // DPT 1.006 - DPT_BinaryValue
-    DECREASE(DATATYPE_BOOLEAN_ZERO),      INCREASE(DATATYPE_BOOLEAN_ONE),   // DPT 1.007 - DPT_Step
-    UP(DATATYPE_BOOLEAN_ZERO),            DOWN(DATATYPE_BOOLEAN_ONE),       // DPT 1.008 - DPT_UpDown
-    OPEN(DATATYPE_BOOLEAN_ZERO),          CLOSE(DATATYPE_BOOLEAN_ONE),      // DPT 1.009 - DPT_OpenClose
-    STOP(DATATYPE_BOOLEAN_ZERO),          START(DATATYPE_BOOLEAN_ONE),      // DPT 1.010 - DPT_Start
-    INACTIVE(DATATYPE_BOOLEAN_ZERO),      ACTIVE(DATATYPE_BOOLEAN_ONE),     // DPT 1.011 - DPT_State
-    NOT_INVERTED(DATATYPE_BOOLEAN_ZERO),  INVERTED(DATATYPE_BOOLEAN_ONE),   // DPT 1.012 - DPT_Invert
-    START_STOP(DATATYPE_BOOLEAN_ZERO),    CYCLICALLY(DATATYPE_BOOLEAN_ONE), // DPT 1.013 - DPT_DimSendStyle
-    FIXED(DATATYPE_BOOLEAN_ZERO),         CALCULATED(DATATYPE_BOOLEAN_ONE); // DPT 1.014 - DPT_InputSource
-
-    private byte value = 0x00;
-
-    DataTypeBoolean(byte value)
-    {
-      this.value = value;
-    }
-
-    public int getDataLength()
-    {
-      return 1;
-    }
-
-    public byte[] getData()
-    {
-      return new byte[] { value };
-    }
-  }
+//
+//  enum DataTypeBoolean implements DataType
+//  {
+//    OFF(DATATYPE_BOOLEAN_ZERO),           ON(DATATYPE_BOOLEAN_ONE),         // DPT 1.001 - DPT_Switch
+//    FALSE(DATATYPE_BOOLEAN_ZERO),         TRUE(DATATYPE_BOOLEAN_ONE),       // DPT 1.002 - DPT_Bool
+//    DISABLE(DATATYPE_BOOLEAN_ZERO),       ENABLE(DATATYPE_BOOLEAN_ONE),     // DPT 1.003 - DPT_Enable
+//    NO_RAMP(DATATYPE_BOOLEAN_ZERO),       RAMP(DATATYPE_BOOLEAN_ONE),       // DPT 1.004 - DPT_Ramp
+//    NO_ALARM(DATATYPE_BOOLEAN_ZERO),      ALARM(DATATYPE_BOOLEAN_ONE),      // DPT 1.005 - DPT_Alarm
+//    LOW(DATATYPE_BOOLEAN_ZERO),           HIGH(DATATYPE_BOOLEAN_ONE),       // DPT 1.006 - DPT_BinaryValue
+//    DECREASE(DATATYPE_BOOLEAN_ZERO),      INCREASE(DATATYPE_BOOLEAN_ONE),   // DPT 1.007 - DPT_Step
+//    UP(DATATYPE_BOOLEAN_ZERO),            DOWN(DATATYPE_BOOLEAN_ONE),       // DPT 1.008 - DPT_UpDown
+//    OPEN(DATATYPE_BOOLEAN_ZERO),          CLOSE(DATATYPE_BOOLEAN_ONE),      // DPT 1.009 - DPT_OpenClose
+//    STOP(DATATYPE_BOOLEAN_ZERO),          START(DATATYPE_BOOLEAN_ONE),      // DPT 1.010 - DPT_Start
+//    INACTIVE(DATATYPE_BOOLEAN_ZERO),      ACTIVE(DATATYPE_BOOLEAN_ONE),     // DPT 1.011 - DPT_State
+//    NOT_INVERTED(DATATYPE_BOOLEAN_ZERO),  INVERTED(DATATYPE_BOOLEAN_ONE),   // DPT 1.012 - DPT_Invert
+//    START_STOP(DATATYPE_BOOLEAN_ZERO),    CYCLICALLY(DATATYPE_BOOLEAN_ONE), // DPT 1.013 - DPT_DimSendStyle
+//    FIXED(DATATYPE_BOOLEAN_ZERO),         CALCULATED(DATATYPE_BOOLEAN_ONE); // DPT 1.014 - DPT_InputSource
+//
+//    private byte value = 0x00;
+//
+//    DataTypeBoolean(byte value)
+//    {
+//      this.value = value;
+//    }
+//
+//    public int getDataLength()
+//    {
+//      return 1;
+//    }
+//
+//    public byte[] getData()
+//    {
+//      return new byte[] { value };
+//    }
+//  }
 
 
   enum DataPointType
@@ -230,14 +232,14 @@ class ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_WRITE,
       DataPointType.SWITCH,
-      DataTypeBoolean.ON
+      DataType.Boolean.ON
   );
 
   final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_WRITE,
       DataPointType.SWITCH,
-      DataTypeBoolean.OFF
+      DataType.Boolean.OFF
   );
 
   final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
