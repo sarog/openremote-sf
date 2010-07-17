@@ -107,7 +107,7 @@ class ApplicationProtocolDataUnit
     /**
      * Group Value Write Service  <p>
      *
-     * PDU:
+     * PDU for data values equal or less than 6 bits in length:
      *
      * <pre>{@code
      *
@@ -124,9 +124,9 @@ class ApplicationProtocolDataUnit
      *
      * }</pre>
      */
-    GROUPVALUE_WRITE(
-        0x00,           // TPCI (6 bits) & APCI high bits (2 bits) - 0x00000000
-        0x80            // APCI low bits (2 bits) + data (6 bits)  - 0x10000000
+    GROUPVALUE_WRITE_6BIT(
+        0x00,               // TPCI (6 bits) & APCI high bits (2 bits) - 0x00000000
+        0x80                // APCI low bits (2 bits) + data (6 bits)  - 0x10000000
     ),
 
     /**
@@ -157,12 +157,34 @@ class ApplicationProtocolDataUnit
 
     // Enum Instance Fields -----------------------------------------------------------------------
 
+    /**
+     * APCI high bits used in the first byte of APDU -- only 2 least significant bits are ever
+     * used, making the value range [0x00..0x03]
+     */
     private int apciHiBits = 0x00;
+
+    /**
+     * APCI low bits used in the second byte of APDU -- in case of 6-bit values this uses the
+     * two most significant bits in the byte. In case of larger data values, all 8 bits are used
+     * for APCI.  <p>
+     *
+     * For 6-bit data values, valid low bit values are 0x80, 0x40 and 0xC0. <p>
+     *
+     * For larger data values, full range of APCI from 0x00 to 0xFF are possible.
+     */
     private int apciLoBits = 0x00;
 
 
     // Enum Constructor ---------------------------------------------------------------------------
 
+    /**
+     * Constructs application layer service instance with APCI bits split to first and second bytes
+     * of the APDU.
+     *
+     * @param apciHiBits  two least significant bits of the first byte in APDU
+     * @param apciLoBits  two most significant bits (in case of 6-bit values) or all bits for the
+     *                    second byte in APDU
+     */
     private Service(int apciHiBits, int apciLoBits)
     {
       this.apciHiBits = apciHiBits;
@@ -170,43 +192,10 @@ class ApplicationProtocolDataUnit
     }
   }
 
-//
-//  enum DataTypeBoolean implements DataType
-//  {
-//    OFF(DATATYPE_BOOLEAN_ZERO),           ON(DATATYPE_BOOLEAN_ONE),         // DPT 1.001 - DPT_Switch
-//    FALSE(DATATYPE_BOOLEAN_ZERO),         TRUE(DATATYPE_BOOLEAN_ONE),       // DPT 1.002 - DPT_Bool
-//    DISABLE(DATATYPE_BOOLEAN_ZERO),       ENABLE(DATATYPE_BOOLEAN_ONE),     // DPT 1.003 - DPT_Enable
-//    NO_RAMP(DATATYPE_BOOLEAN_ZERO),       RAMP(DATATYPE_BOOLEAN_ONE),       // DPT 1.004 - DPT_Ramp
-//    NO_ALARM(DATATYPE_BOOLEAN_ZERO),      ALARM(DATATYPE_BOOLEAN_ONE),      // DPT 1.005 - DPT_Alarm
-//    LOW(DATATYPE_BOOLEAN_ZERO),           HIGH(DATATYPE_BOOLEAN_ONE),       // DPT 1.006 - DPT_BinaryValue
-//    DECREASE(DATATYPE_BOOLEAN_ZERO),      INCREASE(DATATYPE_BOOLEAN_ONE),   // DPT 1.007 - DPT_Step
-//    UP(DATATYPE_BOOLEAN_ZERO),            DOWN(DATATYPE_BOOLEAN_ONE),       // DPT 1.008 - DPT_UpDown
-//    OPEN(DATATYPE_BOOLEAN_ZERO),          CLOSE(DATATYPE_BOOLEAN_ONE),      // DPT 1.009 - DPT_OpenClose
-//    STOP(DATATYPE_BOOLEAN_ZERO),          START(DATATYPE_BOOLEAN_ONE),      // DPT 1.010 - DPT_Start
-//    INACTIVE(DATATYPE_BOOLEAN_ZERO),      ACTIVE(DATATYPE_BOOLEAN_ONE),     // DPT 1.011 - DPT_State
-//    NOT_INVERTED(DATATYPE_BOOLEAN_ZERO),  INVERTED(DATATYPE_BOOLEAN_ONE),   // DPT 1.012 - DPT_Invert
-//    START_STOP(DATATYPE_BOOLEAN_ZERO),    CYCLICALLY(DATATYPE_BOOLEAN_ONE), // DPT 1.013 - DPT_DimSendStyle
-//    FIXED(DATATYPE_BOOLEAN_ZERO),         CALCULATED(DATATYPE_BOOLEAN_ONE); // DPT 1.014 - DPT_InputSource
-//
-//    private byte value = 0x00;
-//
-//    DataTypeBoolean(byte value)
-//    {
-//      this.value = value;
-//    }
-//
-//    public int getDataLength()
-//    {
-//      return 1;
-//    }
-//
-//    public byte[] getData()
-//    {
-//      return new byte[] { value };
-//    }
-//  }
 
-
+  /**
+   * TODO
+   */
   enum DataPointType
   {
     SWITCH,         // DPT 1.001
@@ -230,14 +219,14 @@ class ApplicationProtocolDataUnit
 
   final static ApplicationProtocolDataUnit WRITE_SWITCH_ON = new ApplicationProtocolDataUnit
   (
-      Service.GROUPVALUE_WRITE,
+      Service.GROUPVALUE_WRITE_6BIT,
       DataPointType.SWITCH,
       DataType.Boolean.ON
   );
 
   final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
   (
-      Service.GROUPVALUE_WRITE,
+      Service.GROUPVALUE_WRITE_6BIT,
       DataPointType.SWITCH,
       DataType.Boolean.OFF
   );
