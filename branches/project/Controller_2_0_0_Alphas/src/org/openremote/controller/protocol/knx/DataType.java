@@ -51,7 +51,7 @@ package org.openremote.controller.protocol.knx;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public interface DataType 
+interface DataType 
 {
 
   int getDataLength();
