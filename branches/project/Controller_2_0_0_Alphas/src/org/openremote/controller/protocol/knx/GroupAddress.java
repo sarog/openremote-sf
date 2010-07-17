@@ -23,14 +23,13 @@ package org.openremote.controller.protocol.knx;
 import org.apache.log4j.Logger;
 
 /**
- * TODO
- *
- *
  * KNX Addressing on the common EMI wireformat is a two byte field, consisting of address
- * high byte (a.k.a Octet 0) and low byte (a.k.a Octet 1) [KNX 1.1].
+ * high byte (a.k.a Octet 0) and low byte (a.k.a Octet 1) [KNX 1.1].  <p>
  *
  * [KNX 1.1] Volume 3: Systems Specifications, Part 3 Chapter 2: Data Link Layer General
- * defines Group Address bit structure (1.4 Definitions on page 6-7) as follows:
+ * defines Group Address bit structure (1.4 Definitions on page 6-7) as follows: <p>
+ *
+ * <pre>{@code
  *
  *            +-----------------------------------------------+
  *  16 bits   |                 GROUP ADDRESS                 |
@@ -41,6 +40,8 @@ import org.apache.log4j.Logger;
  *            +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
  *            |  |  Main Group (S13)  |   Sub Group (S13)     |
  *            +--+--------------------+-----------------------+
+ *
+ * }</pre>
  *
  * KNX Group addresses do not need to be unique and a device may have more than one group
  * address. Group addresses are defined globally for the entire KNX network (however, in
@@ -82,12 +83,30 @@ class GroupAddress
 
   // Instance Fields ------------------------------------------------------------------------------
 
+  /**
+   * The first byte of a group address.
+   */
   private byte hiByte = 0x00;
+
+  /**
+   * The second byte of a group address.
+   */
   private byte loByte = 0x00;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Constructs a KNX group address instance from a string definition. <p>
+   *
+   * The assumed convention of the string is 'main/middle/sub' (5/3/8 bits respectively).
+   * The largest group address therefore is '31/7/255'. Note that group address 0/0/0 is used
+   * for system broadcasts.
+   *
+   * @param groupAddress  KNX group address as a string
+   *
+   * @throws InvalidGroupAddressException if parsing the group address string fails for any reason
+   */
   GroupAddress(String groupAddress) throws InvalidGroupAddressException
   {
     if (groupAddress.contains("/"))
@@ -115,33 +134,27 @@ class GroupAddress
 
   // Package-Private Instance Methods -------------------------------------------------------------
 
+  /**
+   * Returns the group address as a 2-byte array.
+   *
+   * @return array of exactly two bytes, with group address high byte first
+   *         (main/middle level bits), followed by low byte (sub level 8 bits).
+   */
   byte[] asByteArray()
   {
     return new byte[] { hiByte, loByte };
   }
 
-  byte getHighByte()
-  {
-    return hiByte;
-  }
-
-  byte getLowByte()
-  {
-    return loByte;
-  }
-
-
+  
   
   // Private Instance Methods ---------------------------------------------------------------------
 
   /**
-   * TODO
+   * Attempts to parse the string with a main/mid/sub level string convention.
    *
-   * @param groupAddress
+   * @param groupAddress    group address as a string
    *
-   * @return
-   * 
-   * @throws InvalidGroupAddressException
+   * @throws InvalidGroupAddressException if parse fails for any reason
    */
   private void parseForwardSlashConvention(String groupAddress) throws InvalidGroupAddressException
   {
