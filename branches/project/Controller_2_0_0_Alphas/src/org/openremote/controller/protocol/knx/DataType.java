@@ -48,13 +48,47 @@ package org.openremote.controller.protocol.knx;
  * <li>String</li>
  * </ol>
  *
+ * @see org.openremote.controller.protocol.knx.ApplicationProtocolDataUnit.DataTypeBoolean
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 interface DataType 
 {
 
+  /**
+   * Value type for 'Boolean' datatype (KNX 1.1 Vol 3: Part 7.2 - Datapoint Types): {@value}
+   */
+  final static byte DATATYPE_BOOLEAN_ONE = 0x01;
+
+  /**
+   * Value type for 'Boolean' datatype (KNX 1.1 Vol 3: Part 7.2 - Datapoint Types): {@value}
+   */
+  final static byte DATATYPE_BOOLEAN_ZERO = 0x00;
+
+
+  /**
+   * Returns the data length (payload) represented by this datatype. Data length is at minimum
+   * 1 byte and at most 14 bytes. It does *not* include the first byte in the application layer
+   * data unit which contains transport protocol and application protocol control information
+   * (TPCI & APCI) -- see {@link ApplicationProtocolDataUnit} for more details on the APDU
+   * structure.
+   *
+   * @return  length of the data in Common EMI frame Application Protocol Data Unit (APDU) payload;
+   *          minimum of 1 byte, maximum of 14 bytes.
+   */
   int getDataLength();
 
+  /**
+   * Returns the data bytes in Application Protocol Data Unit (APDU). This is the actual data
+   * bytes not including the Transport Protocol or Application Protocol Control Information
+   * (TCPI & ACPI, respectively).
+   *
+   * @see #getDataLength
+   * @see ApplicationProtocolDataUnit
+   *
+   * @return KNX Application Protocol Data Unit (APDU) data payload as a byte array. The returned
+   *         array has at minimum 1 byte and at most 14 bytes. It's length matches the value
+   *         returned by {@link #getDataLength} of this datatype.
+   */
   byte[] getData();
 }
