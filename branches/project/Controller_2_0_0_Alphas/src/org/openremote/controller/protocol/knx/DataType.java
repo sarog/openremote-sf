@@ -97,35 +97,147 @@ interface DataType
   // Nested Enums ---------------------------------------------------------------------------------
 
 
+  /**
+   * Boolean datatype as defined in KNX 1.1 Volume 3: System specifications Part 7: Interworking,
+   * Chapter 2, Datapoint Types. <p>
+   *
+   * KNX Boolean datatype is a 1-bit value represented by either 0 or 1 integer value. There are
+   * 14 different datapoint types that use Boolean, each with its own encoding for the 1-bit value:
+   *
+   * <ol>
+   * <li>DPT 1.001 - DPT_Switch</li>
+   * <li>DPT 1.002 - DPT_Bool</li>
+   * <li>DPT 1.003 - DPT_Enable</li>
+   * <li>DPT 1.004 - DPT_Ramp</li>
+   * <li>DPT 1.005 - DPT_Alarm</li>
+   * <li>DPT 1.006 - DPT_BinaryValue</li>
+   * <li>DPT 1.007 - DPT_Step</li>
+   * <li>DPT 1.008 - DPT_UpDown</li>
+   * <li>DPT 1.009 - DPT_OpenClose</li>
+   * <li>DPT 1.010 - DPT_Start</li>
+   * <li>DPT 1.011 - DPT_State</li>
+   * <li>DPT 1.012 - DPT_Invert</li>
+   * <li>DPT 1.013 - DPT_DimSendStyle</li>
+   * <li>DPT 1.014 - DPT_Inputsource</li>
+   * </ol>
+   */
   enum Boolean implements DataType
   {
-    OFF(DATATYPE_BOOLEAN_ZERO),           ON(DATATYPE_BOOLEAN_ONE),         // DPT 1.001 - DPT_Switch
-    FALSE(DATATYPE_BOOLEAN_ZERO),         TRUE(DATATYPE_BOOLEAN_ONE),       // DPT 1.002 - DPT_Bool
-    DISABLE(DATATYPE_BOOLEAN_ZERO),       ENABLE(DATATYPE_BOOLEAN_ONE),     // DPT 1.003 - DPT_Enable
-    NO_RAMP(DATATYPE_BOOLEAN_ZERO),       RAMP(DATATYPE_BOOLEAN_ONE),       // DPT 1.004 - DPT_Ramp
-    NO_ALARM(DATATYPE_BOOLEAN_ZERO),      ALARM(DATATYPE_BOOLEAN_ONE),      // DPT 1.005 - DPT_Alarm
-    LOW(DATATYPE_BOOLEAN_ZERO),           HIGH(DATATYPE_BOOLEAN_ONE),       // DPT 1.006 - DPT_BinaryValue
-    DECREASE(DATATYPE_BOOLEAN_ZERO),      INCREASE(DATATYPE_BOOLEAN_ONE),   // DPT 1.007 - DPT_Step
-    UP(DATATYPE_BOOLEAN_ZERO),            DOWN(DATATYPE_BOOLEAN_ONE),       // DPT 1.008 - DPT_UpDown
-    OPEN(DATATYPE_BOOLEAN_ZERO),          CLOSE(DATATYPE_BOOLEAN_ONE),      // DPT 1.009 - DPT_OpenClose
-    STOP(DATATYPE_BOOLEAN_ZERO),          START(DATATYPE_BOOLEAN_ONE),      // DPT 1.010 - DPT_Start
-    INACTIVE(DATATYPE_BOOLEAN_ZERO),      ACTIVE(DATATYPE_BOOLEAN_ONE),     // DPT 1.011 - DPT_State
-    NOT_INVERTED(DATATYPE_BOOLEAN_ZERO),  INVERTED(DATATYPE_BOOLEAN_ONE),   // DPT 1.012 - DPT_Invert
-    START_STOP(DATATYPE_BOOLEAN_ZERO),    CYCLICALLY(DATATYPE_BOOLEAN_ONE), // DPT 1.013 - DPT_DimSendStyle
+    /**
+     * DPT 1.001 - DPT_Switch. Value 0 = OFF, Value 1 = ON, general use.
+     */
+    OFF(DATATYPE_BOOLEAN_ZERO),           ON(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.002 - DPT_Bool. Value 0 = FALSE, Value 1 = TRUE, general use.
+     */
+    FALSE(DATATYPE_BOOLEAN_ZERO),         TRUE(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.003 - DPT_Enable. Value 0 = DISABLE, Value 1 = ENABLE, general use.
+     */
+    DISABLE(DATATYPE_BOOLEAN_ZERO),       ENABLE(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.004 - DPT_Ramp. Value 0 = NO_RAMP, Value 1 = RAMP, functional blocks only.
+     */
+    NO_RAMP(DATATYPE_BOOLEAN_ZERO),       RAMP(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.005 - DPT_Alarm. Value 0 = NO_ALARM, Value 1 = ALARM, functional blocks only.
+     */
+    NO_ALARM(DATATYPE_BOOLEAN_ZERO),      ALARM(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.006 - DPT_BinaryValue. Value 0 = LOW, Value 1 = HIGH, functional blocks only.
+     */
+    LOW(DATATYPE_BOOLEAN_ZERO),           HIGH(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.007 - DPT_Step. Value 0 = DECREASE, Value 1 = INCREASE, functional blocks only.
+     */
+    DECREASE(DATATYPE_BOOLEAN_ZERO),      INCREASE(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.008 - DPT_UpDown. Value 0 = UP, Value 1 = DOWN, general use.
+     */
+    UP(DATATYPE_BOOLEAN_ZERO),            DOWN(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.009 - DPT_OpenClose. Value 0 = OPEN, Value 1 = CLOSE, general use.
+     */
+    OPEN(DATATYPE_BOOLEAN_ZERO),          CLOSE(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.010 - DPT_Start. Value 0 = STOP, Value 1 = START, general use.
+     */
+    STOP(DATATYPE_BOOLEAN_ZERO),          START(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.011 - DPT_State. Value 0 = INACTIVE, Value 1 = ACTIVE, functional blocks only.
+     */
+    INACTIVE(DATATYPE_BOOLEAN_ZERO),      ACTIVE(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.012 - DPT_Invert. Value 0 = NOT INVERTED, Value 1 = INVERTED, functional blocks only.
+     */
+    NOT_INVERTED(DATATYPE_BOOLEAN_ZERO),  INVERTED(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.013 - DPT_DimSendStyle. Value 0 = START_STOP, Value 1 = CYCLICALLY,
+     * functional blocks only.
+     */
+    START_STOP(DATATYPE_BOOLEAN_ZERO),    CYCLICALLY(DATATYPE_BOOLEAN_ONE),
+
+    /**
+     * DPT 1.014 - DPT_InputSource. Value 0 = FIXED, Value 1 = CALCULATED, functional blocks only.
+     */
     FIXED(DATATYPE_BOOLEAN_ZERO),         CALCULATED(DATATYPE_BOOLEAN_ONE); // DPT 1.014 - DPT_InputSource
 
+
+    // Enum Instance Fields -----------------------------------------------------------------------
+
+    /**
+     * The boolean value held by this enum instance.
+     */
     private byte value = 0x00;
 
+
+    // Enum Constructors --------------------------------------------------------------------------
+
+    /**
+     * New KNX Boolean enum with a given value. Valid values are 0x00 and 0x01.
+     *
+     * @param value   either 0x00 or 0x01, see the enum constant documentation for how these
+     *                two values are encoded (on/off, start/stop, etc.)
+     */
     Boolean(byte value)
     {
+      if (value < 0 || value > 1)
+        throw new Error("Implementation Error: Boolean value must be either 1 or 0.");
+
       this.value = value;
     }
 
+
+    // Implements DataType ------------------------------------------------------------------------
+
+    /**
+     * Returns data length of 1 for all boolean datatype points.
+     *
+     * @return value of 1
+     */
     public int getDataLength()
     {
       return 1;
     }
 
+    /**
+     * Returns a single byte array for all boolean datatype points. The first and only byte
+     * in the array contains the current datatype value, either 0x00 or 0x01.
+     *
+     * @return datatype point value as a single byte array
+     */
     public byte[] getData()
     {
       return new byte[] { value };
