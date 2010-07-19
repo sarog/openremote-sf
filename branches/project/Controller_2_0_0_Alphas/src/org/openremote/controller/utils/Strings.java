@@ -29,10 +29,24 @@ public class Strings
 {
 
   /**
-   * TODO
+   * Translates a signed Java byte into an unsigned hex string.
    *
-   * @param b
-   * @return
+   * For example:
+   *
+   * <pre>{@code
+   *
+   *    1  -> 0x01
+   *   10  -> 0x0F
+   *   16  -> 0x10
+   *   -1  -> 0xFF
+   * -128  -> 0xC0
+   *
+   * }</pre>
+   *
+   * @param b   byte to convert
+   *
+   * @return    Unsigned hex representation of the byte value with a '0x' prefix. Returned values
+   *            are always padded to two digits, so '1' becomes '0x01'.
    */
   public static String byteToUnsignedHexString(byte b)
   {
