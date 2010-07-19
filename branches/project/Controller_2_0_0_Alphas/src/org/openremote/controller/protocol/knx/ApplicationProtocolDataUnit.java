@@ -96,6 +96,68 @@ class ApplicationProtocolDataUnit
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
 
+  /**
+   * Determines from the Application Protocol Control Information (APCI) bits in an application
+   * protocol data unit (APDU) bytes whether the application level service corresponds to Group
+   * Value Response service.
+   *
+   * @see Service#GROUPVALUE_RESPONSE_6BIT
+   *
+   * @param apdu  Byte array containing the application protocol data unit payload. Only the first
+   *              two bytes are inspected. This parameter can therefore contain only a partial
+   *              APDU with only the first two bytes of APCI information or the entire APDU with
+   *              data included.
+   *
+   * @return      true if the APDU corresponds to Group Value Response service; false otherwise
+   */
+  static boolean isGroupValueResponse(byte[] apdu)
+  {
+    // Expected bit structure :
+    //
+    //  Byte 1 : bits xxxxxx00          - first six bits are part of TPCI
+    //  Byte 2 : bits 01xxxxxx          - last six bits are either data (6 bit return values)
+    //                                    or zero for larger than 6 bit return values
+
+    return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x40);
+  }
+
+
+  /**
+   * TODO
+   *
+   * @param apdu
+   * @return
+   */
+  static ApplicationProtocolDataUnit createGroupValueResponse(final byte[] apdu)
+  {
+    DataType unknown = new DataType()
+    {
+      public int getDataLength()
+      {
+        return apdu.length - 1;
+      }
+
+      public byte[] getData()
+      {
+        if (apdu.length == 2)
+        {
+          return new byte[] { (byte)(apdu[1] & 0x3F) };
+        }
+
+        else
+        {
+          byte[] data = new byte[apdu.length - 2];
+          System.arraycopy(apdu, 2, data, 0, data.length);
+
+          return data;
+        }
+      }
+    };
+
+    return new ApplicationProtocolDataUnit(Service.GROUPVALUE_RESPONSE_6BIT, null, unknown);
+  }
+
+
   // Enums ----------------------------------------------------------------------------------------
 
   /**
@@ -125,8 +187,8 @@ class ApplicationProtocolDataUnit
      * }</pre>
      */
     GROUPVALUE_WRITE_6BIT(
-        0x00,               // TPCI (6 bits) & APCI high bits (2 bits) - 0x00000000
-        0x80                // APCI low bits (2 bits) + data (6 bits)  - 0x10000000
+        0x00,               // TPCI (6 bits) & APCI high bits (2 bits) - bits 00000000
+        0x80                // APCI low bits (2 bits) + data (6 bits)  - bits 10000000
     ),
 
     /**
@@ -150,8 +212,34 @@ class ApplicationProtocolDataUnit
      * }</pre>
      */
     GROUPVALUE_READ(
-        0x00,           // TPCI (6 bits) & APCI high bits (2 bits) - 0x00000000
-        0x00            // APCI low bits (8 bits)                  - 0x10000000
+        0x00,           // TPCI (6 bits) & APCI high bits (2 bits) -  bits 00000000
+        0x00            // APCI low bits (8 bits)                  -  bits 10000000
+    ),
+
+    /**
+     * Group Value Response Service  <p>
+     *
+     * PDU for data values equal or less than 6 bits in length:
+     *
+     * <pre>{@code
+     *
+     * +-------------++---------------+
+     * |    Byte 1   ||    Byte 2     |
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     * |T|T|T|T|T|A|A||A|A|D|D|D|D|D|D|
+     * |P|P|P|P|P|P|P||P|P|a|a|a|a|a|a|
+     * |C|C|C|C|C|C|C||C|C|t|t|t|t|t|t|
+     * |I|I|I|I|I|I|I||I|I|a|a|a|a|a|a|
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     * |.|.|.|.|.|0|0||0|1|.|.|.|.|.|.|
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     *
+     * }</pre>
+     */
+    GROUPVALUE_RESPONSE_6BIT
+    (
+        0x00,           // TPCI (6 bits) & APCI high bits (2 bits) -  bits 00000000
+        0x40            // APCI low bits (2 bits) + data (6 bits)  -  bits 01000000
     );
 
 
@@ -198,7 +286,7 @@ class ApplicationProtocolDataUnit
    */
   enum DataPointType
   {
-    SWITCH          ("1.001",   DataType.Boolean.OFF,         DataType.Boolean.OFF),
+    SWITCH          ("1.001",   DataType.Boolean.OFF,         DataType.Boolean.ON),
     BOOL            ("1.002",   DataType.Boolean.FALSE,       DataType.Boolean.TRUE),
     ENABLE          ("1.003",   DataType.Boolean.DISABLE,     DataType.Boolean.ENABLE),
     RAMP            ("1.004",   DataType.Boolean.NO_RAMP,     DataType.Boolean.RAMP),
@@ -213,15 +301,35 @@ class ApplicationProtocolDataUnit
     DIM_SEND_STYLE  ("1.013",   DataType.Boolean.START_STOP,  DataType.Boolean.CYCLICALLY),
     INPUT_SOURCE    ("1.014",   DataType.Boolean.FIXED,       DataType.Boolean.CALCULATED);
 
+    String dptID;
+    DataType.Boolean zeroValueEncoding;
+    DataType.Boolean oneValueEncoding;
+
     DataPointType(String dptID, DataType.Boolean zeroEncoding, DataType.Boolean oneEncoding)
     {
+      this.dptID = dptID;
+      this.zeroValueEncoding = zeroEncoding;
+      this.oneValueEncoding = oneEncoding;
+    }
 
+    DataType.Boolean getEncodingForValue(int value)
+    {
+      if (value == 0) return zeroValueEncoding;
+      else return oneValueEncoding;
     }
   }
 
 
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * Represents the full APDU (APCI + data) for Group Value Write service request with DPT 1.001
+   * (Switch) to state 'ON'.
+   *
+   * @see Service#GROUPVALUE_WRITE_6BIT
+   * @see DataPointType#SWITCH
+   * @see DataType.Boolean#ON
+   */
   final static ApplicationProtocolDataUnit WRITE_SWITCH_ON = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_WRITE_6BIT,
@@ -229,6 +337,10 @@ class ApplicationProtocolDataUnit
       DataType.Boolean.ON
   );
 
+  /**
+   * Represents the full APDU (APCI + data) for Group Value Write service request with
+   * DPT 1.001 (Switch) to state 'OFF'.
+   */
   final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_WRITE_6BIT,
@@ -236,10 +348,15 @@ class ApplicationProtocolDataUnit
       DataType.Boolean.OFF
   );
 
+  /**
+   * Represents the full APDU (APCI bits) for Group Value Read request for data points with
+   * DPT 1.001 (Switch) type.
+   */
   final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_READ,
-      DataPointType.SWITCH
+      DataPointType.SWITCH,
+      DataType.EMPTY              // there's no data on read request
   );
 
 
@@ -248,22 +365,32 @@ class ApplicationProtocolDataUnit
 
   private DataType datatype;
   private Service applicationLayerService;
+  private DataPointType dpt;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Constructs a new APDU with a given application layer service, datapoint type and datatype
+   *
+   * @see Service
+   * @see DataPointType
+   * @see DataType
+   *
+   * @param service   application layer service as defined in {@link Service]
+   * @param dpt       KNX datapoint type
+   * @param datatype  KNX data type
+   */
   private ApplicationProtocolDataUnit(Service service, DataPointType dpt, DataType datatype)
   {
-    this(service, dpt);
+    this.applicationLayerService  = service;
     this.datatype = datatype;
+    this.dpt = dpt;
+
+    // TODO : embed datatype into DPT ?
   }
 
-  private ApplicationProtocolDataUnit(Service service, DataPointType dpt)
-  {
-    this.applicationLayerService = service;
-  }
 
-  
 
   // Package-Private Instance Methods ------------------------------------------------------------
 
@@ -280,6 +407,56 @@ class ApplicationProtocolDataUnit
   {
     return datatype.getDataLength();
   }
+
+  /**
+   * TODO : used ?
+   *
+   * @return
+   */
+  DataType getDataType()
+  {
+    return datatype;
+  }
+
+  /**
+   * TODO
+   *
+   * @return
+   */
+  DataPointType  getDataPointType()
+  {
+    return dpt;
+  }
+
+  /**
+   * TODO
+   *
+   * @return
+   * @throws ConversionException
+   */
+  int convertToBooleanDataType() throws ConversionException
+  {
+    byte[] data = datatype.getData();
+
+    if (data.length == 1)
+    {
+      if (data[0] <= 1)
+      {
+        return data[0];
+      }
+      else
+      {
+        log.warn(""); // TODO
+        return 1;
+      }
+    }
+
+    else
+    {
+      throw new ConversionException("data too large");
+    }
+  }
+
 
   /**
    * Returns the application protocol data unit (APDU) including the Control Information (ACPI)
