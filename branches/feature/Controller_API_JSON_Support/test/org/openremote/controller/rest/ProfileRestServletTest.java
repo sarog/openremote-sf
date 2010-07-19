@@ -40,6 +40,9 @@ public class ProfileRestServletTest {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
+   /**
+    * backup xml files.
+    */
    @Before
    public void setup() {
       String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
@@ -52,6 +55,9 @@ public class ProfileRestServletTest {
 
    }
 
+   /**
+    * restore xml files.
+    */
    @After
    public void tearDown() {
       if (new File(panelXmlPath + ".bak").exists()) {
