@@ -22,8 +22,8 @@ package org.openremote.controller.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.openremote.controller.control.protocol.knx.GroupAddressTest;
-import org.openremote.controller.control.protocol.knx.KNXCommandBuilderTest;
+import org.openremote.controller.protocol.knx.GroupAddressTest;
+import org.openremote.controller.protocol.knx.KNXCommandBuilderTest;
 
 
 /**
