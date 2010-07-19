@@ -52,11 +52,10 @@ public class Strings
   {
     int value = b;
 
-    if (b < 0)
-      value = b & 0xFF;
-
-    return (value < 16 ? "0x0" + Integer.toHexString(value).toUpperCase()
-                       : "0x"  + Integer.toHexString(value).toUpperCase());
+    value &= 0xFF;
+    
+    return ( value < 16 ? "0x0" + Integer.toHexString(value).toUpperCase()
+                        : "0x"  + Integer.toHexString(value).toUpperCase());
   }
 
 
