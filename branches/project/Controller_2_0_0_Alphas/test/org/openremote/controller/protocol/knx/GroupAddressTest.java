@@ -36,6 +36,41 @@ public class GroupAddressTest
   {
     byte one = 0x00;
     byte two = 0x00;
+
+    Assert.assertTrue(GroupAddress.formatToMainMiddleSub(new byte[] { one, two }).equals("0/0/0"));
+
+    one = 0x00;
+    two = 0x01;
+
+    Assert.assertTrue(GroupAddress.formatToMainMiddleSub(new byte[] { one, two }).equals("0/0/1"));
+
+    one = 0x01;
+    two = 0x01;
+
+    Assert.assertTrue(GroupAddress.formatToMainMiddleSub(new byte[] { one, two }).equals("0/1/1"));
+  }
+
+  @Test public void testGroupAddressFormattingHibits()
+  {
+    byte one = 0;
+    byte two = -1;
+
+    String address = GroupAddress.formatToMainMiddleSub(new byte[] { one, two });
+
+    Assert.assertTrue(
+        "Was expecting 0/0/255, got '" + address + "'.",
+        address.equals("0/0/255")
+    );
+
+    one = -1;
+    two = -1;
+
+    address = GroupAddress.formatToMainMiddleSub(new byte[] { one, two });
+
+    Assert.assertTrue(
+        "Was expecting 31/7/255, got '" + address + "'.",
+        address.equals("31/7/255")
+    );
   }
 
 }
