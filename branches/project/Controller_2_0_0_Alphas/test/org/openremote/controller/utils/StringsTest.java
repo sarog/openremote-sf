@@ -31,6 +31,9 @@ import org.junit.Assert;
 public class StringsTest
 {
 
+  /**
+   * Test single digits from 1 to 9.
+   */
   @Test public void testSingleDigits()
   {
     byte[] digits = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -48,6 +51,9 @@ public class StringsTest
     }
   }
 
+  /**
+   * Test range from 10 to 15 (0x0A to 0x0F)
+   */
   @Test public void testHex()
   {
     byte A = 10;
@@ -74,6 +80,9 @@ public class StringsTest
   }
 
 
+  /**
+   * Test two digit hex values
+   */
   @Test public void testDoubleDigits()
   {
     byte a10 = 0x10;
@@ -97,6 +106,9 @@ public class StringsTest
   }
 
 
+  /**
+   * Test highest bit (sign handling) with negative values.
+   */
   @Test public void testHighBits()
   {
     byte a_1 = -1;
@@ -133,4 +145,13 @@ public class StringsTest
     );
   }
 
+  /**
+   * Test zero value
+   */
+  @Test public void testZero()
+  {
+    byte zero = 0;
+
+    Assert.assertTrue(Strings.byteToUnsignedHexString(zero).equals("0x00"));
+  }
 }
