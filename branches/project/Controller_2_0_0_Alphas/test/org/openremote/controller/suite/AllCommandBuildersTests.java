@@ -38,7 +38,6 @@ import org.openremote.controller.control.protocol.upnp.UPnPCommandBuilderTest;
  * @author Javen
  *
  */
-
 @RunWith(Suite.class)
 @SuiteClasses(
    {
@@ -47,7 +46,7 @@ import org.openremote.controller.control.protocol.upnp.UPnPCommandBuilderTest;
       IRCommandBuilderTest.class,
       TCPSocketCommandBuilderTest.class,
       X10CommandBuilderTest.class,
-      KNXCommandBuilderTest.class,
+      //KNXCommandBuilderTest.class,      // moved to KNXTests Suite
       UPnPCommandBuilderTest.class
    }
 )
