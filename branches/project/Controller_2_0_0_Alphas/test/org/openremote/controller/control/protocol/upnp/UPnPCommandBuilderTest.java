@@ -56,8 +56,7 @@ public class UPnPCommandBuilderTest
   /**
    * Test UPnP command parsing with arbitrary device and action properties.
    */
-  @Test
-  public void testUPnPCommandParsing()
+  @Test public void testUPnPCommandParsing()
   {
     Command cmd = getCommandDeviceAndAction("ABC", "ON");
 
