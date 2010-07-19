@@ -81,6 +81,26 @@ class GroupAddress
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
 
+  /**
+   * Formats a two byte group address into a common convention of main/middle/sub string
+   * (5/3/8 bits, respectively.
+   *
+   * @param address two byte array representing a KNX group address.
+   *
+   * @return
+   */
+  static String formatToMainMiddleSub(byte[] address)
+  {
+    int firstByte  = address[0];
+    int secondByte  = address[1];
+
+    String sub  = "" + (secondByte & 0xFF);
+    String mid  = "" + (firstByte & 0x07);
+    String main = "" + ((firstByte & 0xFF) >> 3);
+
+    return main + "/" + mid + "/" + sub;
+  }
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
@@ -131,7 +151,37 @@ class GroupAddress
     }
   }
 
+  GroupAddress(byte hibyte, byte lobyte)
+  {
+    this.hiByte = hibyte;
+    this.loByte = lobyte;
+  }
 
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  @Override public boolean equals(Object o)
+  {
+    if (o == null)
+      return false;
+
+    if (!o.getClass().equals(this.getClass()))
+      return false;
+
+    GroupAddress addr = (GroupAddress)o;
+
+    return addr.hiByte == this.hiByte && addr.loByte == this.loByte;
+  }
+
+  @Override public int hashCode()
+  {
+    int hash = hiByte;
+    hash = hash << 8;
+
+    return hash + loByte;
+  }
+
+  
   // Package-Private Instance Methods -------------------------------------------------------------
 
   /**
