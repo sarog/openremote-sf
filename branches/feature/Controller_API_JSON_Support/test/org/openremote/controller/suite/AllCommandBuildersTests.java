@@ -22,6 +22,7 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.openremote.controller.component.SensorBuilderTest;
 import org.openremote.controller.control.protocol.http.HttpGetCommandBuilderTest;
 import org.openremote.controller.control.protocol.infrared.IRCommandBuilderTest;
 import org.openremote.controller.control.protocol.knx.KNXCommandBuilderTest;
@@ -43,7 +44,8 @@ import org.openremote.controller.control.protocol.x10.X10CommandBuilderTest;
       IRCommandBuilderTest.class,
       TCPSocketCommandBuilderTest.class,
       X10CommandBuilderTest.class,
-      KNXCommandBuilderTest.class
+      KNXCommandBuilderTest.class,
+      SensorBuilderTest.class
    }
 )
 public class AllCommandBuildersTests {

@@ -28,7 +28,15 @@ import org.openremote.controller.utils.CommandUtil;
 
 
 /**
- * The Class HttpGetEventBuilder.
+ * Builds HTTP GET command from XML element.
+ * example:
+ * <pre>
+ * {@code 
+ * <command id="xxx" protocol="httpGet">
+ *      <property name="url" value="http://127.0.0.1:8080/xxx/light1_on" />
+ * </command>
+ * }
+ * </pre>
  *
  * @author Marcus 2009-4-26
  */

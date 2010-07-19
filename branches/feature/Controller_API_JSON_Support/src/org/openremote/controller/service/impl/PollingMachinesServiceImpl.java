@@ -21,20 +21,16 @@ package org.openremote.controller.service.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
-import org.openremote.controller.command.CommandFactory;
-import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.SensorBuilder;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.service.PollingMachinesService;
@@ -54,15 +50,15 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    private static Logger log = Logger.getLogger(PollingMachinesServiceImpl.class);
    private StatusCacheService statusCacheService;
    private RemoteActionXMLParser remoteActionXMLParser;
-   private CommandFactory commandFactory;
    private ControllerXMLListenSharingData controllerXMLListenSharingData;
    private Logger logger = Logger.getLogger(this.getClass().getName());
+   private SensorBuilder sensorBuilder;
    
    /**
     * {@inheritDoc}
     */
    @Override
-   public void initStatusCacheWithControllerXML(Document document, List<Sensor> sensors) {
+   public void initStatusCacheWithControllerXML(Document document) {
       List<Element> sensorElements = null;
       try {
          if (document == null) {
@@ -77,37 +73,20 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       
       if (sensorElements != null) {
          for (Element sensorElement : sensorElements) {
-            String sensorID = sensorElement.getAttributeValue("id");
-            Sensor sensor = new Sensor(Integer.parseInt(sensorID), 
-                  sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), 
-                  getStatusCommand(document, sensorElement),
-                  getStateMap(sensorElement));
-            sensors.add(sensor);
+            Sensor sensor = sensorBuilder.build(document, sensorElement);
             controllerXMLListenSharingData.addSensor(sensor);
-            statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "N/A");
+            statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), "N/A");
          }
       }
       
-   }
-
-   @SuppressWarnings("unchecked")
-   private Map<String, String> getStateMap(Element sensorElement) {
-      HashMap<String, String> stateMap = new HashMap<String, String>();
-      List<Element>childrenOfSensor = sensorElement.getChildren();
-      for (Element childOfSensor : childrenOfSensor) {
-        if ("state".equalsIgnoreCase(childOfSensor.getName())) {
-           stateMap.put(childOfSensor.getAttributeValue("name"), childOfSensor.getAttributeValue("value"));
-        }
-      }
-      return stateMap;
    }
 
    /**
     * {@inheritDoc}
     */
    @Override
-   public void startPollingMachineMultiThread(List<Sensor> sensors) {
-      for (Sensor sensor : sensors) {
+   public void startPollingMachineMultiThread() {
+      for (Sensor sensor : controllerXMLListenSharingData.getSensors()) {
          PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
          pollingMachineThread.start();
          nap(3);
@@ -133,29 +112,6 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       }
    }
    
-   @SuppressWarnings("unchecked")
-   private StatusCommand getStatusCommand(Document document, Element sensorElement) {
-      
-      List<Element>childrenOfSensor = sensorElement.getChildren();
-      String commandElementId = "";
-      for (Element childOfSensor:childrenOfSensor) {
-        if ("include".equalsIgnoreCase(childOfSensor.getName()) && "command".equalsIgnoreCase(childOfSensor.getAttributeValue("type"))) {
-           commandElementId = childOfSensor.getAttributeValue("ref");
-        }
-      }
-      if ("".equals(commandElementId)) {
-        return new NoStatusCommand();
-      }
-      Element commandElement = null;
-      if (document == null) {
-         commandElement = remoteActionXMLParser.queryElementFromXMLById(commandElementId);
-      } else {
-         commandElement = remoteActionXMLParser.queryElementFromXMLById(document, commandElementId);
-      }
-      StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(commandElement);
-      return statusCommand;
-   }
-   
    /** Sleep for several seconds */
    private void nap(long sec) {
       try {
@@ -173,12 +129,12 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       this.remoteActionXMLParser = remoteActionXMLParser;
    }
 
-   public void setCommandFactory(CommandFactory commandFactory) {
-      this.commandFactory = commandFactory;
-   }
-
    public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
       this.controllerXMLListenSharingData = controllerXMLListenSharingData;
+   }
+
+   public void setSensorBuilder(SensorBuilder sensorBuilder) {
+      this.sensorBuilder = sensorBuilder;
    }
    
 }

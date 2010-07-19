@@ -87,10 +87,10 @@
           class = "org.openremote.controller.command.RemoteActionXMLParser">
     </bean>
     
-  <!-- service for file system operation : upload, unzip etc. -->
-  <bean id = "fileService"
-        class = "org.openremote.controller.service.impl.FileServiceImpl">
-  </bean>
+	<!-- service for file system operation : upload, unzip etc. -->
+	<bean id = "fileService"
+	      class = "org.openremote.controller.service.impl.FileServiceImpl">
+	</bean>
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -119,6 +119,8 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
+    
+    <bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
 	
 	<!-- controller.xml change service -->
     <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
@@ -170,9 +172,9 @@
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
 
-  <!-- Universal Plug'n'Play Command Builder -->
-  <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
-        scope = "singleton" />
+	<!-- Universal Plug'n'Play Command Builder -->
+	<bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
+	      scope = "singleton" />
 
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
