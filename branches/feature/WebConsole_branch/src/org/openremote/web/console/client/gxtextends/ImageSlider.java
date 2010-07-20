@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.web.console.client.gxtextends;
 
 import org.openremote.web.console.client.event.ImageSliderEvent;
@@ -20,6 +39,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 
+/**
+ * The Class ImageSlider. {@link com.extjs.gxt.ui.client.widget.Slider}
+ */
 public class ImageSlider extends BoxComponent {
 
 
@@ -370,12 +392,21 @@ public class ImageSlider extends BoxComponent {
    }
 
    protected void moveThumb(int v) {
+     int trackLength = v + halfThumb;
      if (vertical) {
        thumb.el().setStyleAttribute("bottom", v + "px");
-       minTrackEl.setHeight(v);
+       if (trackLength > 0) {
+          minTrackEl.setHeight(trackLength);
+       } else {
+          minTrackEl.setHeight(1);
+       }
      } else {
        thumb.el().setLeft(v);
-       minTrackEl.setWidth(v);
+       if (trackLength > 0) {
+          minTrackEl.setWidth(trackLength);
+       } else {
+          minTrackEl.setWidth(1);
+       }
      }
    }
 
@@ -486,7 +517,8 @@ public class ImageSlider extends BoxComponent {
      
      if (vertical) {
         if (minImage != null) {
-           endEl.setStyleAttribute("background", "url(" + minImage + ") no-repeat scroll center bottom transparent");
+           endEl.setStyleAttribute("backgroundImage", "url()");
+           endEl.setStyleAttribute("paddingTop", "0px");
         }
         if (minTrackImage != null) {
            minTrackEl.setStyleAttribute("background", "url(" + minTrackImage + ") repeat-y scroll center 0 transparent");
@@ -501,14 +533,17 @@ public class ImageSlider extends BoxComponent {
            innerEl.setStyleAttribute("background", "url(" + maxTrackImage + ") repeat-y scroll center 0 transparent");
         }
         if (maxImage != null) {
-           setStyleAttribute("background", "url(" + maxImage + ") no-repeat scroll center 0 transparent");
+           setStyleAttribute("backgroundImage", "url()");
+           setStyleAttribute("paddingBottom", "0px");
         }
      } else {
         if (minImage != null) {
-           setStyleAttribute("background", "url(" + minImage + ") no-repeat scroll left center transparent");
+           setStyleAttribute("backgroundImage", "url()");
+           setStyleAttribute("paddingLeft", "0px");
         }
         if (maxImage != null) {
-           endEl.setStyleAttribute("background", "url(" + maxImage + ") no-repeat scroll right top transparent");
+           endEl.setStyleAttribute("backgroundImage", "url()");
+           endEl.setStyleAttribute("paddingRight", "0px");
         }
         if (maxTrackImage != null) {
            innerEl.setStyleAttribute("background", "url(" + maxTrackImage + ") repeat-x scroll 0 center transparent");
