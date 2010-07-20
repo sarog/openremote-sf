@@ -151,6 +151,13 @@ class GroupAddress
     }
   }
 
+  /**
+   * Constructs group address from a two-byte representation (as is usually found in common EMI
+   * frame, for instance).
+   *
+   * @param hibyte    the first byte (first octet) of the group address
+   * @param lobyte    the second byte (second octet) of the group address
+   */
   GroupAddress(byte hibyte, byte lobyte)
   {
     this.hiByte = hibyte;
@@ -160,6 +167,14 @@ class GroupAddress
 
   // Object Overrides -----------------------------------------------------------------------------
 
+
+  /**
+   * Compares the two-byte representation (KNX wire format) of two group addresses. Equal
+   * address values return true.
+   *
+   * @param o     group address to compare to
+   * @return      true if equal, false otherwise
+   */
   @Override public boolean equals(Object o)
   {
     if (o == null)
@@ -173,6 +188,9 @@ class GroupAddress
     return addr.hiByte == this.hiByte && addr.loByte == this.loByte;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override public int hashCode()
   {
     int hash = hiByte;
