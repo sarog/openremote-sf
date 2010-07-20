@@ -15,7 +15,6 @@ InitView = (function() {
   
   return function() {
     InitView.superClass.constructor.call(this);
-    
     var self = this;
     
     function initView() {

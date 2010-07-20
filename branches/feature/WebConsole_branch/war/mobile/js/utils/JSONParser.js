@@ -12,6 +12,7 @@ JSONParser = (function() {
    
    this.startParse = function() {
      recursiveParse(null, jsonData);
+     delegate.didParseFinished();
    };
    
    this.setDelegate = function(delegateParam) {

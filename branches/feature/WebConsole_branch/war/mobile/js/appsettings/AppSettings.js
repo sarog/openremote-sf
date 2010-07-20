@@ -67,6 +67,15 @@ AppSettings = (function(){
       }
   	};
   	
+  	// Following two methods are delegate methods should defined in UpdateController.js
+    this.didUpdateSuccess = function() {
+      delegate.didUpdateSuccess();
+    };
+    
+    this.didUpdateFail = function(error) {
+      delegate.didUpdateFail(error);
+    };
+  	
     // Private methods
     function init() {
       renderTemplate();

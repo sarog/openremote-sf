@@ -16,8 +16,11 @@ AppBoot = (function() {
     var self = this;
     
     this.didUpdateFinished = function() {
-      rootViewController.renderViews();
-      // TODO: if groups > 0 then initGroups.
+      if (RenderDataDB.getInstance().getGroups().length > 0) {
+        rootViewController.renderViews();
+      } else {
+        rootViewController.removeInitView();
+      }
     };
     
     // Following methods are delegate methods should defined in UpdateController.

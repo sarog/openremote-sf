@@ -29,6 +29,26 @@ RenderDataDB = (function() {
       return groups;
     };
     
+    this.getGroupByID = function(groupID) {
+      for (var index = 0; index < groups.length; index++) {
+        var tempGroup = groups[index];
+        if (tempGroup.id == groupID) {
+          return tempGroup;
+        }
+      }
+      return null;
+    };
+    
+    this.findScreenByID = function(screenID) {
+      for (var index = 0; index < screens.length; index++) {
+        var tempScreen = screens[index];
+        if (tempScreen.id == screenID) {
+          return tempScreen;
+        }
+      }
+      return null;
+    };
+    
   };
   
   return {
