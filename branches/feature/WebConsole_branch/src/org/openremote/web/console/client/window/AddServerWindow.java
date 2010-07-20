@@ -54,9 +54,10 @@ public class AddServerWindow extends FormWindow {
    private void addField() {
       TextField<String> serverText = new TextField<String>();
       serverText.setName(SERVER_URL);
-      serverText.setFieldLabel("Server URL(e.g.:'http://127.0.0.1:8080/controller')");
+      serverText.setFieldLabel("Server URL(e.g.:'127.0.0.1:8080/controller')");
       serverText.setAllowBlank(false);
-//      serverText.setRegex("(http|https)\://[a-zA-Z0-9\-\.]+(\.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*");
+      serverText.setRegex("[a-zA-Z0-9-.]+(.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9-._?,\'/\\\\+&amp;%$#=~])*");
+      serverText.getMessages().setRegexText("Should be a URL, just like 'localhost:8080/controller' ");
       form.add(serverText);
    }
    
@@ -73,7 +74,7 @@ public class AddServerWindow extends FormWindow {
             Map<String, String> attrMap = getAttrMap();
             String server = attrMap.get(SERVER_URL);
             
-            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(server));
+            fireEvent(SubmitEvent.SUBMIT, new SubmitEvent("http://" + server));
             hide();
          }
       });
