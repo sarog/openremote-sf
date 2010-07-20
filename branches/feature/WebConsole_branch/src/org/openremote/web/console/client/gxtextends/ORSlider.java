@@ -19,16 +19,16 @@
 */
 package org.openremote.web.console.client.gxtextends;
 
+import org.openremote.web.console.client.utils.ClientDataBase;
 import org.openremote.web.console.client.widget.ScreenSlider;
 
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.event.DragEvent;
-import com.extjs.gxt.ui.client.widget.Slider;
 
 /**
  * The Class ORSlider.
  */
-public class ORSlider extends Slider {
+public class ORSlider extends ImageSlider {
 
    private org.openremote.web.console.domain.Slider slider;
    
@@ -47,6 +47,22 @@ public class ORSlider extends Slider {
       if (slider.isPassive()) {
          setDraggable(false);
          setClickToChange(false);
+      }
+      String resourcePath = ClientDataBase.appSetting.getResourceRootPath();
+      if (slider.getMinImage() != null) {
+         setMinImage(resourcePath + slider.getMinImage().getSrc());
+      }
+      if (slider.getMinTrackImage() != null) {
+         setMinTrackImage(resourcePath + slider.getMinTrackImage().getSrc());
+      }
+      if (slider.getThumbImage() != null) {
+         setThumbImage(resourcePath + slider.getThumbImage().getSrc());
+      }
+      if (slider.getMaxTrackImage() != null) {
+         setMaxTrackImage(resourcePath + slider.getMaxTrackImage().getSrc());
+      }
+      if (slider.getMaxImage() != null) {
+         setMaxImage(resourcePath + slider.getMaxImage().getSrc());
       }
    }
    

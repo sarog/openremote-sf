@@ -14,6 +14,7 @@
     <link href="resources/images/OpenRemote.Logo.16x16.png" type="image/png" rel="icon"/>
     <link type="text/css" rel="stylesheet" href="resources/css/gxt-all.css" />
     <link type="text/css" rel="stylesheet" href="resources/css/webconsole.css" />
+    <link type="text/css" rel="stylesheet" href="resources/css/image-slider.css" />
 
     <title>OpenRemote Boss 2.0 WebConsole</title>
     
