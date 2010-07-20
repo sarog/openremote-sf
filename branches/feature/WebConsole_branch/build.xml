@@ -96,7 +96,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<!-- ==================================================================== -->
 	<target name="clean" description="Cleans this project">
 		<delete dir="${web-inf.dir}/classes" failonerror="false" />
-		<delete dir="war/modeler" failonerror="false" />
+		<delete dir="war/webcomsole" failonerror="false" />
 		<delete dir="${web-inf.dir}/lib" failonerror="false" />
 		<delete dir="${output.dir}"/>
 		<delete dir="${test.build.dir}"/>
@@ -123,7 +123,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		<echo message="--------------------------------------------------------------------" />
 		<echo message="" />
 		<mkdir dir="${web-inf.dir}/classes" />
-		<javac srcdir="${src.dir}" excludes="org/openremote/modeler/client/**" includes="**" encoding="utf-8" destdir="${web-inf.dir}/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="${src.dir}" excludes="org/openremote/webconsole/client/**" includes="**" encoding="utf-8" destdir="${web-inf.dir}/classes" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source">
 			<classpath refid="project.class.path"/>
 		</javac>
 		<copy todir="${web-inf.dir}/classes">
@@ -294,8 +294,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	              locale           ="${javadoc.locale}"
 	              defaultexcludes  = "yes"
 	              use              = "yes"
-	              header           = "OpenRemote Modeler API "
-	              doctitle         = "OpenRemote Modeler API Specification V2.0"
+	              header           = "OpenRemote WebConsole API "
+	              doctitle         = "OpenRemote WebConsole API Specification V2.0"
 	              nodeprecatedlist = "yes"
 			      classpathref     = "project.class.path" 
 	              sourcepath       = "./${src.dir}"
