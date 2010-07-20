@@ -8,15 +8,26 @@ Group = (function(){
     // For extend
     Group.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
+        
+    this.screens = [];
     
     this.didParse = function(jsonParser, nodeName, properties) {
-      
+      if (Constants.INCLUDE == nodeName && Constants.SCREEN == properties[Constants.TYPE]) {
+        var screenRefID = properties[Constants.REF];
+        var cachedScreen = RenderDataDB.getInstance().findScreenByID(screenRefID);
+        this.screens[this.screens.length] = cachedScreen;
+      } else if (nodeName == Constants.TAB_BAR) {
+        
+      }
     }
     
     // Private methods
     function init(jsonParser, properties) {
-      jsonParser.setDelegate(self);
       self.node_name = Constants.GROUP;
+      self.id = properties[Constants.ID];
+      self.name = properties[Constants.NAME];
+      
+      jsonParser.setDelegate(self);
     }
     
     // Init jobs

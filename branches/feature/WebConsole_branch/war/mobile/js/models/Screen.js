@@ -11,17 +11,19 @@ Screen = (function() {
     
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {
-      if (nodeName == "background") {
+      if (nodeName == Constants.BACKGROUND) {
         this.background = new Background(jsonParser, properties);
-      } else if (nodeName == "absolute") {
-      }
+      } else if (nodeName == Constants.ABSOLUTE) {
+      } else if (nodeName == Constants.GRID) {
+      } // else if (nodeName == Constants.GESTURE) {
+       //      }
     };
     
     // Private methods
     function init(jsonParser, properties) {
       self.node_name = Constants.SCREEN;
-      self.screenID = properties[Constants.ID];
-      self.screenName = properties[Constants.NAME];
+      self.id = properties[Constants.ID];
+      self.name = properties[Constants.NAME];
       self.layouts = [];
       self.background = null;
       

@@ -43,7 +43,7 @@ MessageUtils = (function(){
   			position: "top",
   			buttons: {
   			  "Settings": function() {
-  			    AppSettings.getInstance().show();
+  			    AppSettings.getInstance(AppBoot.getInstance()).show();
   			    $(this).dialog("close");
   				},
   				"Leave it": function() {

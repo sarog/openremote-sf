@@ -54,11 +54,16 @@ UpdateController = (function() {
     
     // Delegate methods of JSONParser    
     this.didParse = function(jsonParser, nodeName, properties) {
-      if (nodeName == "screen") {
+      if (nodeName == Constants.SCREEN) {
         RenderDataDB.getInstance().addScreen(new Screen(jsonParser, properties));
-      } else if (nodeName == "group") {
+      } else if (nodeName == Constants.GROUP) {
         RenderDataDB.getInstance().addGroup(new Group(jsonParser, properties));
       }
+    };
+    
+    this.didParseFinished = function() {
+      MessageUtils.hideLoading();
+      delegate.didUpdateSuccess();
     };
     
   }

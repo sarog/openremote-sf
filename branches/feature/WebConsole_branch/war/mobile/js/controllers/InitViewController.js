@@ -8,7 +8,6 @@ InitViewController = (function() {
   return function() {
     // For extend
     InitViewController.superClass.constructor.call(this);
-    
     var self = this;
     
     function initView() {
