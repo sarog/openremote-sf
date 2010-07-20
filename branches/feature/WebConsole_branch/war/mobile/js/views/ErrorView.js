@@ -20,7 +20,7 @@ ErrorView = (function(){
     // For extend
     ErrorView.superClass.constructor.call(this);
     
-    self = this;
+    var self = this;
     
     var title = "Error";
     var message = "Error message.";
