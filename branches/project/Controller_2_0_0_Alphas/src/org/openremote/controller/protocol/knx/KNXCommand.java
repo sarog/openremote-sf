@@ -457,9 +457,9 @@ abstract class KNXCommand implements Command
   }
 
   /**
-   * TODO
+   * Returns the application protocol data unit (APDU) associated with this command.
    * 
-   * @return
+   * @return  KNX APDU payload of this command
    */
   ApplicationProtocolDataUnit getAPDU()
   {
