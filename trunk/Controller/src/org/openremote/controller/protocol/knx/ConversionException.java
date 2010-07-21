@@ -18,27 +18,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.suite;
+package org.openremote.controller.protocol.knx;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-import org.openremote.controller.utils.ConfigFactoryTest;
-import org.openremote.controller.utils.MacrosIrDelayUtilTest;
-import org.openremote.controller.utils.RemoteActionXMLParserTest;
-import org.openremote.controller.utils.StringsTest;
-
-
-@RunWith(Suite.class)
-@SuiteClasses(
+/**
+ * Generic exception type to indicate conversion problems when attempting to translate KNX
+ * GroupValue Response data into KNX data point types.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
+class ConversionException extends Exception
 {
-   MacrosIrDelayUtilTest.class,
-   RemoteActionXMLParserTest.class,
-   ConfigFactoryTest.class,
-   StringsTest.class
-}
-)
-public class AllUtilTests
-{
-
+  /**
+   * Constructs a new exception with a given message.
+   *
+   * @param msg  human-readable error message
+   */
+  ConversionException(String msg)
+  {
+    super(msg);
+  }
 }

@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.control.protocol.upnp;
+package org.openremote.controller.protocol.upnp;
 
 
 import org.openremote.controller.command.Command;
@@ -56,8 +56,7 @@ public class UPnPCommandBuilderTest
   /**
    * Test UPnP command parsing with arbitrary device and action properties.
    */
-  @Test
-  public void testUPnPCommandParsing()
+  @Test public void testUPnPCommandParsing()
   {
     Command cmd = getCommandDeviceAndAction("ABC", "ON");
 

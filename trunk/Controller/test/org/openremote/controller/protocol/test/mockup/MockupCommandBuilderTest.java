@@ -1,4 +1,4 @@
-package org.openremote.controller.control.protocol.test.mockup;
+package org.openremote.controller.protocol.test.mockup;
 
 
 import junit.framework.Assert;
