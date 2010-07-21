@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -392,7 +393,49 @@ class ApplicationProtocolDataUnit
 
 
 
+
   // Package-Private Instance Methods ------------------------------------------------------------
+
+
+  /**
+   * Returns the actual data payload without application protocol control information (APCI) bits
+   * as a string value. The bytes in the payload are formatted as unsigned hex strings. An example
+   * output could look like:
+   *
+   * <pre>{@code
+   *
+   *   0x00 0x0F
+   *
+   * }</pre>
+   *
+   * @return APDU data payload formatted as a sequence of unsigned hex strings
+   */
+  String dataAsString()
+  {
+    int len = getDataLength();
+    byte[] data = datatype.getData();
+
+    // sanity check...
+
+    if (len != data.length)
+    {
+      log.error(
+          "APDU datalength does not match returned datatype data length: " +
+          len + " != " + data.length
+      );
+    }
+
+    StringBuffer buffer = new StringBuffer(256);
+
+    for (int offset = 0; offset < len && offset < data.length; ++offset)
+    {
+      buffer.append(Strings.byteToUnsignedHexString(data[offset]));
+      buffer.append(" ");
+    }
+
+    return buffer.toString().trim();
+  }
+
 
   /**
    * Returns the data length of the data type associated with this APDU.
