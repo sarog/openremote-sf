@@ -99,6 +99,13 @@ ScreenView = (function() {
         && self.screen.background != null && self.screen.background != undefined
         && self.screen.background.image != null && self.screen.background.image != undefined);
     }
+    
+    function createLayoutviews() {
+      //       for (LayoutModel *layout in screen.layouts) { 
+      //  LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
+      //  [self addSubview:layoutView];
+      // }
+    }
   
     function init() {
       self.screen = screenParam;
@@ -111,6 +118,7 @@ ScreenView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
       
       layoutBackground();
+      createLayoutviews();
     }
   
     init();

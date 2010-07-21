@@ -14,13 +14,16 @@ Screen = (function() {
       if (nodeName == Constants.BACKGROUND) {
         this.background = new Background(jsonParser, properties);
       } else if (nodeName == Constants.ABSOLUTE) {
+        var absoluteLayoutContainer = new AbsoluteLayoutModel(jsonParser, properties);
+        self.layouts[self.layouts.length] = absoluteLayoutContainer;
       } else if (nodeName == Constants.GRID) {
-      } // else if (nodeName == Constants.GESTURE) {
-       //      }
+        var gridLayoutContainer = new GridLayoutModel(jsonParser, properties);
+        self.layouts[self.layouts.length] = gridLayoutContainer;
+      }
     };
     
     // Private methods
-    function init(jsonParser, properties) {
+    function init() {
       self.node_name = Constants.SCREEN;
       self.id = properties[Constants.ID];
       self.name = properties[Constants.NAME];
@@ -31,7 +34,7 @@ Screen = (function() {
     }
     
     // Init jobs
-    init(jsonParser, properties);
+    init();
     
   }
   

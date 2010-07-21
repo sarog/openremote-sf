@@ -23,8 +23,17 @@
      IMAGE : "image",
      SRC : "@src",
      
+     LAYOUT_MODEL : "layoutModel",
+     
      ABSOLUTE : "absolute",
+     LEFT : "@left",
+     TOP : "@top",
+     WIDTH : "@width",
+     HEIGHT : "@height",
+     
      GRID : "grid",
+     ROWS : "@rows",
+     COLS : "@cols",
      
      GROUP : "group",
      
