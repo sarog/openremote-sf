@@ -65,6 +65,15 @@ interface DataType
    */
   final static byte DATATYPE_BOOLEAN_ZERO = 0x00;
 
+  /**
+   * TODO
+   */
+  final static DataType EMPTY = new DataType()
+  {
+    public int getDataLength() { return 1; }
+    public byte[] getData()    { return new byte[] { 0x00 }; }
+
+  };
 
   /**
    * Returns the data length (payload) represented by this datatype. Data length is at minimum
@@ -192,7 +201,7 @@ interface DataType
     /**
      * DPT 1.014 - DPT_InputSource. Value 0 = FIXED, Value 1 = CALCULATED, functional blocks only.
      */
-    FIXED(DATATYPE_BOOLEAN_ZERO),         CALCULATED(DATATYPE_BOOLEAN_ONE); // DPT 1.014 - DPT_InputSource
+    FIXED(DATATYPE_BOOLEAN_ZERO),         CALCULATED(DATATYPE_BOOLEAN_ONE); 
 
 
     // Enum Instance Fields -----------------------------------------------------------------------
