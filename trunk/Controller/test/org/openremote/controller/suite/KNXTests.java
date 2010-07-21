@@ -22,23 +22,24 @@ package org.openremote.controller.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-import org.openremote.controller.utils.ConfigFactoryTest;
-import org.openremote.controller.utils.MacrosIrDelayUtilTest;
-import org.openremote.controller.utils.RemoteActionXMLParserTest;
-import org.openremote.controller.utils.StringsTest;
+import org.openremote.controller.protocol.knx.GroupAddressTest;
+import org.openremote.controller.protocol.knx.KNXCommandBuilderTest;
 
 
+/**
+ * All KNX tests aggregated here.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
 @RunWith(Suite.class)
-@SuiteClasses(
-{
-   MacrosIrDelayUtilTest.class,
-   RemoteActionXMLParserTest.class,
-   ConfigFactoryTest.class,
-   StringsTest.class
-}
+@Suite.SuiteClasses(
+   {
+       KNXCommandBuilderTest.class,
+       GroupAddressTest.class
+   }
 )
-public class AllUtilTests
+public class KNXTests
 {
 
 }
+
