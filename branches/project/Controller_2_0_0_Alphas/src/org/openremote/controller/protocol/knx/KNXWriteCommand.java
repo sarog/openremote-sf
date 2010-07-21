@@ -20,23 +20,25 @@
  */
 package org.openremote.controller.protocol.knx;
 
+import org.openremote.controller.command.ExecutableCommand;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
-
 /**
- * TODO
+ * Write command representing KNX Group Value Write service. This class implements the
+ * {@link ExecutableCommand} interface and therefore acts as an entry point in
+ * controller/protocol SPI.
  */
 class KNXWriteCommand extends KNXCommand implements ExecutableCommand
 {
-    
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * Lookup map from user defined command strings in the designer (from which they end up
+   * into controller.xml) to type safe APDUs for KNX CEMI frames.
+   */
   private final static Map<String, ApplicationProtocolDataUnit> booleanCommandLookup =
       new ConcurrentHashMap<String, ApplicationProtocolDataUnit>();
 
@@ -46,7 +48,6 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
    *   if new valid values for command names are added (in 'commandTranslations'), the
    *   unit tests should be added accordingly into KNXCommandBuilderTest
    */
-
   static
   {
     booleanCommandLookup.put("ON", ApplicationProtocolDataUnit.WRITE_SWITCH_ON);
@@ -54,19 +55,42 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
   }
 
 
+  /**
+   * Factory method for creating new KNX write command instances based on user configured
+   * command name. The command name must be one of the pre-specified command names in this class.
+   *
+   * @param name      User-configured command name used in tools and configuration files. This
+   *                  name is mapped to a typed KNX Application Protocol Data Unit instance.
+   * @param mgr       Connection manager reference this command will use for transmission.
+   * @param address   Destination group address for this command.
+   * 
+   * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
+   *          be matched to any command
+   */
   static KNXWriteCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
   {
     name = name.trim().toUpperCase();
 
     ApplicationProtocolDataUnit apdu = booleanCommandLookup.get(name);
 
+    if (apdu == null)
+      return null;
+    
     return new KNXWriteCommand(mgr, address, apdu);
   }
 
 
 
   // Constructors ---------------------------------------------------------------------------------
-  
+
+  /**
+   * Constructs a new KNXWriteCommand instance with a given connection manager, group address and
+   * application protocol data unit.
+   *
+   * @param connectionManager   connection manager used to send this KNX command
+   * @param groupAddress        destination group address for this command
+   * @param apdu                APDU payload for this command
+   */
   private KNXWriteCommand(KNXConnectionManager connectionManager, GroupAddress groupAddress,
                           ApplicationProtocolDataUnit apdu)
   {
@@ -76,9 +100,14 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
 
   // Implements ExecutableCommand -----------------------------------------------------------------
 
+  /**
+   * {@inheritDoc}
+   */
   public void send()
   {
-    super.send(this);
+    // delegate to super class...
+
+    super.write(this);
   }
     
 
