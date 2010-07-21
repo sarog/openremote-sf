@@ -25,8 +25,8 @@
 <!--
  | JavaBean Bindings
  |
- | Author: Dan Cong
  | Author: Juha Lindfors
+ | Author: Dan Cong
  +-->
 <beans xmlns = "http://www.springframework.org/schema/beans"
        xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
@@ -131,10 +131,10 @@
 		        <prop key = "ir">irCommandBuilder</prop>
 		        <prop key = "knx">knxCommandBuilder</prop>
 		        <prop key = "x10">x10CommandBuilder</prop>
-           	<prop key = "tcpSocket">tcpSocketCommandBuilder</prop>
+           	<prop key = "socket">tcpSocketCommandBuilder</prop>
            	<prop key = "telnet">telnetCommandBuilder</prop>
-           	<prop key = "httpGet">httpGetCommandBuilder</prop>
-            <prop key = "upnp">upnpCommandBuilder</prop>
+           	<prop key = "http">httpGetCommandBuilder</prop>
+            <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "mockup">mockupCommandBuilder</prop>
 		    </props>
 		</property>
@@ -171,9 +171,10 @@
 	      scope = "prototype" />
 
   <!-- Universal Plug'n'Play Command Builder -->
+  <!--
   <bean id = "upnpCommandBuilder" class = "org.openremote.controller.protocol.upnp.UPnPCommandBuilder"
         scope = "singleton" />
-
+   -->
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
 	      
