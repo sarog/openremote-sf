@@ -41,17 +41,17 @@ abstract class KNXCommand implements Command
 
   // Constants ------------------------------------------------------------------------------------
 
-  private final static int CEMI_MESSAGECODE_OFFSET      = 0;
-  private final static int CEMI_ADDITIONALINFO_OFFSET   = 1;
-  private final static int CEMI_CONTROL1_OFFSET         = 2;
-  private final static int CEMI_CONTROL2_OFFSET         = 3;
-  private final static int CEMI_SOURCEADDR_HIGH_OFFSET  = 4;
-  private final static int CEMI_SOURCEADDR_LOW_OFFSET   = 5;
-  private final static int CEMI_DESTADDR_HIGH_OFFSET    = 6;
-  private final static int CEMI_DESTADDR_LOW_OFFSET     = 7;
-  private final static int CEMI_DATALEN_OFFSET          = 8;
-  private final static int CEMI_TPCI_APCI_OFFSET        = 9;
-  private final static int CEMI_APCI_DATA_OFFSET        = 10;
+  final static int CEMI_MESSAGECODE_OFFSET      = 0;
+  final static int CEMI_ADDITIONALINFO_OFFSET   = 1;
+  final static int CEMI_CONTROL1_OFFSET         = 2;
+  final static int CEMI_CONTROL2_OFFSET         = 3;
+  final static int CEMI_SOURCEADDR_HIGH_OFFSET  = 4;
+  final static int CEMI_SOURCEADDR_LOW_OFFSET   = 5;
+  final static int CEMI_DESTADDR_HIGH_OFFSET    = 6;
+  final static int CEMI_DESTADDR_LOW_OFFSET     = 7;
+  final static int CEMI_DATALEN_OFFSET          = 8;
+  final static int CEMI_TPCI_APCI_OFFSET        = 9;
+  final static int CEMI_APCI_DATA_OFFSET        = 10;
 
 
 
