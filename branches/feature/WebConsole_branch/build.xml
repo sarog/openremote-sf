@@ -346,8 +346,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
               <include name="**/*-m.js" />
           </fileset>
       </concat>
-      <concat destfile="${war.dir}/mobile/app.js" encoding="UTF-8" >     <!-- 合并 压缩后的js   destfile指定合并后文件 -->
-          <fileset dir="${war.dir}/mobile/compress">      <!-- 将要合并的文件 include进来 -->
+      <concat destfile="${war.dir}/mobile/app.js" encoding="UTF-8" >
+          <fileset dir="${war.dir}/mobile/compress">
               <include name="*.js" />
           </fileset>
       </concat>
