@@ -194,7 +194,7 @@ public class X10CommandBuilder implements CommandBuilder
     }
 
 
-    // Translate the command string to a type safe KNXCommandType enum...
+    // Translate the command string to a type safe X10CommandType enum...
 
     X10CommandType commandType = null;
 
