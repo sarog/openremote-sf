@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.knx;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,22 @@ import java.util.List;
  */
 abstract class KNXCommand implements Command
 {
+
+  // Constants ------------------------------------------------------------------------------------
+
+  private final static int CEMI_MESSAGECODE_OFFSET      = 0;
+  private final static int CEMI_ADDITIONALINFO_OFFSET   = 1;
+  private final static int CEMI_CONTROL1_OFFSET         = 2;
+  private final static int CEMI_CONTROL2_OFFSET         = 3;
+  private final static int CEMI_SOURCEADDR_HIGH_OFFSET  = 4;
+  private final static int CEMI_SOURCEADDR_LOW_OFFSET   = 5;
+  private final static int CEMI_DESTADDR_HIGH_OFFSET    = 6;
+  private final static int CEMI_DESTADDR_LOW_OFFSET     = 7;
+  private final static int CEMI_DATALEN_OFFSET          = 8;
+  private final static int CEMI_TPCI_APCI_OFFSET        = 9;
+  private final static int CEMI_APCI_DATA_OFFSET        = 10;
+
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -81,7 +98,14 @@ abstract class KNXCommand implements Command
   }
 
 
+  
   // Private Instance Fields ----------------------------------------------------------------------
+
+
+  /**
+   * Command payload (APDU).
+   */
+  private ApplicationProtocolDataUnit apdu;
 
   /**
    * Destination address for this command.
@@ -93,10 +117,6 @@ abstract class KNXCommand implements Command
    */
   private KNXConnectionManager connectionManager;
 
-  /**
-   * Command payload (APDU).
-   */
-  private ApplicationProtocolDataUnit apdu;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -119,6 +139,51 @@ abstract class KNXCommand implements Command
 
 
 
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * Returns a string representation of this command. Expected output is:
+   *
+   * <pre>{@code
+   *
+   * [FRAME] <CEMI Message Code> <source address> -> <dest. address> Data: <unsigned hex bytes>
+   *
+   * }</pre>
+   *
+   * @return
+   */
+  @Override public String toString()
+  {
+    Byte[] frame = getCEMIFrame();
+
+    StringBuffer buffer = new StringBuffer(2048);
+
+    String msgCode = DataLink.findServicePrimitiveByMessageCode(frame[CEMI_MESSAGECODE_OFFSET]);
+
+    String sourceAddr = IndividualAddress.formatToAreaLineDevice(
+        new byte[] { frame[CEMI_SOURCEADDR_HIGH_OFFSET], frame[CEMI_SOURCEADDR_LOW_OFFSET] }
+    );
+
+    String destAddr = GroupAddress.formatToMainMiddleSub(
+        new byte[] { frame[CEMI_DESTADDR_HIGH_OFFSET], frame[CEMI_DESTADDR_LOW_OFFSET] }
+    );
+
+    String data = apdu.dataAsString();
+
+    buffer
+        .append("[FRAME] ")
+        .append(msgCode)
+        .append(" ")
+        .append(sourceAddr)
+        .append(" -> ")
+        .append(destAddr)
+        .append(" Data: ")
+        .append(data);
+
+    return buffer.toString();
+  }
+
+
   // Package-Private Instance Methods -------------------------------------------------------------
 
   /**
@@ -128,24 +193,48 @@ abstract class KNXCommand implements Command
    *
    * @throws ConnectionException  if connection fails for any reason
    */
-  void send(KNXWriteCommand command) throws ConnectionException
+  void write(KNXWriteCommand command)
   {
+    try
+    {
       KNXConnection connection = connectionManager.getConnection();
       connection.send(command);
+    }
+    catch (ConnectionException e)
+    {
+      log.error("Unable to send " + this + " : " + e.getMessage(), e);
+    }
   }
 
 
   /**
-   * TODO
+   * Relay a read command to an open KNX/IP connection.
    *
-   * @param command
-   * @return
-   * @throws ConnectionException
+   * TODO : call semantics on return value
+   *
+   * @param command   KNX read command
+   *
+   * @return  Returns the application protocol data unit (APDU) for a Group Value Read Response
+   *          frame. This frame contains the response value from the device. <P>
+   *
+   *          NOTE: may return <code>null</code> in case there's a connection exception or the
+   *          read response is not available from the device yet.
+   *
+   * @throws ConnectionException    if connection fails for any reason
    */
-  ApplicationProtocolDataUnit read(KNXReadCommand command) throws ConnectionException
+  ApplicationProtocolDataUnit read(KNXReadCommand command)
   {
-    KNXConnection connection = connectionManager.getConnection();
-    return connection.read(command);
+    try
+    {
+      KNXConnection connection = connectionManager.getConnection();
+      return connection.read(command);
+    }
+    catch (ConnectionException e)
+    {
+      log.error("Unable to send " + this + " : " + e.getMessage(), e);
+
+      return null;
+    }
   }
   
 
@@ -255,10 +344,10 @@ abstract class KNXCommand implements Command
    *
    * }</pre>
    *
+   * @return returns a Common EMI frame representing this command as a byte array
    */
   Byte[] getCEMIFrame()
   {
-    final int LINK_LAYER_DATA_REQUEST   = 0x11;       // Message Code, L_Data.req primitive
     final int NO_ADDITIONAL_INFORMATION = 0x00;       // Additional info length = 0
     final int SOURCE_ADDRESS_HIBYTE     = 0x00;       // Source address will be filled in by
     final int SOURCE_ADDRESS_LOBYTE     = 0x00;       // KNX gateway/router
@@ -301,10 +390,10 @@ abstract class KNXCommand implements Command
 
     List<Byte> cemi = new ArrayList<Byte>(11);
 
-    cemi.add((byte)LINK_LAYER_DATA_REQUEST);              // Message Code
-    cemi.add((byte)NO_ADDITIONAL_INFORMATION);            // Additional Info Length
+    cemi.add(DataLink.Service.DATA.getRequestMessageCode());  // Message Code
+    cemi.add((byte)NO_ADDITIONAL_INFORMATION);                // Additional Info Length
 
-    cemi.add(                                             // Control Field 1
+    cemi.add(                                                 // Control Field 1
         (byte)(STANDARD_FRAME_TYPE +
               REPEAT_FRAME +
               SYSTEM_BROADCAST +
@@ -312,21 +401,21 @@ abstract class KNXCommand implements Command
               REQUEST_ACK)
     );
 
-    cemi.add(                                             // Control Field 2
+    cemi.add(                                                 // Control Field 2
         (byte)(GROUP_ADDRESS +
                HOP_COUNT +
                NON_EXTENDED_FRAME_FORMAT)
     );
 
-    cemi.add((byte)SOURCE_ADDRESS_HIBYTE);                // Source address
+    cemi.add((byte)SOURCE_ADDRESS_HIBYTE);                    // Source address
     cemi.add((byte)SOURCE_ADDRESS_LOBYTE);
 
-    cemi.add(destinationAddress[0]);                      // Destination address
+    cemi.add(destinationAddress[0]);                          // Destination address
     cemi.add(destinationAddress[1]);
 
-    cemi.add((byte)apduDataLength);                       // Data Length
-    cemi.add(protocolDataUnit[0]);                        // TPCI + APCI high bits
-    cemi.add(protocolDataUnit[1]);                        // APCI low bits + data
+    cemi.add((byte)apduDataLength);                           // Data Length
+    cemi.add(protocolDataUnit[0]);                            // TPCI + APCI high bits
+    cemi.add(protocolDataUnit[1]);                            // APCI low bits + data
 
     if (apduDataLength > 1)
     {
@@ -334,7 +423,10 @@ abstract class KNXCommand implements Command
 
       if (apduDataLength != protocolDataUnit.length - 1)
       {
-        throw new Error(); // TODO
+        throw new Error(
+            "APDU reported data length does not match the actual data length : " +
+            apduDataLength + " != " + (protocolDataUnit.length - 1)
+        );
       }
 
       for (int pduIndex = 2; pduIndex < protocolDataUnit.length; ++pduIndex)
@@ -346,5 +438,37 @@ abstract class KNXCommand implements Command
     Byte[] cemiBytes = new Byte[cemi.size()];
 
     return cemi.toArray(cemiBytes);
+  }
+
+  /**
+   * Returns a KNX destination group address associated with this command.
+   * 
+   * @return  destination group address of this command
+   */
+  GroupAddress getAddress()
+  {
+    /*
+     * IMPLEMENTATION NOTE:
+     *
+     *  - GroupAddress is an immutable instance so it is ok to return from here and still maintain
+     *    immutability of KNX Command
+     */
+    return address;
+  }
+
+  /**
+   * TODO
+   * 
+   * @return
+   */
+  ApplicationProtocolDataUnit getAPDU()
+  {
+    /*
+     * IMPLEMENTATION NOTE:
+     *
+     *  - APDU is an immutable instance so it is ok to return from here and still maintain
+     *    immutability of KNX Command
+     */
+    return apdu;
   }
 }
