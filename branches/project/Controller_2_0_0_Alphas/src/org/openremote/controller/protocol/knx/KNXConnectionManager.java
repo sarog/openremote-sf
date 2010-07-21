@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Strings;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -30,6 +31,9 @@ import tuwien.auto.calimero.knxnetip.KNXConnectionClosedException;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
+import tuwien.auto.calimero.KNXListener;
+import tuwien.auto.calimero.FrameEvent;
+import tuwien.auto.calimero.CloseEvent;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -47,6 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -200,6 +205,13 @@ class KNXConnectionManager
    * creation should then use this same client IP address as part of the client-side HPAI header.
    */
   private InetAddress clientIP = null;
+
+
+  /**
+   * TODO
+   */
+  private KNXBusListener busListener = null;
+
 
 
   // Protected Instance Methods -------------------------------------------------------------------
@@ -706,6 +718,11 @@ class KNXConnectionManager
           "Connection '" + connection.getName() + "' created " +
           "(Using NAT = " + CONNECTION_USE_NAT + ")."
       );
+
+      busListener = new KNXBusListener(connection);
+
+      connection.addConnectionListener(busListener);
+
     }
     catch (KNXException knx)
     {
@@ -855,7 +872,151 @@ class KNXConnectionManager
   }
 
 
-  // Nested Classes and Interfaces ----------------------------------------------------------------
+  // Inner Classes --------------------------------------------------------------------------------
+
+
+  /**
+   * TODO
+   *
+   */
+  private class KNXBusListener implements KNXListener
+  {
+
+    private KNXnetIPTunnel connection = null;
+    private Map<GroupAddress, ApplicationProtocolDataUnit> internalState =
+        new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit>(1000);
+
+
+
+    private KNXBusListener(KNXnetIPTunnel connection)
+    {
+      this.connection = connection;
+
+    }
+
+    public void frameReceived(FrameEvent event)
+    {
+      try
+      {
+        log.debug("RECEIVED: " + event.getFrame());
+
+        byte[] frame = event.getFrame().toByteArray();
+
+        if (DataLink.isDataIndicateFrame(frame[KNXCommand.CEMI_MESSAGECODE_OFFSET]))
+        {
+          GroupAddress address = new GroupAddress(
+              frame[KNXCommand.CEMI_DESTADDR_HIGH_OFFSET],
+              frame[KNXCommand.CEMI_DESTADDR_LOW_OFFSET]
+          );
+
+          byte dataLen    = frame[KNXCommand.CEMI_DATALEN_OFFSET];
+          byte apciHi     = frame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
+          byte apciLoData = frame[KNXCommand.CEMI_APCI_DATA_OFFSET];
+
+          // sanity checks -- is a response?
+
+          if (!ApplicationProtocolDataUnit.isGroupValueResponse(new byte[] { apciHi, apciLoData }))
+          {
+            log.debug("Ignoring frame: " + event.getFrame());
+
+            // TODO : should handle write requests coming to gateway, e.g. motion sensors
+
+            return;
+          }
+          
+          ApplicationProtocolDataUnit apdu = null;
+
+          if (dataLen == 1)
+          {
+            apdu = ApplicationProtocolDataUnit.createGroupValueResponse
+            (
+                new byte[] { apciHi, apciLoData }
+            );
+          }
+
+          else
+          {
+            byte[] data = new byte[dataLen];
+            System.arraycopy(frame, 11, data, 0, data.length);
+
+            apdu = ApplicationProtocolDataUnit.createGroupValueResponse(data);
+          }
+
+          log.debug("Adding to internal state " + event.getFrame());
+
+          internalState.put(address, apdu);
+        }
+
+/*
+        StringBuffer buffer = new StringBuffer(1024);
+
+        String msgCode = Strings.byteToUnsignedHexString(frame[0]);
+        String addInfo = Strings.byteToUnsignedHexString(frame[1]);
+        String cntrol1 = Strings.byteToUnsignedHexString(frame[2]);
+        String cntrol2 = Strings.byteToUnsignedHexString(frame[3]);
+
+        String sourceAddr = IndividualAddress.formatToAreaLineDevice(new byte[] { frame[4], frame[5]});
+        String destAddr = GroupAddress.formatToMainMiddleSub(new byte[] { frame[6], frame[7]});
+
+        int dataLen = frame[8];
+        String[] data = new String[dataLen + 1];
+
+        for (int offset = 9; (offset < offset + dataLen) && offset < frame.length; ++offset)
+        {
+          data[offset - 9] = Strings.byteToUnsignedHexString(frame[offset]);
+        }
+
+        String sourceAddress =
+              (sourceAddr.length() == 5) ? "      " + sourceAddr + "      "
+            : (sourceAddr.length() == 6) ? "     " + sourceAddr + "      "
+            : (sourceAddr.length() == 7) ? "     " + sourceAddr + "     "
+            : (sourceAddr.length() == 8) ? "    " + sourceAddr + "     "
+                                         : "    " + sourceAddr + "    ";
+
+        String destAddress =
+            (destAddr.length() == 5) ? "      " + destAddr + "      "
+          : (destAddr.length() == 6) ? "     " + destAddr + "      "
+          : (destAddr.length() == 7) ? "     " + destAddr + "     "
+                                     : "    " + destAddr + "     ";
+
+        buffer
+            .append("[FRAME] ").append(DataLink.findServicePrimitiveByMessageCode(frame[0]))
+            .append(" ").append(sourceAddr).append(" -> ").append(destAddr).append(" Data: ");
+
+        for (String b : data)
+        {
+          buffer.append(b).append(" ");
+        }
+
+        buffer
+            .append("\n\n")
+            .append("+--------+--------+--------+--------+--------+--------+--------+--------+---...\n")
+            .append("|msg.code|add.info|control1|control2| source address  |  dest. address  |\n")
+            .append("+--------+--------+--------+--------+-----------------+--------+--------+---...\n")
+            .append("|  ").append(msgCode).append("  ")
+            .append("|  ").append(addInfo).append("  ")
+            .append("|  ").append(cntrol1).append("  ")
+            .append("|  ").append(cntrol2).append("  ")
+            .append("|").append(sourceAddress)
+            .append("|").append(destAddress).append("|\n")
+            .append("+--------+--------+--------+--------+--------+--------+--------+--------+---...\n");
+
+        System.out.println(buffer);
+*/
+      }
+      catch (Throwable t)
+      {
+        t.printStackTrace();
+
+        // TODO
+      }
+    }
+
+    public void connectionClosed(CloseEvent event)
+    {
+      this.connection.removeConnectionListener(this);
+    }
+  }
 
 
   /**
@@ -868,27 +1029,29 @@ class KNXConnectionManager
 
     private CalimeroConnection(KNXnetIPTunnel connection)
     {
-
-System.out.println("--------------- NEW KNX CONNECTION CREATED");
-      
       // TODO : implement reconnect policies
       
       this.connection = connection;
+
     }
 
 
     public ApplicationProtocolDataUnit read(KNXReadCommand command)
     {
+      this.sendInternal(command);
 
-      // TODO
-
-      return null;
+      return busListener.internalState.get(command.getAddress());
     }
 
     public void send(KNXWriteCommand command)
     {
+      this.sendInternal(command);
+    }
 
 
+
+    private void sendInternal(KNXCommand command)
+    {
       CEMILData commonEMI = null;
 
       try
@@ -903,23 +1066,17 @@ System.out.println("--------------- NEW KNX CONNECTION CREATED");
         
         commonEMI = new CEMILData(cemiFrame, 0);
 
-        log.info(printCommonEMIFrame(cemiFrame));
-      }
-      catch (KNXFormatException exception)
-      {
-        log.error("Error in Common EMI frame: " + exception.getMessage(), exception);
-
-        return;
-      }
-      
-      try
-      {
-        log.debug("sending...");
+        log.info(command);
 
         connection.send(commonEMI, KNXnetIPTunnel.NONBLOCKING);
 
         log.info("sent!");
       }
+      catch (KNXFormatException exception)
+      {
+        log.error("Error in Common EMI frame: " + exception.getMessage(), exception);
+      }
+      
       catch (KNXTimeoutException exception)
       {
         log.warn(
@@ -1012,8 +1169,8 @@ System.out.println("--------------- NEW KNX CONNECTION CREATED");
   }
 
 
-  // Private Methods ------------------------------------------------------------------------------
 
+/*
   private String printCommonEMIFrame(byte[] frame)
   {
     StringBuilder str = new StringBuilder(1024);
@@ -1040,9 +1197,9 @@ System.out.println("--------------- NEW KNX CONNECTION CREATED");
     else
       return "0x" + Integer.toHexString(hex).toUpperCase();
   }
+*/
 
 
-  // Inner Classes --------------------------------------------------------------------------------
 
   /**
    * Implements shutdown hook for the KNX connection manager. Main reason is that the IP KNX
