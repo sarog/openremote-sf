@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
+import org.openremote.controller.protocol.x10.X10Command;
+import org.openremote.controller.protocol.http.HttpGetCommand;
 
 
 /**
@@ -44,7 +46,7 @@ public class MacrosIrDelayUtilTest {
          add(new IRCommand());
          add(new DelayCommand());
          add(new IRCommand());
-         //add(new KNXCommand());
+         add(new HttpGetCommand());
       }
    };
 
