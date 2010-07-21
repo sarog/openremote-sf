@@ -20,26 +20,35 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.command.StatusCommand;
 import org.apache.log4j.Logger;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
- * TODO
+ * Read command representing KNX Group Value Read service. This class implements the
+ * {@link StatusCommand} interface and therefore acts as an entry point in controller/protocol SPI.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 class KNXReadCommand extends KNXCommand implements StatusCommand
 {
 
+
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * KNX logger. Uses a common category for all KNX related logging.
+   */
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
+  /**
+   * Lookup map from user defined command strings in the designer (from which they end up
+   * into controller.xml) to type safe APDUs for KNX CEMI frames.
+   */
   private final static Map<String, ApplicationProtocolDataUnit> booleanCommandLookup =
       new ConcurrentHashMap<String, ApplicationProtocolDataUnit>();
 
@@ -49,19 +58,33 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
    *   if new valid values for command names are added (in 'commandTranslations'), the
    *   unit tests should be added accordingly into KNXCommandBuilderTest
    */
-
   static
   {
     booleanCommandLookup.put("STATUS", ApplicationProtocolDataUnit.READ_SWITCH_STATE);
   }
 
 
+  /**
+   * Factory method for creating new KNX read command instances based on user configured
+   * command name. The command name must be one of the pre-specified command names in this class.
+   *
+   * @param name      User-configured command name used in tools and configuration files. This
+   *                  name is mapped to a typed KNX Application Protocol Data Unit instance.
+   * @param mgr       Connection manager reference this command will use for transmission.
+   * @param address   Destination group address for this command.
+   *
+   * @return          a new KNX read command instance, or <code>null</code> if the lookup name
+   *                  could not be matched to any command
+   */
   static KNXReadCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
   {
     name = name.trim().toUpperCase();
 
     ApplicationProtocolDataUnit apdu = booleanCommandLookup.get(name);
 
+    if (apdu == null)
+      return null;
+    
     return new KNXReadCommand(mgr, address, apdu);
   }
 
@@ -69,6 +92,14 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Constructs a new KNXReadCommand instance with a given connection manager, group address
+   * and protocol data unit.
+   *
+   * @param connectionManager   connection manager used to send this KNX command
+   * @param groupAddress        destination group address for this command
+   * @param apdu                APDU payload for this command
+   */
   private KNXReadCommand(KNXConnectionManager connectionManager, GroupAddress groupAddress,
                          ApplicationProtocolDataUnit apdu)
   {
@@ -78,23 +109,59 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
 
   // Implements StatusCommand ---------------------------------------------------------------------
 
+  /**
+   * TODO
+   *
+   * @param sensorType
+   *
+   * @param statusMap
+   * @return
+   */
   public String read(EnumSensorType sensorType, Map<String, String> statusMap)
   {
-System.out.println("++++++++++    Polling Device Status..........");
 
-    // TODO
+    log.debug("Polling device status for " + this);
 
-    try
+    ApplicationProtocolDataUnit responseAPDU = responseAPDU = super.read(this);
+
+    if (responseAPDU == null)
     {
-      ApplicationProtocolDataUnit apdu = super.read(this);
-
-      return apdu.toString(); // TODO
-    }
-    catch (ConnectionException e)
-    {
-      return "";    // TODO
+        return "";      // TODO : check how caller handles invalid return values
     }
 
+    ApplicationProtocolDataUnit.DataPointType dpt = getAPDU().getDataPointType();
+
+    if (dpt == ApplicationProtocolDataUnit.DataPointType.SWITCH)
+    {
+      try
+      {
+        int booleanValue = responseAPDU.convertToBooleanDataType();
+
+        DataType datatype = dpt.getEncodingForValue(booleanValue);
+
+        if (datatype == DataType.Boolean.ON)
+        {
+          return "on";
+        }
+        else
+        {
+          return "off";
+        }
+      }
+      catch (ConversionException e)
+      {
+        log.error(
+            "Cannot convert the frame payload (" + responseAPDU.dataAsString() +
+            ") to SWITCH datatype.", e
+        );
+
+        return "";    // TODO : check how caller handles invalid return types
+      }
+    }
+
+    log.warn("Unrecognized datatype. This implementation cannot handle " + dpt);
+
+    return null;    // TODO : check how caller handles invalid return types
   }
 
 }
