@@ -32,8 +32,8 @@ import android.os.Message;
 public class ORUnBlockConnection extends ORConnection {
 
    public ORUnBlockConnection(final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url,
-         ORConnectionDelegate delegateParam) {
-      super(context, httpMethod, isNeedHttpBasicAuth, url, delegateParam);
+         ORConnectionDelegate delegateParam, boolean isUseSSL) {
+      super(context, httpMethod, isNeedHttpBasicAuth, url, delegateParam, isUseSSL);
       
    }
    

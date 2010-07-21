@@ -23,4 +23,6 @@
     <string name="setting">Setting</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>
+    <string name="ssl">SSL:</string>
+    <string name="ssl_port">Port:</string>
 </resources>

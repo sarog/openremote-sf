@@ -21,7 +21,9 @@
 package org.openremote.android.console.net;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -29,6 +31,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -61,10 +64,10 @@ public class ORConnection {
    public static final int ERROR = 0;
    
    /** 
-    * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> with url for caller,<br />
+    * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> and param <b>isUseSSLfor</b> with url caller,<br />
     * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
     */
-   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
+   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam, boolean isUseSSL) {
       initHandler(context);
       delegate = delegateParam;
       this.context = context;
@@ -77,7 +80,15 @@ public class ORConnection {
       } else if (ORHttpMethod.GET.equals(httpMethod)) {
          httpRequest = new HttpGet(url);
       }
-      
+      if (isUseSSL) {
+         try {
+            URL uri = new URL(url);
+            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+            httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+         } catch (MalformedURLException e) {
+            Log.e("ORConnection", "Create SSL URL fail:" + url);
+         }
+      }
       if (httpRequest == null) {
          Log.e("ORConnection", "Create HttpRequest fail:" + url);
          return;
@@ -89,6 +100,10 @@ public class ORConnection {
       execute();
    }
 
+   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
+      this(context, httpMethod, isNeedHttpBasicAuth, url, delegateParam, false);
+   }
+   
    protected void initHandler(final Context context) {
       handler = new Handler() {
          @Override

@@ -59,10 +59,13 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    public boolean sendCommandRequest(String commandType) {
-      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel
-//            .getCurrentServer(getContext())
-            .getCurrentSecuredServer(getContext())
-            + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+      boolean isUseSSL = AppSettingsModel.isUseSSL(getContext());
+      String currentServer = AppSettingsModel.getCurrentServer(getContext());
+      if (isUseSSL) {
+         currentServer = AppSettingsModel.convertToSecuredServer(currentServer, AppSettingsModel.getSSLPort(getContext()));
+      }
+      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, currentServer
+            + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this, isUseSSL);
       return true;
    }
 

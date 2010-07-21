@@ -34,15 +34,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -106,12 +109,14 @@ public class AppSettingsActivity extends GenericActivity {
       
       appSettingsView.addView(createCacheText());
       appSettingsView.addView(createClearImageCacheButton());
+      appSettingsView.addView(createSSLLayout());
       scroll.addView(appSettingsView);
       
       mainLayout.addView(scroll);
       mainLayout.addView(createDoneAndCancelLayout());
       
       setContentView(mainLayout);
+      initSSLState();
       addOnclickListenerOnDoneButton();
       addOnclickListenerOnCancelButton();
    }
@@ -153,7 +158,39 @@ public class AppSettingsActivity extends GenericActivity {
       LinearLayout saveAndCancelLayout = (LinearLayout)inflater.inflate(R.layout.bottom_button_bar, null);
       return saveAndCancelLayout;
    }
+   
+   private LinearLayout createSSLLayout() {
+      LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
+      LinearLayout sslLayout = (LinearLayout)inflater.inflate(R.layout.ssl_field_view, null);
+      
+      return sslLayout;
+   }
 
+   private void initSSLState() {
+      ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
+      sslBtn.setChecked(AppSettingsModel.isUseSSL(this));
+      sslBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+               AppSettingsModel.setUseSSL(AppSettingsActivity.this, true);
+            } else {
+               AppSettingsModel.setUseSSL(AppSettingsActivity.this, false);
+            }
+         }
+      });
+      
+      EditText sslPortText = (EditText)findViewById(R.id.ssl_port);
+      sslPortText.setText("" + AppSettingsModel.getSSLPort(this));
+      sslPortText.setOnKeyListener(new OnKeyListener() {
+         public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+               AppSettingsModel.setSSLPort(AppSettingsActivity.this, Integer.valueOf(((EditText)v).getText().toString()));
+            }
+            return false;
+         }
+      });
+      
+   }
    /**
     * 
     */

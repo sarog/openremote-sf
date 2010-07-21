@@ -45,6 +45,9 @@ public class AppSettingsModel implements Serializable {
    private static final String CURRENT_SERVER = "currentServer";
    private static final String AUTO_MODE = "autoMode";
    private static final String CURRENT_PANEL_IDENTITY = "currentPanelIdentity";
+   private static final String USE_SSL = "useSSL";
+   private static final String SSL_PORT = "sslPort";
+   public static final int DEFAULT_SSL_PORT = 8443;
    
    private AppSettingsModel() {
    }
@@ -53,16 +56,15 @@ public class AppSettingsModel implements Serializable {
       return context.getSharedPreferences(APP_SETTINGS, 0).getString(CURRENT_SERVER, "");
    }
    
-   public static String getCurrentSecuredServer(Context context) {
-      String server = getCurrentServer(context);
-      if (server.indexOf("http") != -1) {
-         server = server.replaceFirst("http", "https");
+   public static String convertToSecuredServer(String server, int sslPort) {
+      if (server.indexOf("http:") != -1) {
+         server = server.replaceFirst("http:", "https:");
       }
       if (server.indexOf(":") != -1) {
-         server = server.replaceFirst("\\:\\d+", ":" + Constants.SECURED_HTTP_PORT);
+         server = server.replaceFirst("\\:\\d+", ":" + sslPort);
       }
       Log.i("SECURE", server);
-      return getCurrentServer(context);
+      return server;
    }
    
    public static void setCurrentServer(Context context, String currentServer) {
@@ -99,6 +101,26 @@ public class AppSettingsModel implements Serializable {
    
    public static String getCustomServers(Context context) {
       return context.getSharedPreferences(CUSTOM_SERVERS, 0).getString(CUSTOM_SERVERS, "");
+   }
+   
+   public static boolean isUseSSL(Context context) {
+      return context.getSharedPreferences(APP_SETTINGS, 0).getBoolean(USE_SSL, false);
+   }
+   
+   public static void setUseSSL(Context context, boolean isUseSSL) {
+      SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
+      editor.putBoolean(USE_SSL, isUseSSL);
+      editor.commit();
+   }
+   
+   public static int getSSLPort(Context context) {
+      return context.getSharedPreferences(APP_SETTINGS, 0).getInt(SSL_PORT, DEFAULT_SSL_PORT);
+   }
+   
+   public static void setSSLPort(Context context, int sslPort) {
+      SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
+      editor.putInt(SSL_PORT, sslPort);
+      editor.commit();
    }
    
    public static ArrayList<String> getAutoServers() {
