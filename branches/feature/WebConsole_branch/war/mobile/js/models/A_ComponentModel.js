@@ -1,0 +1,18 @@
+/**
+ * This class is for building component models depending on jsonParser, nodeName and properties.
+ * auther: handy.wang 2010-07-22
+ */
+ComponentModel = (function(){
+  return function() {}
+})();
+
+ComponentModel.build = function(jsonParser, nodeName, properties) {
+  switch(nodeName) {
+    case Constants.LABEL :
+      return new BaseModel(jsonParser, properties);//new Label(jsonParser, properties);
+    case Constants.IMAGE :
+      return new Image(jsonParser, properties);
+    default:
+      return new BaseModel(jsonParser, properties);//Control.build(jsonParser, nodeName, properties);
+  }
+};

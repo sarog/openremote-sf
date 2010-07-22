@@ -10,8 +10,7 @@ PaginationView = (function() {
      "background-color":"gray",
      "color":"#FF0000",
      "width":"100%",
-     "height":"100%",
-     "position":"absolute"
+     "height":"100%"
    };
   
   return function(screenViewParam, delegateParam) {
@@ -32,7 +31,6 @@ PaginationView = (function() {
         "id" : "screenViewContainer" + UUID,
         css : {
           "backgroundColor" : "black",
-          "position" : "relative",
           "width" : "100%",
           "height" : "90%"
         }
@@ -85,7 +83,6 @@ PaginationView = (function() {
         css : {
           // "background" : "url(./mobile/images/error_title_bg.jpg) repeat-x",
           "backgroundColor" : "#477db6",
-          "position" : "relative",
           "width" : "100%",
           "height" : "10%"
         }

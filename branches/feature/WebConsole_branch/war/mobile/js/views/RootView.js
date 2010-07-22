@@ -9,8 +9,7 @@ RootView = (function() {
      "background-color":"white",
      "color":"#FF0000",
      "width":"100%",
-     "height":"100%",
-     "position":"absolute"
+     "height":"100%"
    };
   // var rootView = null;
   
@@ -36,14 +35,7 @@ RootView = (function() {
     
   }
   
-  return RootView;// {
-   //    getInstance:function() {
-   //      if (rootView == null) {
-   //        rootView = new RootView();
-   //      }
-   //      return rootView;
-   //    }
-   //  };
+  return RootView;
   
 })();
 
