@@ -8,9 +8,11 @@ AbsoluteLayoutModel = (function() {
     // For extend
     AbsoluteLayoutModel.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
+    self.componentModel = null;
     
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {
+      self.componentModel = ComponentModel.build(jsonParser, nodeName, properties);
     };
     
     // Private methods
@@ -30,4 +32,4 @@ AbsoluteLayoutModel = (function() {
   
 })();
 
-ClassUtils.extend(AbsoluteLayoutModel, LayoutModel);
+ClassUtils.extend(AbsoluteLayoutModel, BaseModel);

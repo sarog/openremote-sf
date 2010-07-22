@@ -34,6 +34,11 @@
      GRID : "grid",
      ROWS : "@rows",
      COLS : "@cols",
+     GRID_CELL : "cell",
+     GRID_CELL_X : "@x",
+     GRID_CELL_Y : "@y",
+     GRID_CELL_ROWSPAN : "@rowspan",
+     GRID_CELL_COLSPAN : "@colspan",
      
      GROUP : "group",
      

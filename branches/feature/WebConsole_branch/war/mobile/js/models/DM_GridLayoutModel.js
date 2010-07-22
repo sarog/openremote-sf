@@ -11,6 +11,10 @@ GridLayoutModel = (function() {
     
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {
+      if (nodeName == Constants.GRID_CELL) {
+        var gridCell = new GridCell(jsonParser, properties);
+        self.cells[self.cells.length] = gridCell;
+      }
     };
     
     // Private methods
@@ -33,4 +37,4 @@ GridLayoutModel = (function() {
   
 })();
 
-ClassUtils.extend(GridLayoutModel, LayoutModel);
+ClassUtils.extend(GridLayoutModel, BaseModel);
