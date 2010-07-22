@@ -69,7 +69,8 @@ public class RESTBaseService {
    }
    
    protected Response unAuthorizedResponse() {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
+      return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate",
+            "Basic realm=\"OPENREMOTE_Beehive\"").build();
    }
    
    /*
