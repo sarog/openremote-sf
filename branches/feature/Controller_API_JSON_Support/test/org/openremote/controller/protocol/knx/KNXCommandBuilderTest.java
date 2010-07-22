@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.control.protocol.knx;
+package org.openremote.controller.protocol.knx;
 
 import static junit.framework.Assert.assertTrue;
 import org.jdom.Element;
@@ -58,7 +58,7 @@ public class KNXCommandBuilderTest
   {
     Command cmd = getCommand("ON", "1/1/1");
 
-    //assertTrue(cmd instanceof KNXWriteCommand);
+    assertTrue(cmd instanceof KNXWriteCommand);
   }
 
   /**
@@ -69,15 +69,15 @@ public class KNXCommandBuilderTest
   {
     Command cmd1 = getCommand("on", "1/1/1");
 
-    //assertTrue(cmd1 instanceof KNXWriteCommand);
+    assertTrue(cmd1 instanceof KNXWriteCommand);
 
     Command cmd2 = getCommand("On", "1/1/1");
 
-    //assertTrue(cmd2 instanceof KNXWriteCommand);
+    assertTrue(cmd2 instanceof KNXWriteCommand);
 
     Command cmd3 = getCommand("oN", "1/1/1");
 
-    //assertTrue(cmd3 instanceof KNXWriteCommand);
+    assertTrue(cmd3 instanceof KNXWriteCommand);
   }
 
 
@@ -88,7 +88,7 @@ public class KNXCommandBuilderTest
   {
     Command cmd = getCommand("OFF", "1/1/1");
 
-    //assertTrue(cmd instanceof KNXWriteCommand);
+    assertTrue(cmd instanceof KNXWriteCommand);
   }
 
   /**
@@ -99,15 +99,15 @@ public class KNXCommandBuilderTest
   {
     Command cmd1 = getCommand("off", "1/1/1");
 
-    //assertTrue(cmd1 instanceof KNXWriteCommand);
+    assertTrue(cmd1 instanceof KNXWriteCommand);
 
     Command cmd2 = getCommand("Off", "1/1/1");
 
-    //assertTrue(cmd2 instanceof KNXWriteCommand);
+    assertTrue(cmd2 instanceof KNXWriteCommand);
 
     Command cmd3 = getCommand("oFf", "1/1/1");
 
-    //assertTrue(cmd3 instanceof KNXWriteCommand);
+    assertTrue(cmd3 instanceof KNXWriteCommand);
   }
 
 
@@ -118,7 +118,7 @@ public class KNXCommandBuilderTest
   @Test public void testKNXStatus()
   {
     Command cmd = getCommand("STATUS", "1/1/1");
-    //assertTrue(cmd instanceof KNXReadCommand);
+    assertTrue(cmd instanceof KNXReadCommand);
   }
 
   /**
@@ -128,13 +128,13 @@ public class KNXCommandBuilderTest
   @Test public void testKNXStatusMixedCase()
   {
     Command cmd1 = getCommand("status", "1/1/1");
-    //assertTrue(cmd1 instanceof KNXReadCommand);
+    assertTrue(cmd1 instanceof KNXReadCommand);
 
     Command cmd2 = getCommand("Status", "1/1/1");
-    //assertTrue(cmd2 instanceof KNXReadCommand);
+    assertTrue(cmd2 instanceof KNXReadCommand);
 
     Command cmd3 = getCommand("STatus", "1/1/1");
-    //assertTrue(cmd3 instanceof KNXReadCommand);
+    assertTrue(cmd3 instanceof KNXReadCommand);
   }
 
   /**
@@ -162,7 +162,7 @@ public class KNXCommandBuilderTest
   @Test public void testKNXSuperfluousProperties()
   {
     Command cmd = getCommandWithExtraProperties("on", "1/1/1") ;
-    //assertTrue(cmd instanceof KNXWriteCommand);
+    assertTrue(cmd instanceof KNXWriteCommand);
   }
 
   /**
@@ -191,7 +191,7 @@ public class KNXCommandBuilderTest
   @Test public void testKNXWithArbitraryPropertyOrder()
   {
     Command cmd = getCommandArbitraryPropertyOrder("on", "1/1/1");
-    //assertTrue(cmd instanceof KNXCommand);
+    assertTrue(cmd instanceof KNXCommand);
   }
 
 

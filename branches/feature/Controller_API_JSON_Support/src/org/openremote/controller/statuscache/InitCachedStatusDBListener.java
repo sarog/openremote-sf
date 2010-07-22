@@ -47,12 +47,12 @@ public class InitCachedStatusDBListener extends ApplicationObjectSupport impleme
       try {
          pollingMachinesService.initStatusCacheWithControllerXML(null);
       } catch (ControllerException e) {
-         logger.error("Failed to init statusCache with controller.xml ." + e.getMessage());
+         logger.error("Failed to init statusCache with controller.xml ." + e.getMessage(), e);
       }
       try {
          pollingMachinesService.startPollingMachineMultiThread();
       } catch (ControllerException e) {
-         logger.error("Failed to start polling multiThread ." + e.getMessage());
+         logger.error("Failed to start polling multiThread ." + e.getMessage(), e);
       }
    }
    

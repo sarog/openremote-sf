@@ -21,45 +21,61 @@
 package org.openremote.controller.protocol.x10;
 
 /**
- * Enumeration of supported X10 commands that can be send over the power line.
+ * Enumeration of supported X10 commands that can be sent over the power line.
  * 
  * Right now supports ON, OFF and ALL UNITS OFF.
  *
  * @author Jerome Velociter
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public enum X10CommandType {
+public enum X10CommandType
+{
 
-   /**
-    * Switches on the target unit
-    */
-   SWITCH_ON(new String[] { "ON" }),
+  /**
+   * Switches on the target unit
+   */
+  SWITCH_ON(new String[] { "ON" }),
 
-   /**
-    * Switches off the target unit
-    */
-   SWITCH_OFF(new String[] { "OFF" }),
+  /**
+   * Switches off the target unit
+   */
+  SWITCH_OFF(new String[] { "OFF" }),
 
-   /**
-    * Switches off all units within the house code
-    */
-   ALL_UNITS_OFF(new String[] { "ALL_OFF", "ALL_UNITS_OFF" });
+  /**
+   * Switches off all units within the house code
+   */
+  ALL_UNITS_OFF(new String[] { "ALL_OFF", "ALL_UNITS_OFF",
+                               "ALL OFF", "ALL UNITS OFF" });
 
-   private String[] commandTranslations = null;
 
-   private X10CommandType(String[] commandTranslations) {
-      this.commandTranslations = commandTranslations;
-   }
+  // Enum Fields ----------------------------------------------------------------------------------
 
-   /**
-    * @return true if the passed command is equal to this command, false otherwise
-    */
-   boolean isEqual(String command) {
-      for (String translation : commandTranslations) {
-         if (translation.equalsIgnoreCase(command)) {
-            return true;
-         }
+  private String[] commandTranslations = null;
+
+
+  // Enum Constructors ----------------------------------------------------------------------------
+
+  private X10CommandType(String[] commandTranslations)
+  {
+    this.commandTranslations = commandTranslations;
+  }
+
+
+  // Enum Methods ---------------------------------------------------------------------------------
+
+  /**
+   * @return true if the passed command is equal to this command, false otherwise
+   */
+  boolean isEqual(String command)
+  {
+    for (String translation : commandTranslations)
+    {
+      if (translation.equalsIgnoreCase(command))
+      {
+        return true;
       }
-      return false;
-   }
+    }
+
+    return false;
+  }
 }
