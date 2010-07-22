@@ -20,13 +20,13 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.jdom.Element;
-import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
+
+import java.util.List;
 
 
 /**
@@ -49,10 +49,13 @@ import org.openremote.controller.exception.NoSuchCommandException;
  *
  * KNX group address values should follow the established convention of three level addressing
  * with a forward slash as separator character for the digits. The valid values for command
- * property are implemented in {@link KNXCommandType} -- command values can be localized.
+ * property are implemented in {@link KNXReadCommand} and {@link KNXWriteCommand} classes --
+ * command values can be localized.
  *
  * @see org.openremote.controller.command.CommandBuilder
- * @see KNXCommandType
+ * @see KNXCommand
+ * @see KNXReadCommand
+ * @see KNXWriteCommand
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -195,7 +198,7 @@ public class KNXCommandBuilder implements CommandBuilder
    *
    * Additional properties not listed here are ignored.
    *
-   * @see KNXCommand
+   * @see KNXWriteCommand
    *
    * @throws NoSuchCommandException
    *            if the KNX command instance cannot be constructed from the XML snippet
@@ -210,14 +213,12 @@ public class KNXCommandBuilder implements CommandBuilder
      * 
      * TODO : DPT to be added. Modify class javadoc with this change.
      *
-     * TODO : should attempt to validate group address values defensively
-     *
      * TODO : could use JAXB instead JDOM since its included in JDK
      *
      * TODO : NoSuchCommandException should be a checked exception
      */
 
-    String groupAddress = null;
+    String groupAddressString = null;
     String commandAsString = null;
 
     // Get the list of properties from XML...
@@ -231,7 +232,7 @@ public class KNXCommandBuilder implements CommandBuilder
 
       if (KNX_XMLPROPERTY_GROUPADDRESS.equalsIgnoreCase(knxPropertyName))
       {
-        groupAddress = knxPropertyValue;
+        groupAddressString = knxPropertyValue;
       }
       else if (KNX_XMLPROPERTY_COMMAND.equalsIgnoreCase(knxPropertyName))
       {
@@ -250,7 +251,7 @@ public class KNXCommandBuilder implements CommandBuilder
 
     // Sanity check on mandatory properties 'command' and 'groupAddress'...
 
-    if (groupAddress == null || "".equals(groupAddress))
+    if (groupAddressString == null || "".equals(groupAddressString))
     {
       throw new NoSuchCommandException(
           "KNX command must have a '" + KNX_XMLPROPERTY_GROUPADDRESS + "' property."
@@ -265,35 +266,28 @@ public class KNXCommandBuilder implements CommandBuilder
     }
 
 
-    // Translate the command string to a type safe KNXCommandType enum...
+    // Attempt to build GroupAddress instance...
 
-    KNXCommandType knxCommand = null;
+    GroupAddress groupAddress = null;
 
-    if (KNXCommandType.SWITCH_ON.isEqual(commandAsString))
+    try
     {
-      knxCommand = KNXCommandType.SWITCH_ON;
+      groupAddress = new GroupAddress(groupAddressString.trim());
     }
-    else if (KNXCommandType.SWITCH_OFF.isEqual(commandAsString))
+    catch (InvalidGroupAddressException e)
     {
-      knxCommand = KNXCommandType.SWITCH_OFF;
-    }
-    else if (KNXCommandType.STATUS.isEqual(commandAsString))
-    {
-      knxCommand = KNXCommandType.STATUS;
-    }
-    else
-    {
-      throw new NoSuchCommandException("Unknown command '" + commandAsString + "'.");
+      throw new NoSuchCommandException(e.getMessage(), e);
     }
 
 
-    // Parsing done...
+    // Translate the command string to a type safe KNX Command types...
 
-    Command command = new KNXCommand(connectionManager, groupAddress, knxCommand);
-    
-    log.info("Created KNX Command " + knxCommand + " for group address '" + groupAddress + "'");
+    Command cmd = KNXCommand.createCommand(commandAsString, connectionManager, groupAddress);
 
-    return command;
+    log.info("Created KNX Command " + cmd + " for group address '" + groupAddress + "'");
+
+    return cmd;
+
   }
 
 

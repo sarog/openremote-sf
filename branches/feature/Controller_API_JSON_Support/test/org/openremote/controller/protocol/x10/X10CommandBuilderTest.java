@@ -18,10 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.control.protocol.x10;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+package org.openremote.controller.protocol.x10;
 
 import static junit.framework.Assert.assertTrue;
 import org.jdom.Element;
@@ -32,7 +29,6 @@ import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.x10.X10Command;
 import org.openremote.controller.protocol.x10.X10CommandBuilder;
-import org.openremote.controller.protocol.x10.X10CommandType;
 
 /**
  * Basic unit tests for parsing XML elements in

@@ -21,12 +21,8 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.component.control.Control;
-
-import tuwien.auto.calimero.GroupAddress;
+import org.openremote.controller.utils.Strings;
 import tuwien.auto.calimero.cemi.CEMILData;
-import tuwien.auto.calimero.datapoint.Datapoint;
-import tuwien.auto.calimero.datapoint.StateDP;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
 import tuwien.auto.calimero.exception.KNXTimeoutException;
@@ -35,12 +31,9 @@ import tuwien.auto.calimero.knxnetip.KNXConnectionClosedException;
 import tuwien.auto.calimero.knxnetip.KNXnetIPTunnel;
 import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
 import tuwien.auto.calimero.knxnetip.util.HPAI;
-import tuwien.auto.calimero.link.KNXNetworkLink;
-import tuwien.auto.calimero.link.KNXNetworkLinkIP;
-import tuwien.auto.calimero.link.medium.TPSettings;
-import tuwien.auto.calimero.process.ProcessCommunicator;
-import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
-import tuwien.auto.calimero.process.ProcessListener;
+import tuwien.auto.calimero.KNXListener;
+import tuwien.auto.calimero.FrameEvent;
+import tuwien.auto.calimero.CloseEvent;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -58,6 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -211,6 +205,13 @@ class KNXConnectionManager
    * creation should then use this same client IP address as part of the client-side HPAI header.
    */
   private InetAddress clientIP = null;
+
+
+  /**
+   * TODO
+   */
+  private KNXBusListener busListener = null;
+
 
 
   // Protected Instance Methods -------------------------------------------------------------------
@@ -717,6 +718,11 @@ class KNXConnectionManager
           "Connection '" + connection.getName() + "' created " +
           "(Using NAT = " + CONNECTION_USE_NAT + ")."
       );
+
+      busListener = new KNXBusListener(connection);
+
+      connection.addConnectionListener(busListener);
+
     }
     catch (KNXException knx)
     {
@@ -866,7 +872,151 @@ class KNXConnectionManager
   }
 
 
-  // Nested Classes and Interfaces ----------------------------------------------------------------
+  // Inner Classes --------------------------------------------------------------------------------
+
+
+  /**
+   * TODO
+   *
+   */
+  private class KNXBusListener implements KNXListener
+  {
+
+    private KNXnetIPTunnel connection = null;
+    private Map<GroupAddress, ApplicationProtocolDataUnit> internalState =
+        new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit>(1000);
+
+
+
+    private KNXBusListener(KNXnetIPTunnel connection)
+    {
+      this.connection = connection;
+
+    }
+
+    public void frameReceived(FrameEvent event)
+    {
+      try
+      {
+        log.debug("RECEIVED: " + event.getFrame());
+
+        byte[] frame = event.getFrame().toByteArray();
+
+        if (DataLink.isDataIndicateFrame(frame[KNXCommand.CEMI_MESSAGECODE_OFFSET]))
+        {
+          GroupAddress address = new GroupAddress(
+              frame[KNXCommand.CEMI_DESTADDR_HIGH_OFFSET],
+              frame[KNXCommand.CEMI_DESTADDR_LOW_OFFSET]
+          );
+
+          byte dataLen    = frame[KNXCommand.CEMI_DATALEN_OFFSET];
+          byte apciHi     = frame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
+          byte apciLoData = frame[KNXCommand.CEMI_APCI_DATA_OFFSET];
+
+          // sanity checks -- is a response?
+
+          if (!ApplicationProtocolDataUnit.isGroupValueResponse(new byte[] { apciHi, apciLoData }))
+          {
+            log.debug("Ignoring frame: " + event.getFrame());
+
+            // TODO : should handle write requests coming to gateway, e.g. motion sensors
+
+            return;
+          }
+          
+          ApplicationProtocolDataUnit apdu = null;
+
+          if (dataLen == 1)
+          {
+            apdu = ApplicationProtocolDataUnit.createGroupValueResponse
+            (
+                new byte[] { apciHi, apciLoData }
+            );
+          }
+
+          else
+          {
+            byte[] data = new byte[dataLen];
+            System.arraycopy(frame, 11, data, 0, data.length);
+
+            apdu = ApplicationProtocolDataUnit.createGroupValueResponse(data);
+          }
+
+          log.debug("Adding to internal state " + event.getFrame());
+
+          internalState.put(address, apdu);
+        }
+
+/*
+        StringBuffer buffer = new StringBuffer(1024);
+
+        String msgCode = Strings.byteToUnsignedHexString(frame[0]);
+        String addInfo = Strings.byteToUnsignedHexString(frame[1]);
+        String cntrol1 = Strings.byteToUnsignedHexString(frame[2]);
+        String cntrol2 = Strings.byteToUnsignedHexString(frame[3]);
+
+        String sourceAddr = IndividualAddress.formatToAreaLineDevice(new byte[] { frame[4], frame[5]});
+        String destAddr = GroupAddress.formatToMainMiddleSub(new byte[] { frame[6], frame[7]});
+
+        int dataLen = frame[8];
+        String[] data = new String[dataLen + 1];
+
+        for (int offset = 9; (offset < offset + dataLen) && offset < frame.length; ++offset)
+        {
+          data[offset - 9] = Strings.byteToUnsignedHexString(frame[offset]);
+        }
+
+        String sourceAddress =
+              (sourceAddr.length() == 5) ? "      " + sourceAddr + "      "
+            : (sourceAddr.length() == 6) ? "     " + sourceAddr + "      "
+            : (sourceAddr.length() == 7) ? "     " + sourceAddr + "     "
+            : (sourceAddr.length() == 8) ? "    " + sourceAddr + "     "
+                                         : "    " + sourceAddr + "    ";
+
+        String destAddress =
+            (destAddr.length() == 5) ? "      " + destAddr + "      "
+          : (destAddr.length() == 6) ? "     " + destAddr + "      "
+          : (destAddr.length() == 7) ? "     " + destAddr + "     "
+                                     : "    " + destAddr + "     ";
+
+        buffer
+            .append("[FRAME] ").append(DataLink.findServicePrimitiveByMessageCode(frame[0]))
+            .append(" ").append(sourceAddr).append(" -> ").append(destAddr).append(" Data: ");
+
+        for (String b : data)
+        {
+          buffer.append(b).append(" ");
+        }
+
+        buffer
+            .append("\n\n")
+            .append("+--------+--------+--------+--------+--------+--------+--------+--------+---...\n")
+            .append("|msg.code|add.info|control1|control2| source address  |  dest. address  |\n")
+            .append("+--------+--------+--------+--------+-----------------+--------+--------+---...\n")
+            .append("|  ").append(msgCode).append("  ")
+            .append("|  ").append(addInfo).append("  ")
+            .append("|  ").append(cntrol1).append("  ")
+            .append("|  ").append(cntrol2).append("  ")
+            .append("|").append(sourceAddress)
+            .append("|").append(destAddress).append("|\n")
+            .append("+--------+--------+--------+--------+--------+--------+--------+--------+---...\n");
+
+        System.out.println(buffer);
+*/
+      }
+      catch (Throwable t)
+      {
+        t.printStackTrace();
+
+        // TODO
+      }
+    }
+
+    public void connectionClosed(CloseEvent event)
+    {
+      this.connection.removeConnectionListener(this);
+    }
+  }
 
 
   /**
@@ -874,492 +1024,153 @@ class KNXConnectionManager
    */
   private class CalimeroConnection implements KNXConnection
   {
-    /** The connection. */
     private KNXnetIPTunnel connection = null;
-    /** The ProcessCommunicator. */
-    private ProcessCommunicator pc; 
+    //private ProcessCommunicator pc;
 
     private CalimeroConnection(KNXnetIPTunnel connection)
     {
       // TODO : implement reconnect policies
       
       this.connection = connection;
+
     }
 
-    public void send(String groupAddress, KNXCommandType command)
+
+    public ApplicationProtocolDataUnit read(KNXReadCommand command)
     {
-      // KNX Addressing on the common EMI wireformat is a two byte field, consisting of address
-      // high byte (a.k.a Octet 0) and low byte (a.k.a Octet 1) [KNX 1.1].
-      //
-      // [KNX 1.1] Volume 3: Systems Specifications, Part 3 Chapter 2: Data Link Layer General
-      // defines Group Address bit structure (1.4 Definitions on page 6-7) as follows:
-      //
-      //           +-----------------------------------------------+
-      // 16 bits   |                 GROUP ADDRESS                 |
-      //           +-----------------------+-----------------------+
-      //           | OCTET 0 (high byte)   |  OCTET 1 (low byte)   |
-      //           +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-      //    bits   | 7| 6| 5| 4| 3| 2| 1| 0| 7| 6| 5| 4| 3| 2| 1| 0|
-      //           +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-      //           |  |  Main Group (S13)  |   Sub Group (S13)     |
-      //           +--+--------------------+-----------------------+
-      //
-      // KNX Group addresses do not need to be unique and a device may have more than one group
-      // address. Group addresses are defined globally for the entire KNX network (however, in
-      // the message frames it is possible to restrict the number of routers that can be crossed
-      // to reach devices).  A group address zero is sent to every device (it is a broadcast).
-      //
-      // NOTE:
-      //        Supplement 13 (S13) to KNX 1.1 specification shows additional structure with
-      //        Main Group (what appears a 7 bit value) and Sub Group (a 8 bit value) but gives
-      //        no further definition for these fields.
-      //                                                                                  [JPL]
-      //
-      // NOTE:
-      //        Regarding the group address segments, I haven't found the corresponding
-      //        KNX specification to support the common convention of main/middle/sub levels
-      //        (5/3/8 bits respectively) or main/sub levels (5/11 bits respectively).
-      //
-      //        This implementation will however treat '/' separated group address fields
-      //        according to these conventions in an attempt to maintain interoperability.
-      //        If there's a spec recommendation for this convention somewhere, let me know
-      //        (haven't looked through KNX 2.0 to see if it clarifies group address structure).
-      //
-      //                                                                                  [JPL]
-      //
+      this.sendInternal(command);
 
-      /* Group Address high byte in the cEMI frame (unstructured) */
-      int addressHiByte = 0;
+      return busListener.internalState.get(command.getAddress());
+    }
 
-      /* Group Address low byte in the cEMI frame (unstructured) */
-      int addressLoByte = 0;
+    public void send(KNXWriteCommand command)
+    {
+      this.sendInternal(command);
+    }
 
 
-      // Common External Message Interface Control Fields [KNX 1.1 Application Note 033]
-      //
-      // Common External Message Interface (EMI) defines two control fields in its frame format
-      // (one byte each). The bit structure of each control field is defined in the KNX 1.1
-      // Application Note 033: Common EMI Specification, section 2.4 Basic Message Structure:
-      //
-      //   Control Field 1
-      //
-      //    Bit  |
-      //   ------+---------------------------------------------------------------
-      //     7   | Frame Type  - 0x0 for extended frame
-      //         |               0x1 for standard frame
-      //   ------+---------------------------------------------------------------
-      //     6   | Reserved
-      //         |
-      //   ------+---------------------------------------------------------------
-      //     5   | Repeat Flag - 0x0 repeat frame on medium in case of an error
-      //         |               0x1 do not repeat
-      //   ------+---------------------------------------------------------------
-      //     4   | System Broadcast - 0x0 system broadcast
-      //         |                    0x1 broadcast
-      //   ------+---------------------------------------------------------------
-      //     3   | Priority    - 0x0 system
-      //         |               0x1 normal
-      //   ------+               0x2 urgent
-      //     2   |               0x3 low
-      //         |
-      //   ------+---------------------------------------------------------------
-      //     1   | Acknowledge Request - 0x0 no ACK requested
-      //         | (L_Data.req)          0x1 ACK requested
-      //   ------+---------------------------------------------------------------
-      //     0   | Confirm      - 0x0 no error
-      //         | (L_Data.con) - 0x1 error
-      //   ------+---------------------------------------------------------------
-      //
 
-      /* A bit for standard common EMI frame type (not extended) in the first control field. */
-      final int STANDARD_FRAME_TYPE = 0x01 << 7;
-
-      /* Use frame repeat in the first control field. */
-      final int REPEAT_FRAME = 0x00;
-
-      /* Use system broadcast in the first control field. */
-      final int SYSTEM_BROADCAST = 0x00;
-
-      /* Bits for normal frame priority (%01) in the first control field of the common EMI frame. */
-      final int NORMAL_PRIORITY = 0x01 << 2;
-
-      /* Bit for requesting an ACK (L_Data.req only) for the frame in the first control field. */
-      final int REQUEST_ACK = 0x01 << 1;
-
-
-      //   Control Field 2
-      //
-      //    Bit  |
-      //   ------+---------------------------------------------------------------
-      //     7   | Destination Address Type - 0x0 individual address
-      //         |                          - 0x1 group address
-      //   ------+---------------------------------------------------------------
-      //    6-4  | Hop Count (0-7)
-      //   ------+---------------------------------------------------------------
-      //    3-0  | Extended Frame Format - 0x0 for standard frame
-      //   ------+---------------------------------------------------------------
-      //
-
-      /* Destination Address Type bit for group address in the second control field of the common
-       * EMI frame - most significant bit of the byte. */
-      final int GROUP_ADDRESS = 0x01 << 7;
-
-      /* Hop count. Default to six. Bits 4 to 6 in the second control field of the cEMI frame. */
-      final int HOP_COUNT =  0x06 << 4;
-
-      /* Non-extended frame format in the second control field of the common EMI frame
-       *(four zero bits) */
-      final int NON_EXTENDED_FRAME_FORMAT = 0x0;
-
-
-      // The KNX Common External Message Interface (a.k.a cEMI) frame has a variable length
-      // and structure depending on the Common EMI frame message code (first byte) and additional
-      // info length (second byte).
-      //
-      // In a very generic fashion, a Common EMI frame can be defined as follows
-      // (KNX 1.1 Application Note 033 - Common EMI Specification, 2.4 Basic Message Structure,
-      // page 8):
-      //
-      // +----+----+---- ... ----+-------- ... --------+
-      // | MC | AI |  Add. Info  |   Service Info      |
-      // +----+----+---- ... ----+-------- ... --------+
-      //
-      // MC = Message Code
-      // AI = Additional Info Length (0x00 if no additional info is included)
-      //
-      // KNX communication stack defines a frame transfer service (known as L_Data Service) in the
-      // data link layer (KNX 1.1 -- Volume 3 System Specification, Part 2 Communication,
-      // Chapter 2 Data Link Layer General, section 2.1 L_Data Service, page 8).
-      //
-      // Link layer data services are available in "normal" mode (vs. bus monitor mode). A data
-      // request (known as L_Data.req primitive) is used to transmit a frame. The corresponding
-      // Common EMI frame for L_Data.req is defined as shown below (KNX 1.1 Application Note 033,
-      // section 2.5.33 L_Data.req, page 13). Example assumes a standard (non-extended) frame with
-      // no additional info fields set in the frame. The application protocol data unit (APDU) is
-      // for a short data (<= 6 bits) group value write request (A_GroupValue_Write.req)
-      //
-      // +--------+--------+--------+--------+----------------+----------------+--------+----------------+
-      // |  Msg   |Add.Info| Ctrl 1 | Ctrl 2 | Source Address | Dest. Address  |  Data  |      APDU      |
-      // | Code   | Length |        |        |                |                | Length |                |
-      // +--------+--------+--------+--------+----------------+----------------+--------+----------------+
-      //   1 byte   1 byte   1 byte   1 byte      2 bytes          2 bytes       1 byte      2 bytes
-      //
-      //  Message Code    = 0x11 - a L_Data.req primitive
-      //  Add.Info Length = 0x00 - no additional info
-      //  Control Field 1 = see the bit structure above
-      //  Control Field 2 = see the bit structure above
-      //  Source Address  = 0x0000 - filled in by router/gateway with its source address which is
-      //                    part of the KNX subnet
-      //  Dest. Address   = KNX group or individual address (2 byte)
-      //  Data Length     = Number of bytes of data in the APDU excluding the TPCI/APCI bits
-      //  APDU            = Application Protocol Data Unit - the actual payload including transport
-      //                    protocol control information (TPCI), application protocol control
-      //                    information (APCI) and data passed as an argument from higher layers of
-      //                    the KNX communication stack
-      //
-
-      final int LINK_LAYER_DATA_REQUEST   = 0x11;
-      final int NO_ADDITIONAL_INFORMATION = 0x00;
-      final int SOURCE_ADDRESS_HIBYTE     = 0x00;
-      final int SOURCE_ADDRESS_LOBYTE     = 0x00;
-
-      //
-      // APDU...
-      //
-      final int APDU_DATA_LENGTH = 0x01;
-      final int APCI_GROUPVALUE_WRITE_HIBYTE = 0x00;
-      final int APCI_GROUPVALUE_WRITE_LOBYTE = 0x80;
-
-      final int DATATYPE_BOOLEAN_BIT_ON   = 0x01;
-      final int DATATYPE_BOOLEAN_BIT_OFF  = 0x00;
-
-
-      /* Indicates in the code if the address submitted as method parameter is interpreted as
-       * individual or group address. */
-      //boolean isGroupAddressType = true;
-
-
-      // We take a forward slash ('/') to mean group address semantics -- either as
-      // three-level 5bit/3bit/8bit (main/middle/sub) hierarchy or 5bit/11bit (main/sub)
-      // hierarchy...
-
-      if (groupAddress.contains("/"))
-      {
-        String [] elements = groupAddress.split("/");
-
-        // Interpret group address in 3 segments as 5/3/8 bit sequence...
-
-        if (elements.length == 3)
-        {
-
-          try
-          {
-            int hibits = new Integer(elements[0]);
-            int midbits = new Integer(elements[1]);
-            int lowbits = new Integer(elements[2]);
-
-            // Sanity checks on address field sizes -- 5 bits is at most 31 decimal...
-
-            if (hibits < 0 || hibits > 31)
-            {
-              log.error(
-                  "Group address value '" + hibits + "' in '" + groupAddress + "' is too large."
-              );
-
-              return;
-            }
-
-            // ...middle bits is max 7 decimal (%111)...
-
-            if (midbits < 0 || midbits > 7)
-            {
-              log.error(
-                  "Group address value '" + midbits + "' in '" + groupAddress + "' is too large."
-              );
-
-              return;
-            }
-
-            // ...low bits max 255 (8 bits)...
-
-            if (lowbits < 0 || lowbits > 255)
-            {
-              log.error(
-                  "Group address value '" + lowbits + "' in '" + groupAddress + "' is too large."
-              );
-
-              return;
-            }
-
-            // shift hibits by 3 to the left to make space for midbits in the first address byte..
-
-            hibits = hibits << 3;
-
-            // and merge with the middle bits...
-
-            hibits = hibits | midbits;
-
-            // store in two bytes for cEMI frame...
-
-            addressHiByte = hibits;
-            addressLoByte = lowbits;
-          }
-          catch (NumberFormatException exception)
-          {
-            log.error(
-                "Cannot parse group address '" + groupAddress +
-                "' (assuming 5/3/8 bit format): " + exception.getMessage(), exception
-            );
-
-            return;
-          }
-        }
-
-        // Interpret group address as 5/11 bit segments...
-
-        else if (elements.length == 2)
-        {
-          // TODO...
-
-          log.error("Dual segment (main/sub) style group addresses not implemented yet.");
-          return;
-        }
-
-        else
-        {
-          log.error("Unknown group address structure in '" + groupAddress + "'.");
-          return;
-        }
-      }
-
-
-      else
-      {
-        // TODO : if no address structure, could interpret as two byte value address...
-
-        log.error("KNX Group Address must be in format main/middle/sub (" + groupAddress + ")");
-
-        return;
-      }
-
-
-      int apduData = APCI_GROUPVALUE_WRITE_LOBYTE;
-      
-      switch (command)
-      {
-        case SWITCH_ON:
-
-          apduData += DATATYPE_BOOLEAN_BIT_ON;
-
-          break;
-
-        case SWITCH_OFF:
-
-          apduData += DATATYPE_BOOLEAN_BIT_OFF;
-
-          break;
-
-        default:
-
-          log.error("Unknown KNX command type: '" + command + "'.");  
-
-          return;
-      }
-
+    private void sendInternal(KNXCommand command)
+    {
       CEMILData commonEMI = null;
 
       try
       {
-        byte[] commonEMIFrame = new byte[]
-            {
-                LINK_LAYER_DATA_REQUEST,        // Message Code
-                NO_ADDITIONAL_INFORMATION,      // Additional Info Length
-                (byte)(STANDARD_FRAME_TYPE +     // Control Field 1
-                      REPEAT_FRAME +
-                      SYSTEM_BROADCAST +
-                      NORMAL_PRIORITY +
-                      REQUEST_ACK),
-                (byte)(GROUP_ADDRESS +           // Control Field 2
-                      HOP_COUNT +
-                      NON_EXTENDED_FRAME_FORMAT),
-                SOURCE_ADDRESS_HIBYTE,          // Source Address
-                SOURCE_ADDRESS_LOBYTE,
-                (byte)addressHiByte,            // Destination Address
-                (byte)addressLoByte,
-                APDU_DATA_LENGTH,               // Data Length
-                APCI_GROUPVALUE_WRITE_HIBYTE,   // TPCI/APCI
-                (byte)apduData                  // APCI & Data
-            };
+        Byte[] cemiBytes = command.getCEMIFrame();
+        byte[] cemiFrame = new byte[cemiBytes.length];
 
-        commonEMI = new CEMILData(commonEMIFrame, 0);
+        for (int i = 0; i < cemiBytes.length; ++i)
+        {
+          cemiFrame[i] = cemiBytes[i];
+        }
+        
+        commonEMI = new CEMILData(cemiFrame, 0);
 
-        log.info(printCommonEMIFrame(commonEMIFrame));
-      }
-      catch (KNXFormatException exception)
-      {
-        log.error("Error in Common EMI frame: " + exception.getMessage(), exception);
-
-        return;
-      }
-      
-      try
-      {
-        log.debug("sending...");
+        log.info(command);
 
         connection.send(commonEMI, KNXnetIPTunnel.NONBLOCKING);
 
         log.info("sent!");
       }
+      catch (KNXFormatException exception)
+      {
+        log.error("Error in Common EMI frame: " + exception.getMessage(), exception);
+      }
+      
       catch (KNXTimeoutException exception)
       {
         log.warn(
-            "Sending KNX command to " + groupAddress + " timed out: " +
+            "Sending KNX command " + command + " timed out: " +
             exception.getMessage(), exception
         );
       }
       catch (KNXConnectionClosedException exception)
       {
         log.error(
-            "Unable to send KNX command to " + groupAddress + ". Connection closed.",
+            "Unable to send KNX command " + command + ". Connection closed.",
             exception
         );
       }
 
-/*
+    }
 
-  Lines below were introduced as part of R1105 -- they don't look like they belong here,
-  especially with the public static access to Control class.
 
-=======
-      
-      if ("off".equalsIgnoreCase(Control.CURRENT_STATUS)) {
-         Control.CURRENT_STATUS = "on";
-      } else {
-         Control.CURRENT_STATUS = "off";
-      }
->>>>>>> .merge-right.r1105
-*/
-
-    }
-    
-    /* (non-Javadoc)
-     * @see org.openremote.controller.protocol.knx.KNXConnection#readDeviceStatus(java.lang.String, java.lang.String)
-     */
-    public String readDeviceStatus(String groupAddress, String dptTypeID) {
-        try {
-            sendReadStatusRequest(connection, null);
-            return read(groupAddress, dptTypeID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "unknown";
-    }
-    
-    /**
-     * Sends read request to Device.
-     * 
-     * @param knxNetIPTunnel KNXnetIPTunnel
-     * @param l the ProcessListener
-     * 
-     * @throws Exception the exception
-     */
-    private void sendReadStatusRequest(KNXnetIPTunnel knxNetIPTunnel, ProcessListener l) throws Exception {
-        // create the network link to the KNX network
-        KNXNetworkLink lnk = createLink(knxNetIPTunnel);
-        
-        // create process communicator with the established link
-        pc = new ProcessCommunicatorImpl(lnk);
-        if (l != null) {
-            pc.addProcessListener(l);
-        }
-        pc.setResponseTimeout(10);
-    }
-    
-    /**
-     * Creates the knxNetIPTunnel link.
-     * 
-     * @param knxNetIPTunnel the knx net ip tunnel
-     * 
-     * @return the kNX network link
-     * 
-     * @throws Exception the exception
-     */
-    private KNXNetworkLink createLink(KNXnetIPTunnel knxNetIPTunnel) throws Exception {
-        // create local and remote socket address for network link
-        final InetSocketAddress local = new InetSocketAddress(InetAddress.getLocalHost(), CLIENT_CONNECTION_PORT);
-        final InetSocketAddress host = new InetSocketAddress(InetAddress.getByName("192.168.0.10"), 3671);//knxNetIPTunnel.getRemoteAddress();
-        final int mode = KNXNetworkLinkIP.TUNNEL;
-        this.connection.close();
-        return new KNXNetworkLinkIP(mode, local, host, CONNECTION_USE_NAT, TPSettings.TP1);
-    }
-    
-    /**
-     * Read status of device with group address and DataPointType id.
-     * 
-     * @param groupAddress the group address
-     * @param dptTypeID the dpt type id
-     * 
-     * @return the string
-     * 
-     * @throws KNXException the KNX exception
-     */
-    private String read(String groupAddress, String dptTypeID) throws KNXException {
-            // check if we are doing a read or write operation
-            final GroupAddress main = new GroupAddress(groupAddress);
-            // encapsulate information into a datapoint
-            // this is a convenient way to let the process communicator
-            // handle the DPT stuff, so an already formatted string will be
-            // returned
-            final Datapoint dp = new StateDP(main, "", 0, dptTypeID);
-            String rst = pc.read(dp);
-            System.out.println("read value: " + rst);
-            return rst;
-        }
+///*
+//        try {
+//            sendReadStatusRequest(connection, null);
+//            return read(groupAddress, dptTypeID);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return "unknown";
+//*/
+//    }
+//
+//    /**
+//     * Sends read request to Device.
+//     *
+//     * @param knxNetIPTunnel KNXnetIPTunnel
+//     * @param l the ProcessListener
+//     *
+//     * @throws Exception the exception
+//     */
+//    private void sendReadStatusRequest(KNXnetIPTunnel knxNetIPTunnel, ProcessListener l) throws Exception {
+//        // create the network link to the KNX network
+//        KNXNetworkLink lnk = createLink(knxNetIPTunnel);
+//
+//        // create process communicator with the established link
+//        pc = new ProcessCommunicatorImpl(lnk);
+//        if (l != null) {
+//            pc.addProcessListener(l);
+//        }
+//        pc.setResponseTimeout(10);
+//    }
+//
+//    /**
+//     * Creates the knxNetIPTunnel link.
+//     *
+//     * @param knxNetIPTunnel the knx net ip tunnel
+//     *
+//     * @return the kNX network link
+//     *
+//     * @throws Exception the exception
+//     */
+//    private KNXNetworkLink createLink(KNXnetIPTunnel knxNetIPTunnel) throws Exception {
+//        // create local and remote socket address for network link
+//        final InetSocketAddress local = new InetSocketAddress(InetAddress.getLocalHost(), CLIENT_CONNECTION_PORT);
+//        final InetSocketAddress host = new InetSocketAddress(InetAddress.getByName("192.168.0.10"), 3671);//knxNetIPTunnel.getRemoteAddress();
+//        final int mode = KNXNetworkLinkIP.TUNNEL;
+//        this.connection.close();
+//        return new KNXNetworkLinkIP(mode, local, host, CONNECTION_USE_NAT, TPSettings.TP1);
+//    }
+//
+//    /**
+//     * Read status of device with group address and DataPointType id.
+//     *
+//     * @param groupAddress the group address
+//     * @param dptTypeID the dpt type id
+//     *
+//     * @return the string
+//     *
+//     * @throws KNXException the KNX exception
+//     */
+//    private String read(String groupAddress, String dptTypeID) throws KNXException {
+//            // check if we are doing a read or write operation
+//            final GroupAddress main = new GroupAddress(groupAddress);
+//            // encapsulate information into a datapoint
+//            // this is a convenient way to let the process communicator
+//            // handle the DPT stuff, so an already formatted string will be
+//            // returned
+//            final Datapoint dp = new StateDP(main, "", 0, dptTypeID);
+//            String rst = pc.read(dp);
+//            System.out.println("read value: " + rst);
+//            return rst;
+//        }
   }
 
 
-  // Private Methods ------------------------------------------------------------------------------
 
+/*
   private String printCommonEMIFrame(byte[] frame)
   {
     StringBuilder str = new StringBuilder(1024);
@@ -1386,9 +1197,9 @@ class KNXConnectionManager
     else
       return "0x" + Integer.toHexString(hex).toUpperCase();
   }
+*/
 
 
-  // Inner Classes --------------------------------------------------------------------------------
 
   /**
    * Implements shutdown hook for the KNX connection manager. Main reason is that the IP KNX
