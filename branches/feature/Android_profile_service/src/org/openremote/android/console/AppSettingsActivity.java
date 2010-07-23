@@ -20,6 +20,7 @@
 package org.openremote.android.console;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
@@ -71,6 +72,7 @@ public class AppSettingsActivity extends GenericActivity {
    private boolean autoMode;
    public static String currentServer = "";
    private PanelSelectSpinnerView panelSelectSpinnerView;
+   private LinearLayout progressLayout;
    
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -119,6 +121,7 @@ public class AppSettingsActivity extends GenericActivity {
       initSSLState();
       addOnclickListenerOnDoneButton();
       addOnclickListenerOnCancelButton();
+      progressLayout = (LinearLayout)findViewById(R.id.choose_controller_progress);
    }
 
    private TextView createCacheText() {
@@ -142,12 +145,10 @@ public class AppSettingsActivity extends GenericActivity {
    /**
     * @return
     */
-   private TextView createChooseControllerLabel() {
-      TextView chooseControllerLabel = new TextView(this);
-      chooseControllerLabel.setText("Choose Controller:");
-      chooseControllerLabel.setPadding(10, 5, 0, 5);
-      chooseControllerLabel.setBackgroundColor(Color.DKGRAY);
-      return chooseControllerLabel;
+   private LinearLayout createChooseControllerLabel() {
+      LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
+      LinearLayout chooseController = (LinearLayout)inflater.inflate(R.layout.choose_controller_bar, null);
+      return chooseController;
    }
 
    /**
@@ -234,7 +235,7 @@ public class AppSettingsActivity extends GenericActivity {
       
       Button clearImgCacheBtn = new Button(this);
       clearImgCacheBtn.setText("Clear Image Cache");
-      RelativeLayout.LayoutParams clearButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+      RelativeLayout.LayoutParams clearButtonLayout = new RelativeLayout.LayoutParams(150, LayoutParams.WRAP_CONTENT);
       clearButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
       clearImgCacheBtn.setLayoutParams(clearButtonLayout);
       clearImgCacheBtn.setOnClickListener(new OnClickListener() {
@@ -268,7 +269,7 @@ public class AppSettingsActivity extends GenericActivity {
       autoText.setText("Auto Discovery");
 
       ToggleButton autoButton = new ToggleButton(this);
-      autoButton.setWidth(100);
+      autoButton.setWidth(150);
       RelativeLayout.LayoutParams autoButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
       autoButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
       autoButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
@@ -410,21 +411,42 @@ public class AppSettingsActivity extends GenericActivity {
    }
   
    private ListView constructAutoServersView() {
-      ListView lv = new ListView(this);
+      final ListView lv = new ListView(this);
       lv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
       lv.setPadding(20, 5, 5, 10);
       lv.setBackgroundColor(0);
       lv.setCacheColorHint(0);
       lv.setItemsCanFocus(true);
       lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-      ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
-            AppSettingsModel.getAutoServers());
+      final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
+            new ArrayList<String>());
       lv.setAdapter(serverListAdapter);
-      if (serverListAdapter.getCount() > 0) {
-         lv.setItemChecked(0, true);
-         currentServer = serverListAdapter.getItem(0);
-         AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
-      }
+      
+      new IPAutoDiscoveryServer(){
+         @Override
+         protected void onProgressUpdate(Void... values) {
+            if (progressLayout != null) {
+               progressLayout.setVisibility(View.VISIBLE);
+            }
+         }
+
+         @Override
+         protected void onPostExecute(List<String> result) {
+            int length = result.size();
+            for (int i = 0; i < length; i++) {
+               serverListAdapter.add(result.get(i));
+            }
+            if (length > 0) {
+               lv.setItemChecked(0, true);
+               currentServer = serverListAdapter.getItem(0);
+               AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+            }
+            if (progressLayout != null) {
+               progressLayout.setVisibility(View.INVISIBLE);
+            }
+         }
+      }.execute((Void) null);
+      
       lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             currentServer = (String)parent.getItemAtPosition(position);

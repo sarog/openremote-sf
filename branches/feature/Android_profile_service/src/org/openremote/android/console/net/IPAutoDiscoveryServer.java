@@ -27,9 +27,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.android.console.Constants;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 /**
@@ -38,25 +40,29 @@ import android.util.Log;
  * @author Tomsky Wang
  *
  */
-public class IPAutoDiscoveryServer implements Runnable {
+public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
 
-   public static ArrayList<String> autoServers = new ArrayList<String>();
    public static boolean isInterrupted;
-   public void run() {
+   
+   @Override
+   protected List<String> doInBackground(Void... params) {
+      publishProgress((Void)null);
+      ArrayList<String> autoServers = new ArrayList<String>();
       boolean moreQuotes = true;
       ServerSocket srvr = null;
       try {
          srvr = new ServerSocket(Constants.LOCAL_SERVER_PORT);
+         new IPAutoDiscoveryClient().run();
          autoServers.clear();
          srvr.setSoTimeout(1000);
       } catch (BindException e) {
          Log.e("AUTO DISCOVER", "auto discovery server setup failed, the address is already in use");
          autoServers.clear();
-         return;
+         return autoServers;
       } catch (IOException e) {
          Log.e("AUTO DISCOVER", "auto discovery server setup failed", e);
          autoServers.clear();
-         return;
+         return autoServers;
       }
       while (moreQuotes && !isInterrupted) {
          try {
@@ -81,7 +87,9 @@ public class IPAutoDiscoveryServer implements Runnable {
          srvr.close();
       } catch (IOException e) {
          Log.e("AUTO DISCOVER", "auto discovery ServerSocket close failed " , e);
+         return autoServers;
       }
+      return autoServers;
    }
 
 }
