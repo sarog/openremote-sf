@@ -58,7 +58,6 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    private static final int SWITCH_TO_OTHER_CONTROLER = 0xF00D;
    
    private Activity activity;
-   private boolean bgImageUpdated;
    
    public AsyncResourceLoader(Activity activity) {
       this.activity = activity;
@@ -153,11 +152,6 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       RelativeLayout loadingView = (RelativeLayout) (activity.findViewById(R.id.welcome_view));
       if (loadingView == null) {
          return;
-      }
-      
-      if (!bgImageUpdated) {
-         ImageUtil.setBackgroundResourceQuitely(loadingView, R.drawable.loading);
-         bgImageUpdated = true;
       }
       
       TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
