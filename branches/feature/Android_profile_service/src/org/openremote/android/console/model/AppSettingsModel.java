@@ -20,11 +20,8 @@
 package org.openremote.android.console.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import org.openremote.android.console.Constants;
-import org.openremote.android.console.net.IPAutoDiscoveryClient;
-import org.openremote.android.console.net.IPAutoDiscoveryServer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -123,14 +120,4 @@ public class AppSettingsModel implements Serializable {
       editor.commit();
    }
    
-   public static ArrayList<String> getAutoServers() {
-      new Thread(new IPAutoDiscoveryServer()).start();
-      new Thread(new IPAutoDiscoveryClient()).start();
-      try {
-         Thread.sleep(200);
-      } catch (InterruptedException e) {
-         Log.e("AppSettingsModel", "can not auto get servers.", e);
-      }
-      return IPAutoDiscoveryServer.autoServers;
-   }
 }
