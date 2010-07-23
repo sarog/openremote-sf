@@ -49,6 +49,8 @@
      PRESSED : "pressed",
      NAVIGATE : "navigate",
      
+     LABEL : "label",
+     
      SWITCH : "switch",
      SLIDER : "slider",
      
