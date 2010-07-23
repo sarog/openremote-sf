@@ -85,23 +85,4 @@ public class ImageUtil {
       }
    }
    
-   /**
-    * Calls native View.setBackgroundResource(int resid), but catch OutOfMemoryError and do nothing.
-    * 
-    * @param view
-    *           a view
-    * @param layoutResID
-    *           Resource ID to be background.
-    */
-   public static void setBackgroundResourceQuitely(View view, int layoutResID) {
-      if (view == null) {
-         return;
-      }
-      try {
-         view.setBackgroundResource(layoutResID);
-      } catch (OutOfMemoryError e) {
-         Log.e("OutOfMemoryError",  "unable to setBackgroundResource, bitmap size exceeds VM budget");
-      }
-   }
-
 }

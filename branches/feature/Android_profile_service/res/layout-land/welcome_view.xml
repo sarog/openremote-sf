@@ -4,7 +4,7 @@
 android:id="@+id/welcome_view"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
-android:background="@drawable/loading">
+android:background="@drawable/loading_land">
 
 	<TextView android:id="@+id/app_version"
 	android:text="@string/app_version"
@@ -17,6 +17,7 @@ android:background="@drawable/loading">
 	
 	<TextView android:id="@+id/loading_text"
 	android:textColor="@color/black"
+	android:text="@string/default_loading_text"
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:layout_alignParentBottom="true"
