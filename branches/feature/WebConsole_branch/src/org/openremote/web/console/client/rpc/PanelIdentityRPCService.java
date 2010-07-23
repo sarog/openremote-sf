@@ -34,9 +34,43 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("panelIdentity.smvc")
 public interface PanelIdentityRPCService extends RemoteService {
 
+   /**
+    * Gets the panel identity names.
+    * 
+    * @param serverUrl the server url
+    * @param username the username
+    * @param password the password
+    * 
+    * @return the panel names
+    * 
+    * @throws NotAuthenticatedException the not authenticated exception
+    * @throws ORConnectionException the OR connection exception
+    */
    List<String> getPanelNames(String serverUrl, String username, String password) throws NotAuthenticatedException, ORConnectionException;
    
+   /**
+    * Gets the panel entity, which contains groups,screens and global tabBar.
+    * 
+    * @param url the url
+    * @param username the username
+    * @param password the password
+    * 
+    * @return the panel xml entity
+    * 
+    * @throws NotAuthenticatedException the not authenticated exception
+    * @throws ORConnectionException the OR connection exception
+    */
    PanelXmlEntity getPanelXmlEntity(String url, String username, String password) throws NotAuthenticatedException, ORConnectionException;
    
+   /**
+    * Checks the current controller if is support JSON API.
+    * 
+    * @param url the url
+    * @param username the username
+    * @param password the password
+    * 
+    * @throws NotAuthenticatedException the not authenticated exception
+    * @throws ORConnectionException the OR connection exception
+    */
    boolean isSupportJsonp(String url, String username, String password) throws NotAuthenticatedException, ORConnectionException;
 }

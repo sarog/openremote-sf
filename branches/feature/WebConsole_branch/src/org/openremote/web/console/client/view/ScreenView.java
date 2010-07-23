@@ -58,6 +58,11 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
    private Point startPoint;
    private static final int SWIPE_MIN_DISTANCE = 200;
    
+   /**
+    * Instantiates a new screen view as a layoutContainer.
+    * 
+    * @param screen the screen
+    */
    public ScreenView(Screen screen) {
       this.screen = screen;
       setStyleAttribute("backgroundColor", "white");
@@ -71,6 +76,12 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       }
    }
    
+   /**
+    * Inits the screen view by screen model.
+    * added screen components in to a layoutContainer, set the layoutContainer's background.
+    * 
+    * @param screen the screen
+    */
    private void init(Screen screen) {
       ArrayList<LayoutContainer> layouts = screen.getLayouts();
       if (layouts.size() > 0) {
@@ -88,6 +99,11 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       }
    }
    
+   /**
+    * Set the screen's background.
+    * 
+    * @param background the background
+    */
    private void addBackground(Background background) {
       String url = ClientDataBase.appSetting.getResourceRootPath()
             + URL.encode(background.getBackgroundImage().getSrc());
@@ -104,6 +120,9 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       }
    }
 
+   /**
+    * Start screen's sensor components polling.
+    */
    public void startPolling() {
       if (!screen.getPollingComponentsIds().isEmpty()) {
          polling = new PollingHelper(screen.getPollingComponentsIds());
@@ -111,12 +130,19 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       }
    }
    
+   /**
+    * Cancel screen's sensor components polling.
+    */
    public void cancelPolling() {
       if (polling != null) {
          polling.cancelPolling();
       }
    }
 
+   /**
+    * Adds the context menu for the logical navigation.
+    * Include toSetting,toLogin,toLogout,back,toNextScreen,toPreviousScreen.
+    */
    private void addContextMenu() {
       Menu contextMenu = new Menu();
       contextMenu.setWidth(140);
@@ -194,6 +220,9 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       setContextMenu(contextMenu);
    }
    
+   /** 
+    * Detect mouse gesture.
+    */
    @Override
    public void onComponentEvent(ComponentEvent ce) {
       super.onComponentEvent(ce);
@@ -221,6 +250,11 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       }
    }
    
+   /**
+    * Handle screen gesture.
+    * 
+    * @param gesture the gesture
+    */
    private void onGesture(Gesture gesture) {
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {

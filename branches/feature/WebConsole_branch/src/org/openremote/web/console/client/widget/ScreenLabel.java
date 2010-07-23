@@ -30,13 +30,19 @@ import org.openremote.web.console.domain.Sensor;
 import com.extjs.gxt.ui.client.widget.Text;
 
 /**
- * The Class ScreenLabel.
+ * The ScreenLabel is for display the label according to label model.
+ * It support sensor.
  */
 public class ScreenLabel extends ScreenComponent implements SensoryDelegate {
 
    private Text text;
    private String labelText;
    
+   /**
+    * Instantiates a new screen label.
+    * 
+    * @param label the label
+    */
    public ScreenLabel(Label label) {
       setComponent(label);
       if (label != null) {
@@ -47,6 +53,11 @@ public class ScreenLabel extends ScreenComponent implements SensoryDelegate {
       }
    }
    
+   /**
+    * Inits the label text.
+    * 
+    * @param label the label
+    */
    private void initText(Label label) {
       text = new Text();
       text.setSize(label.getFrameWidth(), label.getFrameHeight());
@@ -64,6 +75,9 @@ public class ScreenLabel extends ScreenComponent implements SensoryDelegate {
       add(text);
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.web.console.client.widget.SensoryDelegate#addPollingSensoryListener()
+    */
    public void addPollingSensoryListener() {
       final Sensor sensor = ((Label)getComponent()).getSensor();
       final Integer sensorId = sensor.getSensorId();

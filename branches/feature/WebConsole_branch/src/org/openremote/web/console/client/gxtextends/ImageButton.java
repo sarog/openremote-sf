@@ -33,7 +33,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 
 /**
- * The Class ImageButton.
+ * Generate a image button component by {@link org.openremote.web.console.domain.Button}.
  */
 public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
 
@@ -99,6 +99,9 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       }
    }
 
+   /**
+    * Send "click" command.
+    */
    private void sendCommand() {
       ((ScreenButton) getParent()).sendCommand("click", new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
@@ -116,6 +119,9 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       });
    }
    
+   /**
+    * Repeat command when the button is repeatable.
+    */
    private void startTimer() {
       timer = new Timer() {
          @Override
@@ -126,12 +132,18 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       timer.scheduleRepeating(REPEAT_CMD_INTERVAL);
    }
    
+   /**
+    * Cancel repeat send command when MouseUp.
+    */
    private void cancelTimer() {
       if (timer != null) {
          timer.cancel();
       }
    }
    
+   /**
+    * Set default state for button when MouseUp.
+    */
    private void resetIcon() {
       if (hasIcon) {
          if (pressedImage != null) {

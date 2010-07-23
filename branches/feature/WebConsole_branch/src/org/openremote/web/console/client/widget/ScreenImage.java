@@ -30,11 +30,20 @@ import org.openremote.web.console.domain.Label;
 import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.http.client.URL;
 
+/**
+ * The ScreenImage is for show image component in screen.
+ * 
+ */
 public class ScreenImage extends ScreenComponent implements SensoryDelegate {
 
    /** The linked label. */
    private Text linkedLabel;
    
+   /**
+    * Instantiates a new screen image.
+    * 
+    * @param image the image
+    */
    public ScreenImage(Image image) {
       setComponent(image);
       if (image != null) {
@@ -53,10 +62,18 @@ public class ScreenImage extends ScreenComponent implements SensoryDelegate {
       }
    }
    
+   /**
+    * Sets the image background as the image.
+    * 
+    * @param imageSrc the new image background
+    */
    private void setImageBackground(String imageSrc) {
       setStyleAttribute("backgroundImage", "url(" + ClientDataBase.appSetting.getResourceRootPath() + URL.encode(imageSrc) + ")");
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.web.console.client.widget.SensoryDelegate#addPollingSensoryListener()
+    */
    public void addPollingSensoryListener() {
       Image image = (Image)getComponent();
       Integer id = image.getSensor().getSensorId();

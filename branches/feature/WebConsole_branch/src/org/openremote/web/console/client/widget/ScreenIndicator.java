@@ -32,7 +32,8 @@ import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.google.gwt.user.client.Event;
 
 /**
- * The Class ScreenIndicator is for show the screen page control.
+ * The ScreenIndicator is for show the screen page control below the screen.
+ * It support navigate to screen in a group.
  */
 public class ScreenIndicator extends LayoutContainer {
 
@@ -41,6 +42,13 @@ public class ScreenIndicator extends LayoutContainer {
    private int currentScreenIndex = -1;
    private static final String NAVIGATETOSCREEN = "navigateToScreen";
    
+   /**
+    * Instantiates a new screen indicator.
+    * 
+    * @param groupId the group id
+    * @param screenIndex the screen index
+    * @param screens the screens
+    */
    public ScreenIndicator(int groupId, int screenIndex, List<Screen> screens) {
       this.currentGroupId = groupId;
       int screenCount = screens.size();
@@ -55,6 +63,13 @@ public class ScreenIndicator extends LayoutContainer {
       }
    }
    
+   /**
+    * Update current page control below the screen.
+    * 
+    * @param groupId the group id
+    * @param screenIndex the screen index
+    * @param screens the screens
+    */
    public void updateCurrentPageControl(int groupId, int screenIndex, List<Screen> screens) {
       if (indicatorContainer != null) {
          int screenSize = screens.size();
@@ -76,10 +91,12 @@ public class ScreenIndicator extends LayoutContainer {
    }
    
    /**
-    * @param groupId
-    * @param screenIndex
-    * @param screens
-    * @param screenCount
+    * Initial indicator container.
+    * 
+    * @param groupId the group id
+    * @param screenIndex the screen index
+    * @param screens the screens
+    * @param screenCount the screen count
     */
    private void initialIndicatorContainer(int groupId, int screenIndex, List<Screen> screens, int screenCount) {
       for (int i = 0; i < screenCount; i++) {

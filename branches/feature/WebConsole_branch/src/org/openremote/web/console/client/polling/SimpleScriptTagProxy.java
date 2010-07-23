@@ -28,6 +28,12 @@ import com.google.gwt.user.client.Element;
 
 /**
  * The Class SimpleScriptTagProxy.
+ * <p />
+ * Note that if you are retrieving data from a page that is in a domain that is
+ * NOT the same as the originating domain of the running page, you must use this
+ * class.
+ * 
+ * <p />
  */
 public class SimpleScriptTagProxy {
 

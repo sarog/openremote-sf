@@ -22,6 +22,9 @@ package org.openremote.web.console.client.icon;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ImageBundle;
 
+/**
+ * The Interface Icons is for bundled several images to a image, and it can reduce the browser IO.
+ */
 public interface Icons extends ImageBundle {
 
    @Resource("delete.png")

@@ -39,10 +39,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public abstract class AsyncSuccessCallback<T> implements AsyncCallback<T> {
 
    /**
-    * Because If the beehive is not available, this exception will be thrown many times because of initializing template
-    * list, downloading user resources etc.  That means there will be a lot of alert windows show to user. Therefore,
-    * we can replace most of alert information with silent "Info". If you want to let user know what the error
-    * information is, you can just override this method in its subclass.
+    * If not authenticated, show login window. If controller occured unknown error, switch to a group member.
+    * Otherwise alert the error information.
+    * If you want to custom the failure, you can just override this method in its subclass.
     * 
     * @param caught the caught
     * 

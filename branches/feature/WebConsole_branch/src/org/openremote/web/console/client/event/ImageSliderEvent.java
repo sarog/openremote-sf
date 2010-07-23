@@ -25,7 +25,7 @@ import com.extjs.gxt.ui.client.event.BoxComponentEvent;
 import com.google.gwt.user.client.Event;
 
 /**
- * The Class ImageSliderEvent.
+ * The Class ImageSliderEvent is used by {@link ImageSlider}.
  */
 public class ImageSliderEvent extends BoxComponentEvent {
 

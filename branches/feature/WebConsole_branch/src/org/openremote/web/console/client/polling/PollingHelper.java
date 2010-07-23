@@ -37,6 +37,10 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 
+/**
+ * Polling Helper, this class will setup a polling thread to listen 
+ * and notify screen component status changes.
+ */
 public class PollingHelper {
 
    private String pollingStatusIds;
@@ -58,11 +62,16 @@ public class PollingHelper {
       }
    }
    
+   /**
+    * Request current screen components status and start polling.
+    */
    public void requestCurrentStatusAndStartPolling() {
       if (isPolling) {
          return;
       }
       isPolling = true;
+      
+      // request current screen components status
       SimpleScriptTagProxy requestStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/status/" + pollingStatusIds, new JsonResultReader() {
          public void read(JSONObject jsonObj) {
             if (jsonObj.containsKey("status")) {
@@ -80,6 +89,7 @@ public class PollingHelper {
       });
       requestStatusProxy.load();
       
+      // start polling.
       final SimpleScriptTagProxy pollingStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/polling/" + sessionId
             + "/" + pollingStatusIds, new JsonResultReader() {
          public void read(JSONObject jsonObj) {
@@ -112,7 +122,6 @@ public class PollingHelper {
             }
          }
       });
-      
       pollingTimer = new Timer() {
          @Override
          public void run() {
@@ -129,6 +138,9 @@ public class PollingHelper {
       pollingTimer.run();
    }
    
+   /**
+    * Cancel current screen's polling.
+    */
    public void cancelPolling() {
       isPolling = false;
       if (pollingTimer != null) {
@@ -137,6 +149,9 @@ public class PollingHelper {
       pollingTimer = null;
    }
    
+   /**
+    * Read session id from cookies.
+    */
    private void readSessionId() {
       if (sessionId == null) {
          sessionId = Cookies.getCookie("JSESSIONID");

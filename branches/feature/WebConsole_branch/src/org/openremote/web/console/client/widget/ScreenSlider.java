@@ -38,12 +38,18 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 
 /**
- * The Class ScreenSlider.
+ * The ScreenSlider is for generate slider component by slider model.
+ * It support change images,send control command, polling status.
  */
 public class ScreenSlider extends ScreenControl implements SensoryDelegate {
 
    private ImageSlider imageSlider;
    
+   /**
+    * Instantiates a new screen slider.
+    * 
+    * @param slider the slider
+    */
    public ScreenSlider(Slider slider) {
       setComponent(slider);
       setSize(slider.getFrameWidth(), slider.getFrameHeight());
@@ -54,6 +60,11 @@ public class ScreenSlider extends ScreenControl implements SensoryDelegate {
       }
    }
    
+   /**
+    * Inits the image slider, set images if there is have.
+    * 
+    * @param slider the slider
+    */
    private void initImageSlider(final Slider slider) {
       imageSlider = new ImageSlider() {
          @Override
@@ -102,8 +113,10 @@ public class ScreenSlider extends ScreenControl implements SensoryDelegate {
    }
 
    /**
-    * @param slider
-    * @param resourcePath
+    * Adds the min and max image.
+    * If click the min image, the value would be min; and if click the max image, the value would be max. 
+    * @param slider the slider
+    * @param resourcePath the resource path
     */
    private void addMinAndMaxImage(final Slider slider, String resourcePath) {
       String minImage = resourcePath + slider.getMinImage().getSrc();

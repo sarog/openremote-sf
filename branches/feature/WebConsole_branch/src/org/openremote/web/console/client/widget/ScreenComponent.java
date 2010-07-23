@@ -25,6 +25,9 @@ import org.openremote.web.console.domain.Label;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
+/**
+ * The class ScreenComponent is the superclass of screen components.
+ */
 public class ScreenComponent extends LayoutContainer {
 
    private Component component;

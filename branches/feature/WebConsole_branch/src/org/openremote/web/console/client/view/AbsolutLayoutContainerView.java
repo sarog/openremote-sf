@@ -27,7 +27,8 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 /**
- * The Class AbsolutLayoutContainerView.
+ * The AbsoluteLayoutContainer is for wrap screen component(button/switch/slider/label/image),</br>
+ * and display in absolute position.
  */
 public class AbsolutLayoutContainerView extends LayoutContainer {
 

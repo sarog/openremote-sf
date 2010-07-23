@@ -32,11 +32,12 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface CommandRPCService extends RemoteService {
 
    /**
-    * Send command.
+    * Send control command to controller.
     * 
     * @param url the url
     * @param username the username
     * @param password the password
+    * @param sslPort the ssl port
     * 
     * @throws NotAuthenticatedException the not authenticated exception
     * @throws ORConnectionException the OR connection exception

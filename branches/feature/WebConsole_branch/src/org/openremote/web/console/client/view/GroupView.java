@@ -91,6 +91,10 @@ public class GroupView {
    private List<Navigate> navigationHistory;
    private ToolBar toolBar;
    
+   /**
+    * Instantiates a new group view.
+    * A group view contains some screen views, the screen views can changed.
+    */
    public GroupView() {
       viewport = new Viewport();
       layout = new BorderLayout();
@@ -108,7 +112,7 @@ public class GroupView {
          createSouth();
          RootPanel.get().add(viewport);
          addPopSettingListener();
-         addNaviagateListener();
+         addNavigateListener();
          // useful in IE
          KeyNav<ComponentEvent> keyNav = new KeyNav<ComponentEvent>(viewport) {
 
@@ -143,6 +147,9 @@ public class GroupView {
       viewport.add(toolBar, data);
    }
 
+   /**
+    * Inits the tab bar if there is have(group tabBar or panel tabBar).
+    */
    private void initTabBar() {
       TabBar tabbar = currentGroup.getTabBar();
       if (tabbar == null) {
@@ -152,15 +159,18 @@ public class GroupView {
       if (tabbar != null && tabbar.getTabBarItems().size() > 0) {
          List<TabBarItem> tabbarItems = tabbar.getTabBarItems();
          for (TabBarItem tabbarItem : tabbarItems) {
-            addTabBarButtons(tabbarItem);
+            addTabBarItem(tabbarItem);
          }
       }
    }
 
    /**
-    * @param tabbarItem
+    * Adds the tab bar item.
+    * Use button to represent tabbar item.
+    * 
+    * @param tabbarItem the tabbar item
     */
-   private void addTabBarButtons(final TabBarItem tabbarItem) {
+   private void addTabBarItem(final TabBarItem tabbarItem) {
       Button btn = new Button();
       String name = tabbarItem.getName();
       btn.setToolTip(name);
@@ -187,6 +197,9 @@ public class GroupView {
       toolBar.add(btn);
    }
    
+   /**
+    * Creates the current screen view.
+    */
    private void createScreenView() {
       currentScreenView = new ScreenView(currentScreen);
       screenViews.put(currentScreen.getScreenId(), currentScreenView);
@@ -197,6 +210,9 @@ public class GroupView {
       saveGroupAndScreenToCookie();
    }
 
+   /**
+    * Creates the south part the group view if the group have more than one screens.
+    */
    private void createSouth() {
       LayoutContainer southContainer = new LayoutContainer();
       southContainer.setStyleAttribute("backgroundColor", "white");
@@ -268,7 +284,7 @@ public class GroupView {
    }
 
    /**
-    * To next screen.
+    * Show the current screen's next screen if there is have. 
     * 
     * @return true, if successful
     */
@@ -292,7 +308,7 @@ public class GroupView {
    }
 
    /**
-    * To previous screen.
+    * Show the current screen's previous screen if there is have. 
     * 
     * @return true, if successful
     */
@@ -315,6 +331,12 @@ public class GroupView {
       return false;
    }
    
+   /**
+    * Update the south part the group view.
+    * 
+    * @param screenSize the screen size
+    * @param screenIndex the screen index
+    */
    private void updateSouth(int screenSize, int screenIndex) {
       if (screenSize == 1) {
          layout.hide(Style.LayoutRegion.SOUTH);
@@ -344,6 +366,9 @@ public class GroupView {
       }
    }
    
+   /**
+    * Inits the current screen view.
+    */
    private void initCurrentScreenView() {
       currentScreenView = screenViews.get(currentScreen.getScreenId());
       if (currentScreenView == null) {
@@ -352,24 +377,37 @@ public class GroupView {
       }
    }
    
+   /**
+    * Save group and screen to cookie.
+    */
    private void saveGroupAndScreenToCookie() {
       ClientDataBase.userInfo.setLastGroupId(currentGroup.getGroupId());
       ClientDataBase.userInfo.setLastScreenId(currentScreen.getScreenId());
       Cookies.setCookie(Constants.CONSOLE_USERINFO, ClientDataBase.userInfo.toJson());
    }
    
+   /**
+    * Start current screen's polling.
+    */
    private void startCurrentPolling() {
       if (currentScreenView != null) {
          currentScreenView.startPolling();
       }
    }
    
+   /**
+    * Cancel current screen's polling.
+    */
    private void cancelCurrentPolling() {
       if (currentScreenView != null) {
          currentScreenView.cancelPolling();
       }
    }
-   private void addNaviagateListener() {
+   
+   /**
+    * Adds the navigate listener to handle navigate event.
+    */
+   private void addNavigateListener() {
       ORListenerManager.getInstance().addOREventListener(Constants.ListenerNavigateTo, new OREventListener() {
          public void handleEvent(OREvent event) {
             Navigate navigate = (Navigate) event.getData();
@@ -460,6 +498,9 @@ public class GroupView {
       return false;
    }
    
+   /**
+    * Do logout is to empty user password in cookies.
+    */
    private void doLogout() {
       MessageBox.confirm("Logout", "Are you sure you want to logout?", new Listener<MessageBoxEvent>() {
          public void handleEvent(MessageBoxEvent be) {
@@ -471,6 +512,9 @@ public class GroupView {
       });
    }
    
+   /**
+    * Adds the pop setting listener for pop settings window.
+    */
    private void addPopSettingListener() {
       ORListenerManager.getInstance().addOREventListener(Constants.ListenerToPopSetting, new OREventListener() {
          public void handleEvent(OREvent event) {

@@ -23,7 +23,8 @@ import org.openremote.web.console.client.gxtextends.ImageButton;
 import org.openremote.web.console.domain.Button;
 
 /**
- * The Class ScreenButton. It display as a style box, can be adjust size.
+ * The ScreenButton is a kind of screen control. 
+ * It display as a button, can adjust size, change icons.
  */
 public class ScreenButton extends ScreenControl {
 

@@ -21,6 +21,10 @@ package org.openremote.web.console.client.gxtextends;
 
 import com.extjs.gxt.ui.client.data.BaseModelData;
 
+/**
+ * Implements a String value BaseModelData.
+ * Can be used in ComboBox and Grid components.
+ */
 public class StringModelData extends BaseModelData {
 
    private static final long serialVersionUID = -4014669528270383777L;

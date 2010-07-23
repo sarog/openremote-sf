@@ -23,12 +23,17 @@ import org.openremote.web.console.client.gxtextends.SwitchButton;
 import org.openremote.web.console.domain.Switch;
 
 /**
- * The Class ScreenSwitch.
+ * The ScreenSwitch is for generate switch component by switch model.
  */
 public class ScreenSwitch extends ScreenControl implements SensoryDelegate {
 
    private SwitchButton switchButton;
    
+   /**
+    * Instantiates a new screen switch.
+    * 
+    * @param uiSwitch the ui switch
+    */
    public ScreenSwitch(Switch uiSwitch) {
       setComponent(uiSwitch);
       switchButton = new SwitchButton(uiSwitch);
@@ -38,6 +43,9 @@ public class ScreenSwitch extends ScreenControl implements SensoryDelegate {
       }
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.web.console.client.widget.SensoryDelegate#addPollingSensoryListener()
+    */
    public void addPollingSensoryListener() {
       switchButton.addPollingSensoryListener();
    }
