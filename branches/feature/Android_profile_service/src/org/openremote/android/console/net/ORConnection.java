@@ -67,7 +67,7 @@ public class ORConnection {
     * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> and param <b>isUseSSLfor</b> with url caller,<br />
     * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
     */
-   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam, boolean isUseSSL) {
+   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
       initHandler(context);
       delegate = delegateParam;
       this.context = context;
@@ -80,14 +80,15 @@ public class ORConnection {
       } else if (ORHttpMethod.GET.equals(httpMethod)) {
          httpRequest = new HttpGet(url);
       }
-      if (isUseSSL) {
-         try {
-            URL uri = new URL(url);
+      
+      try {
+         URL uri = new URL(url);
+         if ("https".equals(uri.getProtocol())) {
             Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
             httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-         } catch (MalformedURLException e) {
-            Log.e("ORConnection", "Create SSL URL fail:" + url);
          }
+      } catch (MalformedURLException e) {
+         Log.e("ORConnection", "Create URL fail:" + url);
       }
       if (httpRequest == null) {
          Log.e("ORConnection", "Create HttpRequest fail:" + url);
@@ -100,10 +101,6 @@ public class ORConnection {
       execute();
    }
 
-   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
-      this(context, httpMethod, isNeedHttpBasicAuth, url, delegateParam, false);
-   }
-   
    protected void initHandler(final Context context) {
       handler = new Handler() {
          @Override
@@ -206,7 +203,14 @@ public class ORConnection {
       }
       
       try {
+         URL uri = new URL(url);
+         if ("https".equals(uri.getProtocol())) {
+            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+            client.getConnectionManager().getSchemeRegistry().register(sch);
+         }
          response = client.execute(request);
+      } catch (MalformedURLException e) {
+         Log.e("ORConnection", "Create URL fail:" + url);
       } catch (ClientProtocolException e) {
          Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (SocketTimeoutException e) {

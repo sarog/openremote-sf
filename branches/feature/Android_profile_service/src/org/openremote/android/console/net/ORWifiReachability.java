@@ -71,7 +71,10 @@ public class ORWifiReachability {
 	 * @param ip The format must follow "xxx.xxx.xxx.xxx", eg: 192.168.1.11  
 	 */
 	public boolean checkIpString(String ip) {
-		return connectivityManager.requestRouteToHost(ConnectivityManager.TYPE_WIFI, (int) IpUitl.ipStringToLong(ip));
+	   if (ip != null) {
+	      return connectivityManager.requestRouteToHost(ConnectivityManager.TYPE_WIFI, (int) IpUitl.ipStringToLong(ip));
+	   }
+	   return false;
 	}
 	
 	private void localWifiConnectionStatus() {

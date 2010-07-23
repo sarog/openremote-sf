@@ -290,7 +290,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       Gesture gesture = currentScreen.getGestureByType(gestureType);
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
-            new ORRoundRobinConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getCurrentServer(this) + "/rest/control/"
+            new ORRoundRobinConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(this) + "/rest/control/"
                   + gesture.getComponentId() + "/swipe", this);
          }
          if (gesture.getNavigate() != null) {

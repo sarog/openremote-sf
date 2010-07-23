@@ -23,7 +23,9 @@ package org.openremote.android.console.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +38,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
-import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.util.SecurityUtil;
@@ -79,7 +81,8 @@ public class ORControllerServerSwitcher {
       HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
       HttpConnectionParams.setSoTimeout(params, 5 * 1000);
       HttpClient httpClient = new DefaultHttpClient(params);
-      HttpGet httpGet = new HttpGet(AppSettingsModel.getCurrentServer(context) + "/rest/servers");
+      String url = AppSettingsModel.getSecuredServer(context);
+      HttpGet httpGet = new HttpGet(url + "/rest/servers");
 		
 		if (httpGet == null) {
 			Log.e("GROUP MEMBER", "Create HttpRequest fail.");
@@ -87,6 +90,11 @@ public class ORControllerServerSwitcher {
 		}
 		SecurityUtil.addCredentialToHttpRequest(context, httpGet);		
 	   try {
+	      URL uri = new URL(url);
+         if ("https".equals(uri.getProtocol())) {
+            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+            httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+         }
 	    	HttpResponse httpResponse = httpClient.execute(httpGet);
 	    	
 	    	try {
@@ -123,6 +131,8 @@ public class ORControllerServerSwitcher {
 			} catch (IOException e) {
 			   Log.e("GROUP MEMBER", "detectGroupMembers Parse data error", e);
 			}
+	   } catch (MalformedURLException e) {
+         Log.e("GROUP MEMBER", "Create URL fail:" + url);
 	   } catch (ConnectException e) {
          Log.e("GROUP MEMBER", "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
       } catch (ClientProtocolException e) {
