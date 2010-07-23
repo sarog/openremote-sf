@@ -6,7 +6,6 @@ AbsoluteLayoutView = (function() {
   var ID = "absoluteLayoutView";
   var DEFAULT_CSS_STYLE = {
      "border" : "#CCCCCC dashed 1px",
-     "color":"#FF0000",
      "width":"100%",
      "height":"100%",
      "position":"absolute"
@@ -33,6 +32,9 @@ AbsoluteLayoutView = (function() {
     
     function renderSubviews() {
       var size = new Size(self.absoluteLayoutModel.width, self.absoluteLayoutModel.height);
+      if(self.absoluteLayoutModel.componentModel.node_name != Constants.BUTTON) {
+        return;
+      }
       self.componentView = ComponentView.build(self.absoluteLayoutModel.componentModel, size);
       self.addSubView(self.componentView);
     }

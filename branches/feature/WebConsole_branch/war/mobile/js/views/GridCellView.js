@@ -33,7 +33,16 @@ GridCellView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    function renderSubviews() {
+      if(self.gridCell.componentModel.node_name != Constants.BUTTON) {
+        return;
+      }
+      self.componentView = ComponentView.build(self.gridCell.componentModel, self.size);
+      self.addSubView(self.componentView);
+    }
+    
     init();
+    renderSubviews();
   }
 })();
 

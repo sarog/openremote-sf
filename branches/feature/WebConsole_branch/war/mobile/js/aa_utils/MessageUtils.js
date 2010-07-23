@@ -52,6 +52,16 @@ MessageUtils = (function(){
   			}
   		});
   		$("#messageDialog").dialog("open");
+    },
+    getExceptionMessage:function(statusCode) {
+      var message = "No message";
+      if (statusCode != "200") {
+        // switch(statusCode) {
+        //   case REQUEST_ERROR://404
+        //     break;
+        // }
+      }
+      return message;
     }
   };
 })();

@@ -20,7 +20,7 @@ PaginationView = (function() {
     self.delegate = delegateParam;
     
     this.updateView = function(screenViewParam) {
-      $(self.screenViewContainer).children().remove();
+      $(self.screenViewContainer).children().detach();
       $(self.screenViewContainer).append(screenViewParam.getCanvas());
     };
     

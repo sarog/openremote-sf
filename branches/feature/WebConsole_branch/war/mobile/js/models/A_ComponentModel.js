@@ -13,6 +13,6 @@ ComponentModel.build = function(jsonParser, nodeName, properties) {
     case Constants.IMAGE :
       return new Image(jsonParser, properties);
     default:
-      return new BaseModel(jsonParser, properties);//Control.build(jsonParser, nodeName, properties);
+      return ControlModel.build(jsonParser, nodeName, properties);
   }
 };

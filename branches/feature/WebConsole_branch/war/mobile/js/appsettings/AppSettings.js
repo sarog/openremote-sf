@@ -212,44 +212,45 @@ AppSettings = (function(){
       
       $("#controllerPanelSelect").children().remove();
       $("#controllerPanelSelect").html("<option>none</option>");
-
-      var successCallback = function(data, textStatus) {
-        var panelIdentities = [];
-        if (data != null) {
-          for (var index in data.panel) {
-            var panel = data.panel[index];
-            var panelID = panel["@id"];
-            var panelName = panel["@name"];
-            panelIdentities.push(panelName);
-          }
-        } else {
-          MessageUtils.showMessageDialog("Message", "There is no panel identities.");
-        }
-        
-        if (panelIdentities.length != 0) {
-          selectedControllerServer.setPanelIdentities(panelIdentities);
-          $("#controllerPanelSelect").children().remove();
-          for (var index in panelIdentities) {
-            if (selectedControllerServer.getSelectedPanelIdentity() == panelIdentities[index]) {
-              $("#controllerPanelSelect").append("<option selected>" + panelIdentities[index] + "</option>");
-            } else {
-              $("#controllerPanelSelect").append("<option>" + panelIdentities[index] + "</option>");
-            }
-          }
-        }
-
-        $("#controllerPanelSelectContainer").show();
-        MessageUtils.hideLoading();
-      };
       
-      var errorCallback = function(xOptions, textStatus) {
-        $("#controllerPanelSelectContainer").hide();
-        MessageUtils.hideLoading();
-        MessageUtils.showMessageDialog("Message", "Failed to load panels.");
-      };
-      
-      ConnectionUtils.getJson(selectedControllerServer.getUrl()+"/rest/panels?callback=?", successCallback, errorCallback);
+      ConnectionUtils.sendRequest(selectedControllerServer.getUrl()+"/rest/panels?callback=?", self);
     }
+    
+    // Followings two are delegate methods should be defined in ConnectionUtils.js .
+    this.didRequestSuccess = function(data, textStatus) {
+      var panelIdentities = [];
+      if (data != null) {
+        for (var index in data.panel) {
+          var panel = data.panel[index];
+          var panelID = panel["@id"];
+          var panelName = panel["@name"];
+          panelIdentities.push(panelName);
+        }
+      } else {
+        MessageUtils.showMessageDialog("Message", "There is no panel identities.");
+      }
+      
+      if (panelIdentities.length != 0) {
+        selectedControllerServer.setPanelIdentities(panelIdentities);
+        $("#controllerPanelSelect").children().remove();
+        for (var index in panelIdentities) {
+          if (selectedControllerServer.getSelectedPanelIdentity() == panelIdentities[index]) {
+            $("#controllerPanelSelect").append("<option selected>" + panelIdentities[index] + "</option>");
+          } else {
+            $("#controllerPanelSelect").append("<option>" + panelIdentities[index] + "</option>");
+          }
+        }
+      }
+
+      $("#controllerPanelSelectContainer").show();
+      MessageUtils.hideLoading();
+    };
+    
+    this.didRequestError = function(xOptions, textStatus) {
+      $("#controllerPanelSelectContainer").hide();
+      MessageUtils.hideLoading();
+      MessageUtils.showMessageDialog("Message", "Failed to load panels.");
+    };
     
     function initProtocolRadioBtns() {
       $("input[name = 'protocol']").click(function() {
