@@ -21,8 +21,10 @@ package org.openremote.android.console.model;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
@@ -31,6 +33,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -39,6 +42,7 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
+import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
 import org.openremote.android.console.util.SecurityUtil;
 
 import android.content.Context;
@@ -68,7 +72,7 @@ public class PollingHelper {
    private static final int NETWORK_ERROR = 0;
    public PollingHelper(HashSet<Integer> ids, final Context context) {
       this.context = context;
-      this.serverUrl = AppSettingsModel.getCurrentServer(context);
+      this.serverUrl = AppSettingsModel.getSecuredServer(context);
       readDeviceId(context);
       
       Iterator<Integer> id = ids.iterator();
@@ -106,9 +110,18 @@ public class PollingHelper {
       HttpConnectionParams.setSoTimeout(params, 55 * 1000);
       
       client = new DefaultHttpClient(params);
-      
       if (isPolling) {
          return;
+      }
+      
+      try {
+         URL uri = new URL(serverUrl);
+         if ("https".equals(uri.getProtocol())) {
+            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+            client.getConnectionManager().getSchemeRegistry().register(sch);
+         }
+      } catch (MalformedURLException e) {
+         Log.e("POLLING", "Create URL fail:" + serverUrl);
       }
       isPolling = true;
       handleRequest(serverUrl + "/rest/status/" + pollingStatusIds);

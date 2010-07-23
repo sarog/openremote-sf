@@ -50,7 +50,7 @@ public class ORNetworkCheck {
 	private static HttpResponse checkPanelXMlOfCurrentPanelIdentity(Context context) {
 	   HttpResponse response = checkControllerAvailable(context);
 		if(response !=null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
+			String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
 				return null;
 			}
@@ -69,7 +69,7 @@ public class ORNetworkCheck {
 	 */
 	private static HttpResponse checkControllerAvailable(Context context) {
 		if (checkControllerIPAddress(context)) {
-			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
+			String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
 			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
 				return null;
 			}

@@ -23,18 +23,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.ControllerException;
+import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
 
 import android.content.Context;
 import android.util.Log;
@@ -88,6 +92,11 @@ public class HTTPUtil {
       HttpClient client = new DefaultHttpClient(params);
       int statusCode = ControllerException.CONTROLLER_UNAVAILABLE;
       try {
+         URL uri = new URL(serverUrl);
+         if ("https".equals(uri.getProtocol())) {
+            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+            client.getConnectionManager().getSchemeRegistry().register(sch);
+         }
          HttpGet get = new HttpGet(serverUrl);
          SecurityUtil.addCredentialToHttpRequest(context, get);
          HttpResponse response = client.execute(get);
@@ -103,6 +112,8 @@ public class HTTPUtil {
             fOut.close();
             is.close();
          }
+      } catch (MalformedURLException e) {
+         Log.e("HTTPUtil", "Create URL fail:" + serverUrl);
       } catch (IllegalArgumentException e) {
          Log.e("IllegalArgumentException", "Download file " + fileName + " failed with URL: " + serverUrl, e);
       } catch (ClientProtocolException cpe) {

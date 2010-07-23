@@ -53,15 +53,26 @@ public class AppSettingsModel implements Serializable {
       return context.getSharedPreferences(APP_SETTINGS, 0).getString(CURRENT_SERVER, "");
    }
    
-   public static String convertToSecuredServer(String server, int sslPort) {
-      if (server.indexOf("http:") != -1) {
-         server = server.replaceFirst("http:", "https:");
+   /**
+    * Gets the secured server.
+    * return the current server if not set ssl, otherwise convert the current server to secured server and return. 
+    * 
+    * @param context the context
+    * 
+    * @return the server
+    */
+   public static String getSecuredServer(Context context) {
+      String currentServer = AppSettingsModel.getCurrentServer(context);
+      if (isUseSSL(context)) {
+         if (currentServer.indexOf("http:") != -1) {
+            currentServer = currentServer.replaceFirst("http:", "https:");
+         }
+         if (currentServer.indexOf(":") != -1) {
+            currentServer = currentServer.replaceFirst("\\:\\d+", ":" + getSSLPort(context));
+         }
+         Log.i("SECURE", currentServer);
       }
-      if (server.indexOf(":") != -1) {
-         server = server.replaceFirst("\\:\\d+", ":" + sslPort);
-      }
-      Log.i("SECURE", server);
-      return server;
+      return currentServer;
    }
    
    public static void setCurrentServer(Context context, String currentServer) {

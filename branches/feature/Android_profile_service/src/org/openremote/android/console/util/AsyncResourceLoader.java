@@ -70,9 +70,9 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       boolean isDownloadSuccess = false;
       String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
       publishProgress("panel: " + panelName);
-      String serverUrl = AppSettingsModel.getCurrentServer(activity);
+      String serverUrl = AppSettingsModel.getSecuredServer(activity);
 
-      HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, serverUrl);
+      HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, AppSettingsModel.getCurrentServer(activity));
       isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
 
       if (isDownloadSuccess) {
@@ -112,7 +112,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
             while (images.hasNext()) {
                imageName = images.next();
                publishProgress(imageName);
-               HTTPUtil.downLoadImage(activity, AppSettingsModel.getCurrentServer(activity), imageName);
+               HTTPUtil.downLoadImage(activity, AppSettingsModel.getSecuredServer(activity), imageName);
             }
          }
       } else { // Download failed.
