@@ -35,7 +35,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Element;
 
 /**
- * The Class SwitchButton.
+ * Generate a switch component by {@link org.openremote.web.console.domain.Switch}.
  */
 public class SwitchButton extends Button {
 
@@ -90,6 +90,12 @@ public class SwitchButton extends Button {
       }
    }
    
+   /**
+    * Send command by command type.
+    * 
+    * @param commandType 
+    * the command type support "on" and "off"
+    */
    private void sendCommand(String commandType) {
       ((ScreenSwitch) getParent()).sendCommand(commandType, new AsyncSuccessCallback<Void>() {
          public void onSuccess(Void result) {
@@ -98,6 +104,9 @@ public class SwitchButton extends Button {
       });
    }
    
+   /**
+    * Adds the polling sensory listener.
+    */
    public void addPollingSensoryListener() {
       final Integer sensorId = uiSwitch.getSensor().getSensorId();
       if (sensorId > 0) {

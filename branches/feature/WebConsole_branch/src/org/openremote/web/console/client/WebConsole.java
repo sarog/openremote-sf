@@ -46,6 +46,9 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
+/**
+ * The EntryPoint of GWT application. all the code must put into {@link #onModuleLoad()} method.
+ */
 public class WebConsole implements EntryPoint {
 
    /**
@@ -86,6 +89,10 @@ public class WebConsole implements EntryPoint {
       });
    }
    
+   /**
+    * Inits the user cache from cookies.
+    * include user info, application setting and ssl configurations.  
+    */
    private void initUserCache() {
       String userInfoJson = Cookies.getCookie(Constants.CONSOLE_USERINFO);
       String appSettingJson = Cookies.getCookie(Constants.CONSOLE_SETTINGS);
@@ -104,7 +111,7 @@ public class WebConsole implements EntryPoint {
    }
    
    /**
-    * read panel entity from server.
+    * read panel entity from server side.
     */
    private void readPanelXmlEntity() {
       ORRoundRobin.detectGroupMembers();
@@ -151,6 +158,10 @@ public class WebConsole implements EntryPoint {
             ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), callback);
    }
    
+   /**
+    * Inits the error view.
+    * It would be shown if there is no screen to display.
+    */
    private void initErrorView() {
       Text errorTitle = new Text("No Panel Found");
       errorTitle.addStyleName("error-text");

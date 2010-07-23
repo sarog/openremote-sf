@@ -31,13 +31,16 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 
 /**
- * The Class ORRoundRobin.
+ * The Class ORRoundRobin is for detect group member and switch server.
  */
 public class ORRoundRobin {
 
    private ORRoundRobin() {
    }
    
+   /**
+    * Detect group members in the same network segment.
+    */
    public static void detectGroupMembers() {
       String currentServer = ClientDataBase.appSetting.getCurrentServer();
       if(!"".equals(currentServer)) {
@@ -55,6 +58,9 @@ public class ORRoundRobin {
       }
    }
    
+   /**
+    * Do switch to a group member, not self.
+    */
    public static void doSwitch() {
       String memberStr = Cookies.getCookie(Constants.GROUP_MEMBERS);
       if (memberStr != null && !"".equals(memberStr)) {

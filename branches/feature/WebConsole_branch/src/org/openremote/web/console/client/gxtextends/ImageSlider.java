@@ -41,6 +41,7 @@ import com.google.gwt.user.client.Event;
 
 /**
  * The Class ImageSlider. {@link com.extjs.gxt.ui.client.widget.Slider}
+ * Support change images.
  */
 public class ImageSlider extends BoxComponent {
 

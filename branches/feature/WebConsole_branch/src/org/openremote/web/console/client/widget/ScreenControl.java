@@ -31,7 +31,7 @@ import org.openremote.web.console.domain.Switch;
 import com.google.gwt.user.client.Cookies;
 
 /**
- * The Class ScreenControl.
+ * The Class ScreenControl is the superclass of that screen component with control command.
  */
 public class ScreenControl extends ScreenComponent {
 
@@ -54,6 +54,12 @@ public class ScreenControl extends ScreenComponent {
       return screenControl;
    }
    
+   /**
+    * Send control command to controller.
+    * 
+    * @param commandType the command type
+    * @param callback the callback
+    */
    public void sendCommand(String commandType, AsyncSuccessCallback<Void> callback) {
       int sslPort = 0;
       String controlPath = ClientDataBase.appSetting.getControlPath();

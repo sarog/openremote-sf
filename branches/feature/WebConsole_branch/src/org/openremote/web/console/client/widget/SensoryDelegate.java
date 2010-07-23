@@ -24,5 +24,8 @@ package org.openremote.web.console.client.widget;
  */
 public interface SensoryDelegate {
 
+   /**
+    * Adds the polling sensory listener to the component which have sensor.
+    */
    void addPollingSensoryListener();
 }

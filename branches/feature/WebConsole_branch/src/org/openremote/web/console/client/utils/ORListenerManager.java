@@ -38,6 +38,12 @@ public class ORListenerManager {
    private ORListenerManager() {
    }
    
+   /**
+    * Adds the or event listener.
+    * 
+    * @param name the name
+    * @param listener the listener
+    */
    public void addOREventListener(String name, OREventListener listener) {
       List<OREventListener> listeners = null;
       if ((listeners = eventListeners.get(name)) == null) {
@@ -48,6 +54,12 @@ public class ORListenerManager {
       eventListeners.put(name, listeners);
    }
    
+   /**
+    * Notify or event listener.
+    * 
+    * @param name the name
+    * @param data the data
+    */
    public void notifyOREventListener(String name, Object data) {
       if (eventListeners.get(name) == null) {
          return;
@@ -57,6 +69,12 @@ public class ORListenerManager {
       }
    }
    
+   /**
+    * Delete or event listener.
+    * 
+    * @param name the name
+    * @param listener the listener
+    */
    public void deleteOREventListener(String name, OREventListener listener) {
       List<OREventListener> listeners = eventListeners.get(name);
       if (listeners != null) {
@@ -64,6 +82,11 @@ public class ORListenerManager {
       }
    }
    
+   /**
+    * Gets the single instance of ORListenerManager.
+    * 
+    * @return single instance of ORListenerManager
+    */
    public static synchronized ORListenerManager getInstance() {
       if ( instance == null) {
          instance = new ORListenerManager();
