@@ -20,18 +20,6 @@
      BG_IMAGE_ABSOLUTE : "@absolute",
      FILL_SCREEN : "@fillScreen",
      
-     LABEL : "label",
-     
-     BUTTON : "button",
-     DEFAULT : "default",
-     PRESSES : "pressed",
-     NAVIGATE : "navigate",
-     HAS_CONTROL_COMMAND : "@hasControlCommand",
-     IS_COMMAND_REPEATED : "@repeat",
-     
-     SWITCH : "switch",
-     SLIDER : "slider",
-     
      IMAGE : "image",
      SRC : "@src",
      
@@ -53,6 +41,16 @@
      GRID_CELL_COLSPAN : "@colspan",
      
      GROUP : "group",
+     
+     BUTTON : "button",
+     HAS_CONTROL_COMMAND : "@hasControlCommand",
+     IS_COMMAND_REPEATED : "@repeat",
+     DEFAULT : "default",
+     PRESSED : "pressed",
+     NAVIGATE : "navigate",
+     
+     SWITCH : "switch",
+     SLIDER : "slider",
      
      ID : "@id",
      NAME : "@name",
