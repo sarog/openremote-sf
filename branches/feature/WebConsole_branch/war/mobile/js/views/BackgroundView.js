@@ -29,8 +29,7 @@ BackgroundView = (function() {
     
     function layoutView() {
       if(!isImageNull()) {
-        var currentController = CookieUtils.getCookie(Constants.CURRENT_SERVER);
-        var imageQualifiedURL = currentController.url + "/resources/" + self.background.image.src;
+        var imageQualifiedURL = ConnectionUtils.getResourceURL(self.background.image.src);
         
         var customizedCss = {};
         

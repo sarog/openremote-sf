@@ -32,19 +32,21 @@ UpdateController = (function() {
           
           var panelRequestURL = currentServerURL+ "/rest/panel/" + selectedPanelIdentity + "?callback=?";
           MessageUtils.updateLoadingMessage("Downloading panel ...");
-          
-          var successCallback = function(jsonData, textStatus) {
-            MessageUtils.updateLoadingMessage("Downloading panel success ...");
-            parseJSONData(jsonData);
-          };
-          
-          var errorCallback = function(xOptions, textStatus) {
-            delegate.didUpdateFail("Download panel data fail, settings or leave it ?");
-          };
-          ConnectionUtils.getJson(panelRequestURL, successCallback, errorCallback);
+
+          ConnectionUtils.sendRequest(panelRequestURL, self);
         }
       }
     }
+    
+    // Fowllings two are delegate methods should be defined in ConnectionUtils.js .
+    this.didRequestSuccess = function(jsonData, textStatus) {
+      MessageUtils.updateLoadingMessage("Downloading panel success ...");
+      parseJSONData(jsonData);
+    };
+    
+    this.didRequestError = function(xOptions, textStatus) {
+      delegate.didUpdateFail("Download panel data fail, settings or leave it ?");
+    };
     
     function parseJSONData(jsonData) {
       MessageUtils.updateLoadingMessage("Parsing panel ...");

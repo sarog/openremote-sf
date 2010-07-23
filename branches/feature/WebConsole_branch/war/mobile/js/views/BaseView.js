@@ -6,6 +6,7 @@ BaseView = (function() {
   
   // Constructor
   return function() {
+    var self = this;
     // Private instance variables
     var id = "";
     var canvas = null;
@@ -32,7 +33,12 @@ BaseView = (function() {
       if (canvas == null) {
         throw new Error("Canvas is null.");
       }
+      self.css = cssParam;
       $(canvas).css(cssParam);
+    };
+    
+    this.getCss = function() {
+      return self.css;
     };
     
     this.addSubView = function(subView) {

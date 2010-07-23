@@ -7,7 +7,6 @@ ScreenView = (function() {
   var ID = "screenView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"black",
-     "color":"#FF0000",
      "width":"100%",
      "height":"100%"
    };
@@ -35,7 +34,7 @@ ScreenView = (function() {
       
       self.setID(ID+self.screen.id);
       var canvas = $("<div />", {
-        "id" : (ID+self.screen.id)
+        "id" : self.getID()
       });
       self.setCanvas(canvas);
       self.setCss(DEFAULT_CSS_STYLE);

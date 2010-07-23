@@ -31,7 +31,7 @@ GridLayoutView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
-    function renderSubviews() {
+    function renderGridviews() {
       var size = new Size(self.gridLayoutModel.width, self.gridLayoutModel.height);
       var widthPerGridCell = parseInt(self.gridLayoutModel.width)/parseInt(self.gridLayoutModel.cols);
       var heightPerGridCell = parseInt(self.gridLayoutModel.height)/parseInt(self.gridLayoutModel.rows);
@@ -49,7 +49,7 @@ GridLayoutView = (function() {
     }
     
     init();
-    renderSubviews();
+    renderGridviews();
   }
 })();
 
