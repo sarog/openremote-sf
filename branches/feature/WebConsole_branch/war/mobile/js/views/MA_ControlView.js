@@ -12,26 +12,22 @@ ControlView = (function() {
     
     this.sendCommandRequest = function(commandValue) {
       var controlURL = ConnectionUtils.getControlURL(self.component.id, commandValue);
-      ConnectionUtils.sendRequest(controlURL, self);
+      ConnectionUtils.sendNormalRequest(controlURL, self);
     };
     
     this.initView = function() {
     }
     
-    // Followings two are delegate methods should be defined in ConnectionUtils.
-    this.didRequestSuccess = function(data, textStatus) {
-      
+    // It is delegate methods should be defined in ConnectionUtils for sendNormalRequest.
+    this.didFeedBackWithRequest = function(data, textStatus, XMLHttpRequest) {
+      if (data != null && data != undefined) {
+        var error = data.error;
+        if (error != null && error != undefined) {
+          MessageUtils.showMessageDialogWithSettings("Send request error ", error.message);
+        }
+      }
     };
     
-    this.didRequestError = function(xOptions, textStatus) {
-      handleErrorWithStatusCode(textStatus);
-    };
-    
-    function handleErrorWithStatusCode(statusCode) {
-      // if (statusCode != 200) {
-      //   MessageUtils.showMessageDialogWithSettings("Send request error", MessageUtils.getExceptionMessage(statusCode) + statusCode);
-      // }
-    };
   }
 })();
 

@@ -27,11 +27,13 @@ ConnectionUtils = function() {
 		 * Send ajax request with the feedback json data type.
 		 * Used jquery plugin named jquery-jsonp.
 		 * NOTE: this method can get error call back from response.
+		 * error recovery in case of network failure or ill-formed JSON responses
 		 */
-	  sendRequest: function(requestURL, delegate) {
+	  sendJSONPRequest: function(requestURL, delegate) {
       $.jsonp({
           url: requestURL,
           success: delegate.didRequestSuccess,
+          //Error recovery in case of network failure or ill-formed JSON responses
           error: delegate.didRequestError
       });
 	  },
@@ -39,7 +41,7 @@ ConnectionUtils = function() {
 		/**
 		 * This method is used to requests which need http basic authentication.
 		 */
-		sendRequestWithAuthen: function(requestURL, successCallback, errorCallback) {
+		sendJSONPRequestWithAuthen: function(requestURL, successCallback, errorCallback) {
 		  var userInfo = UserInfo.getInstance();
 		  userInfo.setUsername("handy");
 		  userInfo.setPassword("handy");
@@ -59,7 +61,19 @@ ConnectionUtils = function() {
         alert("requireUsernamePassword");
         // delegate.requireUsernamePassword();
       }
-    }
+    },
+    
+    /**
+		 * Send ajax request without json data feedback.
+		 */
+		sendNormalRequest: function(requestURL, delegate) {
+      $.ajax({
+        type: "GET",
+        url: requestURL,
+        dataType: "jsonp",
+        success: delegate.didFeedBackWithRequest
+      });
+ 	  }
 	};
 	return ConnectionUtils;
 }();

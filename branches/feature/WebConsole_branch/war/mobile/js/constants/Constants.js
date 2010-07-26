@@ -10,6 +10,7 @@
      COLOR_BLACK : "#000000",
      COLOR_WHITE : "#FFFFFF",
      COLOR_RED : "#FF0000",
+     REPEAT_CMD_INTERVAL : 300,
      
      BASE_MODEL : "basemodel",
      
