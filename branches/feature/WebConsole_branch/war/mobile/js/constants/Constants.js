@@ -53,10 +53,18 @@
      LABEL : "label",
      
      SWITCH : "switch",
+     LINK : "link",
+     STATE : "state",
+     SENSOR : "sensor",
+     SENSOR_STATE : "sensorState",
+     ON :"on",
+     OFF : "off",
+     
      SLIDER : "slider",
      
      ID : "@id",
      NAME : "@name",
+     VALUE : "@value",
      INCLUDE : "include",
      TYPE : "@type",
      REF : "@ref",

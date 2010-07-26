@@ -9,9 +9,9 @@ ControlModel = (function() {
 ControlModel.build = function(jsonParser, nodeName, properties) {
   switch(nodeName) {
     case Constants.BUTTON :
-      return new Button(jsonParser, properties);//new Label(jsonParser, properties);
+      return new Button(jsonParser, properties);
     case Constants.SWITCH :
-      return new BaseModel(jsonParser, properties);//new Switch(jsonParser, properties);
+      return new Switch(jsonParser, properties);
     case Constants.SLIDER :
       return new BaseModel(jsonParser, properties);//new Slider(jsonParser, properties);
     default:

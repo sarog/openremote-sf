@@ -34,7 +34,7 @@ GridCellView = (function() {
     }
     
     function renderSubviews() {
-      if(self.gridCell.componentModel.node_name != Constants.BUTTON) {
+      if(self.gridCell.componentModel.node_name != Constants.BUTTON && self.gridCell.componentModel.node_name != Constants.SWITCH) {
         return;
       }
       self.componentView = ComponentView.build(self.gridCell.componentModel, self.size);

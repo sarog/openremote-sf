@@ -15,6 +15,7 @@ ControlView = (function() {
       ConnectionUtils.sendNormalRequest(controlURL, self);
     };
     
+    // This method must be overwritten in subclasses.
     this.initView = function() {
     }
     
@@ -38,7 +39,7 @@ ControlView.build = function(componentModelParam, sizeParam) {
     case Constants.BUTTON:
       return new ButtonView(componentModelParam, sizeParam);
     case Constants.SWITCH:
-      return new ControlView(componentModelParam, sizeParam);// return new SwitchView(componentModelParam, sizeParam);
+      return new SwitchView(componentModelParam, sizeParam);
     case Constants.SLIDER:
       return new ControlView(componentModelParam, sizeParam);// return new SliderView(componentModelParam, sizeParam);
     default:
