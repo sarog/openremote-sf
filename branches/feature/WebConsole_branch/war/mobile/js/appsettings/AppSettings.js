@@ -213,7 +213,7 @@ AppSettings = (function(){
       $("#controllerPanelSelect").children().remove();
       $("#controllerPanelSelect").html("<option>none</option>");
       
-      ConnectionUtils.sendRequest(selectedControllerServer.getUrl()+"/rest/panels?callback=?", self);
+      ConnectionUtils.sendJSONPRequest(selectedControllerServer.getUrl()+"/rest/panels?callback=?", self);
     }
     
     // Followings two are delegate methods should be defined in ConnectionUtils.js .

@@ -33,7 +33,7 @@ UpdateController = (function() {
           var panelRequestURL = currentServerURL+ "/rest/panel/" + selectedPanelIdentity + "?callback=?";
           MessageUtils.updateLoadingMessage("Downloading panel ...");
 
-          ConnectionUtils.sendRequest(panelRequestURL, self);
+          ConnectionUtils.sendJSONPRequest(panelRequestURL, self);
         }
       }
     }

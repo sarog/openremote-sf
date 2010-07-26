@@ -24,14 +24,6 @@ ButtonView = (function() {
     
     this.initView = function() {
       initCanvasAndCSS();
-      
-      self.getCanvas().click(function() {
-        if(self.component.hasControlCommand == true) {
-          
-          self.sendCommandRequest("click");
-        }
-      });
-      
       self.customizedCss = {};
       renderImages();
       renderButtonName();
@@ -46,8 +38,11 @@ ButtonView = (function() {
         "id" : self.getID()
       });
       self.setCanvas(canvas);
+      registerListenersForBtn();
+      
       self.setCss(DEFAULT_CSS_STYLE);
       
+      // register default mouseover and mouseout events.
       if (!(self.component.defaultImage !=null && self.component.defaultImage != undefined)) {
         self.getCanvas().mouseover(function() {
           $(self.getCanvas()).css("background", "url('./mobile/css/jquery/images/ui-bg_glass_75_dadada_1x400.png') 50% 50% repeat-x");
@@ -56,6 +51,23 @@ ButtonView = (function() {
           $(self.getCanvas()).css("background", "url('./mobile/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png') 50% 50% repeat-x");
         });
       }
+    }
+    
+    function registerListenersForBtn() {
+      // Mousedown event
+      $(self.getCanvas()).mousedown(function() {
+        if(self.component.hasControlCommand == true) {
+          self.sendCommandRequest("click");
+          if(self.component.isCommandRepeated) {
+            self.timerID = window.setInterval(function() {self.sendCommandRequest("click");}, Constants.REPEAT_CMD_INTERVAL);
+          }
+        }
+      });
+      
+      // Mouseup event
+      $(self.getCanvas()).mouseup(function() {
+        window.clearInterval(self.timerID)
+      });
     }
     
     function renderImages() {

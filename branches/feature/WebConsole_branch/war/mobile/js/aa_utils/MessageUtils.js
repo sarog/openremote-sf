@@ -53,9 +53,9 @@ MessageUtils = (function(){
   		});
   		$("#messageDialog").dialog("open");
     },
-    getExceptionMessage:function(statusCode) {
-      var message = "No message";
-      if (statusCode != "200") {
+    getExceptionMessage:function(textStatus) {
+      var message = "Unknown error!";
+      if (textStatus != "200") {
         // switch(statusCode) {
         //   case REQUEST_ERROR://404
         //     break;
