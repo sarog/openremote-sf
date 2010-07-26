@@ -32,7 +32,7 @@ AbsoluteLayoutView = (function() {
     
     function renderSubviews() {
       var size = new Size(self.absoluteLayoutModel.width, self.absoluteLayoutModel.height);
-      if(self.absoluteLayoutModel.componentModel.node_name != Constants.BUTTON) {
+      if(self.absoluteLayoutModel.componentModel.node_name != Constants.BUTTON && self.absoluteLayoutModel.componentModel.node_name != Constants.SWITCH) {
         return;
       }
       self.componentView = ComponentView.build(self.absoluteLayoutModel.componentModel, size);
