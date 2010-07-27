@@ -109,7 +109,7 @@
 
 - (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error
 {
-  *_error = error;
+  *_error = [error retain];
   _done = YES;
 }
 
