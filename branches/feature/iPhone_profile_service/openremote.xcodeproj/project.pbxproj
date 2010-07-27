@@ -1258,9 +1258,9 @@
 				INFOPLIST_FILE = Info.plist;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				SDKROOT = iphoneos2.2.1;
+				PROVISIONING_PROFILE = "AC50ED98-207B-4B99-A24F-D8418F8FA073";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "AC50ED98-207B-4B99-A24F-D8418F8FA073";
+				SDKROOT = iphoneos3.0;
 			};
 			name = Debug;
 		};
@@ -1507,12 +1507,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.0;
 			};
 			name = Debug;

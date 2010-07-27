@@ -25,18 +25,17 @@
 	
 }
 
-+ (NSString *)panelXmlUrl;
 + (NSString *)imageUrl;
 + (NSString *)controlRESTUrl;
 + (NSString *)statusRESTUrl;
 + (NSString *)pollingRESTUrl;
 + (NSString *)serverUrl;
 + (NSString *)securedServerUrl;
-+ (NSString *)securedControlRESTUrl;
 + (NSString *)logoutUrl;
 + (NSString *)panelsRESTUrl;
 + (NSString *)panelXmlRESTUrl;
 + (NSString *)hostName;
 + (NSString *)serversXmlRESTUrl;
++ (NSString *)securedOrRawServerUrl;
 
 @end

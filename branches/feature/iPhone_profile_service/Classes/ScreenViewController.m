@@ -91,7 +91,7 @@
 	}
 	
 	
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition securedControlRESTUrl]];
+	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]];
 	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]);
 	
@@ -113,7 +113,7 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		if (statusCode == 401) {
+		if (statusCode == UNAUTHORIZED) {
 			[Definition sharedDefinition].password = nil;
 		}
 		
