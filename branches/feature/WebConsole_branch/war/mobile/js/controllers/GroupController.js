@@ -23,6 +23,10 @@ GroupController = (function() {
       if (screens.length > 0) {
         self.paginationController = new PaginationController(self.group.screens);
         self.setView(self.paginationController.getView());
+        
+        var currentScreenViewController = self.paginationController.currentScreenViewController();
+        currentScreenViewController.startPolling();
+        
         MessageUtils.hideLoading();
       } else {
         showErrorView();

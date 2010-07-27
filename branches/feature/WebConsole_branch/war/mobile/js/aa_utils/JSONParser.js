@@ -8,15 +8,15 @@ JSONParser = (function() {
    
    var self = this;
    var jsonData = jsonDataParam;
-   var delegate = delegateParam;
+   self.delegate = delegateParam;
    
    this.startParse = function() {
      recursiveParse(null, jsonData);
-     delegate.didParseFinished();
+     self.delegate.didParseFinished();
    };
    
    this.setDelegate = function(delegateParam) {
-     delegate = delegateParam;
+     self.delegate = delegateParam;
    };
    
    function recursiveParse(nodeName, jsonData) {
@@ -25,14 +25,14 @@ JSONParser = (function() {
      for (var key in jsonData) {
        var value = jsonData[key];
 
-       if (key.toString().indexOf("@") === 0) {
+       if (key.toString().indexOf("@") === 0 || key.toString().indexOf("#") === 0) {
          properties[key] = value;
        } else {
          isLeaf = false;
        }
      }
      if (nodeName != null) {
-       delegate.didParse(self, nodeName, properties);         
+       self.delegate.didParse(self, nodeName, properties);         
      }
      
      if (isLeaf) {
@@ -45,12 +45,12 @@ JSONParser = (function() {
          continue;
        }else if (Object.prototype.toString.apply(value) === "[object Array]") {
          for(var index in value) {
-           var oldDelegate = delegate;
+           var oldDelegate = self.delegate;
            recursiveParse(key, value[index]);
            self.setDelegate(oldDelegate);
          }
        } else {
-         var oldDelegate = delegate;
+         var oldDelegate = self.delegate;
          recursiveParse(key, value);
          self.setDelegate(oldDelegate);
        }

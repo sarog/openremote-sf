@@ -11,6 +11,12 @@
      COLOR_WHITE : "#FFFFFF",
      COLOR_RED : "#FF0000",
      REPEAT_CMD_INTERVAL : 300,
+     HTTP_SUCCESS_CODE : "200",
+     UNKNOWN_ERROR_MESSAGE : "Unknown error from controller",
+     STATUS_CHANGE_EVENT : "statusChangeEvent",
+     
+     STATUS : "status",
+     STATUS_VALUE : "#text",
      
      BASE_MODEL : "basemodel",
      

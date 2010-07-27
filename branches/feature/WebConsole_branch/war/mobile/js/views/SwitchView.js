@@ -23,22 +23,42 @@ SwitchView = (function() {
     var self = this;
     
     this.initView = function() {
+      self.onImageName = "";
+      self.offImageName = "";
+      
       initCanvasAndCSS();
       self.customizedCss = {};
-      renderImages();
+      // renderImages();
       renderButtonName();
       self.setCss(self.customizedCss);
     }
     
+    this.dealPollingStatus = function(statusMapParam) {
+      var sensorStates = self.component.sensor.states;
+      if (sensorStates.length > 0) {
+        if (self.onImageName == "" || self.offImageName == "") {
+          for (var i = 0; i < sensorStates.length; i++) {
+            var sensorState = sensorStates[i];
+            if (sensorState.name.toUpperCase() == Constants.ON.toUpperCase()) {
+              self.onImageName = sensorState.value;
+            } else if (sensorState.name.toUpperCase() == Constants.OFF.toUpperCase()) {
+              self.offImageName = sensorState.value;
+            }
+          }
+        }
+      }
+      updateViewWithStatus(statusMapParam[self.component.sensor.id]);
+    };
+    
     function initCanvasAndCSS() {
       self.component = switchParam;
       self.size = sizeParam;
-      self.setID(ID+self.component.id);
+      self.setID(ID+Math.uuid());
       var canvas = $("<div />", {
         "id" : self.getID()
       });
       self.setCanvas(canvas);
-      registerListenersForBtn();
+      registerListeners();
       
       self.setCss(DEFAULT_CSS_STYLE);
       
@@ -53,39 +73,55 @@ SwitchView = (function() {
       }
     }
     
-    function registerListenersForBtn() {
+    function registerListeners() {
       $(self.getCanvas()).click(function() {
-        if (self.currentStatus.toUpperCase() == "ON") {
-          self.sendCommandRequest("OFF");
-        } else if (self.currentStatus.toUpperCase() == "OFF") {
-          self.sendCommandRequest("ON");
+        if (self.currentStatus.toUpperCase() == Constants.ON.toUpperCase()) {
+          self.sendCommandRequest(Constants.OFF.toUpperCase());
+        } else if (self.currentStatus.toUpperCase() == Constants.OFF.toUpperCase()) {
+          self.sendCommandRequest(Constants.ON.toUpperCase());
         }
       });
     }
     
-    function renderImages() {
-      var defaultImage = self.component.defaultImage;
-      if (defaultImage != null && defaultImage != undefined) {
-        self.customizedCss.background = "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top";
-        var pressedImage = self.component.pressedImage;
-        if (pressedImage != null && pressedImage != undefined) {
-          self.getCanvas().mousedown(function() {
-            $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(pressedImage.src) + "') no-repeat left top");
-          });
-          self.getCanvas().mouseup(function() {
-            $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top");
-          });
-        }
-      }
-    }
+    // function renderImages() {
+    //   var defaultImage = self.component.defaultImage;
+    //   if (defaultImage != null && defaultImage != undefined) {
+    //     self.customizedCss.background = "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top";
+    //     var pressedImage = self.component.pressedImage;
+    //     if (pressedImage != null && pressedImage != undefined) {
+    //       self.getCanvas().mousedown(function() {
+    //         $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(pressedImage.src) + "') no-repeat left top");
+    //       });
+    //       self.getCanvas().mouseup(function() {
+    //         $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top");
+    //       });
+    //     }
+    //   }
+    // }
     
     function renderButtonName() {
         $(self.getCanvas()).html("<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
-                        "<div style='position:relative;top:-50%;width:100%;text-align:center'>" + 
-                          (Constants.OFF).toUpperCase() + 
+                        "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" + 
+                          Constants.OFF.toUpperCase() + 
                         "</div>" + 
                        "</div>");
-        self.currentStatus = Constants.OFF.toUpperCase();
+        updateViewWithStatus(Constants.OFF.toUpperCase());
+    }
+    
+    function updateViewWithStatus(statusParam) {
+      if (statusParam != Constants.ON.toUpperCase() && statusParam != Constants.OFF.toUpperCase()) {
+        MessageUtils.showMessageDialogWithSettings("Error info", "Invalid status " + statusParam + " with switchview's component id " + self.component.id);
+        return;
+      }
+      self.currentStatus = statusParam.toUpperCase();
+      if (canUseImage()) {
+      } else {
+        $("#switchBtnName"+self.getID()).text(self.currentStatus);
+      }
+    }
+    
+    function canUseImage() {
+      return self.onImageName != "" && self.offImageName != "";
     }
     
     self.initView();

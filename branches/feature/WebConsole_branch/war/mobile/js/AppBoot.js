@@ -4,6 +4,7 @@
  * auther: handy.wang 2010-07-07
  */
 $().ready(function() {
+  window.statusChangeEvent = new YAHOO.util.CustomEvent(Constants.STATUS_CHANGE_EVENT);
   var appBoot = AppBoot.getInstance();
 });
 
@@ -14,6 +15,7 @@ AppBoot = (function() {
   // Constructor
   function AppBoot() {
     var self = this;
+    this.webConsoleID = Math.uuid();
     
     this.didUpdateFinished = function() {
       if (RenderDataDB.getInstance().getGroups().length > 0) {

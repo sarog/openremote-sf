@@ -17,13 +17,21 @@ Screen = (function() {
           break;
         case Constants.ABSOLUTE:
           var absoluteLayoutContainer = new AbsoluteLayoutModel(jsonParser, properties);
-          self.layouts[self.layouts.length] = absoluteLayoutContainer;
+          this.layouts[self.layouts.length] = absoluteLayoutContainer;
           break;
         case  Constants.GRID:
           var gridLayoutContainer = new GridLayoutModel(jsonParser, properties);
-          self.layouts[self.layouts.length] = gridLayoutContainer;
+          this.layouts[self.layouts.length] = gridLayoutContainer;
           break;
       }
+    };
+    
+    this.getPollingSensorIDs = function() {
+      self.sensorIDs = [];
+      for (var i = 0; i < this.layouts.length; i++) {
+        self.sensorIDs = self.sensorIDs.concat(this.layouts[i].getPollingSensorIDs());
+      }
+      return self.sensorIDs;
     };
     
     // Private methods

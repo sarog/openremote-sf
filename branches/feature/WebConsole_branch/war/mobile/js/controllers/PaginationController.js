@@ -26,6 +26,10 @@ PaginationController = (function() {
       }
     };
     
+    this.currentScreenViewController = function() {
+      return self.screenViewControllers[self.currentScreenIndex];
+    };
+    
     function init() {
       for (var index = 0; index < screensParam.length; index++) {
         var screenViewController = new ScreenViewController(screensParam[index]);

@@ -11,7 +11,7 @@ ComponentView = (function() {
     self.size = sizeParam;
     
     this.initView = function() {
-      // throw new Error("The initView defined in ComponentView must be rewrited in subclasses.");
+      // throw new Error("The method initView defined in ComponentView must be rewrited in subclasses.");
     }
     
     self.initView();

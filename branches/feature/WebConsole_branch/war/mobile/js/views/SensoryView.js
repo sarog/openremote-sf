@@ -1,11 +1,11 @@
 /**
- * It's view for sensory Conrols.
- * auther: handy.wang 2010-07-26
+ * It's view for sensory components.
+ * auther: handy.wang 2010-07-27
  */
-SensoryControlView = (function() {
+SensoryView = (function() {
   
-  return function(controlParam, sizeParam) {
-    SensoryControlView.superClass.constructor.call(this, controlParam, sizeParam);
+  return function(componentModelParam, sizeParam) {
+    SensoryView.superClass.constructor.call(this, componentModelParam, sizeParam);
     var self = this;
     
     // This method must be overwritten in subclasses.
@@ -16,9 +16,9 @@ SensoryControlView = (function() {
     
     this.addPollingListener = function() {
       var sensorID = 0;
-      if(self.component.node_name == Constants.SWITCH) {
+      if(self.component.node_name == Constants.IMAGE) {
         self.sensorID = self.component.sensor.id;
-      } else if(self.component.node_name == Constants.SLIDER) {
+      } else if(self.component.node_name == Constants.LABEL) {
         self.sensorID = self.component.sensor.id;
       }
       if(self.sensorID > 0) {
@@ -38,4 +38,4 @@ SensoryControlView = (function() {
   }
 })();
 
-ClassUtils.extend(SensoryControlView, ControlView);
+ClassUtils.extend(SensoryControlView, ComponentView);

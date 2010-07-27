@@ -23,9 +23,11 @@ ControlView = (function() {
     this.didFeedBackWithRequest = function(data, textStatus, XMLHttpRequest) {
       if (data != null && data != undefined) {
         var error = data.error;
-        if (error != null && error != undefined) {
+        if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
           MessageUtils.showMessageDialogWithSettings("Send request error ", error.message);
         }
+      } else {
+        MessageUtils.showMessageDialogWithSettings("Send request error ", Constants.UNKNOWN_ERROR_MESSAGE);
       }
     };
     
