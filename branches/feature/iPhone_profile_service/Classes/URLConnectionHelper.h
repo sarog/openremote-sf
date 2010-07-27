@@ -45,6 +45,9 @@
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d ;
 - (void)cancelConnection;
 
+//reimplement +[NSURLConnection sendSynchronousRequest:returningResponse:error:]
+- (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error;
+
 @property(nonatomic,retain) id <URLConnectionHelperDelegate> delegate;
 @property(nonatomic,retain) NSURLConnection *connection;
 @property(nonatomic,retain) NSError *errorMsg;
