@@ -28,6 +28,154 @@
 #import "UpdateController.h"
 #import "NotificationConstant.h"
 
+#pragma mark inner class NSURLConnectionDataCollector
+@interface _NSURLConnectionDataCollector : NSObject <NSURLProtocolClient>
+{
+  NSURLConnection	*_connection;	// Not retained
+  NSMutableData		*_data;
+  NSError		**_error;
+  NSURLResponse		**_response;
+  BOOL			_done;
+}
+
+- (id) initWithResponsePointer: (NSURLResponse **)response andErrorPointer: (NSError **)error;
+- (NSData*) _data;
+- (BOOL) _done;
+- (void) _setConnection: (NSURLConnection *)c;
+
+@end
+
+@implementation _NSURLConnectionDataCollector
+
+- (id) initWithResponsePointer: (NSURLResponse **)response andErrorPointer: (NSError **)error
+{
+  if ((self = [super init]) != nil)
+	{
+		_response = response;
+		_error = error;
+	}
+  return self;
+}
+
+- (void) dealloc
+{
+  [super dealloc];
+	[_data release];
+}
+
+- (BOOL) _done
+{
+  return _done;
+}
+
+- (NSData*) _data
+{
+  return _data;
+}
+
+- (void) _setConnection: (NSURLConnection*)c
+{
+  _connection = c;
+}
+
+// notification handler
+
+- (void) URLProtocol: (NSURLProtocol*)proto cachedResponseIsValid: (NSCachedURLResponse*)resp
+{
+  return;
+}
+
+- (void) URLProtocol: (NSURLProtocol*)proto didReceiveAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge
+{
+  return;
+}
+
+- (void) URLProtocol: (NSURLProtocol*)proto didCancelAuthenticationChallenge: (NSURLAuthenticationChallenge *)challenge
+{
+  return;
+}
+
+- (void) URLProtocol: (NSURLProtocol*)proto wasRedirectedToRequest: (NSURLRequest*)request
+		redirectResponse: (NSURLResponse*)redirectResponse
+{
+  return;
+}
+
+- (void) URLProtocol: (NSURLProtocol*)proto didFailWithError: (NSError*)error
+{
+  *_error = error;
+  _done = YES;
+}
+
+- (void) connection: (NSURLConnection *)connection didFailWithError: (NSError *)error
+{
+  *_error = error;
+  _done = YES;
+}
+
+- (void) URLProtocol: (NSURLProtocol*)proto didReceiveResponse: (NSURLResponse*)response
+  cacheStoragePolicy: (NSURLCacheStoragePolicy)policy
+{
+  *_response = response;
+}
+
+- (void) URLProtocolDidFinishLoading: (NSURLProtocol*)proto
+{
+  _done = YES;
+}
+
+- (void) connectionDidFinishLoading: (NSURLConnection *)connection
+{
+  _done = YES;
+}
+
+
+- (void) URLProtocol: (NSURLProtocol*)proto didLoadData: (NSData*)data
+{
+  if (_data == nil)
+	{
+		_data = [data mutableCopy];
+	}
+  else
+	{
+		[_data appendData: data];
+	}
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+	 *_response = [response retain];
+}
+
+- (void) connection: (NSURLConnection *)connection didReceiveData: (NSData *)data 
+{
+  if (_data == nil)
+	{
+		_data = [data mutableCopy];
+	}
+  else
+	{
+		[_data appendData: data];
+	}
+}
+
+//HTTPS self-certificate
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+	return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+	NSLog(@"[sync] use HTTPS self-certificate");
+	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+	}
+}
+
+@end
+
+
+#pragma mark main class URLConnectionHelper
+//Helper for NSURLConnection async or sync request. use HTTPS self-certificate. 
+//switch to another server when connection fail.
 @interface URLConnectionHelper (Private)
 - (void) removeBadCurrentServerURL;
 - (void) swithToGroupMemberServer;
@@ -39,7 +187,7 @@
 
 @synthesize delegate, connection, errorMsg, autoDiscoverController, getAutoServersTimer;
 
-#pragma mark constructor
+
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
 	if (self = [super init]) {
 		[self setDelegate:d];
@@ -77,6 +225,39 @@
 		
 	}
 }
+
+#pragma mark reimplement +[NSURLConnection sendSynchronousRequest:returningResponse:error:]
+//According to the documentation, +[NSURLConnection sendSynchronousRequest:returningResponse:error:] 
+//is built on top of the asynchronous loading code made available by NSURLConnection. It would not be 
+//difficult to reimplement this by spawning and blocking on an NSThread, running the request asynchronously 
+//in the background on a run loop and ending the thread once either connectionDidFinishLoading: or 
+//connection:didFailWithError: is received.
+- (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error {
+	
+	NSData	*data = nil;
+	
+	_NSURLConnectionDataCollector	*collector;
+	NSURLConnection			*conn;
+	NSRunLoop				*loop;
+	
+	collector = [_NSURLConnectionDataCollector alloc];
+	collector = [collector initWithResponsePointer: response andErrorPointer: error];
+	conn = [NSURLConnection alloc];
+	conn = [conn initWithRequest: request delegate:[collector autorelease]];
+	[collector _setConnection: conn];
+	loop = [NSRunLoop currentRunLoop];
+	while ([collector _done] == NO)
+	{
+		NSDate	*limit;
+		
+		limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 1.0];
+		[loop runMode: NSDefaultRunLoopMode beforeDate: limit];
+		[limit release];
+	}
+	data = [[collector _data] retain];
+  return [data autorelease];
+}
+
 
 #pragma mark Instance method
 
@@ -197,14 +378,13 @@
 	}
 }
 
-// Added by handy.wang
+// HTTPS self-certificate
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-	NSLog(@"protectionSpace.authenticationMethod is %@", protectionSpace.authenticationMethod);
 	return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-	NSLog(@"challenge.protectionSpace.authenticationMethod is %@", challenge.protectionSpace.authenticationMethod);
+	NSLog(@"[async] use HTTPS self-certificate");
 	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
 	}
@@ -223,13 +403,10 @@
 
 #pragma mark Delegate method of UpdateController
 - (void)didUpadted {
-	NSLog(@"----------DidUpdated in URLConnectionHelper------------");
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
-	NSLog(@"------------didUseLocalCache in URLConnectionHelper------------");
-	
 	if ([errorMessage isEqualToString:@"401"]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
 	} else {

@@ -24,6 +24,7 @@
 #import "DirectoryDefinition.h"
 #import "StringUtils.h"
 #import "CredentialUtil.h"
+#import "URLConnectionHelper.h"
 
 #define DOWNLOAD_TIMEOUT_INTERVAL 20
 
@@ -51,7 +52,7 @@ NSFileManager *fileManager;
 	NSString *encodedUrl = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)url, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:encodedUrl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
-	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+	NSData *data = [[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&response error:&error];
 	
 	if (error) {
 		NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;

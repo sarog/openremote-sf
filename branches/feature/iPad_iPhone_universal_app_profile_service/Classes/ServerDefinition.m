@@ -32,63 +32,61 @@
 	return  serverUrl;
 }
 
-//HTTPS
-+ (NSString *)securedServerUrl {
-	static NSString *serverUrl;
-	serverUrl = [AppSettingsDefinition getCurrentServerUrl];
-	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
+//use HTTPS, SSL port
++ (NSString *)applyHttpsAndSslPort:(NSString *)serverUrl {
+	NSString * url = [serverUrl copy];
+	url = [url stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
 	
-	NSString *port = [StringUtils parsePortFromServerUrl:serverUrl];
+	NSString *port = [StringUtils parsePortFromServerUrl:url];
 	NSString *securedPort = [NSString stringWithFormat:@"%d", [AppSettingsDefinition sslPort]];
-	serverUrl = [serverUrl stringByReplacingOccurrencesOfString:port withString:securedPort];
-	
-	return  serverUrl;
+	return [url stringByReplacingOccurrencesOfString:port withString:securedPort];
+}
+
++ (NSString *)securedServerUrl {
+	return  [self applyHttpsAndSslPort:[AppSettingsDefinition getCurrentServerUrl]];
 }
 
 + (NSString *)panelXmlRESTUrl {
 	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",[AppSettingsDefinition getCurrentPanelIdentity]];
-	NSString *panelXmlUrl = [[self serverUrl] stringByAppendingPathComponent:panelUrl];
+	NSString *panelXmlUrl = [[self securedOrRawServerUrl] stringByAppendingPathComponent:panelUrl];
 	return panelXmlUrl;
 }
 
-+ (NSString *)panelXmlUrl {
-	NSString *panelUrl = @"resources/panel.xml";
-	NSString *panelXmlUrl = [[self serverUrl] stringByAppendingPathComponent:panelUrl];
-	return panelXmlUrl;
-}
-
+//Round-Robin (fail-over) servers
 + (NSString *)serversXmlRESTUrl {
-	NSString *serversXmlUrl = [[self serverUrl] stringByAppendingPathComponent:@"rest/servers"];
+	NSString *serversXmlUrl = [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/servers"];
 	return serversXmlUrl;
 }
 
 + (NSString *)imageUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"resources"];
+	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"resources"];
 }
 
 + (NSString *)controlRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"rest/control"];
+	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/control"];
 }
 
-+ (NSString *)securedControlRESTUrl {
-	return [[AppSettingsDefinition useSSL] ? [self securedServerUrl] : [self serverUrl] stringByAppendingPathComponent:@"rest/control"];
+//returns serverUrl, if SSL is enabled, use secured server url.
++ (NSString *)securedOrRawServerUrl {
+	return [AppSettingsDefinition useSSL] ? [self securedServerUrl] : [self serverUrl];
 }
 
 + (NSString *)statusRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"rest/status"];	
+	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/status"];	
 }
 
 + (NSString *)pollingRESTUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"rest/polling"];
+	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/polling"];
 }
 
 + (NSString *)logoutUrl {
-	return [[self serverUrl] stringByAppendingPathComponent:@"logout"];
+	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"logout"];
 }
 
 + (NSString *)panelsRESTUrl {
-	NSLog(@"%@", [AppSettingsDefinition getUnsavedChosenServerUrl]);
-	return [[AppSettingsDefinition getUnsavedChosenServerUrl] stringByAppendingPathComponent:@"rest/panels"];
+	NSString *url = [AppSettingsDefinition getUnsavedChosenServerUrl];
+	url = [AppSettingsDefinition useSSL] ? [self applyHttpsAndSslPort:url] : url;
+	return [url stringByAppendingPathComponent:@"rest/panels"];
 }
 
 + (NSString *)hostName {
