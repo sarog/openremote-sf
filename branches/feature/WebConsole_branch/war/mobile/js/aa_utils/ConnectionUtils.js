@@ -11,8 +11,29 @@ ConnectionUtils = function() {
 		 */
 	  getControlURL: function(componentID, commandValue) {
 	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
-      var controlURL = currentControllerServerURL + "/rest/control/" + componentID + "/" + commandValue;
+      var controlURL = currentControllerServerURL + "/rest/control/" + componentID + "/" + commandValue + "?callback=?";
       return controlURL;
+	  },
+	  
+	  getStatusURL: function(sensorIDs) {
+	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
+	    if(sensorIDs != null && sensorIDs != undefined && sensorIDs.length > 0) {
+	      var pollingURL = currentControllerServerURL + "/rest/status/" + sensorIDs.join(",");
+	      return pollingURL;
+	    } else {
+	      return null;
+	    }
+	  },
+	  
+	  getPollingURL: function(sensorIDs) {
+	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
+	    if(sensorIDs != null && sensorIDs != undefined && sensorIDs.length > 0) {
+	      var webConsoleID = AppBoot.getInstance().webConsoleID;
+	      var pollingURL = currentControllerServerURL + "/rest/polling/" + webConsoleID + "/" + sensorIDs.join(",");
+	      return pollingURL;
+	    } else {
+	      return null;
+	    }
 	  },
 	  
 	  /**
@@ -65,6 +86,7 @@ ConnectionUtils = function() {
     
     /**
 		 * Send ajax request without json data feedback.
+		 * The delegate method's structure is function(data, textStatus, XMLHttpRequest).
 		 */
 		sendNormalRequest: function(requestURL, delegate) {
       $.ajax({

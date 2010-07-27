@@ -15,6 +15,15 @@ AbsoluteLayoutModel = (function() {
       self.componentModel = ComponentModel.build(jsonParser, nodeName, properties);
     };
     
+    this.getPollingSensorIDs = function() {
+      var pollingSensorIDs = [];
+      var sensor = this.componentModel.sensor;
+      if (sensor != null && sensor != undefined) {
+        pollingSensorIDs[pollingSensorIDs.length] = sensor.id;
+      }
+      return pollingSensorIDs;
+    };
+    
     // Private methods
     function init() {
       self.node_name = Constants.ABSOLUTE;

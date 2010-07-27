@@ -13,8 +13,19 @@ GridLayoutModel = (function() {
     this.didParse = function(jsonParser, nodeName, properties) {
       if (nodeName == Constants.GRID_CELL) {
         var gridCell = new GridCell(jsonParser, properties);
-        self.cells[self.cells.length] = gridCell;
+        this.cells[this.cells.length] = gridCell;
       }
+    };
+    
+    this.getPollingSensorIDs = function() {
+      var pollingSensorIDs = [];
+      for (var i = 0; i < this.cells.length; i++) {
+        var cell = this.cells[i];
+        if (cell.componentModel != null && cell.componentModel != undefined && cell.componentModel.sensor != null && cell.componentModel.sensor != undefined) {
+          pollingSensorIDs[pollingSensorIDs.length] = cell.componentModel.sensor.id;
+        }
+      }
+      return pollingSensorIDs;
     };
     
     // Private methods

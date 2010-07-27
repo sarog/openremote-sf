@@ -33,7 +33,7 @@ ButtonView = (function() {
     function initCanvasAndCSS() {
       self.component = buttonParam;
       self.size = sizeParam;
-      self.setID(ID+self.component.id);
+      self.setID(ID+Math.uuid());
       var canvas = $("<div />", {
         "id" : self.getID()
       });
@@ -68,6 +68,11 @@ ButtonView = (function() {
       $(self.getCanvas()).mouseup(function() {
         window.clearInterval(self.timerID)
       });
+      
+      // Mouseup event
+      $(self.getCanvas()).mouseout(function() {
+        window.clearInterval(self.timerID)
+      });
     }
     
     function renderImages() {
@@ -80,6 +85,9 @@ ButtonView = (function() {
             $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(pressedImage.src) + "') no-repeat left top");
           });
           self.getCanvas().mouseup(function() {
+            $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top");
+          });
+          self.getCanvas().mouseout(function() {
             $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top");
           });
         }
