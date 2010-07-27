@@ -183,7 +183,7 @@
 
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		if (statusCode == 401) {
+		if (statusCode == UNAUTHORIZED) {
 			[self showLoginAlert];
 		} else {
 			[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	

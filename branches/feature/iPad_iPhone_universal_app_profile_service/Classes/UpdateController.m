@@ -39,6 +39,7 @@
 #import "RoundRobinException.h"
 #import "DataBaseService.h"
 #import "GroupMember.h"
+#import "URLConnectionHelper.h"
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
@@ -187,7 +188,7 @@
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serversXmlRESTUrl]]; 
 	NSLog(@"serversXmlRESTUrl %@", [ServerDefinition serversXmlRESTUrl]);
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
-	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&resp error:&error];
+	NSData *data = [[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&resp error:&error];
 	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
 	[request release];
 	if (error ) {
