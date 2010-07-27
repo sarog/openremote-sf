@@ -79,6 +79,7 @@ public class ControlCommandRESTServlet extends HttpServlet {
          try{
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
                   controlCommandService.trigger(controlID, commandParam);
+                  output.print(JSONTranslator.toDesiredData(request, response, 200, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(200, "SUCCESS")));
                } else {
                   throw new InvalidCommandTypeException(commandParam);
                }
