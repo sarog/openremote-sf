@@ -21,20 +21,32 @@
 package org.openremote.controller.protocol.knx;
 
 /**
- * Generic exception type to indicate conversion problems when attempting to translate KNX
- * GroupValue Response data into KNX data point types.
+ * Generic exception type to indicate conversion problems from strings to Java types, from
+ * serialization formats to Java types, and so on.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-class ConversionException extends Exception
+public class ConversionException extends Exception
 {
+
   /**
    * Constructs a new exception with a given message.
    *
    * @param msg  human-readable error message
    */
-  ConversionException(String msg)
+  public ConversionException(String msg)
   {
     super(msg);
+  }
+
+  /**
+   * Constructs a new exception with a given message and root cause.
+   *
+   * @param msg     human-readable error message
+   * @param cause   root exception cause
+   */
+  public ConversionException(String msg, Throwable cause)
+  {
+    super(msg, cause);
   }
 }
