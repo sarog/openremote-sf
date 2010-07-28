@@ -199,7 +199,18 @@ class GroupAddress
     return hash + loByte;
   }
 
-  
+  /**
+   * Returns string representation of this group address as defined in
+   * {@link #formatToMainMiddleSub(byte[])}
+   *
+   * @return group address formatted to main/mid/sub convention
+   */
+  @Override public String toString()
+  {
+    return formatToMainMiddleSub(new byte[] { hiByte, loByte });
+  }
+
+
   // Package-Private Instance Methods -------------------------------------------------------------
 
   /**
