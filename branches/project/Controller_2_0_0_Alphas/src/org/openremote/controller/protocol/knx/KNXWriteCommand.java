@@ -21,38 +21,20 @@
 package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.command.ExecutableCommand;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.openremote.controller.command.CommandParameter;
+import org.openremote.controller.protocol.knx.datatype.DataType;
 
 /**
  * Write command representing KNX Group Value Write service. This class implements the
  * {@link ExecutableCommand} interface and therefore acts as an entry point in
  * controller/protocol SPI.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 class KNXWriteCommand extends KNXCommand implements ExecutableCommand
 {
 
   // Class Members --------------------------------------------------------------------------------
-
-  /**
-   * Lookup map from user defined command strings in the designer (from which they end up
-   * into controller.xml) to type safe APDUs for KNX CEMI frames.
-   */
-  private final static Map<String, ApplicationProtocolDataUnit> booleanCommandLookup =
-      new ConcurrentHashMap<String, ApplicationProtocolDataUnit>();
-
-  /*
-   * IMPLEMENTATION NOTE:
-   *
-   *   if new valid values for command names are added (in 'commandTranslations'), the
-   *   unit tests should be added accordingly into KNXCommandBuilderTest
-   */
-  static
-  {
-    booleanCommandLookup.put("ON", ApplicationProtocolDataUnit.WRITE_SWITCH_ON);
-    booleanCommandLookup.put("OFF", ApplicationProtocolDataUnit.WRITE_SWITCH_OFF);
-  }
 
 
   /**
@@ -63,15 +45,17 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
    *                  name is mapped to a typed KNX Application Protocol Data Unit instance.
    * @param mgr       Connection manager reference this command will use for transmission.
    * @param address   Destination group address for this command.
-   * 
+   * @param parameter parameter for this command or <tt>null</tt> if not available
+   *
    * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
    *          be matched to any command
    */
-  static KNXWriteCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
+  static KNXWriteCommand createCommand(String name, KNXConnectionManager mgr,
+                                       GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
 
-    ApplicationProtocolDataUnit apdu = booleanCommandLookup.get(name);
+    ApplicationProtocolDataUnit apdu = Lookup.get(name, parameter);
 
     if (apdu == null)
       return null;
@@ -111,4 +95,68 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
   }
     
 
+  // Nested Classes -------------------------------------------------------------------------------
+
+  /**
+   * Simple helper class to lookup user configured command names and match them to Java instances.
+   */
+  private static class Lookup
+  {
+
+    /**
+     * Lookup from user defined command strings in the designer (from which they end up
+     * into controller.xml) to type safe APDUs for KNX CEMI frames.
+     *
+     * @param   name        lookup name
+     * @param   parameter   command parameter, or <tt>null</tt> if not available
+     *
+     * @return  complete application protocol data unit with control information (APCI) and data,
+     *          or <tt>null</tt> if command was not found by name
+     */
+    private static ApplicationProtocolDataUnit get(String name, CommandParameter parameter)
+    {
+      /*
+       * IMPLEMENTATION NOTE:
+       *
+       *   when new valid values for command names are added, the unit tests should be added
+       *   accordingly into KNXCommandBuilderTest
+       *
+       * TODO : add unit tests for DIM INCREASE, DIM DECREASE
+       */
+      name = name.toUpperCase().trim();
+
+      if (name.equals("ON"))
+      {
+        return ApplicationProtocolDataUnit.WRITE_SWITCH_ON;
+      }
+
+      else if (name.equals("OFF"))
+      {
+        return ApplicationProtocolDataUnit.WRITE_SWITCH_OFF;
+      }
+
+      else if (name.equals("DIM_INCREASE")  ||
+               name.equals("DIM INCREASE"))
+      {
+        return ApplicationProtocolDataUnit.create3BitDimControl(
+            DataType.Boolean.INCREASE,
+            7                           // increase level [0-7]
+        );
+      }
+
+      else if (name.equals("DIM_DECREASE")  ||
+               name.equals("DIM DECREASE"))
+      {
+        return ApplicationProtocolDataUnit.create3BitDimControl(
+            DataType.Boolean.DECREASE,
+            7                           // decrease level [0-7]
+        );
+      }
+
+      else
+      {
+        return null;                    // according to javadoc
+      }
+    }
+  }
 }
