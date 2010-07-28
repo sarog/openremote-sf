@@ -8,7 +8,7 @@ NotificationCenter = (function() {
   var NotificationCenter = function() {
     this.eventListenersMap = [];
     
-    this.addEventListener = function(eventType, observer) {
+    this.addObserver = function(eventType, observer) {
       var eventListeners = this.eventListenersMap[eventType];
       if (eventListeners == null || eventListeners == undefined) {
         eventListeners = [];
@@ -17,21 +17,21 @@ NotificationCenter = (function() {
       this.eventListenersMap[eventType] = eventListeners;
     };
     
-    this.removeEventListener = function(eventType, observer) {
+    this.removeObserver = function(eventType, observer) {
       var eventListeners = this.eventListenersMap[eventType];
       if (eventListeners != null && eventListeners != undefined && eventListeners.length > 0) {
         eventListeners.splice(eventListeners.indexOf(observer), 1);
       }
     };
     
-    this.fireEvent = function(eventType, data) {
+    this.postNotification = function(eventType, data) {
       var eventListeners = this.eventListenersMap[eventType];
       if (eventListeners == null || eventListeners == undefined || eventListeners.length == 0) {
         return;
       }
       for (var i = 0; i < eventListeners.length; i++) {
         var eventListener = eventListeners[i];
-        eventListener.handleEvent(data);
+        eventListener.handleNotification(data);
       }
     };
     

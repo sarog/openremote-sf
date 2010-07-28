@@ -68,6 +68,36 @@ RootViewController = (function(){
      initViewController = new InitViewController();
      self.getView().addSubView(errorViewController.getView());
      self.getView().addSubView(initViewController.getView());
+     
+     // Add navigation event listener.
+     NotificationCenter.getInstance().addObserver(Constants.NAVIGATION, self);
+   }
+   
+   this.handleNotification = function(data) {
+     navigateFromNotification(data);
+   }
+   
+   function navigateFromNotification(data) {
+     if (data != null && data != undefined) {
+       var navigate = data;
+       navigateToWithHistory(navigate);
+     }
+   }
+   
+   function navigateToWithHistory(navigate) {
+     var historyNavigate = {};
+     var currentGroup = self.currentGroupController.group;
+     if (currentGroup != null && currentGroup != undefined) {
+       historyNavigate.fromGroup = currentGroup.id;
+       historyNavigate.fromScreen = self.currentGroupController.currentScreenID();
+     } else {
+       return;
+     }
+     
+     // // TODO: navigate to.
+     // if (navigateTo(navigate)) {
+     //   
+     // }
    }
    
    // Init jobs

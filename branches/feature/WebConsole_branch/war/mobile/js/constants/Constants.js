@@ -56,7 +56,17 @@
      IS_COMMAND_REPEATED : "@repeat",
      DEFAULT : "default",
      PRESSED : "pressed",
+     
      NAVIGATE : "navigate",
+     TO_SCREEN : "@toScreen",
+     TO_GROUP : "@toGroup",
+     TO : "@to",
+     PREVIOUS_SCREEN : "previousscreen",
+     NEXT_SCREEN : "nextscreen",
+     SETTING : "setting",
+     BACK : "back",
+     LOGIN : "login",
+     LOGOUT : "logout",
      
      LABEL : "label",
      

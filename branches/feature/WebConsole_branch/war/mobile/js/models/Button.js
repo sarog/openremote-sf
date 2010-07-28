@@ -25,6 +25,7 @@ Button = (function() {
           }
           break;
         case Constants.NAVIGATE:
+          self.navigate = new Navigate(jsonParser, properties);
           break;
       }
     };
