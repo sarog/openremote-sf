@@ -47,12 +47,17 @@ ConnectionUtils = function() {
 		/**
 		 * Send ajax request with the feedback json data type.
 		 * Used jquery plugin named jquery-jsonp.
+		 *
+		 * didFeedBackWithRequest method's structure is function(data, textStatus)
+		 * didRequestError methods's structure is function(xOptions, textStatus)
+		 *
 		 * NOTE: this method can get error call back from response.
 		 * error recovery in case of network failure or ill-formed JSON responses
 		 */
 	  sendJSONPRequest: function(requestURL, delegate) {
       $.jsonp({
           url: requestURL,
+          callbackParameter: "callback",
           success: delegate.didRequestSuccess,
           //Error recovery in case of network failure or ill-formed JSON responses
           error: delegate.didRequestError
@@ -86,7 +91,7 @@ ConnectionUtils = function() {
     
     /**
 		 * Send ajax request without json data feedback.
-		 * The delegate method's structure is function(data, textStatus, XMLHttpRequest).
+		 * The delegate didFeedBackWithRequest method's structure is function(data, textStatus, XMLHttpRequest).
 		 */
 		sendNormalRequest: function(requestURL, delegate) {
       $.ajax({

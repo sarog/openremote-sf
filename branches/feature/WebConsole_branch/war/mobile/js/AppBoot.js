@@ -4,7 +4,6 @@
  * auther: handy.wang 2010-07-07
  */
 $().ready(function() {
-  window.statusChangeEvent = new YAHOO.util.CustomEvent(Constants.STATUS_CHANGE_EVENT);
   var appBoot = AppBoot.getInstance();
 });
 

@@ -14,6 +14,8 @@
      HTTP_SUCCESS_CODE : "200",
      UNKNOWN_ERROR_MESSAGE : "Unknown error from controller",
      STATUS_CHANGE_EVENT : "statusChangeEvent",
+     TIME_OUT : "504",
+     CONTROLLER_CONFIG_CHANGED : "506",
      
      STATUS : "status",
      STATUS_VALUE : "#text",
