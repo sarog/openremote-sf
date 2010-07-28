@@ -151,7 +151,7 @@ abstract class KNXCommand implements Command
    *
    * }</pre>
    *
-   * @return
+   * @return  this command as string
    */
   @Override public String toString()
   {
@@ -191,8 +191,6 @@ abstract class KNXCommand implements Command
    * Relay a write command to an open KNX/IP connection.
    *
    * @param command   KNX write command
-   *
-   * @throws ConnectionException  if connection fails for any reason
    */
   void write(KNXWriteCommand command)
   {
@@ -220,8 +218,6 @@ abstract class KNXCommand implements Command
    *
    *          NOTE: may return <code>null</code> in case there's a connection exception or the
    *          read response is not available from the device yet.
-   *
-   * @throws ConnectionException    if connection fails for any reason
    */
   ApplicationProtocolDataUnit read(KNXReadCommand command)
   {
