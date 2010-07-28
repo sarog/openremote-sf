@@ -124,38 +124,89 @@ class ApplicationProtocolDataUnit
 
 
   /**
-   * TODO
+   * Constructs an APDU corresponding to a Group Value Read response from Common EMI wire format.
+   * The expected byte array must contain the last two bytes of the CEMI frame which includes
+   * the APCI bits and data payload of the APDU.
    *
-   * @param apdu
-   * @return
+   * @param   apdu  APDU bytes of CEMI frame. Expected byte array length is two for a switch
+   *                response (6-bit data payload for boolean datatype).
+   *
+   * @see Service#GROUPVALUE_RESPONSE_6BIT
+   * @see org.openremote.controller.protocol.knx.DataType.Boolean
+   *
+   * @return  APDU instance for a 6-bit group value response of a boolean datatype including
+   *          the data payload.
    */
-  static ApplicationProtocolDataUnit createGroupValueResponse(final byte[] apdu)
+  static ApplicationProtocolDataUnit createSwitchResponse(final byte[] apdu)
   {
-    DataType unknown = new DataType()
-    {
-      public int getDataLength()
-      {
-        return apdu.length - 1;
-      }
+//    DataType switchReadResponse = new DataType()
+//    {
+//      public int getDataLength()
+//      {
+//        return apdu.length - 1;
+//      }
+//
+//      public byte[] getData()
+//      {
+//        if (apdu.length == 2)
+//        {
+//          return new byte[] { (byte)(apdu[1] & 0x3F) };
+//        }
+//
+//        else
+//        {
+//          byte[] data = new byte[apdu.length - 2];
+//          System.arraycopy(apdu, 2, data, 0, data.length);
+//
+//          return data;
+//        }
+//      }
+//
+//      public DataPointType getDataPointType()
+//      {
+//        return BooleanDataPointType.SWITCH;
+//      }
+//    };
 
-      public byte[] getData()
-      {
-        if (apdu.length == 2)
-        {
-          return new byte[] { (byte)(apdu[1] & 0x3F) };
-        }
+    return new ApplicationProtocolDataUnit(
+        Service.GROUPVALUE_RESPONSE_6BIT,
+        DataType.Boolean.createSwitchResponse(apdu)
+    );
+  }
 
-        else
-        {
-          byte[] data = new byte[apdu.length - 2];
-          System.arraycopy(apdu, 2, data, 0, data.length);
-
-          return data;
-        }
-      }
-    };
-
-    return new ApplicationProtocolDataUnit(Service.GROUPVALUE_RESPONSE_6BIT, null, unknown);
+  /**
+   * Constructs an APDU corresponding to a Group Value Write service for a device expecting
+   * a 3-bit dim control data point type (DPT 3.007). <p>
+   *
+   * The control bit value must correspond to DPT 1.007, 1.008 or 1.014
+   * ({@link DataType.Boolean#INCREASE}/{@link DataType.Boolean#DECREASE},
+   *  {@link DataType.Boolean#UP}/{@link DataType.Boolean#DOWN},
+   *  {@link DataType.Boolean#FIXED}/{@link DataType.Boolean#CALCULATED}, respectively). <p>
+   *
+   * The dim value must be a 3-bit value in the range of [0-7].
+   *
+   * @see DataType.Boolean
+   * @see org.openremote.controller.protocol.knx.DataType.Controlled3Bit
+   *
+   * @param   controlValue  must be one of DataType.Boolean.INCREASE, DataType.Boolean.DECREASE,
+   *                        DataType.Boolean.UP, DataType.Boolean.DOWN, DataType.Boolean.FIXED
+   *                        or DataType.Boolean.CALCULATED
+   *
+   * @param   dimValue      must be in range of [0-7]
+   *
+   * @return  APDU instance for a 3-bit dim control Group Value Write service with a given control
+   *          bit and range bits
+   */
+  static ApplicationProtocolDataUnit create3BitDimControl(DataType.Boolean controlValue,
+                                                          int dimValue)
+  {
+    return new ApplicationProtocolDataUnit(
+        Service.GROUPVALUE_WRITE_6BIT,
+        new DataType.Controlled3Bit(
+            DataType.Control3BitDataPointType.CONTROL_DIMMING,
+            controlValue,
+            dimValue)
+    );
   }
 
 
@@ -282,44 +333,6 @@ class ApplicationProtocolDataUnit
   }
 
 
-  /**
-   * TODO
-   */
-  enum DataPointType
-  {
-    SWITCH          ("1.001",   DataType.Boolean.OFF,         DataType.Boolean.ON),
-    BOOL            ("1.002",   DataType.Boolean.FALSE,       DataType.Boolean.TRUE),
-    ENABLE          ("1.003",   DataType.Boolean.DISABLE,     DataType.Boolean.ENABLE),
-    RAMP            ("1.004",   DataType.Boolean.NO_RAMP,     DataType.Boolean.RAMP),
-    ALARM           ("1.005",   DataType.Boolean.NO_ALARM,    DataType.Boolean.ALARM),
-    BINARY_VALUE    ("1.006",   DataType.Boolean.LOW,         DataType.Boolean.HIGH),
-    STEP            ("1.007",   DataType.Boolean.DECREASE,    DataType.Boolean.INCREASE),
-    UPDOWN          ("1.008",   DataType.Boolean.UP,          DataType.Boolean.DOWN),
-    OPENCLOSE       ("1.009",   DataType.Boolean.OPEN,        DataType.Boolean.CLOSE),
-    START           ("1.010",   DataType.Boolean.STOP,        DataType.Boolean.START),
-    STATE           ("1.011",   DataType.Boolean.INACTIVE,    DataType.Boolean.ACTIVE),
-    INVERT          ("1.012",   DataType.Boolean.NOT_INVERTED,DataType.Boolean.INVERTED),
-    DIM_SEND_STYLE  ("1.013",   DataType.Boolean.START_STOP,  DataType.Boolean.CYCLICALLY),
-    INPUT_SOURCE    ("1.014",   DataType.Boolean.FIXED,       DataType.Boolean.CALCULATED);
-
-    String dptID;
-    DataType.Boolean zeroValueEncoding;
-    DataType.Boolean oneValueEncoding;
-
-    DataPointType(String dptID, DataType.Boolean zeroEncoding, DataType.Boolean oneEncoding)
-    {
-      this.dptID = dptID;
-      this.zeroValueEncoding = zeroEncoding;
-      this.oneValueEncoding = oneEncoding;
-    }
-
-    DataType.Boolean getEncodingForValue(int value)
-    {
-      if (value == 0) return zeroValueEncoding;
-      else return oneValueEncoding;
-    }
-  }
-
 
   // Constants ------------------------------------------------------------------------------------
 
@@ -328,13 +341,11 @@ class ApplicationProtocolDataUnit
    * (Switch) to state 'ON'.
    *
    * @see Service#GROUPVALUE_WRITE_6BIT
-   * @see DataPointType#SWITCH
    * @see DataType.Boolean#ON
    */
   final static ApplicationProtocolDataUnit WRITE_SWITCH_ON = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_WRITE_6BIT,
-      DataPointType.SWITCH,
       DataType.Boolean.ON
   );
 
@@ -345,9 +356,9 @@ class ApplicationProtocolDataUnit
   final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_WRITE_6BIT,
-      DataPointType.SWITCH,
       DataType.Boolean.OFF
   );
+
 
   /**
    * Represents the full APDU (APCI bits) for Group Value Read request for data points with
@@ -356,8 +367,7 @@ class ApplicationProtocolDataUnit
   final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
   (
       Service.GROUPVALUE_READ,
-      DataPointType.SWITCH,
-      DataType.EMPTY              // there's no data on read request
+      DataType.READ_SWITCH              // there's no data on read request
   );
 
 
@@ -366,31 +376,25 @@ class ApplicationProtocolDataUnit
 
   private DataType datatype;
   private Service applicationLayerService;
-  private DataPointType dpt;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a new APDU with a given application layer service, datapoint type and datatype
+   * Constructs a new APDU with a given application layer service and datatype.
    *
    * @see Service
-   * @see DataPointType
    * @see DataType
    *
    * @param service   application layer service as defined in {@link Service]
-   * @param dpt       KNX datapoint type
    * @param datatype  KNX data type
+   *
    */
-  private ApplicationProtocolDataUnit(Service service, DataPointType dpt, DataType datatype)
+  private ApplicationProtocolDataUnit(Service service, DataType datatype)
   {
     this.applicationLayerService  = service;
     this.datatype = datatype;
-    this.dpt = dpt;
-
-    // TODO : embed datatype into DPT ?
   }
-
 
 
 
@@ -439,12 +443,12 @@ class ApplicationProtocolDataUnit
 
   /**
    * Returns the data length of the data type associated with this APDU.
-   * See {@link org.openremote.controller.protocol.knx.DataType#getDataLength()} for details.
+   * See {@link DataType#getDataLength()} for details.
    *
-   * @see org.openremote.controller.protocol.knx.DataType#getDataLength()
+   * @see DataType#getDataLength()
    *
    * @return returns the APDU data payload length in bytes, as specified in
-   *         {@link org.openremote.controller.protocol.knx.DataType#getDataLength()}
+   *         {@link DataType#getDataLength()}
    */
   int getDataLength()
   {
@@ -452,7 +456,7 @@ class ApplicationProtocolDataUnit
   }
 
   /**
-   * TODO : used ?
+   * TODO
    *
    * @return
    */
@@ -462,13 +466,13 @@ class ApplicationProtocolDataUnit
   }
 
   /**
-   * TODO
+   * TODO 
    *
    * @return
    */
-  DataPointType  getDataPointType()
+  DataType.DataPointType getDataPointType()
   {
-    return dpt;
+    return datatype.getDataPointType();
   }
 
   /**
