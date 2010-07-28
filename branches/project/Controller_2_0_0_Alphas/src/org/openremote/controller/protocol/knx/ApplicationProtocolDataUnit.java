@@ -88,6 +88,43 @@ import java.util.List;
  */
 class ApplicationProtocolDataUnit
 {
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Represents the full APDU (APCI + data) for Group Value Write service request with DPT 1.001
+   * (Switch) to state 'ON'.
+   *
+   * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
+   * @see DataType.Boolean#ON
+   */
+  final static ApplicationProtocolDataUnit WRITE_SWITCH_ON = new ApplicationProtocolDataUnit
+  (
+      ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
+      DataType.Boolean.ON
+  );
+
+  /**
+   * Represents the full APDU (APCI + data) for Group Value Write service request with
+   * DPT 1.001 (Switch) to state 'OFF'.
+   */
+  final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
+  (
+      ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
+      DataType.Boolean.OFF
+  );
+
+
+  /**
+   * Represents the full APDU (APCI bits) for Group Value Read request for data points with
+   * DPT 1.001 (Switch) type.
+   */
+  final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
+  (
+      ApplicationLayer.Service.GROUPVALUE_READ,
+      DataType.READ_SWITCH
+  );
+
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -210,43 +247,6 @@ class ApplicationProtocolDataUnit
   }
 
 
-  // Constants ------------------------------------------------------------------------------------
-
-  /**
-   * Represents the full APDU (APCI + data) for Group Value Write service request with DPT 1.001
-   * (Switch) to state 'ON'.
-   *
-   * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
-   * @see DataType.Boolean#ON
-   */
-  final static ApplicationProtocolDataUnit WRITE_SWITCH_ON = new ApplicationProtocolDataUnit
-  (
-      ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
-      DataType.Boolean.ON
-  );
-
-  /**
-   * Represents the full APDU (APCI + data) for Group Value Write service request with
-   * DPT 1.001 (Switch) to state 'OFF'.
-   */
-  final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
-  (
-      ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
-      DataType.Boolean.OFF
-  );
-
-
-  /**
-   * Represents the full APDU (APCI bits) for Group Value Read request for data points with
-   * DPT 1.001 (Switch) type.
-   */
-  final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
-  (
-      ApplicationLayer.Service.GROUPVALUE_READ,
-      DataType.READ_SWITCH              // there's no data on read request
-  );
-
-
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -262,9 +262,9 @@ class ApplicationProtocolDataUnit
    * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service
    * @see DataType
    *
-   * @param service   application layer service as defined in {@link org.openremote.controller.protocol.knx.ApplicationLayer.Service]
+   * @param service   application layer service as defined in
+   *                  {@link org.openremote.controller.protocol.knx.ApplicationLayer.Service]
    * @param datatype  KNX data type
-   *
    */
   private ApplicationProtocolDataUnit(ApplicationLayer.Service service, DataType datatype)
   {
@@ -332,9 +332,11 @@ class ApplicationProtocolDataUnit
   }
 
   /**
-   * TODO
+   * Returns the KNX datatype associated with this APDU.
    *
-   * @return
+   * @see DataType
+   *
+   * @return  KNX datatype
    */
   DataType getDataType()
   {
