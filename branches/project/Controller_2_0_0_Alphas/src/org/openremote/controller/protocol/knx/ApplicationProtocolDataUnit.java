@@ -22,6 +22,8 @@ package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.utils.Strings;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.protocol.knx.datatype.DataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,7 +171,7 @@ class ApplicationProtocolDataUnit
    *                response (6-bit data payload for boolean datatype).
    *
    * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_RESPONSE_6BIT
-   * @see org.openremote.controller.protocol.knx.DataType.Boolean
+   * @see org.openremote.controller.protocol.knx.datatype.DataType.Boolean
    *
    * @return  APDU instance for a 6-bit group value response of a boolean datatype including
    *          the data payload.
@@ -223,7 +225,7 @@ class ApplicationProtocolDataUnit
    * The dim value must be a 3-bit value in the range of [0-7].
    *
    * @see DataType.Boolean
-   * @see org.openremote.controller.protocol.knx.DataType.Controlled3Bit
+   * @see org.openremote.controller.protocol.knx.datatype.DataType.Controlled3Bit
    *
    * @param   controlValue  must be one of DataType.Boolean.INCREASE, DataType.Boolean.DECREASE,
    *                        DataType.Boolean.UP, DataType.Boolean.DOWN, DataType.Boolean.FIXED
@@ -240,7 +242,7 @@ class ApplicationProtocolDataUnit
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
         new DataType.Controlled3Bit(
-            DataType.Control3BitDataPointType.CONTROL_DIMMING,
+            DataPointType.Control3BitDataPointType.CONTROL_DIMMING,
             controlValue,
             dimValue)
     );
@@ -348,7 +350,7 @@ class ApplicationProtocolDataUnit
    *
    * @return
    */
-  DataType.DataPointType getDataPointType()
+  DataPointType getDataPointType()
   {
     return datatype.getDataPointType();
   }

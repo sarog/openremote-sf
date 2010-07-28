@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.knx;
+package org.openremote.controller.protocol.knx.datatype;
 
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 
@@ -51,11 +51,11 @@ import org.openremote.controller.protocol.knx.datatype.DataPointType;
  * </ol>
  *
  * @see DataType.Boolean
- * @see org.openremote.controller.protocol.knx.DataType.Controlled3Bit
+ * @see DataType.Controlled3Bit
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-interface DataType
+public interface DataType
 {
 
   /**
@@ -83,7 +83,7 @@ interface DataType
    * Returns the data length (payload) represented by this datatype. Data length is at minimum
    * 1 byte and at most 14 bytes. It does *not* include the first byte in the application layer
    * data unit which contains transport protocol and application protocol control information
-   * (TPCI & APCI) -- see {@link ApplicationProtocolDataUnit} for more details on the APDU
+   * (TPCI & APCI) -- see {@link org.openremote.controller.protocol.knx.ApplicationProtocolDataUnit} for more details on the APDU
    * structure.
    *
    * @return  length of the data in Common EMI frame Application Protocol Data Unit (APDU) payload;
@@ -97,7 +97,7 @@ interface DataType
    * (TCPI & ACPI, respectively).
    *
    * @see #getDataLength
-   * @see ApplicationProtocolDataUnit
+   * @see org.openremote.controller.protocol.knx.ApplicationProtocolDataUnit
    *
    * @return KNX Application Protocol Data Unit (APDU) data payload as a byte array. The returned
    *         array has at minimum 1 byte and at most 14 bytes. It's length matches the value
@@ -145,94 +145,94 @@ interface DataType
     /**
      * DPT 1.001 - DPT_Switch. Value 0 = OFF, Value 1 = ON, general use.
      */
-    final static Boolean OFF = new Boolean("1.001", DataPointType.BooleanDataPointType.SWITCH, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean OFF = new Boolean("1.001", DataPointType.BooleanDataPointType.SWITCH, DATATYPE_BOOLEAN_ZERO);
 
-    final static Boolean ON = new Boolean("1.001", DataPointType.BooleanDataPointType.SWITCH, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean ON = new Boolean("1.001", DataPointType.BooleanDataPointType.SWITCH, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.002 - DPT_Bool. Value 0 = FALSE, Value 1 = TRUE, general use.
      */
-    final static Boolean FALSE = new Boolean("1.002", DataPointType.BooleanDataPointType.BOOL,  DATATYPE_BOOLEAN_ZERO);
-    final static Boolean TRUE = new Boolean("1.002", DataPointType.BooleanDataPointType.BOOL, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean FALSE = new Boolean("1.002", DataPointType.BooleanDataPointType.BOOL,  DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean TRUE = new Boolean("1.002", DataPointType.BooleanDataPointType.BOOL, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.003 - DPT_Enable. Value 0 = DISABLE, Value 1 = ENABLE, general use.
      */
-    final static Boolean DISABLE = new Boolean("1.003", DataPointType.BooleanDataPointType.ENABLE, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean ENABLE = new Boolean("1.003", DataPointType.BooleanDataPointType.ENABLE, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean DISABLE = new Boolean("1.003", DataPointType.BooleanDataPointType.ENABLE, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean ENABLE = new Boolean("1.003", DataPointType.BooleanDataPointType.ENABLE, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.004 - DPT_Ramp. Value 0 = NO_RAMP, Value 1 = RAMP, functional blocks only.
      */
-    final static Boolean NO_RAMP = new Boolean("1.004", DataPointType.BooleanDataPointType.RAMP, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean RAMP = new Boolean("1.004", DataPointType.BooleanDataPointType.RAMP, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean NO_RAMP = new Boolean("1.004", DataPointType.BooleanDataPointType.RAMP, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean RAMP = new Boolean("1.004", DataPointType.BooleanDataPointType.RAMP, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.005 - DPT_Alarm. Value 0 = NO_ALARM, Value 1 = ALARM, functional blocks only.
      */
-    final static Boolean NO_ALARM = new Boolean("1.005", DataPointType.BooleanDataPointType.ALARM, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean ALARM = new Boolean("1.005", DataPointType.BooleanDataPointType.ALARM, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean NO_ALARM = new Boolean("1.005", DataPointType.BooleanDataPointType.ALARM, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean ALARM = new Boolean("1.005", DataPointType.BooleanDataPointType.ALARM, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.006 - DPT_BinaryValue. Value 0 = LOW, Value 1 = HIGH, functional blocks only.
      */
-    final static Boolean LOW = new Boolean("1.006", DataPointType.BooleanDataPointType.BINARY_VALUE, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean HIGH = new Boolean("1.006", DataPointType.BooleanDataPointType.BINARY_VALUE, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean LOW = new Boolean("1.006", DataPointType.BooleanDataPointType.BINARY_VALUE, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean HIGH = new Boolean("1.006", DataPointType.BooleanDataPointType.BINARY_VALUE, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.007 - DPT_Step. Value 0 = DECREASE, Value 1 = INCREASE, functional blocks only.
      */
-    final static Boolean DECREASE = new Boolean("1.007", DataPointType.BooleanDataPointType.STEP, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean INCREASE = new Boolean("1.007", DataPointType.BooleanDataPointType.STEP, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean DECREASE = new Boolean("1.007", DataPointType.BooleanDataPointType.STEP, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean INCREASE = new Boolean("1.007", DataPointType.BooleanDataPointType.STEP, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.008 - DPT_UpDown. Value 0 = UP, Value 1 = DOWN, general use.
      */
-    final static Boolean UP = new Boolean("1.008", DataPointType.BooleanDataPointType.UP_DOWN, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean DOWN = new Boolean("1.008", DataPointType.BooleanDataPointType.UP_DOWN, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean UP = new Boolean("1.008", DataPointType.BooleanDataPointType.UP_DOWN, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean DOWN = new Boolean("1.008", DataPointType.BooleanDataPointType.UP_DOWN, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.009 - DPT_OpenClose. Value 0 = OPEN, Value 1 = CLOSE, general use.
      */
-    final static Boolean OPEN = new Boolean("1.009", DataPointType.BooleanDataPointType.OPEN_CLOSE, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean CLOSE = new Boolean("1.009", DataPointType.BooleanDataPointType.OPEN_CLOSE, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean OPEN = new Boolean("1.009", DataPointType.BooleanDataPointType.OPEN_CLOSE, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean CLOSE = new Boolean("1.009", DataPointType.BooleanDataPointType.OPEN_CLOSE, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.010 - DPT_Start. Value 0 = STOP, Value 1 = START, general use.
      */
-    final static Boolean STOP = new Boolean("1.010", DataPointType.BooleanDataPointType.START, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean START = new Boolean("1.010", DataPointType.BooleanDataPointType.START, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean STOP = new Boolean("1.010", DataPointType.BooleanDataPointType.START, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean START = new Boolean("1.010", DataPointType.BooleanDataPointType.START, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.011 - DPT_State. Value 0 = INACTIVE, Value 1 = ACTIVE, functional blocks only.
      */
-    final static Boolean INACTIVE = new Boolean("1.011", DataPointType.BooleanDataPointType.STATE, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean ACTIVE = new Boolean("1.011", DataPointType.BooleanDataPointType.STATE, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean INACTIVE = new Boolean("1.011", DataPointType.BooleanDataPointType.STATE, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean ACTIVE = new Boolean("1.011", DataPointType.BooleanDataPointType.STATE, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.012 - DPT_Invert. Value 0 = NOT INVERTED, Value 1 = INVERTED, functional blocks only.
      */
-    final static Boolean NOT_INVERTED = new Boolean("1.012", DataPointType.BooleanDataPointType.INVERT, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean INVERTED = new Boolean("1.012", DataPointType.BooleanDataPointType.INVERT, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean NOT_INVERTED = new Boolean("1.012", DataPointType.BooleanDataPointType.INVERT, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean INVERTED = new Boolean("1.012", DataPointType.BooleanDataPointType.INVERT, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.013 - DPT_DimSendStyle. Value 0 = START_STOP, Value 1 = CYCLICALLY,
      * functional blocks only.
      */
-    final static Boolean START_STOP = new Boolean("1.013", DataPointType.BooleanDataPointType.DIM_SEND_STYLE, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean CYCLICALLY = new Boolean("1.013", DataPointType.BooleanDataPointType.DIM_SEND_STYLE, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean START_STOP = new Boolean("1.013", DataPointType.BooleanDataPointType.DIM_SEND_STYLE, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean CYCLICALLY = new Boolean("1.013", DataPointType.BooleanDataPointType.DIM_SEND_STYLE, DATATYPE_BOOLEAN_ONE);
 
     /**
      * DPT 1.014 - DPT_InputSource. Value 0 = FIXED, Value 1 = CALCULATED, functional blocks only.
      */
-    final static Boolean FIXED = new Boolean("1.014", DataPointType.BooleanDataPointType.INPUT_SOURCE, DATATYPE_BOOLEAN_ZERO);
-    final static Boolean CALCULATED = new Boolean("1.014", DataPointType.BooleanDataPointType.INPUT_SOURCE, DATATYPE_BOOLEAN_ONE);
+    public final static Boolean FIXED = new Boolean("1.014", DataPointType.BooleanDataPointType.INPUT_SOURCE, DATATYPE_BOOLEAN_ZERO);
+    public final static Boolean CALCULATED = new Boolean("1.014", DataPointType.BooleanDataPointType.INPUT_SOURCE, DATATYPE_BOOLEAN_ONE);
 
 
     // Static
 
 
-    static Boolean createSwitchResponse(byte[] apdu)
+    public static Boolean createSwitchResponse(byte[] apdu)
     {
 
       return new Boolean("1.001", DataPointType.BooleanDataPointType.SWITCH, (byte)(apdu[1] & 0x3F));
@@ -261,7 +261,7 @@ interface DataType
      * @param value   either 0x00 or 0x01, see constants in this class for how these
      *                two values are encoded (on/off, start/stop, etc.)
      */
-    Boolean(String dptID, DataPointType.BooleanDataPointType dpt, byte value)
+    private Boolean(String dptID, DataPointType.BooleanDataPointType dpt, byte value)
     {
       if (value < 0 || value > 1)
         throw new Error("Implementation Error: Boolean value must be either 1 or 0.");
@@ -310,7 +310,7 @@ interface DataType
      * @param value
      * @return
      */
-    DataType.Boolean getEncodingForValue(int value)
+    public DataType.Boolean getEncodingForValue(int value)
     {
       switch (dataPointType)
       {
@@ -328,7 +328,7 @@ interface DataType
 
 
 
-  class Controlled3Bit implements DataType
+  public static class Controlled3Bit implements DataType
   {
 
     private DataPointType dpt;
@@ -336,7 +336,7 @@ interface DataType
     private int value = 0;
 
 
-    Controlled3Bit(DataPointType.Control3BitDataPointType dpt, Boolean controlBitValue, int value)
+    public Controlled3Bit(DataPointType.Control3BitDataPointType dpt, Boolean controlBitValue, int value)
     {
       if (controlBitValue != Boolean.INCREASE && controlBitValue != Boolean.DECREASE &&
           controlBitValue != Boolean.UP && controlBitValue != Boolean.DOWN &&

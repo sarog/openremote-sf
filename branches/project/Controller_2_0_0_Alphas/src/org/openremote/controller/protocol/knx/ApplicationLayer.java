@@ -182,7 +182,7 @@ class ApplicationLayer
      * {@link org.openremote.controller.protocol.knx.ApplicationProtocolDataUnit}
      *
      * @see #getTPCIAPCI()
-     * @see DataType
+     * @see org.openremote.controller.protocol.knx.datatype.DataType
      *
      * @return APCI/Data byte (8 bits) in Common EMI frame
      */
