@@ -36,7 +36,7 @@ public class Strings
    * <pre>{@code
    *
    *    1  -> 0x01
-   *   10  -> 0x0F
+   *   15  -> 0x0F
    *   16  -> 0x10
    *   -1  -> 0xFF
    * -128  -> 0xC0

@@ -18,35 +18,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.knx;
+package org.openremote.controller.protocol.knx.datatype;
 
 /**
- * Generic exception type to indicate conversion problems from strings to Java types, from
- * serialization formats to Java types, and so on.
+ * TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ConversionException extends Exception
+public interface DataPointType 
 {
 
-  /**
-   * Constructs a new exception with a given message.
-   *
-   * @param msg  human-readable error message
-   */
-  public ConversionException(String msg)
+  enum BooleanDataPointType implements DataPointType
   {
-    super(msg);
+    SWITCH, BOOL, ENABLE, RAMP, ALARM, BINARY_VALUE, STEP, UP_DOWN, OPEN_CLOSE,
+    START, STATE, INVERT, DIM_SEND_STYLE, INPUT_SOURCE
   }
 
-  /**
-   * Constructs a new exception with a given message and root cause.
-   *
-   * @param msg     human-readable error message
-   * @param cause   root exception cause
-   */
-  public ConversionException(String msg, Throwable cause)
+  enum Control1BitDataPointType implements DataPointType
   {
-    super(msg, cause);
+    SWITCH_CONTROL, BOOL_CONTROL, ENABLE_CONTROL, RAMP_CONTROL, ALARM_CONTROL,
+    BINARY_VALUE_CONTROL, STEP_CONTROL, DIRECTION1_CONTROL, DIRECTION2_CONTROL,
+    START_CONTROL, STATE_CONTROL, INVERT_CONTROL
+  }
+
+  enum Control3BitDataPointType implements DataPointType
+  {
+    CONTROL_DIMMING, CONTROL_BLINDS, MODE_BOILER
+  }
+
+  enum Unsigned8BitValue implements DataPointType
+  {
+    SCALING, ANGLE, RELPOS_VALVE, VALUE_1_UCOUNT
   }
 }

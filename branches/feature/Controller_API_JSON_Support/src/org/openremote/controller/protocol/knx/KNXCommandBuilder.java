@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 import java.util.List;
@@ -209,7 +210,9 @@ public class KNXCommandBuilder implements CommandBuilder
   public Command build(Element element)
   {
     /*
-     * TODO : ${param} handling
+     * TODO : ${param} handling (javadoc)
+     *
+     * TODO : unit test for parameterized commands
      * 
      * TODO : DPT to be added. Modify class javadoc with this change.
      *
@@ -280,9 +283,29 @@ public class KNXCommandBuilder implements CommandBuilder
     }
 
 
-    // Translate the command string to a type safe KNX Command types...
+    // Check for and create a parameterized command if present, and translate the command string
+    // to a type safe KNX Command types...
 
-    Command cmd = KNXCommand.createCommand(commandAsString, connectionManager, groupAddress);
+    String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+
+    CommandParameter parameter = null;
+
+    if (paramValue != null && !paramValue.equals(""))
+    {
+      try
+      {
+        parameter = new CommandParameter(paramValue);
+      }
+      catch (ConversionException exception)
+      {
+        throw new NoSuchCommandException(
+            "Cannot convert '" + paramValue + "' to command parameter : " + exception.getMessage(),
+            exception
+        );
+      }
+    }
+    
+    Command cmd = KNXCommand.createCommand(commandAsString, connectionManager, groupAddress, parameter);
 
     log.info("Created KNX Command " + cmd + " for group address '" + groupAddress + "'");
 
