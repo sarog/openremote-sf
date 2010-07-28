@@ -29,12 +29,6 @@ package org.openremote.controller.exception;
 public class ConversionException extends Exception
 {
 
-  /*
-   * TODO : move to generic exception package
-   *
-   */
-
-
   /**
    * Constructs a new exception with a given message.
    *

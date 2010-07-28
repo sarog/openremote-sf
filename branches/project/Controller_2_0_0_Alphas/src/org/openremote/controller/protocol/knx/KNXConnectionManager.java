@@ -21,7 +21,6 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.component.EnumSensorType;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -724,7 +723,7 @@ class KNXConnectionManager
       connection.addConnectionListener(busListener);
 
 //      GroupAddress address = new GroupAddress((byte)0, (byte)0);
-//      KNXReadCommand cmd = KNXReadCommand.createCommand("STATUS", KNXConnectionManager.this, address);
+//      GroupValueRead cmd = GroupValueRead.createCommand("STATUS", KNXConnectionManager.this, address);
 //
 //      cmd.read(EnumSensorType.CUSTOM, new HashMap());
 
@@ -1041,14 +1040,14 @@ class KNXConnectionManager
     }
 
 
-    public ApplicationProtocolDataUnit read(KNXReadCommand command)
+    public ApplicationProtocolDataUnit read(GroupValueRead command)
     {
       this.sendInternal(command);
 
       return busListener.internalState.get(command.getAddress());
     }
 
-    public void send(KNXWriteCommand command)
+    public void send(GroupValueWrite command)
     {
       this.sendInternal(command);
     }

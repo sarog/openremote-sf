@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * This class is an abstract superclass for KNX protocol read/write commands.
  *
- * @see KNXWriteCommand
- * @see KNXReadCommand
+ * @see GroupValueWrite
+ * @see GroupValueRead
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -63,8 +63,8 @@ abstract class KNXCommand implements Command
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
   /**
-   * Factory method for creating KNX command instances {@link KNXWriteCommand} and
-   * {@link KNXReadCommand} based on a human-readable configuration strings.  <p>
+   * Factory method for creating KNX command instances {@link GroupValueWrite} and
+   * {@link GroupValueRead} based on a human-readable configuration strings.  <p>
    *
    * Each KNX command instance is associated with a link to a connection manager and a
    * destination group address.
@@ -85,12 +85,12 @@ abstract class KNXCommand implements Command
   {
     name = name.trim().toUpperCase();
 
-    KNXWriteCommand writeCmd = KNXWriteCommand.createCommand(name, mgr, address, parameter);
+    GroupValueWrite writeCmd = GroupValueWrite.createCommand(name, mgr, address, parameter);
 
     if (writeCmd != null)
       return writeCmd;
 
-    KNXReadCommand readCmd = KNXReadCommand.createCommand(name, mgr, address);
+    GroupValueRead readCmd = GroupValueRead.createCommand(name, mgr, address);
 
     if (readCmd != null)
       return readCmd;
@@ -192,7 +192,7 @@ abstract class KNXCommand implements Command
    *
    * @param command   KNX write command
    */
-  void write(KNXWriteCommand command)
+  void write(GroupValueWrite command)
   {
     try
     {
@@ -219,7 +219,7 @@ abstract class KNXCommand implements Command
    *          NOTE: may return <code>null</code> in case there's a connection exception or the
    *          read response is not available from the device yet.
    */
-  ApplicationProtocolDataUnit read(KNXReadCommand command)
+  ApplicationProtocolDataUnit read(GroupValueRead command)
   {
     try
     {

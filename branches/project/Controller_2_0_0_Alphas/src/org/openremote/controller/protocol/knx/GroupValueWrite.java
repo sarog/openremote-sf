@@ -31,7 +31,7 @@ import org.openremote.controller.protocol.knx.datatype.DataType;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-class KNXWriteCommand extends KNXCommand implements ExecutableCommand
+class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
    * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
    *          be matched to any command
    */
-  static KNXWriteCommand createCommand(String name, KNXConnectionManager mgr,
+  static GroupValueWrite createCommand(String name, KNXConnectionManager mgr,
                                        GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -60,7 +60,7 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
     if (apdu == null)
       return null;
     
-    return new KNXWriteCommand(mgr, address, apdu);
+    return new GroupValueWrite(mgr, address, apdu);
   }
 
 
@@ -75,7 +75,7 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
    * @param groupAddress        destination group address for this command
    * @param apdu                APDU payload for this command
    */
-  private KNXWriteCommand(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueWrite(KNXConnectionManager connectionManager, GroupAddress groupAddress,
                           ApplicationProtocolDataUnit apdu)
   {
     super(connectionManager, groupAddress, apdu);
