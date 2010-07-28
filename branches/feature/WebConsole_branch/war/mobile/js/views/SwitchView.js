@@ -62,8 +62,9 @@ SwitchView = (function() {
       
       self.setCss(DEFAULT_CSS_STYLE);
       
+      var sensorStates = self.component.sensor.states;
       // register default mouseover and mouseout events.
-      if (!(self.component.defaultImage !=null && self.component.defaultImage != undefined)) {
+      if (sensorStates == null || sensorStates.length == 0 || sensorStates == undefined) {
         self.getCanvas().mouseover(function() {
           $(self.getCanvas()).css("background", "url('./mobile/css/jquery/images/ui-bg_glass_75_dadada_1x400.png') 50% 50% repeat-x");
         });
@@ -83,38 +84,29 @@ SwitchView = (function() {
       });
     }
     
-    // function renderImages() {
-    //   var defaultImage = self.component.defaultImage;
-    //   if (defaultImage != null && defaultImage != undefined) {
-    //     self.customizedCss.background = "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top";
-    //     var pressedImage = self.component.pressedImage;
-    //     if (pressedImage != null && pressedImage != undefined) {
-    //       self.getCanvas().mousedown(function() {
-    //         $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(pressedImage.src) + "') no-repeat left top");
-    //       });
-    //       self.getCanvas().mouseup(function() {
-    //         $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(defaultImage.src) + "') no-repeat left top");
-    //       });
-    //     }
-    //   }
-    // }
-    
     function renderButtonName() {
         $(self.getCanvas()).html("<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
-                        "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" + 
-                          Constants.OFF.toUpperCase() + 
+                        "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" +
                         "</div>" + 
                        "</div>");
         updateViewWithStatus(Constants.OFF.toUpperCase());
     }
     
     function updateViewWithStatus(statusParam) {
-      if (statusParam != Constants.ON.toUpperCase() && statusParam != Constants.OFF.toUpperCase()) {
+      if (statusParam.toUpperCase() != Constants.ON.toUpperCase() && statusParam.toUpperCase() != Constants.OFF.toUpperCase()) {
         MessageUtils.showMessageDialogWithSettings("Error info", "Invalid status " + statusParam + " with switchview's component id " + self.component.id);
         return;
       }
       self.currentStatus = statusParam.toUpperCase();
       if (canUseImage()) {
+        
+        var imageSRC = "";
+        if (self.currentStatus == Constants.ON.toUpperCase()) {
+          imageSRC = self.onImageName;
+        } else {
+          imageSRC = self.offImageName;
+        }
+        $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(imageSRC) + "') no-repeat left top");
       } else {
         $("#switchBtnName"+self.getID()).text(self.currentStatus);
       }

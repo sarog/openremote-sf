@@ -21,11 +21,15 @@ ScreenViewController = (function() {
     }
     
     this.startPolling = function() {
-      self.pollingHelper.requestCurrentStatusAndStartPolling();
+      if (self.pollingHelper != null) {
+        self.pollingHelper.requestCurrentStatusAndStartPolling();
+      }
     };
     
     this.stopPolling = function() {
-      self.pollingHelper.cancelPolling();
+      if (self.pollingHelper != null) {
+        self.pollingHelper.cancelPolling();
+      }
     };
     
     init();

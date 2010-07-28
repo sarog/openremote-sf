@@ -22,10 +22,13 @@ SensoryControlView = (function() {
         self.sensorID = self.component.sensor.id;
       }
       if(self.sensorID > 0) {
-        window.statusChangeEvent.subscribe(function(type, args) {
-          self.dealPollingStatus(args[0]);
-        });
+        var eventType = Constants.STATUS_CHANGE_EVENT + self.component.sensor.id;
+        NotificationCenter.getInstance().addEventListener(eventType, self);
       }
+    };
+    
+    this.handleEvent = function(data) {
+      self.dealPollingStatus(data);
     };
     
     // This method must be overwrite in subclasses.

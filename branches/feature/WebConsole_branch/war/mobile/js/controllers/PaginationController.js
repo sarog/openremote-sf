@@ -14,15 +14,19 @@ PaginationController = (function() {
     
     this.previousScreen = function() {
       if (self.currentScreenIndex > 0) {
-        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex - 1].getView());
+        self.currentScreenViewController().stopPolling();
         self.currentScreenIndex -= 1;
+        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
+        self.currentScreenViewController().startPolling();
       }
     };
     
     this.nextScreen = function() {
       if (self.currentScreenIndex < (self.screenViewControllers.length - 1)) {
-        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex + 1].getView());
-        self.currentScreenIndex += 1;        
+        self.currentScreenViewController().stopPolling();
+        self.currentScreenIndex += 1;
+        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
+        self.currentScreenViewController().startPolling();
       }
     };
     
