@@ -23,6 +23,8 @@ package org.openremote.controller.protocol.knx;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.protocol.knx.datatype.DataType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,22 +124,24 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
 
     log.debug("Polling device status for " + this);
 
-    ApplicationProtocolDataUnit responseAPDU = responseAPDU = super.read(this);
+    ApplicationProtocolDataUnit responseAPDU = super.read(this);
 
     if (responseAPDU == null)
     {
         return "";      // TODO : check how caller handles invalid return values
     }
 
-    ApplicationProtocolDataUnit.DataPointType dpt = getAPDU().getDataPointType();
+    DataPointType dpt = getAPDU().getDataPointType();
 
-    if (dpt == ApplicationProtocolDataUnit.DataPointType.SWITCH)
+    if (dpt == DataPointType.BooleanDataPointType.SWITCH)
     {
       try
       {
         int booleanValue = responseAPDU.convertToBooleanDataType();
 
-        DataType datatype = dpt.getEncodingForValue(booleanValue);
+        DataType.Boolean datatype = (DataType.Boolean)responseAPDU.getDataType();
+
+        datatype = datatype.getEncodingForValue(booleanValue);
 
         if (datatype == DataType.Boolean.ON)
         {
