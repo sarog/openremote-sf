@@ -23,11 +23,11 @@ SensoryControlView = (function() {
       }
       if(self.sensorID > 0) {
         var eventType = Constants.STATUS_CHANGE_EVENT + self.component.sensor.id;
-        NotificationCenter.getInstance().addEventListener(eventType, self);
+        NotificationCenter.getInstance().addObserver(eventType, self);
       }
     };
     
-    this.handleEvent = function(data) {
+    this.handleNotification = function(data) {
       self.dealPollingStatus(data);
     };
     

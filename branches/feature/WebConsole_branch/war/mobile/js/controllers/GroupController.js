@@ -10,6 +10,18 @@ GroupController = (function() {
     var self = this;
     self.paginationController = null;
     
+    this.currentScreenID = function() {
+      return self.currentScreen().id;
+    };
+    
+    this.currentScreen = function() {
+      return self.currentScreenViewController().screen;
+    };
+    
+    this.currentScreenViewController = function() {
+      return self.paginationController.currentScreenViewController();
+    };
+    
     function showErrorView() {
       MessageUtils.hideLoading();
       self.errorViewController = new ErrorViewController("No Screen Found", "Please associate screens with this group.");
@@ -24,7 +36,7 @@ GroupController = (function() {
         self.paginationController = new PaginationController(self.group.screens);
         self.setView(self.paginationController.getView());
         
-        var currentScreenViewController = self.paginationController.currentScreenViewController();
+        var currentScreenViewController = self.currentScreenViewController();
         currentScreenViewController.startPolling();
         
         MessageUtils.hideLoading();

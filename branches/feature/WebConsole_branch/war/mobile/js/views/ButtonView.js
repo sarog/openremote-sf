@@ -59,6 +59,7 @@ ButtonView = (function() {
         if(self.component.hasControlCommand == true) {
           self.sendCommandRequest("click");
           if(self.component.isCommandRepeated) {
+            self.isClearInterval = false;
             self.timerID = window.setInterval(function() {self.sendCommandRequest("click");}, Constants.REPEAT_CMD_INTERVAL);
           }
         }
@@ -66,13 +67,24 @@ ButtonView = (function() {
       
       // Mouseup event
       $(self.getCanvas()).mouseup(function() {
-        window.clearInterval(self.timerID)
+        cancelTimer();
+        
+        // Navigate to certain group or screen if navigate exists.
+        var navigate = self.component.navigate;
+        if (navigate != null && navigate != undefined) {
+          NotificationCenter.getInstance().postNotification(Constants.NAVIGATION, navigate);
+        }
       });
       
       // Mouseup event
-      $(self.getCanvas()).mouseout(function() {
-        window.clearInterval(self.timerID)
-      });
+      $(self.getCanvas()).mouseout(cancelTimer);
+    }
+    
+    function cancelTimer() {
+      if(self.component.hasControlCommand == true && self.component.isCommandRepeated && self.isClearInterval == false) {
+        window.clearInterval(self.timerID);
+        self.isClearInterval = true;
+      }
     }
     
     function renderImages() {

@@ -109,7 +109,7 @@ PollingHelper = (function() {
         MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, "No status was parsed.");
       } else {
         var eventType = Constants.STATUS_CHANGE_EVENT + self.lastID;
-        NotificationCenter.getInstance().fireEvent(eventType, self.statusMap);
+        NotificationCenter.getInstance().postNotification(eventType, self.statusMap);
       }
     };
     
