@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-class KNXReadCommand extends KNXCommand implements StatusCommand
+class GroupValueRead extends KNXCommand implements StatusCommand
 {
 
 
@@ -79,7 +79,7 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
    * @return          a new KNX read command instance, or <code>null</code> if the lookup name
    *                  could not be matched to any command
    */
-  static KNXReadCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
+  static GroupValueRead createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
   {
     name = name.trim().toUpperCase();
 
@@ -88,7 +88,7 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
     if (apdu == null)
       return null;
     
-    return new KNXReadCommand(mgr, address, apdu);
+    return new GroupValueRead(mgr, address, apdu);
   }
 
 
@@ -103,7 +103,7 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
    * @param groupAddress        destination group address for this command
    * @param apdu                APDU payload for this command
    */
-  private KNXReadCommand(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueRead(KNXConnectionManager connectionManager, GroupAddress groupAddress,
                          ApplicationProtocolDataUnit apdu)
   {
     super(connectionManager, groupAddress, apdu);

@@ -58,7 +58,7 @@ public class KNXCommandBuilderTest
   {
     Command cmd = getCommand("ON", "1/1/1");
 
-    assertTrue(cmd instanceof KNXWriteCommand);
+    assertTrue(cmd instanceof GroupValueWrite);
   }
 
   /**
@@ -69,15 +69,15 @@ public class KNXCommandBuilderTest
   {
     Command cmd1 = getCommand("on", "1/1/1");
 
-    assertTrue(cmd1 instanceof KNXWriteCommand);
+    assertTrue(cmd1 instanceof GroupValueWrite);
 
     Command cmd2 = getCommand("On", "1/1/1");
 
-    assertTrue(cmd2 instanceof KNXWriteCommand);
+    assertTrue(cmd2 instanceof GroupValueWrite);
 
     Command cmd3 = getCommand("oN", "1/1/1");
 
-    assertTrue(cmd3 instanceof KNXWriteCommand);
+    assertTrue(cmd3 instanceof GroupValueWrite);
   }
 
 
@@ -88,7 +88,7 @@ public class KNXCommandBuilderTest
   {
     Command cmd = getCommand("OFF", "1/1/1");
 
-    assertTrue(cmd instanceof KNXWriteCommand);
+    assertTrue(cmd instanceof GroupValueWrite);
   }
 
   /**
@@ -99,15 +99,15 @@ public class KNXCommandBuilderTest
   {
     Command cmd1 = getCommand("off", "1/1/1");
 
-    assertTrue(cmd1 instanceof KNXWriteCommand);
+    assertTrue(cmd1 instanceof GroupValueWrite);
 
     Command cmd2 = getCommand("Off", "1/1/1");
 
-    assertTrue(cmd2 instanceof KNXWriteCommand);
+    assertTrue(cmd2 instanceof GroupValueWrite);
 
     Command cmd3 = getCommand("oFf", "1/1/1");
 
-    assertTrue(cmd3 instanceof KNXWriteCommand);
+    assertTrue(cmd3 instanceof GroupValueWrite);
   }
 
 
@@ -118,7 +118,7 @@ public class KNXCommandBuilderTest
   @Test public void testKNXStatus()
   {
     Command cmd = getCommand("STATUS", "1/1/1");
-    assertTrue(cmd instanceof KNXReadCommand);
+    assertTrue(cmd instanceof GroupValueRead);
   }
 
   /**
@@ -128,13 +128,13 @@ public class KNXCommandBuilderTest
   @Test public void testKNXStatusMixedCase()
   {
     Command cmd1 = getCommand("status", "1/1/1");
-    assertTrue(cmd1 instanceof KNXReadCommand);
+    assertTrue(cmd1 instanceof GroupValueRead);
 
     Command cmd2 = getCommand("Status", "1/1/1");
-    assertTrue(cmd2 instanceof KNXReadCommand);
+    assertTrue(cmd2 instanceof GroupValueRead);
 
     Command cmd3 = getCommand("STatus", "1/1/1");
-    assertTrue(cmd3 instanceof KNXReadCommand);
+    assertTrue(cmd3 instanceof GroupValueRead);
   }
 
   /**
@@ -162,7 +162,7 @@ public class KNXCommandBuilderTest
   @Test public void testKNXSuperfluousProperties()
   {
     Command cmd = getCommandWithExtraProperties("on", "1/1/1") ;
-    assertTrue(cmd instanceof KNXWriteCommand);
+    assertTrue(cmd instanceof GroupValueWrite);
   }
 
   /**
