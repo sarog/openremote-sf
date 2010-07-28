@@ -22,8 +22,8 @@ package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
-import org.openremote.controller.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,16 +74,18 @@ abstract class KNXCommand implements Command
    *                  return Java equal() (but not same instance) commands.
    * @param mgr       KNX connection manager used to transmit this command
    * @param address   KNX destination group address.
+   * @param parameter parameter for this command or <tt>null</tt> if not available
    *
    * @throws NoSuchCommandException if command cannot be created by its lookup name
    *
    * @return  new KNX command instance
    */
-  static KNXCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
+  static KNXCommand createCommand(String name, KNXConnectionManager mgr,
+                                  GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
 
-    KNXWriteCommand writeCmd = KNXWriteCommand.createCommand(name, mgr, address);
+    KNXWriteCommand writeCmd = KNXWriteCommand.createCommand(name, mgr, address, parameter);
 
     if (writeCmd != null)
       return writeCmd;
@@ -94,7 +96,6 @@ abstract class KNXCommand implements Command
       return readCmd;
 
     throw new NoSuchCommandException("Unknown command '" + name + "'.");
-
   }
 
 
@@ -150,7 +151,7 @@ abstract class KNXCommand implements Command
    *
    * }</pre>
    *
-   * @return
+   * @return  this command as string
    */
   @Override public String toString()
   {
@@ -190,8 +191,6 @@ abstract class KNXCommand implements Command
    * Relay a write command to an open KNX/IP connection.
    *
    * @param command   KNX write command
-   *
-   * @throws ConnectionException  if connection fails for any reason
    */
   void write(KNXWriteCommand command)
   {
@@ -219,8 +218,6 @@ abstract class KNXCommand implements Command
    *
    *          NOTE: may return <code>null</code> in case there's a connection exception or the
    *          read response is not available from the device yet.
-   *
-   * @throws ConnectionException    if connection fails for any reason
    */
   ApplicationProtocolDataUnit read(KNXReadCommand command)
   {

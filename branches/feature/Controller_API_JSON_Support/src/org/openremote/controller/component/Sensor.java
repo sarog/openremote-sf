@@ -148,4 +148,10 @@ public class Sensor {
       return stateMap == null ? null : stateMap.get(RANGE_MIN_STATE);
    }
 
+
+  @Override public String toString()
+  {
+    return sensorID + " " + sensorType + " " + statusCommand;
+  }
+
 }
