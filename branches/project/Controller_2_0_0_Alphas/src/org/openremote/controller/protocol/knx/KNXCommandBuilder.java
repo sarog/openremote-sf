@@ -26,6 +26,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.exception.ConversionException;
 
 import java.util.List;
 

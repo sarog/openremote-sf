@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.utils.Strings;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.exception.ConversionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -359,7 +360,7 @@ class ApplicationProtocolDataUnit
    * TODO
    *
    * @return
-   * @throws ConversionException
+   * @throws org.openremote.controller.exception.ConversionException
    */
   int convertToBooleanDataType() throws ConversionException
   {

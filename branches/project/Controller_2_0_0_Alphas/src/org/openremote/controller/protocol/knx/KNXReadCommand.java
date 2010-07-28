@@ -25,6 +25,7 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.exception.ConversionException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
