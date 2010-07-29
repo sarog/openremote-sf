@@ -14,6 +14,7 @@ RootViewController = (function(){
    this.groupIDViewMap = {};
    this.currentGroupController = null;
    this.lastSubView = null;
+   this.navigateHistory = [];
 
    var errorViewController = null;
    var initViewController = null;
@@ -100,9 +101,9 @@ RootViewController = (function(){
        return;
      }
      
-     // TODO: navigate to.
      if (navigateTo(navigate)) {
        saveLastGroupIdAndScreenId();
+       self.navigateHistory[self.navigateHistory.length] = historyNavigate;
      }
    }
    
@@ -128,7 +129,7 @@ RootViewController = (function(){
      }
      // To back in histories.
      else if (navigate.isToBack) {
-       // TODO: navigateBackwardInHistory
+       navigateBackwardInHistory();
        return false;
      }
      // To setting dialog
@@ -189,12 +190,13 @@ RootViewController = (function(){
        self.currentGroupController.startPolling();
      }
      
-     // To certain screen in current group
+     // To certain screen
      if (screenID > 0) {
        if (!self.currentGroupController.canFindScreenByID(screenID)) {
          MessageUtils.showMessageDialog("Message", "The screen where is to go isn't in current group.");
          return false;
        } else {
+         // self.currentGroupController().stopPolling();
          return self.currentGroupController.switchToScreen(screenID);
        }
      }
@@ -207,6 +209,21 @@ RootViewController = (function(){
    
    function navigateToNextScreen() {
      self.currentGroupController.nextScreen();
+   }
+   
+   function navigateBackwardInHistory() {
+     if (self.navigateHistory.length > 0) {
+       var backNavigate = self.navigateHistory[self.navigateHistory.length-1];
+       var fromGroup = parseInt(backNavigate.fromGroup);
+       var fromScreen = parseInt(backNavigate.fromScreen);
+       if (fromGroup > 0 && fromScreen > 0) {
+         navigateToGroupAndScreen(fromGroup, fromScreen);
+       } else {
+         navigateTo(backNavigate);
+       }
+       
+       self.navigateHistory.splice(self.navigateHistory.length-1 ,1);
+     }
    }
    
    // Init jobs
