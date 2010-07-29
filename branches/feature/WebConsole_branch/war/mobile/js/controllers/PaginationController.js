@@ -30,6 +30,27 @@ PaginationController = (function() {
       }
     };
     
+    this.switchToScreen = function(screenID) {
+      var index = -1;
+      for (var i = 0; i < self.screenViewControllers.length; i++) {
+        var svc = self.screenViewControllers[i];
+        if (svc.screen.id == screenID) {
+          index = i;
+          break;
+        }
+      }
+      
+      if (index != -1) {
+        self.currentScreenViewController().stopPolling();
+        self.currentScreenIndex = index;
+        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
+        self.currentScreenViewController().startPolling();
+        return true;
+      } else {
+        return false;
+      }
+    };
+    
     this.currentScreenViewController = function() {
       return self.screenViewControllers[self.currentScreenIndex];
     };
@@ -39,9 +60,28 @@ PaginationController = (function() {
         var screenViewController = new ScreenViewController(screensParam[index]);
         self.screenViewControllers[self.screenViewControllers.length] = screenViewController;
       }
-      self.paginationView = new PaginationView(self.screenViewControllers[0].getView(), self);
-      self.setView(self.paginationView);
+
       self.currentScreenIndex = 0;
+      
+      var screenIDWhenQuit = null;
+      var lastFootPrint = CookieUtils.getCookie(Constants.LAST_FOOT_PRINT);
+      if (lastFootPrint != null && lastFootPrint != undefined) {
+        screenIDWhenQuit = lastFootPrint.screenID;
+      }
+      
+      if (screenIDWhenQuit != null && screenIDWhenQuit != "0" && screenIDWhenQuit != 0 && screenIDWhenQuit != undefined) {
+        for (var i = 0; i < self.screenViewControllers.length; i++) {
+          var tempScreenViewController = self.screenViewControllers[i];
+          if (tempScreenViewController.screen.id == screenIDWhenQuit) {
+            self.currentScreenIndex = i;
+            break;
+          }
+        }
+      }
+      
+      self.paginationView = new PaginationView(self.screenViewControllers[self.currentScreenIndex].getView(), self);
+      self.setView(self.paginationView);
+
     }
     
     init();

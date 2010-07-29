@@ -46,7 +46,7 @@ BaseView = (function() {
     };
     
     this.removeSubView = function(subView) {
-      $("#"+subView.getID()).remove();
+      $("#"+subView.getID()).detach();
     };
 
   };

@@ -22,6 +22,40 @@ GroupController = (function() {
       return self.paginationController.currentScreenViewController();
     };
     
+    this.hasNoScreenView = function() {
+      return (self.group.screens.length == 0);
+    };
+    
+    this.canFindScreenByID = function(screenID) {
+      for (var i = 0; i < self.group.screens.length; i++) {
+        var screen = self.group.screens[i];
+        if (screenID == screen.id) {
+          return true;
+        }
+      }
+      return false;
+    };
+    
+    this.startPolling = function() {
+      this.currentScreenViewController().startPolling();
+    };
+    
+    this.stopPolling = function() {
+      this.currentScreenViewController().stopPolling();      
+    };
+    
+    this.switchToScreen = function(screenID) {
+      return this.paginationController.switchToScreen(screenID);
+    };
+    
+    this.previousScreen = function() {
+      return this.paginationController.previousScreen();
+    };
+    
+    this.nextScreen = function() {
+      return this.paginationController.nextScreen();      
+    };
+    
     function showErrorView() {
       MessageUtils.hideLoading();
       self.errorViewController = new ErrorViewController("No Screen Found", "Please associate screens with this group.");
