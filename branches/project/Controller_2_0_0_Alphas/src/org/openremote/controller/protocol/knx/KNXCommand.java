@@ -414,7 +414,7 @@ abstract class KNXCommand implements Command
     cemi.add(protocolDataUnit[0]);                            // TPCI + APCI high bits
     cemi.add(protocolDataUnit[1]);                            // APCI low bits + data
 
-    if (apduDataLength > 1)
+    if (protocolDataUnit.length > 2)
     {
       // Sanity check...
 
@@ -422,7 +422,7 @@ abstract class KNXCommand implements Command
       {
         throw new Error(
             "APDU reported data length does not match the actual data length : " +
-            apduDataLength + " != " + (protocolDataUnit.length - 1)
+            apduDataLength + " != " + (protocolDataUnit.length - 1) + "(" + this.apdu + ")."
         );
       }
 
