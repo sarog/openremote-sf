@@ -42,9 +42,24 @@ PaginationController = (function() {
       
       if (index != -1) {
         self.currentScreenViewController().stopPolling();
-        self.currentScreenIndex = index;
-        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
-        self.currentScreenViewController().startPolling();
+        
+        /* There will be two pollings running, if don't call window.setTimeout for pausing a moment.
+         * This will ocurr in the situation of navigation with a navigation data which contains groupID and screenID.
+         * Because method navigateToGroupAndScreen of RootViewController will navigate to a group with groupID firstly,
+         * then judges screenID is valid and navigates to screen whose id is screenID. 
+         * So, RootViewController stop polling of navigated group before navigating to that screen,
+         * then start polling of screen. However, the action of stoping polling wasnt't successful, so main thread must call "window.setTimeout"
+         * for catching some time for stop polling of previous navigated group .
+         * Obviously, one of two running pollings is started by toGroup in method navigateToGroupAndScreen and
+         * the another one is started by switchScreen in method navigateToGroupAndScreen.
+         *
+         * The time set must be equals or great than 100 milliseconds tested by me.
+         */
+        window.setTimeout(function() {
+          self.currentScreenIndex = index;
+          self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
+          self.currentScreenViewController().startPolling();
+        }, 200);
         return true;
       } else {
         return false;
