@@ -6,7 +6,7 @@
    return {
      CONTROLLER_SERVERS : "controllerServers",
      CURRENT_SERVER : "currentServer",
-     LAST_GROUP_ID_WHEN_QUIT : "lastGroupId",
+     LAST_FOOT_PRINT : "lastFootPrint",
      COLOR_BLACK : "#000000",
      COLOR_WHITE : "#FFFFFF",
      COLOR_RED : "#FF0000",

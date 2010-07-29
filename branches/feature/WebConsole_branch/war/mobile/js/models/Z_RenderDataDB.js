@@ -29,7 +29,7 @@ RenderDataDB = (function() {
       return groups;
     };
     
-    this.getGroupByID = function(groupID) {
+    this.findGroupByID = function(groupID) {
       for (var index = 0; index < groups.length; index++) {
         var tempGroup = groups[index];
         if (tempGroup.id == groupID) {

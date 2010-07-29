@@ -15,8 +15,8 @@ Navigate = (function() {
     function init() {
       self.node_name = Constants.NAVIGATE;
       
-      self.toGroup = (properties[Constants.TO_GROUP] == null || properties[Constants.TO_GROUP] == undefined) ? "" : properties[Constants.TO_GROUP] ;
-      self.toScreen = (properties[Constants.TO_SCREEN] == null || properties[Constants.TO_SCREEN] == undefined) ? "" : properties[Constants.TO_SCREEN];
+      self.toGroup = (properties[Constants.TO_GROUP] == null || properties[Constants.TO_GROUP] == undefined) ? "0" : properties[Constants.TO_GROUP] ;
+      self.toScreen = (properties[Constants.TO_SCREEN] == null || properties[Constants.TO_SCREEN] == undefined) ? "0" : properties[Constants.TO_SCREEN];
       
       var to = properties[Constants.TO];
       to = (to != null && to != undefined && to != "") ? to.toLowerCase() : "";
