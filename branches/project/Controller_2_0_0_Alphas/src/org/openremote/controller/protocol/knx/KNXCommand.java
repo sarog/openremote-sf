@@ -41,16 +41,59 @@ abstract class KNXCommand implements Command
 
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * Byte array offset in Common EMI frame for message code field.
+   */
   final static int CEMI_MESSAGECODE_OFFSET      = 0;
+
+  /**
+   * Byte array offset in Common EMI frame for additional info length field.
+   */
   final static int CEMI_ADDITIONALINFO_OFFSET   = 1;
+
+  /**
+   * Byte array offset in Common EMI frame for control field 1.
+   */
   final static int CEMI_CONTROL1_OFFSET         = 2;
+
+  /**
+   * Byte array offset in Common EMI frame for control field 2.
+   */
   final static int CEMI_CONTROL2_OFFSET         = 3;
+
+  /**
+   * Byte array offset in Common EMI frame for source address high byte.
+   */
   final static int CEMI_SOURCEADDR_HIGH_OFFSET  = 4;
+
+  /**
+   * Byte array offset in Common EMI frame for source address low byte.
+   */
   final static int CEMI_SOURCEADDR_LOW_OFFSET   = 5;
+
+  /**
+   * Byte array offset in Common EMI frame for destination address high byte.
+   */
   final static int CEMI_DESTADDR_HIGH_OFFSET    = 6;
+
+  /**
+   * Byte array offset in Common EMI frame for destination address low byte.
+   */
   final static int CEMI_DESTADDR_LOW_OFFSET     = 7;
+
+  /**
+   * Byte array offset in Common EMI frame for data payload length.
+   */
   final static int CEMI_DATALEN_OFFSET          = 8;
+
+  /**
+   * Byte array offset in Common EMI frame for TPCI/APCI bits
+   */
   final static int CEMI_TPCI_APCI_OFFSET        = 9;
+
+  /**
+   * Byte array offset in Common EMI frame for APCI bits and 6-bit data payload.
+   */
   final static int CEMI_APCI_DATA_OFFSET        = 10;
 
 
