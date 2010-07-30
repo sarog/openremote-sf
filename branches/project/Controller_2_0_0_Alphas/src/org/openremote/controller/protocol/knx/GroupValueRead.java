@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
-import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.exception.ConversionException;
 
 import java.util.Map;
@@ -138,11 +138,11 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     {
       try
       {
-        DataType.Boolean bool = responseAPDU.convertToBooleanDataType();
+        Bool bool = responseAPDU.convertToBooleanDataType();
 
-        DataType.Boolean datatype = (DataType.Boolean)responseAPDU.getDataType();
+        Bool datatype = (Bool)responseAPDU.getDataType();
 
-        if (datatype == DataType.Boolean.ON)
+        if (datatype == Bool.ON)
         {
           return "on";
         }

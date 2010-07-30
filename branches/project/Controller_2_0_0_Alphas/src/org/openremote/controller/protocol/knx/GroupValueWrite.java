@@ -22,7 +22,7 @@ package org.openremote.controller.protocol.knx;
 
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.CommandParameter;
-import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.exception.ConversionException;
 
@@ -143,7 +143,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
                name.equals("DIM INCREASE"))
       {
         return ApplicationProtocolDataUnit.create3BitDimControl(
-            DataType.Boolean.INCREASE,
+            Bool.INCREASE,
             7                           // increase level [0-7]
         );
       }
@@ -152,7 +152,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
                name.equals("DIM DECREASE"))
       {
         return ApplicationProtocolDataUnit.create3BitDimControl(
-            DataType.Boolean.DECREASE,
+            Bool.DECREASE,
             7                           // decrease level [0-7]
         );
       }

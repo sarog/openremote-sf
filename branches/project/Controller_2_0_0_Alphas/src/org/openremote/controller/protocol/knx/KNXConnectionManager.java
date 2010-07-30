@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Strings;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -902,9 +903,13 @@ class KNXConnectionManager
     {
       try
       {
+        System.out.println(event.getFrame());
+        
         log.debug("RECEIVED: " + event.getFrame());
 
         byte[] frame = event.getFrame().toByteArray();
+
+        // TODO : properly handle AdditionalInfo field when AddInfo is present (currently breaks this impl.)
 
         if (DataLink.isDataIndicateFrame(frame[KNXCommand.CEMI_MESSAGECODE_OFFSET]))
         {
@@ -1066,15 +1071,15 @@ class KNXConnectionManager
         for (int i = 0; i < cemiBytes.length; ++i)
         {
           cemiFrame[i] = cemiBytes[i];
+
+System.out.println(Strings.byteToUnsignedHexString(cemiFrame[i]));          
         }
-        
+
         commonEMI = new CEMILData(cemiFrame, 0);
 
-        log.info(command);
+        log.info("Sending : " + command);
 
         connection.send(commonEMI, KNXnetIPTunnel.WAIT_FOR_ACK);
-
-        log.info("sent!");
       }
       catch (KNXFormatException exception)
       {
