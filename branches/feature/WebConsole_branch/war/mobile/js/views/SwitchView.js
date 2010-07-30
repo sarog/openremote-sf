@@ -36,9 +36,6 @@ SwitchView = (function() {
       self.setCss(self.customizedCss);
     }
     
-    // Super class's constructor calling
-    SwitchView.superClass.constructor.call(this, switchParam, sizeParam);
-    
     this.dealPollingStatus = function(statusMapParam) {
       var sensorStates = self.component.sensor.states;
       if (sensorStates.length > 0) {
@@ -55,6 +52,9 @@ SwitchView = (function() {
       }
       updateViewWithStatus(statusMapParam[self.component.sensor.id]);
     };
+    
+    // Super class's constructor calling
+    SwitchView.superClass.constructor.call(this, switchParam, sizeParam);
     
     function initCanvasAndCSS() {
       self.component = switchParam;

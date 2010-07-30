@@ -6,32 +6,25 @@ NotificationCenter = (function() {
   var notificationCenter = null;
   
   var NotificationCenter = function() {
-    this.eventListenersMap = [];
+    this.notificationHandleFunctionsMap = [];
     
-    this.addObserver = function(eventType, observer) {
-      var eventListeners = this.eventListenersMap[eventType];
-      if (eventListeners == null || eventListeners == undefined) {
-        eventListeners = [];
+    this.addObserver = function(notificationType, observerFunction) {
+      var notificationHandleFunctions = this.notificationHandleFunctionsMap[notificationType];
+      if (notificationHandleFunctions == null || notificationHandleFunctions == undefined) {
+        notificationHandleFunctions = [];
       }
-      eventListeners[eventListeners.length] = observer;
-      this.eventListenersMap[eventType] = eventListeners;
+      notificationHandleFunctions[notificationHandleFunctions.length] = observerFunction;
+      this.notificationHandleFunctionsMap[notificationType] = notificationHandleFunctions;
     };
     
-    this.removeObserver = function(eventType, observer) {
-      var eventListeners = this.eventListenersMap[eventType];
-      if (eventListeners != null && eventListeners != undefined && eventListeners.length > 0) {
-        eventListeners.splice(eventListeners.indexOf(observer), 1);
-      }
-    };
-    
-    this.postNotification = function(eventType, data) {
-      var eventListeners = this.eventListenersMap[eventType];
-      if (eventListeners == null || eventListeners == undefined || eventListeners.length == 0) {
+    this.postNotification = function(notificationType, data) {
+      var notificationHandleFunctions = this.notificationHandleFunctionsMap[notificationType];
+      if (notificationHandleFunctions == null || notificationHandleFunctions == undefined || notificationHandleFunctions.length == 0) {
         return;
       }
-      for (var i = 0; i < eventListeners.length; i++) {
-        var eventListener = eventListeners[i];
-        eventListener.handleNotification(data);
+      for (var i = 0; i < notificationHandleFunctions.length; i++) {
+        var notificationHandleFunction = notificationHandleFunctions[i];
+        notificationHandleFunction(data);
       }
     };
     

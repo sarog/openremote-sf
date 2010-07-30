@@ -78,7 +78,7 @@ ButtonView = (function() {
         // Navigate to certain group or screen if navigate exists.
         var navigate = self.component.navigate;
         if (navigate != null && navigate != undefined) {
-          NotificationCenter.getInstance().postNotification(Constants.NAVIGATION, navigate);
+          NotificationCenter.getInstance().postNotification(Constants.NAVIGATION_NOTIFICATION, navigate);
         }
       });
       

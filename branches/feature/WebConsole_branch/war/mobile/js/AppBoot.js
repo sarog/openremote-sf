@@ -39,7 +39,7 @@ AppBoot = (function() {
     // Private instance method
     function init() {
       // Init root view
-      rootViewController = new RootViewController();
+      rootViewController = new RootViewController(self);
       $(rootViewController.getView().getCanvas()).insertBefore($("body").children().first());
       
       // This is for callout AppSettings dialog.

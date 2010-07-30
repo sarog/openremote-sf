@@ -48,6 +48,10 @@ BaseView = (function() {
     this.removeSubView = function(subView) {
       $("#"+subView.getID()).detach();
     };
+    
+    this.removeSubViews = function() {
+      $(canvas).children().detach();
+    };
 
   };
   
