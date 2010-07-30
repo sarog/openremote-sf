@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.utils.Strings;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.exception.ConversionException;
+import org.openremote.controller.command.CommandParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +70,8 @@ import java.util.List;
  *
  * }</pre>
  *
- * Total number of APCI control bits can be either 4 or 10, depending on which {@link org.openremote.controller.protocol.knx.ApplicationLayer.Service
+ * Total number of APCI control bits can be either 4 or 10, depending on which
+ * {@link org.openremote.controller.protocol.knx.ApplicationLayer.Service
  * application layer service} is being used. The second byte bit structure is as follows:
  *
  * <pre>{@code
@@ -90,6 +93,7 @@ import java.util.List;
  */
 class ApplicationProtocolDataUnit
 {
+
   // Constants ------------------------------------------------------------------------------------
 
   /**
@@ -108,6 +112,9 @@ class ApplicationProtocolDataUnit
   /**
    * Represents the full APDU (APCI + data) for Group Value Write service request with
    * DPT 1.001 (Switch) to state 'OFF'.
+   *
+   * @see ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
+   * @see DataType.Boolean#OFF
    */
   final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
   (
@@ -119,11 +126,14 @@ class ApplicationProtocolDataUnit
   /**
    * Represents the full APDU (APCI bits) for Group Value Read request for data points with
    * DPT 1.001 (Switch) type.
+   *
+   * @see ApplicationLayer.Service#GROUPVALUE_READ
+   * @see DataType.Boolean#READ_SWITCH
    */
   final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
   (
       ApplicationLayer.Service.GROUPVALUE_READ,
-      DataType.READ_SWITCH
+      DataType.Boolean.READ_SWITCH
   );
 
 
@@ -224,7 +234,7 @@ class ApplicationProtocolDataUnit
    *
    * The dim value must be a 3-bit value in the range of [0-7].
    *
-   * @see DataType.Boolean
+   * @see org.openremote.controller.protocol.knx.datatype.DataPointType.Control3BitDataPointType#CONTROL_DIMMING
    * @see org.openremote.controller.protocol.knx.datatype.DataType.Controlled3Bit
    *
    * @param   controlValue  must be one of DataType.Boolean.INCREASE, DataType.Boolean.DECREASE,
@@ -249,10 +259,58 @@ class ApplicationProtocolDataUnit
   }
 
 
+  /**
+   * Constructs an APDU corresponding to a Group Value Write service for a device expecting
+   * an 8-bit unsigned scaling value (DPT 5.001). <p>
+   *
+   * Valid parameter value range is [0-100]. This is interpreted as a percentage value.
+   * 
+   * @param   parameter     scaling value for percentage range
+   *
+   * @return  APDU instance for a 8-bit unsigned scaling value
+   *
+   * @throws  ConversionException   if the value is not in a given range or cannot be scaled to the
+   *                                desired range
+   */
+  static ApplicationProtocolDataUnit createScaling(CommandParameter parameter)
+      throws ConversionException
+  {
+    int value = parameter.getValue();
+
+    if (value < 0 || value > 100)
+    {
+      throw new ConversionException(
+          "Expected value is in range [0-100] (percentage), received " + value
+      );
+    }
+
+    // scale it up to [0-255] range of the unsigned byte that is sent on the wire...
+
+    value = (int)(value * 2.55);
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new DataType.Unsigned8Bit(
+            DataPointType.Unsigned8BitValue.SCALING,
+            value)
+    );
+  }
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
+  /**
+   * Datatype associated with this APDU.
+   *
+   * @see DataType
+   */
   private DataType datatype;
+
+  /**
+   * Application Layer Service associated with this APDU.
+   *
+   * @see ApplicationLayer
+   */
   private ApplicationLayer.Service applicationLayerService;
 
 
@@ -275,6 +333,33 @@ class ApplicationProtocolDataUnit
   }
 
 
+  // Object Overrides -----------------------------------------------------------------------------
+
+
+  /**
+   * Returns a string representation of this APDU including the TPCI & APCI bits and data payload.
+   *
+   * @return  application layer service name associated with this APDU and the contents of this
+   *          APDU as unsigned hex values.
+   */
+  @Override public String toString()
+  {
+    StringBuffer buffer = new StringBuffer(256);
+
+    buffer.append(applicationLayerService.name());
+    buffer.append(" ");
+
+    Byte[] pdu = getProtocolDataUnit();
+
+    for (byte b : pdu)
+    {
+      buffer.append(Strings.byteToUnsignedHexString(b));
+      buffer.append(" ");
+    }
+
+    return buffer.toString().trim();
+  }
+
 
   // Package-Private Instance Methods ------------------------------------------------------------
 
@@ -294,24 +379,13 @@ class ApplicationProtocolDataUnit
    */
   String dataAsString()
   {
-    int len = getDataLength();
     byte[] data = datatype.getData();
-
-    // sanity check...
-
-    if (len != data.length)
-    {
-      log.error(
-          "APDU datalength does not match returned datatype data length: " +
-          len + " != " + data.length
-      );
-    }
 
     StringBuffer buffer = new StringBuffer(256);
 
-    for (int offset = 0; offset < len && offset < data.length; ++offset)
+    for (byte b : data)
     {
-      buffer.append(Strings.byteToUnsignedHexString(data[offset]));
+      buffer.append(Strings.byteToUnsignedHexString(b));
       buffer.append(" ");
     }
 
@@ -346,9 +420,11 @@ class ApplicationProtocolDataUnit
   }
 
   /**
-   * TODO 
+   * Returns the KNX datapoint type associated with this APDU.
    *
-   * @return
+   * @see DataPointType
+   *
+   * @return  KNX datapoint type
    */
   DataPointType getDataPointType()
   {
@@ -356,31 +432,45 @@ class ApplicationProtocolDataUnit
   }
 
   /**
-   * TODO
+   * Attempts to convert the data payload of this APDU into a KNX Boolean datatype value.  <p>
    *
-   * @return
-   * @throws ConversionException
+   * Integer value 0 is encoded as FALSE, integer value 1 is encoded as TRUE.
+   *
+   * @see DataType.Boolean#TRUE
+   * @see DataType.Boolean#FALSE
+   *
+   * @return {@link DataType.Boolean#TRUE} for value 1, {@link DataType.Boolean#FALSE} for value 0.
+   *
+   * @throws ConversionException  if the data payload cannot be converted to KNX Boolean type.
    */
-  int convertToBooleanDataType() throws ConversionException
+  DataType.Boolean convertToBooleanDataType() throws ConversionException
   {
     byte[] data = datatype.getData();
 
     if (data.length == 1)
     {
-      if (data[0] <= 1)
+      if (data[0] == 1)
       {
-        return data[0];
+        return DataType.Boolean.TRUE;
       }
+
+      else if (data[0] == 0)
+      {
+        return DataType.Boolean.FALSE;
+      }
+
       else
       {
-        log.warn(""); // TODO
-        return 1;
+        throw new ConversionException("Expected boolean value 0x0 or 0x1 but found " + data[0]);
       }
     }
 
     else
     {
-      throw new ConversionException("data too large");
+      throw new ConversionException(
+          "Was expecting 6-bit boolean datatype in payload but data was " +
+          data.length + " bytes long."
+      );
     }
   }
 
@@ -395,37 +485,32 @@ class ApplicationProtocolDataUnit
    * The six most significant bits of the first byte in the array are Transport Protocol Control
    * Information (TCPI) bits which are all set to zero.
    *
-   *
    * @return full APDU as byte array with APCI bits and data value set
    */
   Byte[] getProtocolDataUnit()
   {
     final int TRANSPORT_LAYER_CONTROL_FIELDS = 0x00;
 
-    int dataLen = getDataLength();
     byte[] apduData = datatype.getData();
 
-    List<Byte> pdu = new ArrayList<Byte>(2);
+    List<Byte> pdu = new ArrayList<Byte>(20);
 
     pdu.add((byte)(TRANSPORT_LAYER_CONTROL_FIELDS + applicationLayerService.getTPCIAPCI()));
-    pdu.add((byte)(applicationLayerService.getAPCIData() + apduData[0]));
 
-    if (dataLen > 1)
+    if (applicationLayerService == ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT ||
+        applicationLayerService == ApplicationLayer.Service.GROUPVALUE_RESPONSE_6BIT ||
+        applicationLayerService == ApplicationLayer.Service.GROUPVALUE_READ)
     {
-      // sanity check...
+      pdu.add((byte)(applicationLayerService.getAPCIData() + apduData[0]));
+    }
 
-      if (apduData.length != dataLen)
-      {
-        throw new Error(
-            "Application Protocol Data Unit (APDU) length field does not match actual data " +
-            "payload length: Datatype data length " + dataLen + " != " + apduData.length +
-            "payload data length"
-        );
-      }
+    else
+    {
+      pdu.add((byte)applicationLayerService.getAPCIData());
 
-      for (int apduDataIndex = 1; apduDataIndex < apduData.length; ++apduDataIndex)
+      for (byte data : apduData)
       {
-        pdu.add(apduData[apduDataIndex]);
+        pdu.add(data);
       }
     }
 

@@ -26,6 +26,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.exception.ConversionException;
 
 import java.util.List;
 
@@ -50,13 +51,13 @@ import java.util.List;
  *
  * KNX group address values should follow the established convention of three level addressing
  * with a forward slash as separator character for the digits. The valid values for command
- * property are implemented in {@link KNXReadCommand} and {@link KNXWriteCommand} classes --
+ * property are implemented in {@link GroupValueRead} and {@link GroupValueWrite} classes --
  * command values can be localized.
  *
  * @see org.openremote.controller.command.CommandBuilder
  * @see KNXCommand
- * @see KNXReadCommand
- * @see KNXWriteCommand
+ * @see GroupValueRead
+ * @see GroupValueWrite
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -199,7 +200,7 @@ public class KNXCommandBuilder implements CommandBuilder
    *
    * Additional properties not listed here are ignored.
    *
-   * @see KNXWriteCommand
+   * @see GroupValueWrite
    *
    * @throws NoSuchCommandException
    *            if the KNX command instance cannot be constructed from the XML snippet
