@@ -138,11 +138,9 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     {
       try
       {
-        int booleanValue = responseAPDU.convertToBooleanDataType();
+        DataType.Boolean bool = responseAPDU.convertToBooleanDataType();
 
         DataType.Boolean datatype = (DataType.Boolean)responseAPDU.getDataType();
-
-        datatype = datatype.getEncodingForValue(booleanValue);
 
         if (datatype == DataType.Boolean.ON)
         {
