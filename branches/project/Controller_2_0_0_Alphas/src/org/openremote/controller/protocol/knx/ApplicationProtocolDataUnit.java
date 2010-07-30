@@ -25,6 +25,8 @@ import org.openremote.controller.utils.Strings;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
+import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
+import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.command.CommandParameter;
 
@@ -236,7 +238,7 @@ class ApplicationProtocolDataUnit
    * The dim value must be a 3-bit value in the range of [0-7].
    *
    * @see org.openremote.controller.protocol.knx.datatype.DataPointType.Control3BitDataPointType#CONTROL_DIMMING
-   * @see org.openremote.controller.protocol.knx.datatype.DataType.Controlled3Bit
+   * @see org.openremote.controller.protocol.knx.datatype.Controlled3Bit
    *
    * @param   controlValue  must be one of DataType.Boolean.INCREASE, DataType.Boolean.DECREASE,
    *                        DataType.Boolean.UP, DataType.Boolean.DOWN, DataType.Boolean.FIXED
@@ -252,7 +254,7 @@ class ApplicationProtocolDataUnit
   {
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
-        new DataType.Controlled3Bit(
+        new Controlled3Bit(
             DataPointType.Control3BitDataPointType.CONTROL_DIMMING,
             controlValue,
             dimValue)
@@ -291,7 +293,7 @@ class ApplicationProtocolDataUnit
 
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
-        new DataType.Unsigned8Bit(
+        new Unsigned8Bit(
             DataPointType.Unsigned8BitValue.SCALING,
             value)
     );
