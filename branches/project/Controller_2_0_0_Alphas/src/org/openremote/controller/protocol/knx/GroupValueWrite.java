@@ -23,6 +23,8 @@ package org.openremote.controller.protocol.knx;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.exception.ConversionException;
 
 /**
  * Write command representing KNX Group Value Write service. This class implements the
@@ -121,7 +123,9 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE
+       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, DIM
+       *
+       * TODO : simple buttons should also allow parameterization so DIM_INCREASE|DECREASE can have different step values
        */
       name = name.toUpperCase().trim();
 
@@ -151,6 +155,23 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
             DataType.Boolean.DECREASE,
             7                           // decrease level [0-7]
         );
+      }
+
+      else if (name.equals("DIM"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing value parameter for DIM command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createScaling(parameter);
+        }
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
       }
 
       else
