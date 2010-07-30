@@ -22,17 +22,13 @@ SensoryControlView = (function() {
         self.sensorID = self.component.sensor.id;
       }
       if(self.sensorID > 0) {
-        var eventType = Constants.STATUS_CHANGE_EVENT + self.component.sensor.id;
-        NotificationCenter.getInstance().addObserver(eventType, self);
+        var notificationType = Constants.STATUS_CHANGE_NOTIFICATION + self.component.sensor.id;
+        NotificationCenter.getInstance().addObserver(notificationType, self.dealPollingStatus);
       }
     };
     
-    this.handleNotification = function(data) {
-      self.dealPollingStatus(data);
-    };
-    
     // This method must be overwrite in subclasses.
-    this.dealPollingStatus = function(statusMapParam) {
+    this.dealPollingStatus = this.dealPollingStatus || function(statusMapParam) {
       throw new Error("The method dealPollingStatus defined in SensoryControlView must be overwrited in subclasses.");
     };
     
