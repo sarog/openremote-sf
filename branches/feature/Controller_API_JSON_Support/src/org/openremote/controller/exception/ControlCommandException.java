@@ -27,25 +27,18 @@ package org.openremote.controller.exception;
 @SuppressWarnings("serial")
 public class ControlCommandException extends ControllerException {
    
-   /** The Constant EVENT_BUILDER_ERROR. */
    public final static int COMMAND_BUILDER_ERROR = 418;
    
-   /** The Constant NO_SUCH_BUTTON. */
    public final static int NO_SUCH_COMPONENT = 419;
    
-   /** The Constant NO_SUCH_EVENT_BUILDER. */
    public final static int NO_SUCH_COMMAND_BUILDER = 420;
    
-   /** The Constant INVALID_COMMAND_TYPE. */
    public final static int INVALID_COMMAND_TYPE = 421;
    
-   /** The Constant CONTROLLER_XML_NOT_FOUND. */
    public final static int CONTROLLER_XML_NOT_FOUND = 422;
    
-   /** The Constant NO_SUCH_EVENT. */
    public final static int NO_SUCH_COMMAND = 423;
    
-   /** The Constant INVALID_CONTROLLER_XML. */
    public final static int INVALID_CONTROLLER_XML = 424;
    
    public final static int INVALID_POLLING_URL = 425;

@@ -20,7 +20,7 @@
  */
 package org.openremote.controller.command;
 
-import org.openremote.controller.protocol.knx.ConversionException;
+import org.openremote.controller.exception.ConversionException;
 
 /**
  * Encapsulates command parameters passed through REST interface to protocol command builders. <p>

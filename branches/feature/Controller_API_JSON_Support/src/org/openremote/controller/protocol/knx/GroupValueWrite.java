@@ -23,6 +23,8 @@ package org.openremote.controller.protocol.knx;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.exception.ConversionException;
 
 /**
  * Write command representing KNX Group Value Write service. This class implements the
@@ -31,7 +33,7 @@ import org.openremote.controller.protocol.knx.datatype.DataType;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-class KNXWriteCommand extends KNXCommand implements ExecutableCommand
+class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -50,7 +52,7 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
    * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
    *          be matched to any command
    */
-  static KNXWriteCommand createCommand(String name, KNXConnectionManager mgr,
+  static GroupValueWrite createCommand(String name, KNXConnectionManager mgr,
                                        GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -60,7 +62,7 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
     if (apdu == null)
       return null;
     
-    return new KNXWriteCommand(mgr, address, apdu);
+    return new GroupValueWrite(mgr, address, apdu);
   }
 
 
@@ -75,7 +77,7 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
    * @param groupAddress        destination group address for this command
    * @param apdu                APDU payload for this command
    */
-  private KNXWriteCommand(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueWrite(KNXConnectionManager connectionManager, GroupAddress groupAddress,
                           ApplicationProtocolDataUnit apdu)
   {
     super(connectionManager, groupAddress, apdu);
@@ -121,7 +123,9 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE
+       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE
+       *
+       * TODO : simple buttons should also allow parameterization so DIM_INCREASE|DECREASE can have different step values
        */
       name = name.toUpperCase().trim();
 
@@ -151,6 +155,23 @@ class KNXWriteCommand extends KNXCommand implements ExecutableCommand
             DataType.Boolean.DECREASE,
             7                           // decrease level [0-7]
         );
+      }
+
+      else if (name.equals("SCALE"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing value parameter for SCALE command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createScaling(parameter);
+        }
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
       }
 
       else

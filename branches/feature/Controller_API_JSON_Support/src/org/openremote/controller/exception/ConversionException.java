@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.knx;
+package org.openremote.controller.exception;
 
 /**
  * Generic exception type to indicate conversion problems from strings to Java types, from

@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * This class is an abstract superclass for KNX protocol read/write commands.
  *
- * @see KNXWriteCommand
- * @see KNXReadCommand
+ * @see GroupValueWrite
+ * @see GroupValueRead
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -41,16 +41,59 @@ abstract class KNXCommand implements Command
 
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * Byte array offset in Common EMI frame for message code field.
+   */
   final static int CEMI_MESSAGECODE_OFFSET      = 0;
+
+  /**
+   * Byte array offset in Common EMI frame for additional info length field.
+   */
   final static int CEMI_ADDITIONALINFO_OFFSET   = 1;
+
+  /**
+   * Byte array offset in Common EMI frame for control field 1.
+   */
   final static int CEMI_CONTROL1_OFFSET         = 2;
+
+  /**
+   * Byte array offset in Common EMI frame for control field 2.
+   */
   final static int CEMI_CONTROL2_OFFSET         = 3;
+
+  /**
+   * Byte array offset in Common EMI frame for source address high byte.
+   */
   final static int CEMI_SOURCEADDR_HIGH_OFFSET  = 4;
+
+  /**
+   * Byte array offset in Common EMI frame for source address low byte.
+   */
   final static int CEMI_SOURCEADDR_LOW_OFFSET   = 5;
+
+  /**
+   * Byte array offset in Common EMI frame for destination address high byte.
+   */
   final static int CEMI_DESTADDR_HIGH_OFFSET    = 6;
+
+  /**
+   * Byte array offset in Common EMI frame for destination address low byte.
+   */
   final static int CEMI_DESTADDR_LOW_OFFSET     = 7;
+
+  /**
+   * Byte array offset in Common EMI frame for data payload length.
+   */
   final static int CEMI_DATALEN_OFFSET          = 8;
+
+  /**
+   * Byte array offset in Common EMI frame for TPCI/APCI bits
+   */
   final static int CEMI_TPCI_APCI_OFFSET        = 9;
+
+  /**
+   * Byte array offset in Common EMI frame for APCI bits and 6-bit data payload.
+   */
   final static int CEMI_APCI_DATA_OFFSET        = 10;
 
 
@@ -63,8 +106,8 @@ abstract class KNXCommand implements Command
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
   /**
-   * Factory method for creating KNX command instances {@link KNXWriteCommand} and
-   * {@link KNXReadCommand} based on a human-readable configuration strings.  <p>
+   * Factory method for creating KNX command instances {@link GroupValueWrite} and
+   * {@link GroupValueRead} based on a human-readable configuration strings.  <p>
    *
    * Each KNX command instance is associated with a link to a connection manager and a
    * destination group address.
@@ -85,12 +128,12 @@ abstract class KNXCommand implements Command
   {
     name = name.trim().toUpperCase();
 
-    KNXWriteCommand writeCmd = KNXWriteCommand.createCommand(name, mgr, address, parameter);
+    GroupValueWrite writeCmd = GroupValueWrite.createCommand(name, mgr, address, parameter);
 
     if (writeCmd != null)
       return writeCmd;
 
-    KNXReadCommand readCmd = KNXReadCommand.createCommand(name, mgr, address);
+    GroupValueRead readCmd = GroupValueRead.createCommand(name, mgr, address);
 
     if (readCmd != null)
       return readCmd;
@@ -192,7 +235,7 @@ abstract class KNXCommand implements Command
    *
    * @param command   KNX write command
    */
-  void write(KNXWriteCommand command)
+  void write(GroupValueWrite command)
   {
     try
     {
@@ -219,7 +262,7 @@ abstract class KNXCommand implements Command
    *          NOTE: may return <code>null</code> in case there's a connection exception or the
    *          read response is not available from the device yet.
    */
-  ApplicationProtocolDataUnit read(KNXReadCommand command)
+  ApplicationProtocolDataUnit read(GroupValueRead command)
   {
     try
     {
@@ -414,7 +457,7 @@ abstract class KNXCommand implements Command
     cemi.add(protocolDataUnit[0]);                            // TPCI + APCI high bits
     cemi.add(protocolDataUnit[1]);                            // APCI low bits + data
 
-    if (apduDataLength > 1)
+    if (protocolDataUnit.length > 2)
     {
       // Sanity check...
 
@@ -422,7 +465,7 @@ abstract class KNXCommand implements Command
       {
         throw new Error(
             "APDU reported data length does not match the actual data length : " +
-            apduDataLength + " != " + (protocolDataUnit.length - 1)
+            apduDataLength + " != " + (protocolDataUnit.length - 1) + "(" + this.apdu + ")."
         );
       }
 

@@ -33,13 +33,13 @@ interface KNXConnection
    *
    * @param command
    */
-  void send(KNXWriteCommand command);
+  void send(GroupValueWrite command);
     
   /**
    * TODO
    *
    * @return t
    */
-  ApplicationProtocolDataUnit read(KNXReadCommand command);
+  ApplicationProtocolDataUnit read(GroupValueRead command);
 
 }
