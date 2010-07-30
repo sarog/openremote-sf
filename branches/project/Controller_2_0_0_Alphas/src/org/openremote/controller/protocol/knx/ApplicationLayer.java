@@ -35,7 +35,7 @@ class ApplicationLayer
   enum Service
   {
     /**
-     * Group Value Write Service  <p>
+     * Group Value Write Service (6-bit data payload) <p>
      *
      * PDU for data values equal or less than 6 bits in length:
      *
@@ -57,6 +57,32 @@ class ApplicationLayer
     GROUPVALUE_WRITE_6BIT(
         0x00,               // TPCI (6 bits) & APCI high bits (2 bits) - bits 00000000
         0x80                // APCI low bits (2 bits) + data (6 bits)  - bits 10000000
+    ),
+
+
+    /**
+     * Group Value Write Service  <p>
+     *
+     * PDU for data values greater than 6 bits in length:
+     *
+     * <pre>{@code
+     *
+     * +-------------++---------------+
+     * |    Byte 1   ||    Byte 2     |
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     * |T|T|T|T|T|A|A||A|A|A|A|A|A|A|A|
+     * |P|P|P|P|P|P|P||P|P|P|P|P|P|P|P|
+     * |C|C|C|C|C|C|C||C|C|C|C|C|C|C|C|
+     * |I|I|I|I|I|I|I||I|I|I|I|I|I|I|I|
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     * |.|.|.|.|.|0|0||1|0|0|0|0|0|0|0|
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     *
+     * }</pre>
+     */
+    GROUPVALUE_WRITE(
+        0x00,
+        0x80
     ),
 
     /**
