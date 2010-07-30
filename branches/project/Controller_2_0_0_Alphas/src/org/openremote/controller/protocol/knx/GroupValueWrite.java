@@ -123,7 +123,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, DIM
+       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE
        *
        * TODO : simple buttons should also allow parameterization so DIM_INCREASE|DECREASE can have different step values
        */
@@ -157,11 +157,11 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         );
       }
 
-      else if (name.equals("DIM"))
+      else if (name.equals("SCALE"))
       {
         if (parameter == null)
         {
-          throw new NoSuchCommandException("Missing value parameter for DIM command.");
+          throw new NoSuchCommandException("Missing value parameter for SCALE command.");
         }
 
         try
