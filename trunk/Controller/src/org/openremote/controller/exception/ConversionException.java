@@ -18,53 +18,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.utils;
+package org.openremote.controller.exception;
 
 /**
- * String related utilities.
+ * Generic exception type to indicate conversion problems from strings to Java types, from
+ * serialization formats to Java types, and so on.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class Strings
+public class ConversionException extends Exception
 {
 
   /**
-   * Translates a signed Java byte into an unsigned hex string.
+   * Constructs a new exception with a given message.
    *
-   * For example:
-   *
-   * <pre>{@code
-   *
-   *    1  -> 0x01
-   *   15  -> 0x0F
-   *   16  -> 0x10
-   *   -1  -> 0xFF
-   * -128  -> 0xC0
-   *
-   * }</pre>
-   *
-   * @param b   byte to convert
-   *
-   * @return    Unsigned hex representation of the byte value with a '0x' prefix. Returned values
-   *            are always padded to two digits, so '1' becomes '0x01'.
+   * @param msg  human-readable error message
    */
-  public static String byteToUnsignedHexString(byte b)
+  public ConversionException(String msg)
   {
-    int value = b;
-
-    value &= 0xFF;
-    
-    return ( value < 16 ? "0x0" + Integer.toHexString(value).toUpperCase()
-                        : "0x"  + Integer.toHexString(value).toUpperCase());
+    super(msg);
   }
 
-
-  // Constructors ---------------------------------------------------------------------------------
-
   /**
-   * Only utility class methods.
+   * Constructs a new exception with a given message and root cause.
+   *
+   * @param msg     human-readable error message
+   * @param cause   root exception cause
    */
-  private Strings()
-  {}
-
+  public ConversionException(String msg, Throwable cause)
+  {
+    super(msg, cause);
+  }
 }
