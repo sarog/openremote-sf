@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.utils.Strings;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.command.CommandParameter;
 
@@ -101,12 +102,12 @@ class ApplicationProtocolDataUnit
    * (Switch) to state 'ON'.
    *
    * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
-   * @see DataType.Boolean#ON
+   * @see org.openremote.controller.protocol.knx.datatype.Bool#ON
    */
   final static ApplicationProtocolDataUnit WRITE_SWITCH_ON = new ApplicationProtocolDataUnit
   (
       ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
-      DataType.Boolean.ON
+      Bool.ON
   );
 
   /**
@@ -114,12 +115,12 @@ class ApplicationProtocolDataUnit
    * DPT 1.001 (Switch) to state 'OFF'.
    *
    * @see ApplicationLayer.Service#GROUPVALUE_WRITE_6BIT
-   * @see DataType.Boolean#OFF
+   * @see org.openremote.controller.protocol.knx.datatype.Bool#OFF
    */
   final static ApplicationProtocolDataUnit WRITE_SWITCH_OFF = new ApplicationProtocolDataUnit
   (
       ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT,
-      DataType.Boolean.OFF
+      Bool.OFF
   );
 
 
@@ -128,12 +129,12 @@ class ApplicationProtocolDataUnit
    * DPT 1.001 (Switch) type.
    *
    * @see ApplicationLayer.Service#GROUPVALUE_READ
-   * @see DataType.Boolean#READ_SWITCH
+   * @see org.openremote.controller.protocol.knx.datatype.Bool#READ_SWITCH
    */
   final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
   (
       ApplicationLayer.Service.GROUPVALUE_READ,
-      DataType.Boolean.READ_SWITCH
+      Bool.READ_SWITCH
   );
 
 
@@ -181,7 +182,7 @@ class ApplicationProtocolDataUnit
    *                response (6-bit data payload for boolean datatype).
    *
    * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_RESPONSE_6BIT
-   * @see org.openremote.controller.protocol.knx.datatype.DataType.Boolean
+   * @see org.openremote.controller.protocol.knx.datatype.Bool
    *
    * @return  APDU instance for a 6-bit group value response of a boolean datatype including
    *          the data payload.
@@ -219,7 +220,7 @@ class ApplicationProtocolDataUnit
 
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_RESPONSE_6BIT,
-        DataType.Boolean.createSwitchResponse(apdu)
+        Bool.createSwitchResponse(apdu)
     );
   }
 
@@ -228,9 +229,9 @@ class ApplicationProtocolDataUnit
    * a 3-bit dim control data point type (DPT 3.007). <p>
    *
    * The control bit value must correspond to DPT 1.007, 1.008 or 1.014
-   * ({@link DataType.Boolean#INCREASE}/{@link DataType.Boolean#DECREASE},
-   *  {@link DataType.Boolean#UP}/{@link DataType.Boolean#DOWN},
-   *  {@link DataType.Boolean#FIXED}/{@link DataType.Boolean#CALCULATED}, respectively). <p>
+   * ({@link org.openremote.controller.protocol.knx.datatype.Bool#INCREASE}/{@link org.openremote.controller.protocol.knx.datatype.Bool#DECREASE},
+   *  {@link org.openremote.controller.protocol.knx.datatype.Bool#UP}/{@link org.openremote.controller.protocol.knx.datatype.Bool#DOWN},
+   *  {@link org.openremote.controller.protocol.knx.datatype.Bool#FIXED}/{@link org.openremote.controller.protocol.knx.datatype.Bool#CALCULATED}, respectively). <p>
    *
    * The dim value must be a 3-bit value in the range of [0-7].
    *
@@ -246,7 +247,7 @@ class ApplicationProtocolDataUnit
    * @return  APDU instance for a 3-bit dim control Group Value Write service with a given control
    *          bit and range bits
    */
-  static ApplicationProtocolDataUnit create3BitDimControl(DataType.Boolean controlValue,
+  static ApplicationProtocolDataUnit create3BitDimControl(Bool controlValue,
                                                           int dimValue)
   {
     return new ApplicationProtocolDataUnit(
@@ -436,14 +437,14 @@ class ApplicationProtocolDataUnit
    *
    * Integer value 0 is encoded as FALSE, integer value 1 is encoded as TRUE.
    *
-   * @see DataType.Boolean#TRUE
-   * @see DataType.Boolean#FALSE
+   * @see org.openremote.controller.protocol.knx.datatype.Bool#TRUE
+   * @see org.openremote.controller.protocol.knx.datatype.Bool#FALSE
    *
-   * @return {@link DataType.Boolean#TRUE} for value 1, {@link DataType.Boolean#FALSE} for value 0.
+   * @return {@link org.openremote.controller.protocol.knx.datatype.Bool#TRUE} for value 1, {@link org.openremote.controller.protocol.knx.datatype.Bool#FALSE} for value 0.
    *
    * @throws ConversionException  if the data payload cannot be converted to KNX Boolean type.
    */
-  DataType.Boolean convertToBooleanDataType() throws ConversionException
+  Bool convertToBooleanDataType() throws ConversionException
   {
     byte[] data = datatype.getData();
 
@@ -451,12 +452,12 @@ class ApplicationProtocolDataUnit
     {
       if (data[0] == 1)
       {
-        return DataType.Boolean.TRUE;
+        return Bool.TRUE;
       }
 
       else if (data[0] == 0)
       {
-        return DataType.Boolean.FALSE;
+        return Bool.FALSE;
       }
 
       else
