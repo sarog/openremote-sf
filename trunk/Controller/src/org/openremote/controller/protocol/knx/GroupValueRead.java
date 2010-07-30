@@ -23,6 +23,9 @@ package org.openremote.controller.protocol.knx;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.protocol.knx.datatype.DataType;
+import org.openremote.controller.exception.ConversionException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-class KNXReadCommand extends KNXCommand implements StatusCommand
+class GroupValueRead extends KNXCommand implements StatusCommand
 {
 
 
@@ -76,7 +79,7 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
    * @return          a new KNX read command instance, or <code>null</code> if the lookup name
    *                  could not be matched to any command
    */
-  static KNXReadCommand createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
+  static GroupValueRead createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
   {
     name = name.trim().toUpperCase();
 
@@ -85,7 +88,7 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
     if (apdu == null)
       return null;
     
-    return new KNXReadCommand(mgr, address, apdu);
+    return new GroupValueRead(mgr, address, apdu);
   }
 
 
@@ -100,7 +103,7 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
    * @param groupAddress        destination group address for this command
    * @param apdu                APDU payload for this command
    */
-  private KNXReadCommand(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueRead(KNXConnectionManager connectionManager, GroupAddress groupAddress,
                          ApplicationProtocolDataUnit apdu)
   {
     super(connectionManager, groupAddress, apdu);
@@ -122,22 +125,22 @@ class KNXReadCommand extends KNXCommand implements StatusCommand
 
     log.debug("Polling device status for " + this);
 
-    ApplicationProtocolDataUnit responseAPDU = responseAPDU = super.read(this);
+    ApplicationProtocolDataUnit responseAPDU = super.read(this);
 
     if (responseAPDU == null)
     {
         return "";      // TODO : check how caller handles invalid return values
     }
 
-    ApplicationProtocolDataUnit.DataPointType dpt = getAPDU().getDataPointType();
+    DataPointType dpt = getAPDU().getDataPointType();
 
-    if (dpt == ApplicationProtocolDataUnit.DataPointType.SWITCH)
+    if (dpt == DataPointType.BooleanDataPointType.SWITCH)
     {
       try
       {
-        int booleanValue = responseAPDU.convertToBooleanDataType();
+        DataType.Boolean bool = responseAPDU.convertToBooleanDataType();
 
-        DataType datatype = dpt.getEncodingForValue(booleanValue);
+        DataType.Boolean datatype = (DataType.Boolean)responseAPDU.getDataType();
 
         if (datatype == DataType.Boolean.ON)
         {

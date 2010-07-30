@@ -21,7 +21,6 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.utils.Strings;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -723,6 +722,11 @@ class KNXConnectionManager
 
       connection.addConnectionListener(busListener);
 
+//      GroupAddress address = new GroupAddress((byte)0, (byte)0);
+//      GroupValueRead cmd = GroupValueRead.createCommand("STATUS", KNXConnectionManager.this, address);
+//
+//      cmd.read(EnumSensorType.CUSTOM, new HashMap());
+
     }
     catch (KNXException knx)
     {
@@ -928,7 +932,7 @@ class KNXConnectionManager
 
           if (dataLen == 1)
           {
-            apdu = ApplicationProtocolDataUnit.createGroupValueResponse
+            apdu = ApplicationProtocolDataUnit.createSwitchResponse
             (
                 new byte[] { apciHi, apciLoData }
             );
@@ -939,7 +943,7 @@ class KNXConnectionManager
             byte[] data = new byte[dataLen];
             System.arraycopy(frame, 11, data, 0, data.length);
 
-            apdu = ApplicationProtocolDataUnit.createGroupValueResponse(data);
+            apdu = ApplicationProtocolDataUnit.createSwitchResponse(data);
           }
 
           log.debug("Adding to internal state " + event.getFrame());
@@ -1036,14 +1040,14 @@ class KNXConnectionManager
     }
 
 
-    public ApplicationProtocolDataUnit read(KNXReadCommand command)
+    public ApplicationProtocolDataUnit read(GroupValueRead command)
     {
       this.sendInternal(command);
 
       return busListener.internalState.get(command.getAddress());
     }
 
-    public void send(KNXWriteCommand command)
+    public void send(GroupValueWrite command)
     {
       this.sendInternal(command);
     }
@@ -1068,7 +1072,7 @@ class KNXConnectionManager
 
         log.info(command);
 
-        connection.send(commonEMI, KNXnetIPTunnel.NONBLOCKING);
+        connection.send(commonEMI, KNXnetIPTunnel.WAIT_FOR_ACK);
 
         log.info("sent!");
       }
