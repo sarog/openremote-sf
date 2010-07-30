@@ -5,14 +5,23 @@
 ComponentView = (function() {
   
   return function(componentModelParam, sizeParam) {
-    ComponentView.superClass.constructor.call(this);
     var self = this;
+    
+    /**
+     * This method must be overwritten in subclasses.
+     * This method must be defined before calling superClass's construtor whatever in current class or sub classes.
+     */
+    this.initView = this.initView || function() {
+      // throw new Error("The method initView defined in ComponentView must be override in subclasses.");
+    }
+    
+    // Super class's constructor calling
+    ComponentView.superClass.constructor.call(this);
+    
     self.component = componentModelParam;
     self.size = sizeParam;
     
-    this.initView = function() {
-      // throw new Error("The method initView defined in ComponentView must be rewrited in subclasses.");
-    }
+
     
     self.initView();
   }

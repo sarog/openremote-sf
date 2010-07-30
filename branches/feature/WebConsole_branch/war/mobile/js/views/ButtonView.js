@@ -19,9 +19,12 @@ ButtonView = (function() {
    };
   
   return function(buttonParam, sizeParam) {
-    ButtonView.superClass.constructor.call(this);
     var self = this;
     
+    /**
+     * Override method
+     * This method must be defined before calling superClass's construtor whatever in current class or sub classes.
+     */
     this.initView = function() {
       initCanvasAndCSS();
       self.customizedCss = {};
@@ -29,6 +32,9 @@ ButtonView = (function() {
       renderButtonName();
       self.setCss(self.customizedCss);
     }
+    
+    // Super class's constructor calling
+    ButtonView.superClass.constructor.call(this, buttonParam, sizeParam);
     
     function initCanvasAndCSS() {
       self.component = buttonParam;
@@ -116,8 +122,6 @@ ButtonView = (function() {
                        "</div>");
       }
     }
-
-    self.initView();
   }
 })();
 

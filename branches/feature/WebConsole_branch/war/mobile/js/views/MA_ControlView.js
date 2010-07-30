@@ -5,8 +5,19 @@
 ControlView = (function() {
   
   return function(componentModelParam, sizeParam) {
-    ControlView.superClass.constructor.call(this, componentModelParam, sizeParam);
     var self = this;
+    
+    /** 
+     * This method must be overwritten in subclasses.
+     * This method must be defined before calling superClass's construtor whatever in current class or sub classes.
+     */
+    this.initView = this.initView || function() {
+      // throw new Error("The method initView defined in ControlView must be override in subclasses.");
+    }
+    
+    // Super class's constructor calling
+    ControlView.superClass.constructor.call(this, componentModelParam, sizeParam);
+    
     self.component = componentModelParam;
     self.size = sizeParam;
     
@@ -14,10 +25,6 @@ ControlView = (function() {
       var controlURL = ConnectionUtils.getControlURL(self.component.id, commandValue);
       ConnectionUtils.sendNormalRequest(controlURL, self);
     };
-    
-    // This method must be overwritten in subclasses.
-    this.initView = function() {
-    }
     
     // It is delegate methods should be defined in ConnectionUtils for sendNormalRequest.
     this.didFeedBackWithRequest = function(data, textStatus, XMLHttpRequest) {
@@ -30,7 +37,6 @@ ControlView = (function() {
         MessageUtils.showMessageDialogWithSettings("Send request error ", Constants.UNKNOWN_ERROR_MESSAGE);
       }
     };
-    
   }
 })();
 
