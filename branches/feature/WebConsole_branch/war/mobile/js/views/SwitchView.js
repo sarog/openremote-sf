@@ -19,9 +19,12 @@ SwitchView = (function() {
    };
   
   return function(switchParam, sizeParam) {
-    SwitchView.superClass.constructor.call(this, switchParam, sizeParam);
     var self = this;
     
+    /**
+     * Override method
+     * This method must be defined before calling superClass's construtor whatever in current class or sub classes.
+     */
     this.initView = function() {
       self.onImageName = "";
       self.offImageName = "";
@@ -32,6 +35,9 @@ SwitchView = (function() {
       renderButtonName();
       self.setCss(self.customizedCss);
     }
+    
+    // Super class's constructor calling
+    SwitchView.superClass.constructor.call(this, switchParam, sizeParam);
     
     this.dealPollingStatus = function(statusMapParam) {
       var sensorStates = self.component.sensor.states;
@@ -115,8 +121,6 @@ SwitchView = (function() {
     function canUseImage() {
       return self.onImageName != "" && self.offImageName != "";
     }
-    
-    self.initView();
     
   }
 })();
