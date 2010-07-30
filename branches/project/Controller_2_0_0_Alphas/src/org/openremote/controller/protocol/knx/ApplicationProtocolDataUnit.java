@@ -128,12 +128,12 @@ class ApplicationProtocolDataUnit
    * DPT 1.001 (Switch) type.
    *
    * @see ApplicationLayer.Service#GROUPVALUE_READ
-   * @see DataType#READ_SWITCH
+   * @see DataType.Boolean#READ_SWITCH
    */
   final static ApplicationProtocolDataUnit READ_SWITCH_STATE = new ApplicationProtocolDataUnit
   (
       ApplicationLayer.Service.GROUPVALUE_READ,
-      DataType.READ_SWITCH
+      DataType.Boolean.READ_SWITCH
   );
 
 
@@ -443,7 +443,7 @@ class ApplicationProtocolDataUnit
    *
    * @throws ConversionException  if the data payload cannot be converted to KNX Boolean type.
    */
-  Boolean convertToBooleanDataType() throws ConversionException
+  DataType.Boolean convertToBooleanDataType() throws ConversionException
   {
     byte[] data = datatype.getData();
 
@@ -451,12 +451,12 @@ class ApplicationProtocolDataUnit
     {
       if (data[0] == 1)
       {
-        return Boolean.TRUE;
+        return DataType.Boolean.TRUE;
       }
 
       else if (data[0] == 0)
       {
-        return Boolean.FALSE;
+        return DataType.Boolean.FALSE;
       }
 
       else
