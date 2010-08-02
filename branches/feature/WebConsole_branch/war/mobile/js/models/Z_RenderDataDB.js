@@ -49,6 +49,11 @@ RenderDataDB = (function() {
       return null;
     };
     
+    this.clearAll = function() {
+      groups = [];
+      screens = [];
+    };
+    
   };
   
   return {
