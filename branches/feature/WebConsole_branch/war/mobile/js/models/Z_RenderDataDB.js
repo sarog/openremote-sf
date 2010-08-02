@@ -9,9 +9,10 @@ RenderDataDB = (function() {
   
   // Constructor
   function RenderDataDB() {
-    
+    var self = this;
     var groups = [];
     var screens = [];
+    self.globalTabBar = null;
     
     this.addScreen = function(screenParam) {
       screens.push(screenParam);
@@ -52,6 +53,7 @@ RenderDataDB = (function() {
     this.clearAll = function() {
       groups = [];
       screens = [];
+      self.globalTabBar = null;
     };
     
   };
