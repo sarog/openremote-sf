@@ -88,6 +88,7 @@
      INCLUDE : "include",
      TYPE : "@type",
      REF : "@ref",
-     TAB_BAR : "tabbar"
+     TAB_BAR : "tabbar",
+     TAB_BAR_ITEM : "item"
    };
  })();

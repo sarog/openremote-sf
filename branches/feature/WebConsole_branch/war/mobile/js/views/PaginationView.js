@@ -38,6 +38,8 @@ PaginationView = (function() {
       if (screenViewParam != null) {
         $(self.screenViewContainer).append(screenViewParam.getCanvas());
       }
+      
+      self.menuItemListView = new MenuItemListView({});
             
       var canvas = $("<div />", {
         "id" : ID
@@ -45,6 +47,8 @@ PaginationView = (function() {
       
       $(canvas).append(self.screenViewContainer);
       $(canvas).append(constructPageControl());
+      $(canvas).append(self.menuItemListView.getCanvas());
+      
       self.setCanvas(canvas);
       self.setCss(DEFAULT_CSS_STYLE);
     }
@@ -78,6 +82,29 @@ PaginationView = (function() {
         }
       });
       
+      var menuBtn = $("<div />", {
+        "id" : "menuBtn" + UUID,
+        "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'><div style='position:relative;top:-50%;width:100%;text-align:center'>Menu</div></div>",
+        css : {
+          "float" : "center",
+          "height" : "98%",
+          "width" : "25%",
+          "margin-left" : "37%",
+          "text-align" : "center",
+          "font-size" : "20px",
+          "color":"#000000",
+          "text-shadow":"0px -1px #bbb,0 2px #fff",
+          "font-family":"Verdana,Arial,sans-serif",
+          // For vertical center
+          "position":"static",
+          "display":"table",
+          "background":"url('./mobile/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png') repeat-x scroll 50% 50%"
+        },
+        click : function() {
+          self.menuItemListView.trigger();
+        }
+      });
+      
       var pageControl = $("<div />", {
         "id" : "pager" + UUID,
         css : {
@@ -89,6 +116,7 @@ PaginationView = (function() {
       });
       $(pageControl).append(previousScreenBtn);
       $(pageControl).append(nextScreenBtn);
+      $(pageControl).append(menuBtn);
       return pageControl;
     }
     

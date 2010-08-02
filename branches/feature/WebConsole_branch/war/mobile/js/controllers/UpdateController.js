@@ -60,6 +60,8 @@ UpdateController = (function() {
         RenderDataDB.getInstance().addScreen(new Screen(jsonParser, properties));
       } else if (nodeName == Constants.GROUP) {
         RenderDataDB.getInstance().addGroup(new Group(jsonParser, properties));
+      } else if (nodeName == Constants.TAB_BAR) {
+        RenderDataDB.getInstance().globalTabBar = new TabBar(jsonParser, properties);
       }
     };
     
