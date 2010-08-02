@@ -34,13 +34,33 @@ CookieUtils = (function() {
     			}
     			// note that in cases where cookie is initialized but no value, null is returned
     			return JSON.parse(cookie_value);
-    			break;
     		}
     		a_temp_cookie = null;
     		cookie_name = '';
     	}
     	if (!b_cookie_found ) {
     		return null;
+    	}
+    },
+    clearCookies : function() {
+      // Firstly split cookie up into name/value pairs
+    	// NOTE: document.cookie only returns name=value, not the other components
+    	var a_all_cookies = document.cookie.split( ';' );
+    	var a_temp_cookie = '';
+    	var cookie_name = '';
+    	var cookie_value = '';
+
+    	for ( i = 0; i < a_all_cookies.length; i++ ) {
+    		// Split apart each name=value pair
+    		a_temp_cookie = a_all_cookies[i].split( '=' );
+
+    		// And trim left/right whitespace while we're at it
+    		cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
+
+    		// if the extracted name matches passed name
+  			CookieUtils.setCookie(cookie_name, null);
+    		a_temp_cookie = null;
+    		cookie_name = '';
     	}
     }
   };

@@ -77,11 +77,14 @@ RootViewController = (function(){
      initViewController = new InitViewController();
      self.getView().addSubView(errorViewController.getView());
      self.getView().addSubView(initViewController.getView());
-     
+     addObservers();
+   }
+   
+   function addObservers() {
      // Add navigation event listener.
      NotificationCenter.getInstance().addObserver(Constants.NAVIGATION_NOTIFICATION, self.navigateFromNotification);
      // Register notification of refreshing view.
-     NotificationCenter.getInstance().addObserver(Constants.REFRESH_VIEW_NOTIFICATION, self.refreshView);
+     // NotificationCenter.getInstance().addObserver(Constants.REFRESH_VIEW_NOTIFICATION, self.refreshView);
    }
    
    this.navigateFromNotification = function(data) {
@@ -92,8 +95,22 @@ RootViewController = (function(){
    };
    
    this.refreshView = function() {
-     // TODO: clear the NotificationCenter
-     
+     RenderDataDB.getInstance().clearAll();
+     //CookieUtils.clearCookies();
+     NotificationCenter.getInstance().reset();
+     self.getView().removeSubViews();
+     self.groupControllers = [];
+     self.groupIDViewMap = {};
+     // TODO: clear tabBarControllers
+     // TODO: clear tabBarControllerViewMap
+     // TODO: reset globalTabBarController
+     // TODO: reset localTabBarController
+     if (self.currentGroupController != null && self.currentGroupController != undefined) {
+       self.currentGroupController.stopPolling();
+     }
+     self.currentGroupController = null;
+     addObservers();
+     self.delegate.beginUpdate();
    };
    
    function navigateToWithHistory(navigate) {
@@ -144,16 +161,22 @@ RootViewController = (function(){
      }
    }
    
-   // Following two methods are for toSetting and click "OK".
-   this.didUpdateSuccess = function() {
-     MessageUtils.hideLoading();
-     NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION);
+   this.beginUpdate = function() {
+       MessageUtils.hideLoading();
+       self.refreshView();
+       // NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION);
    };
    
-   this.didUpdateFail = function(error) {
-     // Call method of AppBoot
-     this.delegate.didUpdateFail(error);
-   }
+   // Following two methods are for toSetting and click "OK".
+   // this.didUpdateSuccess = function() {
+   //   MessageUtils.hideLoading();
+   //   NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION);
+   // };
+   
+   // this.didUpdateFail = function(error) {
+   //   // Call method of AppBoot
+   //   this.delegate.didUpdateFail(error);
+   // }
    
    
    function navigateToGroupAndScreen(groupID, screenID) {

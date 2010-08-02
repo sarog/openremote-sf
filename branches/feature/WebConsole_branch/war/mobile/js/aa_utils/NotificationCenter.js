@@ -28,6 +28,10 @@ NotificationCenter = (function() {
       }
     };
     
+    this.reset = function() {
+      this.notificationHandleFunctionsMap = [];
+    };
+    
   };
   
   return {

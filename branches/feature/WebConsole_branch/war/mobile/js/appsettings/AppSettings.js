@@ -26,6 +26,10 @@ AppSettings = (function(){
     
     // Instatnce methods
     
+    this.setDelegate = function(delegateParam) {
+      delegate = delegateParam;
+    };
+    
     this.show = function() {
       if (controllerServers.length > 0) {
         renderControllerServers();
@@ -68,13 +72,13 @@ AppSettings = (function(){
   	};
   	
   	// Following two methods are delegate methods should defined in UpdateController.js
-    this.didUpdateSuccess = function() {
-      delegate.didUpdateSuccess();
-    };
-    
-    this.didUpdateFail = function(error) {
-      delegate.didUpdateFail(error);
-    };
+    // this.didUpdateSuccess = function() {
+    //   delegate.didUpdateSuccess();
+    // };
+    // 
+    // this.didUpdateFail = function(error) {
+    //   delegate.didUpdateFail(error);
+    // };
   	
     // Private methods
     function init() {
@@ -125,8 +129,9 @@ AppSettings = (function(){
       			
       			// Update with controller url.
       			MessageUtils.showLoading("Rendering......");
-      			var updateController = new UpdateController(self);
-            updateController.update();
+      			delegate.beginUpdate();
+            // var updateController = new UpdateController(self);
+            //             updateController.update();
     			},
     			Cancel: function() {
             resetControllerPanelSelectContainer();
@@ -344,6 +349,7 @@ AppSettings = (function(){
        if (!appSettings) {
          appSettings = new AppSettings(delegateParam);
        }
+       appSettings.setDelegate(delegateParam);
        appSettings.recoverSettingsFromCookie();
        return appSettings;
      }
