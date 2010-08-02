@@ -131,6 +131,10 @@ public class PollingHelper {
    }
 
    private void doPolling() {
+      if (httpGet != null) {
+         httpGet.abort();
+         httpGet = null;
+      }
       Log.i("POLLING", "polling start");
       handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
    }
@@ -146,6 +150,7 @@ public class PollingHelper {
             if (statusCode == Constants.HTTP_SUCCESS) {
                PollingStatusParser.parse(response.getEntity().getContent());
             } else {
+               response.getEntity().getContent().close();
                handleServerErrorWithStatusCode(statusCode);
             }
             return;
