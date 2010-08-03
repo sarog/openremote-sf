@@ -27,8 +27,11 @@
 
 @interface PaginationController (Private)
 
+- (void)initView;
 - (void)updateView;
+- (void)initViewForPage:(NSUInteger)page;
 - (void)updateViewForPage:(NSUInteger)page;
+- (void)updateViewForCurrentPage;
 - (void)updateViewForCurrentPageAndBothSides;
 - (void)pageControlValueDidChange:(id)sender;
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
@@ -86,6 +89,12 @@
 	return [viewControllers objectAtIndex:selectedIndex]; 
 }
 
+- (void)initView {
+	[scrollView setContentSize:CGSizeMake(frameWidth * [viewControllers count], frameHeight)];
+	[pageControl setNumberOfPages:[viewControllers count]];
+	[self updateViewForCurrentPage];
+}
+
 - (void)updateView {
 	[scrollView setContentSize:CGSizeMake(frameWidth * [viewControllers count], frameHeight)];
 	[pageControl setNumberOfPages:[viewControllers count]];
@@ -111,7 +120,7 @@
 		selectedIndex = index;
 		NSLog(@"switch to screen index = %d, id = %d", selectedIndex, screenId);
 		[pageControl setCurrentPage:selectedIndex];
-		[self scrollToSelectedViewWithAnimation:NO];
+		[self scrollToSelectedViewWithAnimation:withAnimation];
 	} else {
 		NSLog(@"switch to screen not found, id = %d", screenId);
 		return NO;
@@ -142,12 +151,7 @@
 	return YES;
 }
 
-- (void)updateViewForCurrentPageAndBothSides {
-	[self updateViewForPage:selectedIndex - 1];
-	[self updateViewForPage:selectedIndex];
-	[self updateViewForPage:selectedIndex + 1];
-	
-	[pageControl setCurrentPage:selectedIndex];
+- (void)saveLastScreen {
 	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
 		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -155,16 +159,47 @@
 	}
 }
 
+- (void)updateViewForCurrentPage {
+	[self initViewForPage:selectedIndex];
+	[pageControl setCurrentPage:selectedIndex];
+}
+
+- (void)updateViewForCurrentPageAndBothSides {
+	[self updateViewForPage:selectedIndex - 1];
+	[self updateViewForPage:selectedIndex];
+	[self updateViewForPage:selectedIndex + 1];
+	
+	[pageControl setCurrentPage:selectedIndex];
+	[self saveLastScreen];
+}
+
+- (void)initViewForPage:(NSUInteger)page {
+	if (page < 0) return;
+	if (page >= [viewControllers count]) return;
+	UIViewController *controller = [viewControllers objectAtIndex:page];
+	
+	if (controller.view.superview != scrollView) {
+		CGRect frame = scrollView.bounds;
+		frame.origin.x = frameWidth * page;
+		[controller.view setFrame:frame];
+		scrollView.contentOffset = CGPointMake(frame.origin.x, 0);
+		[scrollView addSubview:controller.view];
+	}
+	
+	if (page == selectedIndex) {
+		[((ScreenViewController *)controller) startPolling];
+	} else {
+		[((ScreenViewController *)controller) stopPolling];
+	}
+}
+
 - (void)updateViewForPage:(NSUInteger)page {
 	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
-	
-	UIViewController *controller = [viewControllers objectAtIndex:page];	
-	
+	UIViewController *controller = [viewControllers objectAtIndex:page];
 	CGRect frame = scrollView.bounds;
 	frame.origin.x = frameWidth * page;
 	[controller.view setFrame:frame];
-	
 	if (controller.view.superview != scrollView) {
 		[scrollView addSubview:controller.view];
 	}
@@ -179,7 +214,7 @@
 
 //if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation {
-	[self updateViewForCurrentPageAndBothSides];
+	[self updateViewForCurrentPage];
 	CGRect frame = scrollView.bounds;
 	
 	if (selectedIndex == pageControl.numberOfPages - 1) {
@@ -195,7 +230,6 @@
 - (void)loadView {
 	[super loadView];
 	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
-	NSLog(@"pagination loadView width=%g height=%g", frameWidth, frameHeight);
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
@@ -218,8 +252,8 @@
 		[self.view addSubview:pageControl];
 		[pageControl release];
 	}
-	
-	[self updateView];
+	pageControlUsed = NO;
+	[self initView];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -237,6 +271,7 @@
 
 	// Switch the indicator when more than 50% of the previous/next page is visible
 	selectedIndex = floor((scrollView.contentOffset.x - frameWidth / 2) / frameWidth) + 1;
+	
 	[self updateViewForCurrentPageAndBothSides];
 }
 
@@ -259,7 +294,7 @@
 
 	// DENNIS: Maybe you want to make sure that the user can't interact with the scroll view while it is animating.
 	//[scrollView setUserInteractionEnabled:NO];
-	pageControlUsed = YES;
+	pageControlUsed = NO;
 }
 
 

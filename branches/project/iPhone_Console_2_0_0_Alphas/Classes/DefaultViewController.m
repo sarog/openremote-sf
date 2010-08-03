@@ -153,20 +153,12 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 				[self.view addSubview:currentGroupController.view];
 			}
 		
-		//Begin: Recover the last screen	
-		int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
-		if (lastScreenId > 0) {
-			[currentGroupController switchToScreen:lastScreenId];
-		}
-		//End: Recover the last screen
-		// ReSave last groupId and screenId
 		[self saveLastGroupIdAndScreenId];
 	} else {		
 		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
 																																	message:@"Please check your setting or define a group with screens first."];
 		[self.view addSubview:errorViewController.view];		
 	}
-	
 }
 
 - (void)navigateFromNotification:(NSNotification *)notification {
@@ -291,11 +283,17 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		// begin tabBar and view(local or global)
 		//if global tabbar exists
-		if (globalTabBarController) {
-			[globalTabBarController updateGroupController:targetGroupController];
+		if ([[Definition sharedDefinition] tabBar]) {
+			if (globalTabBarController) {
+				[globalTabBarController updateGroupController:targetGroupController];
+			} else {
+				globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[[Definition sharedDefinition] tabBar]];
+			}
 			view = globalTabBarController.view;
 			tabBarScale = TABBAR_SCALE_GLOBAL;
-		}		
+			[globalTabBarController returnToContentView];
+		}
+		
 		//if local tabbar exists
 		if (targetGroupController.group.tabBar) {
 			BOOL findCachedTargetTabBarController = NO;
@@ -313,6 +311,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 			}
 			tabBarScale = TABBAR_SCALE_LOCAL;
 			view = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", localTabBarController.groupController.group.groupId]];
+			[localTabBarController returnToContentView];
 		}
 		// end tabBar and view(local or global)
 		
@@ -327,13 +326,9 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	//if screenId is specified, jump to that screen
 	if (screenId > 0) {
 		return [currentGroupController switchToScreen:screenId];
-	} else {
-		if ([currentGroupController isNew]) {
-			[currentGroupController switchToFirstScreen];
-		}
-	}
-
+	} 
 	
+		
 	return YES;
 }
 
@@ -391,6 +386,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (void)refreshView:(id)sender {
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	for (UIView *view in self.view.subviews) {
 		[view removeFromSuperview];
 	}
@@ -408,7 +404,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	currentGroupController = nil;
 	
 	[self initGroups];
-	
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 }
 
 - (BOOL)isLoadingViewGone {
@@ -420,6 +416,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)onSignin {
 	[currentGroupController stopPolling];
 	[theDelegate performSelector:@selector(checkConfigAndUpdate)];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 }
 
 - (void)onBackFromLogin {
@@ -433,7 +430,9 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	if ([self isLoadingViewGone]) {
+	if (groupControllers.count == 0) {
+		return NO;
+	} else if ([self isLoadingViewGone]) {
 		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 	} else {
 		return YES;

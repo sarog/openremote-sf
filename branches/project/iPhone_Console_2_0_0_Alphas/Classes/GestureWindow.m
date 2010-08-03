@@ -21,7 +21,14 @@
 
 #import "GestureWindow.h"
 #import "Gesture.h"
+#import "NotificationConstant.h"
 
+@interface GestureWindow (Private)
+
+- (void)showLoading;
+- (void)hideLoading;
+
+@end
 
 
 
@@ -43,6 +50,11 @@
 - (id)initWithDelegate:(id)delegate{
 	if (self = [super initWithFrame:[UIScreen mainScreen].bounds]) {
 		theDelegate = delegate;
+		
+		loading  = [[LoadingHUDView alloc] initWithTitle:@"Loading"];
+		loading.center = self.center;
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showLoading) name:NotificationShowLoading object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideLoading) name:NotificationHideLoading object:nil];
 		UIAccelerometer *accelerometer = [UIAccelerometer sharedAccelerometer];
 		accelerometer.delegate = self; 
 		accelerometer.updateInterval = 1.0f/60.0f; 
@@ -150,6 +162,18 @@
 	}
 }
 
+
+- (void)showLoading {
+	if (loading.superview != self) {
+		[self addSubview:loading];
+	}
+	[loading startAnimating];
+}
+
+- (void)hideLoading {
+	[loading stopAnimating];
+	[loading removeFromSuperview];
+}
 
 @end
 

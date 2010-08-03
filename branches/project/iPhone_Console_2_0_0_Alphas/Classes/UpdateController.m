@@ -82,6 +82,9 @@
 // else if auto discovery is enable it will try to find another server url using auto discovery,
 //        elese it will check local cache or call didUpdateFail method.
 - (void)checkConfigAndUpdate {
+	if ([Definition sharedDefinition].groups.count > 0) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
+	}
 	NSLog(@"check config");
 
 	if ([AppSettingsDefinition readServerUrlFromFile]) {

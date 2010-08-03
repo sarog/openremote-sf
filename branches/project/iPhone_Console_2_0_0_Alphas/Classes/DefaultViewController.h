@@ -35,7 +35,6 @@
 #import "UpdateController.h"
 #import "InitViewController.h"
 
-
 @interface DefaultViewController : UIViewController {
 	
 	id theDelegate;
