@@ -99,6 +99,8 @@ RootViewController = (function(){
      //CookieUtils.clearCookies();
      NotificationCenter.getInstance().reset();
      self.getView().removeSubViews();
+     self.getView().addSubView(errorViewController.getView());
+     self.getView().addSubView(initViewController.getView());
      self.groupControllers = [];
      self.groupIDViewMap = {};
      // TODO: clear tabBarControllers

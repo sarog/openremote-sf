@@ -19,7 +19,11 @@ GroupController = (function() {
     };
     
     this.currentScreenViewController = function() {
-      return self.paginationController.currentScreenViewController();
+      if (self.paginationController != null) {
+        return self.paginationController.currentScreenViewController();
+      } else {
+        return null;
+      }
     };
     
     this.hasNoScreenView = function() {
@@ -37,11 +41,15 @@ GroupController = (function() {
     };
     
     this.startPolling = function() {
-      this.currentScreenViewController().startPolling();
+      if (this.currentScreenViewController() != null) {
+        this.currentScreenViewController().startPolling();
+      }
     };
     
     this.stopPolling = function() {
-      this.currentScreenViewController().stopPolling();      
+      if (this.currentScreenViewController() != null) {
+        this.currentScreenViewController().stopPolling();
+      }      
     };
     
     this.switchToScreen = function(screenID) {
@@ -67,7 +75,7 @@ GroupController = (function() {
       
       var screens = self.group.screens;
       if (screens.length > 0) {
-        self.paginationController = new PaginationController(self.group.screens);
+        self.paginationController = new PaginationController(self.group);
         self.setView(self.paginationController.getView());
         
         var currentScreenViewController = self.currentScreenViewController();

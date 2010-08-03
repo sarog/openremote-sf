@@ -14,7 +14,7 @@ MenuItemListView = (function() {
      "width" : "99%",
      "display" : "none",
      "color" : "black",
-     "font-size" : "10px",
+     "font-size" : "12px",
      "text-shadow":"0px -1px #bbb,0 2px #fff",
      "font-family":"Verdana,Arial,sans-serif"
    };
@@ -42,46 +42,37 @@ MenuItemListView = (function() {
       });
       self.setCanvas(canvas);
       self.setCss(DEFAULT_CSS_STYLE);
-      renderMenuItems();
+      renderMenu();
     }
     
-    function renderMenuItems() {
+    function renderMenu() {
       var globalTabBar = RenderDataDB.getInstance().globalTabBar;
-      if (globalTabBar != null) {
-        var globalTabBarItems = globalTabBar.items;
-        if (globalTabBarItems.length > 0) {
-          for (var i = 0; i < globalTabBarItems.length; i++) {
-            var float = "left";
-            if (i % 2 != 0) {
-              float = "right";
-            }
-            var item = globalTabBarItems[i];
-            var qualifiedImageSrc = ConnectionUtils.getResourceURL(item.image.src);
-            var itemHTML = $("<div />", {
-              "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
-                              "<div style='position:relative;top:-50%;width:100%;text-align:center;'>" +
-                              "<image style='padding-top:10px;' src = '" + qualifiedImageSrc + "' />" +
-                              "</div>" +
-                              
-                              "<div style='position:relative;top:-50%;width:100%;text-align:center;padding-top:5px;padding-bottom:5px;'>" + 
-                                item.name + 
-                              "</div>" + 
-                             "</div>",
-              css : {
-                "background" : "url('./mobile/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png') repeat-x scroll 50% 50% #E6E6E6",
-                "border" : "solid 1px #D3D3D3",
-                "width" : "49%",
-                "height" : "44px",
-                "position":"static",
-                "display":"table",
-                "float" : float
-              },
-              click : function() {
-                NotificationCenter.getInstance().postNotification(Constants.NAVIGATION_NOTIFICATION, item.navigate);
-              }
-            });
-            $(self.getCanvas()).append(itemHTML);
+      if (self.tabBarModel != null) {
+        renderMenuItems(self.tabBarModel);
+      } else if (globalTabBar != null) {
+        renderMenuItems(globalTabBar);
+      } else {
+        var defaultTabBar = {};
+        defaultTabBar.items = [];
+        var settingItem = {name : "Settings", image : {src : "!./mobile/images/gear.png"}, navigate : {isToSetting : true}};
+        var backItem = {name : "Back", image : {src : "!./mobile/images/go-back.png"}, navigate : {isToBack : true}};
+        
+        defaultTabBar.items[defaultTabBar.items.length] = settingItem;
+        defaultTabBar.items[defaultTabBar.items.length] = backItem;
+        renderMenuItems(defaultTabBar);
+      }
+    }
+    
+    function renderMenuItems(tabBarModel) {
+      var tabBarItems = tabBarModel.items;
+      if (tabBarItems.length > 0) {
+        for (var i = 0; i < tabBarItems.length; i++) {
+          var float = "left";
+          if (i % 2 != 0) {
+            float = "right";
           }
+          var item = tabBarItems[i];
+          self.addSubView(new MenuItemView(item, float, self));
         }
       }
     }
