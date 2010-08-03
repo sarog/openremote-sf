@@ -34,6 +34,7 @@
 #import "Definition.h"
 #import "UpdateController.h"
 
+#define STATUS_BAR_HEIGHT 20
 
 @interface DefaultViewController : UIViewController {
 	

@@ -32,6 +32,8 @@
 	Background *background;
 	NSMutableArray *layouts;
 	NSMutableArray *gestures;
+	BOOL landscape;
+	int inverseScreenId;// portrait vs landscape screen id
 
 }
 
@@ -43,5 +45,7 @@
 @property (nonatomic,readonly) Background *background;
 @property (nonatomic,readonly) NSMutableArray *layouts;
 @property (nonatomic,readonly) NSMutableArray *gestures;
+@property (nonatomic,readonly) BOOL landscape;
+@property (nonatomic,readonly) int inverseScreenId;
 
 @end

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
 	<screens>
-		<screen id="5" name="basement" background="basement.png">		  	
+		<screen id="5" name="basement" >		  	
 			<grid left="20" top="20" width="300" height="400" rows="2" cols="2">
 				<cell x="0" y="0" rowspan="1" colspan="1">
-					<label id="59" font-size="14" color="#AAAAAA" text="AWaiting">
+					<label id="59" fontSize="14" color="#AAAAAA" text="AWaiting">
 						<link type="sensor" ref="1001">
 							<state name="on" value="LAMP_ON" />
 							<state name="off" value="LAMP_OFF" />
@@ -12,7 +12,7 @@
 					</label>
 				</cell>
 				<cell x="0" y="1" rowspan="1" >
-					<label id="60" font-size="14" color="#BBBBBB" text="BWaiting">
+					<label id="60" fontSize="14" color="#BBBBBB" text="BWaiting">
 						<link type="sensor" ref="1001">
 							<state name="on" value="LAMP_ON" />
 							<state name="off" value="LAMP_OFF" />
@@ -20,7 +20,7 @@
 					</label>
 				</cell>
 				<cell x="1" y="1" colspan="1">
-					<label id="61" font-size="14" color="#CCCCCC" text="CWaiting">
+					<label id="61" fontSize="14" color="#CCCCCC" text="CWaiting">
 						<link type="sensor" ref="1001">
 							<state name="on" value="LAMP_ON" />
 							<state name="off" value="LAMP_OFF" />
@@ -28,7 +28,7 @@
 					</label>
 				</cell>
 				<cell x="1" y="1" >
-					<label id="62" font-size="14" color="#DDDDDD" text="DWaiting">
+					<label id="62" fontSize="14" color="#DDDDDD" text="DWaiting">
 						<link type="sensor" ref="1001">
 							<state name="on" value="LAMP_ON" />
 							<state name="off" value="LAMP_OFF" />
@@ -37,10 +37,10 @@
 				</cell>
 			</grid>
 		</screen>
-		<screen id="6" name="floor" background="basement.png">		  	
+		<screen id="6" name="floor" >		  	
 			<grid left="20" top="20" width="300" height="400" rows="4" cols="4">
 				<cell x="0" y="1" rowspan="1" colspan="2">
-					<label id="63" font-size="14" color="#EEEEEE" text="EWaiting">
+					<label id="63" fontSize="14" color="#EEEEEE" text="EWaiting">
 						<link type="sensor" ref="1001">
 							<state name="on" value="LAMP_ON" />
 							<state name="off" value="LAMP_OFF" />

@@ -34,9 +34,10 @@
  */
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		groupId = [[attributeDict objectForKey:@"id"] intValue];					
-		name = [[attributeDict objectForKey:@"name"] copy];		
+		groupId = [[attributeDict objectForKey:ID] intValue];					
+		name = [[attributeDict objectForKey:NAME] copy];		
 		screens = [[NSMutableArray alloc] init];
+		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
@@ -46,7 +47,7 @@
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
-	return @"group";
+	return GROUP;
 }
 
 - (void)dealloc {
@@ -64,14 +65,21 @@
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	NSLog(@"start at screen ref");
-	if ([elementName isEqualToString:@"include"] && [@"screen" isEqualToString:[attributeDict objectForKey:@"type"]]) {
-		int screenRefId = [[attributeDict objectForKey:@"ref"] intValue];
+	if ([elementName isEqualToString:INCLUDE] && [SCREEN isEqualToString:[attributeDict objectForKey:TYPE]]) {
+		int screenRefId = [[attributeDict objectForKey:REF] intValue];
 		Screen *existedScreen = [[Definition sharedDefinition] findScreenById:screenRefId];
 		[self.screens addObject:existedScreen];
-	} else if ([elementName isEqualToString:@"tabbar"]) {
+	} else if ([elementName isEqualToString:TABBAR]) {
 		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}
 }
 
+
+- (NSArray *) getPortraitScreens {
+	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", NO]]; 
+}
+- (NSArray *) getLandscapeScreens {
+	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", YES]]; 
+}
 
 @end
