@@ -59,7 +59,7 @@
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		switch (statusCode) {
-			case 401://logout succuessful 
+			case UNAUTHORIZED://logout succuessful 
 				NSLog(@"%@ logged out successfully", [Definition sharedDefinition].username);
 				[ViewHelper showAlertViewWithTitle:@"" Message:[NSString stringWithFormat:@"%@ logged out successfully", [Definition sharedDefinition].username]];
 				[Definition sharedDefinition].password = nil;

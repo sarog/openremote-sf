@@ -112,6 +112,10 @@
 	return @"Controller URL:";
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	return YES;
+}
+
 
 - (void)dealloc {
 	[editingItem release];
