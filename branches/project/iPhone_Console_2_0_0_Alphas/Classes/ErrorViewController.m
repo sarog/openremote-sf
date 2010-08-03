@@ -52,7 +52,7 @@ static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
 		
 		[toolbar setItems:items];
 		
-		UIView *bgview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height - 20)];
+		UIView *bgview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
 		[bgview setBackgroundColor:[UIColor whiteColor]];
 		[self setView:bgview];
 		UIImage *errorImage = [UIImage imageNamed:@"repair.png"];

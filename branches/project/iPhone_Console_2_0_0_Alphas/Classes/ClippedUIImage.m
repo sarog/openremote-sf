@@ -52,7 +52,15 @@ NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW = @"ABSOLUTE";
 	align = [align uppercaseString];
 	
 	if ([@"ABSOLUTE" isEqualToString:align] || align == nil || [@"" isEqualToString:align]) {
-		return CGPointMake(0, 0);
+		CGFloat left = uiView.frame.origin.x;
+		CGFloat top = uiView.frame.origin.y;
+		if (uiView.frame.origin.x > 0) {
+			left = 0.0;
+		}
+		if (uiView.frame.origin.y > 0) {
+			top = 0.0;
+		}
+		return CGPointMake(fabs(left), fabs(top));
 	}	
 	int startAtImageXCoordinate=0;
 	int startAtImageYCoordinate=0;

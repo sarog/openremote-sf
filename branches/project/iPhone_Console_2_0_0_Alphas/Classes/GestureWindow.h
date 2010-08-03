@@ -20,15 +20,18 @@
  */
 
 #import <UIKit/UIKit.h>
-
+/*accelerometer simulator*/
+#import "zUIAccelerometer.h"
+/*accelerometer simulator*/
 
 #define MINIMUM_GESTURE_LENGTH      80
 #define MAXIMUM_VARIANCE            40
 
 
 
-@interface GestureWindow : UIWindow {
+@interface GestureWindow : UIWindow <UIAccelerometerDelegate, zUIAccelerometerDelegate> {
 	CGPoint previousTouchLocation;
+	UIInterfaceOrientation orientation;
 	id theDelegate;
 }
 

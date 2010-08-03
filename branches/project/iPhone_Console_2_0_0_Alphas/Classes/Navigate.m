@@ -26,6 +26,13 @@
 
 @synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout, fromGroup, fromScreen;
 
+- (id)init {
+	if (self = [super init]) {
+		
+	}
+	return self;
+}
+
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
@@ -47,7 +54,7 @@
 
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
-	return @"navigate";
+	return NAVIGATE;
 }
 
 

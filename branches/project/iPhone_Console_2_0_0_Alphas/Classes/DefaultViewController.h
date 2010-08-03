@@ -33,13 +33,14 @@
 #import "TabBarController.h"
 #import "Definition.h"
 #import "UpdateController.h"
+#import "InitViewController.h"
 
-#define STATUS_BAR_HEIGHT 20
 
 @interface DefaultViewController : UIViewController {
 	
 	id theDelegate;
 	
+	InitViewController *initViewController;
 	NSMutableArray *groupControllers;
 	GroupController *currentGroupController;
 	NSMutableDictionary *groupViewMap;
@@ -58,6 +59,7 @@
 - (void)populateLoginView:(id)sender;
 - (void)populateSettingsView:(id)sender;
 - (void)performGesture:(Gesture *)gesture;
-- (void) saveLastGroupIdAndScreenId;
+- (void)saveLastGroupIdAndScreenId;
+- (BOOL)isLoadingViewGone;
 
 @end

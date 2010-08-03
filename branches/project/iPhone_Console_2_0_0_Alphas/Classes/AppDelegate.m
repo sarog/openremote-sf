@@ -55,10 +55,6 @@
 	
 	[window addSubview:defaultView];
 	
-	//Init the loading view
-	initViewController = [[InitViewController alloc] init];
-	[defaultView addSubview:initViewController.view];
-	[Definition sharedDefinition].loading = [initViewController label];
 	//Init UpdateController and set delegate to this class, it have three delegate methods
     // - (void)didUpadted;
     // - (void)didUseLocalCache:(NSString *)errorMessage;
@@ -77,11 +73,9 @@
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
-	
-	[initViewController.view removeFromSuperview];
-	
-	[defaultViewController initGroups];
-
+	if (![defaultViewController isLoadingViewGone]) {
+		[defaultViewController initGroups];
+	}
 }
 
 

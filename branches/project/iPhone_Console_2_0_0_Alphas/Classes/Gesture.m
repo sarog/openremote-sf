@@ -30,7 +30,7 @@
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
 - (NSString *) elementName {
-	return @"gesture";
+	return GESTURE;
 }
 
 - (id)initWithGestureSwipeType:(GestureSwipeType)type {
@@ -40,12 +40,51 @@
 	return self;
 }
 
+- (id)initWithGestureSwipeType:(GestureSwipeType)type orientation:(UIInterfaceOrientation)orientation{
+	if (self = [super init]) {
+		switch (orientation) {
+			case UIInterfaceOrientationPortrait:
+				swipeType = type;
+				break;
+			case UIInterfaceOrientationLandscapeLeft:
+				swipeType = (type - 1 + 4)  % 4;
+				break;
+			case UIInterfaceOrientationLandscapeRight:
+				swipeType = (type + 1) % 4;
+				break;
+			case UIInterfaceOrientationPortraitUpsideDown:
+				swipeType = (type + 2) % 4;
+				break;	
+			default:
+				swipeType = type;
+				break;
+		}
+		
+	}
+	return self;
+}
+
+
+- (NSString *)toString {
+	switch (swipeType) {
+		case GestureSwipeTypeTopToBottom:
+			return @"top to bottom";
+		case GestureSwipeTypeBottomToTop:
+			return @"bottom to top";
+		case GestureSwipeTypeLeftToRight:
+			return @"left to right";
+		case GestureSwipeTypeRightToLeft:
+			return @"right to left";
+	}
+	return nil;
+}
+
 #pragma mark Delegate methods of NSXMLParser
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:@"id"] intValue];
-		NSString *type = [attributeDict objectForKey:@"type"];
+		componentId = [[attributeDict objectForKey:ID] intValue];
+		NSString *type = [attributeDict objectForKey:TYPE];
 		NSLog(@"gestrue %@", elementName);
 		if ([type isEqualToString:@"swipe-top-to-bottom"]) {
 			swipeType = GestureSwipeTypeTopToBottom;
@@ -68,7 +107,7 @@
  * Parse the gesture's sub elements .
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:@"navigate"]) {
+	if ([elementName isEqualToString:NAVIGATE]) {
 		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}
 }

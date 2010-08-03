@@ -23,6 +23,8 @@
 #import "PaginationController.h"
 #import "ScreenViewController.h"
 
+#define PAGE_CONTROL_HEIGHT 20
+
 @interface PaginationController (Private)
 
 - (void)updateView;
@@ -31,6 +33,7 @@
 - (void)pageControlValueDidChange:(id)sender;
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
 - (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation;
+
 @end
 
 @implementation PaginationController
@@ -61,6 +64,7 @@
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
 	NSLog(@"last screen id =%d", lastScreenId);
+	
 	if (lastScreenId > 0) {
 		for (int i = 0; i < [viewControllers count]; i++) {
 			if (lastScreenId == [[[viewControllers objectAtIndex:i] screen] screenId]) {
@@ -71,8 +75,11 @@
 	} else {
 		selectedIndex = 0;
 	}
-	
-	//[self updateView];
+}
+
+- (BOOL)switchToFirstScreen {
+	int screenId = ((ScreenViewController *)[viewControllers objectAtIndex:0]).screen.screenId;
+	return [self switchToScreen:screenId];
 }
 
 - (ScreenViewController *)currentScreenViewController {
@@ -82,7 +89,6 @@
 - (void)updateView {
 	[scrollView setContentSize:CGSizeMake(frameWidth * [viewControllers count], frameHeight)];
 	[pageControl setNumberOfPages:[viewControllers count]];
-	
 	[self updateViewForCurrentPageAndBothSides];
 }
 
@@ -103,9 +109,11 @@
 	}
 	if (index != -1) {
 		selectedIndex = index;
+		NSLog(@"switch to screen index = %d, id = %d", selectedIndex, screenId);
 		[pageControl setCurrentPage:selectedIndex];
 		[self scrollToSelectedViewWithAnimation:NO];
 	} else {
+		NSLog(@"switch to screen not found, id = %d", screenId);
 		return NO;
 	}
 	
@@ -140,7 +148,6 @@
 	[self updateViewForPage:selectedIndex + 1];
 	
 	[pageControl setCurrentPage:selectedIndex];
-	
 	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
 		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -154,12 +161,13 @@
 	
 	UIViewController *controller = [viewControllers objectAtIndex:page];	
 	
-	if (controller.view.superview != scrollView) {
-		[scrollView addSubview:controller.view];
-	}
 	CGRect frame = scrollView.bounds;
 	frame.origin.x = frameWidth * page;
 	[controller.view setFrame:frame];
+	
+	if (controller.view.superview != scrollView) {
+		[scrollView addSubview:controller.view];
+	}
 	
 	if (page == selectedIndex) {
 		[((ScreenViewController *)controller) startPolling];
@@ -186,38 +194,30 @@
 
 - (void)loadView {
 	[super loadView];
-	
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	
-	CGFloat availableScreenWidth = isLandscape ? size.height : size.width;
-	CGFloat availableScreenHeight = isLandscape ? size.width : size.height;
-	CGFloat statusBarHeight = 20;
-	CGFloat pageControlHeight = 20;
-	CGFloat availableScrollHeight = availableScreenHeight - statusBarHeight - pageControlHeight;
-	
-	[self.view setFrame:CGRectMake(0, 0, availableScreenWidth, availableScreenHeight - statusBarHeight)];
-	
+	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	NSLog(@"pagination loadView width=%g height=%g", frameWidth, frameHeight);
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
 	[scrollView setShowsVerticalScrollIndicator:NO];
 	[scrollView setShowsHorizontalScrollIndicator:NO];
 	[scrollView setScrollsToTop:NO];
-	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[scrollView setOpaque:YES];
 	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-	[scrollView setFrame:CGRectMake(0, 0, availableScreenWidth, availableScrollHeight)];
+	[scrollView setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[self.view addSubview:scrollView];
 	[scrollView release];
-	
 	pageControl = [[UIPageControl alloc] init];
-	[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-	[pageControl setFrame:CGRectMake(0, availableScrollHeight, availableScreenWidth, pageControlHeight)];
-	[pageControl setBackgroundColor:[UIColor blackColor]];
-	[pageControl setOpaque:YES];
-	[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
-	[self.view addSubview:pageControl];
-	[pageControl release];
+	if (viewControllers.count > 1) {
+		[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
+		[pageControl setFrame:CGRectMake(0, frameHeight - PAGE_CONTROL_HEIGHT, frameWidth, PAGE_CONTROL_HEIGHT)];
+		[pageControl setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5f]];
+		[pageControl setOpaque:YES];
+		[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
+		[self.view addSubview:pageControl];
+		[pageControl release];
+	}
 	
 	[self updateView];
 }

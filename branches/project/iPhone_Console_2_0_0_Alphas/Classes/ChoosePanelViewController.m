@@ -138,7 +138,12 @@
 	
 	textField = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 50.0, 240.0, 25.0)]; 
 	[textField setBackgroundColor:[UIColor whiteColor]];
-	[textField setPlaceholder:@"username"];
+	if ([Definition sharedDefinition].username == nil) {
+		[textField setPlaceholder:@"username"];
+	} else {
+		[textField setText:[Definition sharedDefinition].username];
+	}
+	
 	[prompt addSubview:textField];
 	
 	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 85.0, 240.0, 25.0)]; 

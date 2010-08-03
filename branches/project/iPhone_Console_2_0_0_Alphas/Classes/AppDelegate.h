@@ -29,7 +29,6 @@
 #import "GroupController.h"
 #import "Group.h"
 #import "Definition.h"
-#import "InitViewController.h"
 #import "UpdateController.h"
 #import "DefaultViewController.h"
 
@@ -37,7 +36,6 @@
 	
 	GestureWindow *window;
 	UIView *defaultView;
-	InitViewController *initViewController;
 	DefaultViewController *defaultViewController;
 	UpdateController *updateController;
 }

@@ -22,6 +22,9 @@
 #import "GestureWindow.h"
 #import "Gesture.h"
 
+
+
+
 /*
  * UIWindow to intercept touch events as gesture, this doesn't break the event delivery.
  *
@@ -40,6 +43,18 @@
 - (id)initWithDelegate:(id)delegate{
 	if (self = [super initWithFrame:[UIScreen mainScreen].bounds]) {
 		theDelegate = delegate;
+		UIAccelerometer *accelerometer = [UIAccelerometer sharedAccelerometer];
+		accelerometer.delegate = self; 
+		accelerometer.updateInterval = 1.0f/60.0f; 
+		
+//		/*accelerometer simulator, see http://www.iphonearch.com/topic/6/iphone-accelerometer-simulator/*/
+//		zUIAccelerometer *am;
+//    am = [zUIAccelerometer alloc];
+//    [am setDelegate:self];
+//    [am startFakeAccelerometer];    
+//		/*accelerometer simulator*/
+		
+
 	}
 	
 	return self;
@@ -64,12 +79,12 @@
 				//evaluate gesture
 				if (previousTouchLocation.x < location.x) {
 					//left to right -->
-					NSLog(@"gesture: left to right");
-					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeLeftToRight]];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeLeftToRight orientation:orientation];
+					[theDelegate performSelector:@selector(performGesture:) withObject:g];
 				} else if (previousTouchLocation.x > location.x) {
 					//right to left <--
-					NSLog(@"gesture: right to left");
-					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeRightToLeft]];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeRightToLeft orientation:orientation];
+					[theDelegate performSelector:@selector(performGesture:) withObject:g];
 				}
 			} 
 			
@@ -78,13 +93,13 @@
 				if (location.y > previousTouchLocation.y) {
 					//           |
 					//up to down V
-					NSLog(@"gesture: up to down");
-					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeTopToBottom]];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeTopToBottom orientation:orientation];
+					[theDelegate performSelector:@selector(performGesture:) withObject:g];
 				} else if (previousTouchLocation.y > location.y) {
 					//donw to up ^
 					//           |
-					NSLog(@"gesture: donw to up");
-					[theDelegate performSelector:@selector(performGesture:) withObject:[[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeBottomToTop]];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeBottomToTop orientation:orientation];
+					[theDelegate performSelector:@selector(performGesture:) withObject:g];
 				}
 			}
 		} else if (touch.phase == UITouchPhaseMoved) {
@@ -101,6 +116,39 @@
 	[super sendEvent:event];
 }
 
+/*accelerometer simulator*/
+//- (void)accelerometer:(zUIAccelerometer *)accelerometer didAccelerate:(zUIAcceleration *)acceleration {
+//
+//	if (acceleration.y <= -0.5f) {
+//		orientation = UIInterfaceOrientationPortrait;
+//	} else if (acceleration.x >= 0.5f) {
+//		orientation = UIInterfaceOrientationLandscapeRight;
+//	} else if (acceleration.y >= 0.5f) {
+//		orientation = UIInterfaceOrientationPortraitUpsideDown;
+//	} else if (acceleration.x <= -0.5f) {
+//		orientation = UIInterfaceOrientationLandscapeLeft;
+//	} else {
+//		orientation = UIInterfaceOrientationPortrait;
+//	}
+//
+//
+//}
+/*accelerometer simulator*/
+
+
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration { 
+	if (acceleration.y <= -0.5f) {
+		orientation = UIInterfaceOrientationPortrait;
+	} else if (acceleration.x >= 0.5f) {
+		orientation = UIInterfaceOrientationLandscapeRight;
+	} else if (acceleration.y >= 0.5f) {
+		orientation = UIInterfaceOrientationPortraitUpsideDown;
+	} else if (acceleration.x <= -0.5f) {
+		orientation = UIInterfaceOrientationLandscapeLeft;
+	} else {
+		orientation = UIInterfaceOrientationPortrait;
+	}
+}
 
 
 @end
