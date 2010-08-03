@@ -100,6 +100,33 @@ static NSString *unsavedChosenServerUrl = nil;
 	return (NSMutableDictionary *)[[self getSectionWithIndex:PANEL_IDENTITY_INDEX] objectForKey:@"item"];
 }
 
+
++ (NSMutableDictionary *)getSecurityDic {
+	return (NSMutableDictionary *)[[self getSectionWithIndex:SECURITY_INDEX] objectForKey:@"item"];
+}
+
+// use SSL or not
++ (BOOL)useSSL {
+	return [[[self getSecurityDic] objectForKey:@"useSSL"] boolValue];
+}
+
+// Set use SSL or not
++ (void)setUseSSL:(BOOL)on {
+	[[self getSecurityDic] setValue:[NSNumber numberWithBool:on] forKey:@"useSSL"];
+}
+
+// SSL port
++ (int)sslPort {
+	return [[[self getSecurityDic] objectForKey:@"port"] intValue];
+}
+
+// Set SSL port
++ (void)setSslPort:(int)port {
+	[[self getSecurityDic] setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+}
+
+
+
 + (void)writeToFile {
 	if ([settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {	
 		[self readServerUrlFromFile];

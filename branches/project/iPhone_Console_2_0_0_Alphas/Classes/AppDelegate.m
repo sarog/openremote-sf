@@ -101,6 +101,7 @@
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
+	NSLog(@"%@", errorMessage);
 	if ([errorMessage isEqualToString:@"401"]) {
 		[defaultViewController populateLoginView:nil];
 	} else {
