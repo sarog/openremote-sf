@@ -21,56 +21,35 @@
 
 
 #import "InitViewController.h"
-#import "NotificationConstant.h"
-#import "AppSettingController.h"
-#import "DirectoryDefinition.h"
-
-@interface InitViewController (Private)
-
-- (void)detectDeviceOrientation;
-
-@end
+#import "Definition.h"
 
 @implementation InitViewController
 
 - (id)init {
-	if (self = [super  init]) {
-		[self detectDeviceOrientation];
+	int isIPad = [UIScreen mainScreen].bounds.size.width == 768;
+	if (self = [super  initWithNibName:isIPad ? @"InitViewController~iPad" : @"InitViewController~iPhone" bundle:nil]) {
 		
 	}
 	return self;
 }
 
-- (void)createView {
-	BOOL isLandscape = UIInterfaceOrientationIsLandscape(currentOrientation);
-	InitView *view = [[InitView alloc] initWithOrientation:isLandscape];
-	[self setView:view];
-	CGSize size = [UIScreen mainScreen].bounds.size;
+- (void)viewDidLoad {
+	NSString *v = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+	NSLog(@"version is %@", v);
+	version.text = [NSString stringWithFormat:@"v %@", v];
+	//[[Definition sharedDefinition] setLoading:label];
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	return YES;
+}
+
+- (void)dealloc {
+	[label release];
+	[version release];
 	
-	CGFloat frameWidth = isLandscape ? size.height : size.width;
-	CGFloat frameHeight = isLandscape ? size.width : size.height;
-	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	[super dealloc];
 }
-
-- (void)loadView {
-	[self createView];
-}
-
-- (void)detectDeviceOrientation {
-	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-	currentOrientation = [[UIDevice currentDevice] orientation];
-	
-	if (currentOrientation == UIDeviceOrientationUnknown) {
-		currentOrientation = UIInterfaceOrientationPortrait;
-		NSLog(@"it's using simulator, set portrait by default");
-	}
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	currentOrientation = toInterfaceOrientation;
-	[self createView];
-}
-
 
 
 @end

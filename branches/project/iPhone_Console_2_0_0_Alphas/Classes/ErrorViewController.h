@@ -24,8 +24,8 @@
 
 @interface ErrorViewController : UIViewController {
 	
-	UILabel *titleLabel;
-	UILabel *msgLabel;
+	IBOutlet UILabel *titleLabel;
+	IBOutlet UILabel *msgLabel;
 	NSMutableArray *items;
 
 }

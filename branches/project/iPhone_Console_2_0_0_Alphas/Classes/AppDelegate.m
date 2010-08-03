@@ -40,7 +40,7 @@
 @implementation AppDelegate
 
 //Entry point method
-- (void)applicationDidFinishLaunching:(UIApplication *)application {    
+- (void)applicationDidFinishLaunching:(UIApplication *)application {
 	
 	// Load logined iphone user last time.
 	[[DataBaseService sharedDataBaseService] initLastLoginUser];
@@ -65,6 +65,10 @@
 	
 }
 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	[self applicationDidFinishLaunching:application];
+	return YES;
+}
 
 - (void)checkConfigAndUpdate {
 	[updateController checkConfigAndUpdate];

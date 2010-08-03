@@ -70,7 +70,7 @@
 	
 	if (lastScreenId > 0) {
 		for (int i = 0; i < [viewControllers count]; i++) {
-			if (lastScreenId == [[[viewControllers objectAtIndex:i] screen] screenId]) {
+			if (lastScreenId == [(Screen *)[[viewControllers objectAtIndex:i] screen] screenId]) {
 				selectedIndex = i;
 				break;
 			}

@@ -193,7 +193,7 @@ static Definition *myInstance = nil;
 
 - (void)changeLoadingMessage:(NSString *)msg {
 	if (loading) {
-		[loading setText:msg];
+		//[loading setText:msg];
 	}
 }
 
@@ -220,7 +220,7 @@ static Definition *myInstance = nil;
 - (void)downloadImageIgnoreCacheWithName:(NSString *)imageName {
 	NSString *msg = [[NSMutableString alloc] initWithFormat:@"download %@...", imageName];
 	[self changeLoadingMessage:msg];
-	NSLog(msg);
+	NSLog(@"%@", msg);
 	[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName]  path:[DirectoryDefinition imageCacheFolder]];
 	[imageName release];
 	[msg release];
@@ -231,7 +231,7 @@ static Definition *myInstance = nil;
 	if ([FileUtils checkFileExistsWithPath:path] == NO) {
 		NSString *msg = [[NSMutableString alloc] initWithFormat:@"download %@...", imageName];
 		[self changeLoadingMessage:msg];
-		NSLog(msg);
+		NSLog(@"%@", msg);
 		[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName] path:[DirectoryDefinition imageCacheFolder]];
 		[msg release];
 	}

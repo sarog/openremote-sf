@@ -53,11 +53,8 @@
 		[button setFrame:CGRectMake(0, 0, onUIImage.size.width, onUIImage.size.height)];
 	} else {
 		[button setFrame:[self bounds]];
-		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
+		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:29];
 		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-		
-		//buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		//[button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
 		
 		button.titleLabel.font = [UIFont boldSystemFontOfSize:18];
 		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
