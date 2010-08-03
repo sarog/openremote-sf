@@ -176,64 +176,16 @@ class ApplicationProtocolDataUnit
 
 
   /**
-   * Constructs an APDU corresponding to a Group Value Read response from Common EMI wire format.
-   * The expected byte array must contain the last two bytes of the CEMI frame which includes
-   * the APCI bits and data payload of the APDU.
-   *
-   * @param   apdu  APDU bytes of CEMI frame. Expected byte array length is two for a switch
-   *                response (6-bit data payload for boolean datatype).
-   *
-   * @see org.openremote.controller.protocol.knx.ApplicationLayer.Service#GROUPVALUE_RESPONSE_6BIT
-   * @see org.openremote.controller.protocol.knx.datatype.Bool
-   *
-   * @return  APDU instance for a 6-bit group value response of a boolean datatype including
-   *          the data payload.
-   */
-  static ApplicationProtocolDataUnit createSwitchResponse(final byte[] apdu)
-  {
-//    DataType switchReadResponse = new DataType()
-//    {
-//      public int getDataLength()
-//      {
-//        return apdu.length - 1;
-//      }
-//
-//      public byte[] getData()
-//      {
-//        if (apdu.length == 2)
-//        {
-//          return new byte[] { (byte)(apdu[1] & 0x3F) };
-//        }
-//
-//        else
-//        {
-//          byte[] data = new byte[apdu.length - 2];
-//          System.arraycopy(apdu, 2, data, 0, data.length);
-//
-//          return data;
-//        }
-//      }
-//
-//      public DataPointType getDataPointType()
-//      {
-//        return BooleanDataPointType.SWITCH;
-//      }
-//    };
-
-    return new ApplicationProtocolDataUnit(
-        ApplicationLayer.Service.GROUPVALUE_RESPONSE_6BIT,
-        Bool.createSwitchResponse(apdu)
-    );
-  }
-
-  /**
    * Constructs an APDU corresponding to a Group Value Write service for a device expecting
    * a 3-bit dim control data point type (DPT 3.007). <p>
    *
    * The control bit value must correspond to DPT 1.007, 1.008 or 1.014
-   * ({@link org.openremote.controller.protocol.knx.datatype.Bool#INCREASE}/{@link org.openremote.controller.protocol.knx.datatype.Bool#DECREASE},
-   *  {@link org.openremote.controller.protocol.knx.datatype.Bool#UP}/{@link org.openremote.controller.protocol.knx.datatype.Bool#DOWN},
-   *  {@link org.openremote.controller.protocol.knx.datatype.Bool#FIXED}/{@link org.openremote.controller.protocol.knx.datatype.Bool#CALCULATED}, respectively). <p>
+   * ({@link org.openremote.controller.protocol.knx.datatype.Bool#INCREASE}/
+   * {@link org.openremote.controller.protocol.knx.datatype.Bool#DECREASE},
+   * {@link org.openremote.controller.protocol.knx.datatype.Bool#UP}/
+   * {@link org.openremote.controller.protocol.knx.datatype.Bool#DOWN},
+   * {@link org.openremote.controller.protocol.knx.datatype.Bool#FIXED}/
+   * {@link org.openremote.controller.protocol.knx.datatype.Bool#CALCULATED}, respectively). <p>
    *
    * The dim value must be a 3-bit value in the range of [0-7].
    *
@@ -326,7 +278,7 @@ class ApplicationProtocolDataUnit
    * @see DataType
    *
    * @param service   application layer service as defined in
-   *                  {@link org.openremote.controller.protocol.knx.ApplicationLayer.Service]
+   *                  {@link org.openremote.controller.protocol.knx.ApplicationLayer.Service}
    * @param datatype  KNX data type
    */
   private ApplicationProtocolDataUnit(ApplicationLayer.Service service, DataType datatype)
@@ -362,6 +314,8 @@ class ApplicationProtocolDataUnit
 
     return buffer.toString().trim();
   }
+
+
 
 
   // Package-Private Instance Methods ------------------------------------------------------------
@@ -435,6 +389,19 @@ class ApplicationProtocolDataUnit
   }
 
   /**
+   * Returns the application layer service associated with this application protocol data unit.
+   *
+   * @see ApplicationLayer.Service
+   * 
+   * @return application layer service
+   */
+  ApplicationLayer.Service getApplicationLayerService()
+  {
+    return applicationLayerService;
+  }
+
+
+  /**
    * Attempts to convert the data payload of this APDU into a KNX Boolean datatype value.  <p>
    *
    * Integer value 0 is encoded as FALSE, integer value 1 is encoded as TRUE.
@@ -500,6 +467,8 @@ class ApplicationProtocolDataUnit
 
     pdu.add((byte)(TRANSPORT_LAYER_CONTROL_FIELDS + applicationLayerService.getTPCIAPCI()));
 
+    // TODO : fix the brittle if statement with isSixBit() method on app layer service instance
+
     if (applicationLayerService == ApplicationLayer.Service.GROUPVALUE_WRITE_6BIT ||
         applicationLayerService == ApplicationLayer.Service.GROUPVALUE_RESPONSE_6BIT ||
         applicationLayerService == ApplicationLayer.Service.GROUPVALUE_READ)
@@ -520,4 +489,245 @@ class ApplicationProtocolDataUnit
     Byte[] pduBytes = new Byte[pdu.size()];
     return pdu.toArray(pduBytes);
   }
+
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+
+  /**
+   *  TODO
+   */
+  static class ResponseAPDU extends ApplicationProtocolDataUnit
+  {
+    /**
+     * TODO
+     *
+     * @param apdu
+     * @return
+     */
+    static ResponseAPDU create6BitResponse(final byte[] apdu)
+    {
+      return new ResponseAPDU(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE_6BIT,
+          1 /* data length */,
+          new byte[] { (byte)(apdu[1] & 0x3F)}
+      );
+    }
+
+    /**
+     * TODO
+     *
+     * @param apdu
+     * @return
+     */
+    static ResponseAPDU create8BitResponse(final byte[] apdu)
+    {
+      return new ResponseAPDU(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE,
+          2, /* Data length */
+          new byte[] { apdu[2] }
+      );
+    }
+
+    /**
+     * TODO
+     *
+     * @param apdu
+     * @return
+     */
+    static ResponseAPDU createTwoByteResponse(final byte[] apdu)
+    {
+      return new ResponseAPDU(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE,
+          3, /* Data length */
+          new byte[] { apdu[2], apdu[3] }
+      );
+    }
+
+    /**
+     * TODO
+     *
+     * @param apdu
+     * @return
+     */
+    static ResponseAPDU createThreeByteResponse(final byte[] apdu)
+    {
+      return new ResponseAPDU(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE,
+          4, /* Data length */
+          new byte[] { apdu[2], apdu[3], apdu[4] }
+      );
+    }
+
+    /**
+     * TODO
+     *
+     * @param apdu
+     * @return
+     */
+    static ResponseAPDU createFourByteResponse(final byte[] apdu)
+    {
+      return new ResponseAPDU(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE,
+          5, /* Data length */
+          new byte[] { apdu[2], apdu[3], apdu[4], apdu[5] }
+      );
+    }
+
+    /**
+     * TODO
+     *
+     * @param apdu
+     * @return
+     */
+    static ResponseAPDU createStringResponse(final byte[] apdu)
+    {
+      int len = apdu.length;
+      byte[] stringData = new byte[len - 2];
+
+      System.arraycopy(apdu, 2, stringData, 0, stringData.length);
+
+      return new ResponseAPDU(
+          ApplicationLayer.Service.GROUPVALUE_RESPONSE,
+          stringData.length + 1, /* Data length */
+          stringData
+      );
+    }
+
+    /**
+     * TODO
+     *
+     * @param service
+     * @param dataLen
+     * @param data
+     */
+    private ResponseAPDU(ApplicationLayer.Service service, final int dataLen, final byte[] data)
+    {
+      super(service, new DataType()
+      {
+        public int getDataLength()
+        {
+          return dataLen;
+        }
+
+        public byte[] getData()
+        {
+          return data;
+        }
+
+        public DataPointType getDataPointType()
+        {
+          throw new Error("Response APDU must be resolved to a datapoint type first.");
+        }
+      });
+    }
+
+
+    /**
+     * TODO
+     *
+     * @param dpt
+     * @return
+     */
+    ApplicationProtocolDataUnit resolve(DataPointType dpt)
+    {
+      if (dpt instanceof DataPointType.BooleanDataPointType)
+      {
+        DataPointType.BooleanDataPointType bool = (DataPointType.BooleanDataPointType)dpt;
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToBoolean(bool, getDataType().getData() [0])
+        );
+      }
+
+      else if (dpt instanceof DataPointType.Unsigned8BitValue)
+      {
+        DataPointType.Unsigned8BitValue value = (DataPointType.Unsigned8BitValue)dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveTo8BitValue(value, getDataType().getData() [0])
+        );
+      }
+
+      else
+      {
+        throw new Error("Unrecognized datapoint type " + dpt);
+      }
+    }
+
+
+    /**
+     * TODO
+     * 
+     * @param dpt
+     * @param value
+     * @return
+     */
+    private Unsigned8Bit resolveTo8BitValue(DataPointType.Unsigned8BitValue dpt, int value)
+    {
+      return new Unsigned8Bit(dpt, value);
+    }
+
+
+    /**
+     * TODO
+     *
+     * @param value
+     * @return
+     */
+    private Bool resolveToBoolean(DataPointType.BooleanDataPointType dpt, int value)
+    {
+      if (dpt == DataPointType.BooleanDataPointType.SWITCH)
+          return (value == 0) ? Bool.OFF : Bool.ON;
+
+      else if (dpt == DataPointType.BooleanDataPointType.BOOL)
+          return (value == 0) ? Bool.FALSE : Bool.TRUE;
+
+      else if (dpt == DataPointType.BooleanDataPointType.ENABLE)
+          return (value == 0) ? Bool.DISABLE : Bool.ENABLE;
+
+      else if (dpt == DataPointType.BooleanDataPointType.RAMP)
+          return (value == 0) ? Bool.NO_RAMP : Bool.RAMP;
+
+      else if (dpt == DataPointType.BooleanDataPointType.ALARM)
+          return (value == 0) ? Bool.NO_ALARM : Bool.ALARM;
+
+      else if (dpt == DataPointType.BooleanDataPointType.BINARY_VALUE)
+          return (value == 0) ? Bool.LOW : Bool.HIGH;
+
+      else if (dpt == DataPointType.BooleanDataPointType.STEP)
+          return (value == 0) ? Bool.DECREASE : Bool.INCREASE;
+
+      else if (dpt == DataPointType.BooleanDataPointType.UP_DOWN)
+          return (value == 0) ? Bool.UP : Bool.DOWN;
+
+      else if (dpt == DataPointType.BooleanDataPointType.OPEN_CLOSE)
+          return (value == 0) ? Bool.OPEN : Bool.CLOSE;
+
+      else if (dpt == DataPointType.BooleanDataPointType.START)
+          return (value == 0) ? Bool.STOP : Bool.START;
+
+      else if (dpt == DataPointType.BooleanDataPointType.STATE)
+          return (value == 0) ? Bool.INACTIVE : Bool.ACTIVE;
+
+      else if (dpt == DataPointType.BooleanDataPointType.INVERT)
+          return (value == 0) ? Bool.NOT_INVERTED : Bool.INVERTED;
+
+      else if (dpt == DataPointType.BooleanDataPointType.DIM_SEND_STYLE)
+          return (value == 0) ? Bool.START_STOP : Bool.CYCLICALLY;
+
+      else if (dpt == DataPointType.BooleanDataPointType.INPUT_SOURCE)
+          return (value == 0) ? Bool.FIXED : Bool.CALCULATED;
+
+      else
+      {
+        throw new Error("Unrecognized datapoint type : " + dpt);
+      }
+    }
+
+  }
+
+
 }
