@@ -44,8 +44,7 @@
 //override the constractor
 - (id)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-
-			
+			[self setBackgroundColor:[UIColor blackColor]];
     }
     return self;
 }

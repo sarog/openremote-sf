@@ -216,13 +216,26 @@ static Definition *myInstance = nil;
 	NSLog(@"xml file downloaded.");
 }
 
-- (void)downloadImageWithName:(NSString *)imageName {
+
+- (void)downloadImageIgnoreCacheWithName:(NSString *)imageName {
 	NSString *msg = [[NSMutableString alloc] initWithFormat:@"download %@...", imageName];
 	[self changeLoadingMessage:msg];
 	NSLog(msg);
 	[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName]  path:[DirectoryDefinition imageCacheFolder]];
 	[imageName release];
 	[msg release];
+}
+
+- (void)downloadImageWithName:(NSString *)imageName {
+	NSString *path = [[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageName];
+	if ([FileUtils checkFileExistsWithPath:path] == NO) {
+		NSString *msg = [[NSMutableString alloc] initWithFormat:@"download %@...", imageName];
+		[self changeLoadingMessage:msg];
+		NSLog(msg);
+		[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName] path:[DirectoryDefinition imageCacheFolder]];
+		[msg release];
+	}
+	[imageName release];
 }
 
 - (void)parseXml {

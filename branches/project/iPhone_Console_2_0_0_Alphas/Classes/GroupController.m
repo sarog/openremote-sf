@@ -77,6 +77,12 @@
 		currentOrientation = UIInterfaceOrientationPortrait;
 		NSLog(@"it's using simulator, set portrait by default");
 	}
+	
+	if (currentOrientation == UIDeviceOrientationFaceUp || 
+			currentOrientation == UIDeviceOrientationFaceDown) {
+		currentOrientation = UIInterfaceOrientationPortrait;
+		NSLog(@"it's facing up/down, set portrait by default");
+	}
 }
 
 - (UIInterfaceOrientation)getCurrentOrientation {
@@ -221,7 +227,7 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	if (currentOrientation == interfaceOrientation) {
+	if (UIInterfaceOrientationIsPortrait(currentOrientation) == UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
 		return YES;
 	}
 	if ([self currentScreenId] > 0) {
@@ -257,7 +263,7 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[self printOrientation:currentOrientation];
 	[self printOrientation:toInterfaceOrientation];
-	if (toInterfaceOrientation == currentOrientation) {
+	if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation) == UIInterfaceOrientationIsPortrait(currentOrientation)) {
 		NSLog(@"same orientation");
 		return;
 	} else {

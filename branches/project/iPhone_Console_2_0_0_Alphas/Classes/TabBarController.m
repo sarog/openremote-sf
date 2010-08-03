@@ -25,6 +25,15 @@
 #import "NotificationConstant.h"
 #import "DirectoryDefinition.h"
 
+
+@interface TabBarController (Private)
+
+- (void)updateTabItems;
+
+@end
+
+
+
 @implementation TabBarController
 
 @synthesize customziedTabBar, groupController;
@@ -32,86 +41,126 @@
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar {
 	if (self = [super initWithNibName:nil bundle:nil]) {
 		if (tabBar) {
-			customziedTabBar = tabBar;
-			
+			customziedTabBar = [tabBar retain];
+			isMoreViewShown = NO;
 			self.delegate = self;
-			self.groupController = groupControllerParam;
+			self.groupController = [groupControllerParam retain];
 			CGRect frame = [groupController getFullFrame];
 			[self.view setFrame:frame];
-			NSLog(@"tabbar full frame width=%g, height=%g", frame.size.width,frame.size.height);
 			
-			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
-			int i = 0;
-			int selected = i;
-			for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-				
-				UIViewController *itemController = [[UIViewController alloc] init];
-				itemController.view = groupController.view;
-				itemController.tabBarItem.title = tabBarItem.tabBarItemName;
-				UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
-				itemController.tabBarItem.image = image;
-				
-				[viewControllers addObject:itemController];
-				
-				if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
-					selected = i;
-				}
-				i++;
-			}
-			self.viewControllers = viewControllers;
-			//set selected index after viewControllers have been added, or it won't work
-			//otherwise must set selected index in viewDidLoad
-			[self setSelectedIndex:selected];
+			self.moreNavigationController.navigationBar.hidden = YES;
+			UITableView *tableView = (UITableView *)self.moreNavigationController.topViewController.view;
+			[tableView setDelegate:self];
+			
+			[self updateTabItems];
 		}
 	}
 	return self;
 	
 }
 
-- (void)updateGroupController:(GroupController *)groupControllerParam {
-	self.groupController = groupControllerParam;
+- (void)returnToContentView {
+	if (groupController) {
+		self.selectedViewController = groupController;
+		isMoreViewShown = NO;
+	}
+}
+
+- (void)updateTabItems {
 	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+	int i = 0;
+	int selected = i;
+	BOOL selectedIndexFound = NO;
 	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
 		UIViewController *itemController = [[UIViewController alloc] init];
 		itemController.view = groupController.view;
 		itemController.tabBarItem.title = tabBarItem.tabBarItemName;
 		UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
 		itemController.tabBarItem.image = image;
-		
 		[viewControllers addObject:itemController];
+		
+		if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
+			if (selectedIndexFound == NO && tabBarItem.navigate.toScreen == [groupController currentScreenId]) {
+				selected = i;
+				selectedIndexFound = YES;
+			}	
+		}
+		i++;
 	}
+	
 	self.viewControllers = viewControllers;
+	
+	// no custom view, this disable 'Edit' button in 'More' table view
+	self.customizableViewControllers = nil; 
+	
+	//set selected index after viewControllers have been added, or it won't work
+	//otherwise must set selected index in viewDidLoad
+	if (selectedIndexFound == NO) {
+		i = 0;
+		for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
+			if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
+				selected = i;
+				selectedIndexFound = YES;
+				break;
+			}
+			i++;
+		}
+		if (selectedIndexFound == NO) {
+			selected = NSNotFound;
+		}
+	}
+	[self setSelectedIndex:selected];
+}
+
+- (void)updateGroupController:(GroupController *)groupControllerParam {
+	[self.groupController release];
+	[groupControllerParam retain];
+	self.groupController = groupControllerParam;
+	[self updateTabItems];
+}
+
+
+
+- (void)returnToContentViewWithAnimation {
+		[NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(returnToContentView) userInfo:nil repeats:NO];
 }
 
 #pragma mark Delegate method of UITabBarController
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
-	NSString *selectedViewControllerTitle = viewController.tabBarItem.title;
-	for (TabBarItem *tabBarItem in customziedTabBar.tabBarItems) {
-		if ([selectedViewControllerTitle isEqualToString:tabBarItem.tabBarItemName]) {
-			if (tabBarItem.navigate) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
-			}
+	//if the selected view controller is currently the 'More' navigation controller
+	if (self.selectedIndex == NSNotFound) {
+		if (isMoreViewShown) {
+			[self returnToContentView];
+		} else {
+			isMoreViewShown = YES;
 		}
+
+		return;
+	}
+	
+	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
+	if (tabBarItem && tabBarItem.navigate) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
+		isMoreViewShown = NO;
+	} else if (tabBarItem && !tabBarItem.navigate) {
+		[self returnToContentView];
 	}
 }
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
+#pragma mark Delegate method of 'More' UITableView
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:indexPath.row + 4];
+	if (tabBarItem.navigate) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
+	}
+	[self returnToContentView];
 }
-
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
 
 - (void)dealloc {
 	[groupController release];
 	[customziedTabBar release];
-    [super dealloc];
+	
+	[super dealloc];
 }
 
 
