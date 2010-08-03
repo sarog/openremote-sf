@@ -53,7 +53,9 @@
 @synthesize definition;
 
 - (NSData *) readFile:(NSString *) fileName {
-	NSData *data = [[NSData alloc] initWithContentsOfFile:fileName];
+	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
+	NSString *filePath = [thisBundle pathForResource:fileName ofType:@"xml"];
+	NSData *data = [[NSData alloc] initWithContentsOfFile:filePath];
 	NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(content);
 	[content release];
@@ -64,7 +66,7 @@
 - (void) testParsePanelGridButtonXML {
 	[[Definition sharedDefinition] clearPanelXMLData];
 	NSLog(@"testParsePanelGridButtonXML ");
-	NSData *xml = [self readFile:@"panel_grid_button.xml"];
+	NSData *xml = [self readFile:@"panel_grid_button"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -177,7 +179,7 @@
 - (void) testParsePanelGridSwitchXML {
 	[[Definition sharedDefinition] clearPanelXMLData];
 	NSLog(@"testParsePanelGridSwitchXML ");
-	NSData *xml = [self readFile:@"panel_grid_switch.xml"];
+	NSData *xml = [self readFile:@"panel_grid_switch"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -273,7 +275,7 @@
 - (void) testParsePanelAbsoluteSwitchXML {
 	[[Definition sharedDefinition] clearPanelXMLData];
 	NSLog(@"testParsePanelAbsoluteSwitchXML ");
-	NSData *xml = [self readFile:@"panel_absolute_switch.xml"];
+	NSData *xml = [self readFile:@"panel_absolute_switch"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -357,7 +359,7 @@
 - (void) testParsePanelGridSliderXML {
 	NSLog(@"Begin testParsePanelGridSliderXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_slider.xml"];
+	NSData *xml = [self readFile:@"panel_grid_slider"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -457,7 +459,7 @@
 - (void) testParsePanelAbsoluteSliderXML {
 	NSLog(@"Begin testParsePanelAbsoluteSliderXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_slider.xml"];
+	NSData *xml = [self readFile:@"panel_absolute_slider"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -545,7 +547,7 @@
 - (void) testParsePanelGridLabelXML {
 	NSLog(@"Begin testParsePanelGridLabelXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_label.xml"];
+	NSData *xml = [self readFile:@"panel_grid_label"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -645,7 +647,7 @@
 - (void) testParsePanelAbsoluteLabelXML {
 	NSLog(@"Begin testParsePanelAbsoluteLabelXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_label.xml"];
+	NSData *xml = [self readFile:@"panel_absolute_label"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -731,7 +733,7 @@
 - (void) testParsePanelGridImageXML {
 	NSLog(@"Begin testParsePanelGridImageXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_image.xml"];
+	NSData *xml = [self readFile:@"panel_grid_image"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -857,7 +859,7 @@
 - (void) testParsePanelAbsoluteImageXML {
 	NSLog(@"Begin testParsePanelAbsoluteImageXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_image.xml"];
+	NSData *xml = [self readFile:@"panel_absolute_image"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -968,7 +970,7 @@
 - (void) testParsePanelAbsoluteScreenBackgroundimageXML {
 	NSLog(@"Begin testParsePanelAbsoluteScreenBackgroundimageXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_screen_backgroundimage.xml"];
+	NSData *xml = [self readFile:@"panel_absolute_screen_backgroundimage"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -1060,7 +1062,7 @@
 - (void) testParsePanelRelativeScreenBackgroundimageXML {
 	NSLog(@"Begin testParsePanelRelativeScreenBackgroundimageXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_relative_screen_backgroundimage.xml"];
+	NSData *xml = [self readFile:@"panel_relative_screen_backgroundimage"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -1153,7 +1155,7 @@
 - (void) testParsePanelAbsoluteSliderGestureXML {
 	NSLog(@"Begin testParsePanelAbsoluteSliderGestureXML ");
 	[[Definition sharedDefinition] clearPanelXMLData];	
-	NSData *xml = [self readFile:@"panel_absolute_slider_gesture.xml"];
+	NSData *xml = [self readFile:@"panel_absolute_slider_gesture"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -1245,7 +1247,7 @@
 - (void) testParsePanelGlobalTabbarXML {
 	NSLog(@"Begin testParsePanelTabbarXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_global_tabbar.xml"];
+	NSData *xml = [self readFile:@"panel_global_tabbar"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -1389,7 +1391,7 @@
 - (void) testParsePanelLocalTabbarXML {
 	NSLog(@"Begin testParsePanelTabbarXML");
 	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_local_tabbar.xml"];
+	NSData *xml = [self readFile:@"panel_local_tabbar"];
 	
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
 	[xmlParser setDelegate:self];
@@ -1528,6 +1530,52 @@
 	[xml release];
 	NSLog(@"End testParsePanelTabbarXML");
 }
+
+
+// panel_portrait_landscape.xml test
+- (void) testParsePanelPortraitLandscapeXML {
+	NSLog(@"Begin testParsePanelPortraitLandscapeXML");
+	[[Definition sharedDefinition] clearPanelXMLData];
+	NSData *xml = [self readFile:@"panel_portrait_landscape"];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
+	[xmlParser setDelegate:self];
+	[xmlParser parse];
+	NSMutableArray *groups = [[Definition sharedDefinition] groups];
+	NSMutableArray *screens = [[Definition sharedDefinition] screens];
+
+	int screen_index = 0;
+	for (Group *group in groups) {
+		NSLog(@"group %@ has %d screen", group.name,group.screens.count);
+		for (Screen *screen in group.screens) {
+			STAssertTrue([@"Starting Screen" isEqualToString:screen.name], @"expected 'Starting Screen' but %@", screen.name);
+			if (screen_index == 0) {
+				STAssertTrue(screen.screenId == 1, @"expected 1 but %d", screen.screenId);
+				STAssertTrue(screen.landscape == NO, @"expected NO but %d", screen.landscape);
+				STAssertTrue(screen.inverseScreenId == 0, @"expected 0 but %d", screen.inverseScreenId);
+			} else if (screen_index == 1) {
+				STAssertTrue(screen.screenId == 21, @"expected 21 but %d", screen.screenId);
+				STAssertTrue(screen.landscape == NO, @"expected NO but %d", screen.landscape);
+				STAssertTrue(screen.inverseScreenId == 23, @"expected 23 but %d", screen.inverseScreenId);
+			} else if (screen_index == 2) {
+				STAssertTrue(screen.screenId == 23, @"expected 23 but %d", screen.screenId);
+				STAssertTrue(screen.landscape == YES, @"expected YES but %d", screen.landscape);
+				STAssertTrue(screen.inverseScreenId == 21, @"expected 21 but %d", screen.inverseScreenId);
+			}
+			screen_index++;
+		}
+		STAssertTrue([group getPortraitScreens].count	== 2, @"expected 2 but %d", [group getPortraitScreens].count);
+		STAssertTrue([group getLandscapeScreens].count == 1, @"expected 1 but %d", [group getLandscapeScreens].count);
+	}
+	
+	NSLog(@"groups count = %d",[groups count]);
+	NSLog(@"screens count = %d",[screens count]);
+	NSLog(@"xml parse done");
+	
+	[xmlParser release];
+	[xml release];
+}
+
 
 
 #pragma mark delegate method of NSXMLParser

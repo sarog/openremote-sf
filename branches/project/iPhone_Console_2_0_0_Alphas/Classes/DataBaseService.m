@@ -66,7 +66,9 @@ static DataBaseService *myInstance = nil;
 }
 
 + (DataBaseService *) sharedDataBaseServiceForTest {
-	NSString *dbFilePath = @"database.db";
+	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
+	NSString *dbFilePath = [thisBundle pathForResource:@"database" ofType:@"db"];
+	NSLog(@"dbFilePath=%@", dbFilePath);
 	@synchronized (self) {
 		if (myInstance == nil) {
 			NSFileManager *fileManager = [NSFileManager defaultManager];

@@ -35,7 +35,8 @@
 			customziedTabBar = tabBar;
 			
 			self.delegate = self;
-			[self.view setFrame:CGRectMake(0, 0, 320, 460)];			
+			CGSize size = [UIScreen mainScreen].bounds.size;
+			[self.view setFrame:CGRectMake(0, 0, size.width, size.height - 20)];			
 			self.groupController = groupControllerParam;
 			NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 			int i = 0;

@@ -34,7 +34,8 @@
 	
 	if (grid) {
 		for (GridCell *cell in grid.cells){
-			GridCellView *cellView = [[GridCellView alloc] initWithGridCell:cell frame:CGRectMake(cell.x*w, cell.y*h, w*cell.rowspan, h*cell.colspan)];
+			NSLog(@"rowspan=%d colspan=%d", cell.rowspan, cell.colspan);
+			GridCellView *cellView = [[GridCellView alloc] initWithGridCell:cell frame:CGRectMake(cell.x*w, cell.y*h, w*cell.colspan, h*cell.rowspan)];
 			[cellViews addObject:cellView];
 			[self addSubview:cellView];
 		}

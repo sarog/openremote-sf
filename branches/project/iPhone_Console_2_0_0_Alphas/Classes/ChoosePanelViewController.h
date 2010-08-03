@@ -27,6 +27,8 @@
 	NSMutableArray *panels;
 	NSIndexPath *currentSelectedPanelIndex;
 	NSString *chosenPanel;
+	UITextField *textField;
+	UITextField *textField2;
 }
 
 @end

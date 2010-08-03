@@ -38,7 +38,8 @@ static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
 
 - (id)initWithErrorTitle:(NSString *)title message:(NSString *)message{
 	if (self = [super init]) {
-		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+		CGSize size = [UIScreen mainScreen].bounds.size;
+		UIToolbar* toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, size.width, 44)];
 		items = [[NSMutableArray alloc] init];
 		
 		UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(goBack:)];
@@ -51,13 +52,11 @@ static const int ERROR_IMAGE_FIXED_HEIGHT = 160;
 		
 		[toolbar setItems:items];
 		
-		UIView *bgview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 460)];
+		UIView *bgview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height - 20)];
 		[bgview setBackgroundColor:[UIColor whiteColor]];
 		[self setView:bgview];
 		UIImage *errorImage = [UIImage imageNamed:@"repair.png"];
-		//UIButton *errorImageView = [[UIButton alloc] initWithFrame:CGRectMake((320-errorImage.size.width)/2.0, 100, errorImage.size.width , errorImage.size.height)];
-		//[errorImageView setBackgroundImage:errorImage forState:UIControlStateNormal];
-		UIView *errorImageDependingOnView = [[UIView alloc] initWithFrame:CGRectMake((320-ERROR_IMAGE_FIXED_WIDTH)/2.0, 100, ERROR_IMAGE_FIXED_WIDTH , ERROR_IMAGE_FIXED_HEIGHT)];
+		UIView *errorImageDependingOnView = [[UIView alloc] initWithFrame:CGRectMake((size.width - ERROR_IMAGE_FIXED_WIDTH)/2.0, 100, ERROR_IMAGE_FIXED_WIDTH , ERROR_IMAGE_FIXED_HEIGHT)];
 		UIImageView *errorImageView = [UIViewUtil clippedUIImageViewWith:errorImage dependingOnUIView:errorImageDependingOnView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 		
 		titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 280, 320, 30)];
