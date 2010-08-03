@@ -89,7 +89,7 @@
 		[self updateControllerWith:aAvailableGroupMemberUrl];
 	} else {
 		ViewHelper *viewHelper = [[ViewHelper alloc] init];
-		[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Command failed" Message:@"There's no server available. Leave this problem?"];
+		[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Connection failed" Message:@"There's no server available. Leave this problem?"];
 	}
 }
 
@@ -108,7 +108,7 @@
 		for (int i=0; i < [customServers count]; i++) {
 			[[customServers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
 			if ([tempCurrentServerUrl isEqualToString:[[customServers objectAtIndex:i] objectForKey:@"url"]]) {
-				[[AppSettingsDefinition getCustomServers] removeObjectAtIndex:i];
+				//[[AppSettingsDefinition getCustomServers] removeObjectAtIndex:i];
 			}
 		}
 	}

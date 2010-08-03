@@ -29,11 +29,13 @@
 
 	Group *group;
 	PaginationController *paginationController;
+	PaginationController *lastPaginationController;
 	ErrorViewController *errorViewController;
 	UIInterfaceOrientation currentOrientation;
 }
 
 - (id)initWithGroup:(Group *)newGroup;
+- (id)initWithGroup:(Group *)newGroup orientation:(UIInterfaceOrientation)thatOrientation;
 - (void)startPolling;
 - (void)stopPolling;
 - (BOOL)switchToScreen:(int)screenId;
@@ -43,6 +45,13 @@
 - (int)currentScreenId;
 - (int)groupId;
 - (void)performGesture:(Gesture *)gesture;
+- (UIInterfaceOrientation)getCurrentOrientation;
+- (void)setNewOrientation:(UIInterfaceOrientation)newOrientation;
+- (BOOL)isOrientationLandscape;
+- (CGRect)getFullFrame;
+- (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape;
+- (BOOL)isNew;
+- (BOOL)switchToFirstScreen;
 
 @property (nonatomic, retain) Group *group;
 

@@ -37,7 +37,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)navigateBackwardInHistory:(id)sender;
 - (BOOL)navigateTo:(Navigate *)navi;
 - (void)navigateToWithHistory:(Navigate *)navi;
-
+- (void)saveLastGroupIdAndScreenId;
 
 @end
 
@@ -70,11 +70,17 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	// status bar is 20px high and on the top of window.
 	// all the visible view contents will be shown inside this container.
 	CGSize size = [UIScreen mainScreen].bounds.size;
-	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, STATUS_BAR_HEIGHT, size.width, size.height - STATUS_BAR_HEIGHT) ]];
+	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)]];
+	[self.view setBackgroundColor:[UIColor blackColor]];
+	//Init the loading view
+	initViewController = [[InitViewController alloc] init];
+	[self.view addSubview:initViewController.view];
 }
 
 
 - (void)initGroups {
+	
+	[initViewController.view removeFromSuperview];
 	NSArray *groups = [[Definition sharedDefinition] groups];
 	NSLog(@"groups count is %d",groups.count);
 	
@@ -156,7 +162,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		// ReSave last groupId and screenId
 		[self saveLastGroupIdAndScreenId];
 	} else {		
-		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please associate screens with group or reset setting."];
+		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
+																																	message:@"Please check your setting or define a group with screens first."];
 		[self.view addSubview:errorViewController.view];		
 	}
 	
@@ -170,24 +177,28 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (void)navigateToWithHistory:(Navigate *)navi {
+	Navigate *historyNavigate = [[Navigate alloc] init];
 	if (currentGroupController.group) {
-		navi.fromGroup = currentGroupController.group.groupId;
-		navi.fromScreen = [currentGroupController currentScreenId];
+		historyNavigate.fromGroup = currentGroupController.group.groupId;
+		historyNavigate.fromScreen = [currentGroupController currentScreenId];
 	} else {
 		return;
 	}
 	
 	if ([self navigateTo:navi]) {
-		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-		[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
-		[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];		
-		[navigationHistory addObject:navi];
+		[self saveLastGroupIdAndScreenId];
+		NSLog(@"navigte from group %d, screen %d", historyNavigate.fromGroup, historyNavigate.fromScreen);
+		[navigationHistory addObject:historyNavigate];
+		[historyNavigate release];
 	}
 	
 	NSLog(@"navi history count = %d", navigationHistory.count);
+	for (Navigate *n in navigationHistory) {
+		NSLog(@"navi history from group %d screen %d", n.fromGroup, n.fromScreen);
+	}
 }
 
-- (void) saveLastGroupIdAndScreenId {
+- (void)saveLastGroupIdAndScreenId {
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
 	[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];
@@ -207,11 +218,6 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		return [self navigateToScreen:navi.toScreen];
 	} 
 	
-	else if (navi.isSetting) {								//toSetting
-		[self populateSettingsView:nil];
-		return NO;
-	} 
-	
 	else if (navi.isPreviousScreen) {					//toPreviousScreen
 		return [self navigateToPreviousScreen];
 	}
@@ -220,6 +226,7 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		return [self navigateToNextScreen];
 	}
 	
+	//the following is non-history
 	else if (navi.isBack) {										//toBack
 		[self navigateBackwardInHistory:nil]; 
 		return NO;
@@ -234,6 +241,12 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		[self logout];
 		return NO;
 	}
+	
+	else if (navi.isSetting) {								//toSetting
+		[self populateSettingsView:nil];
+		return NO;
+	}
+	
 	return NO;
 }
 
@@ -254,14 +267,18 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		if (targetGroupController == nil) {
 			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
 			if (group) {
-				targetGroupController = [[GroupController alloc] initWithGroup:group];
+				targetGroupController = [[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]];
 				[groupControllers addObject:targetGroupController];
 				[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
 			} else {
 				return NO;
 			}
 		}
-		
+		if ([targetGroupController hasNoViewInThatOrientation:[currentGroupController isOrientationLandscape]]) {
+			[ViewHelper showAlertViewWithTitle:@"" Message:@"No screen is in that group of this orientation"];
+			return NO;
+		}
+		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 		if ([TABBAR_SCALE_GLOBAL isEqualToString:tabBarScale]) {
 			[globalTabBarController.view removeFromSuperview];
 		} else if([TABBAR_SCALE_LOCAL isEqualToString:tabBarScale]) {
@@ -301,32 +318,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 		
 		[currentGroupController stopPolling];
 		[targetGroupController startPolling];
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:1];
 		
-		// calculate animation curl up or down
-		int currentIndex = 0;
-		int targetIndex = 0;
-		for (int i = 0; i<groupControllers.count; i++) {
-			GroupController *gc = (GroupController *)[groupControllers objectAtIndex:i];
-			if ([gc groupId] == [currentGroupController groupId]) {
-				currentIndex = i;
-			}
-			if ([gc groupId] == [targetGroupController groupId]) {
-				targetIndex = i;
-			}			
-		}
-		//BOOL forward = targetIndex > currentIndex;
-		
-		//if (forward) {
-//			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.view cache:YES];
-//		} else {
-//			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown forView:self.view cache:YES];
-//		}
-		[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:self.view cache:YES];
 		[self.view addSubview:view];
-		
-		[UIView commitAnimations];
 		
 		currentGroupController = targetGroupController;
 	}
@@ -334,7 +327,12 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	//if screenId is specified, jump to that screen
 	if (screenId > 0) {
 		return [currentGroupController switchToScreen:screenId];
+	} else {
+		if ([currentGroupController isNew]) {
+			[currentGroupController switchToFirstScreen];
+		}
 	}
+
 	
 	return YES;
 }
@@ -350,7 +348,8 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 - (void)navigateBackwardInHistory:(id)sender {
 	if (navigationHistory.count > 0) {		
 		Navigate *backward = (Navigate *)[navigationHistory lastObject];
-		if (backward.toGroup > 0 || backward.toScreen > 0 || backward.isPreviousScreen || backward.isNextScreen) {
+		if (backward.fromGroup > 0 && backward.fromScreen > 0 ) {
+			NSLog(@"navigte back to group %d, screen %d", backward.fromGroup, backward.fromScreen);
 			[self navigateToGroup:backward.fromGroup toScreen:backward.fromScreen];
 		} else {
 			[self navigateTo:backward];
@@ -412,6 +411,10 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 	
 }
 
+- (BOOL)isLoadingViewGone {
+	return groupControllers.count > 0;
+}
+
 #pragma mark delegate method of LoginViewController
 
 - (void)onSignin {
@@ -420,22 +423,53 @@ static NSString *TABBAR_SCALE_NONE = @"none";
 }
 
 - (void)onBackFromLogin {
-	
 	[theDelegate performSelector:@selector(updateDidFinished)];
 }
 
 #pragma mark delegate method of GestureWindow
 - (void)performGesture:(Gesture *)gesture {
-	NSLog(@"detected gesture : %d", gesture.swipeType);
+	NSLog(@"detected gesture : %@", [gesture toString]);
 	[currentGroupController performGesture:gesture];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return groupControllers.count > 0 && [[currentGroupController currentScreen] inverseScreenId] > 0;
+	if ([self isLoadingViewGone]) {
+		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+	} else {
+		return YES;
+	}
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[currentGroupController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	if ([self isLoadingViewGone]) {
+		[currentGroupController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	} else {
+		[initViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	}
+}
+
+
+#pragma mark Detect the shake motion.
+
+-(BOOL)canBecomeFirstResponder {
+	return YES;
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	[self becomeFirstResponder];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[self resignFirstResponder];
+	[super viewWillDisappear:animated];
+}
+
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+	if (event.type == UIEventSubtypeMotionShake && [self isLoadingViewGone]) {
+		[self populateSettingsView:nil];
+	}
 }
 
 - (void)dealloc {

@@ -19,35 +19,20 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
-#import "ScreenViewController.h"
+#import "Definition.h"
 
-@interface PaginationController : UIViewController <UIScrollViewDelegate> {
-	NSArray *viewControllers;
-	NSUInteger selectedIndex;
-	
-	UIScrollView *scrollView;
-	UIPageControl *pageControl;
+@interface InitView : UIView {
 	
 	BOOL isLandscape;
-	BOOL isGrinding;
-	BOOL pageControlUsed;
-	
-	CGFloat frameWidth;
-	CGFloat frameHeight;
-	
+	UIImageView *logo;
+	UIImageView *background;
+	UIActivityIndicatorView *loading;
+	UILabel *label;
+	UILabel *version;
+
 }
 
-@property(nonatomic,copy) NSArray *viewControllers;
-@property(nonatomic,readonly) NSUInteger selectedIndex;
-
-- (BOOL)switchToScreen:(int)screenId;
-- (BOOL)previousScreen;
-- (BOOL)nextScreen;
-- (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation;
-- (ScreenViewController *)currentScreenViewController;
-- (void)updateView;
-- (BOOL)switchToFirstScreen;
+- (id)initWithOrientation:(BOOL)isLandscapeOrientation;
 
 @end
