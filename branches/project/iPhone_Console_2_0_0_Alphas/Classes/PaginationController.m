@@ -299,7 +299,7 @@
 
 
 - (void)viewWillAppear:(BOOL)animated {
-	[self updateView];
+	[self initView];
 }
 
 @end
