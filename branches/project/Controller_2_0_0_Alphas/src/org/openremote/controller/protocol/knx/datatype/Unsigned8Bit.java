@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol.knx.datatype;
 
 /**
-   * Unsigned 8-bit datatype as defined in KNX 1.1 Volume 3: System specifications Part 7:
+ * Unsigned 8-bit datatype as defined in KNX 1.1 Volume 3: System specifications Part 7:
  * Interworking, Chapter 2, Datapoint Types. <p>
  *
  * KNX Unsigned 8-bit datatype is a 8-bit value in the range of [0..255]. <p>
@@ -86,6 +86,35 @@ public class Unsigned8Bit implements DataType
   public DataPointType getDataPointType()
   {
     return dpt;
+  }
+
+
+  public int resolve()
+  {
+    if (dpt == DataPointType.Unsigned8BitValue.SCALING)
+    {
+      return (int)(value / 2.55);
+    }
+
+    else if (dpt == DataPointType.Unsigned8BitValue.ANGLE)
+    {
+      return (int)(value * 1.411764705882352);
+    }
+
+    else if (dpt == DataPointType.Unsigned8BitValue.RELPOS_VALVE)
+    {
+      return value;
+    }
+
+    else if (dpt == DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT)
+    {
+      return value;
+    }
+
+    else
+    {
+      throw new Error("Unrecognized unsigned 8-bit datapoint type " + dpt);
+    }
   }
 }
 
