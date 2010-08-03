@@ -149,7 +149,8 @@
 #pragma mark Delegate method of 'More' UITableView
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self returnToContentView];
-	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:indexPath.row + 4];
+	int visibleTabbarItemCount = customziedTabBar.tabBarItems.count - [tableView visibleCells].count;
+	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:indexPath.row + visibleTabbarItemCount];
 	if (tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}

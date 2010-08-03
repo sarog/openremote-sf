@@ -95,26 +95,23 @@
 		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.defaultImage.src]];
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.pressedImage.src]];	
 		ClippedUIImage *clippedUIImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];		
-		[uiButton setImage:clippedUIImage forState:UIControlStateNormal];
+		[uiButton setBackgroundImage:clippedUIImage forState:UIControlStateNormal];
 		if (uiImagePressed) {
 			ClippedUIImage *clippedUIImagePressed = [[ClippedUIImage alloc] initWithUIImage:uiImagePressed dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
-			[uiButton setImage:clippedUIImagePressed forState:UIControlStateHighlighted];
+			[uiButton setBackgroundImage:clippedUIImagePressed forState:UIControlStateHighlighted];
 		}
 		//use top-left alignment
 		[uiButton setFrame:CGRectMake(0, 0, clippedUIImage.size.width, clippedUIImage.size.height)];
 	} else {
 		[uiButton setFrame:[self bounds]];
-		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
+		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:29];
 		[uiButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
-		
-		//buttonImage = [[UIImage imageNamed:@"buttonHighlighted.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-		//[uiButton setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-		
-		uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
-		[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-		uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
-		[uiButton setTitle:button.name forState:UIControlStateNormal];
 	}
+	
+	uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
+	[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
+	uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
+	[uiButton setTitle:button.name forState:UIControlStateNormal];
 	
 }
 

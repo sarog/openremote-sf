@@ -53,7 +53,7 @@
 }
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	NSLog(@"text field is %@",serverUrlFieldCell.textField.text);
-	NSString *url = [NSString stringWithFormat:@"http://%@/",serverUrlFieldCell.textField.text];
+	NSString *url = [NSString stringWithFormat:@"http://%@",serverUrlFieldCell.textField.text];
 	NSLog(@"set url to %@",url);
 	[editingItem setValue:url forKey:@"url"];
 	if (newItem) {

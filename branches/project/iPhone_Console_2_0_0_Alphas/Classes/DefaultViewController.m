@@ -66,9 +66,15 @@
 	// Create a default view that won't be overlapped by status bar.
 	// status bar is 20px high and on the top of window.
 	// all the visible view contents will be shown inside this container.
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	[self setView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)]];
+	[super loadView];
 	[self.view setBackgroundColor:[UIColor blackColor]];
+	
+
+	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
+																													 message:@"Please check your setting or define a group with screens first."];
+	[self.view addSubview:errorViewController.view];
+
+	
 	//Init the loading view
 	initViewController = [[InitViewController alloc] init];
 	[self.view addSubview:initViewController.view];
@@ -77,7 +83,9 @@
 
 - (void)initGroups {
 	
+	[errorViewController.view removeFromSuperview];
 	[initViewController.view removeFromSuperview];
+	
 	NSArray *groups = [[Definition sharedDefinition] groups];
 	NSLog(@"groups count is %d",groups.count);
 	
@@ -152,8 +160,6 @@
 		
 		[self saveLastGroupIdAndScreenId];
 	} else {		
-		errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
-																																	message:@"Please check your setting or define a group with screens first."];
 		[self.view addSubview:errorViewController.view];		
 	}
 }
@@ -421,9 +427,10 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	if (groupControllers.count == 0) {
-		return NO;
-	} else if ([self isLoadingViewGone]) {
+	if ([self isLoadingViewGone]) {
+		if (currentGroupController.group.screens.count == 0) {
+			return YES;
+		} 
 		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 	} else {
 		return YES;

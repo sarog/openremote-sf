@@ -125,11 +125,11 @@
 	
 	if (loginCell == nil) {
 		loginCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:loginCellIdentifier] autorelease];
+		loginCell.selectionStyle = UITableViewCellSelectionStyleNone;
 	}
 
 	
 	if (indexPath.section == 0) {
-		loginCell.selectionStyle = UITableViewCellSelectionStyleNone;
 		UITextField *textField = [[UITextField alloc] initWithFrame:CGRectZero];
 		textField.contentVerticalAlignment = UIControlContentHorizontalAlignmentCenter;
 		textField.font = [UIFont systemFontOfSize:22];
@@ -139,11 +139,11 @@
 		textField.autocorrectionType = UITextAutocorrectionTypeNo;
 		textField.textColor = [UIColor darkGrayColor];
 		textField.returnKeyType = UIReturnKeyDone;
-		textField.frame = CGRectInset(CGRectMake(110, (loginCell.bounds.size.height - 26)/2.0, 200,26),10,0);
+		textField.frame = CGRectInset(CGRectMake(100, (loginCell.bounds.size.height - 26)/2.0, loginCell.bounds.size.width,26),10,0);
 		
 		[textField setDelegate:self];
 		
-		[loginCell addSubview:textField];
+		[loginCell.contentView addSubview:textField];
     
 		if (indexPath.row == 0) {
 			loginCell.textLabel.text = @"Username";
@@ -158,14 +158,17 @@
 		
 		
 	} else if (indexPath.section == 1) {
-		UIButton *signinButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-		[signinButton setFrame:CGRectInset([loginCell bounds], 10, 0)];
+		UIButton *signinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		
 		UIImage *buttonImage = [[UIImage imageNamed:@"btn_green.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
 		[signinButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
-		
+		float height = [tableView rectForRowAtIndexPath:indexPath].size.height;
+		[signinButton setFrame:CGRectMake(0, 0, loginCell.frame.size.width, height)];
+		signinButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		signinButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
 		[signinButton setTitle:@"Sign In" forState:UIControlStateNormal];
-		[loginCell addSubview:signinButton];
+		[loginCell.contentView addSubview:signinButton];
+		
 		[signinButton addTarget:self action:@selector(signin:) forControlEvents:UIControlEventTouchDown];
 	}
 	
@@ -173,6 +176,11 @@
 	return loginCell;
 }
 
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	[[cell textLabel] setBackgroundColor:[UIColor clearColor]];
+}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	
@@ -208,6 +216,10 @@
 		return @"Commands and updates from Controller are secured. This requires user authentication.";
 	}
 	return nil;
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+	return YES;
 }
 
 

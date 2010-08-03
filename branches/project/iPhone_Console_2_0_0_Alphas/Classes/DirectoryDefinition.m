@@ -44,7 +44,7 @@
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsDirectory = [paths objectAtIndex:0];
 	NSString *pathToUserCopyOfPlist = [documentsDirectory stringByAppendingPathComponent:@"appSettings.plist"];
-	NSLog(pathToUserCopyOfPlist);
+	NSLog(@"%@", pathToUserCopyOfPlist);
 	if ([fileManager fileExistsAtPath:pathToUserCopyOfPlist] == NO) {
 		NSLog(@"don't found the app settings");
 		NSString *pathToDefaultPlist = [[NSBundle mainBundle] pathForResource:@"appSettings" ofType:@"plist"];
