@@ -253,6 +253,7 @@ AppSettings = (function(){
     
     this.didRequestError = function(xOptions, textStatus) {
       $("#controllerPanelSelectContainer").hide();
+      selectedControllerServer = null;
       MessageUtils.hideLoading();
       MessageUtils.showMessageDialog("Message", "Failed to load panels.");
     };
