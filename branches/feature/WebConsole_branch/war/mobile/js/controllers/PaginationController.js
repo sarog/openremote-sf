@@ -5,10 +5,12 @@
 PaginationController = (function() {
   
   // Constructor
-  return function(screensParam) {
+  return function(groupParam) {
     // For extend
     PaginationController.superClass.constructor.call(this);
     var self = this;
+    self.group = groupParam;
+    self.screens = groupParam.screens;
     self.screenViewControllers = [];
     self.currentScreenIndex = 0;
     
@@ -71,8 +73,8 @@ PaginationController = (function() {
     };
     
     function init() {
-      for (var index = 0; index < screensParam.length; index++) {
-        var screenViewController = new ScreenViewController(screensParam[index]);
+      for (var index = 0; index < self.screens.length; index++) {
+        var screenViewController = new ScreenViewController(self.screens[index]);
         self.screenViewControllers[self.screenViewControllers.length] = screenViewController;
       }
 
@@ -95,6 +97,8 @@ PaginationController = (function() {
       }
       
       self.paginationView = new PaginationView(self.screenViewControllers[self.currentScreenIndex].getView(), self);
+      self.paginationView.renderMenuItemListView(self.group);
+      
       self.setView(self.paginationView);
 
     }

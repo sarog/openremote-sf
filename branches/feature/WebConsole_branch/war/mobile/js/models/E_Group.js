@@ -9,7 +9,8 @@ Group = (function(){
     Group.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
         
-    this.screens = [];
+    self.screens = [];
+    self.tabBar = null;
     
     this.didParse = function(jsonParser, nodeName, properties) {
       if (Constants.INCLUDE == nodeName && Constants.SCREEN == properties[Constants.TYPE]) {
@@ -17,7 +18,7 @@ Group = (function(){
         var cachedScreen = RenderDataDB.getInstance().findScreenByID(screenRefID);
         this.screens[this.screens.length] = cachedScreen;
       } else if (nodeName == Constants.TAB_BAR) {
-        
+        self.tabBar = new TabBar(jsonParser, properties);
       }
     }
     

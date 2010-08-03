@@ -24,6 +24,11 @@ PaginationView = (function() {
       $(self.screenViewContainer).append(screenViewParam.getCanvas());
     };
     
+    this.renderMenuItemListView = function(groupParam) {
+      self.menuItemListView = new MenuItemListView(groupParam.tabBar);
+      self.addSubView(self.menuItemListView);
+    }
+    
     function init() {
       self.setID(ID);
       
@@ -38,8 +43,6 @@ PaginationView = (function() {
       if (screenViewParam != null) {
         $(self.screenViewContainer).append(screenViewParam.getCanvas());
       }
-      
-      self.menuItemListView = new MenuItemListView({});
             
       var canvas = $("<div />", {
         "id" : ID
@@ -47,7 +50,6 @@ PaginationView = (function() {
       
       $(canvas).append(self.screenViewContainer);
       $(canvas).append(constructPageControl());
-      $(canvas).append(self.menuItemListView.getCanvas());
       
       self.setCanvas(canvas);
       self.setCss(DEFAULT_CSS_STYLE);
@@ -84,14 +86,19 @@ PaginationView = (function() {
       
       var menuBtn = $("<div />", {
         "id" : "menuBtn" + UUID,
-        "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'><div style='position:relative;top:-50%;width:100%;text-align:center'>Menu</div></div>",
+        "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" +
+                    "<div style='position:relative;top:-50%;width:100%;text-align:center;'>" +
+                      "<image style='padding-top:10px;' src = './mobile/images/menu.png' />" +
+                    "</div>" +
+                    "<div style='position:relative;top:-50%;width:100%;text-align:center'>Menu</div>" +
+                 "</div>",
         css : {
           "float" : "center",
           "height" : "98%",
           "width" : "25%",
           "margin-left" : "37%",
           "text-align" : "center",
-          "font-size" : "20px",
+          "font-size" : "12px",
           "color":"#000000",
           "text-shadow":"0px -1px #bbb,0 2px #fff",
           "font-family":"Verdana,Arial,sans-serif",
