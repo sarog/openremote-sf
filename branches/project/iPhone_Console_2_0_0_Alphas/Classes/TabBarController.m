@@ -29,6 +29,7 @@
 @interface TabBarController (Private)
 
 - (void)updateTabItems;
+- (void)returnToContentView;
 
 @end
 
@@ -44,9 +45,9 @@
 			customziedTabBar = [tabBar retain];
 			isMoreViewShown = NO;
 			self.delegate = self;
-			self.groupController = [groupControllerParam retain];
-			CGRect frame = [groupController getFullFrame];
-			[self.view setFrame:frame];
+			[groupControllerParam retain];
+			self.groupController = groupControllerParam;
+			[self.view setFrame:[groupController getFullFrame]];
 			
 			self.moreNavigationController.navigationBar.hidden = YES;
 			UITableView *tableView = (UITableView *)self.moreNavigationController.topViewController.view;
@@ -60,8 +61,8 @@
 }
 
 - (void)returnToContentView {
-	if (groupController) {
-		self.selectedViewController = groupController;
+	if (groupController && self.viewControllers.count > 0) {
+		[self setSelectedViewController:groupController];
 		isMoreViewShown = NO;
 	}
 }
@@ -113,20 +114,16 @@
 }
 
 - (void)updateGroupController:(GroupController *)groupControllerParam {
-	[self.groupController release];
 	[groupControllerParam retain];
 	self.groupController = groupControllerParam;
+	[self.view setFrame:[groupController getFullFrame]];
 	[self updateTabItems];
-}
-
-
-
-- (void)returnToContentViewWithAnimation {
-		[NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(returnToContentView) userInfo:nil repeats:NO];
 }
 
 #pragma mark Delegate method of UITabBarController
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController {
+	NSLog(@"tabbar selectedIndex = %d", self.selectedIndex);
+	
 	//if the selected view controller is currently the 'More' navigation controller
 	if (self.selectedIndex == NSNotFound) {
 		if (isMoreViewShown) {
@@ -137,23 +134,25 @@
 
 		return;
 	}
-	
+
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:self.selectedIndex];
 	if (tabBarItem && tabBarItem.navigate) {
+		[self returnToContentView];
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 		isMoreViewShown = NO;
 	} else if (tabBarItem && !tabBarItem.navigate) {
 		[self returnToContentView];
 	}
+	
 }
 
 #pragma mark Delegate method of 'More' UITableView
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[self returnToContentView];
 	TabBarItem *tabBarItem = [customziedTabBar.tabBarItems objectAtIndex:indexPath.row + 4];
 	if (tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}
-	[self returnToContentView];
 }
 
 - (void)dealloc {

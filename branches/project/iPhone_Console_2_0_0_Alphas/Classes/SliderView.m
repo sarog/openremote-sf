@@ -80,6 +80,7 @@
 	}
 	if (thumbImage) {
 		[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
+		[uiSlider setThumbImage: thumbImage forState:UIControlStateHighlighted];
 	}
 	
 	sliderTip = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"slider_tip.png"]];

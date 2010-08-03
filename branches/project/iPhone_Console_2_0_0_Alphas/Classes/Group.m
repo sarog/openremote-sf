@@ -82,4 +82,8 @@
 	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", YES]]; 
 }
 
+- (BOOL)canFindScreenById:(int)screenId inOrientation:(BOOL)isLandscape {
+	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d && screenId == %d", isLandscape, screenId]].count > 0; 
+}
+
 @end
