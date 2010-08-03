@@ -28,6 +28,7 @@
 @interface SliderView(Private)
 - (void) afterSlide:(UISlider *)sender;
 -(void) releaseSlider;
+-(void) touchDownSlider:(UISlider *)sender;
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender;
 -(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam;
 @end
@@ -46,6 +47,7 @@
 	Slider *sliderModel = (Slider *)component;
 	
 	uiSlider = [[UISlider alloc] initWithFrame:[self bounds]];
+	vertical = sliderModel.vertical;
 	if (sliderModel.vertical) {
 		uiSlider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
 		uiSlider.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height);
@@ -83,9 +85,9 @@
 	sliderTip = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"slider_tip.png"]];
 	[sliderTip setFrame:CGRectMake(uiSlider.frame.origin.x, uiSlider.frame.origin.y - 50, 80, 80)];
 	sliderTip.hidden = YES;
-	[self addSubview:sliderTip];
+	[self.superview addSubview:sliderTip];
 	
-	uiSlider.continuous = YES;
+//	uiSlider.continuous = YES;
 	uiSlider.value = 0.0;
 	currentValue = 0.0;
 	
@@ -93,6 +95,7 @@
 	
 	if (!sliderModel.passive) {
 		[uiSlider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+		[uiSlider addTarget:self action:@selector(touchDownSlider:) forControlEvents:UIControlEventTouchDown];
 		[uiSlider addTarget:self action:@selector(releaseSlider) forControlEvents:UIControlEventTouchUpInside];
 	} else {
 		UIView *cover = [[UIView alloc] initWithFrame:self.bounds];
@@ -114,7 +117,7 @@
 // This method will be executed after slide action finished.
 - (void) afterSlide:(UISlider *)sender {
 	int afterSlideValue = (int)[sender value];
-	if (currentValue >= 0 && abs(currentValue-afterSlideValue) > MIN_SLIDE_VARIANT) {
+	if (currentValue >= 0 && abs(currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		NSLog(@"The value sent is : %d", afterSlideValue);
 		[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
@@ -129,12 +132,22 @@
 	
 }
 
+-(void) touchDownSlider:(UISlider *)sender {
+	[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
+}
+
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender {
 	tip.hidden = NO;
 	[self clearSliderTipSubviews:tip];
-	CGFloat x = ((sender.value - uiSliderParam.minimumValue)/(uiSliderParam.maximumValue - uiSliderParam.minimumValue)) * (uiSliderParam.frame.size.width) + uiSliderParam.frame.origin.x;
-	CGFloat y = uiSliderParam.frame.origin.y + uiSliderParam.frame.size.height / 2;	
-	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+	if (!vertical) {
+		CGFloat x = ((sender.value - uiSliderParam.minimumValue)/(uiSliderParam.maximumValue - uiSliderParam.minimumValue)) * (uiSliderParam.frame.size.width) + uiSliderParam.frame.origin.x;
+		CGFloat y = uiSliderParam.frame.origin.y + uiSliderParam.frame.size.height / 2;	
+		tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+	} else {
+		CGFloat x = uiSliderParam.frame.origin.x + uiSliderParam.frame.size.width / 2;
+		CGFloat y = ((sender.value - uiSliderParam.maximumValue)/(uiSliderParam.minimumValue - uiSliderParam.maximumValue)) * (uiSliderParam.frame.size.height) + uiSliderParam.frame.origin.y;
+		tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
+	}
 	UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
 	tipText.font = [UIFont systemFontOfSize:40];
 	tipText.backgroundColor = [UIColor clearColor];
