@@ -166,19 +166,7 @@ RootViewController = (function(){
    this.beginUpdate = function() {
        MessageUtils.hideLoading();
        self.refreshView();
-       // NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION);
    };
-   
-   // Following two methods are for toSetting and click "OK".
-   // this.didUpdateSuccess = function() {
-   //   MessageUtils.hideLoading();
-   //   NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION);
-   // };
-   
-   // this.didUpdateFail = function(error) {
-   //   // Call method of AppBoot
-   //   this.delegate.didUpdateFail(error);
-   // }
    
    
    function navigateToGroupAndScreen(groupID, screenID) {
