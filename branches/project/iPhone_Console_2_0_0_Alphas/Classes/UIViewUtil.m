@@ -30,9 +30,10 @@
 		ClippedUIImage *clippedUIImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:uiView imageAlignToView:align];
 		UIImageView *uiImageView = [[UIImageView alloc] initWithFrame:uiView.frame];
 		[uiImageView setImage:clippedUIImage];
-		if (!imageFillView) {
+		if (imageFillView) {
 			[uiImageView sizeToFit];
 		}
+		[uiImageView setContentMode:uiView.contentMode];
 		return uiImageView;
 	} else {
 		return nil;

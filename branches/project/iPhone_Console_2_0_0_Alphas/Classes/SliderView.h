@@ -28,6 +28,7 @@
 @interface SliderView : SensoryControlView {
 	UISlider *uiSlider;
 	int currentValue;
+	bool vertical;
 	
 	UIImageView *sliderTip;
 }

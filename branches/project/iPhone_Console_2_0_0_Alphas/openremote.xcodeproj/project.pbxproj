@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00ABCD3B116049FC00997D0A /* slider_tip.png in Resources */ = {isa = PBXBuildFile; fileRef = 00ABCD3A116049FC00997D0A /* slider_tip.png */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -253,6 +254,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		00ABCD3A116049FC00997D0A /* slider_tip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider_tip.png; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* openremote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = openremote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -565,6 +567,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				00ABCD3A116049FC00997D0A /* slider_tip.png */,
 				8CECF3E010E9DD1400C0E1BB /* database.db */,
 				8CF539A610B9356700C52FB0 /* repair.png */,
 				8C1F31C210AA9B3D0081A3D4 /* btn_green.png */,
@@ -989,6 +992,7 @@
 				33960A9310D73104006AFDA8 /* 300X480.png in Resources */,
 				33960A9A10D731EE006AFDA8 /* 300X300.png in Resources */,
 				8CECF3E110E9DD1400C0E1BB /* database.db in Resources */,
+				00ABCD3B116049FC00997D0A /* slider_tip.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1234,8 +1238,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1250,8 +1254,8 @@
 				INFOPLIST_FILE = Info.plist;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "1293DEDF-55DA-416B-A45B-558D225896D4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1293DEDF-55DA-416B-A45B-558D225896D4";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Debug;
@@ -1261,8 +1265,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1273,8 +1277,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = Release;
@@ -1394,8 +1398,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1407,8 +1411,8 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B3DB6719-5E12-4E1E-A68A-CEDA20A5833C";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos3.0;
 			};
 			name = Distribution;
@@ -1433,8 +1437,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Zhijie Chen";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Zhijie Chen";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1452,8 +1456,8 @@
 					"-lgcov",
 				);
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "1293DEDF-55DA-416B-A45B-558D225896D4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "1293DEDF-55DA-416B-A45B-558D225896D4";
+				PROVISIONING_PROFILE = "D6954B63-4D47-4092-A6BC-097B30D34A64";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D6954B63-4D47-4092-A6BC-097B30D34A64";
 				SDKROOT = iphoneos2.2.1;
 			};
 			name = GCov_Build;
