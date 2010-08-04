@@ -93,6 +93,7 @@ SwitchView = (function() {
     function renderButtonName() {
         $(self.getCanvas()).html("<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
                         "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" +
+                        Constants.OFF.toUpperCase() +
                         "</div>" + 
                        "</div>");
         updateViewWithStatus(Constants.OFF.toUpperCase());
@@ -105,7 +106,7 @@ SwitchView = (function() {
       }
       self.currentStatus = statusParam.toUpperCase();
       if (canUseImage()) {
-        
+        $("#switchBtnName"+self.getID()).text("");
         var imageSRC = "";
         if (self.currentStatus == Constants.ON.toUpperCase()) {
           imageSRC = self.onImageName;

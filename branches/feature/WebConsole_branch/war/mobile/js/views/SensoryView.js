@@ -11,6 +11,7 @@ SensoryView = (function() {
     this.initView = this.initView || function() {
       self.component = componentModelParam;
       self.size = sizeParam;
+      self.sensorID = null;
     }
     
     // This method must be overwrite in subclasses.
@@ -24,9 +25,19 @@ SensoryView = (function() {
       var sensorID = 0;
       var sensor = self.component.sensor;
       
-      if((self.component.node_name == Constants.IMAGE || self.component.node_name == Constants.LABEL) 
-      && sensor != null && sensor != undefined) {
-        self.sensorID = sensor.id;
+      if (sensor != null && sensor != undefined) {
+        if(self.component.node_name == Constants.LABEL) {
+          self.sensorID = sensor.id;
+        } else if (self.component.node_name == Constants.IMAGE) {
+          self.sensorID = sensor.id;
+          if (self.sensorID <= 0) {
+            var labelID = self.component.labelID;
+            if (labelID != null) {
+              var labelOfImageInclude = RenderDataDB.getInstance().findLabelByID(labelID);
+              self.sensorID = labelOfImageInclude.sensor.id;
+            }
+          }
+        }
       }
       if(self.sensorID > 0) {
         var notificationType = Constants.STATUS_CHANGE_NOTIFICATION + self.component.sensor.id;

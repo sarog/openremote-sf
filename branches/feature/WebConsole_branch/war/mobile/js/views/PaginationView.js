@@ -7,7 +7,6 @@ PaginationView = (function() {
   var ID = "paginationView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"gray",
-     "color":"#FF0000",
      "width":"100%",
      "height":"100%"
    };

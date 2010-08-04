@@ -6,8 +6,6 @@ LabelView = (function() {
   var ID = "labelView";
   var DEFAULT_CSS_STYLE = {
      "text-shadow":"0px -1px #bbb,0 1px #fff",
-     "width":"100%",
-     "height":"100%",
      "font-family":"Verdana,Arial,sans-serif",
      // for vertical align and the text div css
      "position":"static",
@@ -33,7 +31,10 @@ LabelView = (function() {
                         "</div>" + 
                        "</div>",
         css : {
-          "color" : self.component.color
+          "color" : self.component.color,
+          "width" : self.size.width+"px",
+          "height" : self.size.height+"px",
+          "font-size" : self.component.fontSize
         }
       });
       self.setCanvas(canvas);
@@ -43,7 +44,7 @@ LabelView = (function() {
     this.dealPollingStatus = function(statusMapParam) {
       var sensorStates = self.component.sensor.states; 
       if (sensorStates.length > 0) {
-        var newStatus = statusMapParam[self.component.sensor.id];
+        var newStatus = statusMapParam[self.sensorID];
         var changeText = false;
         
         for (var i = 0; i < sensorStates.length; i++) {
