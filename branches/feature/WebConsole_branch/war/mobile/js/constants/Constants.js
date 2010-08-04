@@ -71,6 +71,9 @@
      LOGOUT : "logout",
      
      LABEL : "label",
+     FONT_SIZE : "@fontSize",
+     COLOR : "@color",
+     TEXT : "@text",
      
      SWITCH : "switch",
      LINK : "link",

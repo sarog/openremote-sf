@@ -101,6 +101,10 @@ AppSettings = (function(){
     		draggable: false,
     		modal: false,
     		buttons: {
+    		  Cancel: function() {
+            resetControllerPanelSelectContainer();
+      			$(appSettingsDialog).dialog('close');
+    			},
     			'OK': function() {
             if (selectedControllerServer == null) {
               MessageUtils.showMessageDialog("Message", "Please select a controller.");
@@ -130,12 +134,6 @@ AppSettings = (function(){
       			// Update with controller url.
       			MessageUtils.showLoading("Rendering......");
       			delegate.beginUpdate();
-            // var updateController = new UpdateController(self);
-            //             updateController.update();
-    			},
-    			Cancel: function() {
-            resetControllerPanelSelectContainer();
-      			$(appSettingsDialog).dialog('close');
     			}
     		},
     		close: function() {

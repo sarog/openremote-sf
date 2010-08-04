@@ -207,8 +207,6 @@ RootViewController = (function(){
          return NO;
        }
        
-       // TODO: render tabbar if exists.
-       
        self.currentGroupController.stopPolling();
        self.getView().removeSubView(self.lastSubView);
        

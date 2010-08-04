@@ -3,32 +3,38 @@
  * auther: handy.wang 2010-08-03
  */
 MenuItemView = (function() {
-  var ID = "menuItemView" + Math.uuid();
+  var ID = "menuItemView";
   var DEFAULT_CSS_STYLE = {
     "background" : "url('./mobile/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png') repeat-x scroll 50% 50% #E6E6E6",
     "border" : "solid 1px #D3D3D3",
-    "width" : "49%",
+    "width" : "33%",
     "height" : "44px",
     "position":"static",
-    "display":"table"
+    "display":"table",
+    "float" : "left",
+    "margin-left" : "1px"
    };
   
-  return function(tabBarItemParam, cssFloatValue, delegateParam) {
+  return function(tabBarItemParam, delegateParam) {
     MenuItemView.superClass.constructor.call(this);
     var self = this;
     
     function initView() {
       self.tabBarItem = tabBarItemParam;
       self.delegate = delegateParam;
-      self.setID(ID);
+      self.setID(ID + Math.uuid());
       
       var qualifiedImageSrc = "";
       var imageSrc = self.tabBarItem.image.src;
-      if (imageSrc.indexOf("!") != -1) {
+      // The src of image start with "!" means it's local resource.
+      if (imageSrc.indexOf("!") == 0) {
         qualifiedImageSrc = imageSrc.substring(imageSrc.indexOf("!") + 1);
       } else {
         qualifiedImageSrc = ConnectionUtils.getResourceURL(self.tabBarItem.image.src);
       }
+      
+      var tabBarItemName = (self.tabBarItem.name.length > 10) ? self.tabBarItem.name.substring(0,10)+"..." : self.tabBarItem.name;
+      
       var canvas = $("<div />", {
         "id" : self.getID(),
         "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
@@ -37,12 +43,9 @@ MenuItemView = (function() {
                         "</div>" +
                         
                         "<div style='position:relative;top:-50%;width:100%;text-align:center;padding-top:5px;padding-bottom:5px;'>" + 
-                          self.tabBarItem.name + 
+                          tabBarItemName + 
                         "</div>" + 
                        "</div>",
-        css : {
-          "float" : cssFloatValue
-        },
         click : function() {
           NotificationCenter.getInstance().postNotification(Constants.NAVIGATION_NOTIFICATION, self.tabBarItem.navigate);
           self.delegate.trigger();

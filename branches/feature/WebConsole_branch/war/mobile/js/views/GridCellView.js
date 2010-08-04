@@ -3,8 +3,7 @@
  * auther: handy.wang 2010-07-22
  */
 GridCellView = (function() {
-  var UUID = Math.uuid();
-  var ID = "gridCellView" + UUID;
+  var ID = "gridCellView";
   var DEFAULT_CSS_STYLE = {
      "border" : "#CCCCCC dotted 1px",
      // "background-color" : "red",
@@ -21,7 +20,7 @@ GridCellView = (function() {
     function init() {
       self.gridCell = gridCellParam;
       self.frame = frameParam;
-      self.setID(ID);
+      self.setID(ID + Math.uuid());
       var canvas = $("<div />", {
         id : self.getID()
       })
@@ -34,7 +33,7 @@ GridCellView = (function() {
     }
     
     function renderSubviews() {
-      if(self.gridCell.componentModel.node_name != Constants.BUTTON && self.gridCell.componentModel.node_name != Constants.SWITCH) {
+      if(self.gridCell.componentModel.node_name == Constants.SLIDER || self.gridCell.componentModel.node_name == Constants.IMAGE || self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
         return;
       }
       self.componentView = ComponentView.build(self.gridCell.componentModel, self.size);

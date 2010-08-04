@@ -3,15 +3,13 @@
  * auther: handy.wang 2010-08-02
  */
 MenuItemListView = (function() {
-  var ID = "menuItemListView" + Math.uuid();
+  var ID = "menuItemListView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"#E6E6E6",
-     "border-top" : "1px solid orange",
-     "border-left" : "1px solid orange",
-     "border-right" : "1px solid orange",
+     "border-top" : "2px solid orange",
      "position" : "absolute",
      "bottom" : "10%",
-     "width" : "99%",
+     "width" : "100%",
      "display" : "none",
      "color" : "black",
      "font-size" : "12px",
@@ -36,7 +34,7 @@ MenuItemListView = (function() {
     
     function initView() {
       self.tabBarModel = tabBarModelParam;
-      self.setID(ID);
+      self.setID(ID + Math.uuid());
       var canvas = $("<div />", {
         "id" : self.getID()
       });
@@ -54,6 +52,7 @@ MenuItemListView = (function() {
       } else {
         var defaultTabBar = {};
         defaultTabBar.items = [];
+        // The src of image start with "!" means it's local resource.
         var settingItem = {name : "Settings", image : {src : "!./mobile/images/gear.png"}, navigate : {isToSetting : true}};
         var backItem = {name : "Back", image : {src : "!./mobile/images/go-back.png"}, navigate : {isToBack : true}};
         
@@ -67,12 +66,8 @@ MenuItemListView = (function() {
       var tabBarItems = tabBarModel.items;
       if (tabBarItems.length > 0) {
         for (var i = 0; i < tabBarItems.length; i++) {
-          var float = "left";
-          if (i % 2 != 0) {
-            float = "right";
-          }
           var item = tabBarItems[i];
-          self.addSubView(new MenuItemView(item, float, self));
+          self.addSubView(new MenuItemView(item, self));
         }
       }
     }

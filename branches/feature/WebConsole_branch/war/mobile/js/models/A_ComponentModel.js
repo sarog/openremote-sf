@@ -9,7 +9,7 @@ ComponentModel = (function(){
 ComponentModel.build = function(jsonParser, nodeName, properties) {
   switch(nodeName) {
     case Constants.LABEL :
-      return new BaseModel(jsonParser, properties);//new Label(jsonParser, properties);
+      return new Label(jsonParser, properties);
     case Constants.IMAGE :
       return new Image(jsonParser, properties);
     default:
