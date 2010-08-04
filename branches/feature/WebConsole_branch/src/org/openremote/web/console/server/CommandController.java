@@ -34,9 +34,9 @@ public class CommandController extends BaseGWTSpringController implements Comman
    /**
     * {@inheritDoc}
     */
-   public void sendCommand(String url, String username, String password, int sslPort) {
+   public void sendCommand(String url, String username, String password) {
       if (!StringUtil.isEmpty(url)) {
-         new ORConnection(url, ORHttpMethod.POST, username, password, sslPort);
+         new ORConnection(url, ORHttpMethod.POST, username, password);
       }
    }
 

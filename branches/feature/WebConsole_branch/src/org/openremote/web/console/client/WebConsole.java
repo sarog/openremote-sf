@@ -115,7 +115,7 @@ public class WebConsole implements EntryPoint {
     */
    private void readPanelXmlEntity() {
       ORRoundRobin.detectGroupMembers();
-      final String url = ClientDataBase.appSetting.getCurrentServer() + "/rest/panel/"
+      final String url = ClientDataBase.getSecuredServer() + "/rest/panel/"
             + URL.encode(ClientDataBase.appSetting.getCurrentPanelIdentity());
       DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
       

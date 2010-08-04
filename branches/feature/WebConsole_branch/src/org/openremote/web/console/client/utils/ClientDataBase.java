@@ -22,11 +22,14 @@ package org.openremote.web.console.client.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.domain.AppSetting;
 import org.openremote.web.console.domain.Group;
 import org.openremote.web.console.domain.PanelXmlEntity;
 import org.openremote.web.console.domain.Screen;
 import org.openremote.web.console.domain.UserInfo;
+
+import com.google.gwt.user.client.Cookies;
 
 /**
  * Stores all the UI models here like a database. <br/>
@@ -118,5 +121,27 @@ public class ClientDataBase {
          return getScreenById(userInfo.getLastScreenId());
       }
       return null;
+   }
+   
+   public static String getSecuredServer() {
+      String currentServer = ClientDataBase.appSetting.getCurrentServer();
+      if ("true".equals(Cookies.getCookie(Constants.SSL_STATUS))) {
+         int sslPort = Integer.valueOf(Cookies.getCookie(Constants.SSL_PORT));
+         if (currentServer.indexOf("http:") != -1) {
+            currentServer = currentServer.replaceFirst("http:", "https:");
+         }
+         if (currentServer.indexOf(":") != -1) {
+            currentServer = currentServer.replaceFirst("\\:\\d+", ":" + sslPort);
+         }
+      }
+      return currentServer;
+   }
+   
+   public static String getControlPath() {
+      return getSecuredServer() + "/rest/control/";
+   }
+   
+   public static String getResourceRootPath() {
+      return ClientDataBase.appSetting.getCurrentServer() + "/resources/";
    }
 }

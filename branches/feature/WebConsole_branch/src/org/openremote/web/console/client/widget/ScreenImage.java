@@ -68,7 +68,7 @@ public class ScreenImage extends ScreenComponent implements SensoryDelegate {
     * @param imageSrc the new image background
     */
    private void setImageBackground(String imageSrc) {
-      setStyleAttribute("backgroundImage", "url(" + ClientDataBase.appSetting.getResourceRootPath() + URL.encode(imageSrc) + ")");
+      setStyleAttribute("backgroundImage", "url(" + ClientDataBase.getResourceRootPath() + URL.encode(imageSrc) + ")");
    }
    
    /* (non-Javadoc)

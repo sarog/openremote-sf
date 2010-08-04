@@ -50,8 +50,8 @@ public class SwitchButton extends Button {
       setSize(uiSwitch.getFrameWidth(), uiSwitch.getFrameHeight());
       hasIcon = uiSwitch.getOnImage() != null && uiSwitch.getOffImage() != null;
       if (hasIcon) {
-         onImageUrl = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiSwitch.getOnImage().getSrc());
-         offImageUrl = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiSwitch.getOffImage().getSrc());
+         onImageUrl = ClientDataBase.getResourceRootPath() + URL.encode(uiSwitch.getOnImage().getSrc());
+         offImageUrl = ClientDataBase.getResourceRootPath() + URL.encode(uiSwitch.getOffImage().getSrc());
       } else {
          setText("OFF");
       }

@@ -95,7 +95,7 @@ public class ScreenSlider extends ScreenControl implements SensoryDelegate {
          imageSlider.setDraggable(false);
          imageSlider.setClickToChange(false);
       }
-      String resourcePath = ClientDataBase.appSetting.getResourceRootPath();
+      String resourcePath = ClientDataBase.getResourceRootPath();
       if (slider.getMinTrackImage() != null) {
          imageSlider.setMinTrackImage(resourcePath + slider.getMinTrackImage().getSrc());
       }

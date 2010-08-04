@@ -320,7 +320,7 @@ public class SettingsWindow extends FormWindow {
       }
       panelListCombo.addListener(Events.TriggerClick, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {
-            String currentServer = ClientDataBase.appSetting.getCurrentServer();
+            String currentServer = ClientDataBase.getSecuredServer();
             if (!"".equals(currentServer)) {
                store.removeAll();
                AsyncServiceFactory.getPanelIdentityServiceAsync().getPanelNames(currentServer,

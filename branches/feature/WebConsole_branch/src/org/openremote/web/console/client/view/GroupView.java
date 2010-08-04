@@ -183,7 +183,7 @@ public class GroupView {
       btn.setIconAlign(IconAlign.TOP);
       btn.setScale(ButtonScale.MEDIUM);
       if (tabbarItem.getImage() != null) {
-         btn.setIcon(IconHelper.create(ClientDataBase.appSetting.getResourceRootPath() + tabbarItem.getImage().getSrc(), 24, 24));
+         btn.setIcon(IconHelper.create(ClientDataBase.getResourceRootPath() + tabbarItem.getImage().getSrc(), 24, 24));
       } else {
          btn.setIcon(icons.defaultIcon());
       }
