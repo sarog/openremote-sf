@@ -5,16 +5,17 @@
 SensoryComponent = (function() {
   
   return function(jsonParser, properties) {
-    SensoryComponent.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
     this.sensor = null;
     
     // Delegate method of JSONParser.
-    this.didParse = function(jsonParser, nodeName, properties) {
+    this.didParse = this.didParse || function(jsonParser, nodeName, properties) {
       if(nodeName == Constants.LINK && Constants.SENSOR == properties[Constants.TYPE]) {
         this.sensor = new Sensor(jsonParser, properties);
       }
     };
+    
+    SensoryComponent.superClass.constructor.call(this, jsonParser, properties);
   }
 })();
 

@@ -12,10 +12,15 @@ RenderDataDB = (function() {
     var self = this;
     var groups = [];
     var screens = [];
+    var labels = [];
     self.globalTabBar = null;
     
     this.addScreen = function(screenParam) {
-      screens.push(screenParam);
+      if (screenParam != null && screenParam != undefined && screenParam.id != null && screenParam.id != undefined && 
+        this.findScreenByID(screenParam.id) == null) {
+          
+        screens[screens.length] = screenParam;
+      }
     };
     
     this.getScreens = function() {
@@ -23,11 +28,27 @@ RenderDataDB = (function() {
     };
     
     this.addGroup = function(groupParam) {
-      groups.push(groupParam);
+      if (groupParam != null && groupParam != undefined && groupParam.id != null && groupParam.id != undefined && 
+        this.findGroupByID(groupParam.id) == null) {
+          
+        groups[groups.length] = groupParam;
+      }
     };
     
     this.getGroups = function() {
       return groups;
+    };
+    
+    this.addLabel = function(labelParam) {
+      if (labelParam != null && labelParam != undefined && labelParam.id != null && labelParam.id != undefined && 
+        this.findLabelByID(labelParam.id) == null) {
+          
+        labels[labels.length] = labelParam;
+      }
+    };
+    
+    this.getLabels = function() {
+      return labels;
     };
     
     this.findGroupByID = function(groupID) {
@@ -50,9 +71,20 @@ RenderDataDB = (function() {
       return null;
     };
     
+    this.findLabelByID = function(labelID) {
+      for (var i = 0; i < labels.length; i++) {
+        var tempLabel = labels[i];
+        if (tempLabel.id == labelID) {
+          return tempLabel;
+        }
+      }
+      return null;
+    };
+    
     this.clearAll = function() {
       groups = [];
       screens = [];
+      labels = [];
       self.globalTabBar = null;
     };
     

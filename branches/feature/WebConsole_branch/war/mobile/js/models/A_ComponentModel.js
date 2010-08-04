@@ -9,7 +9,9 @@ ComponentModel = (function(){
 ComponentModel.build = function(jsonParser, nodeName, properties) {
   switch(nodeName) {
     case Constants.LABEL :
-      return new Label(jsonParser, properties);
+      var label = new Label(jsonParser, properties);
+      RenderDataDB.getInstance().addLabel(label);
+      return label;
     case Constants.IMAGE :
       return new Image(jsonParser, properties);
     default:

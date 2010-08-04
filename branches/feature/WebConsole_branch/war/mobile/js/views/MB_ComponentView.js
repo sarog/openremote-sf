@@ -35,7 +35,7 @@ ComponentView.build = function(componentModelParam, sizeParam) {
     case Constants.LABEL :
       return new LabelView(componentModelParam, sizeParam);
     case Constants.IMAGE :
-      return new ComponentView(componentModelParam, sizeParam);//new ImageView(componentModelParam, sizeParam);
+      return new ImageView(componentModelParam, sizeParam);
     default:
       return ControlView.build(componentModelParam, sizeParam);//ControlView.build(componentModelParam, sizeParam);
   }

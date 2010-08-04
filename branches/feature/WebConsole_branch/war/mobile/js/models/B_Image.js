@@ -5,19 +5,24 @@
 Image = (function() {
   
   return function(jsonParser, properties) {
-    // For extend
-    Image.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
     
-    // Delegate method of JSONParser(Should be defined in JSONParser.js).
+    // Override didParse method of SensoryComponent
     this.didParse = function(jsonParser, nodeName, properties) {
-      // TODO for sensor
+      if(nodeName == Constants.LINK && Constants.SENSOR == properties[Constants.TYPE]) {
+        this.sensor = new Sensor(jsonParser, properties);
+      } else if (nodeName == Constants.INCLUDE && Constants.LABEL == properties[Constants.TYPE]) {
+        this.labelID = properties[Constants.REF];
+      }
     };
+    
+    Image.superClass.constructor.call(this, jsonParser, properties);
     
     function init() {
       self.node_name = Constants.IMAGE;
       self.id = properties[Constants.ID];
       self.src = properties[Constants.SRC];
+      self.labelID = null;
       
       jsonParser.setDelegate(self);
     }
@@ -27,4 +32,4 @@ Image = (function() {
 })();
 
 // For extend
-ClassUtils.extend(Image, BaseModel);
+ClassUtils.extend(Image, SensoryComponent);

@@ -7,7 +7,6 @@ RootView = (function() {
   var ID = "rootView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"white",
-     "color":"#FF0000",
      "width":"100%",
      "height":"100%"
    };
