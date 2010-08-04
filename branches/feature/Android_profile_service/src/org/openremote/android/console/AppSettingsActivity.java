@@ -22,7 +22,6 @@ package org.openremote.android.console;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
@@ -85,14 +84,13 @@ public class AppSettingsActivity extends GenericActivity {
       LinearLayout mainLayout = new LinearLayout(this);
       mainLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
       mainLayout.setOrientation(LinearLayout.VERTICAL);
+      mainLayout.setBackgroundColor(0);
+      mainLayout.setTag(R.string.settings);
       
       ScrollView scroll = new ScrollView(this);
       scroll.setVerticalScrollBarEnabled(true);
-      scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, Screen.SCREEN_HEIGHT - 75));
-      
+      scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
       appSettingsView = new LinearLayout(this);
-      appSettingsView.setBackgroundColor(0);
-      appSettingsView.setTag(R.string.settings);
       appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
       appSettingsView.setOrientation(LinearLayout.VERTICAL);
       
