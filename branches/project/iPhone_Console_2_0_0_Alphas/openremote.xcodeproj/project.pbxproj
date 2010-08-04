@@ -1405,8 +1405,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1421,8 +1421,8 @@
 				INFOPLIST_FILE = Info.plist;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.0;
 			};
 			name = Distribution;
