@@ -79,6 +79,7 @@
 	for (SensorState *sensorState in imageModel.sensor.states) {
 		if ([[sensorState.name lowercaseString] isEqualToString:[newStatus lowercaseString]]) {
 			UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:sensorState.value]];
+			uiImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
 			defaultImageView.image = uiImage;
 			changeView = YES;
 			break;
