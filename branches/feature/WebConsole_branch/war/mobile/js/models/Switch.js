@@ -11,6 +11,8 @@ Switch = (function() {
     function init() {
       self.node_name = Constants.SWITCH;
       self.id = properties[Constants.ID];
+      
+      jsonParser.setDelegate(self);
     }
     
     init();

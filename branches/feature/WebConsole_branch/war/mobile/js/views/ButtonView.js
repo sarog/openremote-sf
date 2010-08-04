@@ -8,7 +8,7 @@ ButtonView = (function() {
      "background-color":"#CCCCCC",
      "background":"url('./mobile/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png') repeat-x scroll 50% 50% #E6E6E6",
      "color":"#000000",
-     "text-shadow":"0px -1px #bbb,0 2px #fff",
+     "text-shadow":"0px -1px #bbb,0 1px #fff",
      "width":"100%",
      "height":"100%",
      "border":"solid 1px #D3D3D3",

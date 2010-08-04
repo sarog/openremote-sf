@@ -32,10 +32,13 @@ AbsoluteLayoutView = (function() {
     
     function renderSubviews() {
       var size = new Size(self.absoluteLayoutModel.width, self.absoluteLayoutModel.height);
-      if(self.absoluteLayoutModel.componentModel.node_name != Constants.BUTTON && self.absoluteLayoutModel.componentModel.node_name != Constants.SWITCH) {
+      if(self.absoluteLayoutModel.componentModel.node_name == Constants.SLIDER || self.absoluteLayoutModel.componentModel.node_name == Constants.IMAGE || self.absoluteLayoutModel.componentModel.node_name == Constants.BASE_MODEL) {
         return;
       }
       self.componentView = ComponentView.build(self.absoluteLayoutModel.componentModel, size);
+      if (self.componentView == null) {
+        alert("a");
+      }
       self.addSubView(self.componentView);
     }
     

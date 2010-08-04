@@ -33,7 +33,7 @@ ClassUtils.extend(ComponentView, BaseView);
 ComponentView.build = function(componentModelParam, sizeParam) {
   switch(componentModelParam.node_name) {
     case Constants.LABEL :
-      return new ComponentView(componentModelParam, sizeParam);//new LabelView(componentModelParam, sizeParam);
+      return new LabelView(componentModelParam, sizeParam);
     case Constants.IMAGE :
       return new ComponentView(componentModelParam, sizeParam);//new ImageView(componentModelParam, sizeParam);
     default:

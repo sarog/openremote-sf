@@ -18,8 +18,8 @@ BaseModel = (function(){
     
     // Private mehthods
     function init(jsonParser, properties) {
-      jsonParser.setDelegate(self);
       self.node_name = Constants.BASE_MODEL;
+      jsonParser.setDelegate(self);
     }
     
     // Init jobs

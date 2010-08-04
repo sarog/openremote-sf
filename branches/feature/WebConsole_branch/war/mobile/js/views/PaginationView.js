@@ -4,8 +4,7 @@
  */
 PaginationView = (function() {
   
-  var UUID = Math.uuid();
-  var ID = "paginationView" + UUID;
+  var ID = "paginationView";
   var DEFAULT_CSS_STYLE = {
      "background-color":"gray",
      "color":"#FF0000",
@@ -17,6 +16,7 @@ PaginationView = (function() {
     // For extend
     PaginationView.superClass.constructor.call(this);
     var self = this;
+    self.UUID = Math.uuid();
     self.delegate = delegateParam;
     
     this.updateView = function(screenViewParam) {
@@ -30,10 +30,10 @@ PaginationView = (function() {
     }
     
     function init() {
-      self.setID(ID);
+      self.setID(ID+self.UUID);
       
       self.screenViewContainer = $("<div />", {
-        "id" : "screenViewContainer" + UUID,
+        "id" : "screenViewContainer" + self.UUID,
         css : {
           "backgroundColor" : "black",
           "width" : "100%",
@@ -45,7 +45,7 @@ PaginationView = (function() {
       }
             
       var canvas = $("<div />", {
-        "id" : ID
+        "id" : self.getID()
       });
       
       $(canvas).append(self.screenViewContainer);
@@ -56,8 +56,9 @@ PaginationView = (function() {
     }
     
     function constructPageControl() {
+      // PreviousScreenButton
       var previousScreenBtn = $("<div />", {
-        "id" : "previousScreenBtn" + UUID,
+        "id" : "previousScreenBtn" + self.UUID,
         css : {
           "float" : "left",
           "marginLeft" : "10px",
@@ -70,8 +71,9 @@ PaginationView = (function() {
         }
       });
       
+      // NextScreenButton
       var nextScreenBtn = $("<div />", {
-        "id" : "nextScreenBtn" + UUID,
+        "id" : "nextScreenBtn" + self.UUID,
         css : {
           "float" : "right",
           "marginRight" : "10px",
@@ -84,8 +86,9 @@ PaginationView = (function() {
         }
       });
       
+      // MenuButton
       var menuBtn = $("<div />", {
-        "id" : "menuBtn" + UUID,
+        "id" : "menuBtn" + self.UUID,
         "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" +
                     "<div style='position:relative;top:-50%;width:100%;text-align:center;'>" +
                       "<image style='padding-top:10px;' src = './mobile/images/menu.png' />" +
@@ -113,10 +116,10 @@ PaginationView = (function() {
       });
       
       var pageControl = $("<div />", {
-        "id" : "pager" + UUID,
+        "id" : "pager" + self.UUID,
         css : {
           // "background" : "url(./mobile/images/error_title_bg.jpg) repeat-x",
-          "backgroundColor" : "#477db6",
+          "backgroundColor" : "#E6E6E6",//#477db6
           "width" : "100%",
           "height" : "10%"
         }
