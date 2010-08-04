@@ -105,7 +105,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
     * @param background the background
     */
    private void addBackground(Background background) {
-      String url = ClientDataBase.appSetting.getResourceRootPath()
+      String url = ClientDataBase.getResourceRootPath()
             + URL.encode(background.getBackgroundImage().getSrc());
       setStyleAttribute("backgroundImage", "url(" + url + ")");
       setStyleAttribute("backgroundRepeat", "no-repeat");
@@ -259,8 +259,8 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
             AsyncServiceFactory.getCommandServiceAsync().sendCommand(
-                  ClientDataBase.appSetting.getControlPath() + gesture.getComponentId() + "/swipe",
-                  ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), 0, new AsyncSuccessCallback<Void>() {
+                  ClientDataBase.getControlPath() + gesture.getComponentId() + "/swipe",
+                  ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(), new AsyncSuccessCallback<Void>() {
                      public void onSuccess(Void result) {
                         // do nothing.
                      }

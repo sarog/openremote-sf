@@ -26,5 +26,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface CommandRPCServiceAsync {
    
-   void sendCommand(String url, String username, String password, int sslPort, AsyncCallback<Void> callback);
+   void sendCommand(String url, String username, String password, AsyncCallback<Void> callback);
 }

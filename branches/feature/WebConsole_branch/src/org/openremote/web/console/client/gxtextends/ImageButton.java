@@ -51,10 +51,10 @@ public class ImageButton extends com.extjs.gxt.ui.client.widget.button.Button {
       this.uiButton = uiButton;
       hasIcon = uiButton.getDefaultImage() != null;
       if (hasIcon) {
-         defaultImage = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiButton.getDefaultImage().getSrc());
+         defaultImage = ClientDataBase.getResourceRootPath() + URL.encode(uiButton.getDefaultImage().getSrc());
       }
       if (uiButton.getPressedImage() != null) {
-         pressedImage = ClientDataBase.appSetting.getResourceRootPath() + URL.encode(uiButton.getPressedImage().getSrc());
+         pressedImage = ClientDataBase.getResourceRootPath() + URL.encode(uiButton.getPressedImage().getSrc());
       }
       setSize(uiButton.getFrameWidth(), uiButton.getFrameHeight());
       setText(uiButton.getName());

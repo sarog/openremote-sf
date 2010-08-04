@@ -21,7 +21,9 @@ package org.openremote.web.console.net;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -66,13 +68,8 @@ public class ORConnection {
       this(url, httpMethod, null, null);
    }
    
-   public ORConnection(String url, ORHttpMethod httpMethod, String username, String password) {
-      this(url, httpMethod, username, password, 0);
-   }
-   
    /**
     * Instantiates a new connection.
-    * if sslPort is 0, not use https.
     * 
     * Please note the host name verification and SSL certificate trust are not
     * the same thing. The host name verification is an additional safeguard
@@ -83,35 +80,37 @@ public class ORConnection {
     * @param httpMethod the http method
     * @param username the username
     * @param password the password
-    * @param sslPort the ssl port
     */
    @SuppressWarnings("deprecation")
-   public ORConnection(String url, ORHttpMethod httpMethod, String username, String password, int sslPort) {
+   public ORConnection(String url, ORHttpMethod httpMethod, String username, String password) {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
       HttpConnectionParams.setSoTimeout(params, 5 * 1000);
       
       httpClient = new DefaultHttpClient(params);
-      // if sslPort is 0, not use https.
-      if (sslPort != 0) {
-         try {
+      try {
+         URL uri = new URL(url);
+         if (HTTPS.equals(uri.getProtocol())) {
             SSLSocketFactory socketFactory = new SSLSocketFactory(new TrustSelfSignedStrategy());
             socketFactory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            Scheme sch = new Scheme(HTTPS, sslPort, socketFactory);
+            Scheme sch = new Scheme(HTTPS, uri.getPort(), socketFactory);
             httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-         } catch (KeyManagementException e) {
-            log.error("KeyManagementException", e);
-            throw new ORConnectionException("Request https cetificate error");
-         } catch (UnrecoverableKeyException e) {
-            log.error("UnrecoverableKeyException", e);
-            throw new ORConnectionException("Request https cetificate error");
-         } catch (NoSuchAlgorithmException e) {
-            log.error("NoSuchAlgorithmException", e);
-            throw new ORConnectionException("Request https cetificate error");
-         } catch (KeyStoreException e) {
-            log.error("KeyStoreException", e);
-            throw new ORConnectionException("Request https cetificate error");
          }
+      } catch (MalformedURLException e) {
+         log.error("MalformedURLException", e);
+         throw new ORConnectionException("Request https cetificate error");
+      } catch (KeyManagementException e) {
+         log.error("KeyManagementException", e);
+         throw new ORConnectionException("Request https cetificate error");
+      } catch (UnrecoverableKeyException e) {
+         log.error("UnrecoverableKeyException", e);
+         throw new ORConnectionException("Request https cetificate error");
+      } catch (NoSuchAlgorithmException e) {
+         log.error("NoSuchAlgorithmException", e);
+         throw new ORConnectionException("Request https cetificate error");
+      } catch (KeyStoreException e) {
+         log.error("KeyStoreException", e);
+         throw new ORConnectionException("Request https cetificate error");
       }
 
       try {

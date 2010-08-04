@@ -19,7 +19,6 @@
 */
 package org.openremote.web.console.client.widget;
 
-import org.openremote.web.console.client.Constants;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
@@ -27,8 +26,6 @@ import org.openremote.web.console.domain.Button;
 import org.openremote.web.console.domain.Component;
 import org.openremote.web.console.domain.Slider;
 import org.openremote.web.console.domain.Switch;
-
-import com.google.gwt.user.client.Cookies;
 
 /**
  * The Class ScreenControl is the superclass of that screen component with control command.
@@ -61,19 +58,8 @@ public class ScreenControl extends ScreenComponent {
     * @param callback the callback
     */
    public void sendCommand(String commandType, AsyncSuccessCallback<Void> callback) {
-      int sslPort = 0;
-      String controlPath = ClientDataBase.appSetting.getControlPath();
-      if ("true".equals(Cookies.getCookie(Constants.SSL_STATUS))) {
-         sslPort = Integer.valueOf(Cookies.getCookie(Constants.SSL_PORT));
-         if (controlPath.indexOf("http:") != -1) {
-            controlPath = controlPath.replaceFirst("http:", "https:");
-         }
-         if (controlPath.indexOf(":") != -1) {
-            controlPath = controlPath.replaceFirst("\\:\\d+", ":" + sslPort);
-         }
-      }
       AsyncServiceFactory.getCommandServiceAsync().sendCommand(
-            controlPath + getComponent().getComponentId() + "/" + commandType, ClientDataBase.userInfo.getUsername(),
-            ClientDataBase.userInfo.getPassword(), sslPort, callback);
+            ClientDataBase.getControlPath() + getComponent().getComponentId() + "/" + commandType, ClientDataBase.userInfo.getUsername(),
+            ClientDataBase.userInfo.getPassword(), callback);
    }
 }
