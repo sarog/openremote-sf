@@ -59,6 +59,7 @@ RootViewController = (function(){
        var currentGroupControllerView = self.currentGroupController.getView();
        self.getView().addSubView(currentGroupControllerView);
        self.lastSubView = currentGroupControllerView;
+       saveLastGroupIdAndScreenId();
      } else {
        self.getView().addSubView(errorViewController.getView());
      }

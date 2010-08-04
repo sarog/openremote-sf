@@ -20,6 +20,7 @@ PaginationController = (function() {
         self.currentScreenIndex -= 1;
         self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
         self.currentScreenViewController().startPolling();
+        saveLastGroupIdAndScreenId();
       }
     };
     
@@ -29,6 +30,7 @@ PaginationController = (function() {
         self.currentScreenIndex += 1;
         self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
         self.currentScreenViewController().startPolling();
+        saveLastGroupIdAndScreenId();
       }
     };
     
@@ -100,7 +102,14 @@ PaginationController = (function() {
       self.paginationView.renderMenuItemListView(self.group);
       
       self.setView(self.paginationView);
-
+      saveLastGroupIdAndScreenId();
+    }
+    
+    function saveLastGroupIdAndScreenId() {
+      var lastFootPrint = {};
+      lastFootPrint.groupID = self.group.id;
+      lastFootPrint.screenID = self.currentScreenViewController().screen.id;
+      CookieUtils.setCookie(Constants.LAST_FOOT_PRINT, lastFootPrint);
     }
     
     init();
