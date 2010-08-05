@@ -71,15 +71,6 @@ AppSettings = (function(){
       }
   	};
   	
-  	// Following two methods are delegate methods should defined in UpdateController.js
-    // this.didUpdateSuccess = function() {
-    //   delegate.didUpdateSuccess();
-    // };
-    // 
-    // this.didUpdateFail = function(error) {
-    //   delegate.didUpdateFail(error);
-    // };
-  	
     // Private methods
     function init() {
       renderTemplate();
@@ -222,15 +213,21 @@ AppSettings = (function(){
     // Followings two are delegate methods should be defined in ConnectionUtils.js .
     this.didRequestSuccess = function(data, textStatus) {
       var panelIdentities = [];
-      if (data != null) {
-        for (var index in data.panel) {
-          var panel = data.panel[index];
-          var panelID = panel["@id"];
-          var panelName = panel["@name"];
-          panelIdentities.push(panelName);
+      if (data != null && data != undefined) {
+        var error = data.error;
+        if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
+          selectedControllerServer = null;
+          MessageUtils.hideLoading();
+          MessageUtils.showMessageDialog("Load panel identities", error.message);
+          return;
+        } else {
+          for (var index in data.panel) {
+            var panel = data.panel[index];
+            var panelID = panel["@id"];
+            var panelName = panel["@name"];
+            panelIdentities[panelIdentities.length] = panelName;
+          }
         }
-      } else {
-        MessageUtils.showMessageDialog("Message", "There is no panel identities.");
       }
       
       if (panelIdentities.length != 0) {
@@ -243,6 +240,10 @@ AppSettings = (function(){
             $("#controllerPanelSelect").append("<option>" + panelIdentities[index] + "</option>");
           }
         }
+      } else {
+        MessageUtils.hideLoading();
+        MessageUtils.showMessageDialog("Message", "No identity load");
+        return;
       }
 
       $("#controllerPanelSelectContainer").show();
