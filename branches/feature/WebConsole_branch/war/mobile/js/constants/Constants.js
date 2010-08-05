@@ -84,6 +84,13 @@
      OFF : "off",
      
      SLIDER : "slider",
+     IS_VERTICAL : "@vertical",
+     IS_PASSIVE : "@passive",
+     THUMB_IMAGE : "@thumbImage",
+     MAX : "max",
+     MIN : "min",
+     SLIDER_IMAGE : "@image",
+     SLIDER_TRACK_IMAGE : "@trackImage",
      
      ID : "@id",
      NAME : "@name",

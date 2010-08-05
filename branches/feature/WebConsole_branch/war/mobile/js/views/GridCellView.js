@@ -33,7 +33,7 @@ GridCellView = (function() {
     }
     
     function renderSubviews() {
-      if(self.gridCell.componentModel.node_name == Constants.SLIDER || self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
+      if(self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
         return;
       }
       self.componentView = ComponentView.build(self.gridCell.componentModel, self.size);

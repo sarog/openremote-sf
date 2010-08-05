@@ -1,6 +1,6 @@
 /**
- * It's view for switch.
- * auther: handy.wang 2010-07-26
+ * It's view for image.
+ * auther: handy.wang 2010-08-04
  */
 ImageView = (function() {
   var ID = "imageView";
