@@ -25,6 +25,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Random;
 
 /**
  * The Class SimpleScriptTagProxy.
@@ -55,7 +56,7 @@ public class SimpleScriptTagProxy {
 
      transId = "transId" + ID++;
      String prepend = url.indexOf("?") != -1 ? "&" : "?";
-     String u = url + prepend + "callback=" + transId;
+     String u = url + prepend + "callback=" + transId + "&" + Random.nextInt();
 
      createCallback(this, transId);
 

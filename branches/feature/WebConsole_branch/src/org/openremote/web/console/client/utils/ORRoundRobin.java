@@ -69,15 +69,15 @@ public class ORRoundRobin {
          String member = null;
          if (groupArray != null) {
             // use the second member.
-            member = groupArray.get(1).isObject().get("@url").isString().toString();
+            member = groupArray.get(1).isObject().get("@url").isString().stringValue();
          } else {
-            member = jsonValue.isObject().get("@url").isString().toString();
+            member = jsonValue.isObject().get("@url").isString().stringValue();
          }
          if (member != null && !member.equals(ClientDataBase.appSetting.getCurrentServer())) {
             ClientDataBase.appSetting.setCurrentServer(member);
             Cookies.setCookie(Constants.CONSOLE_SETTINGS, ClientDataBase.appSetting.toJson());
-            Window.Location.reload();
          }
+         Window.Location.reload();
       }
    }
 }
