@@ -49,7 +49,7 @@ ControlView.build = function(componentModelParam, sizeParam) {
     case Constants.SWITCH:
       return new SwitchView(componentModelParam, sizeParam);
     case Constants.SLIDER:
-      return new ControlView(componentModelParam, sizeParam);// return new SliderView(componentModelParam, sizeParam);
+      return new SliderView(componentModelParam, sizeParam);
     default:
       return null;
   }

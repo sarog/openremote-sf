@@ -13,7 +13,7 @@ ControlModel.build = function(jsonParser, nodeName, properties) {
     case Constants.SWITCH :
       return new Switch(jsonParser, properties);
     case Constants.SLIDER :
-      return new BaseModel(jsonParser, properties);//new Slider(jsonParser, properties);
+      return new Slider(jsonParser, properties);
     default:
       return new BaseModel(jsonParser, properties);
   }
