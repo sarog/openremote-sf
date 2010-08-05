@@ -77,10 +77,13 @@
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
-	if (![defaultViewController isLoadingViewGone]) {
+	
+	if ([defaultViewController isAppLaunching]) {//blocked from app launching, should refresh all groups.
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		[defaultViewController initGroups];
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+	} else {//blocked from sending command, should refresh command.
+		[defaultViewController refreshPolling];
 	}
 }
 

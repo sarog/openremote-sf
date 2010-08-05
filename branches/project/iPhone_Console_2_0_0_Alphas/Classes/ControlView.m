@@ -79,11 +79,14 @@
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[Definition sharedDefinition].password = nil;
+			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+		} else {
+			[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
 		}
 
 		[self cancelTimer];
 		isError = YES;
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
+			
 	}
 }
 
@@ -98,10 +101,10 @@
 
 - (void)sendCommandRequest:(NSString *)commandType{
 	
-	if ([[Definition sharedDefinition] password] == nil) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		return;
-	}
+//	if ([[Definition sharedDefinition] password] == nil) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+//		return;
+//	}
 	
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];

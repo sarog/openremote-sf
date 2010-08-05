@@ -55,10 +55,12 @@
 }
 
 - (void)initGroups;
+- (void)refreshPolling;
 - (void)populateLoginView:(id)sender;
 - (void)populateSettingsView:(id)sender;
 - (void)performGesture:(Gesture *)gesture;
 - (void)saveLastGroupIdAndScreenId;
 - (BOOL)isLoadingViewGone;
+- (BOOL)isAppLaunching;
 
 @end

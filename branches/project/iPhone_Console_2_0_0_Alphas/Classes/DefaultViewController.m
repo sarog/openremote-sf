@@ -80,6 +80,9 @@
 	[self.view addSubview:initViewController.view];
 }
 
+- (void)refreshPolling {
+	[currentGroupController startPolling];
+}
 
 - (void)initGroups {
 	
@@ -402,6 +405,10 @@
 	
 	[self initGroups];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+}
+
+- (BOOL)isAppLaunching {
+	return ![self isLoadingViewGone];
 }
 
 - (BOOL)isLoadingViewGone {
