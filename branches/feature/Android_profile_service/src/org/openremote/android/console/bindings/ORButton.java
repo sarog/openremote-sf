@@ -23,15 +23,32 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The button can send command to controller and navigate to, has default image and pressed image.
+ * If it has set repeat, it would repeat send command.
+ * Use "ORButton" as its name is because android has "Button" component.
+ */
 @SuppressWarnings("serial")
 public class ORButton extends Control {
 
    private String name;
    private boolean hasControlCommand;
    private boolean repeat;
+   
+   /** The button's normal image. */
    private Image defaultImage;
+   
+   /** The button's pressed image. */
    private Image pressedImage;
+   
+   /** Navigate to. */
    private Navigate navigate;
+   
+   /**
+    * Instantiates a new button by parse the button node.
+    * 
+    * @param node the node
+    */
    public ORButton(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue()));
@@ -83,6 +100,13 @@ public class ORButton extends Control {
       return navigate;
    }
    
+   /**
+    * Creates the image by parse image node.
+    * 
+    * @param elementNode the element node
+    * 
+    * @return the image
+    */
    private Image createImage(Node elementNode) {
       for (Node imageNode = elementNode.getFirstChild(); imageNode != null; imageNode = imageNode.getNextSibling()) {
          if (imageNode.getNodeType() == Node.ELEMENT_NODE && "image".equals(imageNode.getNodeName())) {

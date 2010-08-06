@@ -34,9 +34,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * This is the "settings" screen. It also appears if you have a communication
- * error of some kind. Mainly it configures the URL of your device (which is
- * assumed to be the root of iphone.xml.
+ * This is the add custom server screen. Mainly it configures the URL of 
+ * your device (which is assumed to be the root of controller.xml.
  * 
  * @author Andrew C. Oliver <acoliver at osintegrators.com>
  */

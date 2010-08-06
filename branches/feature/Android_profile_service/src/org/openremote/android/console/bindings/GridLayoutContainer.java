@@ -26,6 +26,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The subclass of LayoutContainer which include grid cells.
+ * It contains column size and row size.
+ * 
+ */
 @SuppressWarnings("serial")
 public class GridLayoutContainer extends LayoutContainer {
 
@@ -33,6 +38,11 @@ public class GridLayoutContainer extends LayoutContainer {
    private int cols;
    private ArrayList<GridCell> cells;
    
+   /**
+    * Instantiates a new grid layout container by parse a grid node.
+    * 
+    * @param node the grid node
+    */
    public GridLayoutContainer(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.left = Integer.valueOf(nodeMap.getNamedItem("left").getNodeValue());
@@ -59,6 +69,11 @@ public class GridLayoutContainer extends LayoutContainer {
       return cols;
    }
    
+   /**
+    * Gets the grid cells.
+    * 
+    * @return the cells
+    */
    public ArrayList<GridCell> getCells() {
       return cells;
    }

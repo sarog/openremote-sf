@@ -1,25 +1,23 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
- *
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console;
-
-import java.util.List;
 
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
@@ -39,9 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -75,21 +71,32 @@ public class Main extends GenericActivity {
         
         checkNetType();
         readDisplayMetrics();        
-        if(!toSetting()) {        
+        if(!checkServerAndPanel()) {        
            new AsyncResourceLoader(this).execute((Void) null);
         }
     }
     
+    /**
+     * Display toast with message "switching controller".
+     */
     public static void prepareToastForSwitchingController() {
        isRefreshingController = true;
-       loadingToast.setText("Refreshing from Controller...");
+       loadingToast.setText("Switching from Controller...");
     }
     
+    /**
+     * Display toast with message "refreshing controller".
+     */
     public static void prepareToastForRefreshingController() {
        isRefreshingController = true;
-       loadingToast.setText("Switching Controller...");
+       loadingToast.setText("Refreshing Controller...");
     }
     
+    /**
+     * Check net type.
+     * It is used for ipAutoDiscovery, if net type is not wifi,
+     * multicast to non wifi address.
+     */
     private void checkNetType() {
        ConnectivityManager conn = (ConnectivityManager)(this).getSystemService(Context.CONNECTIVITY_SERVICE);
        NetworkInfo info = conn.getActiveNetworkInfo();
@@ -101,6 +108,10 @@ public class Main extends GenericActivity {
        }
     }
     
+    /**
+     * Read display metrics.
+     * Include screen width and height.
+     */
     private void readDisplayMetrics() {
       DisplayMetrics dm = new DisplayMetrics();
       dm = getApplicationContext().getResources().getDisplayMetrics();
@@ -108,51 +119,32 @@ public class Main extends GenericActivity {
       Screen.SCREEN_HEIGHT = dm.heightPixels;
     }
     
-    private boolean toSetting () {
+    /**
+     * Check server and panel.
+     * If server or panel is empty, do settings and return true;
+     * else return false.
+     * 
+     * @return true, if successful
+     */
+    private boolean checkServerAndPanel () {
        Log.i("toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
-       Intent intent = new Intent();
        if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || 
              TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
-          intent.setClass(this, AppSettingsActivity.class);
-       } else {
-          return false;
+          doSettings();
+          return true;
        }
-       startActivity(intent);
-       finish();
-       return true;
-    }
-
-    private void doSettings(String error) {
-        Intent i = new Intent();
-        i.setClassName(this.getClass().getPackage().getName(),
-                AddServerActivity.class.getName());
-        if (TextUtils.isEmpty(error))
-            ;
-        i.putExtra(Constants.ERROR, error);
-        startActivity(i);
+       return false;
     }
 
     /**
-     * Constructs the ListView which is the main display element for the Main
-     * activity. This is just a list of the activities. The activityNames
-     * parameter is a string list of ORActivity.getName() constructed by
-     * parseXML.
-     * 
-     * @param activityNames
-     * @return
+     * Forward to settings view.
      */
-    public ListView constructListView(List<String> activityNames) {
-        ListView lv = new ListView(this);
-        lv.setBackgroundColor(0);
-        lv.setCacheColorHint(0);
-        ArrayAdapter<String> aa = new ArrayAdapter<String>(activitiesListView
-                .getContext(), android.R.layout.simple_list_item_1,
-                activityNames);
-
-        lv.setAdapter(aa);
-        lv.setItemsCanFocus(false);
-        lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        return lv;
+    private void doSettings() {
+        Intent i = new Intent();
+        i.setClassName(this.getClass().getPackage().getName(),
+              AppSettingsActivity.class.getName());
+        startActivity(i);
+        finish();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,7 +160,7 @@ public class Main extends GenericActivity {
     public void handleMenu(MenuItem item) {
         switch (item.getItemId()) {
         case Constants.MENU_ITEM_SETTING:
-            doSettings(null);
+            doSettings();
             break;
         case Constants.MENU_ITEM_QUIT:
             System.exit(0);

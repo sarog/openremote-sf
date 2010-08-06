@@ -23,6 +23,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The screen gesture, which contains 4 sorts.
+ */
 @SuppressWarnings("serial")
 public class Gesture extends Control {
 
@@ -35,6 +38,12 @@ public class Gesture extends Control {
    private boolean hasControlCommand;
    private Navigate navigate;
    
+   /**
+    * Parse gesture node to instantiates a new gesture.
+    * It contains swipe type, navigation and command.
+    *  
+    * @param node the node
+    */
    public Gesture(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem("id").getNodeValue()));

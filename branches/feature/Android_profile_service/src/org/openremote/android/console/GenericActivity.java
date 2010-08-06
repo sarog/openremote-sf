@@ -23,10 +23,11 @@ import android.app.Activity;
 import android.os.Bundle;
 
 /**
- * The Class GenericActivity.
+ * The Class GenericActivity is the super activity in the application.
  */
 public class GenericActivity extends Activity {
 
+   /** The is activity resumed. */
    private boolean isActivityResumed;
    
    @Override
@@ -46,6 +47,13 @@ public class GenericActivity extends Activity {
       super.onResume();
    }
    
+   /**
+    * Checks if is activity resumed.
+    * If activity is resumed, can operate it's views;
+    * otherwise can't.
+    * 
+    * @return true, if is activity resumed
+    */
    public boolean isActivityResumed() {
       return isActivityResumed;
    }

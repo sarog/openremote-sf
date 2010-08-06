@@ -22,6 +22,11 @@ package org.openremote.android.console.bindings;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Node;
 
+/**
+ * The super class of component, which include label, image and control component.
+ * It contains component id and size.
+ * 
+ */
 @SuppressWarnings("serial")
 public class Component extends BusinessEntity {
 
@@ -29,6 +34,13 @@ public class Component extends BusinessEntity {
    private int frameWidth;
    private int frameHeight;
    
+   /**
+    * Builds the component by parse component node.
+    * 
+    * @param node the node
+    * 
+    * @return the component
+    */
    public static Component buildWithXML(Node node) {
       Component component = null;
       if (LABEL.equals(node.getNodeName())) {

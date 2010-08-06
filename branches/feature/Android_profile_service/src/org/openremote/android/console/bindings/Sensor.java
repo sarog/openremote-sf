@@ -24,10 +24,15 @@ import java.util.ArrayList;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Parse the sensor node in sensor component.
+ */
 @SuppressWarnings("serial")
 public class Sensor extends BusinessEntity {
 
    private int sensorId;
+   
+   /** The states are predefined for polling result. */
    private ArrayList<SensorState> states;
 
    public Sensor(Node node) {
@@ -48,6 +53,13 @@ public class Sensor extends BusinessEntity {
       return states;
    }
    
+   /**
+    * Gets the state value by key.
+    * 
+    * @param key the key
+    * 
+    * @return the state value
+    */
    public String getStateValue(String key) {
       int stateSize = states.size();
       for (int i = 0; i < stateSize; i++) {
