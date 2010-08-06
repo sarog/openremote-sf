@@ -56,7 +56,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 /**
  * Application global settings view.
- * 
+ * It is for configuring controller server, panel identity and security.
+ * It also can delete image caches.
  * 
  * @author Tomsky Wang
  * @author Dan Cong
@@ -65,12 +66,23 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class AppSettingsActivity extends GenericActivity {
 
+   /** The app settings view contains auto discovery, auto servers, custom servers,
+    * select panel identity, clear image cache and security configuration. 
+   */
    private LinearLayout appSettingsView;
-   private ListView customeListView;
+   
+   /** The custom list view contains custom server list. */
+   private ListView customListView;
    private int currentCustomServerIndex = -1;
+   
+   /** The auto mode is to indicate if auto discovery servers. */
    private boolean autoMode;
    public static String currentServer = "";
+   
+   /** The view for selecting panel identity. */
    private PanelSelectSpinnerView panelSelectSpinnerView;
+   
+   /** The progress layout display auto discovery progress. */
    private LinearLayout progressLayout;
    
    @Override
@@ -81,12 +93,14 @@ public class AppSettingsActivity extends GenericActivity {
       
       this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
       
+      // The main layout contains all application configuration items.
       LinearLayout mainLayout = new LinearLayout(this);
       mainLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
       mainLayout.setOrientation(LinearLayout.VERTICAL);
       mainLayout.setBackgroundColor(0);
       mainLayout.setTag(R.string.settings);
       
+      // The scroll view contains appSettingsView, and make the appSettingsView can be scrolled.
       ScrollView scroll = new ScrollView(this);
       scroll.setVerticalScrollBarEnabled(true);
       scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
@@ -101,7 +115,7 @@ public class AppSettingsActivity extends GenericActivity {
       if (autoMode) {
          appSettingsView.addView(constructAutoServersView());
       } else {
-         appSettingsView.addView(constructCustomeServersView());
+         appSettingsView.addView(constructCustomServersView());
       }
       appSettingsView.addView(createChoosePanelLabel());
       panelSelectSpinnerView = new PanelSelectSpinnerView(this);
@@ -122,6 +136,11 @@ public class AppSettingsActivity extends GenericActivity {
       progressLayout = (LinearLayout)findViewById(R.id.choose_controller_progress);
    }
 
+   /**
+    * Creates the image cache text view.
+    * 
+    * @return the text view
+    */
    private TextView createCacheText() {
       TextView cacheText = new TextView(this);
       cacheText.setPadding(10, 5, 0, 5);
@@ -129,8 +148,11 @@ public class AppSettingsActivity extends GenericActivity {
       cacheText.setBackgroundColor(Color.DKGRAY);
       return cacheText;
    }
+   
    /**
-    * @return
+    * Creates the choose panel identity text.
+    * 
+    * @return the text view
     */
    private TextView createChoosePanelLabel() {
       TextView choosePanelInfo = new TextView(this);
@@ -141,7 +163,10 @@ public class AppSettingsActivity extends GenericActivity {
    }
 
    /**
-    * @return
+    * Creates the choose controller bar, which contains "Choose controller:" text and 
+    * a progress bar(used in auto discovery servers).
+    * 
+    * @return the linear layout
     */
    private LinearLayout createChooseControllerLabel() {
       LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
@@ -150,7 +175,9 @@ public class AppSettingsActivity extends GenericActivity {
    }
 
    /**
-    * @return
+    * Creates the done and cancel layout that is inflated from xml.
+    * 
+    * @return the linear layout
     */
    private LinearLayout createDoneAndCancelLayout() {
       LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
@@ -158,6 +185,12 @@ public class AppSettingsActivity extends GenericActivity {
       return saveAndCancelLayout;
    }
    
+   /**
+    * Creates the ssl layout.
+    * It contains ssl switch and ssl port.
+    * 
+    * @return the linear layout
+    */
    private LinearLayout createSSLLayout() {
       LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
       LinearLayout sslLayout = (LinearLayout)inflater.inflate(R.layout.ssl_field_view, null);
@@ -165,6 +198,9 @@ public class AppSettingsActivity extends GenericActivity {
       return sslLayout;
    }
 
+   /**
+    * Set the ssl switch state and ssl port value.
+    */
    private void initSSLState() {
       ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
       sslBtn.setChecked(AppSettingsModel.isUseSSL(this));
@@ -190,8 +226,11 @@ public class AppSettingsActivity extends GenericActivity {
       });
       
    }
+   
    /**
+    * Adds the onclick listener on done button.
     * 
+    * If success, start Main activity and reload the application.
     */
    private void addOnclickListenerOnDoneButton() {
       Button doneButton = (Button)findViewById(R.id.setting_done);
@@ -218,6 +257,9 @@ public class AppSettingsActivity extends GenericActivity {
       });
    }
    
+   /**
+    * Finish the settings activity.
+    */
    private void addOnclickListenerOnCancelButton() {
       Button cancelButton = (Button)findViewById(R.id.setting_cancel);
       cancelButton.setOnClickListener(new OnClickListener() {
@@ -227,6 +269,10 @@ public class AppSettingsActivity extends GenericActivity {
       });
    }
 
+   /**
+    * Creates the clear image cache button, add listener for clear image cache.
+    * @return the relative layout
+    */
    private RelativeLayout createClearImageCacheButton() {
       RelativeLayout clearImageView = new RelativeLayout(this);
       clearImageView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
@@ -244,7 +290,6 @@ public class AppSettingsActivity extends GenericActivity {
                         FileUtil.clearImagesInCache(AppSettingsActivity.this);
                      }
                   });
-
          }
       });
       
@@ -253,7 +298,10 @@ public class AppSettingsActivity extends GenericActivity {
    }
 
    /**
-    * @return
+    * Creates the auto layout.
+    * It contains toggle button to switch auto state, two text view to indicate auto messages.
+    * 
+    * @return the relative layout
     */
    private RelativeLayout createAutoLayout() {
       RelativeLayout autoLayout = new RelativeLayout(this);
@@ -282,7 +330,7 @@ public class AppSettingsActivity extends GenericActivity {
                appSettingsView.addView(constructAutoServersView(), 2);
             } else {
                IPAutoDiscoveryServer.isInterrupted = true;
-               appSettingsView.addView(constructCustomeServersView(), 2);
+               appSettingsView.addView(constructCustomServersView(), 2);
             }
             AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
          }
@@ -302,7 +350,12 @@ public class AppSettingsActivity extends GenericActivity {
       return autoLayout;
    }
 
-   private void getCustomServersFromFile(ArrayList<String> customServers) {
+   /**
+    * Inits the custom servers from customServers.xml.
+    * 
+    * @param customServers the custom servers
+    */
+   private void initCustomServersFromFile(ArrayList<String> customServers) {
       String storedUrls = AppSettingsModel.getCustomServers(this);
       if (! TextUtils.isEmpty(storedUrls)) {
          String[] data = storedUrls.split(",");
@@ -319,14 +372,21 @@ public class AppSettingsActivity extends GenericActivity {
       }
    }
    
-   private LinearLayout constructCustomeServersView() {
+   /**
+    * It contains a list view to display custom servers, 
+    * "Add" button to add custom server, "Delete" button to delete custom server.
+    * The custom servers would be saved in customServers.xml. If click a list item, it would be saved as current server.
+    * 
+    * @return the linear layout
+    */
+   private LinearLayout constructCustomServersView() {
       LinearLayout custumeView = new LinearLayout(this);
       custumeView.setOrientation(LinearLayout.VERTICAL);
       custumeView.setPadding(20, 5, 5, 0);
       custumeView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
       
       ArrayList<String> customServers = new ArrayList<String>();
-      getCustomServersFromFile(customServers);
+      initCustomServersFromFile(customServers);
       
       RelativeLayout buttonsView = new RelativeLayout(this);
       buttonsView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 80));
@@ -353,10 +413,13 @@ public class AppSettingsActivity extends GenericActivity {
       deleteServer.setOnClickListener(new OnClickListener() {
          @SuppressWarnings("unchecked")
          public void onClick(View v) {
-            int checkedPosition = customeListView.getCheckedItemPosition();
+            int checkedPosition = customListView.getCheckedItemPosition();
             if (!(checkedPosition == ListView.INVALID_POSITION)) {
-               customeListView.setItemChecked(checkedPosition, false);
-               ((ArrayAdapter<String>)customeListView.getAdapter()).remove(customeListView.getItemAtPosition(checkedPosition).toString());
+               customListView.setItemChecked(checkedPosition, false);
+               ((ArrayAdapter<String>)customListView.getAdapter()).remove(customListView.getItemAtPosition(checkedPosition).toString());
+               currentServer = "";
+               AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+               writeCustomServerToFile();
             }
          }
       });
@@ -364,19 +427,19 @@ public class AppSettingsActivity extends GenericActivity {
       buttonsView.addView(addServer);
       buttonsView.addView(deleteServer);
       
-      customeListView = new ListView(this);
-      customeListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
-      customeListView.setCacheColorHint(0);
+      customListView = new ListView(this);
+      customListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
+      customListView.setCacheColorHint(0);
       final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
               customServers);
-      customeListView.setAdapter(serverListAdapter);
-      customeListView.setItemsCanFocus(true);
-      customeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+      customListView.setAdapter(serverListAdapter);
+      customListView.setItemsCanFocus(true);
+      customListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
       if (currentCustomServerIndex != -1) {
-         customeListView.setItemChecked(currentCustomServerIndex, true);
-         currentServer = (String)customeListView.getItemAtPosition(currentCustomServerIndex);
+         customListView.setItemChecked(currentCustomServerIndex, true);
+         currentServer = (String)customListView.getItemAtPosition(currentCustomServerIndex);
       }
-      customeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             currentServer = (String)parent.getItemAtPosition(position);
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
@@ -385,11 +448,17 @@ public class AppSettingsActivity extends GenericActivity {
          
       });
       
-      custumeView.addView(customeListView);
+      custumeView.addView(customListView);
       custumeView.addView(buttonsView);
       return custumeView;
   }
 
+   /**
+    * Received custom server from AddServerActivity, add prefix "http://" before it.
+    * Add the result in custom server list and set it as current server.
+    * 
+    * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+    */
    @SuppressWarnings("unchecked")
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -398,9 +467,9 @@ public class AppSettingsActivity extends GenericActivity {
          if (Constants.REQUEST_CODE == requestCode && !TextUtils.isEmpty(result)) {
             if (Constants.RESULT_CONTROLLER_URL == resultCode) {
                currentServer = "http://" + result;
-               ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customeListView.getAdapter();
+               ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customListView.getAdapter();
                customeListAdapter.add(currentServer);
-               customeListView.setItemChecked(customeListAdapter.getCount() - 1, true);
+               customListView.setItemChecked(customeListAdapter.getCount() - 1, true);
                AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
                writeCustomServerToFile();
             }
@@ -408,6 +477,12 @@ public class AppSettingsActivity extends GenericActivity {
       }
    }
   
+   /**
+    * Auto discovery servers and add them in a list view.
+    * Click a list item and make it as current server.
+    * 
+    * @return the list view
+    */
    private ListView constructAutoServersView() {
       final ListView lv = new ListView(this);
       lv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
@@ -455,29 +530,28 @@ public class AppSettingsActivity extends GenericActivity {
       return lv;
    }
 
+   /**
+    *  Construct custom servers to a string which split by "," and write it to customServers.xml.
+    */
    private void writeCustomServerToFile() {
-      int customServerCount = customeListView.getCount();
+      int customServerCount = customListView.getCount();
       if (customServerCount > 0) {
-         int checkedPosition = customeListView.getCheckedItemPosition();
+         int checkedPosition = customListView.getCheckedItemPosition();
          String customServerUrls = "";
          for (int i = 0; i < customServerCount; i++) {
             if (i != checkedPosition) {
-               customServerUrls = customServerUrls + customeListView.getItemAtPosition(i).toString();
+               customServerUrls = customServerUrls + customListView.getItemAtPosition(i).toString();
             } else {
-               customServerUrls = customServerUrls + StringUtil.markControllerServerURLSelected(customeListView.getItemAtPosition(i).toString());
+               customServerUrls = customServerUrls + StringUtil.markControllerServerURLSelected(customListView.getItemAtPosition(i).toString());
             }
             if (i != customServerCount - 1) {
             	customServerUrls = customServerUrls + ",";
             }
          }
          if (!TextUtils.isEmpty(customServerUrls)) {
-            AppSettingsModel.setCustomServers(customeListView.getContext(), customServerUrls);
+            AppSettingsModel.setCustomServers(customListView.getContext(), customServerUrls);
          }
       }
    }
    
-   public int sum() {
-      return 2+5;
-   }
-
 }

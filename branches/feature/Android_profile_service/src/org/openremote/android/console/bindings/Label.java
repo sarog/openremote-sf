@@ -23,6 +23,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The label can set font size and color, change text by polling status.
+ */
 @SuppressWarnings("serial")
 public class Label extends SensorComponent {
 

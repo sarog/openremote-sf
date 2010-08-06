@@ -25,11 +25,21 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The subclass of LayoutContainer which include a component.
+ * It parse the absolute node, contains size and position info.
+ * 
+ */
 @SuppressWarnings("serial")
 public class AbsoluteLayoutContainer extends LayoutContainer {
 
    private Component component;
    
+   /**
+    * Instantiates a new absolute layout container by parse absolute node.
+    * 
+    * @param node the absolute node
+    */
    public AbsoluteLayoutContainer(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.left = Integer.valueOf(nodeMap.getNamedItem("left").getNodeValue());

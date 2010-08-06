@@ -23,6 +23,9 @@ import java.io.Serializable;
 
 import org.openremote.android.console.Constants;
 
+/**
+ * Super class for all entities with the predefined strings.
+ */
 public class BusinessEntity implements Serializable {
    private static final long serialVersionUID = Constants.BINDING_VERSION;
 

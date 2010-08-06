@@ -1,22 +1,22 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
- *
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console;
 
 import java.io.InputStream;
@@ -69,6 +69,7 @@ import android.widget.LinearLayout;
 
 /**
  * Controls all the screen views in a group.
+ * The main operation of application is handled in it.
  * 
  * @author Tomsky Wang
  * @author Dan Cong
@@ -77,10 +78,14 @@ import android.widget.LinearLayout;
 
 public class GroupActivity extends GenericActivity implements OnGestureListener, ORConnectionDelegate, SensorListener {
 
-   // private static final int FLIPPER = 0xF00D;
+   /** To detect gesture, just for one finger touch. */
    private GestureDetector gestureScanner;
    private GroupView currentGroupView;
-   private LinearLayout linearLayout;
+   
+   /** The layout is the activity's content view, it contains currentScreenViewFlipper. */
+   private LinearLayout contentLayout;
+   
+   /** The current screen view flipper contains current group views. */
    private ScreenViewFlipper currentScreenViewFlipper;
    private Screen currentScreen;
    private int screenSize;
@@ -94,12 +99,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private boolean isLandscape = false;
 
     private SensorManager mSensorManager;
-   /* sensor simulator begin */
-//   private SensorManagerSimulator mSensorManager;
-   /* sensor simulator end */
 
    private OROrientation orientation;
    private int lastConfigurationOrientation = -1;
+   
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -128,22 +131,15 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          navigationHistory = new ArrayList<Navigate>();
       }
 
-       mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-      /* sensor simulator begin */
-//      mSensorManager = SensorManagerSimulator.getSystemService(this, SENSOR_SERVICE);
-//      try {
-//         mSensorManager.connectSimulator();
-//      } catch (NumberFormatException e) {
-//         Log.e("sensor simulator error", "the SensorSimulator.jar has not running", e);
-//      } catch (NullPointerException e) {
-//         Log.e("sensor simulator error", "not use SensorSimulatorSettings.apk to config ip", e);
-//      }
-      /* sensor simulator end */
+      mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
       recoverLastGroupScreen();
       addControllerRefreshEventListener();
    }
 
+   /**
+    * If the controller refreshed, finish this activity.
+    */
    private void addControllerRefreshEventListener() {
       final Activity that = this;
       ORListenerManager.getInstance().addOREventListener(ListenerConstant.FINISH_GROUP_ACTIVITY, new OREventListener() {
@@ -158,6 +154,14 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return currentGroupView == null ? 0 : currentGroupView.getGroup().getGroupId();
    }
 
+   /**
+    * Gets the screen index in a group with the same landscape.
+    * 
+    * @param screenId the screen id
+    * @param landscape the landscape
+    * 
+    * @return the screen index
+    */
    private int getScreenIndex(int screenId, boolean landscape) {
       if (currentGroupView != null && currentGroupView.getGroup() != null) {
          return currentGroupView.getGroup().getScreenIndexByOrientation(XMLEntityDataBase.getScreen(screenId),
@@ -166,6 +170,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return -1;
    }
 
+   /**
+    * Init group and screen, if it is first access, init the first group
+    * and first screen, else init the last time group and screen. If no 
+    * group or screen found, can configure settings.
+    * 
+    */
    private void recoverLastGroupScreen() {
 
       int lastGroupID = UserCache.getLastGroupId(this);
@@ -195,9 +205,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       if (lastScreenID > 0 && lastGroup.canfindScreenByIdAndOrientation(lastScreenID, isLandscape)) {
          currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, isLandscape));
       }
-      linearLayout = new LinearLayout(this);
-      linearLayout.addView(currentScreenViewFlipper);
-      this.setContentView(linearLayout);
+      contentLayout = new LinearLayout(this);
+      contentLayout.addView(currentScreenViewFlipper);
+      this.setContentView(contentLayout);
       ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
       if (currentScreenView == null) {
          return;
@@ -209,6 +219,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       addNaviagateListener();
    }
 
+   /**
+    * If the activity resumed, handle the navigation.
+    */
    private void addNaviagateListener() {
       ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerNavigateTo, new OREventListener() {
          public void handleEvent(OREvent event) {
@@ -220,6 +233,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       });
    }
 
+   /**
+    * Display the next screen in a group.
+    * 
+    * @return true, if successful
+    */
    private boolean moveRight() {
       Log.d(this.toString(), "MoveRight");
       if (currentScreenViewFlipper.getDisplayedChild() < screenSize - 1) {
@@ -234,6 +252,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return false;
    }
 
+   /**
+    * Display the previous screen in a group.
+    * 
+    * @return true, if successful
+    */
    private boolean moveLeft() {
       Log.d(this.toString(), "MoveLeft");
       if (currentScreenViewFlipper.getDisplayedChild() > 0) {
@@ -248,6 +271,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return false;
    }
 
+   /**
+    * Handle the touch event by GestureDetector.
+    * 
+    * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
+    */
    @Override
    public boolean onTouchEvent(MotionEvent me) {
       return gestureScanner.onTouchEvent(me);
@@ -255,10 +283,15 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    @Override
    public boolean onDown(MotionEvent e) {
-      // TODO Auto-generated method stub
       return false;
    }
 
+   /**
+    * Detect the gesture and handle it.
+    * Support fling type: "right to left", "left to right", "bottom to top" and "top to bottom".
+    * 
+    * @see android.view.GestureDetector.OnGestureListener#onFling(android.view.MotionEvent, android.view.MotionEvent, float, float)
+    */
    @Override
    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
       // The panel or group is empty.
@@ -284,9 +317,14 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return true;
    }
 
+   /**
+    * Handle screen gesture by type.
+    * Support navigate and send command.
+    * 
+    * @param gestureType the gesture type
+    */
    private void onScreenGestureEvent(int gestureType) {
       currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
-//      gestureType = Gesture.switchGestureTypeByOrientation(gestureType, orientation);
       Gesture gesture = currentScreen.getGestureByType(gestureType);
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
@@ -301,25 +339,25 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    @Override
    public void onLongPress(MotionEvent e) {
-      // TODO Auto-generated method stub
+      // Do nothing.
 
    }
 
    @Override
    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-      // TODO Auto-generated method stub
+      // Do nothing.
       return false;
    }
 
    @Override
    public void onShowPress(MotionEvent e) {
-      // TODO Auto-generated method stub
+      // Do nothing.
 
    }
 
    @Override
    public boolean onSingleTapUp(MotionEvent e) {
-      // TODO Auto-generated method stub
+      // Do nothing.
       return false;
    }
 
@@ -328,6 +366,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return true;
    }
 
+   /**
+    * Handle default menu("setting" and "logout").
+    * 
+    * @param item the item
+    */
    public void handleMenu(MenuItem item) {
       switch (item.getItemId()) {
       case Constants.MENU_ITEM_SETTING:
@@ -341,6 +384,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
+   /**
+    * If there is no global and local tabbar, create default menu.
+    * Contains "setting" and "logout".
+    * 
+    * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+    */
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
       menu.setQwertyMode(true);
@@ -351,6 +400,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return true;
    }
 
+   /**
+    * If there have global or local tabbar, create and update menu before the menu is shown.
+    * 
+    * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
+    */
    @Override
    public boolean onPrepareOptionsMenu(Menu menu) {
       if (currentGroupView == null || currentGroupView.getGroup() == null) {
@@ -386,6 +440,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return true;
    }
 
+   /**
+    * Make current screen do polling.
+    */
    private void startCurrentPolling() {
       if (currentScreenViewFlipper == null) {
          return;
@@ -397,6 +454,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
+   /**
+    * Make current screen stop polling.
+    */
    private void cancelCurrentPolling() {
       if (currentScreenViewFlipper == null) {
          return;
@@ -407,12 +467,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
-   @Override
-   protected void onStart() {
-      super.onStart();
-      // startCurrentPolling();
-   }
-
+   /**
+    * When the activity is stoped, unregister sensor listener,
+    * stop current screen's polling.
+    * 
+    * @see android.app.Activity#onStop()
+    */
    @Override
    protected void onStop() {
       mSensorManager.unregisterListener(this);
@@ -420,6 +480,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       cancelCurrentPolling();
    }
 
+   /**
+    * When the activity is destroyed, stop current screen's polling.
+    * 
+    * @see android.app.Activity#onDestroy()
+    */
    @Override
    protected void onDestroy() {
       super.onDestroy();
@@ -432,6 +497,13 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       cancelCurrentPolling();
    }
 
+   /**
+    * When the activity is resumed, close the loading toast if it is not null,
+    * indicate use cached content if load resources from controller error,
+    * register the orientation sensor listener, start current screen's polling.
+    *  
+    * @see org.openremote.android.console.GenericActivity#onResume()
+    */
    @Override
    protected void onResume() {
       super.onResume();
@@ -447,7 +519,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    }
 
    /**
-    * @param navigate
+    * Handle the 7 sorts of navigate.
+    * 
+    * @param navigate the navigate
+    * 
+    * @return true, if successful
     */
    private boolean navigateTo(Navigate navigate) {
       if (navigate.isNextScreen()) {
@@ -482,6 +558,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return false;
    }
 
+   /**
+    * Handle logout navigation, clear user password.
+    */
    private void doLogout() {
       String username = UserCache.getUsername(GroupActivity.this);
       String password = UserCache.getPassword(GroupActivity.this);
@@ -491,6 +570,14 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
+   /**
+    * Handle the navigate to group, it contains to group and to screen.
+    * 
+    * @param toGroupId the to group id
+    * @param toScreenId the to screen id
+    * 
+    * @return true, if successful
+    */
    private boolean navigateToGroup(int toGroupId, int toScreenId) {
       Group targetGroup = XMLEntityDataBase.getGroup(toGroupId);
       if (targetGroup != null) {
@@ -498,6 +585,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          boolean currentOrientation = currentScreen.isLandscape();
          
          if (currentGroupView.getGroup().getGroupId() != toGroupId) {
+            // in different group.
             GroupView targetGroupView = groupViews.get(toGroupId);
             if (targetGroupView == null) {
                targetGroupView = new GroupView(this, targetGroup);
@@ -513,10 +601,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
                return false;
             }
             
-            linearLayout.removeView(currentScreenViewFlipper);
+            contentLayout.removeView(currentScreenViewFlipper);
             currentScreenViewFlipper = targetGroupView.getScreenViewFlipperByOrientation(currentOrientation);
             currentGroupView = targetGroupView;
-            linearLayout.addView(currentScreenViewFlipper);
+            contentLayout.addView(currentScreenViewFlipper);
             if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, currentOrientation)) {
                currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, currentOrientation));
             }
@@ -538,7 +626,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    }
 
    /**
-    * @param navigate
+    * Handle navigate, if navigate to group or to screen success, store the navigation history(for back navigation).
+    * 
+    * @param navigate the navigate
     */
    private void handleNavigate(Navigate navigate) {
       Navigate historyNavigate = new Navigate();
@@ -562,6 +652,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
+   /**
+    * If press back key, finish the activity.
+    * 
+    * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
+    */
    @Override
    public boolean onKeyDown(int keyCode, KeyEvent event) {
       if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -597,7 +692,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    @Override
    public void onAccuracyChanged(int sensor, int accuracy) {
-      // TODO Auto-generated method stub
+      // Do nothing.
 
    }
 
@@ -625,6 +720,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
    
+   /**
+    * Check the current screen if can rotate.
+    * 
+    * @return true, if successful
+    */
    private boolean canRotateToInterfaceOrientation() {
       if (currentScreen != null && currentScreen.getScreenId() > 0) {
          return currentScreen.getInverseScreenId() > 0;
@@ -632,13 +732,16 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       return false;
    }
 
+   /**
+    * Display the current screen's inverse screen.
+    */
    private void rotateToIntefaceOrientation() {
       int inverseScreenId = currentScreen.getInverseScreenId();
       if (currentGroupView != null) {
          cancelCurrentPolling();
-         linearLayout.removeView(currentScreenViewFlipper);
+         contentLayout.removeView(currentScreenViewFlipper);
          currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(isLandscape);
-         linearLayout.addView(currentScreenViewFlipper);
+         contentLayout.addView(currentScreenViewFlipper);
          currentScreenViewFlipper.setDisplayedChild(getScreenIndex(inverseScreenId, isLandscape));
          startCurrentPolling();
          if (currentGroupView.getGroup() != null) {
@@ -649,6 +752,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
    }
 
+   /**
+    * Detect the phone's orientation and display the corresponding screen.
+    * 
+    * @see android.app.Activity#onConfigurationChanged(android.content.res.Configuration)
+    */
    @Override
    public void onConfigurationChanged(Configuration newConfig) {
       int newOrientation = newConfig.orientation;

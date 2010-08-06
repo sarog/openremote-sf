@@ -24,11 +24,19 @@ import java.util.ArrayList;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The tabBar contains tabBarItems.
+ */
 @SuppressWarnings("serial")
 public class TabBar extends BusinessEntity {
 
    private ArrayList<TabBarItem> tabBarItems;
    
+   /**
+    * Instantiates a new tab bar by parse tabBar node.
+    * 
+    * @param node the tabBar node
+    */
    public TabBar(Node node) {
       tabBarItems = new ArrayList<TabBarItem>();
       NodeList childNodes = node.getChildNodes();

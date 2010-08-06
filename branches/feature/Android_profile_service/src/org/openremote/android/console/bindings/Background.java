@@ -23,6 +23,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The background of screen, which contains background position in screen.
+ * The position include absolute position and relative position.
+ * 
+ */
 @SuppressWarnings("serial")
 public class Background extends BusinessEntity {
 

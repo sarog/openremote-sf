@@ -22,6 +22,9 @@ package org.openremote.android.console.bindings;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * Represents Sensor State in sensor.
+ */
 @SuppressWarnings("serial")
 public class SensorState extends BusinessEntity {
 

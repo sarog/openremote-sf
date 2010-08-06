@@ -28,6 +28,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
+/**
+ * Group is parsed by group node, which contains id, name, screens and tabBar.
+ */
 @SuppressWarnings("serial")
 public class Group extends BusinessEntity{
 
@@ -75,6 +78,11 @@ public class Group extends BusinessEntity{
       return tabBar;
    }
    
+   /**
+    * Gets the portrait screens from the group's screens.
+    * 
+    * @return the portrait screens
+    */
    public List<Screen> getPortraitScreens() {
       if (portraitScreens == null) {
          portraitScreens = new ArrayList<Screen>();
@@ -87,6 +95,11 @@ public class Group extends BusinessEntity{
       return portraitScreens;
    }
    
+   /**
+    * Gets the landscape screens from the group's screens.
+    * 
+    * @return the landscape screens
+    */
    public List<Screen> getLandscapeScreens() {
       if (landscapeScreens == null) {
          landscapeScreens = new ArrayList<Screen>();
@@ -99,6 +112,14 @@ public class Group extends BusinessEntity{
       return landscapeScreens;
    }
    
+   /**
+    * Check the group if has a screen by the screen id and the orientation.
+    * 
+    * @param screenId the screen id
+    * @param landscape the landscape
+    * 
+    * @return true, if successful
+    */
    public boolean canfindScreenByIdAndOrientation(int screenId, boolean landscape) {
       for (Screen screen : screens) {
          if (screen.getScreenId() == screenId && screen.isLandscape() == landscape) {
@@ -108,6 +129,13 @@ public class Group extends BusinessEntity{
       return false;
    }
    
+   /**
+    * Gets the group's screen size by the orientation.
+    * 
+    * @param landscape the landscape
+    * 
+    * @return the screen size by orientation
+    */
    public int getScreenSizeByOrientation(boolean landscape) {
       if(landscape) {
          return getLandscapeScreens().size();
@@ -115,6 +143,14 @@ public class Group extends BusinessEntity{
       return getPortraitScreens().size();
    }
    
+   /**
+    * Gets the screen index by orientation(in portrait screens or landscape screens).
+    * 
+    * @param screen the screen
+    * @param landscape the landscape
+    * 
+    * @return the screen index by orientation
+    */
    public int getScreenIndexByOrientation(Screen screen, boolean landscape) {
       if(landscape) {
          return getLandscapeScreens().indexOf(screen);
@@ -122,6 +158,13 @@ public class Group extends BusinessEntity{
       return getPortraitScreens().indexOf(screen);
    }
    
+   /**
+    * Checks the group if have the orientation's screens.
+    * 
+    * @param landscape the landscape
+    * 
+    * @return true, if successful
+    */
    public boolean hasOrientationScreens(boolean landscape) {
       if(landscape) {
          return getLandscapeScreens().size() > 0 ? true : false;

@@ -23,6 +23,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The grid cell include a component, have position and span in grid.
+ */
 @SuppressWarnings("serial")
 public class GridCell extends BusinessEntity {
 

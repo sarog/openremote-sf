@@ -21,6 +21,10 @@ package org.openremote.android.console.bindings;
 
 import java.util.HashSet;
 
+/**
+ * The super class of AbsoluteLayoutContainer and GridLayoutContainer.
+ * It contains the absolute position and size information.
+ */
 @SuppressWarnings("serial")
 public class LayoutContainer extends BusinessEntity {
 
@@ -45,6 +49,11 @@ public class LayoutContainer extends BusinessEntity {
       return height;
    }
 
+   /**
+    * Gets the polling components ids in the container.
+    * 
+    * @return the polling components ids
+    */
    public HashSet<Integer> getPollingComponentsIds() {
       return null;
    }

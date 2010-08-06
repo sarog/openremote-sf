@@ -1,25 +1,71 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console.bindings;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * The navigate is for forward to group/screen or other logical.
+ */
 @SuppressWarnings("serial")
 public class Navigate extends BusinessEntity {
 
    private int toScreen;
    private int toGroup;
+   
+   /** To previous screen in a group. */
    private boolean previousScreen;
+   
+   /** To next screen in a group. */
    private boolean nextScreen;
+   
+   /** Back to last display screen. */
    private boolean back;
+   
+   /** To display setting. */
    private boolean setting;
+   
+   /** To display login. */
    private boolean login;
+   
+   /** Make the user to logout. */
    private boolean logout;
+   
+   /** The last display screen. */
    private int fromScreen;
+   
+   /** The last visit group. */
    private int fromGroup;
 
+   /**
+    * Instantiates a new navigate without properties.
+    */
    public Navigate() {
    }
    
+   /**
+    * Instantiates a new navigate by parse navigate node.
+    * 
+    * @param node the navigate node
+    */
    public Navigate(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       if (nodeMap.getNamedItem("toGroup") != null) {

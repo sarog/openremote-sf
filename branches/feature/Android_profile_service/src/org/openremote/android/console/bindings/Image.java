@@ -24,13 +24,29 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The image component can has sensor and can change status.
+ * It can also has a linked label to display as a label. 
+ */
 @SuppressWarnings("serial")
 public class Image extends SensorComponent {
 
    private String src;
+   
+   /** The image's style, but now is unUsed. */
    private String style;
+   
+   /** The linked label. */
    private Label label;
+   
+   /** The linked label id. */
    private int labelRefId = 0;
+   
+   /**
+    * Instantiates a new image by parse the image node.
+    * 
+    * @param node the node
+    */
    public Image(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       if (nodeMap.getNamedItem(ID) != null) {

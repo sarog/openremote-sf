@@ -26,6 +26,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Screen contains id, name, layouts, background, gestures and inverse screen id.
+ */
 @SuppressWarnings("serial")
 public class Screen extends BusinessEntity {
    /**
@@ -34,7 +37,6 @@ public class Screen extends BusinessEntity {
    */
    public static int SCREEN_WIDTH = 320;
    public static int SCREEN_HEIGHT = 480;
-//   public static int SCREEN_STATUS_BAR_HEIGHT = 20;
    public static int SCREEN_STATUS_BAR_HEIGHT = 0;
    
    private int screenId;
@@ -46,6 +48,11 @@ public class Screen extends BusinessEntity {
    private boolean landscape;
    private int inverseScreenId;
    
+   /**
+    * Parse screen node to instantiates a new screen.
+    * 
+    * @param node the screen node
+    */
    public Screen(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.screenId = Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue());

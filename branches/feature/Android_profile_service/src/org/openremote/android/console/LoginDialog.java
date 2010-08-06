@@ -30,6 +30,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 
+/**
+ * The dialog is shown when http request unauthorized.
+ * It is used in configure applications and send control command.
+ */
 public class LoginDialog extends Dialog {
 
    private EditText usernameText;
