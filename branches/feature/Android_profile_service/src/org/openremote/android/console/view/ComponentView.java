@@ -26,6 +26,9 @@ import org.openremote.android.console.bindings.Label;
 import android.content.Context;
 import android.widget.FrameLayout;
 
+/**
+ * The super class of all component view.
+ */
 public class ComponentView extends FrameLayout {
 
    private Component component;
@@ -34,6 +37,15 @@ public class ComponentView extends FrameLayout {
       super(context);
    }
    
+   /**
+    * Builds the component view by component.
+    * Include label, image and control.
+    * 
+    * @param context the context
+    * @param component the component
+    * 
+    * @return the component view
+    */
    public static ComponentView buildWithComponent(Context context, Component component) {
       ComponentView componentView = null;
       if (component instanceof Label) {

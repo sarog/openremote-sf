@@ -25,6 +25,10 @@ import org.openremote.android.console.Constants;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * The Class UserCache is for management user cache, which include 
+ * last group id, last screen id, username and password.
+ */
 public class UserCache implements Serializable {
 
    private static final long serialVersionUID = Constants.CACHE_VERSION;

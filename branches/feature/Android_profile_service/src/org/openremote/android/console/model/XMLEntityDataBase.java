@@ -29,12 +29,25 @@ import org.openremote.android.console.bindings.Label;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 
+/**
+ * Stores all the UI models here like a database. <br/>
+ */
 public class XMLEntityDataBase {
    public static TabBar globalTabBar = null;
    public static final Map<Integer, Group> groups = new LinkedHashMap<Integer, Group>();
    public static final HashMap<Integer, Screen> screens = new HashMap<Integer, Screen>();
+   
+   /** The all panel's labels. */
    public static final HashMap<Integer, Label> labels = new HashMap<Integer, Label>();
+   
+   /** The all panel's images. */
    public static final HashSet<String> imageSet = new HashSet<String>();
+   
+   /**
+    * Gets the first group of current panel, if not found return null.
+    * 
+    * @return the first group
+    */
    public static Group getFirstGroup() {
       if (!groups.isEmpty()) {
          return groups.get(groups.keySet().iterator().next());
@@ -42,6 +55,13 @@ public class XMLEntityDataBase {
       return null;
    }
    
+   /**
+    * Gets the group of current panel by id, if not found return null.
+    * 
+    * @param groupId the group id
+    * 
+    * @return the group by id
+    */
    public static Group getGroup(int groupId) {
       if (!groups.isEmpty()) {
          return groups.get(groupId);
@@ -49,6 +69,13 @@ public class XMLEntityDataBase {
       return null;
    }
    
+   /**
+    * Gets the screen by id, if not found return null.
+    * 
+    * @param screenId the screen id
+    * 
+    * @return the screen by id
+    */
    public static Screen getScreen(int screenId) {
       if (!screens.isEmpty()) {
          return screens.get(screenId);

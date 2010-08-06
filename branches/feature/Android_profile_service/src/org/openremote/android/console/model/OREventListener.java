@@ -19,6 +19,17 @@
 */
 package org.openremote.android.console.model;
 
+/**
+ * The listener interface for receiving OREvent events.
+ * The class that is interested in processing a OREvent
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addOREventListener<code> method. When
+ * the OREvent event occurs, that object's appropriate
+ * method is invoked.
+ * 
+ * @see OREventEvent
+ */
 public interface OREventListener {
 
    void handleEvent(OREvent event);
