@@ -52,6 +52,15 @@ import android.util.Log;
 public class HTTPUtil {
 
 
+   /**
+    * Down load panel.xml from controller.
+    * 
+    * @param context the context
+    * @param serverUrl the server url
+    * @param panelName the panel name
+    * 
+    * @return the int
+    */
    public static int downLoadPanelXml(Context context, String serverUrl, String panelName) {
       return downLoadFile(context, serverUrl + "/rest/panel/" + encodePercentUri(panelName), Constants.PANEL_XML);
    }
@@ -71,6 +80,13 @@ public class HTTPUtil {
    }
 
    
+   /**
+    * Encode percent uri to "UTF-8".
+    * 
+    * @param uri the uri
+    * 
+    * @return the string
+    */
    public static String encodePercentUri(String uri) {
       String encodedUri = null;
       try {
@@ -85,6 +101,15 @@ public class HTTPUtil {
       return encodedUri;
    }
    
+   /**
+    * Down load file and store it in local context.
+    * 
+    * @param context the context
+    * @param serverUrl the server url
+    * @param fileName the file name
+    * 
+    * @return the int
+    */
    private static int downLoadFile(Context context, String serverUrl, String fileName) {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);

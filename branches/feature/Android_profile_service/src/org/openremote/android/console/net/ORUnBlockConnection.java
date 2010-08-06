@@ -37,6 +37,11 @@ public class ORUnBlockConnection extends ORConnection {
       
    }
    
+   /**
+    * Initialize handler by a random thread looper.
+    * 
+    * @see org.openremote.android.console.net.ORConnection#initHandler(android.content.Context)
+    */
    protected void initHandler(final Context context) {
       HandlerThread handlerThread = new HandlerThread(Math.random()+"");  
       handlerThread.start();  

@@ -40,7 +40,10 @@ public class ButtonView extends ControlView {
    private Button uiButton;
    private BitmapDrawable defaultImage;
    private BitmapDrawable pressedImage;
+   
+   /** The Constant REPEAT_CMD_INTERVAL. */
    public final static long REPEAT_CMD_INTERVAL = 300;
+   
    public ButtonView(Context context, ORButton button) {
       super(context);
       setComponent(button);
@@ -50,6 +53,14 @@ public class ButtonView extends ControlView {
       }
    }
    
+   /**
+    * Inits the button.
+    * Add listener to make the button send command and navigate to.
+    * If pressed, send command; if up, navigate to. It also can 
+    * repeat send command if pressed and not up.  
+    * 
+    * @param button the button
+    */
    private void initButton(final ORButton button) {
       int width = button.getFrameWidth();
       int height = button.getFrameHeight();

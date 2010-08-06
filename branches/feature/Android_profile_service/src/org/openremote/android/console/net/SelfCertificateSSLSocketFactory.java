@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console.net;
 
 import java.io.IOException;
@@ -19,13 +38,20 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 /**
- * This socket factory will create ssl socket that accepts self signed certificate
+ * This socket factory will create ssl socket that accepts self signed certificate.
  * 
  */
 public class SelfCertificateSSLSocketFactory implements LayeredSocketFactory {
 
    private SSLContext sslcontext = null;
 
+   /**
+    * Creates a new SelfCertificateSSLSocket object.
+    * 
+    * @return the SSL context
+    * 
+    * @throws IOException Signals that an I/O exception has occurred.
+    */
    private static SSLContext createEasySSLContext() throws IOException {
       TrustManager easyTrustManager = new X509TrustManager() {
          @Override

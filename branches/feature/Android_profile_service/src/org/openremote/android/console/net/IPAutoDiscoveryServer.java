@@ -42,6 +42,7 @@ import android.util.Log;
  */
 public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
 
+   /** Interrupted the current discovery. */
    public static boolean isInterrupted;
    
    @Override

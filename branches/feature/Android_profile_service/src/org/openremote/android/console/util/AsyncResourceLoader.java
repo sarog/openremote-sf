@@ -45,7 +45,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
- * It's responsible for downloading resources in backgroud.
+ * It's responsible for downloading resources in backgroud and updte progress in text.
  * 
  * @author handy 2010-05-10
  * @author Dan Cong
@@ -64,6 +64,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       
    }
    
+   /** 
+    * Download resources in background.
+    * 
+    * @see android.os.AsyncTask#doInBackground(Params[])
+    */
    @Override
    protected AsyncResourceLoaderResult doInBackground(Void... params) {
       AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
@@ -147,6 +152,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       return result;
    }
 
+   /**
+    * Update progress message in text.
+    * 
+    * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+    */
    @Override
    protected void onProgressUpdate(String... values) {
       RelativeLayout loadingView = (RelativeLayout) (activity.findViewById(R.id.welcome_view));
@@ -160,6 +170,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       loadingText.setSingleLine(true);
    }
 
+   /**
+    * Finish downloading and forward to different view by result.
+    * 
+    * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+    */
    @Override
    protected void onPostExecute(AsyncResourceLoaderResult result) {
       publishProgress("groups & screens");
@@ -189,9 +204,18 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
 
 }
 
+/**
+ * To express the downloading result state.
+ */
 class AsyncResourceLoaderResult {
+   
+   /** The action after downloading. */
    private int action;
+   
+   /** Download resources status code. */
    private int statusCode;
+   
+   /** If download failed, can use local cache or not. */
    private boolean canUseLocalCache;
 
    public AsyncResourceLoaderResult() {

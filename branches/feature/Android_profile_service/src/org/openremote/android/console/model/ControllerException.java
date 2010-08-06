@@ -19,6 +19,9 @@
 */
 package org.openremote.android.console.model;
 
+/**
+ * It contains controller exception codes, and translate code to message.
+ */
 public class ControllerException {
    public static final int CONTROLLER_UNAVAILABLE = 0;
 
@@ -26,7 +29,6 @@ public class ControllerException {
    public static final int REQUEST_ERROR = 404;
 
    public static final int SERVER_ERROR = 500;
-   private static final int NA_SERVICE = 503;
    public static final int GATEWAY_TIMEOUT = 504;
    public static final int REFRESH_CONTROLLER = 506;
 
@@ -43,6 +45,13 @@ public class ControllerException {
    private static final int NO_SUCH_PANEL = 428;
    private static final int INVALID_ELEMENT = 429;
    
+   /**
+    * Get exception message by code.
+    * 
+    * @param erroCode the erro code
+    * 
+    * @return the string
+    */
    public static String exceptionMessageOfCode(int erroCode) {
       String errorMessage = null;
       if (erroCode != 200) {

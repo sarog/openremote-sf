@@ -21,10 +21,14 @@ package org.openremote.android.console.model;
 
 import java.io.Serializable;
 
+/**
+ * The OREvent is used by OREventListener and store event data.
+ */
 public class OREvent  implements Serializable{
 
    private static final long serialVersionUID = -6105383614180080369L;
    
+   /** The transformed data. */
    private Object data;
    
    public OREvent(Object data) {

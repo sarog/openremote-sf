@@ -19,6 +19,9 @@
 */
 package org.openremote.android.console.model;
 
+/**
+ * The Class ListenerConstant is defined some listener strings.
+ */
 public class ListenerConstant {
 
    public static final String DefinationUpdateDidFinishedListener = "updateDidFinishedListener";

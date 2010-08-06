@@ -19,12 +19,9 @@
 */
 package org.openremote.android.console.util;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,8 +29,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Group;
-import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.Screen;
+import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,7 +40,6 @@ import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 /**
  * File I/O utility.
  * 
@@ -66,62 +62,11 @@ public class FileUtil {
       return context.getFileStreamPath(fileName).exists();
    }
 
-   // unused
-   public static String ReadSettings(Context context) {
-      StringBuffer strBuffer = new StringBuffer();
-      if (context.getFileStreamPath("settings.dat").exists()) {
-         FileInputStream fIn = null;
-         byte[] inputBuffer = null;
-         int count = 0;
-         try {
-            fIn = context.openFileInput("settings.dat");
-            Log.d("FileUtil", "Settings read");
-            do {
-               inputBuffer = new byte[512];
-               count = fIn.read(inputBuffer, 0, inputBuffer.length);
-               strBuffer.append(new String(inputBuffer));
-            } while (count != -1);
-         } catch (FileNotFoundException e) {
-            Log.e("FileUtil", "settings.dat not found.");
-            Toast.makeText(context, "Settings not stored", Toast.LENGTH_SHORT).show();
-            return null;
-         } catch (IOException e) {
-            Log.e("FileUtil", "Failed to read servers from settings.dat.");
-            Toast.makeText(context, "Failed to read servers from settings.dat.", Toast.LENGTH_SHORT).show();
-         } finally {
-            try {
-               fIn.close();
-            } catch (IOException e) {
-               e.printStackTrace();
-            }
-         }
-      }
-      return strBuffer.toString().trim();
-   }
-   //unused
-   public static void WriteSettings(Context context, String data) {
-      FileOutputStream fOut = null;
-      OutputStreamWriter osw = null;
-         try {
-            fOut = context.openFileOutput("settings.dat", Context.MODE_PRIVATE);
-            osw = new OutputStreamWriter(fOut);
-            osw.write(data);
-            osw.flush();
-            Toast.makeText(context, "Settings saved", Toast.LENGTH_SHORT).show();
-         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-         } catch (IOException e) {
-            e.printStackTrace();
-         } finally {
-            try {
-               osw.close();
-               fOut.close();
-            } catch (IOException e) {
-               e.printStackTrace();
-            }
-         }
-   }
-   
+   /**
+    * Parses the panel from panel.xml.
+    * 
+    * @param context the context
+    */
    public static void parsePanelXML(Context context) {
       if (context.getFileStreamPath(Constants.PANEL_XML).exists()) {
          try {
@@ -134,7 +79,6 @@ public class FileUtil {
    
    public static void parsePanelXMLInputStream(InputStream fIn) {
       try {
-//         Log.d("FileUtil", "Settings read");
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
          Document dom = builder.parse(fIn);
@@ -178,6 +122,11 @@ public class FileUtil {
       }
    }
    
+   /**
+    * Clear images from cache.
+    * 
+    * @param context the context
+    */
    public static void clearImagesInCache(Context context) {
       String[] fileNames = context.fileList();
       for (int i = 0; i < fileNames.length; i++) {

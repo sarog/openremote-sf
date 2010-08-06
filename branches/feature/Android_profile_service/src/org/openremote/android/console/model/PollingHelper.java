@@ -61,6 +61,7 @@ import android.util.Log;
  */
 public class PollingHelper {
 
+   /** The polling status ids is split by ",". */
    private String pollingStatusIds;
    private boolean isPolling;
    private HttpClient client;
@@ -70,6 +71,13 @@ public class PollingHelper {
    private static String deviceId = null;
    private Handler handler;
    private static final int NETWORK_ERROR = 0;
+   
+   /**
+    * Instantiates a new polling helper.
+    * 
+    * @param ids the ids
+    * @param context the context
+    */
    public PollingHelper(HashSet<Integer> ids, final Context context) {
       this.context = context;
       this.serverUrl = AppSettingsModel.getSecuredServer(context);
@@ -102,6 +110,9 @@ public class PollingHelper {
       };
    }
 
+   /**
+    * Request current status and start polling.
+    */
    public void requestCurrentStatusAndStartPolling() {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
@@ -139,6 +150,11 @@ public class PollingHelper {
       handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
    }
 
+   /**
+    * Execute request and handle the result.
+    * 
+    * @param requestUrl the request url
+    */
    private void handleRequest(String requestUrl) {
       Log.i("POLLING", requestUrl);
       httpGet = new HttpGet(requestUrl);
@@ -182,6 +198,9 @@ public class PollingHelper {
       }
    }
    
+   /**
+    * Cancel the polling, abort http request.
+    */
    public void cancelPolling() {
       Log.i("POLLING", "polling [" + pollingStatusIds +"] canceled");
       isPolling = false;
@@ -191,6 +210,12 @@ public class PollingHelper {
       }
    }
 
+   /**
+    * Handle server error with status code.
+    * If request timeout, return and start a new request.
+    * 
+    * @param statusCode the status code
+    */
    private void handleServerErrorWithStatusCode(int statusCode) {
       if (statusCode != Constants.HTTP_SUCCESS) {
          httpGet = null;
@@ -211,6 +236,11 @@ public class PollingHelper {
       }
    }
 
+   /**
+    * Read the device id for send it in polling request url.
+    * 
+    * @param context the context
+    */
    private static void readDeviceId(Context context) {
       if (deviceId == null) {
          TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);

@@ -38,6 +38,11 @@ public class IPAutoDiscoveryClient implements Runnable {
    
    public static boolean isNetworkTypeWIFI;
    
+   /**
+    * To send a Multicast UDP client broadcasting request.
+    * 
+    * @see java.lang.Runnable#run()
+    */
    public void run() {
       try {
          DatagramSocket socket = new DatagramSocket();
@@ -53,6 +58,11 @@ public class IPAutoDiscoveryClient implements Runnable {
 
    }
    
+   /**
+    * Gets the multicast address by net type.
+    * 
+    * @return the multicast address
+    */
    public static String getMulticastAddress() {
       if (isNetworkTypeWIFI) {
          return Constants.MULTICAST_ADDRESS;

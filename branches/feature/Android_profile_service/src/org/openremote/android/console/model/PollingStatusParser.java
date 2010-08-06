@@ -45,6 +45,11 @@ import android.util.Log;
 public class PollingStatusParser {
    public static final HashMap<String, String> statusMap = new HashMap<String, String>();
    
+   /**
+    * Parses the polling result.
+    * 
+    * @param inputStream the input stream
+    */
    public static void parse(InputStream inputStream) {
       try {
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
