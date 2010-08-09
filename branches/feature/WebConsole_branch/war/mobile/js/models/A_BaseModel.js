@@ -14,8 +14,7 @@ BaseModel = (function(){
     
     // Delegate method of JSONParser.
     this.didParse = this.didParse || function(jsonParser, nodeName, properties) {
-      // TODO: remove following comment.
-      // throw new Error("Method didParse in BaseModel must be overrided in subclasses.");
+      throw new Error("Method didParse in BaseModel must be overrided in subclasses.");
     };
     
     // Private mehthods

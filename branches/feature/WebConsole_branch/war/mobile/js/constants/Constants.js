@@ -16,6 +16,7 @@
      STATUS_CHANGE_NOTIFICATION : "statusChangeNotification",
      REFRESH_VIEW_NOTIFICATION : "refreshViewNotification",
      NAVIGATION_NOTIFICATION : "navigationNotification",
+     UNAUTHORIZED : "401",
      TIME_OUT : "504",
      CONTROLLER_CONFIG_CHANGED : "506",
      

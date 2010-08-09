@@ -7,6 +7,15 @@ ConnectionUtils = function() {
 
 	var ConnectionUtils = {
 	  /**
+	   * Compose the url for logout which controller server provides.
+	   */
+	  getLogoutURL: function() {
+	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
+      var logoutURL = currentControllerServerURL + "/logout?callback=?";
+      return logoutURL;
+	  },
+	  
+	  /**
 		 * Get URL value for control action.
 		 */
 	  getControlURL: function(componentID, commandValue) {
@@ -48,7 +57,7 @@ ConnectionUtils = function() {
 		 * Send ajax request with the feedback json data type.
 		 * Used jquery plugin named jquery-jsonp.
 		 *
-		 * didFeedBackWithRequest method's structure is function(data, textStatus)
+		 * didRequestSuccess method's structure is function(data, textStatus)
 		 * didRequestError methods's structure is function(xOptions, textStatus)
 		 *
 		 * NOTE: this method can get error call back from response.
