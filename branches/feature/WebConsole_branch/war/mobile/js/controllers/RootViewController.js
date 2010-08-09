@@ -97,17 +97,13 @@ RootViewController = (function(){
    
    this.refreshView = function() {
      RenderDataDB.getInstance().clearAll();
-     //CookieUtils.clearCookies();
      NotificationCenter.getInstance().reset();
      self.getView().removeSubViews();
      self.getView().addSubView(errorViewController.getView());
      self.getView().addSubView(initViewController.getView());
      self.groupControllers = [];
      self.groupIDViewMap = {};
-     // TODO: clear tabBarControllers
-     // TODO: clear tabBarControllerViewMap
-     // TODO: reset globalTabBarController
-     // TODO: reset localTabBarController
+     
      if (self.currentGroupController != null && self.currentGroupController != undefined) {
        self.currentGroupController.stopPolling();
      }
@@ -160,6 +156,11 @@ RootViewController = (function(){
      // To setting dialog
      else if (navigate.isToSetting) {
        AppSettings.getInstance(self).show();
+       return false;
+     }
+     // To logout
+     else if (navigate.isToLogout) {
+       navigateToLogout();
        return false;
      }
    }
@@ -252,6 +253,35 @@ RootViewController = (function(){
        
        self.navigateHistory.splice(self.navigateHistory.length-1 ,1);
      }
+   }
+   
+   function navigateToLogout() {
+     ConnectionUtils.sendJSONPRequest(ConnectionUtils.getLogoutURL(), self);
+   }
+   
+   //The following two methods are delegate methods should be declared in ConnectionUtils and invoked by ConnectionUtils.
+   /**
+    * This method will be called after request being sent succussfully and 
+    * some exception occured in controller server with json-formatted data back.
+    */
+   this.didRequestSuccess = function(data, textStatus) {
+     if (data != null && data != undefined) {
+       var error = data.error;
+       if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE && error.code == Constants.UNAUTHORIZED) {
+        MessageUtils.showMessageDialog("Logout info", error.message);
+       } else {
+         MessageUtils.showMessageDialogWithSettings("Logout fail", error.message);
+       }
+     } else {
+       MessageUtils.showMessageDialogWithSettings("Logout fail", Constants.UNKNOWN_ERROR_MESSAGE);
+     }
+   };
+   
+   /**
+    * This method will be called in case of network failure or ill-formed JSON responses
+    */
+   this.didRequestError = function(xOptions, textStatus) {
+      MessageUtils.showMessageDialogWithSettings("Logout fail", "Network connection error or some unknown exceptions occured.");
    }
    
    // Init jobs
