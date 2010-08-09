@@ -36,6 +36,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 
 /**
  * Polling Helper, this class will setup a polling thread to listen 
@@ -110,6 +111,14 @@ public class PollingHelper {
                } else if (errorCode == ControllerExceptionMessage.UNAUTHORIZED) {
                   cancelPolling();
                   new LoginWindow();
+               } else if (errorCode == ControllerExceptionMessage.REFRESH_CONTROLLER) {
+                  cancelPolling();
+                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),
+                        new Listener<MessageBoxEvent>() {
+                           public void handleEvent(MessageBoxEvent be) {
+                              Window.Location.reload();
+                           }
+                        });
                } else {
                   cancelPolling();
                   MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),

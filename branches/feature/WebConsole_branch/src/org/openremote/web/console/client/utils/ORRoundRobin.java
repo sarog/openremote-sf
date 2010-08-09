@@ -68,8 +68,7 @@ public class ORRoundRobin {
          JSONArray groupArray = jsonValue.isArray();
          String member = null;
          if (groupArray != null) {
-            // use the second member.
-            member = groupArray.get(1).isObject().get("@url").isString().stringValue();
+            member = groupArray.get(0).isObject().get("@url").isString().stringValue();
          } else {
             member = jsonValue.isObject().get("@url").isString().stringValue();
          }
