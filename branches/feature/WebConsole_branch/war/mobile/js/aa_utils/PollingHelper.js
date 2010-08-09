@@ -56,6 +56,7 @@ PollingHelper = (function() {
         }
       } else {
         MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, Constants.UNKNOWN_ERROR_MESSAGE);
+        RoundRobinUtils.getInstance().switchControllerServer();
       }
     };
     
@@ -68,6 +69,14 @@ PollingHelper = (function() {
             return;
           case Constants.CONTROLLER_CONFIG_CHANGED:
             return;
+          case Constants.UNAUTHORIZED:
+            self.isPollingRunning = false;
+            if (self.queryStatusStep == true) {
+              MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, error.message);
+            } else {
+              MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, error.message);
+            }
+            return;
         }
         self.isPollingRunning = false;
         if (self.queryStatusStep == true) {
@@ -75,6 +84,7 @@ PollingHelper = (function() {
         } else {
           MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, error.message);
         }
+        RoundRobinUtils.getInstance().switchControllerServer();
       }
     };
     
@@ -88,6 +98,7 @@ PollingHelper = (function() {
       } else {
         MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, "Failed to polling status.");
       }
+      RoundRobinUtils.getInstance().switchControllerServer();
     };
     
     // Delegate methods of JSONParser    

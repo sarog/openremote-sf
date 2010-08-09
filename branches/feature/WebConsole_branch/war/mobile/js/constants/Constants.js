@@ -7,6 +7,8 @@
      CONTROLLER_SERVERS : "controllerServers",
      CURRENT_SERVER : "currentServer",
      LAST_FOOT_PRINT : "lastFootPrint",
+     GROUP_MEMBERS : "groupMembers",
+     GROUP_MEMBER_URL : "@url",
      COLOR_BLACK : "#000000",
      COLOR_WHITE : "#FFFFFF",
      COLOR_RED : "#FF0000",
