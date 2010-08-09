@@ -85,7 +85,7 @@ RootViewController = (function(){
      // Add navigation event listener.
      NotificationCenter.getInstance().addObserver(Constants.NAVIGATION_NOTIFICATION, self.navigateFromNotification);
      // Register notification of refreshing view.
-     // NotificationCenter.getInstance().addObserver(Constants.REFRESH_VIEW_NOTIFICATION, self.refreshView);
+     NotificationCenter.getInstance().addObserver(Constants.REFRESH_VIEW_NOTIFICATION, self.refreshView);
    }
    
    this.navigateFromNotification = function(data) {

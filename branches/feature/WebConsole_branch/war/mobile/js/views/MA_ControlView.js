@@ -23,19 +23,55 @@ ControlView = (function() {
     
     this.sendCommandRequest = function(commandValue) {
       var controlURL = ConnectionUtils.getControlURL(self.component.id, commandValue);
-      ConnectionUtils.sendNormalRequest(controlURL, self);
+      ConnectionUtils.sendJSONPRequest(controlURL, self);
+    };
+    
+    // Delegate methods should be defined in ConnectionUtils.
+    this.didRequestSuccess = function(data, textStatus) {
+      if (data != null && data != undefined) {
+        var error = data.error;
+        if (error != null && error != undefined) {
+          self.handleServerError(error);
+        }
+      } else {
+        MessageUtils.showMessageDialogWithSettings("Send request error", Constants.UNKNOWN_ERROR_MESSAGE);
+        RoundRobinUtils.getInstance().switchControllerServer();
+      }
+    };
+    
+    this.handleServerError = function(error) {
+      var statusCode = error.code;
+      if (statusCode != Constants.HTTP_SUCCESS_CODE) {
+        switch (statusCode) {
+          case Constants.TIME_OUT:
+            return;
+          case Constants.CONTROLLER_CONFIG_CHANGED:
+            return;
+          case Constants.UNAUTHORIZED:
+            MessageUtils.showMessageDialogWithSettings("Send request error", error.message);
+            return;
+        }
+        MessageUtils.showMessageDialogWithSettings("Send request error", error.message);
+        RoundRobinUtils.getInstance().switchControllerServer();
+      }
+    };
+    
+    // For dealing network error and illed json data.
+    this.didRequestError = function(xOptions, textStatus) {
+      MessageUtils.showMessageDialogWithSettings("Send request error", "Failed to send control request.");
+      RoundRobinUtils.getInstance().switchControllerServer();
     };
     
     // It is delegate methods should be defined in ConnectionUtils for sendNormalRequest.
     this.didFeedBackWithRequest = function(data, textStatus, XMLHttpRequest) {
-      if (data != null && data != undefined) {
-        var error = data.error;
-        if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
-          MessageUtils.showMessageDialogWithSettings("Send request error ", error.message);
-        }
-      } else {
-        MessageUtils.showMessageDialogWithSettings("Send request error ", Constants.UNKNOWN_ERROR_MESSAGE);
-      }
+      // if (data != null && data != undefined) {
+      //   var error = data.error;
+      //   if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
+      //     MessageUtils.showMessageDialogWithSettings("Send request error ", error.message);
+      //   }
+      // } else {
+      //   MessageUtils.showMessageDialogWithSettings("Send request error ", Constants.UNKNOWN_ERROR_MESSAGE);
+      // }
     };
   }
 })();

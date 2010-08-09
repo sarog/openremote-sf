@@ -67,6 +67,8 @@ UpdateController = (function() {
     
     this.didParseFinished = function() {
       MessageUtils.hideLoading();
+      // Cache group members into cookie and use it while polling and control fail.
+      RoundRobinUtils.getInstance().cacheGroupMembers();
       delegate.didUpdateSuccess();
     };
     

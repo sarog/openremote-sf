@@ -7,6 +7,15 @@ ConnectionUtils = function() {
 
 	var ConnectionUtils = {
 	  /**
+	   * Compose the url for roundrobin service.
+	   */
+	  getRoundRobinURL: function() {
+	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
+      var roundRobinURL = currentControllerServerURL + "/rest/servers?callback=?";
+      return roundRobinURL;
+	  },
+	  
+	  /**
 	   * Compose the url for logout which controller server provides.
 	   */
 	  getLogoutURL: function() {
@@ -76,27 +85,27 @@ ConnectionUtils = function() {
 		/**
 		 * This method is used to requests which need http basic authentication.
 		 */
-		sendJSONPRequestWithAuthen: function(requestURL, successCallback, errorCallback) {
-		  var userInfo = UserInfo.getInstance();
-		  userInfo.setUsername("handy");
-		  userInfo.setPassword("handy");
-      if (userInfo.getUsername() && userInfo.getUsername() != "" && userInfo.getPassword() && userInfo.getPassword != "") {
-        $.ajax({
-            type: "GET",
-            url: requestURL, 
-            dataType: "jsonp",
-            beforeSend : function(xmlHttpRequest) {
-              SecurityUtils.getHTTPBasicAuthRequest(xmlHttpRequest);
-            },
-            success: successCallback,
-            error: errorCallback || function(){}
-          }
-        );
-      } else {
-        alert("requireUsernamePassword");
-        // delegate.requireUsernamePassword();
-      }
-    },
+    // sendJSONPRequestWithAuthen: function(requestURL, successCallback, errorCallback) {
+    //   var userInfo = UserInfo.getInstance();
+    //   userInfo.setUsername("handy");
+    //   userInfo.setPassword("handy");
+    //       if (userInfo.getUsername() && userInfo.getUsername() != "" && userInfo.getPassword() && userInfo.getPassword != "") {
+    //         $.ajax({
+    //             type: "GET",
+    //             url: requestURL, 
+    //             dataType: "jsonp",
+    //             beforeSend : function(xmlHttpRequest) {
+    //               SecurityUtils.getHTTPBasicAuthRequest(xmlHttpRequest);
+    //             },
+    //             success: successCallback,
+    //             error: errorCallback || function(){}
+    //           }
+    //         );
+    //       } else {
+    //         alert("requireUsernamePassword");
+    //         // delegate.requireUsernamePassword();
+    //       }
+    //     },
     
     /**
 		 * Send ajax request without json data feedback.
