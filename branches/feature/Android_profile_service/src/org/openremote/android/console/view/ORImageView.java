@@ -38,6 +38,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * The ORImageView contains image component.
+ */
 public class ORImageView extends ComponentView implements SensoryDelegate {
 
    private ImageView imageView;
@@ -92,6 +95,7 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
 
    }
    
+   /** The handler is for update image view by polling result. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {

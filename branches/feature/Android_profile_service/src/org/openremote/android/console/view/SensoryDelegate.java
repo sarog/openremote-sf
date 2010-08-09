@@ -19,6 +19,9 @@
 */
 package org.openremote.android.console.view;
 
+/**
+ * The Interface is for component view which has sensory.
+ */
 public interface SensoryDelegate {
 
    void addPollingSensoryListener();

@@ -54,7 +54,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 /**
- * The Class PanelSelectSpinnerView.
+ * The PanelSelectSpinnerView is request panel identity from controller and display as a combobox.
  */
 public class PanelSelectSpinnerView extends Spinner implements ORConnectionDelegate {
 
@@ -80,6 +80,12 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       setOntouchListener(context, this);
    }
    
+   /**
+    * Sets the touch listener when touch the panel item.
+    * 
+    * @param context the context
+    * @param orConnectionDelegate the or connection delegate
+    */
    private void setOntouchListener(final Context context, final PanelSelectSpinnerView orConnectionDelegate) {
       setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
@@ -175,6 +181,9 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       }
    }
 
+   /**
+    * Sets panel identity list into the view's adapter.
+    */
    private void setDefaultAdapterContent() {
       if (arrayAdapter != null) {
          arrayAdapter.clear();
@@ -188,8 +197,10 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    }
 
    /**
-    * @param context
-    * @param ORConnectionDelegate
+    * Request panel identity list from controller.
+    * 
+    * @param context the context
+    * @param ORConnectionDelegate the oR connection delegate
     */
    private void requestPanelList(final Context context, final PanelSelectSpinnerView ORConnectionDelegate) {
       sendCount++;

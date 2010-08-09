@@ -34,8 +34,12 @@ import android.os.Message;
 import android.view.Gravity;
 import android.widget.TextView;
 
+/**
+ * The LabelView contains label component, can change label text by polling result.
+ */
 public class LabelView extends ComponentView implements SensoryDelegate {
 
+   /** The text view display the label text. */
    private TextView textView;
    private String text;
    public LabelView(Context context, Label label) {
@@ -50,6 +54,11 @@ public class LabelView extends ComponentView implements SensoryDelegate {
       }
    }
 
+   /**
+    * Inits the label and set it's text, font size and color.
+    * 
+    * @param label the label
+    */
    private void initLabel(Label label) {
       textView.setId(label.getComponentId());
       textView.setGravity(Gravity.CENTER);
@@ -84,6 +93,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
       }
    }
    
+   /** The handler is for update label by polling result. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
