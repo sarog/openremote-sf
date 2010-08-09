@@ -26,6 +26,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
+/**
+ * The ScreenViewFlipper is for fling a group of screen views and make some animation.
+ */
 public class ScreenViewFlipper extends ViewFlipper {
    private Animation slideLeftIn;
    private Animation slideLeftOut;

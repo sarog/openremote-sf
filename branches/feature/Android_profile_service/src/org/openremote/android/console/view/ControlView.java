@@ -1,22 +1,22 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
- *
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console.view;
 
 import java.io.InputStream;
@@ -37,8 +37,12 @@ import org.openremote.android.console.net.ORUnBlockConnection;
 
 import android.content.Context;
 
+/**
+ * The super class of all control view, include ButtonView, SwitchView and SliderView.
+ */
 public class ControlView extends ComponentView implements ORConnectionDelegate {
 
+   /** The repeat send command timer. */
    private Timer timer;
    private Context context;
    protected ControlView(Context context) {
@@ -58,12 +62,22 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
       return controlView;
    }
 
+   /**
+    * Send command request to controller by command type.
+    * 
+    * @param commandType the command type
+    * 
+    * @return true, if successful
+    */
    public boolean sendCommandRequest(String commandType) {
       new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
             + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
       return true;
    }
 
+   /**
+    * Cancel repeat send command.
+    */
    public void cancelTimer() {
       if (timer != null) {
          timer.cancel();
@@ -75,6 +89,12 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
       this.timer = timer;
    }
 
+   /**
+    * Handle server error with status code.
+    * If status code not equals 200, cancel the timer, and display alert with error message.
+    * 
+    * @param statusCode the status code
+    */
    public void handleServerErrorWithStatusCode(int statusCode) {
       if (statusCode != 200) {
          cancelTimer();

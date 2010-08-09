@@ -25,6 +25,9 @@ import org.openremote.android.console.bindings.GridCell;
 import android.content.Context;
 import android.widget.FrameLayout;
 
+/**
+ * The GridCellView contains a component view.
+ */
 public class GridCellView extends FrameLayout {
 
    public GridCellView(Context context, int cellWidth, int cellHeight, GridCell gridCell) {

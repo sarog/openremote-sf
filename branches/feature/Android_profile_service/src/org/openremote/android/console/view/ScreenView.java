@@ -127,6 +127,9 @@ public class ScreenView extends AbsoluteLayout {
       }
    }
 
+   /**
+    * Start polling on the screen's sensor components.
+    */
    public void startPolling() {
       if (!screen.getPollingComponentsIds().isEmpty()) {
          polling = new PollingHelper(screen.getPollingComponentsIds(), getContext());

@@ -37,6 +37,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+/**
+ * This class is responsible for rendering the switch in screen with the switch data.
+ * It has control command and sensory.
+ * 
+s */
 public class SwitchView extends SensoryControlView {
 
    private Button button;
@@ -57,6 +62,12 @@ public class SwitchView extends SensoryControlView {
       }
    }
 
+   /**
+    * Sets switch's on/off state(image or text).
+    * Sets touch listener on the switch view for change switch state and send command.
+    * 
+    * @param switchComponent the switch component
+    */
    private void initSwitch(Switch switchComponent) {
       int width = switchComponent.getFrameWidth();
       int height = switchComponent.getFrameHeight();
@@ -135,6 +146,7 @@ public class SwitchView extends SensoryControlView {
       }
    }
    
+   /** The handler is for update switch state by polling result. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {

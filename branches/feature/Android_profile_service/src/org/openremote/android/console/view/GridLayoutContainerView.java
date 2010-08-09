@@ -27,6 +27,9 @@ import org.openremote.android.console.bindings.GridLayoutContainer;
 import android.content.Context;
 import android.widget.AbsoluteLayout;
 
+/**
+ * The GridLayoutContainerView in screen's absolute position, and contains grid cell views.
+ */
 public class GridLayoutContainerView extends LayoutContainerView {
 
    @SuppressWarnings("deprecation")

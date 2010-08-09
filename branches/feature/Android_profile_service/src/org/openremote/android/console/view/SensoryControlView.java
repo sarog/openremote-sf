@@ -21,6 +21,9 @@ package org.openremote.android.console.view;
 
 import android.content.Context;
 
+/**
+ * The super class of that component view which has control command and sensory.
+ */
 public class SensoryControlView extends ControlView implements SensoryDelegate {
 
    protected SensoryControlView(Context context) {
