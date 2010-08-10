@@ -24,6 +24,7 @@ import static junit.framework.Assert.assertTrue;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -171,7 +172,6 @@ public class KNXCommandBuilderTest
 
     assertTrue(cmd3 instanceof GroupValueWrite);
   }
-
 
   /**
    * Test KNX command parsing with "STATUS" as the command string and 1/1/1 as
