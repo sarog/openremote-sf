@@ -42,11 +42,10 @@ LabelView = (function() {
     }
     
     this.dealPollingStatus = function(statusMapParam) {
-      var sensorStates = self.component.sensor.states; 
+      var sensorStates = self.component.sensor.states;
+      var newStatus = statusMapParam[self.sensorID];
+      var changeText = false; 
       if (sensorStates.length > 0) {
-        var newStatus = statusMapParam[self.sensorID];
-        var changeText = false;
-        
         for (var i = 0; i < sensorStates.length; i++) {
           var state = sensorStates[i];
           if (state.name.toLowerCase() == newStatus.toLowerCase()) {
@@ -55,16 +54,17 @@ LabelView = (function() {
             break;
           }
         }
-        
-        if (!changeText && newStatus != null && newStatus != "") {
-          $("#labelName" + self.getID()).text(newStatus);
-          changeText = true;
-        }
-        
-        if (!changeText) {
-          $("#labelName" + self.getID()).text(self.component.text);
-        }
       }
+      
+      if (!changeText && newStatus != null && newStatus != "") {
+        $("#labelName" + self.getID()).text(newStatus);
+        changeText = true;
+      }
+      
+      if (!changeText) {
+        $("#labelName" + self.getID()).text(self.component.text);
+      }
+
     };
     
     // Super class's constructor calling
