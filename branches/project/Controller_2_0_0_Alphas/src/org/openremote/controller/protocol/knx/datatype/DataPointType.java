@@ -201,7 +201,7 @@ public abstract class DataPointType
     return is6BitDPT;
   }
 
-  String getDPTID()
+  public String getDPTID()
   {
     return DataPointType.getDPTID(getMainNumber(), getSubNumber());
   }
