@@ -40,8 +40,17 @@ UpdateController = (function() {
     
     // Fowllings two are delegate methods should be defined in ConnectionUtils.js .
     this.didRequestSuccess = function(jsonData, textStatus) {
-      MessageUtils.updateLoadingMessage("Downloading panel success ...");
-      parseJSONData(jsonData);
+      if (jsonData != null && jsonData != undefined) {
+        var error = jsonData.error;
+        if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
+          delegate.didUpdateFail("Download panel data fail with " + error.message + ", settings or leave it ?");
+        } else {
+          MessageUtils.updateLoadingMessage("Downloading panel success ...");
+          parseJSONData(jsonData);
+        }
+      } else {
+        delegate.didUpdateFail("Download panel data fail with unknown reason, settings or leave it ?");
+      }
     };
     
     this.didRequestError = function(xOptions, textStatus) {

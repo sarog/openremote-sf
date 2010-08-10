@@ -42,12 +42,12 @@ MessageUtils = (function(){
   			title: titleParam,
   			position: "top",
   			buttons: {
+  			  "Leave it": function() {
+  					$(this).dialog('close');
+  				},
   			  "Settings": function() {
   			    AppSettings.getInstance(AppBoot.getInstance()).show();
   			    $(this).dialog("close");
-  				},
-  				"Leave it": function() {
-  					$(this).dialog('close');
   				}
   			}
   		});

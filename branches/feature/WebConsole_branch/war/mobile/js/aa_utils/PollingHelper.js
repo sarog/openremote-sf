@@ -55,7 +55,7 @@ PollingHelper = (function() {
           doPolling();
         }
       } else {
-        MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, Constants.UNKNOWN_ERROR_MESSAGE);
+        // MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, Constants.UNKNOWN_ERROR_MESSAGE);
         RoundRobinUtils.getInstance().switchControllerServer();
       }
     };
@@ -79,11 +79,11 @@ PollingHelper = (function() {
             return;
         }
         self.isPollingRunning = false;
-        if (self.queryStatusStep == true) {
-          MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, error.message);
-        } else {
-          MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, error.message);
-        }
+        // if (self.queryStatusStep == true) {
+        //   MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, error.message);
+        // } else {
+        //   MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, error.message);
+        // }
         RoundRobinUtils.getInstance().switchControllerServer();
       }
     };
@@ -93,11 +93,11 @@ PollingHelper = (function() {
       if (self.isPollingRunning == false) {
         return;
       }
-      if (self.queryStatusStep == true) {
-        MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, "Failed to query status.");
-      } else {
-        MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, "Failed to polling status.");
-      }
+      // if (self.queryStatusStep == true) {
+      //   MessageUtils.showMessageDialogWithSettings(STATUS_ERROR_MSG_TITLE, "Failed to query status.");
+      // } else {
+      //   MessageUtils.showMessageDialogWithSettings(POLLING_ERROR_MSG_TITLE, "Failed to polling status.");
+      // }
       RoundRobinUtils.getInstance().switchControllerServer();
     };
     

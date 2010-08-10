@@ -12,9 +12,11 @@ RoundRobinUtils = (function() {
 	   * Switch to a available controller server.
 	   */
 	  this.switchControllerServer = function() {
+	    MessageUtils.showLoading("Switching controller server...");
 	    var servers = CookieUtils.getCookie(Constants.GROUP_MEMBERS);
 	    if (servers == null || servers == undefined || servers.length == 0) {
-	      MessageUtils.showMessageDialogWithSettings("RoundRobin fail", "No a available groupmember can switch to.");
+	      MessageUtils.hideLoading();
+	      MessageUtils.showMessageDialogWithSettings("RoundRobin fail", "There's no server available. Leave this problem?");
 	      return;
 	    }
       var serverURL = servers[0][Constants.GROUP_MEMBER_URL];
@@ -33,6 +35,7 @@ RoundRobinUtils = (function() {
       CookieUtils.setCookie(Constants.CURRENT_SERVER, currentServer);
       CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
       NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION, null);
+      MessageUtils.hideLoading();
 	  },
     
     /** 
@@ -71,13 +74,22 @@ RoundRobinUtils = (function() {
      * Store the group members into cookie.
      */
     function storeGroupMembers(data) {
+      var currentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
+      var currentServerURL = currentServer.url;
+      
       var servers = data.servers.server;
       if (Object.prototype.toString.apply(servers) === '[object Array]' && servers.length > 0) {
-        CookieUtils.setCookie(Constants.GROUP_MEMBERS, servers);
+        var tempServers = [];
+        for (var i = 0; i < servers.length; i++) {
+          var tempServer = servers[i];
+          if (tempServer[Constants.GROUP_MEMBER_URL] == currentServerURL) {
+            continue;
+          }
+          tempServers[tempServers.length] = tempServer;
+        }
+        CookieUtils.setCookie(Constants.GROUP_MEMBERS, tempServers);
       } else if (servers != null) {
         var controllerURL = servers[Constants.GROUP_MEMBER_URL];
-        var currentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
-        var currentServerURL = currentServer.url;
         if (currentServerURL == controllerURL) {
           // MessageUtils.showMessageDialog("RoudRobin", "No group member was found, but it doesn't matter for now.");
           return;
