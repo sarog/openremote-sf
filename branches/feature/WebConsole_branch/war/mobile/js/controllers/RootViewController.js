@@ -281,7 +281,7 @@ RootViewController = (function(){
     * This method will be called in case of network failure or ill-formed JSON responses
     */
    this.didRequestError = function(xOptions, textStatus) {
-      MessageUtils.showMessageDialogWithSettings("Logout fail", "Network connection error or some unknown exceptions occured.");
+      // MessageUtils.showMessageDialogWithSettings("Logout fail", "Network connection error or some unknown exceptions occured.");
    }
    
    // Init jobs

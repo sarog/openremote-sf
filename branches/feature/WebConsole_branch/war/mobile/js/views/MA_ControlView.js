@@ -34,7 +34,7 @@ ControlView = (function() {
           self.handleServerError(error);
         }
       } else {
-        MessageUtils.showMessageDialogWithSettings("Send request error", Constants.UNKNOWN_ERROR_MESSAGE);
+        // MessageUtils.showMessageDialogWithSettings("Send request error", Constants.UNKNOWN_ERROR_MESSAGE);
         RoundRobinUtils.getInstance().switchControllerServer();
       }
     };
@@ -51,27 +51,15 @@ ControlView = (function() {
             MessageUtils.showMessageDialogWithSettings("Send request error", error.message);
             return;
         }
-        MessageUtils.showMessageDialogWithSettings("Send request error", error.message);
+        // MessageUtils.showMessageDialogWithSettings("Send request error", error.message);
         RoundRobinUtils.getInstance().switchControllerServer();
       }
     };
     
     // For dealing network error and illed json data.
     this.didRequestError = function(xOptions, textStatus) {
-      MessageUtils.showMessageDialogWithSettings("Send request error", "Failed to send control request.");
+      // MessageUtils.showMessageDialogWithSettings("Send request error", "Failed to send control request.");
       RoundRobinUtils.getInstance().switchControllerServer();
-    };
-    
-    // It is delegate methods should be defined in ConnectionUtils for sendNormalRequest.
-    this.didFeedBackWithRequest = function(data, textStatus, XMLHttpRequest) {
-      // if (data != null && data != undefined) {
-      //   var error = data.error;
-      //   if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
-      //     MessageUtils.showMessageDialogWithSettings("Send request error ", error.message);
-      //   }
-      // } else {
-      //   MessageUtils.showMessageDialogWithSettings("Send request error ", Constants.UNKNOWN_ERROR_MESSAGE);
-      // }
     };
   }
 })();
