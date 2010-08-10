@@ -37,6 +37,13 @@ import org.openremote.controller.exception.ConversionException;
 class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
 
+
+  // Constants ------------------------------------------------------------------------------------
+
+  final static int DIMCONTROL_INCREASE_VALUE = 7;
+  final static int DIMCONTROL_DECREASE_VALUE = 7;
+
+  
   // Class Members --------------------------------------------------------------------------------
 
 
@@ -151,7 +158,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
       {
         return ApplicationProtocolDataUnit.create3BitDimControl(
             Bool.INCREASE,
-            7                           // increase level [0-7]
+            DIMCONTROL_INCREASE_VALUE
         );
       }
 
@@ -160,7 +167,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
       {
         return ApplicationProtocolDataUnit.create3BitDimControl(
             Bool.DECREASE,
-            7                           // decrease level [0-7]
+            DIMCONTROL_DECREASE_VALUE
         );
       }
 
