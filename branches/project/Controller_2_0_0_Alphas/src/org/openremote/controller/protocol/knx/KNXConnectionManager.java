@@ -904,8 +904,6 @@ class KNXConnectionManager
     {
       try
       {
-        System.out.println(event.getFrame());
-        
         log.debug("RECEIVED: " + event.getFrame());
 
         byte[] frame = event.getFrame().toByteArray();
@@ -1128,8 +1126,6 @@ class KNXConnectionManager
         for (int i = 0; i < cemiBytes.length; ++i)
         {
           cemiFrame[i] = cemiBytes[i];
-
-System.out.println(Strings.byteToUnsignedHexString(cemiFrame[i]));          
         }
 
         commonEMI = new CEMILData(cemiFrame, 0);
