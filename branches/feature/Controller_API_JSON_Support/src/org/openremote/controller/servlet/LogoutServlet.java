@@ -49,8 +49,10 @@ public class LogoutServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	   response.setHeader("WWW-Authenticate", "Basic realm=\"OPENREMOTE_Controller\"");
 	   PrintWriter printWriter = response.getWriter();
 	   printWriter.print(JSONTranslator.toDesiredData(request, response, LOGOUT_ERROR_CODE, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(LOGOUT_ERROR_CODE, "Logout successfully   ")));
+	   response.setStatus(LOGOUT_ERROR_CODE);
 	}
 
 }
