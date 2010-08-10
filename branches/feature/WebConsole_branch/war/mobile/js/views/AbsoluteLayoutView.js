@@ -5,7 +5,6 @@
 AbsoluteLayoutView = (function() {
   var ID = "absoluteLayoutView";
   var DEFAULT_CSS_STYLE = {
-     "border" : "#CCCCCC dashed 1px",
      "width":"100%",
      "height":"100%",
      "position":"absolute"

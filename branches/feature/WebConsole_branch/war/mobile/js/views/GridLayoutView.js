@@ -5,7 +5,6 @@
 GridLayoutView = (function() {
   var ID = "gridLayoutView";
   var DEFAULT_CSS_STYLE = {
-     "border" : "#CCCCCC dotted 1px",
      "color":"#FF0000",
      "width":"100%",
      "height":"100%",
