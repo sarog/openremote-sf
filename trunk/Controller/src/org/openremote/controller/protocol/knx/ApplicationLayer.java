@@ -134,6 +134,32 @@ class ApplicationLayer
     (
         0x00,           // TPCI (6 bits) & APCI high bits (2 bits) -  bits 00000000
         0x40            // APCI low bits (2 bits) + data (6 bits)  -  bits 01000000
+    ),
+
+    /**
+     * Group Value Response Service  <p>
+     *
+     * PDU for data values greater than 6 bits in length:
+     *
+     * <pre>{@code
+     *
+     * +-------------++---------------+
+     * |    Byte 1   ||    Byte 2     |
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     * |T|T|T|T|T|A|A||A|A|A|A|A|A|A|A|
+     * |P|P|P|P|P|P|P||P|P|P|P|P|P|P|P|
+     * |C|C|C|C|C|C|C||C|C|C|C|C|C|C|C|
+     * |I|I|I|I|I|I|I||I|I|I|I|I|I|I|I|
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     * |.|.|.|.|.|0|0||0|1|0|0|0|0|0|0|
+     * +-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+
+     *
+     * }</pre>
+     */
+    GROUPVALUE_RESPONSE
+    (
+        0x00,         // TPCI (6 bits) & APCI high bits (2 bits) -  bits 00000000
+        0x40          // APCI low bits (8 bits)                  -  bits 01000000
     );
 
 

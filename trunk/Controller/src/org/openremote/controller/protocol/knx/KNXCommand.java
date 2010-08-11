@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,13 @@ import java.util.List;
 abstract class KNXCommand implements Command
 {
 
+  /*
+   * IMPLEMENTATION NOTE:
+   *
+   *  - This class should be immutable
+   */
+
+
   // Constants ------------------------------------------------------------------------------------
 
   /**
@@ -53,48 +61,94 @@ abstract class KNXCommand implements Command
 
   /**
    * Byte array offset in Common EMI frame for control field 1.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_CONTROL1_OFFSET         = 2;
 
   /**
    * Byte array offset in Common EMI frame for control field 2.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_CONTROL2_OFFSET         = 3;
 
   /**
    * Byte array offset in Common EMI frame for source address high byte.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_SOURCEADDR_HIGH_OFFSET  = 4;
 
   /**
    * Byte array offset in Common EMI frame for source address low byte.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_SOURCEADDR_LOW_OFFSET   = 5;
 
   /**
    * Byte array offset in Common EMI frame for destination address high byte.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_DESTADDR_HIGH_OFFSET    = 6;
 
   /**
    * Byte array offset in Common EMI frame for destination address low byte.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_DESTADDR_LOW_OFFSET     = 7;
 
   /**
    * Byte array offset in Common EMI frame for data payload length.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_DATALEN_OFFSET          = 8;
 
   /**
    * Byte array offset in Common EMI frame for TPCI/APCI bits
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_TPCI_APCI_OFFSET        = 9;
 
   /**
    * Byte array offset in Common EMI frame for APCI bits and 6-bit data payload.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
    */
   final static int CEMI_APCI_DATA_OFFSET        = 10;
+
+  /**
+   * Offset of first data byte in CEMI frame containing larger than 6-bit data payload.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
+   */
+  final static int CEMI_DATA1_OFFSET = 11;
+
+  /**
+   * Offset of second data byte in CEMI frame containing larger than 6-bit data payload.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
+   */
+  final static int CEMI_DATA2_OFFSET = 12;
+
+  /**
+   * Offset of third data byte in CEMI frame containing larger than 6-bit data payload.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
+   */
+  final static int CEMI_DATA3_OFFSET = 13;
+
+  /**
+   * Offset of fourth data byte in CEMI frame containing larger than 6-bit data payload.
+   *
+   * If additional info is included, this offset must be adjusted with addtional info length.
+   */
+  final static int CEMI_DATA4_OFFSET = 14;
 
 
 
@@ -104,6 +158,7 @@ abstract class KNXCommand implements Command
    * KNX logger. Uses a common category for all KNX related logging.
    */
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
+
 
   /**
    * Factory method for creating KNX command instances {@link GroupValueWrite} and
@@ -115,6 +170,7 @@ abstract class KNXCommand implements Command
    * @param name      Command lookup name. This is usually a human-readable string used in
    *                  configuration and tools. Note that multiple lookup names can be used to
    *                  return Java equal() (but not same instance) commands.
+   * @param dpt       KNX datapoint type associated with this command
    * @param mgr       KNX connection manager used to transmit this command
    * @param address   KNX destination group address.
    * @param parameter parameter for this command or <tt>null</tt> if not available
@@ -123,17 +179,17 @@ abstract class KNXCommand implements Command
    *
    * @return  new KNX command instance
    */
-  static KNXCommand createCommand(String name, KNXConnectionManager mgr,
+  static KNXCommand createCommand(String name, DataPointType dpt, KNXConnectionManager mgr,
                                   GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
 
-    GroupValueWrite writeCmd = GroupValueWrite.createCommand(name, mgr, address, parameter);
+    GroupValueWrite writeCmd = GroupValueWrite.createCommand(name, dpt, mgr, address, parameter);
 
     if (writeCmd != null)
       return writeCmd;
 
-    GroupValueRead readCmd = GroupValueRead.createCommand(name, mgr, address);
+    GroupValueRead readCmd = GroupValueRead.createCommand(name, mgr, address, dpt);
 
     if (readCmd != null)
       return readCmd;
@@ -150,6 +206,11 @@ abstract class KNXCommand implements Command
    * Command payload (APDU).
    */
   private ApplicationProtocolDataUnit apdu;
+
+  /**
+   * Command datapoint type (DPT)
+   */
+  private DataPointType dpt;
 
   /**
    * Destination address for this command.
@@ -172,13 +233,15 @@ abstract class KNXCommand implements Command
    * @param connectionManager KNX connection manager instance used for transmitting this commnad
    * @param address           destination group address
    * @param apdu              command payload
+   * @param dpt               KNX datapoint type associated with this command
    */
   KNXCommand(KNXConnectionManager connectionManager, GroupAddress address,
-             ApplicationProtocolDataUnit apdu)
+             ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     this.address = address;
     this.connectionManager = connectionManager;
     this.apdu = apdu;
+    this.dpt = dpt;
   }
 
 
@@ -198,6 +261,9 @@ abstract class KNXCommand implements Command
    */
   @Override public String toString()
   {
+
+    // TODO : need to adjust for CEMI frames that come with additional info fields...
+
     Byte[] frame = getCEMIFrame();
 
     StringBuffer buffer = new StringBuffer(2048);
@@ -487,12 +553,6 @@ abstract class KNXCommand implements Command
    */
   GroupAddress getAddress()
   {
-    /*
-     * IMPLEMENTATION NOTE:
-     *
-     *  - GroupAddress is an immutable instance so it is ok to return from here and still maintain
-     *    immutability of KNX Command
-     */
     return address;
   }
 
@@ -503,12 +563,18 @@ abstract class KNXCommand implements Command
    */
   ApplicationProtocolDataUnit getAPDU()
   {
-    /*
-     * IMPLEMENTATION NOTE:
-     *
-     *  - APDU is an immutable instance so it is ok to return from here and still maintain
-     *    immutability of KNX Command
-     */
     return apdu;
+  }
+
+  /**
+   * Returns the KNX datapoint type associated with this command.
+   *
+   * @see DataPointType
+   *
+   * @return datapoint type of this command
+   */
+  DataPointType getDataPointType()
+  {
+    return dpt;
   }
 }
