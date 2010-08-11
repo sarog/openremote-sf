@@ -31,6 +31,9 @@ public class IPAutoDiscoveryController extends BaseGWTSpringController implement
 
    private static final long serialVersionUID = 940351583130663140L;
 
+   /**
+    * {@inheritDoc}
+    */
    public List<String> getAutoDiscoveryServers() {
       return IPAutoDiscovery.getAutoServers();
    }

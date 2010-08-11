@@ -28,7 +28,25 @@ import org.openremote.web.console.domain.PanelXmlEntity;
  */
 public interface PanelIdentityService {
 
+   /**
+    * Gets the panel names as a list from controller.
+    * 
+    * @param url the url
+    * @param username the username
+    * @param password the password
+    * 
+    * @return the panel names
+    */
    List<String> getPanelNames(String url, String username, String password);
    
+   /**
+    * Gets the panel.xml from controller and parse it to panel xml entity.
+    * 
+    * @param url the url
+    * @param username the username
+    * @param password the password
+    * 
+    * @return the panel xml entity
+    */
    PanelXmlEntity getPanelXmlEntity(String url, String username, String password);
 }
