@@ -5,6 +5,9 @@
  */
 MessageUtils = (function(){
   
+  var MSG_DIALOG_WIDTH = "97%";
+  var MSG_DIALOG_HEIGHT = "auto";
+  
   return {
     showLoading:function(message) {
       $("#grayMask").show();
@@ -24,6 +27,8 @@ MessageUtils = (function(){
       $("#messageDialog").html(messageParam);
 		  $("#messageDialog").dialog({
   			modal: true,
+  			width: MSG_DIALOG_WIDTH,
+  			height: MSG_DIALOG_HEIGHT,
   			title: titleParam,
   			position: "top",
   			buttons: {
@@ -39,6 +44,8 @@ MessageUtils = (function(){
       $("#messageDialog").html(messageParam);
 		  $("#messageDialog").dialog({
   			modal: true,
+  			width: MSG_DIALOG_WIDTH,
+  			height: MSG_DIALOG_HEIGHT,
   			title: titleParam,
   			position: "top",
   			buttons: {

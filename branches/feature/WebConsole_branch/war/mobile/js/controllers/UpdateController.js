@@ -3,7 +3,7 @@
  * auther: handy.wang 2010-07-13
  */
 UpdateController = (function() {
-  var MSG_OF_NO_CONTROLLER_CONFIG = "Please enter a controller firstly in Settings panel, or leave it ?";
+  var MSG_OF_NO_CONTROLLER_CONFIG = "Please enter a controller url in Settings panel, or leave it ?";
   
   return function(delegateParam) {
     var self = this;
