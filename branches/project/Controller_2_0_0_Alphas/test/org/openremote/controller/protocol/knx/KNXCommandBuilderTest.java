@@ -223,7 +223,7 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXSuperfluousProperties()
   {
-    Command cmd = getCommandWithExtraProperties("on", "1/1/1") ;
+    Command cmd = getCommandWithExtraProperties("on", "1/1/1", DataPointType.SWITCH) ;
     assertTrue(cmd instanceof GroupValueWrite);
   }
 
@@ -252,7 +252,7 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXWithArbitraryPropertyOrder()
   {
-    Command cmd = getCommandArbitraryPropertyOrder("on", "1/1/1");
+    Command cmd = getCommandArbitraryPropertyOrder("on", "1/1/1", DataPointType.SWITCH);
     assertTrue(cmd instanceof KNXCommand);
   }
 
@@ -292,7 +292,7 @@ public class KNXCommandBuilderTest
     return builder.build(ele);
   }
 
-  private Command getCommandArbitraryPropertyOrder(String cmd, String groupAddress)
+  private Command getCommandArbitraryPropertyOrder(String cmd, String groupAddress, DataPointType dpt)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -306,6 +306,15 @@ public class KNXCommandBuilderTest
                            cmd);
 
     ele.addContent(propAddr2);
+
+
+    Element dptAttr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    dptAttr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                           KNXCommandBuilder.KNX_XMLPROPERTY_DPT);
+    dptAttr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                           dpt.getDPTID());
+
+    ele.addContent(dptAttr);
 
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
@@ -353,7 +362,7 @@ public class KNXCommandBuilderTest
     return builder.build(ele);
   }
 
-  private Command getCommandWithExtraProperties(String cmd, String groupAddress)
+  private Command getCommandWithExtraProperties(String cmd, String groupAddress, DataPointType dpt)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -374,6 +383,16 @@ public class KNXCommandBuilderTest
                            cmd);
 
     ele.addContent(propAddr2);
+
+
+
+    Element dptAttr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    dptAttr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                           KNXCommandBuilder.KNX_XMLPROPERTY_DPT);
+    dptAttr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                           dpt.getDPTID());
+
+    ele.addContent(dptAttr);
 
     // empty properties..
 
