@@ -241,7 +241,7 @@ class ApplicationProtocolDataUnit
 
     // scale it up to [0-255] range of the unsigned byte that is sent on the wire...
 
-    value = (int)(value * 2.55);
+    value = (int)Math.round(value * 2.55);
 
     return new ApplicationProtocolDataUnit(
         ApplicationLayer.Service.GROUPVALUE_WRITE,
