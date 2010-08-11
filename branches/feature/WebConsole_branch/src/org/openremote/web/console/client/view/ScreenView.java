@@ -48,7 +48,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Event;
 
 /**
- * The Class ScreenView for init screen components.
+ * Initialize screen components.
  */
 public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
 

@@ -40,6 +40,11 @@ public class IPAutoDiscoveryServer implements Runnable {
    private static Logger log = Logger.getLogger(IPAutoDiscoveryServer.class);
    
    public static ArrayList<String> autoServers = new ArrayList<String>();
+   
+   /**
+    * Starts TCP server and receive discovered servers.
+    * The server's port is "2346".
+    */
    public void run() {
       boolean moreQuotes = true;
       ServerSocket srvr = null;

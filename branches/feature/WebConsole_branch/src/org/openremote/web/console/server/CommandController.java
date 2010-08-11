@@ -25,14 +25,14 @@ import org.openremote.web.console.net.ORHttpMethod;
 import org.openremote.web.console.utils.StringUtil;
 
 /**
- * The Class CommandController.
+ * <code>CommandRPCService</code> implementation.
  */
 public class CommandController extends BaseGWTSpringController implements CommandRPCService {
 
    private static final long serialVersionUID = 2596589916062609326L;
 
    /**
-    * {@inheritDoc}
+    * If url is not empty, send command to controller
     */
    public void sendCommand(String url, String username, String password) {
       if (!StringUtil.isEmpty(url)) {

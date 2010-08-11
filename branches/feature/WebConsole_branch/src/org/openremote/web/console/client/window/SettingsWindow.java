@@ -66,6 +66,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * Manage the application's configuration.
+ * Include auto discovery, manage custom servers, select panel identity and configure security. 
+ */
 public class SettingsWindow extends FormWindow {
    
    private Icons icons = GWT.create(Icons.class);
@@ -93,7 +97,10 @@ public class SettingsWindow extends FormWindow {
    }
    
    /**
-    * Create Auto discovery button and add to form.
+    * Create Auto discovery toggle button and add it into form.
+    * 
+    * Override toggle button's toggle method, if state is true, make the text "ON" and show auto discovery server grid,
+    * otherwise make the text "OFF" and show custom server grid.
     */
    private void addAutoField() {
       autoButton = new ToggleButton("OFF") {
@@ -135,7 +142,10 @@ public class SettingsWindow extends FormWindow {
    }
    
    /**
-    * Creates the custom server grid.
+    * Creates the custom server grid and initial servers from AppSetting object.
+    * 
+    * Add "Add server" and "Delete" buttons before the custom server grid. "Add sever" button can add a custom server into the grid,
+    * and the "Delete" button can delete a custom server from the grid.
     */
    private void createCustomServerGrid() {
      List<ColumnConfig> customServerConfigs = new ArrayList<ColumnConfig>();
@@ -229,7 +239,7 @@ public class SettingsWindow extends FormWindow {
    }
    
    /**
-    * Creates the auto server grid.
+    * Creates grid contains auto discovery servers.
     */
    private void createAutoServerGrid() {
       List<ColumnConfig> autoServerConfigs = new ArrayList<ColumnConfig>();
@@ -351,6 +361,11 @@ public class SettingsWindow extends FormWindow {
       form.add(panelListCombo);
    }
    
+   /**
+    * Adds the security fields.
+    * 
+    * It contains a toggle button to open or close the security, a text field to input ssl port.
+    */
    private void addSecurityFields() {
       FieldSet securityField = new FieldSet();
       FormLayout layout = new FormLayout();
@@ -408,7 +423,9 @@ public class SettingsWindow extends FormWindow {
    }
    
    /**
-    * Adds "OK"/"Cancel" buttons.
+    * Adds "OK"/"Cancel" buttons to hide the window.
+    * 
+    * If click "OK" button, save the settings into Cookies.
     */
    private void addButtons() {
       Button okButton = new Button("OK");

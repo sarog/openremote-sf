@@ -25,14 +25,40 @@ import org.openremote.web.console.domain.UserInfo;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * Reads and writes user info with userCache.json.
+ * Reads and writes application settings with appSetting.json.
+ * 
+ */
 @RemoteServiceRelativePath("usercache.smvc")
 public interface UserCacheRPCService extends RemoteService {
 
+   /**
+    * Reads user info from userCache.json.
+    * 
+    * @return the user info
+    */
    UserInfo getUserInfo();
 
+   /**
+    * Writes username and password to userCache.json.
+    * 
+    * @param username the username
+    * @param password the password
+    */
    void saveUser(String username, String password);
    
+   /**
+    * Reads the app setting from appSetting.json.
+    * 
+    * @return the app setting
+    */
    AppSetting getAppSetting();
    
+   /**
+    * Writes app setting to appSetting.json.
+    * 
+    * @param appSetting the app setting
+    */
    void saveAppSetting(AppSetting appSetting);
 }

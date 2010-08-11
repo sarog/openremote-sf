@@ -23,15 +23,36 @@ import org.openremote.web.console.domain.AppSetting;
 import org.openremote.web.console.domain.UserInfo;
 
 /**
- * The Interface UserCacheService is for save/get UserCache with file(usercache.json).
+ * Reads or writes user info with file userCache.json.
+ * Reads or writes application setting with file appSetting.json.
  */
 public interface UserCacheService {
    
+   /**
+    * Reads user info from userCache.json.
+    * 
+    * @return the user info
+    */
    UserInfo getUserCache();
    
-   void saveUserCache(UserInfo userCache);
+   /**
+    * Writes user info to userCache.json.
+    * 
+    * @param userCache the user info
+    */
+   void saveUserCache(UserInfo userInfo);
    
+   /**
+    * Reads the app setting from appSetting.json.
+    * 
+    * @return the app setting
+    */
    AppSetting getAppSetting();
    
+   /**
+    * Writes app setting to appSetting.json.
+    * 
+    * @param appSetting the app setting
+    */
    void saveAppSetting(AppSetting appSetting);
 }

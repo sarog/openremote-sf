@@ -19,6 +19,9 @@
 */
 package org.openremote.web.console.exception;
 
+/**
+ * Utility class for storing controller exception codes and convert codes to messages.
+ */
 public class ControllerExceptionMessage {
    public static final int CONTROLLER_UNAVAILABLE = 0;
 

@@ -21,6 +21,9 @@ package org.openremote.web.console.domain;
 
 import java.io.Serializable;
 
+/**
+ * Super class for all entities with the predefined strings.
+ */
 public class BusinessEntity implements Serializable {
    private static final long serialVersionUID = 1;
 

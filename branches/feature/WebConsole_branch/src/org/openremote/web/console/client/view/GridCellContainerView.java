@@ -27,7 +27,7 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
 /**
- * The GridCellContainerView is for wrap  screen component(button/switch/slider/label/image),
+ * Wraps  screen component(button/switch/slider/label/image),
  * and displayed in a grid.
  */
 public class GridCellContainerView extends LayoutContainer {

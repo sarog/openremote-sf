@@ -22,10 +22,16 @@ package org.openremote.web.console.domain;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * This class is responsible for storing data about switch.
+ */
 @SuppressWarnings("serial")
 public class Switch extends SensorComponent {
 
+   /** It's for display in on state. */
    private Image onImage;
+   
+   /** It's for display in off state. */
    private Image offImage;
    
    public Switch() {
@@ -50,6 +56,11 @@ public class Switch extends SensorComponent {
       return offImage;
    }
 
+   /**
+    * Parse the on image and off image from sensor states.
+    * 
+    * @see org.openremote.web.console.domain.SensorComponent#parser(org.w3c.dom.Node)
+    */
    @Override
    public void parser(Node node) {
       super.parser(node);

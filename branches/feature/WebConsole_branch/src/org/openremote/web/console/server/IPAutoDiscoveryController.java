@@ -25,14 +25,14 @@ import org.openremote.web.console.client.rpc.IPAutoDiscoveryRPCService;
 import org.openremote.web.console.net.IPAutoDiscovery;
 
 /**
- * The Class is for get auto discovery servers.
+ * <code>IPAutoDiscoveryRPCService</code> implementation.
  */
 public class IPAutoDiscoveryController extends BaseGWTSpringController implements IPAutoDiscoveryRPCService {
 
    private static final long serialVersionUID = 940351583130663140L;
 
    /**
-    * {@inheritDoc}
+    * Gets auto discovery servers as a list.
     */
    public List<String> getAutoDiscoveryServers() {
       return IPAutoDiscovery.getAutoServers();

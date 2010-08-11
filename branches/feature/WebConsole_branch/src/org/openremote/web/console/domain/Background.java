@@ -26,6 +26,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * The background of screen, which contains background position in screen.
+ * The position include absolute position and relative position.
+ * 
+ */
 @SuppressWarnings("serial")
 public class Background extends BusinessEntity {
 
@@ -62,6 +67,13 @@ public class Background extends BusinessEntity {
          }
       }
    }
+   
+   /**
+    * Checks if is fill screen.
+    * If true, the background position is (0,0).
+    * 
+    * @return true, if is fill screen
+    */
    public boolean isFillScreen() {
       return fillScreen;
    }

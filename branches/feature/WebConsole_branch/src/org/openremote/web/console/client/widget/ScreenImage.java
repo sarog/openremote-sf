@@ -31,7 +31,7 @@ import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.http.client.URL;
 
 /**
- * The ScreenImage is for show image component in screen.
+ * The ScreenImage is for showing image component in screen.
  * 
  */
 public class ScreenImage extends ScreenComponent implements SensoryDelegate {

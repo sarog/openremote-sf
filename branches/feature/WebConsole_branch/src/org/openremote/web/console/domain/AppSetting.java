@@ -32,6 +32,8 @@ import com.google.gwt.json.client.JSONString;
 
 /**
  * The Class AppSetting is for storing the settings info.
+ * 
+ * It contains auto discovery, current server, current panel identity and custom servers.
  */
 public class AppSetting implements Serializable {
 
@@ -92,7 +94,12 @@ public class AppSetting implements Serializable {
       customServers.remove(customServer);
    }
    
-   // The method is just calling by client code.
+   /**
+    * Convert the AppSetting object to JSONObject, and return as a string.
+    * 
+    * The method is just calling by client code.
+    * @return the string
+    */
    public String toJson() {
       JSONObject jsonObj = new JSONObject();
       jsonObj.put("autoDiscovery", JSONBoolean.getInstance(this.autoDiscovery));
@@ -111,7 +118,12 @@ public class AppSetting implements Serializable {
       return jsonObj.toString();
    }
    
-   // The method is just calling by client code.
+   /**
+    * Inits the AppSetting's properties from json string.
+    * 
+    * The method is just calling by client code.
+    * @param jsonStr the json string
+    */
    public void initFromJson(String jsonStr) {
       if (jsonStr == null || "".equals(jsonStr)) {
          return;

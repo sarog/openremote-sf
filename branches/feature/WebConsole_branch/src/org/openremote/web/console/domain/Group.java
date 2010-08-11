@@ -27,7 +27,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
+/**
+ * Group is parsed by group node, which contains id, name, screens and tabBar.
+ */
 @SuppressWarnings("serial")
 public class Group extends BusinessEntity{
 

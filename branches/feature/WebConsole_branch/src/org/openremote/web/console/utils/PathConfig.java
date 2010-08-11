@@ -23,7 +23,7 @@ package org.openremote.web.console.utils;
 import java.io.File;
 
 /**
- * The Class PathConfig.
+ * Contains static methods to get local file path.
  * 
  * @author Tomsky.wang
  */

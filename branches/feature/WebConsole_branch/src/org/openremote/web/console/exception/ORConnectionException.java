@@ -22,7 +22,7 @@ package org.openremote.web.console.exception;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * If the connection not return 200/401, this exception will be thrown. 
+ * If the connection not return 200 or 401, this exception will be thrown. 
  * 
  */
 @SuppressWarnings("serial")

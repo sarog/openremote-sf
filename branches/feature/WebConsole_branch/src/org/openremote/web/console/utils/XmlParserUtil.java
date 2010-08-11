@@ -42,6 +42,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * Contains parse xml inputStream methods.
+ */
 public class XmlParserUtil {
 
    private static Logger log = Logger.getLogger(XmlParserUtil.class);

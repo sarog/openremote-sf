@@ -24,6 +24,9 @@ import org.openremote.web.console.domain.AppSetting;
 import org.openremote.web.console.domain.UserInfo;
 import org.openremote.web.console.service.UserCacheService;
 
+/**
+ * <code>UserCacheRPCService</code> implementation.
+ */
 public class UserCacheController extends BaseGWTSpringController implements UserCacheRPCService {
 
    private static final long serialVersionUID = 8586067195519365526L;
@@ -38,6 +41,9 @@ public class UserCacheController extends BaseGWTSpringController implements User
       return userCacheService.getUserCache();
    }
 
+   /**
+    * Sets username and password into UserInfo object, writes it into file userCache.json.
+    */
    public void saveUser(String username, String password) {
       UserInfo userCache = getUserInfo();
       if (userCache == null) {

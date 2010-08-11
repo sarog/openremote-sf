@@ -26,7 +26,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * The Interface CommandRPCService.
+ * Sends control command to controller with url, username and password.
  */
 @RemoteServiceRelativePath("command.smvc")
 public interface CommandRPCService extends RemoteService {
@@ -34,8 +34,9 @@ public interface CommandRPCService extends RemoteService {
    /**
     * Send control command to controller.
     * 
-    * @param url the url
-    * @param username the username
+    * @param url 
+    * The url can't be null.
+    * @param username the username 
     * @param password the password
     * 
     * @throws NotAuthenticatedException the not authenticated exception

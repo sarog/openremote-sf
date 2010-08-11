@@ -22,9 +22,6 @@ package org.openremote.web.console.server;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openremote.web.console.client.rpc.PanelIdentityRPCService;
@@ -32,10 +29,9 @@ import org.openremote.web.console.domain.PanelXmlEntity;
 import org.openremote.web.console.net.ORConnection;
 import org.openremote.web.console.net.ORHttpMethod;
 import org.openremote.web.console.service.PanelIdentityService;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
- * The Class PanelIdentityController is for get panel list from controller.
+ * <code>PanelIdentityRPCService</code> implementation.
  */
 public class PanelIdentityController extends BaseGWTSpringController implements PanelIdentityRPCService {
 
@@ -49,27 +45,17 @@ public class PanelIdentityController extends BaseGWTSpringController implements 
       this.panelIdentityService = panelIdentityService;
    }
 
-   /**
-    * {@inheritDoc}
-    */
    public List<String> getPanelNames(String serverUrl, String username, String password) {
       return panelIdentityService.getPanelNames(serverUrl, username, password);
-   }
-
-   @Override
-   public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-      ModelAndView mav = super.handleRequest(request, response);
-//      if ( mav != null) {
-//         mav.setViewName("home");
-//      }
-      
-      return mav;
    }
 
    public PanelXmlEntity getPanelXmlEntity(String url, String username, String password) {
       return panelIdentityService.getPanelXmlEntity(url, username, password);
    }
 
+   /**
+    * Request panel names as jsonp data to check controller if is support JSON API, 
+    */
    public boolean isSupportJsonp(String url, String username, String password) {
       boolean isSupportJsonp = false;
       url = url + "/rest/panels?callback=jsonp";

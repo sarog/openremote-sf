@@ -73,7 +73,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * The Class GroupView for init group and screens.
+ * Initialize group and screens.
  */
 public class GroupView {
 

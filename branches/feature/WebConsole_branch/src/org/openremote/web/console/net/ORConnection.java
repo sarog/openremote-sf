@@ -64,6 +64,12 @@ public class ORConnection {
    private int statusCode;
    private InputStream responseData;
    
+   /**
+    * Instantiates a new oR connection without username and password.
+    * 
+    * @param url the url
+    * @param httpMethod the http method
+    */
    public ORConnection(String url, ORHttpMethod httpMethod) {
       this(url, httpMethod, null, null);
    }
