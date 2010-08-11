@@ -20,15 +20,16 @@
  */
 package org.openremote.controller.protocol.knx;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.CommandParameter;
-import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.exception.ConversionException;
-
-import java.util.List;
+import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
 
 
 /**
@@ -148,6 +149,20 @@ public class KNXCommandBuilder implements CommandBuilder
    */
   public final static String KNX_XMLPROPERTY_COMMAND       = "command";
 
+  /**
+   * String constant for parsing KNX protocol XML entries from controller.xml file.
+   *
+   * This constant is the expected property name value for KNX commands ({@value}):
+   *
+   * <pre>{@code
+   * <command protocol = "knx" >
+   *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "command" value = "ON"/>
+   * </command>
+   * }</pre>
+   */
+  public final static String KNX_XMLPROPERTY_DPT       = "DPT";
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -194,6 +209,7 @@ public class KNXCommandBuilder implements CommandBuilder
    * <pre>{@code
    * <command protocol = "knx" >
    *   <property name = "groupAddress" value = "x/x/x"/>
+   *   <property name = "DPT" value = "n.mmm"/>
    *   <property name = "command" value = "ON"/>
    * </command>
    * }</pre>
@@ -213,10 +229,8 @@ public class KNXCommandBuilder implements CommandBuilder
     /*
      * TODO : ${param} handling (javadoc)
      *
-     * TODO : unit test for parameterized commands
+     * TODO : unit test for parameterized commands, DPT property
      * 
-     * TODO : DPT to be added. Modify class javadoc with this change.
-     *
      * TODO : could use JAXB instead JDOM since its included in JDK
      *
      * TODO : NoSuchCommandException should be a checked exception
@@ -224,6 +238,8 @@ public class KNXCommandBuilder implements CommandBuilder
 
     String groupAddressString = null;
     String commandAsString = null;
+    String dptString = null;
+
 
     // Get the list of properties from XML...
 
@@ -238,10 +254,17 @@ public class KNXCommandBuilder implements CommandBuilder
       {
         groupAddressString = knxPropertyValue;
       }
+
       else if (KNX_XMLPROPERTY_COMMAND.equalsIgnoreCase(knxPropertyName))
       {
         commandAsString = knxPropertyValue;
       }
+
+      else if (KNX_XMLPROPERTY_DPT.equalsIgnoreCase(knxPropertyName))
+      {
+        dptString = knxPropertyValue;
+      }
+
       else
       {
         log.warn(
@@ -253,7 +276,7 @@ public class KNXCommandBuilder implements CommandBuilder
     }
 
 
-    // Sanity check on mandatory properties 'command' and 'groupAddress'...
+    // Sanity check on mandatory properties 'command', 'groupAddress' and 'DPT'...
 
     if (groupAddressString == null || "".equals(groupAddressString))
     {
@@ -266,6 +289,13 @@ public class KNXCommandBuilder implements CommandBuilder
     {
       throw new NoSuchCommandException(
           "KNX command must have a '" + KNX_XMLPROPERTY_COMMAND + "' property."
+      );
+    }
+
+    if (dptString == null || "".equals(dptString))
+    {
+      throw new NoSuchCommandException(
+          "KNX command must have a '" + KNX_XMLPROPERTY_DPT + "' property."
       );
     }
 
@@ -283,6 +313,14 @@ public class KNXCommandBuilder implements CommandBuilder
       throw new NoSuchCommandException(e.getMessage(), e);
     }
 
+    // Translate DPT string into a type safe instance...
+
+    DataPointType dpt = DataPointType.lookup(dptString);
+
+    if (dpt == null)
+    {
+      throw new NoSuchCommandException("Unrecognized KNX datapoint type '" + dptString + "'.");
+    }
 
     // Check for and create a parameterized command if present, and translate the command string
     // to a type safe KNX Command types...
@@ -306,7 +344,7 @@ public class KNXCommandBuilder implements CommandBuilder
       }
     }
     
-    Command cmd = KNXCommand.createCommand(commandAsString, connectionManager, groupAddress, parameter);
+    Command cmd = KNXCommand.createCommand(commandAsString, dpt, connectionManager, groupAddress, parameter);
 
     log.info("Created KNX Command " + cmd + " for group address '" + groupAddress + "'");
 

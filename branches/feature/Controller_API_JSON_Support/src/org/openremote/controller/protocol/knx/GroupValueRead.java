@@ -20,15 +20,16 @@
  */
 package org.openremote.controller.protocol.knx;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
-import org.openremote.controller.exception.ConversionException;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 
 
 /**
@@ -58,8 +59,8 @@ class GroupValueRead extends KNXCommand implements StatusCommand
   /*
    * IMPLEMENTATION NOTE:
    *
-   *   if new valid values for command names are added (in 'commandTranslations'), the
-   *   unit tests should be added accordingly into KNXCommandBuilderTest
+   *   if new valid values for command names are added, the unit tests should be added
+   *   accordingly into KNXCommandBuilderTest
    */
   static
   {
@@ -75,11 +76,13 @@ class GroupValueRead extends KNXCommand implements StatusCommand
    *                  name is mapped to a typed KNX Application Protocol Data Unit instance.
    * @param mgr       Connection manager reference this command will use for transmission.
    * @param address   Destination group address for this command.
+   * @param dpt       KNX datapoint type associated with this command
    *
    * @return          a new KNX read command instance, or <code>null</code> if the lookup name
    *                  could not be matched to any command
    */
-  static GroupValueRead createCommand(String name, KNXConnectionManager mgr, GroupAddress address)
+  static GroupValueRead createCommand(String name, KNXConnectionManager mgr,
+                                      GroupAddress address, DataPointType dpt)
   {
     name = name.trim().toUpperCase();
 
@@ -88,7 +91,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     if (apdu == null)
       return null;
     
-    return new GroupValueRead(mgr, address, apdu);
+    return new GroupValueRead(mgr, address, apdu, dpt);
   }
 
 
@@ -102,11 +105,12 @@ class GroupValueRead extends KNXCommand implements StatusCommand
    * @param connectionManager   connection manager used to send this KNX command
    * @param groupAddress        destination group address for this command
    * @param apdu                APDU payload for this command
+   * @param dpt                 KNX datapoint type associated with this command
    */
   private GroupValueRead(KNXConnectionManager connectionManager, GroupAddress groupAddress,
-                         ApplicationProtocolDataUnit apdu)
+                         ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
-    super(connectionManager, groupAddress, apdu);
+    super(connectionManager, groupAddress, apdu, dpt);
   }
 
 
@@ -133,38 +137,97 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     }
 
     DataPointType dpt = getAPDU().getDataPointType();
+    DataType datatype = getAPDU().getDataType();
 
-    if (dpt == DataPointType.BooleanDataPointType.SWITCH)
+    if (sensorType == EnumSensorType.SWITCH)
     {
-      try
+      if (dpt == DataPointType.BooleanDataPointType.SWITCH)
       {
-        DataType.Boolean bool = responseAPDU.convertToBooleanDataType();
+          Bool bool = (Bool)responseAPDU.getDataType();
 
-        DataType.Boolean datatype = (DataType.Boolean)responseAPDU.getDataType();
-
-        if (datatype == DataType.Boolean.ON)
-        {
-          return "on";
-        }
-        else
-        {
-          return "off";
-        }
+          if (bool == Bool.ON)
+          {
+            return "on";
+          }
+          else
+          {
+            return "off";
+          }
       }
-      catch (ConversionException e)
+
+      else
       {
-        log.error(
-            "Cannot convert the frame payload (" + responseAPDU.dataAsString() +
-            ") to SWITCH datatype.", e
-        );
+        log.warn("Only support SWITCH sensor mapping to KNX Switch DPT (1.001)");
 
         return "";    // TODO : check how caller handles invalid return types
       }
     }
 
-    log.warn("Unrecognized datatype. This implementation cannot handle " + dpt);
+    else if (sensorType == EnumSensorType.LEVEL)
+    {
+      if (dpt == DataPointType.Unsigned8BitValue.SCALING)
+      {
+        Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
 
-    return null;    // TODO : check how caller handles invalid return types
+        return Integer.toString(valueDPT.resolve());
+      }
+
+      else if (dpt == DataPointType.Unsigned8BitValue.ANGLE)
+      {
+        Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
+        return Integer.toString((int)(valueDPT.resolve() / 3.6));
+      }
+
+      else if (dpt == DataPointType.Unsigned8BitValue.RELPOS_VALVE)
+      {
+        Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
+        return Integer.toString((int)(valueDPT.resolve() / 2.55));
+      }
+
+      else if (dpt == DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT)
+      {
+        Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
+        return Integer.toString((int)(valueDPT.resolve() / 2.55));
+      }
+
+      else
+      {
+        throw new Error("Unrecognized datatype for LEVEL sensor: " + dpt);
+      }
+    }
+
+    else if (sensorType == EnumSensorType.RANGE)
+    {
+      // TODO :
+      //    need to merge the fixes that gives range min/max values so return values
+      //    can be scaled accordingly
+
+      if (datatype instanceof Unsigned8Bit)
+      {
+        Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
+        return Integer.toString(valueDPT.resolve());
+      }
+
+      else
+      {
+        throw new Error("Currently only Unsigned 8 bit datatype supported for RANGE sensor type.");
+      }
+    }
+
+    else if (sensorType == EnumSensorType.CUSTOM)
+    {
+      throw new Error ("No mappings from custom state values to KNX datatypes implemented yet.");
+    }
+
+    else
+    {
+      throw new Error("Unrecognized sensor type " + sensorType);
+
+    }
   }
 
 }

@@ -21,6 +21,8 @@
 package org.openremote.controller.protocol.knx;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Strings;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
@@ -887,8 +889,8 @@ class KNXConnectionManager
   {
 
     private KNXnetIPTunnel connection = null;
-    private Map<GroupAddress, ApplicationProtocolDataUnit> internalState =
-        new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit>(1000);
+    private Map<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU> internalState =
+        new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU>(1000);
 
 
 
@@ -905,6 +907,8 @@ class KNXConnectionManager
         log.debug("RECEIVED: " + event.getFrame());
 
         byte[] frame = event.getFrame().toByteArray();
+
+        // TODO : properly handle AdditionalInfo field when AddInfo is present (currently breaks this impl.)
 
         if (DataLink.isDataIndicateFrame(frame[KNXCommand.CEMI_MESSAGECODE_OFFSET]))
         {
@@ -928,22 +932,69 @@ class KNXConnectionManager
             return;
           }
           
-          ApplicationProtocolDataUnit apdu = null;
+          ApplicationProtocolDataUnit.ResponseAPDU apdu = null;
 
           if (dataLen == 1)
           {
-            apdu = ApplicationProtocolDataUnit.createSwitchResponse
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.create6BitResponse
             (
                 new byte[] { apciHi, apciLoData }
             );
           }
 
+          else if (dataLen == 2)
+          {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.create8BitResponse
+            (
+                new byte[] { apciHi, apciLoData, frame[KNXCommand.CEMI_DATA1_OFFSET] }
+            );
+          }
+
+          else if (dataLen == 3)
+          {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createTwoByteResponse
+            (
+                new byte[] {
+                    apciHi, apciLoData,
+                    KNXCommand.CEMI_DATA1_OFFSET,
+                    KNXCommand.CEMI_DATA2_OFFSET
+                }
+            );
+          }
+
+          else if (dataLen == 4)
+          {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createThreeByteResponse
+            (
+                new byte[] {
+                    apciHi, apciLoData,
+                    KNXCommand.CEMI_DATA1_OFFSET,
+                    KNXCommand.CEMI_DATA2_OFFSET,
+                    KNXCommand.CEMI_DATA3_OFFSET
+                }
+            );
+          }
+
+          else if (dataLen == 5)
+          {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createFourByteResponse
+            (
+                new byte[] {
+                    apciHi, apciLoData,
+                    KNXCommand.CEMI_DATA1_OFFSET,
+                    KNXCommand.CEMI_DATA2_OFFSET,
+                    KNXCommand.CEMI_DATA3_OFFSET,
+                    KNXCommand.CEMI_DATA4_OFFSET
+                }
+            );
+          }
+          
           else
           {
             byte[] data = new byte[dataLen];
-            System.arraycopy(frame, 11, data, 0, data.length);
+            System.arraycopy(frame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
 
-            apdu = ApplicationProtocolDataUnit.createSwitchResponse(data);
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
           }
 
           log.debug("Adding to internal state " + event.getFrame());
@@ -1044,7 +1095,16 @@ class KNXConnectionManager
     {
       this.sendInternal(command);
 
-      return busListener.internalState.get(command.getAddress());
+      ApplicationProtocolDataUnit.ResponseAPDU response = busListener.internalState.get(command.getAddress());
+
+      if (response == null)
+      {
+        return null;
+      }
+
+      DataPointType dpt = command.getDataPointType();
+
+      return response.resolve(dpt);
     }
 
     public void send(GroupValueWrite command)
@@ -1067,14 +1127,12 @@ class KNXConnectionManager
         {
           cemiFrame[i] = cemiBytes[i];
         }
-        
+
         commonEMI = new CEMILData(cemiFrame, 0);
 
-        log.info(command);
+        log.info("Sending : " + command);
 
         connection.send(commonEMI, KNXnetIPTunnel.WAIT_FOR_ACK);
-
-        log.info("sent!");
       }
       catch (KNXFormatException exception)
       {
