@@ -198,7 +198,7 @@ public class DimIncreaseDecreaseTest
     assertTrue(c3.getDataLength() == 1);
 
     assertTrue(
-        "Expecting " + DataPointType.SCALING + ", got " + c3.getDataPointType(),
+        "Expecting " + DataPointType.CONTROL_DIMMING + ", got " + c3.getDataPointType(),
         c3.getDataPointType() == DataPointType.CONTROL_DIMMING
     );
 
@@ -236,7 +236,7 @@ public class DimIncreaseDecreaseTest
     assertTrue(c3.getDataLength() == 1);
 
     assertTrue(
-        "Expecting " + DataPointType.SCALING + ", got " + c3.getDataPointType(),
+        "Expecting " + DataPointType.CONTROL_DIMMING + ", got " + c3.getDataPointType(),
         c3.getDataPointType() == DataPointType.CONTROL_DIMMING
     );
 
