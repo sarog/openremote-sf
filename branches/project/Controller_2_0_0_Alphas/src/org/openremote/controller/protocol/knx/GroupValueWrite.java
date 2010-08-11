@@ -171,7 +171,8 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         );
       }
 
-      else if (name.equals("SCALE"))
+      else if (name.equals("SCALE") ||
+               name.equals("DIM"))
       {
         if (parameter == null)
         {
