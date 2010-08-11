@@ -18,36 +18,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.knx.datatype;
+package org.openremote.controller.suite;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.openremote.controller.protocol.knx.GroupAddressTest;
+import org.openremote.controller.protocol.knx.KNXCommandBuilderTest;
+import org.openremote.controller.protocol.knx.DimIncreaseDecreaseTest;
+import org.openremote.controller.protocol.knx.ScalingTest;
+
 
 /**
- * TODO
+ * All KNX tests aggregated here.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public interface DataPointType 
+@RunWith(Suite.class)
+@Suite.SuiteClasses(
+   {
+       KNXCommandBuilderTest.class,
+       DimIncreaseDecreaseTest.class,
+       ScalingTest.class,
+       GroupAddressTest.class
+   }
+)
+public class KNXTests
 {
 
-  enum BooleanDataPointType implements DataPointType
-  {
-    SWITCH, BOOL, ENABLE, RAMP, ALARM, BINARY_VALUE, STEP, UP_DOWN, OPEN_CLOSE,
-    START, STATE, INVERT, DIM_SEND_STYLE, INPUT_SOURCE
-  }
-
-  enum Control1BitDataPointType implements DataPointType
-  {
-    SWITCH_CONTROL, BOOL_CONTROL, ENABLE_CONTROL, RAMP_CONTROL, ALARM_CONTROL,
-    BINARY_VALUE_CONTROL, STEP_CONTROL, DIRECTION1_CONTROL, DIRECTION2_CONTROL,
-    START_CONTROL, STATE_CONTROL, INVERT_CONTROL
-  }
-
-  enum Control3BitDataPointType implements DataPointType
-  {
-    CONTROL_DIMMING, CONTROL_BLINDS, MODE_BOILER
-  }
-
-  enum Unsigned8BitValue implements DataPointType
-  {
-    SCALING, ANGLE, RELPOS_VALVE, VALUE_1_UCOUNT
-  }
 }
+

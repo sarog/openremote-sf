@@ -24,10 +24,12 @@ import static junit.framework.Assert.assertTrue;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.KNXCommandBuilder;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
 
 /**
  * Basic unit tests for parsing XML elements in
@@ -56,7 +58,7 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXOn() 
   {
-    Command cmd = getCommand("ON", "1/1/1");
+    Command cmd = getCommand("ON", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd instanceof GroupValueWrite);
   }
@@ -67,15 +69,15 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXOnMixedCase()
   {
-    Command cmd1 = getCommand("on", "1/1/1");
+    Command cmd1 = getCommand("on", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd1 instanceof GroupValueWrite);
 
-    Command cmd2 = getCommand("On", "1/1/1");
+    Command cmd2 = getCommand("On", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd2 instanceof GroupValueWrite);
 
-    Command cmd3 = getCommand("oN", "1/1/1");
+    Command cmd3 = getCommand("oN", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd3 instanceof GroupValueWrite);
   }
@@ -86,7 +88,7 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXOff()
   {
-    Command cmd = getCommand("OFF", "1/1/1");
+    Command cmd = getCommand("OFF", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd instanceof GroupValueWrite);
   }
@@ -97,19 +99,79 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXOffMixedCase()
   {
-    Command cmd1 = getCommand("off", "1/1/1");
+    Command cmd1 = getCommand("off", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd1 instanceof GroupValueWrite);
 
-    Command cmd2 = getCommand("Off", "1/1/1");
+    Command cmd2 = getCommand("Off", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd2 instanceof GroupValueWrite);
 
-    Command cmd3 = getCommand("oFf", "1/1/1");
+    Command cmd3 = getCommand("oFf", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
 
     assertTrue(cmd3 instanceof GroupValueWrite);
   }
 
+
+
+  /**
+   * Test KNX command parsing with "SWITCH ON" as the command string and 1/1/1 as group address.
+   */
+  @Test public void testKNXSwitchOn()
+  {
+    Command cmd = getCommand("SWITCH ON", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd instanceof GroupValueWrite);
+  }
+
+  /**
+   * Test KNX command parsing with "switch on", "Switch On" and "sWitch oN" as the command string
+   * and 1/1/1 as group address.
+   */
+  @Test public void testKNXSwitchOnMixedCase()
+  {
+    Command cmd1 = getCommand("switch on", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd1 instanceof GroupValueWrite);
+
+    Command cmd2 = getCommand("Switch On", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd2 instanceof GroupValueWrite);
+
+    Command cmd3 = getCommand("sWitch oN", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd3 instanceof GroupValueWrite);
+  }
+
+
+  /**
+   * Test KNX command parsing with "SWITCH OFF" as the command string and 1/1/1 as group address.
+   */
+  @Test public void testKNXSwitchOff()
+  {
+    Command cmd = getCommand("SWITCH OFF", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd instanceof GroupValueWrite);
+  }
+
+  /**
+   * Test KNX command parsing with "switch off", "Switch Off" and "sWitch oFf" as the command string
+   * and 1/1/1 as group address.
+   */
+  @Test public void testKNXSwitchOffMixedCase()
+  {
+    Command cmd1 = getCommand("switch off", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd1 instanceof GroupValueWrite);
+
+    Command cmd2 = getCommand("Switch Off", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd2 instanceof GroupValueWrite);
+
+    Command cmd3 = getCommand("sWitch oFf", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
+
+    assertTrue(cmd3 instanceof GroupValueWrite);
+  }
 
   /**
    * Test KNX command parsing with "STATUS" as the command string and 1/1/1 as
@@ -117,7 +179,7 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXStatus()
   {
-    Command cmd = getCommand("STATUS", "1/1/1");
+    Command cmd = getCommand("STATUS", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
     assertTrue(cmd instanceof GroupValueRead);
   }
 
@@ -127,13 +189,13 @@ public class KNXCommandBuilderTest
    */
   @Test public void testKNXStatusMixedCase()
   {
-    Command cmd1 = getCommand("status", "1/1/1");
+    Command cmd1 = getCommand("status", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
     assertTrue(cmd1 instanceof GroupValueRead);
 
-    Command cmd2 = getCommand("Status", "1/1/1");
+    Command cmd2 = getCommand("Status", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
     assertTrue(cmd2 instanceof GroupValueRead);
 
-    Command cmd3 = getCommand("STatus", "1/1/1");
+    Command cmd3 = getCommand("STatus", "1/1/1", DataPointType.BooleanDataPointType.SWITCH);
     assertTrue(cmd3 instanceof GroupValueRead);
   }
 
@@ -143,7 +205,7 @@ public class KNXCommandBuilderTest
   @Test(expected = NoSuchCommandException.class)
   public void testNoSuchCommand()
   {
-    getCommand(" ", "1/2/2");
+    getCommand(" ", "1/2/2", DataPointType.BooleanDataPointType.SWITCH);
   }
 
   /**
@@ -153,7 +215,7 @@ public class KNXCommandBuilderTest
   @Test (expected = NoSuchCommandException.class)
   public void invalidGroupAddress()
   {
-    getCommand("STatus", "gargabe should not work");
+    getCommand("STatus", "gargabe should not work", DataPointType.BooleanDataPointType.SWITCH);
   }
 
   /**
@@ -197,7 +259,7 @@ public class KNXCommandBuilderTest
 
   // Helpers --------------------------------------------------------------------------------------
   
-  private Command getCommand(String cmd, String groupAddress)
+  private Command getCommand(String cmd, String groupAddress, DataPointType dpt)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
@@ -219,6 +281,14 @@ public class KNXCommandBuilderTest
 
     ele.addContent(propAddr2);
 
+    Element propAddr3 = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME,
+                           KNXCommandBuilder.KNX_XMLPROPERTY_DPT);
+    propAddr3.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE,
+                           dpt.getDPTID());
+
+    ele.addContent(propAddr3);
+    
     return builder.build(ele);
   }
 

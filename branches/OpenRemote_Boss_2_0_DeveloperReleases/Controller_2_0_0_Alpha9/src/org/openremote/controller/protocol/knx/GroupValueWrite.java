@@ -23,6 +23,7 @@ package org.openremote.controller.protocol.knx;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.protocol.knx.datatype.Bool;
+import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.exception.ConversionException;
 
@@ -36,6 +37,13 @@ import org.openremote.controller.exception.ConversionException;
 class GroupValueWrite extends KNXCommand implements ExecutableCommand
 {
 
+
+  // Constants ------------------------------------------------------------------------------------
+
+  final static int DIMCONTROL_INCREASE_VALUE = 7;
+  final static int DIMCONTROL_DECREASE_VALUE = 7;
+
+  
   // Class Members --------------------------------------------------------------------------------
 
 
@@ -45,6 +53,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    *
    * @param name      User-configured command name used in tools and configuration files. This
    *                  name is mapped to a typed KNX Application Protocol Data Unit instance.
+   * @param dpt       KNX datapoint type associated with this command
    * @param mgr       Connection manager reference this command will use for transmission.
    * @param address   Destination group address for this command.
    * @param parameter parameter for this command or <tt>null</tt> if not available
@@ -52,7 +61,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
    *          be matched to any command
    */
-  static GroupValueWrite createCommand(String name, KNXConnectionManager mgr,
+  static GroupValueWrite createCommand(String name, DataPointType dpt, KNXConnectionManager mgr,
                                        GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -62,7 +71,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
     if (apdu == null)
       return null;
     
-    return new GroupValueWrite(mgr, address, apdu);
+    return new GroupValueWrite(mgr, address, apdu, dpt);
   }
 
 
@@ -76,11 +85,12 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    * @param connectionManager   connection manager used to send this KNX command
    * @param groupAddress        destination group address for this command
    * @param apdu                APDU payload for this command
+   * @param dpt                 KNX datapoint type associated with this command
    */
   private GroupValueWrite(KNXConnectionManager connectionManager, GroupAddress groupAddress,
-                          ApplicationProtocolDataUnit apdu)
+                          ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
-    super(connectionManager, groupAddress, apdu);
+    super(connectionManager, groupAddress, apdu, dpt);
   }
 
 
@@ -123,18 +133,22 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE
+       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE, etc.
        *
+       * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.)
+       * 
        * TODO : simple buttons should also allow parameterization so DIM_INCREASE|DECREASE can have different step values
        */
       name = name.toUpperCase().trim();
 
-      if (name.equals("ON"))
+      if (name.equals("ON") ||
+          name.equals("SWITCH ON"))
       {
         return ApplicationProtocolDataUnit.WRITE_SWITCH_ON;
       }
 
-      else if (name.equals("OFF"))
+      else if (name.equals("OFF") ||
+               name.equals("SWITCH OFF"))
       {
         return ApplicationProtocolDataUnit.WRITE_SWITCH_OFF;
       }
@@ -144,7 +158,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
       {
         return ApplicationProtocolDataUnit.create3BitDimControl(
             Bool.INCREASE,
-            7                           // increase level [0-7]
+            DIMCONTROL_INCREASE_VALUE
         );
       }
 
@@ -153,11 +167,12 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
       {
         return ApplicationProtocolDataUnit.create3BitDimControl(
             Bool.DECREASE,
-            7                           // decrease level [0-7]
+            DIMCONTROL_DECREASE_VALUE
         );
       }
 
-      else if (name.equals("SCALE"))
+      else if (name.equals("SCALE") ||
+               name.equals("DIM"))
       {
         if (parameter == null)
         {
