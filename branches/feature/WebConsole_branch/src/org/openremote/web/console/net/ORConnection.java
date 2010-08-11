@@ -165,6 +165,11 @@ public class ORConnection {
       }
    }
    
+   /**
+    * Gets the response data if request success.
+    * 
+    * @return the response data
+    */
    public InputStream getResponseData() {
       return responseData;
    }
