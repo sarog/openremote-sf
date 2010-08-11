@@ -32,7 +32,7 @@ import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.google.gwt.user.client.Event;
 
 /**
- * The ScreenIndicator is for show the screen page control below the screen.
+ * The ScreenIndicator is for showing the screen page control below the screen.
  * It support navigate to screen in a group.
  */
 public class ScreenIndicator extends LayoutContainer {

@@ -30,6 +30,7 @@ import flexjson.JSON;
 
 /**
  * The Class PanelXmlEntity is for store the groups,screens,global tabbar and labels.
+ * It is used by client codes to display views.
  */
 public class PanelXmlEntity implements Serializable {
 

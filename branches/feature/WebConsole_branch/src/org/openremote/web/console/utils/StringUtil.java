@@ -20,7 +20,7 @@
 package org.openremote.web.console.utils;
 
 /**
- * The Class StringUtil.
+ * Contains static methods to operate string.
  */
 public class StringUtil {
 

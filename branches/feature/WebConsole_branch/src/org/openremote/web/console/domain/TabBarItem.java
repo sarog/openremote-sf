@@ -23,11 +23,19 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * This class is responsible for storing data about tabBarItem.
+ */
 @SuppressWarnings("serial")
 public class TabBarItem extends BusinessEntity {
 
+   /** The tabBar item display text. */
    private String name;
+   
+   /** Navigate to. */
    private Navigate navigate;
+   
+   /** The image display on the item. */
    private Image image;
    
    public TabBarItem() {

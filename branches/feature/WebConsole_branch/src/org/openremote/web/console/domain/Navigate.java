@@ -3,21 +3,45 @@ package org.openremote.web.console.domain;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * Forwards to screen or do other logical functions.
+ * Includes to group, to screen, to previous screen , to next screen, back, login, logout and setting.
+ */
 @SuppressWarnings("serial")
 public class Navigate extends BusinessEntity {
 
    private int toScreen;
    private int toGroup;
+   
+   /** To previous screen in a group. */
    private boolean previousScreen;
+   
+   /** To next screen in a group. */
    private boolean nextScreen;
+   
+   /** Back to last display screen. */
    private boolean back;
+   
+   /** To display settings window. */
    private boolean setting;
+   
+   /** To display login view. */
    private boolean login;
+   
+   /** Make the user to logout. */
    private boolean logout;
 
+   /**
+    * Instantiates a new navigate without properties.
+    */
    public Navigate() {
    }
    
+   /**
+    * Instantiates a new navigate by parse navigate node.
+    * 
+    * @param node the navigate node
+    */
    public Navigate(Node node) {
       NamedNodeMap nodeMap = node.getAttributes();
       if (nodeMap.getNamedItem("toGroup") != null) {

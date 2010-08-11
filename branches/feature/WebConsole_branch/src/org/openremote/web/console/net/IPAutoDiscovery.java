@@ -24,15 +24,26 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 
+/**
+ * Discover controllers in the same network segment.
+ */
 public class IPAutoDiscovery {
    private static Logger log = Logger.getLogger(IPAutoDiscovery.class);
    public static final String MULTICAST_ADDRESS = "224.0.1.100";
    public static final int MULTICAST_PORT = 3333;
    public static final int TCP_PORT = 2346;
    
+   /**
+    * Not be Instantiated.
+    */
    private IPAutoDiscovery() {
    }
    
+   /**
+    * Gets the auto discovery servers by start a Multicast UDP client broadcasting to request and a TCP server to receive response.
+    * 
+    * @return the auto servers
+    */
    public static ArrayList<String> getAutoServers() {
       new Thread(new IPAutoDiscoveryServer()).start();
       new Thread(new IPAutoDiscoveryClient()).start();

@@ -24,7 +24,7 @@ import java.util.List;
 import org.openremote.web.console.domain.PanelXmlEntity;
 
 /**
- * The Interface PanelIdentityService.
+ * Gets panel names and gets panel entity from controller.
  */
 public interface PanelIdentityService {
 

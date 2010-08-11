@@ -32,12 +32,12 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 
 /**
- * The Window with Form.
+ * Super class of window with form.
  * 
  */
 public class FormWindow extends Window {
    
-   /** The form. */
+   /** The form is wrapped in the window. */
    protected FormPanel form = new FormPanel();
    
    /**
@@ -67,15 +67,6 @@ public class FormWindow extends Window {
       setLayout(new FillLayout());
       setModal(true);
       setBodyBorder(false);
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public void show() {
-//      setFocusWidget(form.getWidget(0));
-      super.show();
    }
 
    /**

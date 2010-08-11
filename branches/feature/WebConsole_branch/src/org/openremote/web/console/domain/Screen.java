@@ -26,12 +26,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
+ */
 @SuppressWarnings("serial")
 public class Screen extends BusinessEntity {
-   /**
-    * Screen width and height may be different in different device, 
-    *  so they can be changed when the application start at runtime.
-   */
    
    private int screenId;
    private String name;
@@ -43,6 +42,11 @@ public class Screen extends BusinessEntity {
    public Screen() {
    }
    
+   /**
+    * Parse screen node to instantiates a new screen.
+    * 
+    * @param node the screen node
+    */
    public Screen(Node node, PanelXmlEntity panelXmlEntity) {
       NamedNodeMap nodeMap = node.getAttributes();
       this.screenId = Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue());
@@ -93,6 +97,11 @@ public class Screen extends BusinessEntity {
       return null;
    }
 
+   /**
+    * Gets the polling components ids from its contained layout containers.
+    * 
+    * @return the polling components ids
+    */
    public HashSet<Integer> getPollingComponentsIds() {
       if (pollingComponentsIds.isEmpty()) {
          for (LayoutContainer layoutContainer : layouts) {

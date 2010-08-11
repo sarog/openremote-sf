@@ -38,7 +38,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 
 /**
- * The ScreenSlider is for generate slider component by slider model.
+ * The ScreenSlider is for generating slider component by slider model.
  * It support change images,send control command, polling status.
  */
 public class ScreenSlider extends ScreenControl implements SensoryDelegate {

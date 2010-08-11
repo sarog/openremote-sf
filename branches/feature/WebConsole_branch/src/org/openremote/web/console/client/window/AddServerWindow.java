@@ -32,7 +32,7 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.LabelAlign;
 
 /**
- * The Class AddServerWindow.
+ * Adds custom server to custom server grid in SettingsWindow.
  */
 public class AddServerWindow extends FormWindow {
    private static  final String SERVER_URL = "server_url";

@@ -30,7 +30,7 @@ import org.openremote.web.console.domain.Sensor;
 import com.extjs.gxt.ui.client.widget.Text;
 
 /**
- * The ScreenLabel is for display the label according to label model.
+ * The ScreenLabel is for displaying the label according to label model.
  * It support sensor.
  */
 public class ScreenLabel extends ScreenComponent implements SensoryDelegate {

@@ -35,6 +35,10 @@ import org.apache.log4j.Logger;
 public class IPAutoDiscoveryClient implements Runnable {
    private static Logger log = Logger.getLogger(IPAutoDiscoveryClient.class);
    
+   /**
+    * Starts UDP broadcasting.
+    * The address is "224.0.1.100", port is "3333".
+    */
    public void run() {
       try {
          DatagramSocket socket = new DatagramSocket();

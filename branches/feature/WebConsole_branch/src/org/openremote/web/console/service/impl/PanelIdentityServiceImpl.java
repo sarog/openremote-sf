@@ -29,12 +29,12 @@ import org.openremote.web.console.service.PanelIdentityService;
 import org.openremote.web.console.utils.XmlParserUtil;
 
 /**
- * The Class PanelIdentityServiceImpl.
+ * The implementation of <code>PanelIdentityService</code>.
  */
 public class PanelIdentityServiceImpl implements PanelIdentityService {
 
    /**
-    * @see org.openremote.web.console.service.PanelIdentityService#getPanelNames(java.lang.String, java.lang.String, java.lang.String)
+    * Requests panels from controller as xml, and parse the xml to panel names.
     */
    public List<String> getPanelNames(String url, String username, String password) {
       List<String> panels = null;
@@ -48,7 +48,7 @@ public class PanelIdentityServiceImpl implements PanelIdentityService {
    }
 
    /**
-    * @see org.openremote.web.console.service.PanelIdentityService#getPanelXmlEntity(java.lang.String, java.lang.String, java.lang.String)
+    * Requests panel.xml from controller, and parse the xml to panel xml entity.
     */
    public PanelXmlEntity getPanelXmlEntity(String url, String username, String password) {
       PanelXmlEntity panelXmlEntity = null;

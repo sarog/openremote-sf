@@ -36,6 +36,9 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.user.client.Cookies;
 
+/**
+ * Store the username and password to Cookies.
+ */
 public class LoginWindow extends FormWindow {
 
    private static final String USERNAME = "username";

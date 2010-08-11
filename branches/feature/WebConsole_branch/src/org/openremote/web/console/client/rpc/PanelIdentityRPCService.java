@@ -29,7 +29,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * The Interface PanelIdentityRPCService is for get panel identity list from server.
+ * RPC interface for client gets panel names, gets panel entity, checks the current controller if is support JSON API.
  */
 @RemoteServiceRelativePath("panelIdentity.smvc")
 public interface PanelIdentityRPCService extends RemoteService {

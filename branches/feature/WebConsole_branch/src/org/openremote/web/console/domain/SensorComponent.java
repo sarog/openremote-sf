@@ -21,11 +21,20 @@ package org.openremote.web.console.domain;
 
 import org.w3c.dom.Node;
 
+/**
+ * The super component class of which have sensor.
+ * The subclasses include Label, Image, Switch and Slider.
+ */
 @SuppressWarnings("serial")
 public class SensorComponent extends Component {
 
    private Sensor sensor;
 
+   /**
+    * Parser the sensor node in the component.
+    * 
+    * @param node the node
+    */
    public void parser(Node node) {
       if (LINK.equals(node.getNodeName()) && SENSOR.equals(node.getAttributes().getNamedItem(TYPE).getNodeValue())) {
          sensor = new Sensor(node);

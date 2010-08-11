@@ -25,7 +25,7 @@ import org.openremote.web.console.domain.GridLayoutContainer;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
 /**
- * The GridLayoutContainerView is for wrap grid cells, and display in a absolute position.
+ * Wraps grid cells, and display in a absolute position.
  */
 public class GridLayoutContainerView extends LayoutContainer {
 
