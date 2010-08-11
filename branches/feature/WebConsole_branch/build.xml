@@ -311,6 +311,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	<!-- Compress javascript                                                  -->
 	<!-- ==================================================================== -->
 	<target name="compressjs"  description="compress and concat the js files">
+      <mkdir dir="${war.dir}/mobile/compress/js/constants" />
       <mkdir dir="${war.dir}/mobile/compress/js/appsettings" />
       <mkdir dir="${war.dir}/mobile/compress/js/controllers" />
       <mkdir dir="${war.dir}/mobile/compress/js/models" />
