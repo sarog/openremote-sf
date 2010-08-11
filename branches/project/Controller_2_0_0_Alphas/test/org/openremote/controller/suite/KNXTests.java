@@ -25,6 +25,7 @@ import org.junit.runners.Suite;
 import org.openremote.controller.protocol.knx.GroupAddressTest;
 import org.openremote.controller.protocol.knx.KNXCommandBuilderTest;
 import org.openremote.controller.protocol.knx.DimIncreaseDecreaseTest;
+import org.openremote.controller.protocol.knx.ScalingTest;
 
 
 /**
@@ -37,6 +38,7 @@ import org.openremote.controller.protocol.knx.DimIncreaseDecreaseTest;
    {
        KNXCommandBuilderTest.class,
        DimIncreaseDecreaseTest.class,
+       ScalingTest.class,
        GroupAddressTest.class
    }
 )
