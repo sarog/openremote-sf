@@ -221,8 +221,15 @@ AppSettings = (function(){
           MessageUtils.showMessageDialog("Load panel identities", error.message);
           return;
         } else {
-          for (var index in data.panel) {
-            var panel = data.panel[index];
+          if (Object.prototype.toString.apply(data.panel) === '[object Array]') {
+            for (var index in data.panel) {
+              var panel = data.panel[index];
+              var panelID = panel["@id"];
+              var panelName = panel["@name"];
+              panelIdentities[panelIdentities.length] = panelName;
+            }
+          } else if (data.panel != null && data.panel != undefined) {
+            var panel = data.panel;
             var panelID = panel["@id"];
             var panelName = panel["@name"];
             panelIdentities[panelIdentities.length] = panelName;

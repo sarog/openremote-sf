@@ -5,9 +5,6 @@
 GridCellView = (function() {
   var ID = "gridCellView";
   var DEFAULT_CSS_STYLE = {
-     "border" : "#CCCCCC dotted 1px",
-     // "background-color" : "red",
-     "color":"#FF0000",
      "width":"100%",
      "height":"100%",
      "position":"absolute"
@@ -36,7 +33,7 @@ GridCellView = (function() {
       if(self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
         return;
       }
-      self.componentView = ComponentView.build(self.gridCell.componentModel, self.size);
+      self.componentView = ComponentView.build(self.gridCell.componentModel, self.frame.size);
       self.addSubView(self.componentView);
     }
     

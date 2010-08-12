@@ -37,7 +37,11 @@ SwitchView = (function() {
     }
     
     this.dealPollingStatus = function(statusMapParam) {
-      var sensorStates = self.component.sensor.states;
+      var sensor = self.component.sensor;
+      if (sensor == null || sensor == undefined) {
+        return;
+      }
+      var sensorStates = sensor.states;
       if (sensorStates.length > 0) {
         if (self.onImageName == "" || self.offImageName == "") {
           for (var i = 0; i < sensorStates.length; i++) {
@@ -50,7 +54,7 @@ SwitchView = (function() {
           }
         }
       }
-      updateViewWithStatus(statusMapParam[self.component.sensor.id]);
+      updateViewWithStatus(statusMapParam[sensor.id]);
     };
     
     // Super class's constructor calling
@@ -68,9 +72,13 @@ SwitchView = (function() {
       
       self.setCss(DEFAULT_CSS_STYLE);
       
-      var sensorStates = self.component.sensor.states;
-      // register default mouseover and mouseout events.
-      if (sensorStates == null || sensorStates.length == 0 || sensorStates == undefined) {
+      var sensor = self.component.sensor;
+      if (sensor != null && sensor != undefined) {
+        var sensorStates = sensor.states;
+      }
+      
+      if (sensor == null || sensor == undefined || sensorStates == null || sensorStates.length == 0 || sensorStates == undefined) {
+        // register default mouseover and mouseout events.
         self.getCanvas().mouseover(function() {
           $(self.getCanvas()).css("background", "url('./mobile/css/jquery/images/ui-bg_glass_75_dadada_1x400.png') 50% 50% repeat-x");
         });

@@ -6,7 +6,7 @@ PaginationView = (function() {
   
   var ID = "paginationView";
   var DEFAULT_CSS_STYLE = {
-     "background-color":"gray",
+     // "background-color":"gray",
      "width":"100%",
      "height":"100%"
    };
@@ -34,7 +34,7 @@ PaginationView = (function() {
       self.screenViewContainer = $("<div />", {
         "id" : "screenViewContainer" + self.UUID,
         css : {
-          "backgroundColor" : "black",
+          // "backgroundColor" : "black",
           "width" : "100%",
           "height" : "90%"
         }
@@ -47,8 +47,8 @@ PaginationView = (function() {
         "id" : self.getID()
       });
       
-      $(canvas).append(self.screenViewContainer);
       $(canvas).append(constructPageControl());
+      $(canvas).append(self.screenViewContainer);
       
       self.setCanvas(canvas);
       self.setCss(DEFAULT_CSS_STYLE);
@@ -89,9 +89,9 @@ PaginationView = (function() {
       var menuBtn = $("<div />", {
         "id" : "menuBtn" + self.UUID,
         "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" +
-                    "<div style='position:relative;top:-50%;width:100%;text-align:center;'>" +
-                      "<image style='padding-top:10px;' src = './mobile/images/menu.png' />" +
-                    "</div>" +
+                    // "<div style='position:relative;top:-50%;width:100%;text-align:center;'>" +
+                    //   "<image src = './mobile/images/menu.png' />" +
+                    // "</div>" +
                     "<div style='position:relative;top:-50%;width:100%;text-align:center'>Menu</div>" +
                  "</div>",
         css : {
@@ -100,7 +100,7 @@ PaginationView = (function() {
           "width" : "25%",
           "margin-left" : "37%",
           "text-align" : "center",
-          "font-size" : "12px",
+          "font-size" : "11px",
           "color":"#000000",
           "text-shadow":"0px -1px #bbb,0 2px #fff",
           "font-family":"Verdana,Arial,sans-serif",
