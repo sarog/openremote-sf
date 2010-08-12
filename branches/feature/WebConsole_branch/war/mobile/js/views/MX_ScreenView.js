@@ -6,9 +6,10 @@ ScreenView = (function() {
   
   var ID = "screenView";
   var DEFAULT_CSS_STYLE = {
-     "background-color":"black",
+     // "background-color":"black",
      "width":"100%",
-     "height":"100%"
+     "height":"100%",
+     "position":"relative"
    };
   
   return function(screenParam) {

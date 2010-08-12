@@ -197,7 +197,7 @@ SliderView = (function() {
        // Customize thumb image.
        // thumb.css({"font-size":"14px"});
        var thumbImageSRC = self.component.thumbImageSRC;
-       var canThumbImageUse = (thumbImageSRC != null && thumbImageSRC != "");
+       var canThumbImageUse = (thumbImageSRC != null && thumbImageSRC != "" && thumbImageSRC != undefined);
        var qualifiedThumbImageSRC = ConnectionUtils.getResourceURL(thumbImageSRC);
        if (canThumbImageUse) {
          thumb.css({"background":"url("+ qualifiedThumbImageSRC +") no-repeat scroll 50% 50%"});

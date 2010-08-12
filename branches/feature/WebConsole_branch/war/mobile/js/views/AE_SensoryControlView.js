@@ -16,6 +16,10 @@ SensoryControlView = (function() {
     
     this.addPollingListener = function() {
       var sensorID = 0;
+      var sensor = self.component.sensor;
+      if (sensor == null || sensor == undefined) {
+        return;
+      }
       if(self.component.node_name == Constants.SWITCH) {
         self.sensorID = self.component.sensor.id;
       } else if(self.component.node_name == Constants.SLIDER) {

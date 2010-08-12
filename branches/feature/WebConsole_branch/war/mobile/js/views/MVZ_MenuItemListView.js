@@ -8,13 +8,14 @@ MenuItemListView = (function() {
      "background-color":"#E6E6E6",
      "border-top" : "2px solid orange",
      "position" : "absolute",
-     "bottom" : "10%",
+     "top" : "10%",
      "width" : "100%",
      "display" : "none",
      "color" : "black",
      "font-size" : "12px",
      "text-shadow":"0px -1px #bbb,0 2px #fff",
-     "font-family":"Verdana,Arial,sans-serif"
+     "font-family":"Verdana,Arial,sans-serif",
+     "z-index":"1000"
    };
   
   return function(tabBarModelParam) {
