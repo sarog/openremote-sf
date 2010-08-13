@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * The screen gesture, which contains 4 sorts.
+ * The screen gesture, which contains 4 swipe types: "top-to-bottom", "bottom-to-top", "left-to-right" and "right-to-left".
  */
 @SuppressWarnings("serial")
 public class Gesture extends Control {

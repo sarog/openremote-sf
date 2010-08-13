@@ -146,7 +146,7 @@ public class SwitchView extends SensoryControlView {
       }
    }
    
-   /** The handler is for update switch state by polling result. */
+   /** The handler is for updating switch state by polling result. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {

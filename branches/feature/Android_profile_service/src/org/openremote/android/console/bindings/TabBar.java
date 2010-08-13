@@ -25,7 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * The tabBar contains tabBarItems.
+ * The tabBar contains tabBarItems, which displayed as menus.
  */
 @SuppressWarnings("serial")
 public class TabBar extends BusinessEntity {
