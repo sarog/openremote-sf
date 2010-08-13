@@ -25,7 +25,7 @@ import org.openremote.android.console.bindings.Component;
 import android.content.Context;
 
 /**
- * The AbsoluteLayoutContainerView is for wrap component view and display in a absolute position.
+ * Wraps component view and display in a absolute position.
  */
 public class AbsoluteLayoutContainerView extends LayoutContainerView {
 

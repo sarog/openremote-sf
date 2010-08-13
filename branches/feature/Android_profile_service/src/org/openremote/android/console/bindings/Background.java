@@ -60,6 +60,13 @@ public class Background extends BusinessEntity {
          }
       }
    }
+   
+   /**
+    * Checks if is fill screen.
+    * If true, the background position is (0,0).
+    * 
+    * @return true, if is fill screen
+    */
    public boolean isFillScreen() {
       return fillScreen;
    }

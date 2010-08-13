@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 
 /**
  * Represents Sensor State in sensor.
+ * It use key-value structure, the name as key.
  */
 @SuppressWarnings("serial")
 public class SensorState extends BusinessEntity {

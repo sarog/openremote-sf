@@ -23,7 +23,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * The navigate is for forward to group/screen or other logical.
+ * Forwards to screen or do other logical functions.
+ * Includes to group, to screen, to previous screen , to next screen, back, login, logout and setting.
  */
 @SuppressWarnings("serial")
 public class Navigate extends BusinessEntity {
@@ -40,10 +41,10 @@ public class Navigate extends BusinessEntity {
    /** Back to last display screen. */
    private boolean back;
    
-   /** To display setting. */
+   /** To display settings view. */
    private boolean setting;
    
-   /** To display login. */
+   /** To display login view. */
    private boolean login;
    
    /** Make the user to logout. */
