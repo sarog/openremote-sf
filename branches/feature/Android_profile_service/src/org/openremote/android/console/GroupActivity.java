@@ -27,7 +27,6 @@ import org.apache.http.HttpResponse;
 import org.openremote.android.console.bindings.Gesture;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Navigate;
-import org.openremote.android.console.bindings.OROrientation;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.TabBarItem;
@@ -50,9 +49,8 @@ import org.openremote.android.console.view.ScreenViewFlipper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.hardware.SensorListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -62,6 +60,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.GestureDetector.OnGestureListener;
@@ -76,7 +75,7 @@ import android.widget.LinearLayout;
  * 
  */
 
-public class GroupActivity extends GenericActivity implements OnGestureListener, ORConnectionDelegate, SensorListener {
+public class GroupActivity extends GenericActivity implements OnGestureListener, ORConnectionDelegate {
 
    /** To detect gesture, just for one finger touch. */
    private GestureDetector gestureScanner;
@@ -98,9 +97,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private boolean isNavigetionBackward;
    private boolean isLandscape = false;
 
-    private SensorManager mSensorManager;
 
-   private OROrientation orientation;
    private int lastConfigurationOrientation = -1;
    
    @Override
@@ -114,11 +111,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       Log.i("ORIENTATION", "onCreate:" + display.getOrientation());
       if (display != null && display.getOrientation() == 1) {
          isLandscape = true;
-         orientation = OROrientation.UIInterfaceOrientationLandscapeRight;
          lastConfigurationOrientation = Configuration.ORIENTATION_LANDSCAPE;
       } else {
          isLandscape = false;
-         orientation = OROrientation.UIInterfaceOrientationPortrait;
          lastConfigurationOrientation = Configuration.ORIENTATION_PORTRAIT;
       }
       
@@ -131,10 +126,36 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          navigationHistory = new ArrayList<Navigate>();
       }
 
-      mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
       recoverLastGroupScreen();
       addControllerRefreshEventListener();
+
+      initOrientationListener();
+
+   }
+
+   /**
+    * Inits a orientation listener, set request orientation be sensor when the current screen's orientation equals device orientation.
+    */
+   private void initOrientationListener() {
+      OrientationEventListener orientationListener = new OrientationEventListener(this) {
+         @Override
+         public void onOrientationChanged(int orientation) {
+            if (orientation > 315 || orientation < 45  || (orientation > 135 && orientation < 225)) {
+               // portrait
+               if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                     && !currentScreen.isLandscape()) {
+                  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               }
+            } else if ((orientation > 225 && orientation < 315) || (orientation > 45 && orientation < 135)) {
+               // landscape
+               if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                     && currentScreen.isLandscape()) {
+                  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               }
+            }
+         }
+     };
+     orientationListener.enable();
    }
 
    /**
@@ -475,7 +496,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
     */
    @Override
    protected void onStop() {
-      mSensorManager.unregisterListener(this);
       super.onStop();
       cancelCurrentPolling();
    }
@@ -514,7 +534,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          useLocalCache = true;
          ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
       }
-      mSensorManager.registerListener(this, SensorManager.SENSOR_ORIENTATION, SensorManager.SENSOR_DELAY_NORMAL);
       startCurrentPolling();
    }
 
@@ -595,34 +614,60 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
                return false;
             }
             
-            if (targetGroup.hasOrientationScreens(isLandscape)) {
-               currentOrientation = isLandscape;
-            } else {
-               return false;
+            boolean newOrientation = currentOrientation;
+            if (! targetGroup.hasOrientationScreens(newOrientation)) {
+               newOrientation = !newOrientation;
             }
             
             contentLayout.removeView(currentScreenViewFlipper);
-            currentScreenViewFlipper = targetGroupView.getScreenViewFlipperByOrientation(currentOrientation);
+            currentScreenViewFlipper = targetGroupView.getScreenViewFlipperByOrientation(newOrientation);
             currentGroupView = targetGroupView;
             contentLayout.addView(currentScreenViewFlipper);
-            if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, currentOrientation)) {
-               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, currentOrientation));
+            if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, newOrientation)) {
+               currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, newOrientation));
             }
-            screenSize = targetGroup.getScreenSizeByOrientation(currentOrientation);
-         } else if (toScreenId > 0 && targetGroup.canfindScreenByIdAndOrientation(toScreenId, currentOrientation)) {
+            screenSize = targetGroup.getScreenSizeByOrientation(newOrientation);
+            if (newOrientation != currentOrientation) {
+               manualRotateScreen(newOrientation);
+            }
+            
+         } else if (toScreenId > 0) {
             // in same group.
+            boolean newOrientation = XMLEntityDataBase.getScreen(toScreenId).isLandscape();
+            if (newOrientation != currentOrientation) {
+               screenSize = targetGroup.getScreenSizeByOrientation(newOrientation);
+               contentLayout.removeView(currentScreenViewFlipper);
+               currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(newOrientation);
+               contentLayout.addView(currentScreenViewFlipper);
+               manualRotateScreen(newOrientation);
+            }
             if (isNavigetionBackward) {
                currentScreenViewFlipper.setToPreviousAnimation();
             } else {
                currentScreenViewFlipper.setToNextAnimation();
             }
-            currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, currentOrientation));
+            currentScreenViewFlipper.setDisplayedChild(getScreenIndex(toScreenId, newOrientation));
          }
          startCurrentPolling();
          currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
          return true;
       }
       return false;
+   }
+
+   /**
+    * @param newOrientation
+    */
+   private void manualRotateScreen(boolean newOrientation) {
+      if (newOrientation) {
+         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+         lastConfigurationOrientation = Configuration.ORIENTATION_LANDSCAPE;
+         isLandscape = true;
+      } else {
+         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+         lastConfigurationOrientation = Configuration.ORIENTATION_PORTRAIT;
+         isLandscape = false;
+      }
    }
 
    /**
@@ -690,36 +735,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    }
 
-   @Override
-   public void onAccuracyChanged(int sensor, int accuracy) {
-      // Do nothing.
-
-   }
-
-   @Override
-   public void onSensorChanged(int sensor, float[] values) {
-      if (SensorManager.SENSOR_ORIENTATION == sensor) {
-         float pitch = values[1]; // pitch
-         float roll = values[2]; // roll
-         if (!(roll > -45 && roll < 45)) {
-            if (pitch > -45 && pitch < 45) {
-               if (roll > 0) {
-                  orientation = OROrientation.UIInterfaceOrientationLandscapeLeft;
-               } else {
-                  orientation = OROrientation.UIInterfaceOrientationLandscapeRight;
-               }
-            } else {
-               if (pitch < 0) {
-                  orientation = OROrientation.UIInterfaceOrientationPortrait;
-               } else {
-                  orientation = OROrientation.UIInterfaceOrientationPortraitUpsideDown;
-               }
-            }
-         }
-
-      }
-   }
-   
    /**
     * Check the current screen if can rotate.
     * 
@@ -759,6 +774,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
     */
    @Override
    public void onConfigurationChanged(Configuration newConfig) {
+      Log.e("Orientation", "------------change orientation---------"+getRequestedOrientation());
       int newOrientation = newConfig.orientation;
       Log.i("ORIENTATION", "orientation:" + newOrientation);
       if (lastConfigurationOrientation != newOrientation) {
@@ -769,14 +785,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          }
          if (canRotateToInterfaceOrientation()) {
             rotateToIntefaceOrientation();
-         } else {
-            newConfig.orientation = Configuration.ORIENTATION_UNDEFINED;
          }
-      } else if (lastConfigurationOrientation == Configuration.ORIENTATION_LANDSCAPE && lastConfigurationOrientation == newOrientation) {
-         newConfig.orientation = Configuration.ORIENTATION_UNDEFINED;
       }
-      lastConfigurationOrientation = newOrientation;
       super.onConfigurationChanged(newConfig);
+      lastConfigurationOrientation = newOrientation;
    }
+   
    
 }
