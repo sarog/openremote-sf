@@ -1,6 +1,6 @@
 /**
  * It's init view for app.
- * auther: handy.wang 2010-07-14
+ * author: handy.wang 2010-07-14
  */
 InitView = (function() {
   

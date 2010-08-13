@@ -1,6 +1,8 @@
 /**
  * This class is responsible for dealing with round robin.
- * auther: handy.wang 2010-08-09
+ * Incldes request group members, store group members in cookie and switch to a available controller server.
+ *
+ * author: handy.wang 2010-08-09
  */
 RoundRobinUtils = (function() {
   var roundRobinUtils = null;

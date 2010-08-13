@@ -1,6 +1,6 @@
 /**
  * This class is for storing absolute layout data.
- * auther: handy.wang 2010-07-21
+ * author: handy.wang 2010-07-21
  */
 AbsoluteLayoutModel = (function() {
   
@@ -15,6 +15,9 @@ AbsoluteLayoutModel = (function() {
       self.componentModel = ComponentModel.build(jsonParser, nodeName, properties);
     };
     
+    /**
+     * Get all the sensor id of absolute layout contains.
+     */
     this.getPollingSensorIDs = function() {
       var pollingSensorIDs = [];
       var sensor = this.componentModel.sensor;
@@ -25,6 +28,9 @@ AbsoluteLayoutModel = (function() {
     };
     
     // Private methods
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.ABSOLUTE;
       self.left = properties[Constants.LEFT];

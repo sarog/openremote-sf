@@ -1,6 +1,6 @@
 /**
  * It's view for sensory Conrols.
- * auther: handy.wang 2010-07-26
+ * author: handy.wang 2010-07-26
  */
 SensoryControlView = (function() {
   
@@ -8,12 +8,17 @@ SensoryControlView = (function() {
     SensoryControlView.superClass.constructor.call(this, controlParam, sizeParam);
     var self = this;
     
-    // This method must be overwritten in subclasses.
+    /**
+     * This method must be overwritten in subclasses.
+     */
     this.initView = function() {
       self.component = controlParam;
       self.size = sizeParam;
     }
     
+    /**
+     * Add polling observer for sensory view.
+     */
     this.addPollingListener = function() {
       var sensorID = 0;
       var sensor = self.component.sensor;
@@ -31,7 +36,9 @@ SensoryControlView = (function() {
       }
     };
     
-    // This method must be overwrite in subclasses.
+    /**
+     * This method must be overwrite in subclasses.
+     */
     this.dealPollingStatus = this.dealPollingStatus || function(statusMapParam) {
       throw new Error("The method dealPollingStatus defined in SensoryControlView must be overwrited in subclasses.");
     };

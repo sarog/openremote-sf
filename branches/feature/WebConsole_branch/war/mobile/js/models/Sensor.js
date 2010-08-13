@@ -1,6 +1,6 @@
 /**
  * This class is for storing sensor data.
- * auther: handy.wang 2010-07-26
+ * author: handy.wang 2010-07-26
  */
 Sensor = (function() {
   
@@ -16,6 +16,9 @@ Sensor = (function() {
       }
     };
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.LINK;
       self.id = properties[Constants.REF];

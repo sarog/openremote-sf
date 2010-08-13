@@ -1,6 +1,6 @@
 /**
  * This class is for storing button data.
- * auther: handy.wang 2010-07-28
+ * author: handy.wang 2010-07-28
  */
 Navigate = (function() {
   

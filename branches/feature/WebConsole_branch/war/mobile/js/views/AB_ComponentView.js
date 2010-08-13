@@ -1,6 +1,6 @@
 /**
  * This class is for building component views depending on component model data and size.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 ComponentView = (function() {
   
@@ -20,9 +20,7 @@ ComponentView = (function() {
     
     self.component = componentModelParam;
     self.size = sizeParam;
-    
 
-    
     self.initView();
   }
 

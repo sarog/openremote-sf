@@ -1,6 +1,7 @@
 /**
  * This class is for storing sensory component's data.
- * auther: handy.wang 2010-07-26
+ *
+ * author: handy.wang 2010-07-26
  */
 SensoryComponent = (function() {
   

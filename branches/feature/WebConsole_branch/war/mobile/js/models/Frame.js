@@ -1,6 +1,7 @@
 /**
  * This class is for storing frame data including left, top, width and height.
- * auther: handy.wang 2010-07-22
+ *
+ * author: handy.wang 2010-07-22
  */
 Frame = (function() {
   

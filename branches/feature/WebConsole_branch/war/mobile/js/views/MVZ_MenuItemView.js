@@ -1,6 +1,6 @@
 /**
  * It's view for menu item.
- * auther: handy.wang 2010-08-03
+ * author: handy.wang 2010-08-03
  */
 MenuItemView = (function() {
   var ID = "menuItemView";

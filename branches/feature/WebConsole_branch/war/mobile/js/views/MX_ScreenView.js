@@ -1,6 +1,6 @@
 /**
  * It's view for screen view controller.
- * auther: handy.wang 2010-07-19
+ * author: handy.wang 2010-07-19
  */
 ScreenView = (function() {
   
@@ -17,6 +17,9 @@ ScreenView = (function() {
     ScreenView.superClass.constructor.call(this);
     var self = this;
     
+    /**
+     * Render absolute and grid layout view
+     */
     function createCustomizedLayoutviews() {
       for (var index = 0; index < self.screen.layouts.length; index++) {
         var layoutModel = self.screen.layouts[index];

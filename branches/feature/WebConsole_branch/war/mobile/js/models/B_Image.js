@@ -1,13 +1,16 @@
 /**
  * This class is for storing image data.
- * auther: handy.wang 2010-07-19
+ *
+ * author: handy.wang 2010-07-19
  */
 Image = (function() {
   
   return function(jsonParser, properties) {
     var self = this;
     
-    // Override didParse method of SensoryComponent
+    /**
+     * Override didParse method of SensoryComponent
+     */
     this.didParse = function(jsonParser, nodeName, properties) {
       if(nodeName == Constants.LINK && Constants.SENSOR == properties[Constants.TYPE]) {
         this.sensor = new Sensor(jsonParser, properties);
@@ -18,6 +21,9 @@ Image = (function() {
     
     Image.superClass.constructor.call(this, jsonParser, properties);
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.IMAGE;
       self.id = properties[Constants.ID];

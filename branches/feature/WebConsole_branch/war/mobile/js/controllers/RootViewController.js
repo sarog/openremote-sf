@@ -1,6 +1,6 @@
 /**
  * It's for controlling all views render.
- * auther: handy.wang 2010-07-13
+ * author: handy.wang 2010-07-13
  */
 RootViewController = (function(){
  
@@ -19,11 +19,11 @@ RootViewController = (function(){
 
    var errorViewController = null;
    var initViewController = null;
-   
-   // properties
-   //var ErrorViewController = new ErrorViewController();
 
    // Public instance methods
+   /**
+    * It's responsible for subviews of root view including group views, pagination views, screen views and all kinds of component views.
+    */
    this.renderViews = function() {
      self.getView().removeSubView(errorViewController.getView());
      self.getView().removeSubView(initViewController.getView());
@@ -66,11 +66,17 @@ RootViewController = (function(){
      $("#errorViewSettingsBtn").button({icons: {primary: 'ui-icon-gear'}}).click(function() {AppSettings.getInstance(self).show();})
    };
    
+   /**
+    * Remove the initializing view of current webconsole.
+    */
    this.removeInitView = function() {
      self.getView().removeSubView(initViewController.getView());
    };
 
    // Private instance methods
+   /**
+    * Initializing jobs.
+    */
    function initView() {
      
      self.setView(new RootView());
@@ -81,6 +87,9 @@ RootViewController = (function(){
      addObservers();
    }
    
+   /**
+    * Add obsevers into Notification center for navigate and action of refreshing all view.
+    */
    function addObservers() {
      // Add navigation event listener.
      NotificationCenter.getInstance().addObserver(Constants.NAVIGATION_NOTIFICATION, self.navigateFromNotification);
@@ -88,6 +97,9 @@ RootViewController = (function(){
      NotificationCenter.getInstance().addObserver(Constants.REFRESH_VIEW_NOTIFICATION, self.refreshView);
    }
    
+   /**
+    * Do navigate action with model data navigate which is transfered by notification.
+    */
    this.navigateFromNotification = function(data) {
      if (data != null && data != undefined) {
        var navigate = data;
@@ -95,6 +107,9 @@ RootViewController = (function(){
      }
    };
    
+   /**
+    * Refresh webconsole views.
+    */
    this.refreshView = function() {
      RenderDataDB.getInstance().clearAll();
      NotificationCenter.getInstance().reset();
@@ -112,6 +127,9 @@ RootViewController = (function(){
      self.delegate.beginUpdate();
    };
    
+   /**
+    * Do navigate action and save the group and screen information.
+    */
    function navigateToWithHistory(navigate) {
      var historyNavigate = {};
      var currentGroup = self.currentGroupController.group;
@@ -128,6 +146,9 @@ RootViewController = (function(){
      }
    }
    
+   /**
+    * Save the last group and screen which users browse.
+    */
    function saveLastGroupIdAndScreenId() {
      var lastFootPrint = {};
      lastFootPrint.groupID = self.currentGroupController.group.id;
@@ -135,6 +156,9 @@ RootViewController = (function(){
      CookieUtils.setCookie(Constants.LAST_FOOT_PRINT, lastFootPrint);
    }
    
+   /**
+    * Do navigate action with navigate model data.
+    */
    function navigateTo(navigate) {
      // To group and screen
      if (parseInt(navigate.toGroup) > 0) {
@@ -165,12 +189,17 @@ RootViewController = (function(){
      }
    }
    
+   /**
+    * Update webconsole client with refreshing views.
+    */
    this.beginUpdate = function() {
        MessageUtils.hideLoading();
        self.refreshView();
    };
    
-   
+   /**
+    * Do navigate action to the specified group and screen with group id and screen id.
+    */
    function navigateToGroupAndScreen(groupID, screenID) {
      var targetGroupController = null;
      var isNotToSelf = (groupID != self.currentGroupController.group.id);
@@ -232,14 +261,23 @@ RootViewController = (function(){
      return true;
    }
    
+   /**
+    * Do navigate action to previous screen view.
+    */
    function navigateToPreviousScreen() {
      self.currentGroupController.previousScreen();
    }
    
+   /**
+    * Do navigate action to next screen view.
+    */
    function navigateToNextScreen() {
      self.currentGroupController.nextScreen();
    }
    
+   /**
+    * Do navigate action for back with history.
+    */
    function navigateBackwardInHistory() {
      if (self.navigateHistory.length > 0) {
        var backNavigate = self.navigateHistory[self.navigateHistory.length-1];
@@ -255,6 +293,9 @@ RootViewController = (function(){
      }
    }
    
+   /**
+    * Do logout action for user.
+    */
    function navigateToLogout() {
      ConnectionUtils.sendJSONPRequest(ConnectionUtils.getLogoutURL(), self);
    }

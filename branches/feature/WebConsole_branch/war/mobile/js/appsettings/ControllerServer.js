@@ -1,7 +1,7 @@
 /**
  * This class is responsible for storing info about controller whitch will be used in client.
  * 
- * auther: handy.wang 2010-07-07
+ * author: handy.wang 2010-07-07
  */
  
 ControllerServer = (function(){

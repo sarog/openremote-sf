@@ -1,6 +1,7 @@
 /**
  * It's responsible for controlling render screenviews.
- * auther: handy.wang 2010-07-19
+ *
+ * author: handy.wang 2010-07-19
  */
 PaginationController = (function() {
   
@@ -14,6 +15,9 @@ PaginationController = (function() {
     self.screenViewControllers = [];
     self.currentScreenIndex = 0;
     
+    /**
+     * Switch to previous screen view of current view.
+     */
     this.previousScreen = function() {
       if (self.currentScreenIndex > 0) {
         self.currentScreenViewController().stopPolling();
@@ -24,6 +28,9 @@ PaginationController = (function() {
       }
     };
     
+    /**
+     * Switch to next screen view of current view.
+     */
     this.nextScreen = function() {
       if (self.currentScreenIndex < (self.screenViewControllers.length - 1)) {
         self.currentScreenViewController().stopPolling();
@@ -34,6 +41,9 @@ PaginationController = (function() {
       }
     };
     
+    /**
+     * Switch to the specified screen view with screen id.
+     */
     this.switchToScreen = function(screenID) {
       var index = -1;
       for (var i = 0; i < self.screenViewControllers.length; i++) {
@@ -70,10 +80,16 @@ PaginationController = (function() {
       }
     };
     
+    /**
+     * Get current screenViewController instance.
+     */
     this.currentScreenViewController = function() {
       return self.screenViewControllers[self.currentScreenIndex];
     };
     
+    /**
+     * Initializing jobs
+     */
     function init() {
       for (var index = 0; index < self.screens.length; index++) {
         var screenViewController = new ScreenViewController(self.screens[index]);
@@ -105,6 +121,9 @@ PaginationController = (function() {
       saveLastGroupIdAndScreenId();
     }
     
+    /**
+     * Save the last group and screen into cookie when switch screen views in pagination view.
+     */
     function saveLastGroupIdAndScreenId() {
       var lastFootPrint = {};
       lastFootPrint.groupID = self.group.id;

@@ -1,11 +1,14 @@
 /**
  * This class is for building component models depending on jsonParser, nodeName and properties.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 ComponentModel = (function(){
   return function() {}
 })();
 
+/**
+ * Factory method for build all kinds of model instances related to webconsole identified by node name.
+ */
 ComponentModel.build = function(jsonParser, nodeName, properties) {
   switch(nodeName) {
     case Constants.LABEL :

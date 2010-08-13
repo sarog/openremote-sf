@@ -1,6 +1,6 @@
 /**
  * It's view for pagination controller.
- * auther: handy.wang 2010-07-19
+ * author: handy.wang 2010-07-19
  */
 PaginationView = (function() {
   
@@ -18,11 +18,17 @@ PaginationView = (function() {
     self.UUID = Math.uuid();
     self.delegate = delegateParam;
     
+    /**
+     * Switch screen view.
+     */
     this.updateView = function(screenViewParam) {
       $(self.screenViewContainer).children().detach();
       $(self.screenViewContainer).append(screenViewParam.getCanvas());
     };
     
+    /**
+     * Render the view of menuItemList.
+     */
     this.renderMenuItemListView = function(groupParam) {
       self.menuItemListView = new MenuItemListView(groupParam.tabBar);
       self.addSubView(self.menuItemListView);
@@ -54,6 +60,9 @@ PaginationView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    /**
+     * Make page control view.
+     */
     function constructPageControl() {
       // PreviousScreenButton
       var previousScreenBtn = $("<div />", {

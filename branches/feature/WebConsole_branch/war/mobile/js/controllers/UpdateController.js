@@ -1,6 +1,6 @@
 /**
  * It's responsible for loading panel data, parsing it and notify the AppBoot to call rootViewController to render groups, screens and so on.
- * auther: handy.wang 2010-07-13
+ * author: handy.wang 2010-07-13
  */
 UpdateController = (function() {
   var MSG_OF_NO_CONTROLLER_CONFIG = "Please enter a controller url in Settings panel, or leave it ?";
@@ -9,11 +9,16 @@ UpdateController = (function() {
     var self = this;
     var delegate = delegateParam;
     
+    /**
+     * Begin update with downloading panel json-formed data.
+     */
     this.update = function() {
       downloadJSONDataWithURL();
     };
     
-    // It's responsible for downloading json data from controller server.
+    /**
+     * It's responsible for downloading json data from controller server.
+     */
     function downloadJSONDataWithURL() {
       MessageUtils.updateLoadingMessage("Checking settings ...");
       var currentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
@@ -57,13 +62,16 @@ UpdateController = (function() {
       delegate.didUpdateFail("Download panel data fail, settings or leave it ?");
     };
     
+    /**
+     * Parse json-formed data downloaded from controller server.
+     */
     function parseJSONData(jsonData) {
       MessageUtils.updateLoadingMessage("Parsing panel ...");
       var jsonParser = new JSONParser(jsonData, self);
       jsonParser.startParse();
     }
     
-    // Delegate methods of JSONParser    
+    // Following two methods are delegate methods of JSONParser    
     this.didParse = function(jsonParser, nodeName, properties) {
       if (nodeName == Constants.SCREEN) {
         RenderDataDB.getInstance().addScreen(new Screen(jsonParser, properties));

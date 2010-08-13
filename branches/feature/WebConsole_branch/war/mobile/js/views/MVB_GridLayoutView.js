@@ -1,6 +1,6 @@
 /**
  * It's view for grid layout.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 GridLayoutView = (function() {
   var ID = "gridLayoutView";
@@ -29,6 +29,9 @@ GridLayoutView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    /**
+     * Render all the cell views of included in grid layout.
+     */
     function renderGridviews() {
       var size = new Size(self.gridLayoutModel.width, self.gridLayoutModel.height);
       var widthPerGridCell = parseInt(self.gridLayoutModel.width)/parseInt(self.gridLayoutModel.cols);

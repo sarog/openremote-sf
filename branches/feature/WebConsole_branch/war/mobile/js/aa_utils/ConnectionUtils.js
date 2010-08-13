@@ -1,13 +1,17 @@
 /**
- * This class is responsible for ajax requests.
+ * This class is responsible for ajax requests to controller server 
+ * and providing some function about composing specific URL to controller server.
  *
- * auther: handy.wang 2010-07-07
+ * author: handy.wang 2010-07-07
  */
 ConnectionUtils = function() {
 
+ /**
+  * Constructor
+  */
 	var ConnectionUtils = {
 	  /**
-	   * Compose the url for roundrobin service.
+	   * Compose the url for roundrobin service of controller server.
 	   */
 	  getRoundRobinURL: function() {
 	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
@@ -25,7 +29,7 @@ ConnectionUtils = function() {
 	  },
 	  
 	  /**
-		 * Get URL value for control action.
+		 * Get URL for control action provied by controller server.
 		 */
 	  getControlURL: function(componentID, commandValue) {
 	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
@@ -33,6 +37,9 @@ ConnectionUtils = function() {
       return controlURL;
 	  },
 	  
+	  /**
+	   * Get URL of status query about devices provided by controller server.
+	   */
 	  getStatusURL: function(sensorIDs) {
 	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
 	    if(sensorIDs != null && sensorIDs != undefined && sensorIDs.length > 0) {
@@ -43,6 +50,9 @@ ConnectionUtils = function() {
 	    }
 	  },
 	  
+	  /**
+	   * Get URL of status polling about devices provided by controller server.
+	   */
 	  getPollingURL: function(sensorIDs) {
 	    var currentControllerServerURL = CookieUtils.getCookie(Constants.CURRENT_SERVER).url;
 	    if(sensorIDs != null && sensorIDs != undefined && sensorIDs.length > 0) {
@@ -55,7 +65,7 @@ ConnectionUtils = function() {
 	  },
 	  
 	  /**
-		 * Get URL value for resource(mainly images).
+		 * Get qualified URL of resources(mainly images) where is in controller server side.
 		 */
 	  getResourceURL: function(resourceName) {
 	    var currentController = CookieUtils.getCookie(Constants.CURRENT_SERVER);
@@ -63,21 +73,21 @@ ConnectionUtils = function() {
 	  },
 	  
 		/**
-		 * Send ajax request with the feedback json data type.
-		 * Used jquery plugin named jquery-jsonp.
+		 * Send ajax request with feedback of json data using jquery plugin named jquery-jsonp.
+		 * The parameter "requestURL" is where the current method sends request to.
 		 *
-		 * didRequestSuccess method's structure is function(data, textStatus)
-		 * didRequestError methods's structure is function(xOptions, textStatus)
+		 * The structure of delegate method didRequestSuccess is "this.didRequestSuccess(data, textStatus)".
+		 * The structure of delegate method didRequestError is "this.didRequestError(xOptions, textStatus)".
 		 *
-		 * NOTE: this method can get error call back from response.
-		 * error recovery in case of network failure or ill-formed JSON responses
+		 * NOTE: this method can get error call back from response in case of network failure or ill-formed JSON responses.
+		 *
+		 * The details about JQueryJSONP please check it's website.
 		 */
 	  sendJSONPRequest: function(requestURL, delegate) {
       $.jsonp({
           url: requestURL,
           callbackParameter: "callback",
           success: delegate.didRequestSuccess,
-          //Error recovery in case of network failure or ill-formed JSON responses
           error: delegate.didRequestError
       });
 	  },
@@ -108,8 +118,10 @@ ConnectionUtils = function() {
     //     },
     
     /**
-		 * Send ajax request without json data feedback.
-		 * The delegate didFeedBackWithRequest method's structure is function(data, textStatus, XMLHttpRequest).
+		 * Send ajax request without feedback of json data.
+		 * The parameter "requestURL" is where the current method sends request to.
+		 *
+		 * The structure of delegate method didFeedBackWithRequest is "this.didFeedBackWithRequest(data, textStatus, XMLHttpRequest)".
 		 */
 		sendNormalRequest: function(requestURL, delegate) {
       $.ajax({

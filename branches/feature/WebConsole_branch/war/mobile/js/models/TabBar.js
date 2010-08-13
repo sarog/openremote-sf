@@ -1,6 +1,6 @@
 /**
  * This class is for storing tabbar data.
- * auther: handy.wang 2010-08-02
+ * author: handy.wang 2010-08-02
  */
 TabBar = (function() {
   
@@ -16,6 +16,9 @@ TabBar = (function() {
       }
     };
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.TAB_BAR;
       jsonParser.setDelegate(self);
