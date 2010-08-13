@@ -1,6 +1,6 @@
 /**
  * It's super base view of all views.
- * auther: handy.wang 2010-07-14
+ * author: handy.wang 2010-07-14
  */
 BaseView = (function() {
   
@@ -19,6 +19,9 @@ BaseView = (function() {
       return id;
     };
     
+    /**
+     * The canvas is for attaching subviews' canvas.
+     */
     this.setCanvas = function(canvasParam) {
       canvas = canvasParam;
     };

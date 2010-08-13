@@ -1,6 +1,6 @@
 /**
  * It's view for absolute layout.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 AbsoluteLayoutView = (function() {
   var ID = "absoluteLayoutView";
@@ -29,6 +29,9 @@ AbsoluteLayoutView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    /**
+     * Render all the subviews of included in absolute layout.
+     */
     function renderSubviews() {
       var size = new Size(self.absoluteLayoutModel.width, self.absoluteLayoutModel.height);
       if(self.absoluteLayoutModel.componentModel.node_name == Constants.BASE_MODEL) {

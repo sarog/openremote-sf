@@ -1,6 +1,6 @@
 /**
  * It's view for grid cell.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 GridCellView = (function() {
   var ID = "gridCellView";
@@ -29,6 +29,9 @@ GridCellView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    /**
+     * Render all the subviews of included in grid cell view.
+     */
     function renderSubviews() {
       if(self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
         return;

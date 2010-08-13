@@ -1,14 +1,22 @@
 /**
- * This class is for storing sensor data.
- * auther: handy.wang 2010-07-27
+ * This class is for polling with sensor data and posting notification of status change.
+ *
+ * author: handy.wang 2010-07-27
  */
 PollingHelper = (function() {
   var STATUS_ERROR_MSG_TITLE = "Status query fail";
   var POLLING_ERROR_MSG_TITLE = "Polling fail";
   
+  /**
+   * Constructor
+   */
   return function(sensorIDsParam) {
     var self = this;
     
+    /**
+     * Cancle polling request. So the polling request which is waiting for status change will be cancled
+     * and webconsole won't deal the status although some status changes after polling is cancled.
+     */
     this.cancelPolling = function() {
       self.isPollingRunning = false;
       if(navigator.appName == "Microsoft Internet Explorer") {
@@ -18,6 +26,9 @@ PollingHelper = (function() {
       }
     };
     
+    /**
+     * Query the status of devices directly for initializing the status of sensory components in screen view.
+     */
     this.requestCurrentStatusAndStartPolling = function() {
       if (this.isPollingRunning == false) {
         var statusURL = ConnectionUtils.getStatusURL(this.sensorIDs);
@@ -30,6 +41,9 @@ PollingHelper = (function() {
       }
     };
     
+    /**
+     * Send polling request to controller server with polling url which contains sensor ids.
+     */
     function doPolling() {
       if (self.isPollingRunning == false) {
         return;
@@ -42,7 +56,9 @@ PollingHelper = (function() {
       ConnectionUtils.sendJSONPRequest(pollingURL, self);
     }
     
-    // Delegate methods should be defined in ConnectionUtils.
+    /**
+     * This is delegate method of ConnectionUtils and invoked by ConnectionUtils on condition of ConnectionUtils goes well.
+     */
     this.didRequestSuccess = function(data, textStatus) {
       if (data != null && data != undefined) {
         var error = data.error;
@@ -60,6 +76,9 @@ PollingHelper = (function() {
       }
     };
     
+    /**
+     * This is responsible for handle errors from controller server passed by previous delegate method didRequestSuccess.
+     */
     this.handleServerError = function(error) {
       var statusCode = error.code;
       if (statusCode != Constants.HTTP_SUCCESS_CODE) {
@@ -88,7 +107,9 @@ PollingHelper = (function() {
       }
     };
     
-    // For dealing network error and illed json data.
+    /**
+     * This is delegate method of ConnectionUtils and invoked by ConnectionUtils on condition of error occurs .
+     */
     this.didRequestError = function(xOptions, textStatus) {
       if (self.isPollingRunning == false) {
         return;
@@ -101,7 +122,9 @@ PollingHelper = (function() {
       RoundRobinUtils.getInstance().switchControllerServer();
     };
     
-    // Delegate methods of JSONParser    
+   /**
+    * This is delegate method of JSONParser and will be called during parsing process.
+    */
     this.didParse = function(jsonParser, nodeName, properties) {
       if (nodeName == Constants.STATUS) {
         self.lastID = properties[Constants.ID];
@@ -110,6 +133,9 @@ PollingHelper = (function() {
       }
     };
     
+    /**
+     * This is delegate method of JSONParser and is called after parsing process finish.
+     */
     this.didParseFinished = function() {
       var isGotStatus = false;
       for (var key in self.statusMap) {
@@ -124,11 +150,17 @@ PollingHelper = (function() {
       }
     };
     
+    /**
+     * Initializing method.
+     */
     function init() {
       self.isPollingRunning = false;
       self.sensorIDs = sensorIDsParam;
     }
     
+    /**
+     * Call initializing method.
+     */
     init();
   }
 })();

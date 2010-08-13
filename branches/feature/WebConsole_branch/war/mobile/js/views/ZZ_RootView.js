@@ -1,6 +1,6 @@
 /**
  * It's container of all views.
- * auther: handy.wang 2010-07-13
+ * author: handy.wang 2010-07-13
  */
 RootView = (function() {
   

@@ -1,6 +1,7 @@
 /**
  * This class is for storing point data including left and top.
- * auther: handy.wang 2010-07-22
+ *
+ * author: handy.wang 2010-07-22
  */
 Point = (function() {
   

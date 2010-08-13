@@ -1,6 +1,7 @@
 /**
  * It's responsible for rendering group.
- * auther: handy.wang 2010-07-19
+ *
+ * author: handy.wang 2010-07-19
  */
 GroupController = (function() {
   
@@ -10,14 +11,23 @@ GroupController = (function() {
     var self = this;
     self.paginationController = null;
     
+    /**
+     * Get current screen's id.
+     */
     this.currentScreenID = function() {
       return self.currentScreen().id;
     };
     
+    /**
+     * Get current screen instance.
+     */
     this.currentScreen = function() {
       return self.currentScreenViewController().screen;
     };
     
+    /**
+     * Get current screenViewController instance.
+     */
     this.currentScreenViewController = function() {
       if (self.paginationController != null) {
         return self.paginationController.currentScreenViewController();
@@ -26,10 +36,16 @@ GroupController = (function() {
       }
     };
     
+    /**
+     * Judge if there is no screen view.
+     */
     this.hasNoScreenView = function() {
       return (self.group.screens.length == 0);
     };
     
+    /**
+     * Judge if app can find the specified screen with screen id.
+     */
     this.canFindScreenByID = function(screenID) {
       for (var i = 0; i < self.group.screens.length; i++) {
         var screen = self.group.screens[i];
@@ -40,36 +56,57 @@ GroupController = (function() {
       return false;
     };
     
+    /**
+     * Start polling.
+     */
     this.startPolling = function() {
       if (this.currentScreenViewController() != null) {
         this.currentScreenViewController().startPolling();
       }
     };
     
+    /**
+     * Stop polling.
+     */
     this.stopPolling = function() {
       if (this.currentScreenViewController() != null) {
         this.currentScreenViewController().stopPolling();
       }      
     };
     
+    /**
+     * Switch to the specified screen with screen id.
+     */
     this.switchToScreen = function(screenID) {
       return this.paginationController.switchToScreen(screenID);
     };
     
+    /**
+     * Switch to the previous screen view of current screen view.
+     */
     this.previousScreen = function() {
       return this.paginationController.previousScreen();
     };
     
+    /**
+     * Switch to the next screen view of current screen view.
+     */
     this.nextScreen = function() {
       return this.paginationController.nextScreen();      
     };
     
+    /**
+     * Show the error view about no screen found.
+     */
     function showErrorView() {
       MessageUtils.hideLoading();
       self.errorViewController = new ErrorViewController("No Screen Found", "Please associate screens with this group.");
       self.setView(self.errorViewController.getView());
     }
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.group = groupParam;
       

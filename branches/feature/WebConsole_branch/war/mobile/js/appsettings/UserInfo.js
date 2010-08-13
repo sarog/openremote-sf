@@ -1,6 +1,6 @@
 /**
  * This class is responsible for storing info about user.
- * auther: handy.wang 2010-07-09
+ * author: handy.wang 2010-07-09
  */
  UserInfo = (function(){
    

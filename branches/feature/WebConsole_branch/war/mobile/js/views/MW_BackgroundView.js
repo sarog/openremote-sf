@@ -1,6 +1,6 @@
 /**
  * It's view for background.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 BackgroundView = (function() {
   var ID = "backgroundView";
@@ -27,6 +27,9 @@ BackgroundView = (function() {
       layoutView();
     }
     
+    /**
+     * Render background view
+     */
     function layoutView() {
       if(!isImageNull()) {
         var imageQualifiedURL = ConnectionUtils.getResourceURL(self.background.image.src);

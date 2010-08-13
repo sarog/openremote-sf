@@ -1,6 +1,6 @@
 /**
  * This class is for storing screen data.
- * auther: handy.wang 2010-07-16
+ * author: handy.wang 2010-07-16
  */
 Screen = (function() {
   
@@ -26,6 +26,9 @@ Screen = (function() {
       }
     };
     
+    /**
+     * Get all the sensor id of screen contains.
+     */
     this.getPollingSensorIDs = function() {
       self.sensorIDs = [];
       for (var i = 0; i < this.layouts.length; i++) {
@@ -35,6 +38,9 @@ Screen = (function() {
     };
     
     // Private methods
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.SCREEN;
       self.id = properties[Constants.ID];

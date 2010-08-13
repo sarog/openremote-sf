@@ -1,6 +1,6 @@
 /**
  * This class is for storing slider data.
- * auther: handy.wang 2010-08-05
+ * author: handy.wang 2010-08-05
  */
 Slider = (function() {
   
@@ -36,6 +36,9 @@ Slider = (function() {
     
     Slider.superClass.constructor.call(this, jsonParser, properties);
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.SLIDER;
       self.id = properties[Constants.ID];

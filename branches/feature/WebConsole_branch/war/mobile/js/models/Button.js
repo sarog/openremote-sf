@@ -1,6 +1,6 @@
 /**
  * This class is for storing button data.
- * auther: handy.wang 2010-07-22
+ * author: handy.wang 2010-07-22
  */
 Button = (function() {
   
@@ -30,6 +30,9 @@ Button = (function() {
       }
     };
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.BUTTON;
       self.id = properties[Constants.ID];

@@ -1,6 +1,6 @@
 /**
  * It's view for menu item list.
- * auther: handy.wang 2010-08-02
+ * author: handy.wang 2010-08-02
  */
 MenuItemListView = (function() {
   var ID = "menuItemListView";
@@ -23,6 +23,9 @@ MenuItemListView = (function() {
     var self = this;
     self.show = false;
     
+    /**
+     * Show or hide menuItemListView.
+     */
     this.trigger = function() {
       if (self.show == false) {
         $(self.getCanvas()).css("display", "block");
@@ -44,6 +47,9 @@ MenuItemListView = (function() {
       renderMenu();
     }
     
+    /**
+     * Render menu view
+     */
     function renderMenu() {
       var globalTabBar = RenderDataDB.getInstance().globalTabBar;
       if (self.tabBarModel != null) {
@@ -63,6 +69,9 @@ MenuItemListView = (function() {
       }
     }
     
+    /**
+     * Render menu item list view
+     */
     function renderMenuItems(tabBarModel) {
       var tabBarItems = tabBarModel.items;
       if (tabBarItems.length > 0) {

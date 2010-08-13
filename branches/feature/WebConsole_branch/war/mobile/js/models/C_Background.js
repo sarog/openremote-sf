@@ -1,6 +1,6 @@
 /**
  * This class is for storing background data.
- * auther: handy.wang 2010-07-16
+ * author: handy.wang 2010-07-16
  */
 Background = (function() {
   
@@ -17,6 +17,9 @@ Background = (function() {
     };
     
     // Private methods
+    /**
+     * Initializing jobs.
+     */
     function init(jsonParser, properties) {
       self.node_name = Constants.BACKGROUND;
       self.image = null;

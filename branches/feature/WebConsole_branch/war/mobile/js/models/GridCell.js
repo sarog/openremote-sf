@@ -1,6 +1,7 @@
 /**
  * This class is for storing gridcell data.
- * auther: handy.wang 2010-07-22
+ *
+ * author: handy.wang 2010-07-22
  */
 GridCell = (function() {
   
@@ -13,6 +14,9 @@ GridCell = (function() {
       self.componentModel = ComponentModel.build(jsonParser, nodeName, properties);
     };
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.GRID_CELL;
       self.x = properties[Constants.GRID_CELL_X];

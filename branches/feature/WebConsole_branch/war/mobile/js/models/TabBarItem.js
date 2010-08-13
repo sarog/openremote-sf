@@ -1,6 +1,6 @@
 /**
  * This class is for storing tabbar item data.
- * auther: handy.wang 2010-08-02
+ * author: handy.wang 2010-08-02
  */
 TabBarItem = (function() {
   
@@ -20,6 +20,9 @@ TabBarItem = (function() {
       }
     };
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.TAB_BAR_ITEM;
       self.name = properties[Constants.NAME];

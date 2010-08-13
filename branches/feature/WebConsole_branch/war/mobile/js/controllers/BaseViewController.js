@@ -1,6 +1,7 @@
 /**
  * It's super class of related view controller.
- * auther: handy.wang 2010-07-13
+ *
+ * author: handy.wang 2010-07-13
  */
 BaseViewController = (function(){
   

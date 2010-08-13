@@ -1,6 +1,6 @@
 /**
  * It's error view for error.
- * auther: handy.wang 2010-07-14
+ * author: handy.wang 2010-07-14
  */
  
 ErrorView = (function(){

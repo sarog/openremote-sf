@@ -1,6 +1,6 @@
 /**
  * It's view for switch.
- * auther: handy.wang 2010-07-26
+ * author: handy.wang 2010-07-26
  */
 SwitchView = (function() {
   var ID = "switchView";
@@ -32,10 +32,13 @@ SwitchView = (function() {
       initCanvasAndCSS();
       self.customizedCss = {};
       // renderImages();
-      renderButtonName();
+      renderSwithValue();
       self.setCss(self.customizedCss);
     }
     
+    /**
+     * Deal with changed status for render in switch view.
+     */
     this.dealPollingStatus = function(statusMapParam) {
       var sensor = self.component.sensor;
       if (sensor == null || sensor == undefined) {
@@ -60,6 +63,9 @@ SwitchView = (function() {
     // Super class's constructor calling
     SwitchView.superClass.constructor.call(this, switchParam, sizeParam);
     
+    /**
+     * Initializing the style of switch view.
+     */
     function initCanvasAndCSS() {
       self.component = switchParam;
       self.size = sizeParam;
@@ -88,6 +94,9 @@ SwitchView = (function() {
       }
     }
     
+    /**
+     * Binding events about switch.
+     */
     function registerListeners() {
       $(self.getCanvas()).click(function() {
         if (self.currentStatus.toUpperCase() == Constants.ON.toUpperCase()) {
@@ -98,7 +107,10 @@ SwitchView = (function() {
       });
     }
     
-    function renderButtonName() {
+    /**
+     * Render changed status value if there is no images for changed status render.
+     */
+    function renderSwithValue() {
         $(self.getCanvas()).html("<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
                         "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" +
                         Constants.OFF.toUpperCase() +
@@ -107,6 +119,9 @@ SwitchView = (function() {
         updateViewWithStatus(Constants.OFF.toUpperCase());
     }
     
+    /**
+     * Update the render of switch view with changed status.
+     */
     function updateViewWithStatus(statusParam) {
       if (statusParam.toUpperCase() != Constants.ON.toUpperCase() && statusParam.toUpperCase() != Constants.OFF.toUpperCase()) {
         MessageUtils.showMessageDialogWithSettings("Error info", "Invalid status " + statusParam + " with switchview's component id " + self.component.id);
@@ -127,6 +142,9 @@ SwitchView = (function() {
       }
     }
     
+    /**
+     * Judge if switch can use image to render changed status.
+     */
     function canUseImage() {
       return self.onImageName != "" && self.offImageName != "";
     }

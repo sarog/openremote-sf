@@ -1,6 +1,7 @@
 /**
  * This class is super class of all model classes for storing data.
- * auther: handy.wang 2010-07-16
+ *
+ * author: handy.wang 2010-07-16
  */
 BaseModel = (function(){
   

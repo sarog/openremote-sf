@@ -1,6 +1,6 @@
 /**
  * This class is for storing sensorState data.
- * auther: handy.wang 2010-07-26
+ * author: handy.wang 2010-07-26
  */
 SensorState = (function() {
   
@@ -12,6 +12,10 @@ SensorState = (function() {
     // this.didParse = function(jsonParser, nodeName, properties) {
     // };
     // 
+    
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.SENSOR_STATE;
       self.name = properties[Constants.NAME];

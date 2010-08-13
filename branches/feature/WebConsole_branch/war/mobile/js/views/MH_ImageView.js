@@ -1,6 +1,6 @@
 /**
  * It's view for image.
- * auther: handy.wang 2010-08-04
+ * author: handy.wang 2010-08-04
  */
 ImageView = (function() {
   var ID = "imageView";
@@ -41,6 +41,9 @@ ImageView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    /**
+     * Deal with changed status for render in image view.
+     */
     this.dealPollingStatus = function(statusMapParam) {
       var newStatus = statusMapParam[self.sensorID];
       var updateView = false;

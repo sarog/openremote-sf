@@ -1,14 +1,32 @@
 /**
- * This class is responsible for maintenance data within cookie.
- * auther: handy.wang 2010-07-09
+ * This class is responsible for data maintenance within cookie.
+ *
+ * author: handy.wang 2010-07-09
  */
 CookieUtils = (function() {
+  /**
+   * The methods CookieUtils provides are static.
+   */
   return {
+    /**
+     * Save data into cookie.
+     * Parameter "name" is the key of the data which is to be stored.
+     * parameter "jsonObj" is the data which is to be stored and it's javascript object.
+     *
+     * NOTE: The data stored in cookie will be replaced with the same key "name".
+     */
     setCookie : function(name, jsonObj) {
       var stringValue = JSON.stringify(jsonObj, null);
       var expires = new Date(3000,01,01);
       document.cookie = name + "=" + escape(stringValue) + "; path=/; expires=" + expires.toGMTString();
     },
+    
+    /**
+     * Get data from cookie with key "name".
+     * Param "name" is the key which can identify the data stored in cookie.
+     *
+     * NOTE: The data return to caller of this method is javascript object.
+     */
     getCookie : function(name) {
     	// Firstly split cookie up into name/value pairs
     	// NOTE: document.cookie only returns name=value, not the other components
@@ -42,6 +60,10 @@ CookieUtils = (function() {
     		return null;
     	}
     },
+    
+    /**
+     * Clear all cookie data about webconsole.
+     */
     clearCookies : function() {
       // Firstly split cookie up into name/value pairs
     	// NOTE: document.cookie only returns name=value, not the other components

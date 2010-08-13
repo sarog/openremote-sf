@@ -1,6 +1,6 @@
 /**
  * This class is for storing grid layout data.
- * auther: handy.wang 2010-07-21
+ * author: handy.wang 2010-07-21
  */
 GridLayoutModel = (function() {
   
@@ -17,6 +17,9 @@ GridLayoutModel = (function() {
       }
     };
     
+    /**
+     * Get all the sensor id of grid layout contains.
+     */
     this.getPollingSensorIDs = function() {
       var pollingSensorIDs = [];
       for (var i = 0; i < this.cells.length; i++) {
@@ -29,6 +32,9 @@ GridLayoutModel = (function() {
     };
     
     // Private methods
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.GRID;
       self.left = properties[Constants.LEFT];

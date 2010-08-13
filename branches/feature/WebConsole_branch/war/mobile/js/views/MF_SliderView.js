@@ -1,6 +1,6 @@
 /**
  * It's view for slider.
- * auther: handy.wang 2010-08-05
+ * author: handy.wang 2010-08-05
  */
 SliderView = (function() {
   var ID = "sliderView";

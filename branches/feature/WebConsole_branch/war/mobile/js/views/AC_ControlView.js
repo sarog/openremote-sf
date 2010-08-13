@@ -1,6 +1,6 @@
 /**
  * This class is for building control views depending on component model data and size.
- * auther: handy.wang 2010-07-23
+ * author: handy.wang 2010-07-23
  */
 ControlView = (function() {
   
@@ -15,12 +15,17 @@ ControlView = (function() {
       // throw new Error("The method initView defined in ControlView must be override in subclasses.");
     }
     
-    // Super class's constructor calling
+    /**
+     * Super class's constructor calling
+     */
     ControlView.superClass.constructor.call(this, componentModelParam, sizeParam);
     
     self.component = componentModelParam;
     self.size = sizeParam;
     
+    /**
+     * Send control command to controller server with value.
+     */
     this.sendCommandRequest = function(commandValue) {
       var controlURL = ConnectionUtils.getControlURL(self.component.id, commandValue);
       ConnectionUtils.sendJSONPRequest(controlURL, self);
@@ -39,6 +44,9 @@ ControlView = (function() {
       }
     };
     
+    /**
+     * Handle errors from controller server.
+     */
     this.handleServerError = function(error) {
       var statusCode = error.code;
       if (statusCode != Constants.HTTP_SUCCESS_CODE) {
@@ -56,7 +64,9 @@ ControlView = (function() {
       }
     };
     
-    // For dealing network error and illed json data.
+    /** 
+     * For dealing network error and illed json data.
+     */
     this.didRequestError = function(xOptions, textStatus) {
       // MessageUtils.showMessageDialogWithSettings("Send request error", "Failed to send control request.");
       RoundRobinUtils.getInstance().switchControllerServer();
@@ -66,6 +76,9 @@ ControlView = (function() {
 
 ClassUtils.extend(ControlView, ComponentView);
 
+/**
+ * Factory method for build all kinds of control view with model data and size the control view should be.
+ */
 ControlView.build = function(componentModelParam, sizeParam) {
   switch(componentModelParam.node_name) {
     case Constants.BUTTON:

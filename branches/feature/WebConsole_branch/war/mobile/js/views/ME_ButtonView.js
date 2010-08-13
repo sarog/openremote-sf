@@ -1,6 +1,6 @@
 /**
- * It's view for button.
- * auther: handy.wang 2010-07-22
+ * It's view of button.
+ * author: handy.wang 2010-07-22
  */
 ButtonView = (function() {
   var ID = "buttonView";
@@ -36,6 +36,9 @@ ButtonView = (function() {
     // Super class's constructor calling
     ButtonView.superClass.constructor.call(this, buttonParam, sizeParam);
     
+    /**
+     * Initializing the style of button view.
+     */
     function initCanvasAndCSS() {
       self.component = buttonParam;
       self.size = sizeParam;
@@ -59,6 +62,9 @@ ButtonView = (function() {
       }
     }
     
+    /**
+     * Binding events about button view.
+     */
     function registerListenersForBtn() {
       // Mousedown event
       $(self.getCanvas()).mousedown(function() {
@@ -86,6 +92,9 @@ ButtonView = (function() {
       $(self.getCanvas()).mouseout(cancelTimer);
     }
     
+    /**
+     * Cancle the timer for repeated command sending.
+     */
     function cancelTimer() {
       if(self.component.hasControlCommand == true && self.component.isCommandRepeated && self.isClearInterval == false) {
         window.clearInterval(self.timerID);
@@ -93,6 +102,9 @@ ButtonView = (function() {
       }
     }
     
+    /**
+     * Render the images about button view including default image and pressed image.
+     */
     function renderImages() {
       var defaultImage = self.component.defaultImage;
       if (defaultImage != null && defaultImage != undefined) {
@@ -112,6 +124,9 @@ ButtonView = (function() {
       }
     }
     
+    /**
+     * Render the name of button view.
+     */
     function renderButtonName() {
       var name = self.component.name;
       if (name != null && name != undefined) {

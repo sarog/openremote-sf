@@ -1,7 +1,8 @@
 /**
  * This class is responsible for saving some configurations which is used to create client.
+ * This class is singleton.
  *
- * auther: handy.wang 2010-07-07
+ * author: handy.wang 2010-07-07
  */
 
 AppSettings = (function(){
@@ -9,13 +10,24 @@ AppSettings = (function(){
   // Private static variables
   var appSettings = null;
   
+  /** Width css style for AppSettings dialog */
   var DIALOG_WIDHT = "97%";
+  
+  /** Height css style for AppSettings dialog */
   var DIALOG_HEIGHT = "auto";
+  
+  /** HTTP protocol for qualified url */
   var HTTP_PROTOCOL = "http://";
+  
+  /** Regular expression for url which doesn't contain protocol part */
   var URL_REGEX = /(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+  
+  /** Empty html content of url list of controller server. */
   var EMPTY_CONTROLLER_URL_LIST = "<div style='text-align: center; padding: 0.4em; font-size: 100%; height: 18px;'>Currently, there is no controller url.</div>";
    
-  // Constructor
+  /**
+   * Constructor
+   */
   function AppSettings(delegateParam) {
     var self = this;
     var delegate = delegateParam;
@@ -26,10 +38,16 @@ AppSettings = (function(){
     
     // Instatnce methods
     
+    /**
+     * Set delegate for change current delegate instance.
+     */
     this.setDelegate = function(delegateParam) {
       delegate = delegateParam;
     };
     
+    /**
+     * Show appsettings's dialog.
+     */
     this.show = function() {
       if (controllerServers.length > 0) {
         renderControllerServers();
@@ -40,10 +58,16 @@ AppSettings = (function(){
       $(appSettingsDialog).dialog("open");
     };
     
+    /**
+     * Get controller servers users customized.
+     */
     this.getControllerServers  = function() {
       return controllerServers;
     };
     
+    /**
+     * Recover AppSettings dialog with current controller server and controller servers stored in cookie.
+     */
     this.recoverSettingsFromCookie = function() {
       // Recover cookied controller servers.
   	  var cookiedControllerServersObjs = CookieUtils.getCookie(Constants.CONTROLLER_SERVERS);
@@ -79,7 +103,9 @@ AppSettings = (function(){
       initControllerPanelSelect();
     }
     
-    // Attatch the template layout to dialog.
+    /**
+     * Renders the AppSettings dialog's layout.
+     */
     function renderTemplate() {
       var dialogContent = new EJS({url: "./mobile/ejs/AppSettings.ejs"}).render({name:"handy"});
       $(appSettingsDialog).html(dialogContent);
@@ -132,13 +158,18 @@ AppSettings = (function(){
     	});
     }
     
+    /**
+     * Reset the panel identities select.
+     */
     function resetControllerPanelSelectContainer() {
 		  $("#controllerPanelSelectContainer").hide();
       $("#controllerPanelSelect").children().remove();
       $("#controllerPanelSelect").html("<option>none</option>");
     }
     
-    // Init the addControllerURL button.
+    /** 
+     * Init the addControllerURL button.
+     */
     function initAddControllerURLBtn() {
       $(appSettingsDialog).find("#addControllerURLBtn").button({icons : {primary : 'ui-icon-plusthick'}})
         .click(function() {
@@ -152,6 +183,9 @@ AppSettings = (function(){
       );
     }
     
+    /**
+     * Render the controller servers list.
+     */
     function renderControllerServers() {
       $(appSettingsDialog).find("#controllerURLList").html("");
       var controllerServersDivs = "";
@@ -201,6 +235,9 @@ AppSettings = (function(){
       }
     }
     
+    /**
+     * Load panel identities from controller server.
+     */
     function loadPanelIdentities() {
       MessageUtils.showLoading("Loading panel identities.");
       
@@ -211,6 +248,9 @@ AppSettings = (function(){
     }
     
     // Followings two are delegate methods should be defined in ConnectionUtils.js .
+    /**
+     * Invoked when request is successful.
+     */
     this.didRequestSuccess = function(data, textStatus) {
       var panelIdentities = [];
       if (data != null && data != undefined) {
@@ -257,6 +297,9 @@ AppSettings = (function(){
       MessageUtils.hideLoading();
     };
     
+    /**
+     * Invoked when some error occured with request.
+     */
     this.didRequestError = function(xOptions, textStatus) {
       $("#controllerPanelSelectContainer").hide();
       selectedControllerServer = null;
@@ -264,6 +307,9 @@ AppSettings = (function(){
       MessageUtils.showMessageDialog("Message", "Failed to load panels.");
     };
     
+    /**
+     * Binding events to radio buttons for protocol choose.
+     */
     function initProtocolRadioBtns() {
       $("input[name = 'protocol']").click(function() {
         $("#controllerURLInput").val($(this).val());
@@ -271,12 +317,18 @@ AppSettings = (function(){
       });
     }
     
+    /**
+     * Binding events to panel identity select.
+     */
     function initControllerPanelSelect() {
       $("#controllerPanelSelectContainer").hide();
       $("#controllerPanelSelect").change(function(){
       });
     }
 
+    /**
+     * Update the tips when user enter wrong formed url.
+     */
     function updateTips(t) {
       var tips =  $(appSettingsDialog).find("#appSettingsTips");
       var initInfo = tips.html();
@@ -288,6 +340,9 @@ AppSettings = (function(){
   		);
   	}
 
+    /**
+     * Check the value of o with regular expression.
+     */
     function checkRegexp(o,regexp,n) {
       o.removeClass('ui-state-error');
   		if (!( regexp.test(o.val().trim()))) {
@@ -299,6 +354,9 @@ AppSettings = (function(){
   		}
   	}
   	
+  	/**
+  	 * Create a controller server instance and save it to cookie.
+  	 */
   	function newControllerServer(urlParam) {
       var controllerServer = new ControllerServer(urlParam);
       controllerServers.push(controllerServer);
@@ -310,6 +368,9 @@ AppSettings = (function(){
     //   CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
     // }
     
+    /**
+     * Query controller server instance from controller servers.
+     */
     function findControllerServerByID(id) {
       if (id == null || id == "" || id == undefined) {
         return null;
@@ -322,6 +383,9 @@ AppSettings = (function(){
       return null;
     }
     
+    /**
+     * Remove controller server with id from cookie.
+     */
     function removeControllerServerByID(id) {
       if (id == "" || id == undefined) {
         return false;
@@ -339,6 +403,9 @@ AppSettings = (function(){
       return false;
     }
     
+    /**
+     * Replace controller server instance with id.
+     */
     function replaceControllerServer(id, controllerServerObj) {
       var controllerServer = findControllerServerByID(id);
       controllerServers.splice(controllerServers.indexOf(controllerServer), 0, controllerServerObj);

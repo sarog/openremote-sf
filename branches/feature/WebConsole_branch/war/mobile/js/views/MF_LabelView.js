@@ -1,6 +1,6 @@
 /**
  * It's view for label.
- * auther: handy.wang 2010-08-03
+ * author: handy.wang 2010-08-03
  */
 LabelView = (function() {
   var ID = "labelView";
@@ -41,6 +41,9 @@ LabelView = (function() {
       self.setCss(DEFAULT_CSS_STYLE);
     }
     
+    /**
+     * Deal with the changed status for render in lalel view.
+     */
     this.dealPollingStatus = function(statusMapParam) {
       var sensorStates = self.component.sensor.states;
       var newStatus = statusMapParam[self.sensorID];

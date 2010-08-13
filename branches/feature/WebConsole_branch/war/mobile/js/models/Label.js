@@ -1,6 +1,6 @@
 /**
  * This class is for storing label data.
- * auther: handy.wang 2010-08-03
+ * author: handy.wang 2010-08-03
  */
 Label = (function() {
   
@@ -8,6 +8,9 @@ Label = (function() {
     Label.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
     
+    /**
+     * Initializing jobs.
+     */
     function init() {
       self.node_name = Constants.LABEL;
       self.id = properties[Constants.ID];
