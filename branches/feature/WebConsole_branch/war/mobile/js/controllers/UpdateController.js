@@ -85,8 +85,37 @@ UpdateController = (function() {
     this.didParseFinished = function() {
       MessageUtils.hideLoading();
       // Cache group members into cookie and use it while polling and control fail.
-      RoundRobinUtils.getInstance().cacheGroupMembers();
-      delegate.didUpdateSuccess();
+      var cacheGroupMembersCallbackDelegate = {
+        // The following two methods "didRequestSuccess" and "didRequestError" are delegate methods of ConnectionUtils.
+        /**
+         * This method will be invoked when request successfully.
+         */
+        didRequestSuccess : function(data, textStatus) {
+          if (data != null && data != undefined) {
+            var error = data.error;
+            if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
+              MessageUtils.showMessageDialogWithSettings("RoundRobin fail", error.message);
+            } else {
+              RoundRobinUtils.getInstance().storeGroupMembers(data);
+            }
+          } else {
+            MessageUtils.showMessageDialogWithSettings("RoundRobin fail", Constants.UNKNOWN_ERROR_MESSAGE);
+          }
+          // Render the views with panel data of current controller, authough request servers was failed.
+          delegate.didUpdateSuccess();
+        },
+
+        /**
+         * This method will be called when illed json data come back and network exceptions occured.
+         */
+        didRequestError : function(xOptions, textStatus) {
+          // Render the views with panel data of current controller, authough request servers was failed.
+          delegate.didUpdateSuccess();
+          MessageUtils.showMessageDialogWithSettings("RoundRobin fail", "No group member was found with network connection error or some unknown exceptions occured.");
+        }
+      };
+      
+      RoundRobinUtils.getInstance().cacheGroupMembers(cacheGroupMembersCallbackDelegate);
     };
     
   }

@@ -7,6 +7,8 @@ TabBarItem = (function() {
   return function(jsonParser, properties) {
     TabBarItem.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
+    self.navigate = null;
+    self.image = null;
     
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {

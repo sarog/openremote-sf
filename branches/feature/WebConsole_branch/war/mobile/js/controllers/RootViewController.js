@@ -111,6 +111,7 @@ RootViewController = (function(){
     * Refresh webconsole views.
     */
    this.refreshView = function() {
+     MessageUtils.hideLoading();
      RenderDataDB.getInstance().clearAll();
      NotificationCenter.getInstance().reset();
      self.getView().removeSubViews();
@@ -188,14 +189,6 @@ RootViewController = (function(){
        return false;
      }
    }
-   
-   /**
-    * Update webconsole client with refreshing views.
-    */
-   this.beginUpdate = function() {
-       MessageUtils.hideLoading();
-       self.refreshView();
-   };
    
    /**
     * Do navigate action to the specified group and screen with group id and screen id.
