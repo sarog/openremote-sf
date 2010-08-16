@@ -21,6 +21,7 @@ package org.openremote.web.console.client;
 
 import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.listener.SubmitListener;
+import org.openremote.web.console.client.polling.JsonResultReader;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
@@ -41,6 +42,7 @@ import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
@@ -72,7 +74,7 @@ public class WebConsole implements EntryPoint {
       if ("".equals(currentServer) || "".equals(currentPanel)) {
          toSetting();
       } else {
-         readPanelXmlEntity();
+         loadResources();
       }
    }
    
@@ -84,7 +86,7 @@ public class WebConsole implements EntryPoint {
       SettingsWindow settingWindow = new SettingsWindow();
       settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          public void afterSubmit(SubmitEvent be) {
-            readPanelXmlEntity();
+            loadResources();
          }
       });
    }
@@ -111,10 +113,26 @@ public class WebConsole implements EntryPoint {
    }
    
    /**
+    * Load resources from controller, first detect group members, after group members result return, read panel xml entity.
+    */
+   private void loadResources() {
+      ORRoundRobin.detectGroupMembers(new JsonResultReader() {
+         public void read(JSONObject jsonObj) {
+            if (jsonObj.containsKey("servers")) {
+               JSONObject serversObj = jsonObj.get("servers").isObject();
+               if (serversObj.containsKey("server")) {
+                  Cookies.setCookie(Constants.GROUP_MEMBERS, serversObj.get("server").toString());
+               }
+            }
+            readPanelXmlEntity();
+         }
+      });
+   }
+   
+   /**
     * read panel entity from server side.
     */
    private void readPanelXmlEntity() {
-      ORRoundRobin.detectGroupMembers();
       final String url = ClientDataBase.getSecuredServer() + "/rest/panel/"
             + URL.encode(ClientDataBase.appSetting.getCurrentPanelIdentity());
       DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
