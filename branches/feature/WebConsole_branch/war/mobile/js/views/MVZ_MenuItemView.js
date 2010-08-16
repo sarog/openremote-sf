@@ -25,12 +25,12 @@ MenuItemView = (function() {
       self.setID(ID + Math.uuid());
       
       var qualifiedImageSrc = "";
-      var imageSrc = self.tabBarItem.image.src;
+      var imageSrc = (self.tabBarItem.image != null && self.tabBarItem.image != undefined) ? self.tabBarItem.image.src : "";
       // The src of image start with "!" means it's local resource.
       if (imageSrc.indexOf("!") == 0) {
         qualifiedImageSrc = imageSrc.substring(imageSrc.indexOf("!") + 1);
       } else {
-        qualifiedImageSrc = ConnectionUtils.getResourceURL(self.tabBarItem.image.src);
+        qualifiedImageSrc = ConnectionUtils.getResourceURL(imageSrc);
       }
       
       var tabBarItemName = (self.tabBarItem.name.length > 10) ? self.tabBarItem.name.substring(0,10)+"..." : self.tabBarItem.name;

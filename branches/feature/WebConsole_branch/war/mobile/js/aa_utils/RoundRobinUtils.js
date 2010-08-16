@@ -22,18 +22,15 @@ RoundRobinUtils = (function() {
 	      return;
 	    }
       var serverURL = servers[0][Constants.GROUP_MEMBER_URL];
-      var currentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
-      currentServer.url = serverURL;
+      
+      var oldCurrentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
+      var currentServer = new ControllerServer(serverURL);
+      currentServer.selectedPanelIdentity = oldCurrentServer.selectedPanelIdentity;
+      currentServer.panelIdentities = oldCurrentServer.panelIdentities;
       
       var controllerServers = CookieUtils.getCookie(Constants.CONTROLLER_SERVERS);
-      for (var i = 0; i < controllerServers.length; i++) {
-        var controllerServer = controllerServers[i];
-        if (controllerServer.id == currentServer.id) {
-          controllerServer.url = serverURL;
-          break;
-        }
-      }
-      
+      controllerServers[controllerServers.length] = currentServer;
+
       CookieUtils.setCookie(Constants.CURRENT_SERVER, currentServer);
       CookieUtils.setCookie(Constants.CONTROLLER_SERVERS, controllerServers);
       NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION, null);
@@ -43,39 +40,15 @@ RoundRobinUtils = (function() {
     /** 
      * Cache group members into cookie and use it while polling and control fail.
      */
-    this.cacheGroupMembers = function() {
+    this.cacheGroupMembers = function(delegate) {
       var roundRobinURL = ConnectionUtils.getRoundRobinURL();
-      ConnectionUtils.sendJSONPRequest(roundRobinURL, self);
+      ConnectionUtils.sendJSONPRequest(roundRobinURL, delegate);
     };
-    
-    // The following two methods "didRequestSuccess" and "didRequestError" are delegate methods of ConnectionUtils.
-    /**
-     * This method will be invoked when request successfully.
-     */
-    this.didRequestSuccess = function(data, textStatus) {
-      if (data != null && data != undefined) {
-        var error = data.error;
-        if (error != null && error != undefined && error.code != Constants.HTTP_SUCCESS_CODE) {
-          MessageUtils.showMessageDialogWithSettings("RoundRobin fail", error.message);
-        } else {
-          storeGroupMembers(data);
-        }
-      } else {
-        MessageUtils.showMessageDialogWithSettings("RoundRobin fail", Constants.UNKNOWN_ERROR_MESSAGE);
-      }
-    };
-    
-    /**
-     * This method will be called when illed json data come back and network exceptions occured.
-     */
-    this.didRequestError = function(xOptions, textStatus) {
-      MessageUtils.showMessageDialogWithSettings("RoundRobin fail", "No group member was found with network connection error or some unknown exceptions occured.");
-    }
     
     /**
      * Store the group members into cookie.
      */
-    function storeGroupMembers(data) {
+    this.storeGroupMembers = function(data) {
       var currentServer = CookieUtils.getCookie(Constants.CURRENT_SERVER);
       var currentServerURL = currentServer.url;
       

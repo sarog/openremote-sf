@@ -150,7 +150,7 @@ AppSettings = (function(){
       			
       			// Update with controller url.
       			MessageUtils.showLoading("Rendering......");
-      			delegate.beginUpdate();
+            NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION, null);
     			}
     		},
     		close: function() {
