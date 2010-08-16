@@ -87,6 +87,7 @@ PollingHelper = (function() {
             doPolling();
             return;
           case Constants.CONTROLLER_CONFIG_CHANGED:
+            NotificationCenter.getInstance().postNotification(Constants.REFRESH_VIEW_NOTIFICATION, null);
             return;
           case Constants.UNAUTHORIZED:
             self.isPollingRunning = false;
