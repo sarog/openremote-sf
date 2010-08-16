@@ -28,8 +28,8 @@
 @interface GroupController : UIViewController {
 
 	Group *group;
-	PaginationController *paginationController;
-	PaginationController *lastPaginationController;
+	PaginationController *portraitPaginationController;
+	PaginationController *landscapePaginationController;
 	ErrorViewController *errorViewController;
 	UIInterfaceOrientation currentOrientation;
 }
@@ -50,9 +50,8 @@
 - (BOOL)isOrientationLandscape;
 - (CGRect)getFullFrame;
 - (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape;
-- (BOOL)isNew;
-- (BOOL)switchToFirstScreen;
-
+- (void)transformToOrientation:(UIInterfaceOrientation)thatOrientation;
+- (BOOL)isOrientationLandscapeWithScreenId:(int)screenId;
 @property (nonatomic, retain) Group *group;
 
 @end
