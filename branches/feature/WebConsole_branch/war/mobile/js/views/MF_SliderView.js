@@ -129,6 +129,9 @@ SliderView = (function() {
            "margin-top":self.component.isVertical ? ((isFirstBtn == true) ? "0px" : "7px") : "auto"
          },
          click : function() {
+           if (self.component.isPassive == true) {
+             return;
+           }
            if (self.currentValue == null) {
              return;
            }
@@ -183,6 +186,9 @@ SliderView = (function() {
        });
        
        var thumb = self.sliderRange.children("a:last-child");
+       
+       // Hack the slider of JQuery UI providing.
+       // Default trackImages and thumbImages.
        if (self.component.isVertical == false) {
          sliderRangeCanvas.css({"width":"70%"});
          self.sliderRange.children("div:first-child").removeClass("ui-widget-header").addClass("horizontal-slider-min-track-image");
@@ -207,7 +213,8 @@ SliderView = (function() {
          });
        }
        
-       // Customize track image.
+       // Begin customize track image.
+       // Customizes min trackImage.
        var minTrackImageSRC = self.component.minTrackImageSRC;
        var canMinTrackImageUse = (minTrackImageSRC != null && minTrackImageSRC != "");
        var qualifiedMinTrackImageSRC = ConnectionUtils.getResourceURL(minTrackImageSRC);
@@ -219,6 +226,7 @@ SliderView = (function() {
          }
        }
        
+       // Customizes max trackImage
        var maxTrackImageSRC = self.component.maxTrackImageSRC;
        var canMaxTrackImageUse = (maxTrackImageSRC != null && maxTrackImageSRC != "");
        var qualifiedMaxTrackImageSRC = ConnectionUtils.getResourceURL(maxTrackImageSRC);
@@ -229,9 +237,13 @@ SliderView = (function() {
            self.sliderRange.css({"background" : "url(" + qualifiedMaxTrackImageSRC + ") repeat-x scroll 50% 50%"});
          }
        }
-       
        if (canMinTrackImageUse && canMaxTrackImageUse) {
          self.sliderRange.css({"border" : "0px"});
+       }
+       // End custom track image
+       
+       if (self.component.isPassive == true) {
+         self.sliderRange.slider({disabled: true});
        }
        
        return self.sliderRange;
