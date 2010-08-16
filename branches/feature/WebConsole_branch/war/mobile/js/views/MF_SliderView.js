@@ -173,8 +173,8 @@ SliderView = (function() {
        self.sliderRange = $(sliderRangeCanvas).slider({
          orientation: (self.component.isVertical) ? "vertical" : "horizontal",
          range: "min",
-         min: self.component.minValue,
-         max: self.component.maxValue,
+         min: parseInt(self.component.minValue),
+         max: parseInt(self.component.maxValue),
          step: 1,
          value: 0,
          slide: function(event, ui) {
