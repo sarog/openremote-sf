@@ -615,6 +615,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
             }
             
             boolean newOrientation = currentOrientation;
+            if (toScreenId > 0) {
+               newOrientation = XMLEntityDataBase.getScreen(toScreenId).isLandscape();
+            }
             if (! targetGroup.hasOrientationScreens(newOrientation)) {
                newOrientation = !newOrientation;
             }
@@ -774,7 +777,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
     */
    @Override
    public void onConfigurationChanged(Configuration newConfig) {
-      Log.e("Orientation", "------------change orientation---------"+getRequestedOrientation());
       int newOrientation = newConfig.orientation;
       Log.i("ORIENTATION", "orientation:" + newOrientation);
       if (lastConfigurationOrientation != newOrientation) {
