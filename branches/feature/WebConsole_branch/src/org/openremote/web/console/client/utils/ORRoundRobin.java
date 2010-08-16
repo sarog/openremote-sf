@@ -24,7 +24,6 @@ import org.openremote.web.console.client.polling.JsonResultReader;
 import org.openremote.web.console.client.polling.SimpleScriptTagProxy;
 
 import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Cookies;
@@ -39,21 +38,12 @@ public class ORRoundRobin {
    }
    
    /**
-    * Detect group members in the same network segment.
+    * Detect group members in the same network segment, after detect group members return start read panel.xml in <code>WebConsole</code>.
     */
-   public static void detectGroupMembers() {
+   public static void detectGroupMembers(JsonResultReader resultReader) {
       String currentServer = ClientDataBase.appSetting.getCurrentServer();
       if(!"".equals(currentServer)) {
-         SimpleScriptTagProxy roundRobinProxy = new SimpleScriptTagProxy(currentServer + "/rest/servers", new JsonResultReader() {
-            public void read(JSONObject jsonObj) {
-               if (jsonObj.containsKey("servers")) {
-                  JSONObject serversObj = jsonObj.get("servers").isObject();
-                  if (serversObj.containsKey("server")) {
-                     Cookies.setCookie(Constants.GROUP_MEMBERS, serversObj.get("server").toString());
-                  }
-               }
-            }
-         });
+         SimpleScriptTagProxy roundRobinProxy = new SimpleScriptTagProxy(currentServer + "/rest/servers", resultReader);
          roundRobinProxy.load();
       }
    }
@@ -67,16 +57,22 @@ public class ORRoundRobin {
          JSONValue jsonValue = JSONParser.parse(memberStr);
          JSONArray groupArray = jsonValue.isArray();
          String member = null;
+         String currentServer = ClientDataBase.appSetting.getCurrentServer();
          if (groupArray != null) {
-            member = groupArray.get(0).isObject().get("@url").isString().stringValue();
+            for (int i = 0; i < groupArray.size(); i++) {
+               member = groupArray.get(i).isObject().get("@url").isString().stringValue();
+               if (!currentServer.equals(member)) {
+                  break;
+               }
+            }
          } else {
             member = jsonValue.isObject().get("@url").isString().stringValue();
          }
-         if (member != null && !member.equals(ClientDataBase.appSetting.getCurrentServer())) {
+         if (member != null && !currentServer.equals(member)) {
             ClientDataBase.appSetting.setCurrentServer(member);
             Cookies.setCookie(Constants.CONSOLE_SETTINGS, ClientDataBase.appSetting.toJson());
+            Window.Location.reload();
          }
-         Window.Location.reload();
       }
    }
 }
