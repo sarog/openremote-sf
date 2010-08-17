@@ -73,67 +73,16 @@ public class PollingHelper {
       isPolling = true;
       
       // request current screen components status
-      SimpleScriptTagProxy requestStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/status/" + pollingStatusIds, new JsonResultReader() {
-         public void read(JSONObject jsonObj) {
-            if (jsonObj.containsKey("status")) {
-               readStatus(jsonObj);
-            } else if (jsonObj.containsKey("error")) {
-               JSONObject errorObj = jsonObj.get("error").isObject();
-               int errorCode = Integer.valueOf(errorObj.get("code").isString().stringValue());
-               if (errorCode == ControllerExceptionMessage.UNAUTHORIZED) {
-                  new LoginWindow();
-               } else {
-                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(), null);
-               }
-            }
-         }
-      });
+      SimpleScriptTagProxy requestStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/status/" + pollingStatusIds, new StatusResultReader());
       requestStatusProxy.load();
       
       // start polling.
       final SimpleScriptTagProxy pollingStatusProxy = new SimpleScriptTagProxy(serverUrl + "/rest/polling/" + sessionId
-            + "/" + pollingStatusIds, new JsonResultReader() {
-         public void read(JSONObject jsonObj) {
-            if (jsonObj.containsKey("status")) {
-               readStatus(jsonObj);
-               if (pollingTimer != null) {
-                  pollingTimer.run();
-               }
-               return;
-            } else if (jsonObj.containsKey("error")) {
-               JSONObject errorObj = jsonObj.get("error").isObject();
-               int errorCode = Integer.valueOf(errorObj.get("code").isString().stringValue());
-               if (errorCode == ControllerExceptionMessage.GATEWAY_TIMEOUT) {
-                  if (pollingTimer != null) {
-                     pollingTimer.run();
-                  }
-                  return;
-               } else if (errorCode == ControllerExceptionMessage.UNAUTHORIZED) {
-                  cancelPolling();
-                  new LoginWindow();
-               } else if (errorCode == ControllerExceptionMessage.REFRESH_CONTROLLER) {
-                  cancelPolling();
-                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),
-                        new Listener<MessageBoxEvent>() {
-                           public void handleEvent(MessageBoxEvent be) {
-                              Window.Location.reload();
-                           }
-                        });
-               } else {
-                  cancelPolling();
-                  MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),
-                        new Listener<MessageBoxEvent>() {
-                           public void handleEvent(MessageBoxEvent be) {
-                              ORRoundRobin.doSwitch();
-                           }
-                        });
-               }
-            }
-         }
-      });
+            + "/" + pollingStatusIds, new StatusResultReader());
       pollingTimer = new Timer() {
          @Override
          public void run() {
+            isPolling = true;
             pollingStatusProxy.load();
          }
 
@@ -187,6 +136,46 @@ public class PollingHelper {
          String value = statusObj.get("#text").isString().stringValue();
          ClientDataBase.statusMap.put(id, value);
          ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerPollingStatusIdFormat + id, null);
+      }
+   }
+   
+   private class StatusResultReader implements JsonResultReader {
+      public void read(JSONObject jsonObj) {
+         if (jsonObj.containsKey("status")) {
+            readStatus(jsonObj);
+            if (pollingTimer != null) {
+               pollingTimer.run();
+            }
+            return;
+         } else if (jsonObj.containsKey("error")) {
+            JSONObject errorObj = jsonObj.get("error").isObject();
+            int errorCode = Integer.valueOf(errorObj.get("code").isString().stringValue());
+            if (errorCode == ControllerExceptionMessage.GATEWAY_TIMEOUT) {
+               if (pollingTimer != null) {
+                  pollingTimer.run();
+               }
+               return;
+            } else if (errorCode == ControllerExceptionMessage.UNAUTHORIZED) {
+               cancelPolling();
+               new LoginWindow();
+            } else if (errorCode == ControllerExceptionMessage.REFRESH_CONTROLLER) {
+               cancelPolling();
+               MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),
+                     new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent be) {
+                           Window.Location.reload();
+                        }
+                     });
+            } else {
+               cancelPolling();
+               MessageBox.alert("ERROR", errorObj.get("message").isString().stringValue(),
+                     new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent be) {
+                           ORRoundRobin.doSwitch();
+                        }
+                     });
+            }
+         }
       }
    }
 }
