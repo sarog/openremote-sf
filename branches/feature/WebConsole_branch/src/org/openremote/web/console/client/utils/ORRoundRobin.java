@@ -24,6 +24,7 @@ import org.openremote.web.console.client.polling.JsonResultReader;
 import org.openremote.web.console.client.polling.SimpleScriptTagProxy;
 
 import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Cookies;
@@ -38,12 +39,21 @@ public class ORRoundRobin {
    }
    
    /**
-    * Detect group members in the same network segment, after detect group members return start read panel.xml in <code>WebConsole</code>.
+    * Detect group members in the same network segment.
     */
-   public static void detectGroupMembers(JsonResultReader resultReader) {
+   public static void detectGroupMembers() {
       String currentServer = ClientDataBase.appSetting.getCurrentServer();
       if(!"".equals(currentServer)) {
-         SimpleScriptTagProxy roundRobinProxy = new SimpleScriptTagProxy(currentServer + "/rest/servers", resultReader);
+         SimpleScriptTagProxy roundRobinProxy = new SimpleScriptTagProxy(currentServer + "/rest/servers", new JsonResultReader() {
+            public void read(JSONObject jsonObj) {
+               if (jsonObj.containsKey("servers")) {
+                  JSONObject serversObj = jsonObj.get("servers").isObject();
+                  if (serversObj.containsKey("server")) {
+                     Cookies.setCookie(Constants.GROUP_MEMBERS, serversObj.get("server").toString());
+                  }
+               }
+            }
+         });
          roundRobinProxy.load();
       }
    }

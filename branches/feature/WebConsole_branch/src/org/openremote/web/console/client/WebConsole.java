@@ -74,7 +74,7 @@ public class WebConsole implements EntryPoint {
       if ("".equals(currentServer) || "".equals(currentPanel)) {
          toSetting();
       } else {
-         loadResources();
+         readPanelXmlEntity();
       }
    }
    
@@ -86,7 +86,7 @@ public class WebConsole implements EntryPoint {
       SettingsWindow settingWindow = new SettingsWindow();
       settingWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          public void afterSubmit(SubmitEvent be) {
-            loadResources();
+            readPanelXmlEntity();
          }
       });
    }
@@ -113,26 +113,10 @@ public class WebConsole implements EntryPoint {
    }
    
    /**
-    * Load resources from controller, first detect group members, after group members result return, read panel xml entity.
-    */
-   private void loadResources() {
-      ORRoundRobin.detectGroupMembers(new JsonResultReader() {
-         public void read(JSONObject jsonObj) {
-            if (jsonObj.containsKey("servers")) {
-               JSONObject serversObj = jsonObj.get("servers").isObject();
-               if (serversObj.containsKey("server")) {
-                  Cookies.setCookie(Constants.GROUP_MEMBERS, serversObj.get("server").toString());
-               }
-            }
-            readPanelXmlEntity();
-         }
-      });
-   }
-   
-   /**
     * read panel entity from server side.
     */
    private void readPanelXmlEntity() {
+      ORRoundRobin.detectGroupMembers();
       final String url = ClientDataBase.getSecuredServer() + "/rest/panel/"
             + URL.encode(ClientDataBase.appSetting.getCurrentPanelIdentity());
       DOM.setStyleAttribute(RootPanel.get("welcome-content").getElement(), "display", "block");
