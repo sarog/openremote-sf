@@ -21,6 +21,7 @@ package org.openremote.web.console.net;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -142,6 +143,9 @@ public class ORConnection {
       
       try {
          httpResponse = httpClient.execute(httpRequest);
+      } catch (ConnectException e) {
+         log.error("ConnectException", e);
+         throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(0));
       } catch (SocketTimeoutException e) {
          log.error("SocketTimeoutException", e);
          throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(0));
