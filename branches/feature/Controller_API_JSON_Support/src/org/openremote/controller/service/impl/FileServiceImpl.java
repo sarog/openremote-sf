@@ -111,7 +111,7 @@ public class FileServiceImpl implements FileService {
          if (!ZipUtil.unzip(zip, resourcePath)) {
             return false;
          }
-         logger.info("unzip " + zip.getAbsolutePath() + "success.");
+         logger.info("unzip " + zip.getAbsolutePath() + " success.");
          FileUtils.forceDeleteOnExit(zip);
       } catch (IOException e) {
          logger.error("Can't write openremote.zip to " + resourcePath, e);
