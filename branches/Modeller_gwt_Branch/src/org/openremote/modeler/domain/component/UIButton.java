@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -30,6 +30,10 @@ import org.openremote.modeler.utils.StringUtils;
 
 import flexjson.JSON;
 
+/**
+ * UIButton defines some properties for changing display images, sending command and navigating.
+ * Include default image, pressed image, navigate, uicommand and repeat.
+ */
 public class UIButton extends UIControl implements ImageSourceOwner{
    
    private static final long serialVersionUID = 2511411866454281810L;
@@ -37,15 +41,19 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    /** The label. */
    private String name = "Button";
 
+   /** If pressed the button, repeat to send command or not. */
    private boolean repeate;
    
+   /** The button's default image. */
    private ImageSource image;
    
+   /** The button's pressed image. */
    private ImageSource pressImage;
    
+   /** If click the button, navigate to. */
    private Navigate navigate = new Navigate();
 
-   /** The ui command. */
+   /** If click the button, send the uicommand. */
    private UICommand uiCommand;
 
    /**

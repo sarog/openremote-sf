@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,6 +24,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+/**
+ * This commandRefItem is used for sensor.
+ * It define the relation between command and sensor.
+ */
 @Entity
 @DiscriminatorValue("SENSOR_CMD_REF")
 public class SensorCommandRef extends CommandRefItem {

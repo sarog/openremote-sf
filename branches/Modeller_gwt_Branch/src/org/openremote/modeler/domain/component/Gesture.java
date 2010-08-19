@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -27,7 +27,8 @@ import org.openremote.modeler.domain.UICommand;
 import flexjson.JSON;
 
 /**
- * The Gesture defined the gesture on screen.
+ * Defined a gesture on a screen.
+ * It supports to navigate to and to send command.
  */
 public class Gesture extends UIControl {
 
@@ -104,6 +105,10 @@ public class Gesture extends UIControl {
       }
       return new ArrayList<UICommand>();
    }
+   
+   /**
+    * The Enum GestureType defines four types of gesture.
+    */
    public static enum GestureType {
       swipe_bottom_to_top, swipe_top_to_bottom, swipe_left_to_right, swipe_right_to_left;
       

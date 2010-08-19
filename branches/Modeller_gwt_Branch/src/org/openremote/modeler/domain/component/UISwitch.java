@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
@@ -28,11 +31,21 @@ import org.openremote.modeler.domain.UICommand;
 
 import flexjson.JSON;
 
+/**
+ * UISwitch defines a switch command, on image and off image.
+ * It can sends on/off command, changes self state.
+ */
 public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner {
    
    private static final long serialVersionUID = 8617346306578381074L;
+   
+   /** The UISwitch's on image. */
    private ImageSource onImage;
+   
+   /** The UISwitch's off image. */
    private ImageSource offImage;
+   
+   /** The switch command include sensor, on command and off command. */
    private Switch switchCommand;
 
    public UISwitch() {
@@ -79,6 +92,11 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       return "Switch";
    }
 
+   /**
+    * If the switchCommand has been set, return the on and off commands.
+    * 
+    * @see org.openremote.modeler.domain.component.UIControl#getCommands()
+    */
    @JSON(include=false)
    @Override
    public List<UICommand> getCommands() {
@@ -114,6 +132,10 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
       return xmlContent.toString();
    }
 
+   /**
+    * Gets the sensor from switch command.
+    * 
+    */
    @Override
    @JSON(include=false)
    public Sensor getSensor() {

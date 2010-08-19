@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,7 +29,7 @@ import javax.persistence.Transient;
 import flexjson.JSON;
 
 /**
- * The Class Switch.
+ * It represents a switch entity, includes sensor, on command and off command.
  */
 @SuppressWarnings("serial")
 @Entity
@@ -136,6 +136,14 @@ public class Switch extends BusinessEntity {
       return true;
    }
    
+   /**
+    * Equals without compare oid.
+    * Used for rebuilding from template.
+    * 
+    * @param swh the swh
+    * 
+    * @return true, if successful
+    */
    public boolean equalsWithoutCompareOid(Switch swh) {
       if (name == null) {
          if (swh.name != null) return false;

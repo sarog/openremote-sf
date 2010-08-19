@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,6 +24,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+/**
+ * The subclass of <b>SensorRefItem</b>, which define a relation between a sensor and a switch.
+ * A switch can have a SwitchSensorRef.
+ */
 @Entity
 @DiscriminatorValue("SWITCH_SENSOR_REF")
 public class SwitchSensorRef extends SensorRefItem {

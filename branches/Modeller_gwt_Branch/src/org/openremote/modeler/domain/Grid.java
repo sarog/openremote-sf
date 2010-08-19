@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class Grid.
+ * The grid define a relative layout, but its in screen's absolute position.
+ * A grid has cells, and the cell has component.
  */
 public class Grid extends BusinessEntity {
 

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,6 +21,9 @@ package org.openremote.modeler.domain;
 
 import javax.persistence.Transient;
 
+/**
+ * The GroupRef is linked the group and panel.
+ */
 public class GroupRef extends BusinessEntity {
 
    private static final long serialVersionUID = -8454086925745873969L;
@@ -41,6 +44,12 @@ public class GroupRef extends BusinessEntity {
    public Panel getPanel() {
       return panel;
    }
+   
+   /**
+    * Sets the group, make the old group release reference, and make the new group increase reference.
+    * 
+    * @param group the new group
+    */
    public void setGroup(Group group) {
       if (this.group != null) {
          this.group.releaseRef();

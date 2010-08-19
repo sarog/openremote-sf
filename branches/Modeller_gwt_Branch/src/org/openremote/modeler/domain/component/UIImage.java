@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,6 +32,14 @@ import org.openremote.modeler.domain.SensorType;
 
 import flexjson.JSON;
 
+/**
+ * UIImage defines a image source, a sensor and a linked label.
+ * The default image source is OpenRemote logo.
+ * 
+ * The ui image can change image by sensor state, if there is no image 
+ * corresponding with the sensor state and the label has been specified,
+ * show the label's state on the component.
+ */
 public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwner {
 
    private static final long serialVersionUID = -4114009124680167066L;
@@ -40,10 +48,13 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
    
    private ImageSource imageSource = new ImageSource(DEFAULT_IMAGE_URL);
 
+   /** The ui image can change display image by the sensor. */
    private Sensor sensor = null;
 
+   /** The ui image can display the label's sensor text. */
    private UILabel label = null;
 
+   /** The sensor link is for recording the properties of the sensor. */
    private SensorLink sensorLink;
 
    public UIImage() {
