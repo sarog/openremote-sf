@@ -56,9 +56,10 @@
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:29];
 		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
 		
-		button.titleLabel.font = [UIFont boldSystemFontOfSize:18];
-		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-		button.titleLabel.shadowOffset = CGSizeMake(0, -2);
+		button.titleLabel.font = [UIFont boldSystemFontOfSize:13];
+		button.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+		//[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
+		//button.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	}
 	[self setOn:NO];
 }
