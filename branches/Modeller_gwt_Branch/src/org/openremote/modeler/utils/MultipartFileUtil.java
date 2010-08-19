@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -37,6 +37,15 @@ public final class MultipartFileUtil {
 
    private static final Logger LOGGER = Logger.getLogger(MultipartFileUtil.class);
    
+   /**
+    * Gets the multipart file from request.
+    * Used for uploading file.
+    * 
+    * @param request the request
+    * @param fileFieldName the file field name
+    * 
+    * @return the multipart file from request
+    */
    @SuppressWarnings("unchecked")
    public static MultipartFile getMultipartFileFromRequest(HttpServletRequest request, String fileFieldName) {
       MultipartFile multipartFile = null;
