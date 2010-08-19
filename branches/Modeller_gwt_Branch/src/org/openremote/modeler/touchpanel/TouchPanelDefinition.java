@@ -24,7 +24,11 @@ import java.io.Serializable;
 import flexjson.JSON;
 
 /**
- * The Class TouchPanelDefinition define the touch panel's properties, which match along with panel xml file.
+ * The Class TouchPanelDefinition define the touch panel's properties, which match along with predefined touchpanel xml file,
+ * also can be create a custom definition when create custom panel. The default definition is for portrait screen, and it can 
+ * get landscape definition by transform the default.
+ * 
+ * It Support iPhone, iPad, Android, custom panel, etc.
  */
 public class TouchPanelDefinition implements Serializable {
 

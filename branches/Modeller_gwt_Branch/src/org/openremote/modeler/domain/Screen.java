@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -36,7 +36,9 @@ import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 import flexjson.JSON;
 
 /**
- * The Class Screen.
+ * The Screen define a isolate page which would be shown in panel(like web console, iPhone, Android, etc.).
+ * In the screen, there are components, which in absolute or relative position. The absolutes include components
+ * with absolute position, the grid is also in absolute position, but the components in grid is in relative position.  
  */
 public class Screen extends BusinessEntity {
    private static final long serialVersionUID = -4133577592315343274L;
@@ -47,26 +49,31 @@ public class Screen extends BusinessEntity {
    /** The name. */
    private String name;
 
-   /** The absolutes. */
+   /** The absolute components which included in the screen. */
    private List<Absolute> absolutes = new ArrayList<Absolute>();
 
+   /** The grid that include grid cell with component. */
    private List<UIGrid> grids = new ArrayList<UIGrid>();
 
-   /** The touch panel definition. */
+   /** Support a canvas for the screen to manage components. */
    private TouchPanelDefinition touchPanelDefinition;
 
-   /** The background. */
+   /** The screen's background, include image and image position. */
    private Background background = null;
 
    private List<Gesture> gestures = new ArrayList<Gesture>();
    
    private boolean hasTabbar;
    
+   /** Represent the screen is landscape or portrait, true is landscape and false is portrait. */
    private boolean isLandscape;
    
+   /** The screen's id which orientation is opposite to the screen. */
    private long inverseScreenId = 0;
    
+   /** The screen pair can have two screens, landscape and portrait, or have one screen. */
    private ScreenPair screenPair;
+   
    public Screen() {
       this.background = new Background();
    }
@@ -112,6 +119,11 @@ public class Screen extends BusinessEntity {
       return touchPanelDefinition;
    }
 
+   /**
+    * Gets the CSS background image url, which encode the " " to "%20".
+    * 
+    * @return the cSS background
+    */
    @JSON(include=false)
    public String getCSSBackground() {
       return background.getImageSource().getSrc().replaceAll(" ", "%20");

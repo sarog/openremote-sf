@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -31,6 +31,10 @@ import javax.persistence.Transient;
 
 import flexjson.JSON;
 
+/**
+ * The super class of <b>SliderSensorRef</b> and <b>SwitchSensorRef</b>.
+ * It include a sensor.
+ */
 @Entity
 @Table(name = "sensor_ref_item")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -58,6 +62,14 @@ public class SensorRefItem extends BusinessEntity {
       return sensor.getDisplayName();
    }
    
+   /**
+    * Equals without compare oid.
+    * Used for rebuilding from template.
+    * 
+    * @param other the other
+    * 
+    * @return true, if successful
+    */
    public boolean equalsWithoutCompareOid(SensorRefItem other) {
       return sensor.equalsWithoutCompareOid(other.getSensor());
    }

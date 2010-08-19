@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 /**
- * The Class CommandDelay.
+ * It define a delay second for sending a delay command.
  */
 @Entity
 @DiscriminatorValue("CMD_DELAY")

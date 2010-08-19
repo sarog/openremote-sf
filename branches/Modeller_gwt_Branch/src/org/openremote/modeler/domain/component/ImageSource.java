@@ -23,7 +23,7 @@ import org.openremote.modeler.domain.BusinessEntity;
 
 
 /**
- * The Class UImage.
+ * Define image source path. The path can be a url or a file path.
  */
 public class ImageSource extends BusinessEntity {
 

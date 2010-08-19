@@ -22,7 +22,11 @@ package org.openremote.modeler.domain.component;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * UITabbar has two scope(group and panel), the default scope is group.
+ * It has some tabbar items.
+ *
+ */
 public class UITabbar extends UIComponent {
 
    private static final long serialVersionUID = 8227607089110291452L;

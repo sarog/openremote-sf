@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,6 +21,10 @@ package org.openremote.modeler.domain.component;
 
 import javax.persistence.Transient;
 
+/**
+ * UITabbarItem defines a image, a name and a navigation.
+ * It can navigates to screen or logical targets.
+ */
 public class UITabbarItem extends UIComponent {
 
    private static final long serialVersionUID = -3815544266807672929L;
