@@ -37,5 +37,4 @@ public interface SensorRPCServiceAsync {
    
    void getById(long id, AsyncCallback<Sensor> async);
    
-//   void loadByDevice(Device device,AsyncCallback<List<Sensor>> async);
 }
