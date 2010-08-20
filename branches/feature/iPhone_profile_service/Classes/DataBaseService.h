@@ -24,7 +24,15 @@
 #import "sqlite3.h"
 #import "GroupMember.h"
 
-
+/*
+ Local database service.
+ if using Sqlite, manages all database connections. expose a convenient method to access.
+ 
+ this service manage the following:
+ 1) last login username/password
+ 2) Round-Robin (failover) group members' url
+ 
+ */
 @interface DataBaseService : NSObject {
 	sqlite3 *openDatabase;
 }

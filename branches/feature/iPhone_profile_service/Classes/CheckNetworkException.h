@@ -22,12 +22,15 @@
 
 #import <Foundation/Foundation.h>
 
-
+/*
+ Exception when checking newwork.
+ */
 @interface CheckNetworkException : NSException {
-	NSString *title;
-	NSString *message;
+	NSString *title;    //exception title
+	NSString *message;  //exception message
 }
 
+// convenient method to create CheckNetworkException
 + (CheckNetworkException *)exceptionWithTitle:(NSString *)t message:(NSString *)msg; 
 
 @property (nonatomic,copy) NSString *title;
