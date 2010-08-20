@@ -24,19 +24,25 @@
 
 @implementation DirectoryDefinition
 
+// Get cache folder in apple handset.
 + (NSString *)cacheFolder {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	return [paths objectAtIndex:0];
 		
 }
+
+// Get image cache folder. It bases on cache folder of handset.
 + (NSString *)imageCacheFolder{
 	return [[self cacheFolder] stringByAppendingPathComponent:@"image"];
 	
 }
+
+// Get xml cache folder. It bases on cache folder of handset.
 + (NSString *)xmlCacheFolder {
 	return [[self cacheFolder] stringByAppendingPathComponent:@"xml"];
 }
 
+// Get directory of appSettings.plist .
 + (NSString *)appSettingsFilePath{
 	// Check for data in Documents directory. Copy default appData.plist to Documents if not found.
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -57,6 +63,7 @@
 	return pathToUserCopyOfPlist;
 }
 
+// Get directory of file info.plist .
 + (NSString *)infoFilePath {
 	NSString *pathToDefaultPlist = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
 	return pathToDefaultPlist;
