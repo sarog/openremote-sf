@@ -75,7 +75,7 @@
 			case SERVER_ERROR://500
 				errorMessage = @"Error in controller. Please check controller log.";
 				break;
-			case CONTROLLER_CONFIG_CHANGE://506
+			case CONTROLLER_CONFIG_CHANGED://506
 				errorMessage = @"Configuration of controller changed.";
 				break;
 			case UNAUTHORIZED://401
