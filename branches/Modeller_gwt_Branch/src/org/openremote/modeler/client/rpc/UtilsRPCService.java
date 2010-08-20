@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -41,7 +41,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 
 /**
- * The Interface DeviceMacroService.
+ * The Interface supports some utility methods.
  * 
  * @author handy.wang
  */
@@ -50,7 +50,7 @@ public interface UtilsRPCService extends RemoteService {
 
 
    /**
-    * Export files.
+    * Export files into a compressed file, include panel.xml, controller.xml, panels.obj and some images.
     * 
     * @param maxId the max id
     * @param activityList the activity list
@@ -60,25 +60,60 @@ public interface UtilsRPCService extends RemoteService {
    String exportFiles(long maxId, List<Panel> panelList) throws XmlExportException,FileOperationException,ResourceFileLostException;
    
    /**
-    * Beehive rest icon url.
+    * Get beehive rest icon url.
     * 
     * @return the string
     */
    String beehiveRestIconUrl();
 
    /**
-    * Auto save activity json.
+    * Auto save ui designer layout into server and beehive.
+    * It is saved as a zip file.
     * 
-    * @param activities the activities
+    * @param panels the panels
+    * @param maxID the max id
     * 
     * @return the auto save response
+    * 
+    * @throws BeehiveNotAvailableException the beehive not available exception
+    * @throws FileOperationException the file operation exception
+    * @throws IllegalRestUrlException the illegal rest url exception
+    * @throws ResourceFileLostException the resource file lost exception
     */
    AutoSaveResponse autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException,ResourceFileLostException;
    
+   /**
+    * Manually save ui designer layout into server and beehive.
+    * It is saved as a zip file.
+    * 
+    * @param panels the panels
+    * @param maxID the max id
+    * 
+    * @return the auto save response
+    * 
+    * @throws BeehiveNotAvailableException the beehive not available exception
+    * @throws FileOperationException the file operation exception
+    * @throws IllegalRestUrlException the illegal rest url exception
+    * @throws ResourceFileLostException the resource file lost exception
+    */
    AutoSaveResponse saveUiDesignerLayout(Collection<Panel> panels, long maxID) throws BeehiveNotAvailableException,FileOperationException,IllegalRestUrlException,ResourceFileLostException;
    
+   /**
+    * Restore panels and max oid from server or beehive.
+    * They are stored as a zip file.
+    * 
+    * @return the panels and max oid
+    * 
+    * @throws UIRestoreException the UI restore exception
+    * @throws BeehiveNotAvailableException the beehive not available exception
+    */
    PanelsAndMaxOid restore() throws UIRestoreException,BeehiveNotAvailableException;
    
+   /**
+    * Check the panels if can restore from a stored zip file.
+    * 
+    * @return true, if successful
+    */
    boolean canRestore();
    
    Collection<Panel> loadPanelsFromSession() throws UIRestoreException,BeehiveNotAvailableException;
@@ -97,7 +132,18 @@ public interface UtilsRPCService extends RemoteService {
    
    UISlider rotateImage(UISlider uiSlider);
    
+   /**
+    * Gets the account path that under the resource path.
+    * 
+    * @return the account path
+    */
    String getAccountPath();
    
+   /**
+    * Gets current user's on line test url.
+    * It used for testing WYSISWYG in all kinds of panel(iPhone, Android, Webconsole, etc.).
+    * 
+    * @return the on line test url
+    */
    String getOnLineTestURL ();
 }

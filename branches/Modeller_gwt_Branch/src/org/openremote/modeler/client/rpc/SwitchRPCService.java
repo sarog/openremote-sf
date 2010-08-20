@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,10 +26,41 @@ import org.openremote.modeler.domain.Switch;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * The Interface defines some methods to manage the switch entity.
+ */
 @RemoteServiceRelativePath("switch.smvc")
 public interface SwitchRPCService extends RemoteService {
+   
+   /**
+    * Load all switch from database.
+    * 
+    * @return the list< switch>
+    */
    List<Switch> loadAll();
+   
+   /**
+    * Save switch into database.
+    * 
+    * @param switchToggle the switch toggle
+    * 
+    * @return the switch
+    */
    Switch save(Switch switchToggle);
+   
+   /**
+    * Update switch with database data.
+    * 
+    * @param switchToggle the switch toggle
+    * 
+    * @return the switch
+    */
    Switch update(Switch switchToggle);
+   
+   /**
+    * Delete switch by id.
+    * 
+    * @param id the id
+    */
    void delete(long id);
 }

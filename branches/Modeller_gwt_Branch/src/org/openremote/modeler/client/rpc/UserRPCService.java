@@ -27,18 +27,46 @@ import org.openremote.modeler.exception.UserInvitationException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * The Interface is for managing user and account.
+ */
 @RemoteServiceRelativePath("user.smvc")
 public interface UserRPCService extends RemoteService {
 
+   /**
+    * Invite a user for sharing an account, and the account has a specified role.
+    * 
+    * @param email the email
+    * @param role the role
+    * 
+    * @return the user
+    * 
+    * @throws UserInvitationException the user invitation exception
+    */
    User inviteUser(String email, String role) throws UserInvitationException;
    
+   /**
+    * Gets the pending invitees by current account.
+    * 
+    * @return the pending invitees by account
+    */
    List<User> getPendingInviteesByAccount();
    
    User updateUserRoles(long uid, String roles);
    
    void deleteUser(long uid);
    
+   /**
+    * Gets the users who can access the current account.
+    * 
+    * @return the account access users
+    */
    List<User> getAccountAccessUsers();
    
+   /**
+    * Gets the current user's id.
+    * 
+    * @return the user id
+    */
    Long getUserId();
 }
