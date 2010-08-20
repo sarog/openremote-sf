@@ -46,18 +46,25 @@
 -(NSString *)getUnsavedChosenServerUrl;
 @end
 
+// The section of table cell where autoDiscoverySwitch is in.
 #define AUTO_DISCOVERY_SWITCH_SECTION 0
 
 //auto discovery & customized controller server url are treat as one section
 #define CONTROLLER_URLS_SECTION 1
 
+// The section of table cell where selected panel identity is in.
 #define PANEL_IDENTITY_SECTION 2
 
+// The section of table cell where clearCache table cell is in.
 #define CLEAR_CACHE_SECTION 3
 
+// The section of table cell where security table cells is in.
 #define SECURITY_SECTION 4
 
+// Interval of auto discovery timer.
 #define AUTO_DISCOVERY_TIMER_INTERVAL 1
+
+// Default security port.
 #define SECURITY_PORT 8443
 
 @implementation AppSettingController
@@ -76,6 +83,7 @@
 	return self;
 }
 
+// Show spinner after title of "Choose Controller" while auto discovery running.
 - (void)showSpinner {
 	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(210, 113, 44, 44)] autorelease];
 	[spinner startAnimating];
@@ -87,6 +95,7 @@
 	[self.view addSubview:spinner];
 }
 
+// Hide spinner
 - (void)forceHideSpinner:(BOOL)force {
 	if (spinner && serverArray.count > 0 || force) {
 		[spinner removeFromSuperview];
@@ -94,6 +103,7 @@
 	}	
 }
 
+// Get servers by auto discovery or customizing in appSettingDefinition depending on if auto discovery is enabled.
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b {
 	if (b) {
 		return [AppSettingsDefinition getAutoServers];
@@ -102,6 +112,7 @@
 	}
 }
 
+// Get the selected controller server url in controller server cell list of "Choose Controller" section.
 -(NSString *)getUnsavedChosenServerUrl {
 	NSArray *shownServers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
 	NSString *url = nil;
@@ -114,15 +125,20 @@
 	return url;
 }
 
+// Check if the section parameter indexPath specified is auto discovery section.
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath {
 	return indexPath.section == AUTO_DISCOVERY_SWITCH_SECTION;
 }
+
+// Check if the section parameter indexPath specified is servers section by auto discovery.
 - (BOOL)isAutoServerSection:(NSIndexPath *)indexPath {
 	if (autoDiscovery && indexPath.section == CONTROLLER_URLS_SECTION) {
 		return YES;
 	}
 	return NO;
 }
+
+// Check if the section parameter indexPath specified is servers section by customizing.
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
 	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		if (indexPath.row == 0) {
@@ -132,6 +148,8 @@
 	}
 	return NO;
 }
+
+// Check if the row parameter indexPath specified is the cell row of add customized controller server.
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath {
 	if (!autoDiscovery && indexPath.row >= [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		return YES;
@@ -139,6 +157,7 @@
 	return NO;
 }
 
+// The method will be called if auto discovery switch is triggered.
 - (void)autoDiscoverChanged:(id)sender {
 	UISwitch *s = (UISwitch *)sender;
 	autoDiscovery = s.on;
@@ -174,6 +193,7 @@
 		
 }
 
+// Delegate method of UITextFieldDelegate and is called when 'return' key pressed. return NO to ignore.
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	NSScanner* scan = [NSScanner scannerWithString:textField.text]; 
 	int val; 
@@ -260,18 +280,13 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	// Register notification when the keyboard will be show
-	[[NSNotificationCenter defaultCenter] addObserver:self
-																					 selector:@selector(keyboardWillShow:)
-																							 name:UIKeyboardWillShowNotification
-																						 object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 	
 	// Register notification when the keyboard will be hide
-	[[NSNotificationCenter defaultCenter] addObserver:self
-																					 selector:@selector(keyboardWillHide:)
-																							 name:UIKeyboardWillHideNotification
-																						 object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
+// Delegate all table cells of servers while switching between auto discovery and customizing.
 - (void)deleteAllRow {
 	UITableView *tv = (UITableView *)self.view;
 	
@@ -298,6 +313,7 @@
 	[insertIndexPaths release];
 	
 }
+
 - (void)updateTableView {
 	UITableView *tv = (UITableView *)self.view;
 	[tv beginUpdates];
