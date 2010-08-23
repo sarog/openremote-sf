@@ -41,7 +41,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * The Class DeviceBeanModelProxy.
+ * The proxy is for managing device and deviceCommand.
  */
 public class DeviceBeanModelProxy {
    

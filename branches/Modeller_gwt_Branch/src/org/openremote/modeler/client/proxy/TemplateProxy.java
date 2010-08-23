@@ -36,6 +36,7 @@ import org.openremote.modeler.domain.component.UIGrid;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
+ * The proxy is for managing template.
  * 
  * @author javen
  *

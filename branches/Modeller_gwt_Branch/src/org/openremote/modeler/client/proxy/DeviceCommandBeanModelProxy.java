@@ -37,7 +37,7 @@ import com.extjs.gxt.ui.client.data.ModelData;
 
 
 /**
- * The Class DeviceCommandBeanModelProxy.
+ * The is for managing deviceCommand.
  */
 public class DeviceCommandBeanModelProxy {
    

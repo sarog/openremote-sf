@@ -27,7 +27,8 @@ import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 
 /**
- * The Class ScreenTable.
+ * The Class defines a screen table which can notify change listener when the screen changed.
+ * It can clear unused screenPair.
  */
 public class ScreenTable extends BeanModelTable {
 

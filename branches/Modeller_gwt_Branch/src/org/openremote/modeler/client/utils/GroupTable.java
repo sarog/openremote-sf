@@ -25,7 +25,7 @@ import com.extjs.gxt.ui.client.data.ChangeEvent;
 import com.extjs.gxt.ui.client.data.ChangeListener;
 
 /**
- * The Class ScreenTable.
+ * The Class defines a group table which can notify change listener when the group changed.
  */
 public class GroupTable extends BeanModelTable {
 

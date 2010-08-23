@@ -34,7 +34,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 
 
 /**
- * The Class DeviceMacroBeanModelProxy.
+ * The proxy is for managing deviceMacro.
  */
 public class DeviceMacroBeanModelProxy {
 
