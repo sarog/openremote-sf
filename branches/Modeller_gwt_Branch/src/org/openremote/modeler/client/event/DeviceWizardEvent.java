@@ -23,7 +23,7 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.EventType;
 
 /**
- * The event for DeviceWizardListener.
+ * The event for DeviceWizardListener, it would store and transform data.
  */
 public class DeviceWizardEvent extends BaseEvent {
 

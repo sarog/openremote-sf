@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.view;
 
 import java.util.List;
@@ -65,7 +68,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * The Class ApplicationView.
+ * The application's main view, which create a viewport and added it into rootPanel.
+ * 
+ * The viewport use border layout, initial a toolbar in the north part, 
+ * buildingModelerView or uiDesignerView in the center part.
+ * It would show buildingModelerView or uiDesignerView by the user role.
  * 
  * @author Tomsky,Allen
  */
@@ -92,7 +99,7 @@ public class ApplicationView implements View {
    private Button exportButton;
    
    /**
-    * Initialize.
+    * Initialize the application's main view.
     * 
     * @see org.openremote.modeler.client.view.View#initialize()
     */
@@ -122,14 +129,15 @@ public class ApplicationView implements View {
    }
 
    /**
-    * Show.
+    * Add the viewport into rootPanel and show it.
     */
    private void show() {
       RootPanel.get().add(viewport);
    }
 
    /**
-    * Creates the north.
+    * Creates the applicationToolBar in the viewport's north part.
+    * The applicationToolBar's buttons lies on the user role. 
     */
    private void createNorth() {
       ToolBar applicationToolBar = new ToolBar();
@@ -161,6 +169,11 @@ public class ApplicationView implements View {
       viewport.add(applicationToolBar, data);
    }
 
+   /**
+    * Creates the button that can convert to building modeler view.
+    * 
+    * @return the toggle button
+    */
    private ToggleButton createBMButton() {
       final ToggleButton bmButton = new ToggleButton();
       bmButton.setToolTip("Building Modeler");
@@ -184,6 +197,11 @@ public class ApplicationView implements View {
       return bmButton;
    }
    
+   /**
+    * Creates the button that can convert to ui designer view.
+    * 
+    * @return the toggle button
+    */
    private ToggleButton createUDButton() {
       final ToggleButton udButton = new ToggleButton();
       udButton.setToolTip("UI Designer");
@@ -207,6 +225,11 @@ public class ApplicationView implements View {
       return udButton;
    }
    
+   /**
+    * Creates the button that can pop up the testOnline dialog.
+    * 
+    * @return the button
+    */
    private Button createOnLineTestBtn() {
       final Button showDemoBtn = new Button();
       showDemoBtn.setToolTip("Test UI online in your panel. ");
@@ -242,6 +265,10 @@ public class ApplicationView implements View {
       });
       return showDemoBtn;
    }
+   
+   /**
+    * Inits the save and export buttons on applicationToolBar.
+    */
    private void initSaveAndExportButtons() {
       saveButton = new Button();
       saveButton.setIcon(icons.saveIcon());
@@ -276,6 +303,11 @@ public class ApplicationView implements View {
       });
    }
 
+   /**
+    * Creates the logout button for the user logout the application.
+    * 
+    * @return the button
+    */
    private Button createLogoutButton() {
       String currentUserName = (this.authority == null) ? "" : "(" + this.authority.getUsername() + ")";
       Button logoutButton = new Button();
@@ -333,7 +365,8 @@ public class ApplicationView implements View {
    }
 
    /**
-    * Creates the center.
+    * Creates the center view in viewport by the user role, if the role is building modeler, then show the building modeler view, 
+    * else show the ui designer view.
     * 
     * @param authority
     *           the authority
@@ -364,6 +397,11 @@ public class ApplicationView implements View {
 
    }
 
+   /**
+    * Creates the button to pop up the account management window.
+    * 
+    * @return the button
+    */
    private Button createAccountManageButton() {
       Button accountManageBtn = new Button();
       accountManageBtn.setToolTip("Account management");

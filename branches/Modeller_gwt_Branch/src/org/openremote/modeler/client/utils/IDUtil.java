@@ -21,7 +21,8 @@ package org.openremote.modeler.client.utils;
 
 
 /**
- * The Class IDUtil.
+ * The class maintain a id that the client object would use.
+ * e.g.: panel, group, screen, widgets, etc.
  */
 public class IDUtil {
    

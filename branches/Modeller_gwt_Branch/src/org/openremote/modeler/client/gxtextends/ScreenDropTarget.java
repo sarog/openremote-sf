@@ -24,7 +24,7 @@ import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.widget.Component;
 
 /**
- * The Class ScreenDropTarget.
+ * The Class is for creating grid cell as a dropTarget.
  */
 public class ScreenDropTarget extends DropTarget {
 

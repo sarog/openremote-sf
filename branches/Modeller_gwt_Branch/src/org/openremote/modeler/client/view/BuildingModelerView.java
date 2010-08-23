@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.view;
 
 import org.openremote.modeler.client.widget.buildingmodeler.ConfigPanel;
@@ -28,37 +31,28 @@ import com.extjs.gxt.ui.client.widget.TabPanel;
 import com.extjs.gxt.ui.client.widget.layout.AccordionLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayout;
 import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
-import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 
 /**
- * The Class BuildingModelerView.
+ * The class is for initializing the building modeler view.
+ * It is border layout, include device panel, macro panel, config panel in the west part,
+ * and configTabPanel in the center part.
+ * 
  */
 public class BuildingModelerView extends TabItem {
 
+   /** The config tab panel is for managing the controller configuration. */
    private TabPanel configTabPanel = new TabPanel();
 
    public BuildingModelerView() {
       setText("Building Modeler");
       setLayout(new BorderLayout());
-      // createNorth();
       createWest();
       createCenter();
    }
 
    /**
-    * Creates the north.
-    */
-   @SuppressWarnings("unused")
-   private void createNorth() {
-      ToolBar north = new ToolBar();
-      BorderLayoutData northData = new BorderLayoutData(LayoutRegion.NORTH, 200);
-      northData.setCollapsible(false);
-      northData.setMargins(new Margins(0, 2, 0, 2));
-      add(north, northData);
-   }
-
-   /**
-    * Creates the west.
+    * Creates the west part of the view, it is accordion layout, include device panel, macro panel 
+    * and config panel.
     */
    private void createWest() {
       ContentPanel west = new ContentPanel();
@@ -76,7 +70,7 @@ public class BuildingModelerView extends TabItem {
    }
 
    /**
-    * Creates the center.
+    * Creates the center part of the view, it only has configTabPanel which is used for config panel.
     */
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);

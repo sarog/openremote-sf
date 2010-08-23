@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.client.view;
 
 import java.util.ArrayList;
@@ -60,11 +63,15 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
 /**
- * The Class UIDesignerView.
+ * The class is for initializing the ui designer view.
+ * 
+ * It use border layout, includes profile panel and template panel 
+ * in the west, screen panel in the center, widget panel and property
+ * panel in the east.
  */
 public class UIDesignerView extends TabItem {
 
-   /** The screen tab. */
+   /** The screen panel is for DND widget in it. */
    private ScreenPanel screenPanel = new ScreenPanel();
 
    /** The auto_save_interval millisecond. */
@@ -104,7 +111,7 @@ public class UIDesignerView extends TabItem {
    }
 
    /**
-    * Creates the timer.
+    * Creates the auto save timer.
     */
    private void createAutoSaveTimer() {
       timer = new Timer() {
@@ -151,6 +158,9 @@ public class UIDesignerView extends TabItem {
       }
    }
 
+   /**
+    * Save ui designer layout, if the template panel is expanded, save its data, else save the profile panel's data.
+    */
    public void saveUiDesignerLayout() {
       if (templatePanel != null && templatePanel.isExpanded()) {
          templatePanel.saveTemplateUpdates();
@@ -189,6 +199,9 @@ public class UIDesignerView extends TabItem {
       }
    }
 
+   /**
+    * Restore ui designer layout and datas from server.
+    */
    public void restore() {
       UtilsProxy.restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
          @Override
@@ -223,7 +236,8 @@ public class UIDesignerView extends TabItem {
    }
 
    /**
-    * Creates the east.
+    * Creates the east part of the view.
+    * It includes widget and property panels.
     */
    private void createEast() {
       BorderLayoutData eastLayout = new BorderLayoutData(LayoutRegion.EAST, 300);
@@ -233,7 +247,8 @@ public class UIDesignerView extends TabItem {
    }
 
    /**
-    * Creates the west.
+    * Creates the west part of the view.
+    * It includes profilePanel and templatePanel.
     */
    private ProfilePanel createWest() {
       ContentPanel west = new ContentPanel();
@@ -257,6 +272,9 @@ public class UIDesignerView extends TabItem {
       return result;
    }
 
+   /**
+    * Refresh the profile panel tree.
+    */
    private void refreshPanelTree() {
       if (profilePanel != null) {
          profilePanel.layout();
@@ -264,7 +282,8 @@ public class UIDesignerView extends TabItem {
    }
 
    /**
-    * Creates the center.
+    * Creates the center part of the view.
+    * It includes the sceenPanel.
     */
    private void createCenter() {
       BorderLayoutData centerData = new BorderLayoutData(LayoutRegion.CENTER);
@@ -273,7 +292,7 @@ public class UIDesignerView extends TabItem {
    }
 
    /**
-    * Prepare data.
+    * Load the touchPanels from server.
     */
    private void prepareData() {
       TouchPanels.load();
@@ -305,6 +324,11 @@ public class UIDesignerView extends TabItem {
       return widgetAndPropertyContainer;
    }
 
+   /**
+    * Gets the all panels from panelTable.
+    * 
+    * @return the all panels
+    */
    List<Panel> getAllPanels() {
       List<Panel> panelList = new ArrayList<Panel>();
       for (BeanModel panelBeanModel : BeanModelDataBase.panelTable.loadAll()) {

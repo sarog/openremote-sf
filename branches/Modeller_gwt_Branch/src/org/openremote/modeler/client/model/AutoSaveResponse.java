@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 
 /**
- * The Class AutoSaveResponse.
+ * Defines a object to indicate the uiDesignerLayout if has updated when save the layout.
  * 
  * @author handy.wang
  */
