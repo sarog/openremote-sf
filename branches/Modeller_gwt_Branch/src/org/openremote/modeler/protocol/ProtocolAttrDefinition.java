@@ -24,7 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class ProtocolAttrDefinition.
+ * The Class defines a attribute of a protocol, which has some validators.
+ * 
+ * The attribute xml segment structure is similar following:</br>
+ * 
+      &lt;attr name="name" label="Name"&gt;</br>
+         &lt;validations&gt;</br>
+            &lt;allowBlank&gt;false&lt;/allowBlank&gt;</br>
+         &lt;/validations&gt;</br>
+      &lt;/attr>
  */
 public class ProtocolAttrDefinition implements Serializable {
 

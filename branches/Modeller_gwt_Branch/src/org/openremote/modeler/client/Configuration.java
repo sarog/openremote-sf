@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,20 +21,38 @@
 package org.openremote.modeler.client;
 
 /**
- * The Class Configuration.
+ * The Class defines beehiveRESTRootUrl and some local file path, which provided in file config.properties.
  */
 public class Configuration {
 
+   /** The beehive rest root url.
+    * e.g.: "http://openremote.finalist.hk/beehive/rest/".
+    */
    private String beehiveRESTRootUrl;
 
+   /** The relative path of panel xsd. 
+    *  e.g.: "/panel-2.0-M7.xsd" 
+    */
    private String panelXsdPath;
 
+   /** The relative path of controller xsd. 
+    *  e.g.: "/controller-2.0-M7.xsd"
+    */
    private String controllerXsdPath;
 
+   /** The webapp server root url. 
+    *  e.g.: "http://127.0.0.1:8080/modeler" 
+    */
    private String webappServerRoot;
 
+   /** The relative path of controller config xml. 
+    *  e.g.: "/controller-config-2.0-M7.xml"
+    */
    private String controllerConfigPath;
    
+   /** The relative path of controller config xsd. 
+    *  e.g.: "/controllerConfig-2.0-M7.xsd" 
+    */
    private String controllerConfigXsdPath;
 
    public String getPanelXsdPath() {

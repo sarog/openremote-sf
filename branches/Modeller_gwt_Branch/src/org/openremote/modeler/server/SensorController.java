@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,6 +26,9 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.UserService;
 
+/**
+ * The server side implementation of the RPC service <code>SensorRPCService</code>.
+ */
 public class SensorController extends BaseGWTSpringControllerWithHibernateSupport implements SensorRPCService {
 
    private static final long serialVersionUID = 7122839354773238989L;

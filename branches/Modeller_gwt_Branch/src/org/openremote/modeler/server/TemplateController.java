@@ -29,7 +29,7 @@ import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.service.TemplateService;
 
 /**
- * The controller for Template. 
+ * The server side implementation of the RPC service <code>TemplateRPCService</code>. 
  * @author javen
  *
  */

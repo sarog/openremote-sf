@@ -27,6 +27,9 @@ import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.UserService;
 
+/**
+ * The Class is for inviting user and managing invited user.
+ */
 public class UserController extends BaseGWTSpringControllerWithHibernateSupport implements UserRPCService {
 
    private static final long serialVersionUID = -3486307399647834562L;
