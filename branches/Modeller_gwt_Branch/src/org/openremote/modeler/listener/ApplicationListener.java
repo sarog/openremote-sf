@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Init application when web server is started.
+ * It make sure the resource folder("modeler_tmp") be created.
  * 
  * @see ApplicationEvent
  * @author Tomsky, Dan

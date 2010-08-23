@@ -27,7 +27,7 @@ import org.openremote.modeler.protocol.ProtocolDefinition;
 import org.openremote.modeler.service.ProtocolParser;
 
 /**
- * The Class ProtocolServiceImpl.
+ * The server side implementation of the RPC service <code>ProtocolRPCService</code>.
  */
 public class ProtocolController extends BaseGWTSpringController implements ProtocolRPCService {
 

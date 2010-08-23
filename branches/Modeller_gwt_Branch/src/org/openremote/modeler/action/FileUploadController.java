@@ -39,7 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
- * The Class FileUploadController.
+ * The Class is used for uploading files.
  * 
  * @author handy.wang
  */
@@ -51,7 +51,7 @@ public class FileUploadController extends MultiActionController {
    private ResourceService resourceService;
    
    /**
-    * Creates the.
+    * Import openremote.zip into application, but now is not use.
     * 
     * @param request the request
     * @param response the response

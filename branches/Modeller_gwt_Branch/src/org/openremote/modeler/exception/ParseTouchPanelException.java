@@ -21,7 +21,9 @@ package org.openremote.modeler.exception;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
+/**
+ * If the parse touch panel XMLs procedure occurr error, application will throw this exception.
+ */
 public class ParseTouchPanelException  extends RuntimeException implements IsSerializable {
 
    private static final long serialVersionUID = -510888683143871120L;

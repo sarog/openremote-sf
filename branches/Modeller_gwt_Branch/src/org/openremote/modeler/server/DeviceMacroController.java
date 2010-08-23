@@ -28,7 +28,7 @@ import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
- * The Class DeviceMacroController.
+ * The server side implementation of the RPC service <code>DeviceMacroRPCService</code>.
  */
 @SuppressWarnings("serial")
 public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceMacroRPCService {

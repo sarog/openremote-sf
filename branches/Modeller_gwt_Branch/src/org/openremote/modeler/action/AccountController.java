@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -34,7 +34,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
- * The Class AccountController.
+ * The Class is used for managing user and account.
+ * It includes creating user, activating user, the invited user accept invitation, changing user password.
  * 
  * @author Dan 2009-09-04
  */
@@ -43,7 +44,7 @@ public class AccountController extends MultiActionController {
    private UserService userService;
    
    /**
-    * Creates the account.
+    * Creates a new user that with the admin role.
     * 
     * @param request the request
     * @param response the response
@@ -119,6 +120,14 @@ public class AccountController extends MultiActionController {
       }
    }
    
+   /**
+    * Activates the user account from user email address.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    */
    public ModelAndView activate(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView loginMav = new ModelAndView("login");
       String userOid = request.getParameter("uid");
@@ -133,6 +142,15 @@ public class AccountController extends MultiActionController {
       return loginMav;
    }
    
+   /**
+    * Check the invited info, if legal show the accpet.jsp and make the user input password, else 
+    * show the  accept.jsp and allow the user forward to register a new account.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    */
    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView acceptMav = new ModelAndView("accept");
       String userOid = request.getParameter("uid");
@@ -148,6 +166,14 @@ public class AccountController extends MultiActionController {
       return acceptMav;
    }
    
+   /**
+    * Accept the invition and set the user password.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    */
    public ModelAndView acceptInvition(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView loginMav = new ModelAndView("login");
       ModelAndView acceptMav = new ModelAndView("accept");
@@ -220,6 +246,14 @@ public class AccountController extends MultiActionController {
       }
    }
    
+   /**
+    * If the user forget password, forward to foget.jsp.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    */
    public ModelAndView forgetPassword(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView forgetMav = new ModelAndView("forget");
       String username = request.getParameter("username");
@@ -239,6 +273,14 @@ public class AccountController extends MultiActionController {
       return forgetMav;
    }
    
+   /**
+    * Check the user id and uuid in database, if legal forward to reset_password.jsp, else forward to login.jsp.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    */
    public ModelAndView resetPassword(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView resetMav = new ModelAndView("reset_password");
       ModelAndView loginMav = new ModelAndView("login");
@@ -263,6 +305,14 @@ public class AccountController extends MultiActionController {
       return resetMav;
    }
    
+   /**
+    * Change the user password and set it into database.
+    * 
+    * @param request the request
+    * @param response the response
+    * 
+    * @return the model and view
+    */
    public ModelAndView changePassword(HttpServletRequest request, HttpServletResponse response) {
       ModelAndView resetMav = new ModelAndView("reset_password");
       ModelAndView loginMav = new ModelAndView("login");
