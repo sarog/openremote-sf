@@ -18,6 +18,6 @@ ControlModel.build = function(jsonParser, nodeName, properties) {
     case Constants.SLIDER :
       return new Slider(jsonParser, properties);
     default:
-      return new BaseModel(jsonParser, properties);
+      return null;
   }
 };

@@ -33,7 +33,8 @@ GridCellView = (function() {
      * Render all the subviews of included in grid cell view.
      */
     function renderSubviews() {
-      if(self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
+      var componentModelOfGridCell = self.gridCell.componentModel;
+      if(componentModelOfGridCell == null || self.gridCell.componentModel.node_name == Constants.BASE_MODEL) {
         return;
       }
       self.componentView = ComponentView.build(self.gridCell.componentModel, self.frame.size);

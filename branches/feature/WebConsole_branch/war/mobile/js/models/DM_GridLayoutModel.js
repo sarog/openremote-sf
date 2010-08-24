@@ -12,7 +12,7 @@ GridLayoutModel = (function() {
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {
       if (nodeName == Constants.GRID_CELL) {
-        var gridCell = new GridCell(jsonParser, properties);
+        var gridCell = new GridCell(jsonParser, properties, self);
         this.cells[this.cells.length] = gridCell;
       }
     };

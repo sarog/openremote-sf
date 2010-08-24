@@ -34,7 +34,8 @@ AbsoluteLayoutView = (function() {
      */
     function renderSubviews() {
       var size = new Size(self.absoluteLayoutModel.width, self.absoluteLayoutModel.height);
-      if(self.absoluteLayoutModel.componentModel.node_name == Constants.BASE_MODEL) {
+      var componentModelOfAbsoluteLayoutModel = self.absoluteLayoutModel.componentModel;
+      if(componentModelOfAbsoluteLayoutModel == null || componentModelOfAbsoluteLayoutModel.node_name == Constants.BASE_MODEL) {
         return;
       }
       self.componentView = ComponentView.build(self.absoluteLayoutModel.componentModel, size);
