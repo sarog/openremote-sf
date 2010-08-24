@@ -16,7 +16,7 @@ Screen = (function() {
           this.background = new Background(jsonParser, properties);
           break;
         case Constants.ABSOLUTE:
-          var absoluteLayoutContainer = new AbsoluteLayoutModel(jsonParser, properties);
+          var absoluteLayoutContainer = new AbsoluteLayoutModel(jsonParser, properties, self);
           this.layouts[self.layouts.length] = absoluteLayoutContainer;
           break;
         case  Constants.GRID:

@@ -5,13 +5,17 @@
  */
 GridCell = (function() {
   
-  return function(jsonParser, properties) {
+  return function(jsonParser, properties, parentDelegateParam) {
     GridCell.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
+    self.parentDelegate = parentDelegateParam;
     
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {
       self.componentModel = ComponentModel.build(jsonParser, nodeName, properties);
+      if (self.componentModel == null) {
+         jsonParser.setDelegate(self.parentDelegate);
+      }
     };
     
     /**

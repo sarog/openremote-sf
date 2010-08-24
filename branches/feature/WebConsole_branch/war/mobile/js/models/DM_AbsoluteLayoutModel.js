@@ -4,15 +4,19 @@
  */
 AbsoluteLayoutModel = (function() {
   
-  return function(jsonParser, properties) {
+  return function(jsonParser, properties, parentDelegateParam) {
     // For extend
     AbsoluteLayoutModel.superClass.constructor.call(this, jsonParser, properties);
     var self = this;
     self.componentModel = null;
+    self.parentDelegate = parentDelegateParam;
     
     // Delegate method of JSONParser.
     this.didParse = function(jsonParser, nodeName, properties) {
       self.componentModel = ComponentModel.build(jsonParser, nodeName, properties);
+      if (self.componentModel == null) {
+        jsonParser.setDelegate(self.parentDelegate);
+      }
     };
     
     /**
@@ -20,6 +24,9 @@ AbsoluteLayoutModel = (function() {
      */
     this.getPollingSensorIDs = function() {
       var pollingSensorIDs = [];
+      if (this.componentModel == null) {
+        return pollingSensorIDs;
+      }
       var sensor = this.componentModel.sensor;
       if (sensor != null && sensor != undefined) {
         pollingSensorIDs[pollingSensorIDs.length] = sensor.id;
