@@ -26,6 +26,12 @@ import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 
+/**
+ * Initializes a layout container which can be button style to show the text
+ * or can be image style to show the icon. Its size is set by the caller.
+ * 
+ * It is used for the <b>ChangeIconWindow</b> to preview the widget's icon or text.
+ */
 public class IconPreviewWidget extends LayoutContainer {
 
    private FlexTable btnTable = new FlexStyleBox();
@@ -34,6 +40,12 @@ public class IconPreviewWidget extends LayoutContainer {
 
    private Image image = new Image();
    
+   /**
+    * Instantiates a new icon preview widget.
+    * 
+    * @param width the width
+    * @param height the height
+    */
    public IconPreviewWidget(int width, int height) {
       setSize(width, height);
       addStyleName("screen-btn");
@@ -41,6 +53,11 @@ public class IconPreviewWidget extends LayoutContainer {
       add(btnTable);
    }
    
+   /**
+    * Sets the icon.
+    * 
+    * @param icon the new icon
+    */
    public void setIcon(String icon) {
       if (icon != null) {
          image.setUrl(icon);
@@ -49,6 +66,11 @@ public class IconPreviewWidget extends LayoutContainer {
       btnTable.setWidget(1, 1, image);
    }
    
+   /**
+    * Sets the text.
+    * 
+    * @param text the new text
+    */
    public void setText(String text) {
       center.setText(text);
       btnTable.addStyleName("screen-btn-cont");
