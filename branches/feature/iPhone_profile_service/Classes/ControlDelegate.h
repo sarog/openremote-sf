@@ -22,6 +22,12 @@
 #import <Foundation/Foundation.h>
 #import "URLConnectionHelper.h"
 
+/**
+ * Define delegate methods of Controls should implement.
+ */
 @protocol ControlDelegate <NSObject, URLConnectionHelperDelegate>
+/**
+ * Delegate method of sending control command with command value.
+ */
 - (void)sendCommandRequest:(NSString *)commandType;
 @end
