@@ -24,6 +24,9 @@
 #import "Button.h"
 #import "ControlView.h"
 
+/**
+ * Button View for sending control command and there is no polling for button view.
+ */
 @interface ButtonView : ControlView {
 	
 	UIButton *uiButton;

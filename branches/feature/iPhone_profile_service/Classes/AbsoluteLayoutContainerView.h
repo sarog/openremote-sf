@@ -22,11 +22,11 @@
 #import "LayoutContainerView.h"
 #import "ComponentView.h"
 
-
+/**
+ * This view is for layouting component views with absolute position in screen view.
+ */
 @interface AbsoluteLayoutContainerView : LayoutContainerView {
-	
 	ComponentView *componentView;
-
 }
 
 @property (nonatomic, readonly)ComponentView *componentView;

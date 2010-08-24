@@ -53,6 +53,7 @@
 	}
 }
 
+// Override method of sensory view.
 - (void) addPollingNotificationObserver {
 	Image *imageModel = ((Image *)component);
 	int sensorId = imageModel.sensor.sensorId;
@@ -64,6 +65,7 @@
 	}
 }
 
+// Override method of sensory view.
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Image *)component).sensor.sensorId;
@@ -106,6 +108,7 @@
 	return tempImageModel;
 }
 
+// Remove all subviews of imageView.
 -(void) clearSubviews {
 	removeSubviewsTag = YES;
 	for(UIView *tempView in self.subviews) {
@@ -113,6 +116,7 @@
 	}
 }
 
+// Render label imageView included. So, imageView's content is depending on labelView and lableView's sensors.
 -(void) renderIncludedLabel:(Image *)imageModel newStatus:(NSString *)newStatus {
 	UILabel *uiLabel = [[UILabel alloc] initWithFrame:self.bounds];
 	[uiLabel setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];

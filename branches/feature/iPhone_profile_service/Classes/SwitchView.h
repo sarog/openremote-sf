@@ -27,6 +27,9 @@
 #import "ComponentView.h"
 #import "SensoryControlView.h"
 
+/**
+ * SwitchView is mainly for rendering boolean status and sending boolean command to remote controller server.
+ */
 @interface SwitchView : SensoryControlView {
 	UIButton *button;
 	BOOL isOn;
