@@ -25,10 +25,12 @@
 #import "URLConnectionHelper.h"
 #import "ControlView.h"
 
+#define IPHONE_SCREEN_STATUS_BAR_HEIGHT 20 // Height macro of iPhone status bar
+#define IPHONE_SCREEN_BOTTOM_PAGE_CONTROL_HEIGHT 20 // Height macro of iPHone page control
 
-#define IPHONE_SCREEN_STATUS_BAR_HEIGHT 20
-#define IPHONE_SCREEN_BOTTOM_PAGE_CONTROL_HEIGHT 20
-
+/**
+ * Screen view is a container view for render layouts.
+ */
 @interface ScreenView : UIView {
 	Screen *screen;
 }
