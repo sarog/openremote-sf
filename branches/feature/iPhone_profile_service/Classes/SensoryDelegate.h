@@ -21,6 +21,9 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ * Define delegate methods of sensoryComponents should implement.
+ */
 @protocol SensoryDelegate <NSObject>
 
 /**

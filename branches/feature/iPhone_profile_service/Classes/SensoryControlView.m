@@ -27,7 +27,7 @@
 @implementation SensoryControlView
 
 #pragma mark instance methods
-
+// Implement the delegate method for adding notification observer of polling.
 - (void) addPollingNotificationObserver {
 	int sensorId;
 	if ([component isKindOfClass:[Slider class]]) {
@@ -41,7 +41,7 @@
 }
 
 #pragma mark delegate methods of SensoryDelegate.
-
+// Implement the delegate method of dealing polling notification.
 - (void)setPollingStatus:(NSNotification *)notification {
 	[self doesNotRecognizeSelector:_cmd];
 }

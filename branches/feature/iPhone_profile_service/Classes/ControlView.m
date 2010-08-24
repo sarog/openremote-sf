@@ -102,15 +102,7 @@
 }
 
 #pragma mark delegate methods of Protocol ControlDelegate.
-
 - (void)sendCommandRequest:(NSString *)commandType{
-	
-//	if ([[Definition sharedDefinition] password] == nil) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-//		return;
-//	}
-	
-	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
 	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);

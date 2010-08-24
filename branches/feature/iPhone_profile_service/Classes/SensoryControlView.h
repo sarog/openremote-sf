@@ -23,6 +23,9 @@
 #import "ControlView.h"
 #import	"SensoryDelegate.h"
 
+/**
+ * It's super class of all views which can both send control command and polling.
+ */
 @interface SensoryControlView : ControlView<SensoryDelegate> {
 }
 
