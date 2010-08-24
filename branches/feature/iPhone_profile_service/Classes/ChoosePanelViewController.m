@@ -49,6 +49,7 @@
 	return self;
 }
 
+// Load panel list from remote controller server.
 - (void)requestPanelList {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
@@ -130,13 +131,14 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
+// Show login dialog for users, if users didn't login remote controller server.
 - (void)showLoginAlert {
 	
 	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Please Sign In" 
-																									 message:@"\n\n\n" // IMPORTANT
-																									delegate:self 
-																				 cancelButtonTitle:@"Cancel" 
-																				 otherButtonTitles:@"OK", nil];
+													 message:@"\n\n\n" // IMPORTANT
+													delegate:self 
+										   cancelButtonTitle:@"Cancel" 
+										   otherButtonTitles:@"OK", nil];
 	
 	textField = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 50.0, 240.0, 25.0)]; 
 	textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -172,6 +174,7 @@
 	
 }
 
+#pragma mark alert delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
 		[Definition sharedDefinition].username = textField.text;
@@ -181,6 +184,7 @@
 	} 
 }
 
+// Handle the server errors which are from controller server with status code.
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {

@@ -35,6 +35,10 @@
 #import "UpdateController.h"
 #import "InitViewController.h"
 
+/**
+ * It's responsible for controlling rendering of all views related to client.
+ * Its view is the root view container of all views related to client.
+ */
 @interface DefaultViewController : UIViewController {
 	
 	id theDelegate;
@@ -54,13 +58,46 @@
 
 }
 
+/**
+ * Initialize all groupControllers, localTabBarControllers and globalTabBarController with group, localTabBar and globalTabBar model data.
+ */
 - (void)initGroups;
+
+/**
+ * Starting polling for currentGroupController.
+ */
 - (void)refreshPolling;
+
+/**
+ * Prompts the user to enter a valid user name and password
+ */
 - (void)populateLoginView:(id)sender;
+
+/**
+ * Prompts the user to setting.
+ */
 - (void)populateSettingsView:(id)sender;
+
+/**
+ * Perform gesture action. Currently, the gesture should be one action of sliding from left to right, 
+ * sliding from right to left, sliding from top to bottom and sliding from bottom to top.
+ */
 - (void)performGesture:(Gesture *)gesture;
+
+/** 
+ * Save id of current group and current screen while initializing groupController 
+ * and navigating for recovery of lastScreenView in RootViewController.
+ */
 - (void)saveLastGroupIdAndScreenId;
+
+/**
+ * Check if the InitView and errorView are gone.
+ */
 - (BOOL)isLoadingViewGone;
+
+/**
+ * Check if the downloading panel.xml and parsing process are finished.
+ */
 - (BOOL)isAppLaunching;
 
 @end

@@ -68,6 +68,8 @@ NSString *const PRESSED = @"pressed";
 NSString *const SRC = @"src";
 NSString *const STYLE = @"style";
 
+NSString *const COLORPICKER = @"colorpicker";
+
 NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT = @"LEFT";
 NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT = @"RIGHT";
 NSString *const BG_IMAGE_RELATIVE_POSITION_TOP = @"TOP";
