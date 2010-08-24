@@ -69,11 +69,14 @@ PaginationController = (function() {
          *
          * The time set must be equals or great than 100 milliseconds tested by me.
          */
-        window.setTimeout(function() {
-          self.currentScreenIndex = index;
-          self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
-          self.currentScreenViewController().startPolling();
-        }, 200);
+        // window.setTimeout(function() {
+        //   self.currentScreenIndex = index;
+        //   self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
+        //   self.currentScreenViewController().startPolling();
+        // }, 200);
+        self.currentScreenIndex = index;
+        self.paginationView.updateView(self.screenViewControllers[self.currentScreenIndex].getView());
+        self.currentScreenViewController().startPolling();
         return true;
       } else {
         return false;
