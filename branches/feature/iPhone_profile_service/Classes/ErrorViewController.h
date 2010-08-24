@@ -21,7 +21,11 @@
 
 #import <UIKit/UIKit.h>
 
-
+/**
+ * It's responsible for controlling errorView's renderiing.
+ * Error view will be shown in condition of no groups and no screens.
+ * And users can be navigated to AppSetting view with Setting button in errorView.
+ */
 @interface ErrorViewController : UIViewController {
 	
 	IBOutlet UILabel *titleLabel;
@@ -30,6 +34,9 @@
 
 }
 
+/**
+ * Init errorView with title and message content.
+ */
 - (id)initWithErrorTitle:(NSString *)title message:(NSString *)message;
 
 - (void)setTitle:(NSString *)title message:(NSString *)message;

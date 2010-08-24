@@ -314,6 +314,7 @@
 	
 }
 
+// Update controller server list in tableview.
 - (void)updateTableView {
 	UITableView *tv = (UITableView *)self.view;
 	[tv beginUpdates];
@@ -334,15 +335,15 @@
 	[self forceHideSpinner:NO];
 }
 
-
+// Cancle(Dismiss) appSettings view.
 - (void)cancelView:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
 }
-		
+
+// Persists settings info into appSettings.plist .
 - (void)saveSettings {
 	if (serverArray.count == 0) {
-		[ViewHelper showAlertViewWithTitle:@"Warning" 
-															 Message:@"No Controller. Please configure Controller URL manually."];
+		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		done.enabled = NO;
@@ -359,12 +360,14 @@
 	}	
 }
 
+// Persist SSL info of enable status into appSettings.plist .
 - (void)saveUseSSL:(id)sender {
 	UISwitch *s = (UISwitch *)sender;
 	[AppSettingsDefinition setUseSSL:s.on];
 	[AppSettingsDefinition writeToFile];
 }
 
+// Persist SSL info of port into appSettings.plist .
 - (void)saveSslPort:(id)sender {
 	UITextField *t = (UITextField *)sender;
 	[AppSettingsDefinition setSslPort:[t.text intValue]];

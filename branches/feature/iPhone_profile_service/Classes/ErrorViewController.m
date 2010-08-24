@@ -60,6 +60,7 @@
 	[msgLabel setText:message];
 }
 
+// To appSetting View with clicking setting button in errorView.
 - (void)gotoSettings:(id)sender {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateSettingsView object:nil];
 }
@@ -68,7 +69,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateBack object:nil];
 }
 
-
+// Enable rotating of errorView.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
 	return YES;
 }

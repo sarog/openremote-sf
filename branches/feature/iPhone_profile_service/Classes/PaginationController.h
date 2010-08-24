@@ -22,7 +22,9 @@
 
 #import <UIKit/UIKit.h>
 #import "ScreenViewController.h"
-
+/**
+ * This class is mainly responsible for switching screenView in groupController's screenViews.
+ */
 @interface PaginationController : UIViewController <UIScrollViewDelegate> {
 	NSArray *viewControllers;
 	NSUInteger selectedIndex;
@@ -42,12 +44,39 @@
 @property(nonatomic,copy) NSArray *viewControllers;
 @property(nonatomic,readonly) NSUInteger selectedIndex;
 
+/**
+ * Switch to the specified screen with screen id.
+ */
 - (BOOL)switchToScreen:(int)screenId;
+
+/**
+ * Switch to the previous screen of current screen.
+ */
 - (BOOL)previousScreen;
+
+/**
+ * Switch to the next screen of current screen.
+ */
 - (BOOL)nextScreen;
+
+/**
+ * Assign the ScreenViewController array to paginationController with landscape boolean value.
+ */
 - (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation;
+
+/**
+ * Get the current screenViewController instance.
+ */
 - (ScreenViewController *)currentScreenViewController;
+
+/**
+ * Refresh paginationController.
+ */
 - (void)updateView;
+
+/**
+ * Switch the current screen view of paginationController to the first screen view.
+ */
 - (BOOL)switchToFirstScreen;
 
 @end

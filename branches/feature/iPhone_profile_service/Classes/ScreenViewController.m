@@ -43,7 +43,9 @@
 
 @synthesize screen, polling;
 
-
+/**
+ * Assign parameter screen model data to screenViewController.
+ */
 - (void)setScreen:(Screen *)s {
 	[s retain];
 	[screen release];
@@ -54,6 +56,10 @@
 	
 }
 
+/**
+ * Perform gesture action. Currently, the gesture should be one action of sliding from left to right, 
+ * sliding from right to left, sliding from top to bottom and sliding from bottom to top.
+ */
 - (void)performGesture:(Gesture *)gesture {
 	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
 	if (g) {
@@ -85,6 +91,7 @@
 	[polling cancelPolling];
 }
 
+// Send control command for gesture actions.
 - (void)sendCommandRequest:(int)componentId {
 	
 //	if ([[Definition sharedDefinition] password] == nil) {
@@ -113,6 +120,7 @@
 	[connection autorelease];	
 }
 
+// Handle the server errors which are from controller server with status code.
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
