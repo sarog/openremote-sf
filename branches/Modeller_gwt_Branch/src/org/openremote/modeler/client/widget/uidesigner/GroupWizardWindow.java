@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -27,6 +27,9 @@ import org.openremote.modeler.domain.Panel;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
+/**
+ * The wizard window to create a new group, if click next button, can select screens for the group.
+ */
 public class GroupWizardWindow extends WizardWindow {
 
    public static final int SELECT_PANEL_STEP = 0;

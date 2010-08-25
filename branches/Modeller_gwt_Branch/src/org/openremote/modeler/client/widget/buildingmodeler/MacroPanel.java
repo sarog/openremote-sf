@@ -65,7 +65,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
 /**
- * The Class MacroPanel.
+ * The panel contains a toolbar and a treePanel to manage macro.
+ * It display in the west part of the page.
  */
 public class MacroPanel extends ContentPanel {
 

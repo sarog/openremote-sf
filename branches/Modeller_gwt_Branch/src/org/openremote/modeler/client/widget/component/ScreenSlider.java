@@ -30,6 +30,8 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 
 /**
+ * The class generates the slider component, it has five images.
+ * There are two type of slider, vertical and horizontal.
  * 
  * @author javen
  *

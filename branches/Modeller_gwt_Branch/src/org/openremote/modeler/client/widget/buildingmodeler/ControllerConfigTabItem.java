@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -55,6 +55,7 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * A tab item for configuring the controller under a specific category. 
+ * It would display at the layout's center part.
  * @author javen
  *
  */
@@ -64,9 +65,19 @@ public class ControllerConfigTabItem extends TabItem {
    private Set<ControllerConfig> configs = null;
    private Set<ControllerConfig> newConfigs = null;               //new configurations after the Controller-Config-2.0-M7.xml updated. 
    private Text hintContent = new Text();
+   
+   /** The config container includes all config infos. */
    private FormPanel configContainer = new FormPanel();
+   
+   /** The hint field set show the selected field's hint message. */
    private FieldSet hintFieldSet = new FieldSet();
    
+   /**
+    * Instantiates a new controller config tab item.
+    * It includes configuration category and can manage it.
+    * 
+    * @param category the category
+    */
    public ControllerConfigTabItem(ConfigCategory category){
       this.category = category;
       this.setHeight(500);
@@ -111,6 +122,10 @@ public class ControllerConfigTabItem extends TabItem {
    }
    
    
+   /**
+    * Gets current account's controller configurations and initializes the form. 
+    * If the Controller-Config-2.0-M7.xml has updated, gets the new configurations too.
+    */
    private void initForm() {
       if (configs == null) {
          ControllerConfigBeanModelProxy.getConfigs(category, new AsyncSuccessCallback<Set<ControllerConfig>>() {
@@ -171,6 +186,13 @@ public class ControllerConfigTabItem extends TabItem {
       this.category = category;
    }
    
+   /**
+    * Creates the controllerConfig property as a field and add it into the configContainer.
+    * If the property is new, highlight it with red color.
+    * 
+    * @param config the config
+    * @param isNewConfig the is new config
+    */
    private void createProperty(ControllerConfig config,boolean isNewConfig) {
       if (config.getOptions().trim().length() == 0) {
          TextField<String> configValueField = new TextField<String>();
@@ -208,6 +230,13 @@ public class ControllerConfigTabItem extends TabItem {
       }
    }
    
+   /**
+    * Adds the update listener to text field.
+    * If blur, update the controllerConfig value. If focus, sets the hint message to hintContent.
+    * 
+    * @param config the config
+    * @param configValueField the config value field
+    */
    private void addUpdateListenerToTextField(final ControllerConfig config,final TextField<String> configValueField){
       configValueField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
@@ -226,6 +255,14 @@ public class ControllerConfigTabItem extends TabItem {
       });
    }
    
+   /**
+    * Adds the update listener to combo box.
+    * If select changed, update the controllerConfig value.
+    * If focus or blur, sets the hint message to hintContent.
+    * 
+    * @param config the config
+    * @param configValueComboBox the config value combo box
+    */
    private void addUpdateListenerToComboBox(final ControllerConfig config,final ComboBox<ModelData> configValueComboBox){
       configValueComboBox.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
 
@@ -253,6 +290,19 @@ public class ControllerConfigTabItem extends TabItem {
       });
    }
    
+ /**
+  * The listener interface for receiving save events.
+  * The class that is interested in processing a save
+  * event implements this interface, and the object created
+  * with that class is registered with a component using the
+  * component's <code>addSaveListener<code> method. When
+  * the save event occurs, that object's appropriate
+  * method is invoked.
+  * 
+  * It is for saving all controllerConfigs.
+  * 
+  * @see SaveEvent
+  */
  class SaveListener extends SelectionListener<ButtonEvent>{
    @Override
    public void componentSelected(ButtonEvent ce) {

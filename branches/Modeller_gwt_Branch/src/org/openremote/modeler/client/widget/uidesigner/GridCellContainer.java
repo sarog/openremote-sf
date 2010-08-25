@@ -24,7 +24,7 @@ import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Cell;
 
 /**
- * The Class GridCellContainer.
+ * The container for storing cell component, which placed in grid container.
  */
 public class GridCellContainer extends ComponentContainer { 
 

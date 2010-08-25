@@ -43,7 +43,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
- * A panel for display screen button properties.
+ * A panel for editing tabbarItem properties.
  */
 public class TabbarItemPropertyForm extends PropertyForm {
    private NavigateFieldSet navigateSet = null;

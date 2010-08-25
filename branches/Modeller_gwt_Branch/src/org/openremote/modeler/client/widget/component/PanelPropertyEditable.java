@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,11 +28,16 @@ import org.openremote.modeler.domain.Panel;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
+/**
+ * The class make the panel be edit in property form.
+ */
 public class PanelPropertyEditable implements PropertyEditable {
 
    private static final long serialVersionUID = -1171027894552188432L;
 
    private Panel panel = null;
+   
+   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
    private TreePanel<BeanModel> profileTree = null;
 
    public PanelPropertyEditable() {
