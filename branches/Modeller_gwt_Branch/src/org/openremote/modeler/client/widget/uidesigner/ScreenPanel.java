@@ -37,10 +37,20 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
+/**
+ * The panel stores the screenTab. It can change the screenTab according to the select screenPair changed.
+ */
 public class ScreenPanel extends LayoutContainer {
 
+   /** The change listener map. */
    private Map<ScreenTab, ChangeListener> changeListenerMap = null;
+   
+   /** The screen item. */
    private ScreenTab screenItem = null;
+   
+   /**
+    * Instantiates a new screen panel.
+    */
    public ScreenPanel() {
       setLayout(new FitLayout());
       setStyleAttribute("backgroundColor", "white");
@@ -48,6 +58,9 @@ public class ScreenPanel extends LayoutContainer {
       addInsertListener();
    }
 
+   /**
+    * Adds the listeners.
+    */
    @SuppressWarnings("unchecked")
    private void addListeners() {
       addListener(Events.BeforeAdd, new Listener<ContainerEvent>() {
@@ -78,6 +91,13 @@ public class ScreenPanel extends LayoutContainer {
       });
    }
    
+   /**
+    * Gets the screen change listener.
+    * 
+    * @param screenTab the screen tab
+    * 
+    * @return the screen change listener
+    */
    private ChangeListener getScreenChangeListener(final ScreenTab screenTab) {
       if (changeListenerMap == null) {
          changeListenerMap = new HashMap<ScreenTab, ChangeListener>();
@@ -117,10 +137,20 @@ public class ScreenPanel extends LayoutContainer {
       });
    }
    
+   /**
+    * Gets the screen item.
+    * 
+    * @return the screen item
+    */
    public ScreenTab getScreenItem() {
       return screenItem;
    }
    
+   /**
+    * Sets the screen item.
+    * 
+    * @param screenItem the new screen item
+    */
    public void setScreenItem(ScreenTab screenItem) {
       if (this.screenItem != null) {
          remove(this.screenItem);
@@ -130,6 +160,9 @@ public class ScreenPanel extends LayoutContainer {
       layout();
    }
    
+   /**
+    * Close current screen tab.
+    */
    public void closeCurrentScreenTab() {
       if (this.indexOf(screenItem) != -1) {
          remove(this.screenItem);

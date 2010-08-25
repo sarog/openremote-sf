@@ -47,10 +47,13 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.Field;
 
-public class SwitchWizardWidnow extends SwitchWindow {
+/**
+ * The wizard window to create a new switch for the current device.
+ */
+public class SwitchWizardWindow extends SwitchWindow {
 
    private Device device;
-   public SwitchWizardWidnow(Device device) {
+   public SwitchWizardWindow(Device device) {
       super(null, device);
       this.device = device;
       initSensorFiled();

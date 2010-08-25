@@ -30,7 +30,7 @@ import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
- * A panel for display screen button properties.
+ * A panel for editing tabbar properties.
  */
 public class TabbarPropertyForm extends PropertyForm {
    
