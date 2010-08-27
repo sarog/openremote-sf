@@ -24,7 +24,6 @@
 #import "Button.h"
 #import "Switch.h"
 #import "Slider.h"
-#import "ColorPicker.h"
 
 
 @implementation Control
