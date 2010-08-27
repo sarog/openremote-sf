@@ -31,6 +31,7 @@ import org.openremote.modeler.client.proxy.BeanModelDataBase;
 import org.openremote.modeler.client.proxy.UtilsProxy;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.TouchPanels;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.GroupRef;
@@ -41,14 +42,11 @@ import org.openremote.modeler.domain.ScreenPairRef;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 
@@ -61,7 +59,7 @@ public class PanelWindow extends FormWindow {
    private BeanModel panelModel = null;
    private TextField<String> panelNameField = null;
 //   private CheckBox createScreen = new CheckBox();
-   private ComboBox<ModelData> predefinedPanel = null;
+   private ComboBoxExt predefinedPanel = null;
    
    /**
     * Instantiates a window to create a new panel.
@@ -122,16 +120,13 @@ public class PanelWindow extends FormWindow {
       add(form);
    }
 
-   private ComboBox<ModelData> createTypeField() {
-      predefinedPanel = new ComboBox<ModelData>();
+   private ComboBoxExt createTypeField() {
+      predefinedPanel = new ComboBoxExt();
       
       Map<String, List<TouchPanelDefinition>> predefinedPanels = TouchPanels.getInstance();
-      ListStore<ModelData> store = new ListStore<ModelData>();
-      predefinedPanel.setStore(store);
       predefinedPanel.setFieldLabel("Panel type");
       predefinedPanel.setName("predefine");
       predefinedPanel.setAllowBlank(false);
-      predefinedPanel.setEditable(false);
       ComboBoxDataModel<TouchPanelDefinition> iphoneData = null;
       for (String key : predefinedPanels.keySet()) {
          for (TouchPanelDefinition touchPanel : predefinedPanels.get(key)) {
@@ -140,12 +135,10 @@ public class PanelWindow extends FormWindow {
             if ("iPhone".equals(touchPanel.getName())) {
                iphoneData = data;
             }
-            store.add(data);
+            predefinedPanel.getStore().add(data);
          }
       }
-      predefinedPanel.setDisplayField(ComboBoxDataModel.getDisplayProperty());
       predefinedPanel.setEmptyText("Please Select Panel...");
-      predefinedPanel.setValueField(ComboBoxDataModel.getDataProperty());
       predefinedPanel.setValue(iphoneData); // temp select iphone panel.
       
       return predefinedPanel;
