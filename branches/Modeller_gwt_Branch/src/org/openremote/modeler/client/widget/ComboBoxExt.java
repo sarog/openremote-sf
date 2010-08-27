@@ -34,5 +34,7 @@ public class ComboBoxExt extends ComboBox<ModelData> {
       setStore(new ListStore<ModelData>());
       setDisplayField(ComboBoxDataModel.getDisplayProperty());
       setValueField(ComboBoxDataModel.getDataProperty());
+      setTriggerAction(TriggerAction.ALL);
+      setEditable(false);
    }
 }
