@@ -24,7 +24,6 @@
 #import "Control.h"
 #import "Navigate.h"
 
-
 //CW rotate: +1 % 4
 //CCW rotate: (-1+4) % 4
 //opposite : +2 % 4
@@ -35,8 +34,10 @@ typedef enum {
 	GestureSwipeTypeRightToLeft  = 3
 } GestureSwipeType;
 
+/**
+ * Gesture model stores swipeType, hasControlCommand and navigate data.
+ */
 @interface Gesture : Control {
-	
 	GestureSwipeType swipeType;
 	BOOL hasControlCommand;
 	Navigate *navigate;
@@ -47,8 +48,16 @@ typedef enum {
 @property (nonatomic, readonly)BOOL hasControlCommand;
 @property (nonatomic, readonly)Navigate *navigate;
 
+/**
+ * Construct a gesture instance with swipe type.
+ */
 - (id)initWithGestureSwipeType:(GestureSwipeType)type;
+
+/**
+ * Construct a gesture instance with swipe type and orientation value.
+ */
 - (id)initWithGestureSwipeType:(GestureSwipeType)type orientation:(UIInterfaceOrientation)orientation;
+
 - (NSString *)toString;
 
 @end

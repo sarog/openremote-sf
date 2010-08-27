@@ -22,19 +22,17 @@
 #import <Foundation/Foundation.h>
 #import "LayoutContainer.h"
 
-
-
+/**
+ * Store gridcell model.
+ */
 @interface GridLayoutContainer : LayoutContainer {
-	
 	NSMutableArray *cells;
 	int rows;
 	int cols;
-
 }
 
 @property (nonatomic, readonly) NSMutableArray *cells;
 @property (nonatomic, readonly) int rows;
 @property (nonatomic, readonly) int cols;
-
 
 @end

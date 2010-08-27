@@ -19,16 +19,36 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
+/**
+ * Wifi Network checking util.
+ */
 #import <Foundation/Foundation.h>
 
 @interface CheckNetwork : NSObject {
-
 }
 
+/**
+ * Check if wifi network is available. If wifi network isn't available, this method will throw CheckNetworkException.
+ */
 + (void)checkWhetherNetworkAvailable;
+
+/**
+ * Check if ip address of controller server is available. If it isn't, this method will throw CheckNetworkException.
+ */
 + (void)checkIPAddress;
+
+/**
+ * Check if controller server's url is available. If it isn't, this method will throw CheckNetworkException.
+ */
 + (void)checkControllerAvailable;
+
+/**
+ * Check if the url of panel RESTful request if available. If it isn't, this method will throw CheckNetworkException.
+ */
 + (void)checkPanelXml;
+
+/**
+ * Call previous checking method.
+ */
 + (void)checkAll;
 @end

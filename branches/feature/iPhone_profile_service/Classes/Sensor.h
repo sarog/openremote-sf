@@ -22,6 +22,9 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 
+/**
+ * Stores model data about sensor parsed from "include" element of panel data.
+ */
 @interface Sensor : XMLEntity {
 	
 	int sensorId;

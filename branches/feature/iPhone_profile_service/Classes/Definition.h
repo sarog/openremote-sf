@@ -25,8 +25,11 @@
 #import "Group.h"
 #import "Tabbar.h"
 
-#define TWICE 2
+#define TWICE 2 // Constant of parsing panel.xml .
 
+/**
+ * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
+ */
 @interface Definition : NSObject {		
 	BOOL isUpdating;
 	NSDate *lastUpdateTime;
@@ -42,17 +45,64 @@
 	NSString *password;
 }
 
+/**
+ * Get Definition singleton instance.
+ */
 + (Definition *)sharedDefinition;
+
+/**
+ * Download and parse panel data.
+ */
 - (void)update;
+
+/**
+ * Check the downloaded data is ready.
+ */
 - (BOOL)isDataReady;
+
+/**
+ * Use local cache in handset side.
+ */
 - (void)useLocalCacheDirectly;
+
+/**
+ * Clear stored models data(groups, screens, labels and tabBar).
+ */
 - (void)clearPanelXMLData;
+
+/**
+ * Add image name to a array for downloading images into image cache.
+ */
 - (void)addImageName:(NSString *)imageName;
+
+/**
+ * Get a group instance with group id.
+ */
 - (Group *)findGroupById:(int)groupId;
+
+/**
+ * Get a screen instance with screen id.
+ */
 - (Screen *)findScreenById:(int)screenId;
+
+/**
+ * Add a group instance for caching.
+ */
 - (void)addGroup:(Group *)group;
+
+/**
+ * Add a screen instance for caching.
+ */
 - (void)addScreen:(Screen *)screen;
+
+/**
+ * Add a label instance for caching.
+ */
 - (void) addLabel:(Label *)label;
+
+/**
+ * Get a label instance with lable id.
+ */
 - (Label *)findLabelById:(int)labelId;
 
 @property (nonatomic,readonly) BOOL isUpdating;

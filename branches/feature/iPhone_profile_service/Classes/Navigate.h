@@ -22,6 +22,9 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 
+/**
+ * Stores data about navigation.
+ */
 @interface Navigate : XMLEntity {
 	
 	int toScreen;

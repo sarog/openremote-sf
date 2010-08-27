@@ -32,6 +32,10 @@
 #import "UpdateController.h"
 #import "DefaultViewController.h"
 
+/*
+ * This is the entrypoint of the application.
+ *  After application have been started applicationDidFinishLaunching method will be called.
+ */
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
 	
 	GestureWindow *window;

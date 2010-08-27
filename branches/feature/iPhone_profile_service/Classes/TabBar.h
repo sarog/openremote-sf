@@ -22,6 +22,9 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 
+/**
+ * Stores model data about tabbar parsed from "tabbar" element of panel data.
+ */
 @interface TabBar : XMLEntity {
 	NSMutableArray *tabBarItems;
 }

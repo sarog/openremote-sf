@@ -22,6 +22,9 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 
+/**
+ * Stores model data about state parsed from element "state" of panel data.
+ */
 @interface SensorState : XMLEntity {
 
 	NSString *name;

@@ -23,7 +23,9 @@
 #import "SensorComponent.h"
 #import "Image.h"
 
-
+/**
+ * Stores model data about slider parsed from "slider" element of panel data.
+ */
 @interface Slider : SensorComponent {
 	Image *thumbImage;
 	BOOL vertical;

@@ -29,8 +29,6 @@
 
 @implementation Control
 
-
-
 + (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	Control *newControl;
 	if ([controlType isEqualToString:BUTTON]) {
