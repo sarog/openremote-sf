@@ -24,6 +24,9 @@
 #import "Navigate.h"
 #import "Image.h"
 
+/**
+ * Button stores informations parsed from button element in panel.xml .
+ */
 @interface Button : Control {
 	
 	NSString *name;

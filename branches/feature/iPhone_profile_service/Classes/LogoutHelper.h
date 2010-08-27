@@ -21,11 +21,16 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Helper for logout.
+ */
 @interface LogoutHelper : NSObject {
 
 }
 
+/**
+ * Send logout request to controller server.
+ */
 - (void)requestLogout;
 
 @end

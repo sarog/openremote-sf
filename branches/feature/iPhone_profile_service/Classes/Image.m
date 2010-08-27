@@ -33,7 +33,6 @@
 	return IMAGE;
 }
 
-
 // init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
 	if (self = [super init]) {

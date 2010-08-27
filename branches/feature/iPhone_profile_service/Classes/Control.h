@@ -23,12 +23,15 @@
 #import <UIKit/UIKit.h>
 #import "Component.h"
 
-
-@interface Control : Component {
-
-	
+/**
+ * Control is super class of all models such as button.
+ */
+@interface Control : Component {	
 }
 
+/**
+ * Build controls with parameters.
+ */
 + (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
 

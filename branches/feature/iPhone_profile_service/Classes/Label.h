@@ -22,6 +22,9 @@
 #import <Foundation/Foundation.h>
 #import "SensorComponent.h"
 
+/**
+ * Stores text, textcolor and font size.
+ */
 @interface Label : SensorComponent {
 	int fontSize;
 	NSString *color;

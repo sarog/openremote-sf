@@ -23,6 +23,9 @@
 #import "SensorComponent.h"
 #import "Label.h"
 
+/**
+ * Stores image src and label model.
+ */
 @interface Image : SensorComponent {
 	NSString *src;
 	NSString *style;

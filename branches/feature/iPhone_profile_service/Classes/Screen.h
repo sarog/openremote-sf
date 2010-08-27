@@ -25,6 +25,9 @@
 #import "Gesture.h"
 #import "Background.h"
 
+/**
+ * Stores model data about screen parsed from screen element of panel data.
+ */
 @interface Screen : XMLEntity {
 	
 	int screenId;
@@ -37,7 +40,14 @@
 
 }
 
+/**
+ * Get all polling id of sensory components in screen.
+ */
 - (NSArray *)pollingComponentsIds;
+
+/**
+ * Get gesture instance by gesture swipe type.
+ */
 - (Gesture *)getGestureIdByGestureSwipeType:(GestureSwipeType)type;
 
 @property (nonatomic,readonly) int screenId;

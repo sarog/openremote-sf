@@ -23,11 +23,11 @@
 #import "LayoutContainer.h"
 #import "Component.h"
 
-
+/**
+ * AbsoluteLayoutContainer model, it stores one kind of all component models data.
+ */
 @interface AbsoluteLayoutContainer : LayoutContainer {
-	
 	Component *component;
-
 }
 
 @property (nonatomic,readonly) Component *component;

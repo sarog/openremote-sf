@@ -23,8 +23,10 @@
 #import "Component.h"
 #import "XMLEntity.h"
 
+/**
+ * Store model data of components.
+ */
 @interface GridCell : XMLEntity {
-
 	int x;
 	int y;
 	int rowspan;

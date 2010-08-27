@@ -23,6 +23,9 @@
 #import "XMLEntity.h"
 #import "Image.h"
 
+/**
+ * Background stores informations parsed from background element in panel.xml .
+ */
 @interface Background : XMLEntity {
 	int backgroundImageAbsolutePositionLeft;
 	int backgroundImageAbsolutePositionTop;

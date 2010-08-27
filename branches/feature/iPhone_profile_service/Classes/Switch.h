@@ -23,6 +23,9 @@
 #import "SensorComponent.h"
 #import "Image.h"
 
+/**
+ * Stores model data about switch parsed from "swith" element of panel data.
+ */
 @interface Switch : SensorComponent {
 
 	Image *onImage;

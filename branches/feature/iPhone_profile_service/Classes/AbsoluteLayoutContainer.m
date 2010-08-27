@@ -40,6 +40,9 @@
 	return self;
 }
 
+/**
+ * Get the polling ids of component in AbsoluteLayoutContainer.
+ */
 - (NSArray *)pollingComponentsIds {
 	NSMutableArray *ids = [[NSMutableArray alloc] init];
 	if ([component isKindOfClass:SensorComponent.class]){	

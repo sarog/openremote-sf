@@ -56,6 +56,7 @@
 	
 }
 
+// Handle the server errors which are from controller server with status code.
 - (void)handleServerErrorWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		switch (statusCode) {

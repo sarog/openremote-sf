@@ -24,6 +24,9 @@
 #import "Navigate.h"
 #import "Image.h"
 
+/**
+ * Store model data about tabbar item parsed from element "item" in element "tabbar" of panel data.
+ */
 @interface TabBarItem : XMLEntity {
 	NSString *tabBarItemName;
 	Navigate *navigate;
