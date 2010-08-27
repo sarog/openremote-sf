@@ -33,8 +33,6 @@
 #import "ControllerException.h"
 #import "Slider.h"
 #import "SliderView.h"
-#import "ColorPicker.h"
-#import "ColorPickerView.h"
 
 @interface ControlView (Private)
 
