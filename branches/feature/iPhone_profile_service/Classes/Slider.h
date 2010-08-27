@@ -24,7 +24,13 @@
 #import "Image.h"
 
 /**
- * Stores model data about slider parsed from "slider" element of panel data.
+ * Stores model data about slider parsed from "slider" element in panel.xml.
+ * XML fragment example:
+ * <slider id="60" thumbImage="thumbImage.png">
+ *    <min value="0" image="mute.png" trackImage="red.png"/>
+ *    <max value="100" image="loud.png" trackImage="green.png"/>
+ *    <link type="sensor" ref="60" />
+ * </slider>
  */
 @interface Slider : SensorComponent {
 	Image *thumbImage;

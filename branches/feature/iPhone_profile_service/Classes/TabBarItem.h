@@ -25,7 +25,22 @@
 #import "Image.h"
 
 /**
- * Store model data about tabbar item parsed from element "item" in element "tabbar" of panel data.
+ * Store model data about tabbar item parsed from element "item" in element "tabbar" in panel.xml.
+ * XML fragment example:
+ * <tabbar>
+ *    <item name="previous">
+ *       <navigate to="PreviousScreen" />
+ *       <image src="previous.png" />
+ *    </item>
+ *    <item name="next">
+ *	     <navigate to="NextScreen" />
+ *		 <image src="next.png" />
+ *    </item>
+ *	  <item name="setting">
+ *       <navigate to="Setting" />
+ *       <image src="setting.png" />
+ *    </item>                
+ * </tabbar>
  */
 @interface TabBarItem : XMLEntity {
 	NSString *tabBarItemName;

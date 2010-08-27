@@ -23,10 +23,10 @@
 #import "ServerAutoDiscoveryController.h"
 
 #define AUTO_DISCOVERY_SWITCH_INDEX 0 // Auto discovery boolean value is stored in the first item of appSettings.plist .
-#define AUTO_DISCOVERY_URLS_INDEX 1 // Auto discovery urls are stored in the second item of appSettings.plist .
-#define CUSOMIZED_URLS_INDEX 2 // Customized urls are stored in the 3rd item of appSettings.plist .
-#define PANEL_IDENTITY_INDEX 3 // Selected panel indentity is stored in the 4th item of appSettings.plist .
-#define SECURITY_INDEX 5 // Security settings are stored in the 6th item of appSettings.plist .
+#define AUTO_DISCOVERY_URLS_INDEX   1 // Auto discovery urls are stored in the second item of appSettings.plist .
+#define CUSOMIZED_URLS_INDEX        2 // Customized urls are stored in the 3rd item of appSettings.plist .
+#define PANEL_IDENTITY_INDEX        3 // Selected panel indentity is stored in the 4th item of appSettings.plist .
+#define SECURITY_INDEX              5 // Security settings are stored in the 6th item of appSettings.plist .
 
 /**
  * All setting infomations about current panel are accessed(read and write) by current class. 
