@@ -24,7 +24,11 @@
 #import "Image.h"
 
 /**
- * Background stores informations parsed from background element in panel.xml .
+ * Background stores informations parsed from background element in panel.xml.
+ * XML fragment example:
+ * <background fillScreen="true">
+ *    <image src="living_colors_320.png" />
+ * </background>
  */
 @interface Background : XMLEntity {
 	int backgroundImageAbsolutePositionLeft;

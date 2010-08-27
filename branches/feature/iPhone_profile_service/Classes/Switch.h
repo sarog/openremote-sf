@@ -24,7 +24,14 @@
 #import "Image.h"
 
 /**
- * Stores model data about switch parsed from "swith" element of panel data.
+ * Stores model data about switch parsed from "swith" element in panel.xml.
+ * XML fragment example:
+ * <switch id="60" >
+ *    <link type="sensor" ref="60">
+ *       <state name="on" value="c.png" />
+ *       <state name="off" value="d.png" />
+ *    </link>
+ * </switch>
  */
 @interface Switch : SensorComponent {
 

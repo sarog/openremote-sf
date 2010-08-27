@@ -26,7 +26,19 @@
 #import "Background.h"
 
 /**
- * Stores model data about screen parsed from screen element of panel data.
+ * Stores model data about screen parsed from screen element of panel data and parsed from element screen in panel.xml.
+ * XML fragment example:
+ * <screen id="5" name="basement">
+ *    <background absolute="100,100">
+ *       <image src="basement1.png" />
+ *    </background>
+ *    <absolute left="20" top="320" width="100" height="100" >
+ *       <image id="59" src = "a.png" />
+ *    </absolute>
+ *    <absolute left="20" top="320" width="100" height="100" >
+ *       <image id="60" src = "b.png" />
+ *    </absolute>
+ * </screen>
  */
 @interface Screen : XMLEntity {
 	

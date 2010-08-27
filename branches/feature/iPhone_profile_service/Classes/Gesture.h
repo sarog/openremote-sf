@@ -35,7 +35,20 @@ typedef enum {
 } GestureSwipeType;
 
 /**
- * Gesture model stores swipeType, hasControlCommand and navigate data.
+ * Gesture model stores swipeType, hasControlCommand and navigate data, parsed from element gesture in panel.xml.
+ * XML fragment example:
+ * <gesture id="514" hasControlCommand="true" type="swipe-bottom-to-top">
+ *    <navigate to="setting" />
+ * </gesture>
+ * <gesture id="515" hasControlCommand="true" type="swipe-top-to-bottom">
+ *    <navigate to="setting" />
+ * </gesture>
+ * <gesture id="516" hasControlCommand="true" type="swipe-left-to-right">
+ *    <navigate to="setting" />
+ * </gesture>
+ * <gesture id="517" hasControlCommand="true" type="swipe-right-to-left">
+ *    <navigate to="setting" />
+ * </gesture>
  */
 @interface Gesture : Control {
 	GestureSwipeType swipeType;

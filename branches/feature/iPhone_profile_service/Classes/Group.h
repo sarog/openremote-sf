@@ -24,7 +24,12 @@
 #import "TabBar.h"
 
 /**
- * Stores screens model data.
+ * Stores screens model data and parsed from element group in panel.xml.
+ * XML fragment example:
+ * <group id="27" name="Bedroom">
+ *    <include type="screen" ref="30" />
+ *    <include type="screen" ref="45" />
+ * </group>
  */
 @interface Group : XMLEntity {
 	
