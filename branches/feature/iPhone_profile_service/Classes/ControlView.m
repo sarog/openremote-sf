@@ -54,8 +54,6 @@
 		controlView = [ButtonView alloc];
 	} else if ([control isKindOfClass:[Slider class]]) {
 		controlView = [SliderView alloc];
-	} else if ([control isKindOfClass:[ColorPicker class]]) {
-		controlView = [ColorPickerView alloc];
 	} else {
 		return nil;
 	}
