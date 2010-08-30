@@ -21,7 +21,9 @@
 
 #import <UIKit/UIKit.h>
 
-
+/**
+ * It's responsible for rendering login view and function of login to remote controller server.
+ */
 @interface LoginViewController : UITableViewController <UITextFieldDelegate> {
 	
 	UITextField *usernameField;

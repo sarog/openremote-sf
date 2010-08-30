@@ -120,6 +120,7 @@
 	}	
 }
 
+// Check if network is available. If network is available, then update client.
 - (void)checkNetworkAndUpdate {
 	NSLog(@"checkNetworkAndUpdate");
 	@try {	
@@ -146,6 +147,7 @@
 	}	
 }
 
+// Use local cache if update fail and local cache exists.
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage {
 	NSLog(@"updateFailOrUseLocalCache");
 	NSString *path = [[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]];
@@ -157,6 +159,7 @@
 	}
 }
 
+// Select the first customized servers as current server and then update if customized servers' length isn't zero.
 - (void)useCustomDefaultUrl {
 	NSLog(@"useCustomDefaultUrl");
 	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
@@ -182,6 +185,7 @@
 	}
 }
 
+// Get the group members(controller url) of current using controller.
 - (void)getRoundRobinGroupMembers {
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;

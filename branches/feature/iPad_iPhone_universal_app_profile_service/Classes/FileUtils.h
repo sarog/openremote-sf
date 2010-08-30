@@ -24,12 +24,25 @@
 #import <UIKit/UIKit.h>
 
 // DENNIS: Maybe you can add these helper methods as an Objective-C category to the NSFileManager class? (Make sure to use a precise and unique name for your methods.)
-
+/**
+ * Uitls about file operations.
+ */
 @interface FileUtils : NSObject {
 }
 
+/**
+ * Download resouce file from specified url and save into the specified path.
+ */
 + (void) downloadFromURL:(NSString *) url  path:(NSString *)p;
+
+/**
+ * Delete folder with specified path.
+ */
 + (void)deleteFolderWithPath:(NSString *) path;
+
+/**
+ * Check if the file path specified exists.
+ */
 + (BOOL)checkFileExistsWithPath:(NSString *)path;
 
 @end

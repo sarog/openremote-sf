@@ -31,7 +31,6 @@
 
 @synthesize layout;
 
-
 + (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer {
 	LayoutContainerView* layoutView = nil;
 	if ([layoutContainer isKindOfClass:[AbsoluteLayoutContainer class]]) {
@@ -73,6 +72,5 @@
 	[layout release];
 	[super dealloc];
 }
-
 
 @end

@@ -35,9 +35,8 @@
     return self;
 }
 
-
+// Override metho of UIView and be called automatically.
 - (void)layoutSubviews {
-	
 	if (cell.component) {
 		//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 		//Otherwise, UI widget inside will not work in nested UIViews
