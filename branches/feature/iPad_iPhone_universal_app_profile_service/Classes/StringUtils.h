@@ -23,15 +23,25 @@
 #import <Foundation/Foundation.h>
 
 // DENNIS: Maybe you can add these helper methods as an Objective-C category to the NSString class? (Make sure to use a precise and unique name for your methods.)
-
+/**
+ * Utils about string operations
+ */
 @interface StringUtils : NSObject {
-
 }
 
+/**
+ * Get the file name from a string.
+ */
 + (NSString *)parsefileNameFromString:(NSString *)str ;
 
+/**
+ * Get the port from server url.
+ */
 + (NSString *)parsePortFromServerUrl:(NSString *)serverUrl;
 
+/**
+ * Get host name from server url.
+ */
 + (NSString *)parseHostNameFromServerUrl:(NSString *)serverUrl;
 
 @end

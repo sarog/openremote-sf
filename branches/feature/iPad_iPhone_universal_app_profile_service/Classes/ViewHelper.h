@@ -23,12 +23,20 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
+/**
+ * ViewHelper mainly provides convient methods for showing alert view.
+ */
 @interface ViewHelper : NSObject {
-
 }
 
+/**
+ * Show common alert view with customized title and message content.
+ */
 +(void) showAlertViewWithTitle:(NSString *)title Message:(NSString *)message;
+
+/**
+ * Show alert view with customized title, message content and providing a setting button for navigating to appsetting view.
+ */
 -(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message;
 
 @end

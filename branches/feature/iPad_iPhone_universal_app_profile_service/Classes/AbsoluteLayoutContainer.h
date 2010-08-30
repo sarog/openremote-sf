@@ -23,11 +23,15 @@
 #import "LayoutContainer.h"
 #import "Component.h"
 
-
+/**
+ * AbsoluteLayoutContainer model, it stores one kind of all component models data, its frame and parsed from element absolute in panel.xml.
+ * XML fragment example:
+ * <absolute left="10" top="10" width="320" height="300">
+ * ......
+ * </absolute>
+ */
 @interface AbsoluteLayoutContainer : LayoutContainer {
-	
 	Component *component;
-
 }
 
 @property (nonatomic,readonly) Component *component;

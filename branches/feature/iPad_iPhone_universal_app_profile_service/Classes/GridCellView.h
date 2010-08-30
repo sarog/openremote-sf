@@ -23,12 +23,17 @@
 #import "GridCell.h"
 #import "ComponentView.h"
 
+/**
+ * GridCellView is mainly for layout component views.
+ */
 @interface GridCellView : UIView {
-	
 	GridCell *cell;
 	ComponentView *componentView;
 }
 
+/**
+ * Construct a gridcell view instance with gridcell model data and specified frame.
+ */
 - (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame;
 
 @property (nonatomic, readonly)ComponentView *componentView;

@@ -25,6 +25,9 @@
 
 #define MIN_SLIDE_VARIANT 1
 
+/**
+ * This is a view for rendering dynamic numeric data and sending control command with numeric value.
+ */
 @interface SliderView : SensoryControlView {
 	UISlider *uiSlider;
 	int currentValue;

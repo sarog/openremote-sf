@@ -21,7 +21,9 @@
 
 #import <UIKit/UIKit.h>
 
-
+/**
+ * It's responsible for Controlling presentation of choosing panel view.
+ */
 @interface ChoosePanelViewController : UITableViewController {
 	
 	NSMutableArray *panels;

@@ -22,9 +22,16 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ * This is Splash view of current client and show version of current client 
+ * and process progress of updating from controller server while client starting up.
+ */
 @interface InitViewController : UIViewController {
 	
+	// For render process progress of updating from controller server while client starting up.
 	IBOutlet UILabel *label;
+	
+	// For render version of current client, It's read from Info.plist .
 	IBOutlet UILabel *version;
 
 }

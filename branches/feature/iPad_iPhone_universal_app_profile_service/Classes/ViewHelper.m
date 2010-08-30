@@ -42,6 +42,8 @@
 	[alert autorelease];
 }
 
+// Delegate method of UIAlertViewDelegate.
+// Called when a button is clicked. The view will be automatically dismissed after this call returns
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {//setting button
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateSettingsView object:nil];

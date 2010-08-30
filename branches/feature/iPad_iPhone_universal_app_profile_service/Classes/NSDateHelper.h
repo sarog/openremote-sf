@@ -21,11 +21,29 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Utils about NSData operations.
+ */
 @interface NSDate (Helper)
+
+/**
+ * Get default date format.
+ */
 + (NSString *)dbFormatString;
+
+/**
+ * Translate a date string into NSDate instance with default date format.
+ */
 + (NSDate *)dateFromString:(NSString *)string;
+
+/**
+ * Translate a date string into NSDate instance with specified format.
+ */
 + (NSString *)stringFromDate:(NSDate *)date withFormat:(NSString *)string;
+
+/**
+ * Translate a date instance into string value with default date format.
+ */
 + (NSString *)stringFromDate:(NSDate *)date;
 
 @end

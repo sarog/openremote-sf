@@ -23,8 +23,10 @@
 #import "URLConnectionHelper.h"
 #import "UpdateController.h"
 
-//Setup a polling connection to detect the component status changes and 
-//notificate the new status to component on screen.
+/**
+ * Setup a polling connection to detect the component status changes and 
+ * notificate the new status to component on screen.
+ */
 
 @interface PollingHelper : NSObject <URLConnectionHelperDelegate> {
 	
@@ -35,12 +37,19 @@
 	UpdateController *updateController;
 }
 
+/**
+ * Construct polling helper with sensor ids.
+ */
 - (id) initWithComponentIds:(NSString *)ids;
 
-
+/**
+ * Request the latest status of device and then start polling.
+ */
 - (void)requestCurrentStatusAndStartPolling;
 
-
+/**
+ * Cancel polling to controller server.
+ */
 - (void)cancelPolling;
 
 @property(nonatomic,readonly) BOOL isPolling;

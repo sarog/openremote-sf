@@ -22,10 +22,15 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
+/**
+ * Utils about image operations.
+ */
 @interface UIViewUtil : NSObject {
 }
 
+/**
+ * Clip image depending on image's container view, align pattern and fill pattern.
+ */
 + (UIImageView *) clippedUIImageViewWith:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView uiImageAlignToUIViewPattern:(NSString *)align isUIImageFillUIView:(BOOL)imageFillView;
 
 @end

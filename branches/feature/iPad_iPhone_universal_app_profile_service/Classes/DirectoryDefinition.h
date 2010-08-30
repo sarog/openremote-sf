@@ -21,15 +21,38 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Provide the way to access some special directories.
+ */
 @interface DirectoryDefinition : NSObject {
-
 }
 
+/**
+ * Get the directory of cache folder in handset.
+ */
 + (NSString *)cacheFolder;
+
+/**
+ * Get the directory of image cache folder in handset.
+ * It's the sub directory of cacheFolder.
+ */
 + (NSString *)imageCacheFolder;
+
+/**
+ * Get the directory of xml cache folder in handset.
+ * It's the sub directory of cacheFolder.
+ */
 + (NSString *)xmlCacheFolder;
+
+/**
+ * Get the directory of appSettings.plist in handset.
+ * It's in the directory of document directory in handset.
+ */
 + (NSString *)appSettingsFilePath;
+
+/**
+ * Get the directory of info.plist .
+ */
 + (NSString *)infoFilePath;
 
 @end

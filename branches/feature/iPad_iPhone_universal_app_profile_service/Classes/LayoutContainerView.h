@@ -22,15 +22,21 @@
 #import <UIKit/UIKit.h>
 #import "LayoutContainer.h"
 
+/**
+ * Super class of all layout views(Such as AbsoluteLayoutContainerView and GridLayoutContainerView).
+ */
 @interface LayoutContainerView : UIView {
-	
 	LayoutContainer *layout;
-
-	
 }
 
+/**
+ * Construct a layoutview instance with layoutContainer model data and the specified frame.
+ */
 - (id)initWithLayoutContainer:(LayoutContainer *)layoutContainer frame:(CGRect)frame;
 
+/**
+ * Build layout view with layout model data.
+ */
 + (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer;
 
 @property (nonatomic, readonly) LayoutContainer *layout;

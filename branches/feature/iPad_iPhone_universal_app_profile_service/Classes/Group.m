@@ -74,14 +74,17 @@
 	}
 }
 
-
+// Get all portrait screens in group.
 - (NSArray *) getPortraitScreens {
 	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", NO]]; 
 }
+
+// Get all landscape screens in group.
 - (NSArray *) getLandscapeScreens {
 	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", YES]]; 
 }
 
+// Find screen model in specified orientation screens of group containing by screen id.
 - (BOOL)canFindScreenById:(int)screenId inOrientation:(BOOL)isLandscape {
 	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d && screenId == %d", isLandscape, screenId]].count > 0; 
 }

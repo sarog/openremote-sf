@@ -22,18 +22,39 @@
 
 #import <Foundation/Foundation.h>
 
+// This notification will be post when UpdateController have been finished to update.
 extern NSString *const DefinationUpdateDidFinishedNotification;
 extern NSString *const DefinationNeedNotUpdate;
+
+// This notificaton will be post while needing to show appsetting view.
 extern NSString *const NotificationShowSettingsView; 
+
+// This notificaton will be post while needing to hide init view.
 extern NSString *const NotificationHideInitView; 
 extern NSString *const NotificationRefreshAcitivitiesView;
+
+// This notificaton will be post while needing to refresh groups view.
 extern NSString *const NotificationRefreshGroupsView;
+
+// This notificaton will be post while status is changed.
 extern NSString *const NotificationPollingStatusIdFormat;
+
+// This notificaton will be post while triggering navigation actions.
 extern NSString *const NotificationNavigateTo;
+
+// This notificaton will be post while needing users to login.
 extern NSString *const NotificationPopulateCredentialView;
+
+// This notificaton will be post while needing to show appsetting view.
 extern NSString *const NotificationPopulateSettingsView;
+
+// This notificaton will be post when back navigation is triggered.
 extern NSString *const NotificationNavigateBack;
+
+// This notificaton will be post while needing to show loading view.
 extern NSString *const NotificationShowLoading;
+
+// This notificaton will be post while needing to hide loading view.
 extern NSString *const NotificationHideLoading;
 
 @interface NotificationConstant : NSObject {

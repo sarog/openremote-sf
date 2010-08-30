@@ -23,6 +23,9 @@
 #import "ComponentView.h"
 #import "SensoryDelegate.h"
 
+/**
+ * It's super class of all sensory views in screen views.
+ */
 @interface SensoryView : ComponentView<SensoryDelegate> {
 }
 

@@ -49,6 +49,9 @@
 	[super dealloc];
 }
 
+/**
+ * Assign the ScreenViewController array to paginationController with landscape boolean value.
+ */
 - (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation {
 	isLandscape = isLandscapeOrientation;
 	CGSize size = [UIScreen mainScreen].bounds.size;
@@ -152,6 +155,7 @@
 	return YES;
 }
 
+// Save last screen's id while switching screen view for recovery of lastScreenView in RootViewController.
 - (void)saveLastScreen {
 	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
@@ -160,11 +164,13 @@
 	}
 }
 
+// Refresh the current screenView.
 - (void)updateViewForCurrentPage {
 	[self initViewForPage:selectedIndex];
 	[pageControl setCurrentPage:selectedIndex];
 }
 
+// Refresh the current screenView, previous screenView and next screenView.
 - (void)updateViewForCurrentPageAndBothSides {
 	[self updateViewForPage:selectedIndex - 1];
 	[self updateViewForPage:selectedIndex];
@@ -174,6 +180,7 @@
 	[self saveLastScreen];
 }
 
+// Init current screen view of paginationController with specified page index.
 - (void)initViewForPage:(NSUInteger)page {
 	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
@@ -194,6 +201,8 @@
 	}
 }
 
+
+// Refresh the screenView page index specified.
 - (void)updateViewForPage:(NSUInteger)page {
 	if (page < 0) return;
 	if (page >= [viewControllers count]) return;

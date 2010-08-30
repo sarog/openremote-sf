@@ -65,6 +65,7 @@
 	// e.g. self.myOutlet = nil;
 }
 
+// Back to the view where loginView was triggered from.
 - (void)goBack:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
 	if ([theDelegate respondsToSelector:@selector(onBackFromLogin)]) {
@@ -77,6 +78,7 @@
 	[passwordField resignFirstResponder];
 }
 
+// Send sign in request to remote controller server by loginViewController's delegate.
 - (void)signin:(id)sender {
 	if (usernameField.text == nil || passwordField.text == nil ||
 			[@"" isEqualToString:usernameField.text] || [@"" isEqualToString:passwordField.text]) {

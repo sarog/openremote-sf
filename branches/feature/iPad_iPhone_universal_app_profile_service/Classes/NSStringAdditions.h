@@ -21,10 +21,14 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Base64 encoding util.
+ */
 @interface NSString (NSStringAdditions)
 
-	
+/**
+ * Encode data with base64 algorithm.
+ */
 + (NSString *) base64StringFromData: (NSData *)data length: (int)length;
 
 

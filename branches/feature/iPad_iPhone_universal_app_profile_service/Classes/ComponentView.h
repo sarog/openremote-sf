@@ -22,22 +22,29 @@
 #import <UIKit/UIKit.h>
 #import "Component.h"
 
-
-//@protocol PollingCallBackNotificationDelegate <NSObject>
-//- (void)setPollingStatus:(NSNotification *)notification;
-//@end
-
+/**
+ * It's super class of all component views in screen view.
+ */
 @interface ComponentView : UIView {
 	Component *component;	
 }
 
 @property(nonatomic,readonly)Component *component;
 
-//Class methods:
+/**
+ * Build componentViews with component model data and frame of its layout container.
+ */
 + (ComponentView *)buildWithComponent:(Component *)component frame:(CGRect)frame;
 
-//Instance methods:
+/**
+ * Construct a component view instance with component data and frame of its layout container.
+ */
 - (id)initWithComponent:(Component *)c frame:(CGRect)frame;
+
+/**
+ * It's responsible for initializing view of sub components.
+ * This method is abstract, So, it must be overriden in subComponentViews.
+ */
 - (void) initView;
 
 @end
