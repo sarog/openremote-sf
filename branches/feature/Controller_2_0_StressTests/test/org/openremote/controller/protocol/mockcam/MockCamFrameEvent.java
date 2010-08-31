@@ -32,7 +32,7 @@ public class MockCamFrameEvent implements Runnable
 
   public void run()
   {
-    int iterations = 5 /* five times per second */ * 30; /* for 30 seconds */
+    int iterations = 1000 /* 1000 times per second */ * 5; /* for 5 seconds */
     long[] measuredDelays = new long[iterations];
 
     try
