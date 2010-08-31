@@ -63,11 +63,11 @@ public class MockCamFrameEvent implements Runnable
     {
       sum += value;
 
-      System.out.println("" + linenum++ + " Value: " + value + "ms");
+      System.out.println("" + linenum++ + "\tValue:\t" + value + "\tms");
 
     }
 
-    System.out.println("========== Recorded avg measured delay of " + (double)sum/iterations + "ms");
+    System.out.println("========== Recorded avg measured delay of " + (double)sum/iterations + " ms");
   }
 }
 
