@@ -21,6 +21,10 @@
 package org.openremote.controller.protocol.mockcam;
 
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * TODO
@@ -30,44 +34,68 @@ import java.util.Set;
 public class MockCamFrameEvent implements Runnable
 {
 
+  private boolean running = true;
+  private int frameCounter = 0;
+  private long frameTimeSnapshot = System.currentTimeMillis();
+
+  private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+  private Lock readLock = rwLock.readLock();
+  private Lock writeLock = rwLock.writeLock();
+
   public void run()
   {
-    int iterations = 1000 /* 1000 times per second */ * 5; /* for 5 seconds */
-    long[] measuredDelays = new long[iterations];
 
     try
     {
-      for (int i = 0; i < iterations; ++i)
+      while (running)
       {
+        Thread.sleep(200);
 
-        long time = System.currentTimeMillis();
+        try
+        {
+          writeLock.lock();
 
-        Thread.sleep(1);
-
-        long end = System.currentTimeMillis();
-
-        measuredDelays[i] = end - time;
+          frameCounter++;
+          frameTimeSnapshot = System.currentTimeMillis();
+        }
+        finally
+        {
+          writeLock.unlock();
+        }
       }
     }
     catch (InterruptedException e)
     {
       // if we get interrupted, we'll just wind down to finish
     }
+  }
 
-    // calculate the measured delay averages
-
-    long sum = 0;
-    int linenum = 0;
-
-    for (long value : measuredDelays)
+  public Frame getCurrentFrame()
+  {
+    try
     {
-      sum += value;
+      readLock.lock();
 
-      System.out.println("" + linenum++ + "\tValue:\t" + value + "\tms");
-
+      return new Frame(frameCounter, frameTimeSnapshot);
     }
+    finally
+    {
+      readLock.unlock();
+    }
+  }
 
-    System.out.println("========== Recorded avg measured delay of " + (double)sum/iterations + " ms");
+
+  public class Frame
+  {
+
+    public int counter;
+    public long timeSnapshot;
+
+    Frame(int counter, long timeSnapshot)
+    {
+      this.counter = counter;
+      this.timeSnapshot = timeSnapshot;
+    }
   }
 }
 
