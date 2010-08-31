@@ -24,6 +24,8 @@
 #import "NotificationConstant.h"
 #import "Slider.h"
 #import "DirectoryDefinition.h"
+#import	"AbsoluteLayoutContainerView.h"
+#import "GridCellView.h"
 
 
 @interface UIImage (RotateAdditions)
@@ -216,7 +218,17 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 	
 	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
-	[self.superview.superview bringSubviewToFront:self.superview];
+	NSLog(@"AbsoluteLayoutContainerView is %d", [self.superview isMemberOfClass:[AbsoluteLayoutContainerView class]]);
+	NSLog(@"GridCellView is %d", [self.superview isMemberOfClass:[GridCellView class]]);
+	
+	// SliderView is in the AbsoluteLayoutContainerView
+	if ([self.superview isMemberOfClass:[AbsoluteLayoutContainerView class]]) {
+		[self.superview.superview bringSubviewToFront:[self superview]];
+	}
+	// SliderView is in the GridCellView
+	else if ([self.superview isMemberOfClass:[GridCellView class]]) {
+		[self.superview.superview.superview bringSubviewToFront:[self superview]];
+	}
 	UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
 	tipText.font = [UIFont systemFontOfSize:40];
 	tipText.backgroundColor = [UIColor clearColor];
