@@ -47,14 +47,25 @@ public class ControlCommandServiceImpl implements ControlCommandService {
     * {@inheritDoc}
     */
    public void trigger(String controlID, String commandParam) {
-      
+
+
+
       Control control = getControl(controlID, commandParam);
+
       List<ExecutableCommand> executableCommands = control.getExecutableCommands();
+
       MacrosIrDelayUtil.ensureDelayForIrCommand(executableCommands);
-      for (ExecutableCommand executableCommand : executableCommands) {
-         if (executableCommand != null) {
+
+      for (ExecutableCommand executableCommand : executableCommands)
+      {
+         if (executableCommand != null)
+         {
             executableCommand.send();
-         } else {
+
+         }
+
+         else
+         {
             throw new NoSuchCommandException("ExecutableCommand is null");
          }
       }

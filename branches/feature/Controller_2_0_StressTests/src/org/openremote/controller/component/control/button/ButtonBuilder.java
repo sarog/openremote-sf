@@ -44,7 +44,8 @@ public class ButtonBuilder extends ComponentBuilder {
      */
     @SuppressWarnings("unchecked")
    @Override
-    public Component build(Element componentElement, String commandParam) {
+    public Component build(Element componentElement, String commandParam)
+    {
        Button button = new Button();
        if (button.isValidActionWith(commandParam)) {
           List<Element> commandRefElements = componentElement.getChildren();

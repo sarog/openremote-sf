@@ -116,8 +116,9 @@
 	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
 	
 	<!-- status cache service -->
-    <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    	<property name="cache" ref="statusCache"></property>
+    <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl2" >
+      <property name = "commandControl" ref = "controlCommandService"></property>
+    	<property name = "cache" ref = "statusCache"></property>
     </bean>
 	
 	<!-- controller.xml change service -->
@@ -136,6 +137,7 @@
            	<prop key = "http">httpGetCommandBuilder</prop>
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "mockup">mockupCommandBuilder</prop>
+            <prop key = "mockcam">mockCamBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -169,6 +171,9 @@
 	<!-- HTTP GET Command Builder -->
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
+
+  <bean id = "mockCamBuilder" class = "org.openremote.controller.protocol.mockcam.MockCamCommandBuilder" />
+
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--

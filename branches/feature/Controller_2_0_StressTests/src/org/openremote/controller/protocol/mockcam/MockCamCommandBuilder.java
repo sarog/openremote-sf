@@ -26,6 +26,7 @@ import java.util.Map;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.jdom.Element;
 
@@ -73,10 +74,18 @@ public class MockCamCommandBuilder implements CommandBuilder
       {
         return new ReadCommand(mockFrameEvent);
       }
+
+      if (propertyName.equalsIgnoreCase("WRITE"))
+      {
+        return new WriteCommand();
+      }
     }
 
     throw new Error("ERR: 1");    
   }
+
+  long frameTimeSnapshot;
+  long sensorTimeSnapshot;
 
   class ReadCommand implements StatusCommand
   {
@@ -93,13 +102,61 @@ public class MockCamCommandBuilder implements CommandBuilder
 
       MockCamFrameEvent.Frame frame = frameSource.getCurrentFrame();
 
-      buffer.append(frame.counter);
-      buffer.append("\t");
-      buffer.append(frame.timeSnapshot);
+      frameTimeSnapshot = frame.timeSnapshot;
+      sensorTimeSnapshot = System.currentTimeMillis();
+
+      buffer.append("[testcase]\t");
+//      buffer.append(frame.counter);
+//      buffer.append("\t");
+//      buffer.append(frame.timeSnapshot);
 
       return buffer.toString();
     }
 
+  }
+
+  static long[] pathTimeDelays = new long[5000];
+  static int arrayCounter = 0;
+  static int warmupCycles = 0;
+
+  class WriteCommand implements ExecutableCommand
+  {
+    public void send()
+    {
+
+      if (warmupCycles < 10000)
+      {
+        warmupCycles++;
+      }
+      else
+      {
+        long myTimeSnapshot = System.currentTimeMillis();
+
+        if (arrayCounter < 5000)
+          pathTimeDelays[arrayCounter++] = myTimeSnapshot - sensorTimeSnapshot;
+      }
+
+      if (arrayCounter == 5000)
+      {
+        long sum = 0;
+
+        for (long time : pathTimeDelays)
+        {
+          sum += time;
+
+          System.out.println("Value " + time + " ms.");
+        }
+
+        System.out.println("****** Avg time from sensor to command " + (double)sum/5000);
+
+        arrayCounter=5001;
+      }
+
+//      System.out.println("Last camera frame received " + (myTimeSnapshot - frameTimeSnapshot) + " ms ago.");
+//      System.out.println("Sensor to command time " + (myTimeSnapshot - sensorTimeSnapshot) + "ms.");
+
+
+    }
   }
 }
 

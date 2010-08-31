@@ -32,7 +32,7 @@ public class PollingMachineThread extends Thread
 
   private Sensor sensor;
 	private StatusCacheService statusCacheService;
-	private static final long INTERVAL = 5000;
+	private static final long INTERVAL = 1;
 	private boolean alive = true;
 	
 	/** milliseconds */
