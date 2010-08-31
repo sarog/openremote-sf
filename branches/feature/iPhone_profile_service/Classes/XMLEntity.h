@@ -59,8 +59,6 @@ extern NSString *const PRESSED;
 extern NSString *const SRC;
 extern NSString *const STYLE;
 
-extern NSString *const COLORPICKER;
-
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT;
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_RIGHT;
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_TOP;
