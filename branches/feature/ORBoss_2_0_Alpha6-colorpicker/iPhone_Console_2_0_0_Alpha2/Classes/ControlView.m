@@ -33,6 +33,8 @@
 #import "ControllerException.h"
 #import "Slider.h"
 #import "SliderView.h"
+#import "ColorPicker.h"
+#import "ColorPickerView.h"
 
 @interface ControlView (Private)
 
@@ -52,6 +54,8 @@
 		controlView = [ButtonView alloc];
 	} else if ([control isKindOfClass:[Slider class]]) {
 		controlView = [SliderView alloc];
+	} else if ([control isKindOfClass:[ColorPicker class]]) {
+		controlView = [ColorPickerView alloc];
 	} else {
 		return nil;
 	}

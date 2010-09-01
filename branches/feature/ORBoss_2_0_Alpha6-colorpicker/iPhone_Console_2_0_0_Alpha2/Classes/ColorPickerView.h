@@ -19,33 +19,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <UIKit/UIKit.h>
+#import "ColorPickerImageView.h"
+#import "ControlView.h"
 
-#import "Control.h"
-#import "Button.h"
-#import "Switch.h"
-#import "Slider.h"
-#import "ColorPicker.h"
+/**
+ * This view color picker, users can select a color with the image ColorPikcerView contained 
+ * and send the color command to controller server.
+ */
+@interface ColorPickerView : ControlView {
+	
+	UIImage *uiImage;
+	ColorPickerImageView *imageView;
 
-@implementation Control
-
-
-
-+ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	Control *newControl;
-	if ([controlType isEqualToString:BUTTON]) {
-		newControl = [Button alloc];
-	} else if ([controlType isEqualToString:SWITCH]) {
-		newControl = [Switch alloc];
-	} else if ([controlType isEqualToString:SLIDER]) {
-		newControl = [Slider alloc];
-	} else if ([controlType isEqualToString:COLORPICKER]) {
-		newControl = [ColorPicker alloc];
-	} else {
-		return nil;
-	}
-
-	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 }
-	
-	
+
 @end
