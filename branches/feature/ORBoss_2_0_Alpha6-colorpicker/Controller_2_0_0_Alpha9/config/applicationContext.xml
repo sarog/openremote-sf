@@ -136,6 +136,7 @@
            	<prop key = "http">httpGetCommandBuilder</prop>
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "mockup">mockupCommandBuilder</prop>
+            <prop key = "livingColors">livingColorsBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -178,6 +179,9 @@
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
 	      
+	<bean id = "livingColorsBuilder" class = "org.openremote.controller.protocol.livingColors.LivingColorsCommandBuilder"
+	      scope = "prototype" />
+	      
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>
@@ -188,6 +192,7 @@
 		        <prop key = "slider">sliderBuilder</prop>
 		        <prop key = "gesture">gestureBuilder</prop>
 		        <prop key = "image">imageBuilder</prop>
+		        <prop key = "colorpicker">colorpickerBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -221,5 +226,8 @@
 	
 	<!-- imageBuilder -->
 	<bean id="imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
+	
+	<!-- colorpickerBuilder -->
+	<bean id="colorpickerBuilder" class="org.openremote.controller.component.control.colorpicker.ColorPickerBuilder" />
 
 </beans>
