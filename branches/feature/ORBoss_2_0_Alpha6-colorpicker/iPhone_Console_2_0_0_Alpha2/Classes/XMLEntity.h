@@ -84,6 +84,7 @@ extern NSString *const ITEM;
 
 extern NSString *const NAVIGATE;
 
+extern NSString *const COLORPICKER;
 
 /* This is an abstract class for all entities (element) in panel.xml.
  * Objective-C doesn't have the abstract compiler construct like Java at 

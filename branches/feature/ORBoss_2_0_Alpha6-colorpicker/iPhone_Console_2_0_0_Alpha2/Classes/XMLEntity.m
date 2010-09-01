@@ -93,6 +93,7 @@ NSString *const ITEM = @"item";
 
 NSString *const NAVIGATE = @"navigate";
 
+NSString *const COLORPICKER = @"colorpicker";
 
 // NOTE: This is an abstract method, must be implemented in subclass
 - (NSString *) elementName {

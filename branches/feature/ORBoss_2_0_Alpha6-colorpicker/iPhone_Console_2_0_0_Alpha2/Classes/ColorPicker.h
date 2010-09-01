@@ -19,33 +19,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
+#import <Foundation/Foundation.h>
 #import "Control.h"
-#import "Button.h"
-#import "Switch.h"
-#import "Slider.h"
-#import "ColorPicker.h"
+#import "Image.h"
 
-@implementation Control
-
-
-
-+ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	Control *newControl;
-	if ([controlType isEqualToString:BUTTON]) {
-		newControl = [Button alloc];
-	} else if ([controlType isEqualToString:SWITCH]) {
-		newControl = [Switch alloc];
-	} else if ([controlType isEqualToString:SLIDER]) {
-		newControl = [Slider alloc];
-	} else if ([controlType isEqualToString:COLORPICKER]) {
-		newControl = [ColorPicker alloc];
-	} else {
-		return nil;
-	}
-
-	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+/**
+ * ColorPicker mainly stores image model data and parsed from element colorpicker.
+ * XML fragment example:
+ * <colorpicker id="40" >
+ *    <image src="colorWheel1.png" />
+ * </colorpicker>
+ */
+@interface ColorPicker : Control {
+	Image *image;
 }
-	
-	
+
+@property (nonatomic,readonly)Image *image; 
+
 @end
