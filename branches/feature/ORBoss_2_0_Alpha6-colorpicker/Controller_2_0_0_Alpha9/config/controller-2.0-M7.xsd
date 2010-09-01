@@ -101,6 +101,7 @@
 			<xsd:element ref="label" />
 			<xsd:element ref="gesture" />
 			<xsd:element ref="image"/>
+			<xsd:element ref="colorpicker"/>
 		</xsd:choice>
 	</xsd:group>
 	
@@ -279,6 +280,17 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:group ref="macroGroup" minOccurs="0" maxOccurs="unbounded"></xsd:group>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- ###############  color picker  ################ -->
+	
+	<xsd:element name="colorpicker">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="idType" use="required" />
 		</xsd:complexType>
