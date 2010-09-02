@@ -11,23 +11,32 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/CoreAnimation.h>
 
+@interface ColorPickerImageView(Private)
+- (void) pickColorWithTouches:(NSSet *)touches andEvent:(UIEvent*)event;
+@end
+
 @implementation ColorPickerImageView
 
 @synthesize lastColor;
 @synthesize pickedColorDelegate;
 
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	[self pickColorWithTouches:touches andEvent:event];
+}
 
 - (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
+	[self pickColorWithTouches:touches andEvent:event];
+}
+
+- (void) pickColorWithTouches:(NSSet *)touches andEvent:(UIEvent*)event {
 	UITouch* touch = [touches anyObject];
 	CGPoint point = [touch locationInView:self]; //where image was tapped
 	if ([self pointInside: point withEvent: event]) {
-	
-	self.lastColor = [self getPixelColorAtLocation:point]; 
-	NSLog(@"color %@",lastColor);
-	[pickedColorDelegate pickedColor:(UIColor*)self.lastColor];
+		self.lastColor = [self getPixelColorAtLocation:point]; 
+		NSLog(@"color %@",lastColor);
+		[pickedColorDelegate pickedColor:(UIColor*)self.lastColor];
 	}
 }
-
 
 - (UIColor*) getPixelColorAtLocation:(CGPoint)point {
 	UIColor* color = nil;

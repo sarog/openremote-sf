@@ -23,15 +23,18 @@
 #import "ColorPickerImageView.h"
 #import "ControlView.h"
 
+#define MIN_VALID_MOVE_DISTANCE 2
+
 /**
  * This view color picker, users can select a color with the image ColorPikcerView contained 
  * and send the color command to controller server.
  */
-@interface ColorPickerView : ControlView {
+@interface ColorPickerView : ControlView <PickedColorDelegate> {
 	
 	UIImage *uiImage;
 	ColorPickerImageView *imageView;
-
+	CGPoint touchBeginPoint;
+	BOOL movingTag;
 }
 
 @end

@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-
+@protocol PickedColorDelegate
+	- (void) pickedColor:(UIColor*)color;
+@end
 
 @interface ColorPickerImageView : UIImageView {
 	UIColor* lastColor;
