@@ -24,6 +24,7 @@ import java.util.Timer;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.LoginDialog;
+import org.openremote.android.console.bindings.ColorPicker;
 import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.bindings.Slider;
@@ -58,6 +59,8 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
          controlView = new SwitchView(context, (Switch) control);
       } else if (control instanceof Slider) {
          controlView = new SliderView(context, (Slider) control);
+      } else if (control instanceof ColorPicker) {
+         controlView = new ColorPickerView(context, (ColorPicker)control);
       }
       return controlView;
    }
