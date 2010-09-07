@@ -19,40 +19,35 @@
 */
 package org.openremote.android.console.bindings;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-
-import android.util.Log;
-
+import org.w3c.dom.NodeList;
 
 /**
- * The super class of control component, which include button, switch and slider.
+ * The colorPicker includes a image, it can detect the point's color on the image.
  */
 @SuppressWarnings("serial")
-public class Control extends Component {
+public class ColorPicker extends Control {
 
-   /**
-    * Builds the control component by parse component node, 
-    * which include button, switch and slider.
-    * 
-    * @param node the node
-    * 
-    * @return the control component
-    */
-   public static Component buildWithXML(Node node) {
-      Component component = null;
-      if (node == null) {
-         Log.e("COMPONENT", "The node is null in buildWithXML.");
-         return null;
+   private Image image;
+   
+   public ColorPicker(Node node) {
+      NamedNodeMap nodeMap = node.getAttributes();
+      if (nodeMap.getNamedItem(ID) != null) {
+         setComponentId(Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue()));
       }
-      if (BUTTON.equals(node.getNodeName())) {
-         component =  new ORButton(node);
-      } else if (SWITCH.equals(node.getNodeName())) {
-         component = new Switch(node);
-      } else if (SLIDER.equalsIgnoreCase(node.getNodeName())) {
-         component = new Slider(node);
-      } else if (COLORPICKER.equals(node.getNodeName())) {
-         component = new ColorPicker(node);
+      
+      NodeList childNodes = node.getChildNodes();
+      int nodeNum = childNodes.getLength();
+      for (int i = 0; i < nodeNum; i++) {
+         if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE && IMAGE.equals(childNodes.item(i).getNodeName())) {
+            this.image = new Image(childNodes.item(i));
+         }
       }
-      return component;
    }
+
+   public Image getImage() {
+      return image;
+   }
+   
 }
