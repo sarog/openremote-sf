@@ -22,14 +22,18 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 
+/**
+ * Component is super class of all models in screen.
+ */
 @interface Component : XMLEntity {
-
 	int componentId;
-	
 }
 
 @property(nonatomic,readwrite)int componentId;
 
+/**
+ * Build components with parameters.
+ */
 + (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
 
 @end

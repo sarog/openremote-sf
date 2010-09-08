@@ -40,7 +40,7 @@ static NSString *currentServerUrl = nil;
 static NSMutableArray *settingsData = nil;
 static NSString *unsavedChosenServerUrl = nil;
 
-
+// Read appSettings infomation from file appSettings.plist in array.
 + (NSMutableArray *)getAppSettings {
 	if (!settingsData) {
 			settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
@@ -48,6 +48,7 @@ static NSString *unsavedChosenServerUrl = nil;
 	return settingsData;
 }
 
+// Refresh settingsData from appSettings.plist .
 + (void)reloadData {
 	if (settingsData) {
 		[settingsData release];
@@ -56,39 +57,52 @@ static NSString *unsavedChosenServerUrl = nil;
 	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
 }
 
-
+// Get the specified section with index from appSettings.plist .
 +(NSMutableDictionary *)getSectionWithIndex:(int)index {
 	return [[self getAppSettings] objectAtIndex:index];
 }
+
+// Get the specified section's header with index from appSettings.plist .
 + (NSString *)getSectionHeaderWithIndex:(int)index{
 	return [[[self getAppSettings] objectAtIndex:index] valueForKey:@"header"];
 }
+
+// Get the specified section's footer with index from appSettings.plist .
 + (NSString *)getSectionFooterWithIndex:(int)index{
 	return [[[self getAppSettings] objectAtIndex:index] valueForKey:@"footer"];
 }
+
+// Get the map value of auto discovery boolean value.
 + (NSMutableDictionary *)getAutoDiscoveryDic {
 	return (NSMutableDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
 }
+
+// Check if function of auto discovery is enabled.
 + (BOOL)isAutoDiscoveryEnable {
 	return [[[self getAutoDiscoveryDic] objectForKey:@"value"] boolValue];
 }
 
+// Enable or disable auto discovery function.
 + (void)setAutoDiscovery:(BOOL)on {
 	[[self getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:on] forKey:@"value"];
 }
 
+// Get servers by auto discovery from appSettings.plist .
 + (NSMutableArray *)getAutoServers {
 	return (NSMutableArray *)[[self getSectionWithIndex:AUTO_DISCOVERY_URLS_INDEX] objectForKey:@"servers"];
 }
 
+// Get servers by user input from appSettings.plist .
 + (NSMutableArray *)getCustomServers {
 	return (NSMutableArray *)[[self getSectionWithIndex:CUSOMIZED_URLS_INDEX] objectForKey:@"servers"];
 }
 
+// Add specified server into array of auto servers.
 + (void)addAutoServer:(NSDictionary *)server {
 	[[self getAutoServers] addObject:server];
 }
 
+// Clear the auto servers from appSettings.plist .
 + (void)removeAllAutoServer {
 	[[self getAutoServers] removeAllObjects];
 	[self writeToFile];
@@ -100,7 +114,7 @@ static NSString *unsavedChosenServerUrl = nil;
 	return (NSMutableDictionary *)[[self getSectionWithIndex:PANEL_IDENTITY_INDEX] objectForKey:@"item"];
 }
 
-
+// Get security infomation from appSettings.plist .
 + (NSMutableDictionary *)getSecurityDic {
 	return (NSMutableDictionary *)[[self getSectionWithIndex:SECURITY_INDEX] objectForKey:@"item"];
 }
@@ -125,8 +139,7 @@ static NSString *unsavedChosenServerUrl = nil;
 	[[self getSecurityDic] setValue:[NSNumber numberWithInt:port] forKey:@"port"];
 }
 
-
-
+// Save the appSettings infomation into appSettings.plist .
 + (void)writeToFile {
 	if ([settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {	
 		[self readServerUrlFromFile];
@@ -177,8 +190,7 @@ static NSString *unsavedChosenServerUrl = nil;
 	}
 }
 
-
-
+// Get current server url panel client use from appSettings.plist .
 + (NSString *)getCurrentServerUrl {
 	if (currentServerUrl) {
 		return currentServerUrl;
@@ -190,16 +202,20 @@ static NSString *unsavedChosenServerUrl = nil;
 	return nil;
 }
 
+// Change current server url panel client use to specified url .
 + (void)setCurrentServerUrl:(NSString *)url {
 	[url retain];
 	[currentServerUrl release];
 	currentServerUrl = url;
 }
 
+// Get panel identity current panel client use from appSettings.plist .
 + (NSString *)getCurrentPanelIdentity {
 	return [[self getPanelIdentityDic] objectForKey:@"identity"];
 }
 
+// Get current conroller server url as unsavedChosenServerUrl
+// or return value method setUnsavedChosenServerUrl set.
 + (NSString *)getUnsavedChosenServerUrl {
 	if (!unsavedChosenServerUrl) {
 		unsavedChosenServerUrl = [currentServerUrl copy];
@@ -207,6 +223,7 @@ static NSString *unsavedChosenServerUrl = nil;
 	return unsavedChosenServerUrl;
 }
 
+// Set server url as choosed controller server url but don't save into appSettings.plist .
 + (void)setUnsavedChosenServerUrl:(NSString *)url {
 	[url retain];
 	[unsavedChosenServerUrl release];

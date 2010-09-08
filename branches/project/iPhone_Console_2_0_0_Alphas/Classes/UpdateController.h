@@ -23,6 +23,9 @@
 #import <Foundation/Foundation.h>
 #import "ServerAutoDiscoveryController.h"
 
+/**
+ * It's responsible for checking network, download panel.xml, parse panel.xml and notify DefaultViewController to refresh views.
+ */
 @interface UpdateController : NSObject {
 	id theDelegate;
 	ServerAutoDiscoveryController *serverAutoDiscoveryController;

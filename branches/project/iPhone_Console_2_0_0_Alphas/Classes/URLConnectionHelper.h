@@ -24,10 +24,22 @@
 #import "ViewHelper.h"
 #import "ServerAutoDiscoveryController.h"
 
-//Define a protocol 
+//Define a protocol for delegate implementation
 @protocol URLConnectionHelperDelegate <NSObject>
+
+/**
+ * This method will be called when request is finisehed with URLConnection.
+ */
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data;
+
+/**
+ * This method will be called when failed to request with URLConnection.
+ */
 - (void)definitionURLConnectionDidFailWithError:(NSError *)error;
+
+/**
+ * This method will be called when receive response from controller server with URLConnection.
+ */
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response;
 @end
 

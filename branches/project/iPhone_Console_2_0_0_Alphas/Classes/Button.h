@@ -24,6 +24,19 @@
 #import "Navigate.h"
 #import "Image.h"
 
+/**
+ * Button stores informations parsed from button element in panel.xml.
+ * XML fragment example:
+ * <button id="59" name="A" repeat="false" hasControlCommand="false">
+ *    <default>
+ *       <image src="a.png" />
+ *    </default>
+ *    <pressed>
+ *       <image src="b.png" />
+ *    </pressed>
+ *    <navigate toScreen="19" />
+ * </button>
+ */
 @interface Button : Control {
 	
 	NSString *name;

@@ -33,8 +33,6 @@
 
 @end
 
-
-
 @implementation TabBarController
 
 @synthesize customziedTabBar, groupController;
@@ -60,6 +58,7 @@
 	
 }
 
+// Reselect the tabbar item of tabbar controller with groupController reference after selecting a item in more tableView.
 - (void)returnToContentView {
 	if (groupController && self.viewControllers.count > 0) {
 		[self setSelectedViewController:groupController];

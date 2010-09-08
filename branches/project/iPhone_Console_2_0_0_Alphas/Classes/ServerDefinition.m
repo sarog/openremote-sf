@@ -52,7 +52,7 @@
 	return panelXmlUrl;
 }
 
-//Round-Robin (fail-over) servers
+//Round-Robin (failover) servers
 + (NSString *)serversXmlRESTUrl {
 	NSString *serversXmlUrl = [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/servers"];
 	return serversXmlUrl;

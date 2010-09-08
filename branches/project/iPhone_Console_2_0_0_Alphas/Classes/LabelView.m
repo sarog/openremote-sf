@@ -48,6 +48,7 @@
 	[self addSubview:uiLabel];
 }
 
+// Override method of sensory view.
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Label *)component).sensor.sensorId;

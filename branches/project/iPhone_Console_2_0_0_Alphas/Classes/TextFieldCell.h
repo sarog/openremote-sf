@@ -22,7 +22,9 @@
 
 #import <UIKit/UIKit.h>
 
-
+/**
+ * TextField view in tableview cell.
+ */
 @interface TextFieldCell : UITableViewCell {
 	UITextField *textField;
 }

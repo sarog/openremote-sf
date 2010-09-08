@@ -60,6 +60,7 @@
 	
 }
 
+// Event handler for button up.
 - (void) controlButtonUp:(id)sender {
 	[self cancelTimer];
 	Button *button = (Button *)component;
@@ -68,6 +69,7 @@
 	}
 }
 
+// Event handler for button down.
 - (void) controlButtonDown:(id)sender {
 	[self cancelTimer];
 	
@@ -81,6 +83,7 @@
 
 }
 
+// Send control command to remote controller server.
 - (void) sendCommand:(id)sender {
 	[self	sendCommandRequest:@"click"];
 }

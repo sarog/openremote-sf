@@ -64,6 +64,7 @@
 	[self setOn:NO];
 }
 
+// Override method of SensoryControlView.
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Switch *)component).sensor.sensorId;
@@ -98,6 +99,7 @@
 	canUseImage = onImage && offImage;
 }
 
+// Update the UI of swith view with polling status.
 - (void)setOn:(BOOL)on {
 	if (on) {
 		isOn = YES;
@@ -118,6 +120,7 @@
 	
 }
 
+// Send boolean control command to remote controller server.
 - (void)stateChanged:(id)sender {
 	if (isOn) {
 		[self sendCommandRequest:@"OFF"];

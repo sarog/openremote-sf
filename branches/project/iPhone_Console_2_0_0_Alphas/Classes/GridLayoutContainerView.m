@@ -26,8 +26,8 @@
 
 @synthesize cellViews;
 
+// Override method of UIView and be called automatically.
 - (void)layoutSubviews {
-	
 	GridLayoutContainer *grid = (GridLayoutContainer *)layout;
 	int h = self.bounds.size.height/grid.rows;				
 	int w = self.bounds.size.width/grid.cols;
@@ -39,11 +39,6 @@
 			[self addSubview:cellView];
 		}
 	}
-	
-	
-	
-	
-
 }
 
 

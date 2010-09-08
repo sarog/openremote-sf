@@ -22,6 +22,9 @@
 #import "LayoutContainerView.h"
 #import "GridCellView.h"
 
+/**
+ * This view is for layouting component views with relative position in screen view.
+ */
 @interface GridLayoutContainerView : LayoutContainerView {
 
 	NSMutableArray *cellViews;

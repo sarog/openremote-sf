@@ -71,6 +71,7 @@
 	return NO;
 }
 
+// Detect the current orientation of handset.
 - (void)detectDeviceOrientation {
 	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	currentOrientation = [[UIDevice currentDevice] orientation];
@@ -95,6 +96,7 @@
 	[self willRotateToInterfaceOrientation:newOrientation duration:0];
 }
 
+// Check if current orientation is landscape.
 - (BOOL)isOrientationLandscape {
 	return UIInterfaceOrientationIsLandscape(currentOrientation);
 }
@@ -121,6 +123,7 @@
 	return group.groupId;
 }
 
+// Initializes screenViewController array of groupController with screen model array.
 - (NSMutableArray *)initScreenViewControllers:(NSArray *)screens {
 	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 	
@@ -134,10 +137,12 @@
 	return viewControllers;
 }
 
+// Get the paginationController of groupController.
 - (PaginationController *)currentPaginationController {	
 	return [self isOrientationLandscape] ? landscapePaginationController : portraitPaginationController;
 }
 
+// Show the view of specified orientation depending on the parameter isLandScape specified.
 - (void)showLandscapeOrientation:(BOOL)isLandscape {
 	
 	NSArray *screens = isLandscape ? [group getLandscapeScreens] : [group getPortraitScreens];
@@ -170,15 +175,18 @@
 	
 }
 
+// Show portrait orientation view.
 - (void)showPortrait {
 	NSLog(@"show portrait");
 	[self showLandscapeOrientation:NO];
 }
 
+// Show landscape orientation view.
 - (void)showLandscape {
 	NSLog(@"show landscape");
 	[self showLandscapeOrientation:YES];
 }
+
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -192,10 +200,9 @@
 	} 
 }
 
+// Show error view if some error occured.
 - (void)showErrorView {
-	errorViewController = [[ErrorViewController alloc] 
-															initWithErrorTitle:@"No Screen Found" 
-																				 message:@"Please associate screens with this group of this orientation."];
+	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Screen Found" message:@"Please associate screens with this group of this orientation."];
 	[errorViewController.view setFrame:[self getFullFrame]];
 	[self setView:errorViewController.view];	
 }
@@ -296,6 +303,7 @@
 	}
 }
 
+// Override this method for enable view rotating.
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[self printOrientation:currentOrientation];
 	[self printOrientation:toInterfaceOrientation];

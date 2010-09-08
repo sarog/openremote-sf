@@ -22,6 +22,11 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 
+/**
+ * It's super class of all layoutContainer model(such as absoluteLayoutCotainer, gridLayoutContainer).
+ * The layoutContainer can be located in screen by position info left and top.
+ * The layoutContainer's size is described by width and height.
+ */
 @interface LayoutContainer : XMLEntity {
 	
 	int left;
@@ -36,6 +41,9 @@
 @property (nonatomic, readonly) int width;
 @property (nonatomic, readonly) int height;
 
+/**
+ * Get all component id layoutContainer(such as gridLayoutOutContainer, AbsoluteLayOutContainer).
+ */
 - (NSArray *)pollingComponentsIds;
 
 @end

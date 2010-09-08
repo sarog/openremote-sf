@@ -21,7 +21,9 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Stores groupmember controller's url.
+ */
 @interface GroupMember : NSObject {
 	NSString *url;
 	NSDate *age;
