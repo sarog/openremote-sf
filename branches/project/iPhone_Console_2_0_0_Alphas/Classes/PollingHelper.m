@@ -95,11 +95,11 @@
 		isError = YES;
 		switch (statusCode) {
 
-			case 506://controller config changed
+			case CONTROLLER_CONFIG_CHANGED://controller config changed
 				updateController = [[UpdateController alloc] initWithDelegate:self];
 				[updateController checkConfigAndUpdate];
 				return;
-			case 504://polling timeout, need to refresh
+			case POLLING_TIMEOUT://polling timeout, need to refresh
 				isError = NO;
 
 				
