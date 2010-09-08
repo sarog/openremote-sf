@@ -68,12 +68,14 @@
 
 // Implement loadView to create a view hierarchy programmatically.
 - (void)loadView {
-	ScreenView *view = [[ScreenView alloc] init];
+	ScreenView *v = [[ScreenView alloc] init];
 
 	//set Screen in ScreenView
-	[view setScreen:screen];
-	[self setView:view];
-	[view release];
+	[v setScreen:screen];
+	
+	[self setView:v];
+	[v setBackgroundColor:[UIColor blackColor]];
+	[v release];
 }
 
 - (void)startPolling {
@@ -85,10 +87,10 @@
 
 - (void)sendCommandRequest:(int)componentId {
 	
-	if ([[Definition sharedDefinition] password] == nil) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		return;
-	}
+//	if ([[Definition sharedDefinition] password] == nil) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+//		return;
+//	}
 	
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
@@ -115,9 +117,10 @@
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[Definition sharedDefinition].password = nil;
+			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+		} else {
+			[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
 		}
-		
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	}
 }
 
