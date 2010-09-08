@@ -108,9 +108,10 @@
 		[uiButton setBackgroundImage:buttonImage forState:UIControlStateNormal];
 	}
 	
-	uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
-	[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-	uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
+	uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:13];
+	uiButton.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+	//[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
+	//uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	[uiButton setTitle:button.name forState:UIControlStateNormal];
 	
 }
