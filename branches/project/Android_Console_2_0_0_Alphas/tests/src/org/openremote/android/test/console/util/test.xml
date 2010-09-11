@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="htt//www.w3.org/2001/XMLSchema-instance" xmlns:schemaLocation="htt//www.openremote.org ihpone.xsd">
+  <screens>
+    <screen id="3" name="firstScreen">
+      <background relative="CENTER">
+        <image src="livingroom.png" />
+      </background>
+      <absolute left="14" top="334" width="150" height="20">
+        <slider id="9" vertical="false" passive="false">
+          <link type="sensor" ref="45" />
+          <min value="-20" />
+          <max value="30" />
+        </slider>
+      </absolute>
+      <absolute left="194" top="304" width="78" height="79">
+        <switch id="11">
+          <link type="sensor" ref="46">
+            <state name="on" value="lightbulb.png" />
+            <state name="off" value="lightbulb_off.png" />
+          </link>
+        </switch>
+      </absolute>
+      <absolute left="-1" top="-115" width="58" height="34">
+        <label id="13" font-size="12" color="#FF0000" text="Wellcome">
+          <link type="sensor" ref="48" />
+        </label>
+      </absolute>
+      <absolute left="148" top="36" width="146" height="147">
+        <image id="15" src="luhu.jpg">
+          <link type="sensor" ref="47">
+            <state name="open" value="lightbulb.png" />
+            <state name="closed" value="lightbulb_off.png" />
+          </link>
+          <include type="label" ref="17" />
+        </image>
+      </absolute>
+      <absolute left="35" top="215" width="38" height="33">
+        <label id="17" font-size="12" color="#00FF00" text="Hello">
+          <link type="sensor" ref="48" />
+        </label>
+      </absolute>
+      <absolute left="168" top="233" width="50" height="50">
+        <button id="19" name="opentv" hasControlCommand="true" />
+      </absolute>
+      <gesture id="27" type="swipe-left-to-right">
+        <navigate toGroup="2" toScreen="24" />
+      </gesture>
+    </screen>
+    <screen id="24" name="secondScreen">
+      <grid left="55" top="248" width="150" height="150" rows="3" cols="3">
+        <cell x="0" y="1" rowspan="1" colspan="1">
+          <button id="32" name="Vol-" hasControlCommand="true">
+            <default>
+              <image src="vol_down.png" />
+            </default>
+          </button>
+        </cell>
+        <cell x="2" y="1" rowspan="1" colspan="1">
+          <button id="34" name="Vol+" hasControlCommand="true">
+            <default>
+              <image src="vol_up.png" />
+            </default>
+          </button>
+        </cell>
+        <cell x="1" y="2" rowspan="1" colspan="1">
+          <button id="36" name="Ch-" hasControlCommand="true">
+            <default>
+              <image src="magnify-.png" />
+            </default>
+          </button>
+        </cell>
+        <cell x="1" y="1" rowspan="1" colspan="1">
+          <button id="38" name="Menu" hasControlCommand="true">
+            <default>
+              <image src="menu.png" />
+            </default>
+          </button>
+        </cell>
+        <cell x="1" y="0" rowspan="1" colspan="1">
+          <button id="43" name="Ch+" hasControlCommand="true">
+            <default>
+              <image src="magnify+.png" />
+            </default>
+          </button>
+        </cell>
+      </grid>
+    </screen>
+  </screens>
+  <groups>
+    <group id="2" name="firstGroup">
+      <include type="screen" ref="3" />
+      <include type="screen" ref="24" />
+    </group>
+  </groups>
+</openremote>
+
