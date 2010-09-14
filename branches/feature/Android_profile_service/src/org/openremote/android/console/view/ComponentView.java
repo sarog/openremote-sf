@@ -24,12 +24,13 @@ import org.openremote.android.console.bindings.Image;
 import org.openremote.android.console.bindings.Label;
 
 import android.content.Context;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 /**
  * The super class of all component view.
+ * Extends LinearLayout can specify a location for a child.
  */
-public class ComponentView extends FrameLayout {
+public class ComponentView extends LinearLayout {
 
    private Component component;
    
