@@ -37,6 +37,8 @@
 - (BOOL)navigateTo:(Navigate *)navi;
 - (void)navigateToWithHistory:(Navigate *)navi;
 - (void)saveLastGroupIdAndScreenId;
+- (void)rerenderTabbarWithNewOrientation;
+- (void)transformToOppositeOrientation;
 
 @end
 
@@ -53,6 +55,7 @@
 			tabBarControllerViewMap = [[NSMutableDictionary alloc] init];
 			navigationHistory = [[NSMutableArray alloc] init];
 			
+			//register notifications
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(navigateFromNotification:) name:NotificationNavigateTo object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateSettingsView:) name:NotificationPopulateSettingsView object:nil];
@@ -171,6 +174,18 @@
 		} else {
 			[self.view addSubview:currentGroupController.view];
 			lastSubView = currentGroupController.view;
+		}
+		
+		//if last screen orientation is not current device orientation, transform to that orientation.
+		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+		if ([userDefaults objectForKey:@"lastScreenId"]) {
+			int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
+			Screen *screen = [currentGroupController.group findScreenByScreenId:lastScreenId];
+			if (screen && ([currentGroupController isOrientationLandscape] != screen.landscape)) {
+				[self transformToOppositeOrientation];
+				[self rerenderTabbarWithNewOrientation];
+				[currentGroupController switchToScreen:screen.screenId];
+			}
 		}
 		
 		[self saveLastGroupIdAndScreenId];
@@ -384,6 +399,16 @@
 			[self rerenderTabbarWithNewOrientation];
 		}
 		return [currentGroupController switchToScreen:screenId];
+	}
+	//If only group is specified, then by definition we show the first screen of that group.
+	else if (screenId == 0) {
+		Screen *screen = [currentGroupController.group.screens objectAtIndex:0];
+		//if navigate to opposite orientation, need to transform view +/- 90 degrees.
+		if (screen && (isLastOrientationLandscape != screen.landscape)) {
+			[self transformToOppositeOrientation];
+			[self rerenderTabbarWithNewOrientation];
+		}
+		return [currentGroupController switchToScreen:screen.screenId];
 	}
 		
 	return YES;
