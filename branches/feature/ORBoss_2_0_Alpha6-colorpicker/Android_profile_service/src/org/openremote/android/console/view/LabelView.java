@@ -31,20 +31,32 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 
 /**
- * The LabelView contains label component, can change label text by polling result.
+ * The Class LabelView.
  */
 public class LabelView extends ComponentView implements SensoryDelegate {
 
-   /** The text view display the label text. */
+   /** The text view. */
    private TextView textView;
+   
+   /** The text. */
    private String text;
+   
+   /**
+    * Instantiates a new label view.
+    * {@link #setGravity(int)} make the text be in center.
+    * 
+    * @param context the context
+    * @param label the label
+    */
    public LabelView(Context context, Label label) {
       super(context);
       setComponent(label);
+      setGravity(Gravity.CENTER);
       if (label != null) {
          textView = new TextView(context);
          initLabel(label);
@@ -55,7 +67,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
    }
 
    /**
-    * Inits the label and set it's text, font size and color.
+    * Inits the label.
     * 
     * @param label the label
     */
@@ -67,14 +79,18 @@ public class LabelView extends ComponentView implements SensoryDelegate {
          textView.setText(text);
       }
       if (label.getFontSize() > 0) {
-         textView.setTextSize(label.getFontSize());
+         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP,label.getFontSize());
       }
       if (label.getColor() != null) {
          textView.setTextColor(Color.parseColor(label.getColor()));
       }
       addView(textView);
+      setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
    }
    
+   /* (non-Javadoc)
+    * @see org.openremote.android.console.view.SensoryDelegate#addPollingSensoryListener()
+    */
    @Override
    public void addPollingSensoryListener() {
       final Sensor sensor = ((Label)getComponent()).getSensor();
@@ -93,7 +109,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
       }
    }
    
-   /** The handler is for update label by polling result. */
+   /** The handler. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
