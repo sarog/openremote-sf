@@ -50,8 +50,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
     * Instantiates a new label view.
     * {@link #setGravity(int)} make the text be in center.
     * 
-    * @param context the context
-    * @param label the label
+    * @param label the label entity
     */
    public LabelView(Context context, Label label) {
       super(context);
@@ -69,7 +68,6 @@ public class LabelView extends ComponentView implements SensoryDelegate {
    /**
     * Inits the label.
     * 
-    * @param label the label
     */
    private void initLabel(Label label) {
       textView.setId(label.getComponentId());

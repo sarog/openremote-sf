@@ -42,8 +42,7 @@ public class ComponentView extends LinearLayout {
     * Builds the component view by component.
     * Include label, image and control.
     * 
-    * @param context the context
-    * @param component the component
+    * @param component the component entity
     * 
     * @return the component view
     */

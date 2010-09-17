@@ -52,9 +52,7 @@ public class AppSettingsModel implements Serializable {
    /**
     * Gets the current server from appSettings.xml.
     * 
-    * @param context the context
-    * 
-    * @return the current server
+    * @return the current not secured server
     */
    public static String getCurrentServer(Context context) {
       return context.getSharedPreferences(APP_SETTINGS, 0).getString(CURRENT_SERVER, "");
@@ -64,9 +62,7 @@ public class AppSettingsModel implements Serializable {
     * Gets the secured server.
     * return the current server if not set ssl, otherwise convert the current server to secured server and return. 
     * 
-    * @param context the context
-    * 
-    * @return the server
+    * @return the current secured server
     */
    public static String getSecuredServer(Context context) {
       String currentServer = AppSettingsModel.getCurrentServer(context);
@@ -77,16 +73,15 @@ public class AppSettingsModel implements Serializable {
          if (currentServer.indexOf(":") != -1) {
             currentServer = currentServer.replaceFirst("\\:\\d+", ":" + getSSLPort(context));
          }
-         Log.i("SECURE", currentServer);
+         Log.i("OpenRemote-SECURE", currentServer);
       }
       return currentServer;
    }
    
    /**
-    * Sets the current server into appSettings.xml.
+    * Sets the current not secured server into appSettings.xml.
     * 
-    * @param context the context
-    * @param currentServer the current server
+    * @param currentServer the current not secured server
     */
    public static void setCurrentServer(Context context, String currentServer) {
       SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
@@ -97,8 +92,7 @@ public class AppSettingsModel implements Serializable {
    /**
     * Sets the auto discovery mode.
     * 
-    * @param context the context
-    * @param isAuto the is auto
+    * @param isAuto the auto mode
     */
    public static void setAutoMode(Context context, boolean isAuto) {
       SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
@@ -117,7 +111,6 @@ public class AppSettingsModel implements Serializable {
    /**
     * Sets the current panel identity.
     * 
-    * @param context the context
     * @param currentPanelIdentity the current panel identity
     */
    public static void setCurrentPanelIdentity(Context context, String currentPanelIdentity) {
@@ -143,8 +136,7 @@ public class AppSettingsModel implements Serializable {
    /**
     * Sets use security or not.
     * 
-    * @param context the context
-    * @param isUseSSL the is use ssl
+    * @param isUseSSL if use ssl
     */
    public static void setUseSSL(Context context, boolean isUseSSL) {
       SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
@@ -159,7 +151,6 @@ public class AppSettingsModel implements Serializable {
    /**
     * Sets the ssl port.
     * 
-    * @param context the context
     * @param sslPort the ssl port
     */
    public static void setSSLPort(Context context, int sslPort) {

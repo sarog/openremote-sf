@@ -80,13 +80,13 @@ public class ORWifiReachability {
 	private void localWifiConnectionStatus() {
 		if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
 			this.wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
-			Log.i("INFO", "Wifi in handset wasn't enabled or wifi network didn't detect.");
+			Log.i("OpenRemote-INFO", "Wifi in handset wasn't enabled or wifi network didn't detect.");
 			return;
 		}
 		
 		NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 		if (!wifiNetworkInfo.isAvailable()) {// Indicates whether network connectivity is possible.
-			Log.i("INFO", "Wifi network detected but wasn't available.");
+			Log.i("OpenRemote-INFO", "Wifi network detected but wasn't available.");
 			this.wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
 		} else {
 			this.wifiConnectionStatus = ORWifiConnectionStatus.REACHABLE_VIA_WIFINETWORK;
