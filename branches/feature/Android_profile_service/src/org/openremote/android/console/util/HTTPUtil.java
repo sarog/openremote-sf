@@ -55,9 +55,8 @@ public class HTTPUtil {
    /**
     * Down load panel.xml from controller.
     * 
-    * @param context the context
-    * @param serverUrl the server url
-    * @param panelName the panel name
+    * @param serverUrl the current server url
+    * @param panelName the current panel name
     * 
     * @return the int
     */
@@ -67,9 +66,9 @@ public class HTTPUtil {
 
    public static int downLoadImage(Context context, String serverUrl, String imageName) {
       if (FileUtil.checkFileExists(context, imageName)) {
-         Log.i("SKIP IMAGE", imageName + " is already in cache");
+         Log.i("OpenRemote-SKIP IMAGE", imageName + " is already in cache");
       } else {
-         Log.i("NEW IMAGE", imageName + " downloading...");
+         Log.i("OpenRemote-NEW IMAGE", imageName + " downloading...");
          return downLoadFile(context, serverUrl + "/resources/" + encodePercentUri(imageName), imageName);
       }
       return 200;
@@ -92,11 +91,11 @@ public class HTTPUtil {
       try {
          encodedUri = URLEncoder.encode(uri, "UTF-8");
          if (!encodedUri.equals(uri)) {
-            Log.i("URLEncoder", encodedUri);
+            Log.i("OpenRemote-URLEncoder", encodedUri);
          }
       } catch (UnsupportedEncodingException e) {
          encodedUri = uri;
-         Log.e("UnsupportedEncodingException", "Failed to encode percent : " + uri, e);
+         Log.e("OpenRemote-UnsupportedEncodingException", "Failed to encode percent : " + uri, e);
       }
       return encodedUri;
    }
@@ -104,9 +103,8 @@ public class HTTPUtil {
    /**
     * Down load file and store it in local context.
     * 
-    * @param context the context
-    * @param serverUrl the server url
-    * @param fileName the file name
+    * @param serverUrl the current server url
+    * @param fileName the file name for downloading
     * 
     * @return the int
     */
@@ -138,13 +136,13 @@ public class HTTPUtil {
             is.close();
          }
       } catch (MalformedURLException e) {
-         Log.e("HTTPUtil", "Create URL fail:" + serverUrl);
+         Log.e("OpenRemote-HTTPUtil", "Create URL fail:" + serverUrl);
       } catch (IllegalArgumentException e) {
-         Log.e("IllegalArgumentException", "Download file " + fileName + " failed with URL: " + serverUrl, e);
+         Log.e("OpenRemote-IllegalArgumentException", "Download file " + fileName + " failed with URL: " + serverUrl, e);
       } catch (ClientProtocolException cpe) {
-         Log.e("ClientProtocolException", "Download file " + fileName + " failed with URL: " + serverUrl, cpe);
+         Log.e("OpenRemote-ClientProtocolException", "Download file " + fileName + " failed with URL: " + serverUrl, cpe);
       } catch (IOException ioe) {
-         Log.e("IOException", "Download file " + fileName + " failed with URL: " + serverUrl, ioe);
+         Log.e("OpenRemote-IOException", "Download file " + fileName + " failed with URL: " + serverUrl, ioe);
       }
       return statusCode;
    }

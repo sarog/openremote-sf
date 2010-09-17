@@ -88,10 +88,10 @@ public class ORConnection {
             httpClient.getConnectionManager().getSchemeRegistry().register(sch);
          }
       } catch (MalformedURLException e) {
-         Log.e("ORConnection", "Create URL fail:" + url);
+         Log.e("OpenRemote-ORConnection", "Create URL fail:" + url);
       }
       if (httpRequest == null) {
-         Log.e("ORConnection", "Create HttpRequest fail:" + url);
+         Log.e("OpenRemote-ORConnection", "Create HttpRequest fail:" + url);
          return;
       }
       
@@ -166,12 +166,12 @@ public class ORConnection {
          if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
             delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
          } else {
-            Log.e("ORConnection", "Get the entity's content of httpresponse fail."); 
+            Log.e("OpenRemote-ORConnection", "Get the entity's content of httpresponse fail."); 
          }
       } catch (IllegalStateException e) {
-         Log.e("ORConnection", "Get the entity's content of httpresponse fail.", e);
+         Log.e("OpenRemote-ORConnection", "Get the entity's content of httpresponse fail.", e);
       } catch (IOException e) {
-         Log.e("ORConnection", "Get the entity's content of httpresponse fail.", e);
+         Log.e("OpenRemote-ORConnection", "Get the entity's content of httpresponse fail.", e);
       }
    }
    
@@ -195,7 +195,7 @@ public class ORConnection {
       }
       
       if (request == null) {
-         Log.i("ORConnection", "checking URL creation failed:" + url);
+         Log.i("OpenRemote-ORConnection", "checking URL creation failed:" + url);
          return null;
       }
       if (isNeedBasicAuth) {
@@ -210,15 +210,15 @@ public class ORConnection {
          }
          response = client.execute(request);
       } catch (MalformedURLException e) {
-         Log.e("ORConnection", "Create URL fail:" + url);
+         Log.e("OpenRemote-ORConnection", "Create URL fail:" + url);
       } catch (ClientProtocolException e) {
-         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (SocketTimeoutException e) {
-         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (IOException e) {
-         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       } catch (OutOfMemoryError e) {
-         Log.i("ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
       }
       return response;
    }
