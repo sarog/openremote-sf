@@ -79,9 +79,6 @@ public class NewScreenFromTemplateWindow extends FormWindow {
    
    private TextField<String> keywordsField = new TextField<String> ();
    
-   private ShareRadioChangeListener shareRadioChangeListener = new ShareRadioChangeListener();
-   
-   
    private Button previousPage = new Button();
    
    private Button nextPage = new Button();
@@ -194,7 +191,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       searchContainer.setLayout(searchContainerLayout);
       searchContainer.add(keywordsField);
       searchContainer.addButton(searchBtn);
-      searchContainer.hide();
+//      searchContainer.hide();
       
       
       ContentPanel templateSelectContainer = new ContentPanel();
@@ -213,23 +210,10 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 
       shareNoneRadio.setBoxLabel("Private");
       shareNoneRadio.setValue(true);
-      shareNoneRadio.addListener(Events.Change,new ShareRadioChangeListener(){
-
-         @Override
-         public void handleEvent(FieldEvent be) {
-            super.handleEvent(be);
-            boolean showPrivate = shareNoneRadio.getValue();
-            if (showPrivate) {
-               searchContainer.hide();
-            } else {
-               searchContainer.show();
-            }
-         }
-         
-      });
 
       shareToAllRadio.setName("Public");
       shareToAllRadio.setBoxLabel("Public");
+      shareToAllRadio.addListener(Events.Change,new ShareRadioChangeListener());
       shareRadioGroup.setFieldLabel("From:");
       shareRadioGroup.add(shareNoneRadio);
       shareRadioGroup.add(shareToAllRadio);
@@ -258,11 +242,11 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       templateView.setDisplayProperty("displayName");
       ListStore<BeanModel> store = new ListStore<BeanModel>();
       templateView.setStore(store);
-      initTemplateView(true);
+      initTemplateView(false);
    }
 
-   private void searchTemplates(final String keywords,final int page) {
-      TemplateProxy.searchTemplates(keywords, page, new AsyncCallback<List<Template>>() {
+   private void searchTemplates(final boolean shared, final String keywords,final int page) {
+      TemplateProxy.searchTemplates(shared, keywords, page, new AsyncCallback<List<Template>>() {
 
          @Override
          public void onFailure(Throwable caught) {
@@ -275,49 +259,29 @@ public class NewScreenFromTemplateWindow extends FormWindow {
             nextPage.setEnabled(result.size() == MAX_TEMPLATES_SIZE_PER_PAGE);
             previousPage.setEnabled(currentPage > 0);
             templateView.unmask();
-            shareNoneRadio.removeListener(Events.Change, shareRadioChangeListener);
-            shareNoneRadio.setValue(false);
-            shareToAllRadio.setValue(true);
+            shareNoneRadio.setValue(!shared);
+            shareToAllRadio.setValue(shared);
             templateView.getStore().removeAll();
             templateView.getStore().add(Template.createModels(result));
-            shareNoneRadio.addListener(Events.Change, shareRadioChangeListener);
          }
          
       });
       templateView.mask("searching ... ");
    }
-   private void initTemplateView(boolean fromPrivate) {
+   private void initTemplateView(boolean shared) {
+      searchTemplates(shared, "", 0);
       templateView.mask("initializing templates... ");
-      if (fromPrivate) {
-         TemplateProxy.getTemplates(true, new AsyncCallback<List<Template>>() {
-   
-            @Override
-            public void onFailure(Throwable caught) {
-               templateView.unmask();
-               templateView.getStore().removeAll();
-            }
-   
-            @Override
-            public void onSuccess(List<Template> result) {
-               templateView.unmask();
-               templateView.getStore().removeAll();
-               templateView.getStore().add(Template.createModels(result));
-            }
-   
-         });
-      } else {
-         searchTemplates("",0);
-      }
    }
    
    class SearchListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
+         boolean shared = shareToAllRadio.getValue();
          if (keywordsField.getValue() == null || keywordsField.getValue().trim().length()==0) {
-           //search public templates without caring keywords.  
-           searchTemplates(null,0); 
+           //search templates without caring keywords.  
+           searchTemplates(shared,null,0); 
          } else {
-            searchTemplates(keywordsField.getValue(),0);
+            searchTemplates(shared,keywordsField.getValue(),0);
          }
          currentPage = 0;
       }
@@ -328,10 +292,11 @@ public class NewScreenFromTemplateWindow extends FormWindow {
       @Override
       public void componentSelected(ButtonEvent ce) {
          Button btn = ce.getComponent();
+         boolean shared = shareToAllRadio.getValue();
          if (btn.equals(previousPage)&& currentPage > 0) {
-            searchTemplates(currentKeywords, --currentPage);
+            searchTemplates(shared, currentKeywords, --currentPage);
          } else if (btn.equals(nextPage) ) {
-            searchTemplates(currentKeywords, ++currentPage);
+            searchTemplates(shared, currentKeywords, ++currentPage);
          }
       }
       
@@ -341,12 +306,9 @@ public class NewScreenFromTemplateWindow extends FormWindow {
 
       @Override
       public void handleEvent(FieldEvent be) {
-         if (be.getSource() instanceof Radio && be.getSource().equals(shareNoneRadio)) {
-            Boolean showPrivate = (Boolean) be.getValue();
-            initTemplateView(showPrivate);
-            nextPage.setEnabled(false);
-            previousPage.setEnabled(false);
-         }
+         boolean showPublic = shareToAllRadio.getValue();
+         keywordsField.setValue("");
+         initTemplateView(showPublic);
       }
       
    }

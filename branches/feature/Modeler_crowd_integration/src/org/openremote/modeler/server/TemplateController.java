@@ -63,8 +63,8 @@ public class TemplateController extends BaseGWTSpringController implements Templ
    }
 
    @Override
-   public List<Template> searchTemplates(String keywords, int page) {
-      return templateService.getTemplatesByKeywordsAndPage(keywords, page, getPassword());
+   public List<Template> searchTemplates(boolean shared, String keywords, int page) {
+      return templateService.getTemplatesByKeywordsAndPage(shared, keywords, page, getPassword());
    }
 
    @Override

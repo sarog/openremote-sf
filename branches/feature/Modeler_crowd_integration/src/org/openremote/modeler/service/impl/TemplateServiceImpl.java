@@ -349,13 +349,14 @@ public class TemplateServiceImpl implements TemplateService {
       return templates;
    }
    
-   public List<Template> getTemplatesByKeywordsAndPage(String keywords,int page, String password) {
+   public List<Template> getTemplatesByKeywordsAndPage(boolean shared, String keywords,int page, String password) {
+      String share = shared ? "public" : "private";
       String newKeywords = keywords;
       if (keywords == null || keywords.trim().length() == 0) {
          newKeywords = TemplateService.NO_KEYWORDS;
       }
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveRESTRootUrl() + "templates/keywords/"
+      String restURL = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid() + "/templates/" + share + "/keywords/"
             + newKeywords + "/page/"+page;
 
       HttpGet httpGet = new HttpGet(restURL);
