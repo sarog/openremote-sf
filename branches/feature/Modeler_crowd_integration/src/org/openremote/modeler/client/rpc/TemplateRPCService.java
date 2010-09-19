@@ -66,5 +66,5 @@ public interface TemplateRPCService extends RemoteService {
    
    Boolean deleteTemplate(long templateId) throws BeehiveNotAvailableException;
    
-   List<Template> searchTemplates(String keywords,int page);
+   List<Template> searchTemplates(boolean shared, String keywords,int page);
 }

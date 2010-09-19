@@ -36,7 +36,7 @@ public interface TemplateRPCServiceAsync {
    void saveTemplate(final Template template,AsyncCallback<Template> callback);
    void buildScreeFromTemplate(final Template template,AsyncCallback<ScreenFromTemplate> callback);
    void deleteTemplate(final long templateId,AsyncCallback<Boolean> callback);
-   void searchTemplates(final String keywords,final int page, AsyncCallback<List<Template>> callback);
+   void searchTemplates(final boolean shared, final String keywords,final int page, AsyncCallback<List<Template>> callback);
    void buildScreen(final Template template,AsyncCallback<ScreenPair> callback);
    void updateTemplate(final Template template,AsyncCallback<Template> callback);
 }

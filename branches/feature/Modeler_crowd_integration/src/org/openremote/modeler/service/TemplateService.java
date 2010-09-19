@@ -82,5 +82,5 @@ public interface TemplateService {
    
    List<Template> getTemplates(boolean isFromPrivate, String password);
    
-   List<Template> getTemplatesByKeywordsAndPage(String keywords,int page, String password);
+   List<Template> getTemplatesByKeywordsAndPage(boolean shared, String keywords,int page, String password);
 }
