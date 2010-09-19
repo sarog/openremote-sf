@@ -90,6 +90,42 @@ public class TemplateRESTService extends RESTBaseService {
       }
       return resourceNotFoundResponse();
    }
+   
+   /**
+    * Get all templates by account id.
+    * 
+    * @param accountId
+    *           account id
+    * @param shared
+    *           public or private
+    * @param credentials
+    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    * 
+    * @return template list
+    */
+   @Path("templates/{shared}/keywords/{keywords}/page/{page}")
+   @GET
+   @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+   public Response getTemplatesByKeywordsAndPage(@PathParam("account_id") long accountId, @PathParam("shared") String shared,
+         @PathParam("keywords") String keywords, @PathParam("page") int page,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      
+      if (!authorize(accountId, credentials)) return unAuthorizedResponse();
+      String newKeywords = keywords;
+      if (keywords.equals(TemplateService.NO_KEYWORDS)) {
+         newKeywords = "";
+      }
+      List<TemplateDTO> list = null;
+      if ("public".equalsIgnoreCase(shared)) {
+         list = getTemplateService().loadPublicTemplatesByKeywordsAndPage(newKeywords, page);
+      } else if ("private".equalsIgnoreCase(shared)) {
+         list = getTemplateService().loadPrivateTemplatesByKeywordsAndPage(accountId, newKeywords, page);
+      }
+      if (list != null) {
+         return buildResponse(new TemplateListing(list));
+      }
+      return resourceNotFoundResponse();
+   }
 
    /**
     * Get template resources : template.zip (images included).
