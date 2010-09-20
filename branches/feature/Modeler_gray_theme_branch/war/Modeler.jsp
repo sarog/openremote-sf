@@ -20,6 +20,8 @@
     <!-- Consider inlining CSS to reduce the number of requested files -->
     <!--                                                               -->
 	<link rel="stylesheet" type="text/css" href="resources/css/gxt-all.css" />
+    <!-- Support gray theme, if use default, just comment the next line.-->
+	<link rel="stylesheet" type="text/css" href="resources/css/gxt-gray.css" />
 	<link rel="stylesheet" type="text/css" href="resources/css/main.css" />
 	
     <!--                                           -->
