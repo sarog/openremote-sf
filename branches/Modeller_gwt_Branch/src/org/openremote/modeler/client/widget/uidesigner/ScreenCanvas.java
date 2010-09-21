@@ -258,9 +258,8 @@ public class ScreenCanvas extends ComponentContainer {
                } else {
                   Point position = getPosition(e);
                   controlContainer.setPosition(position.x, position.y);
-                  LayoutContainer componentContainer = new LayoutContainer();
                   GridCellBounds recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
-                  componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
+                  AbsoluteLayoutContainer componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
                   createDragSource(canvas, componentContainer);
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
@@ -350,13 +349,13 @@ public class ScreenCanvas extends ComponentContainer {
                      resizable.setMinHeight(10);
                      resizable.setMinWidth(10);
                   }
-                  WidgetSelectionUtil.setSelectWidget(componentContainer);
                   canvas.add(componentContainer);
                   Object model = dataModel.getBean();
                   if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {
                      componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                            - absolutePosition.y);
                   }
+                  WidgetSelectionUtil.setSelectWidget(componentContainer);
                }
             }
 

@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import org.openremote.modeler.client.model.ORBounds;
+import org.openremote.modeler.client.utils.AbsoluteBoundsListenerManager;
 import org.openremote.modeler.client.widget.component.ScreenComponent;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -55,17 +57,21 @@ public class AbsoluteLayoutContainer extends ComponentContainer {
       super.setSize(width, height);
       absolute.setSize(width, height);
       screenComponent.setSize(width - 2, height - 2);
+      AbsoluteBoundsListenerManager.getInstance().notifyAbsoluteBoundsListener(this,
+            new ORBounds(absolute.getLeft(), absolute.getTop(), width, height));
    }
 
    @Override
    public void setPosition(int left, int top) {
       super.setPosition(left, top);
       absolute.setPosition(left, top);
+      AbsoluteBoundsListenerManager.getInstance().notifyAbsoluteBoundsListener(this,
+            new ORBounds(left, top, absolute.getWidth(), absolute.getHeight()));
    }
 
    @Override
    public PropertyForm getPropertiesForm() {
      return this.screenComponent.getPropertiesForm();
    }
-
+   
 }
