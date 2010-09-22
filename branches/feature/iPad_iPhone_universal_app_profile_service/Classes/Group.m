@@ -89,4 +89,15 @@
 	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d && screenId == %d", isLandscape, screenId]].count > 0; 
 }
 
+
+- (Screen *) findScreenByScreenId:(int)screenId {
+	NSArray *ss = [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"screenId == %d", screenId]];
+	if (ss.count > 0) {
+		Screen *screen = [ss objectAtIndex:0];
+		return screen;
+	}
+	return nil;
+}
+
+
 @end
