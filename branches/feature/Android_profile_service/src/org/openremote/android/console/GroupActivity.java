@@ -143,14 +143,18 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
             if (orientation > 315 || orientation < 45  || (orientation > 135 && orientation < 225)) {
                // portrait
                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                     && !currentScreen.isLandscape()) {
+                     && !currentScreen.isLandscape() && currentScreen.getInverseScreenId() > 0) {
                   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               } else if (!currentScreen.isLandscape() && currentScreen.getInverseScreenId() == 0) {
+                  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                }
             } else if ((orientation > 225 && orientation < 315) || (orientation > 45 && orientation < 135)) {
                // landscape
                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                     && currentScreen.isLandscape()) {
+                     && currentScreen.isLandscape() && currentScreen.getInverseScreenId() > 0) {
                   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               } else if (currentScreen.isLandscape() && currentScreen.getInverseScreenId() == 0) {
+                  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                }
             }
          }
