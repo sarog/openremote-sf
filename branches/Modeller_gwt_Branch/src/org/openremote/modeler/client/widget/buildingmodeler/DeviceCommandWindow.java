@@ -55,6 +55,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
@@ -79,6 +80,8 @@ public class DeviceCommandWindow extends FormWindow {
    
    protected boolean hideWindow = true;
    
+   protected LabelField info;
+   protected static final String INFO_FIELD = "infoField";
    /**
     * Instantiates a new device command window.
     * 
@@ -126,12 +129,17 @@ public class DeviceCommandWindow extends FormWindow {
 
       submitBtn.addSelectionListener(new FormSubmitListener(form));
       if (deviceCommand == null) {
-         Button continueButton = new Button("Submit and continue");
+         info = new LabelField();
+         info.setName(INFO_FIELD);
+         form.add(info);
+         info.hide();
+         Button continueButton = new Button("Submit and Continue");
          form.addButton(continueButton);
          continueButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent ce) {
                if (form.isValid()) {
                   hideWindow = false;
+                  mask("Saving command......");
                   form.submit();
                }
             }
@@ -141,6 +149,7 @@ public class DeviceCommandWindow extends FormWindow {
       Button resetButton = new Button("Reset");
       resetButton.addSelectionListener(new FormResetListener(form));
       form.addButton(resetButton);
+      
       
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
@@ -153,7 +162,7 @@ public class DeviceCommandWindow extends FormWindow {
                   attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
                         .toString());
                } else {
-                  if (f.getValue() != null && !"".equals(f.getValue().toString())) {
+                  if (f.getValue() != null && !"".equals(f.getValue().toString()) && ! INFO_FIELD.equals(f.getName())) {
                      attrMap.put(f.getName(), f.getValue().toString());
                   }
                }
@@ -166,6 +175,9 @@ public class DeviceCommandWindow extends FormWindow {
                      hide();
                   } else {
                      hideWindow = true;
+                     unmask();
+                     info.setText("Command '" + deviceCommandModel.get("name") + "' is saved.");
+                     info.show();
                   }
                }
             };
@@ -216,7 +228,11 @@ public class DeviceCommandWindow extends FormWindow {
          @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
             if (form.getItems().size() > 2) {
-               form.getItem(2).removeFromParent();
+               if (info == null) {
+                  form.getItem(2).removeFromParent();
+               } else if (form.getItems().size() > 3) {
+                  form.getItem(3).removeFromParent();
+               }
             }
             addAttrs((ComboBoxDataModel<ProtocolDefinition>) se.getSelectedItem());
          }
