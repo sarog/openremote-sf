@@ -62,7 +62,7 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
 
 /**
- * A layout container for create and dnd components.
+ * A layout container for create components.
  */
 public class ScreenCanvas extends ComponentContainer {
 
@@ -83,10 +83,10 @@ public class ScreenCanvas extends ComponentContainer {
    /**
     * Instantiates a new screen canvas.
     * 
-    * @param screen
-    *           the screen
+    * @param dropTarget
+    *           the container to drop components
     */
-   public ScreenCanvas(Screen screen) {
+   public ScreenCanvas(Screen screen, LayoutContainer dropTarget) {
       this.screen = screen;
       TouchPanelCanvasDefinition canvas = screen.getTouchPanelDefinition().getCanvas();
       setSize(canvas.getWidth(), canvas.getHeight());
@@ -118,7 +118,7 @@ public class ScreenCanvas extends ComponentContainer {
       }
       layout();
 
-      addDropTargetDNDListener(screen);
+      addDropTargetDNDListener(screen, dropTarget);
       moveBackGround.addStyleName("move-background");
       moveBackGround.hide();
       add(moveBackGround);
@@ -126,13 +126,14 @@ public class ScreenCanvas extends ComponentContainer {
       setStyleAttribute("backgroundRepeat", "no-repeat");
       setStyleAttribute("overflow", "hidden");
       updateGround();
-      new DragSource(this);
+      new DragSource(dropTarget);
       /*
        * if (screen.isHasTabbar()) { addTabbar(); }
        */
       if (this.tabbarContainer != null) {
          add(tabbarContainer);
       }
+      sinkEvents(Event.ONMOUSEDOWN);
    }
 
    public void updateGround() {
@@ -159,9 +160,9 @@ public class ScreenCanvas extends ComponentContainer {
     * @param screen
     *           the screen
     */
-   private void addDropTargetDNDListener(final Screen screen) {
+   private void addDropTargetDNDListener(final Screen screen, LayoutContainer dropTarget) {
       final ScreenCanvas canvas = this;
-      DropTarget target = new DropTarget(canvas);
+      DropTarget target = new DropTarget(dropTarget);
       target.addDNDListener(new DNDListener() {
 
          @Override
@@ -187,61 +188,74 @@ public class ScreenCanvas extends ComponentContainer {
          @Override
          public void dragLeave(DNDEvent e) {
             moveBackGround.hide();
-            Object data = e.getData();
-            if (data instanceof GridCellContainer) {
-               final GridCellContainer cellContainer = (GridCellContainer) data;
-               MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-                  public void handleEvent(MessageBoxEvent be) {
-                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                        WidgetSelectionUtil.setSelectWidget(null);
-                     } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
-                        cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
-                        cellContainer.getGridContainer().addGridCellContainer(cellContainer);
+            if (!canDrop(canvas, e)) {
+               Object data = e.getData();
+               if (data instanceof GridCellContainer) {
+                  final GridCellContainer cellContainer = (GridCellContainer) data;
+                  MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                     public void handleEvent(MessageBoxEvent be) {
+                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                           WidgetSelectionUtil.setSelectWidget(null);
+                        } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                           cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
+                           cellContainer.getGridContainer().addGridCellContainer(cellContainer);
+                        }
                      }
+                  });
+               } else if (data instanceof LayoutContainer) {
+                  if (data instanceof GridLayoutContainerHandle) {
+                     final GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle) e.getData();
+                     gridContainer.show();
+                     MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent be) {
+                           if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                              ScreenCanvas.this.getScreen()
+                                    .removeGrid(gridContainer.getGridlayoutContainer().getGrid());
+                              gridContainer.removeFromParent();
+                              WidgetSelectionUtil.setSelectWidget(null);
+                           }
+                        }
+                     });
+                  } else {
+                     final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
+                     MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent be) {
+                           if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                              ScreenCanvas.this.getScreen().removeAbsolute(controlContainer.getAbsolute());
+                              controlContainer.removeFromParent();
+                              WidgetSelectionUtil.setSelectWidget(null);
+                           }
+                        }
+                     });
                   }
-               });
-            } else if (data instanceof LayoutContainer) {
-               if (data instanceof GridLayoutContainerHandle) {
-                  final GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle) e.getData();
-                  gridContainer.show();
-                  MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-                     public void handleEvent(MessageBoxEvent be) {
-                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           ScreenCanvas.this.getScreen().removeGrid(gridContainer.getGridlayoutContainer().getGrid());
-                           gridContainer.removeFromParent();
-                           WidgetSelectionUtil.setSelectWidget(null);
-                        }
-                     }
-                  });
-               } else {
-                  final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
-                  MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-                     public void handleEvent(MessageBoxEvent be) {
-                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           ScreenCanvas.this.getScreen().removeAbsolute(controlContainer.getAbsolute());
-                           controlContainer.removeFromParent();
-                           WidgetSelectionUtil.setSelectWidget(null);
-                        }
-                     }
-                  });
                }
             }
+         }
+
+         /**
+          * @param canvas the current canvas
+          * @param e the dndEvent
+          * @return
+          */
+         private boolean canDrop(final ScreenCanvas canvas, DNDEvent e) {
+            if (absolutePosition == null) {
+               absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
+            }
+            Point mousePoint = e.getXY();
+            boolean canDrop = false;
+            int x = getWidth() - (mousePoint.x - absolutePosition.x);
+            int y = getHeight() - (mousePoint.y - absolutePosition.y);
+            if (x > -5 && x < getWidth() + 5 && y > -5 && y < getHeight() + 5) {
+               canDrop = true;
+            }
+            return canDrop;
          }
 
          @SuppressWarnings("unchecked")
          @Override
          public void dragDrop(DNDEvent e) {
-            if (absolutePosition == null) {
-               absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
-            }
+            boolean canDrop = canDrop(canvas, e);
             Object data = e.getData();
-            Point mousePoint = e.getXY();
-            boolean canDrop = false;
-            int x = getWidth() - (mousePoint.x - absolutePosition.x);
-            int y = getHeight() - (mousePoint.y - absolutePosition.y);
-            if (x > 0 && x < getWidth() && y > 0 && y < getHeight()) {
-               canDrop = true;
-            }
             if (data instanceof GridCellContainer) {
                final GridCellContainer controlContainer = (GridCellContainer) data;
                if (!canDrop) {
@@ -305,7 +319,21 @@ public class ScreenCanvas extends ComponentContainer {
                   Point position = getPosition(e);
                   final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
                   if (canDrop) {
-                     controlContainer.setPosition(position.x, position.y);
+                     int x = position.x;
+                     int y = position.y;
+                     if (x < 0) {
+                        x = 0;
+                     }
+                     if (x + controlContainer.getWidth() > getWidth()) {
+                        x = getWidth() - controlContainer.getWidth();
+                     }
+                     if (y < 0) {
+                        y = 0;
+                     }
+                     if (y + controlContainer.getHeight() > getHeight()) {
+                        y = getHeight() - controlContainer.getHeight();
+                     }
+                     controlContainer.setPosition(x, y);
                   } else {
                      MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                         public void handleEvent(MessageBoxEvent be) {
