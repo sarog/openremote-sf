@@ -42,6 +42,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -64,9 +65,9 @@ public class PropertyForm extends FormPanel {
       setLabelWidth(90);
       setFieldWidth(150);
       setScrollMode(Scroll.AUTO);
-      ComponentContainer layoutContainer = ((ComponentContainer) componentContainer.getParent());
+      LayoutContainer layoutContainer = (LayoutContainer)componentContainer.getParent();
       if (layoutContainer instanceof AbsoluteLayoutContainer) {
-         addAbsolutePositionAndSizeProperties(layoutContainer);
+         addAbsolutePositionAndSizeProperties((ComponentContainer)layoutContainer);
       }
    }
 
