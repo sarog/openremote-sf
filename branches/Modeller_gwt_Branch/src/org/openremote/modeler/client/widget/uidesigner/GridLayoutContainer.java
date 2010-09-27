@@ -195,7 +195,6 @@ public class GridLayoutContainer extends ComponentContainer {
             cellContainer.setName(cell.getUiComponent().getName());
             cellContainer.setCellSpan(cell.getColspan(), cell.getRowspan());
             add(cellContainer);
-            cellContainer.setBorders(false);
             cellContainer.fillArea(btnInArea);
             createDragSource(cellContainer);
             layout();
@@ -232,12 +231,15 @@ public class GridLayoutContainer extends ComponentContainer {
                if (screenComponent instanceof ScreenButton) {
                   ((ScreenButton)screenComponent).setDefaultImage();
                }
+            } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
+               WidgetSelectionUtil.setSelectWidget((GridLayoutContainerHandle)this.getGridContainer().getParent());
             }
             ce.cancelBubble();
             super.onComponentEvent(ce);
          }
       };
       cellContainer.sinkEvents(Event.ONMOUSEUP);
+      cellContainer.sinkEvents(Event.ONDBLCLICK);
       cellContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             grid.removeCell(cellContainer.getCell());
@@ -291,17 +293,20 @@ public class GridLayoutContainer extends ComponentContainer {
                   ((ScreenLabel)screenComponent).onStateChange();
                } else if (screenComponent instanceof ScreenImage) {
                   ((ScreenImage)screenComponent).onStateChange();
-               }
+               } 
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP){
                if (screenComponent instanceof ScreenButton) {
                   ((ScreenButton)screenComponent).setDefaultImage();
                }
+            } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
+               WidgetSelectionUtil.setSelectWidget((GridLayoutContainerHandle)this.getGridContainer().getParent());
             }
             ce.cancelBubble();
             super.onComponentEvent(ce);
          }
       };
       cellContainer.sinkEvents(Event.ONMOUSEUP);
+      cellContainer.sinkEvents(Event.ONDBLCLICK);
       cellContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             grid.removeCell(cell);
