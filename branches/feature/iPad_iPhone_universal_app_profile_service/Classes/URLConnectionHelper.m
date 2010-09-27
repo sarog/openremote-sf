@@ -183,11 +183,25 @@
 - (void) updateControllerWith:(NSString *)groupMemberUrl;
 @end
 
+// a static flag for WIFI activity.
+// iphone will disconnect from WIFI when in sleep mode.
+static BOOL isWifiActive = NO;
+
 @implementation URLConnectionHelper 
 
 @synthesize delegate, connection, errorMsg, autoDiscoverController, getAutoServersTimer;
 
 
+#pragma mark WIFI activity flag getter/setter
++ (BOOL)isWifiActive {
+	return isWifiActive;
+}
+
++ (void)setWifiActive:(BOOL)active {
+	isWifiActive = active;
+}
+
+#pragma mark init
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
 	if (self = [super init]) {
 		[self setDelegate:d];
@@ -263,7 +277,7 @@
 
 // Swith to groupmember controller.
 - (void) swithToGroupMemberServer {
-	[self removeBadCurrentServerURL];
+	//[self removeBadCurrentServerURL];
 	NSString *aAvailableGroupMemberUrl = [self checkGroupMemberServers];
 	
 	if (aAvailableGroupMemberUrl != nil && ![@"" isEqualToString:aAvailableGroupMemberUrl]) {
@@ -364,7 +378,9 @@
 	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
 		[delegate definitionURLConnectionDidFailWithError:error];
 		self.errorMsg = error;
-		[self swithToGroupMemberServer];
+		if ([URLConnectionHelper isWifiActive]) {
+			[self swithToGroupMemberServer];
+		}
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
