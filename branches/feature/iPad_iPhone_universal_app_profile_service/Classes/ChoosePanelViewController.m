@@ -185,7 +185,7 @@
 }
 
 // Handle the server errors which are from controller server with status code.
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[self showLoginAlert];
@@ -235,7 +235,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
