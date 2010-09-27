@@ -22,6 +22,7 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 #import "TabBar.h"
+#import "Screen.h"
 
 /**
  * Stores screens model data and parsed from element group in panel.xml.
@@ -59,5 +60,10 @@
  * Find screen model in specified orientation screens of group containing by screen id.
  */
 - (BOOL)canFindScreenById:(int)screenId inOrientation:(BOOL)isLandscape;
+
+/**
+ * Find screen model by screen id. returns nil if not found.
+ */
+- (Screen *) findScreenByScreenId:(int)screenId;
 
 @end

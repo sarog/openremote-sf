@@ -56,8 +56,8 @@
 	
 }
 
-// Handle the server errors which are from controller server with status code.
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+// Handle the server response which are from controller server with status code.
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		switch (statusCode) {
 			case UNAUTHORIZED://logout succuessful 
@@ -88,7 +88,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 

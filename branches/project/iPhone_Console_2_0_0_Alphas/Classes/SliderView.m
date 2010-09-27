@@ -218,8 +218,6 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 	
 	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
-	NSLog(@"AbsoluteLayoutContainerView is %d", [self.superview isMemberOfClass:[AbsoluteLayoutContainerView class]]);
-	NSLog(@"GridCellView is %d", [self.superview isMemberOfClass:[GridCellView class]]);
 	
 	// SliderView is in the AbsoluteLayoutContainerView
 	if ([self.superview isMemberOfClass:[AbsoluteLayoutContainerView class]]) {
