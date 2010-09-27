@@ -54,8 +54,13 @@
 }
 
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)delegate;
-- (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d ;
-- (void)cancelConnection;
+- (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d;
+
+
+
+- (void)cancelConnection;                 // cancel a connection, actually ignore the callback.
++ (BOOL)isWifiActive;                     // get a flag that indicates WIFI is active or not.
++ (void)setWifiActive:(BOOL)active;       // set a flag that indicates WIFI is active or not.
 
 //reimplement +[NSURLConnection sendSynchronousRequest:returningResponse:error:]
 - (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error;

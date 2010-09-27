@@ -75,7 +75,7 @@
 	return self;
 }
 
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[Definition sharedDefinition].password = nil;
@@ -132,7 +132,7 @@
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
 	NSLog(@"control[%d]statusCode is %d",component.componentId, [httpResp statusCode]);
 	
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 #pragma mark dealloc
