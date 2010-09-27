@@ -493,12 +493,15 @@ public class ScreenCanvas extends ComponentContainer {
                if (screenControl instanceof ScreenButton) {
                   ((ScreenButton) screenControl).setDefaultImage();
                }
+            } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
+               WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
             }
             ce.cancelBubble();
             super.onComponentEvent(ce);
          }
       };
       controlContainer.sinkEvents(Event.ONMOUSEUP);
+      controlContainer.sinkEvents(Event.ONDBLCLICK);
       controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeAbsolute(absolute);
@@ -576,6 +579,8 @@ public class ScreenCanvas extends ComponentContainer {
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget(this);
+            } else if (event.getTypeInt() == Event.ONDBLCLICK) {
+               WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
             }
             event.stopPropagation();
             super.onBrowserEvent(event);
@@ -588,6 +593,7 @@ public class ScreenCanvas extends ComponentContainer {
          }
 
       };
+      gridContainer.sinkEvents(Event.ONDBLCLICK);
       gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeGrid(grid);
