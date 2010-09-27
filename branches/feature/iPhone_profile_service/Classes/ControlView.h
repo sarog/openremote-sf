@@ -44,9 +44,9 @@
 - (id)initWithControl:(Control *)c frame:(CGRect)frame;
 
 /**
- * Handle the server errors which are from controller server with status code.
+ * Handle the server response which are from controller server with status code.
  */
-- (void)handleServerErrorWithStatusCode:(int) statusCode;
+- (void)handleServerResponseWithStatusCode:(int) statusCode;
 
 /**
  * Cancel timer of repeated sending control command.

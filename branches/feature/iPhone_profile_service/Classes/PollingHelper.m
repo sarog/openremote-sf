@@ -26,6 +26,9 @@
 #import "NotificationConstant.h"
 #import "ControllerException.h"
 
+//retry polling after half a second
+#define POLLING_RETRY_DELAY 0.5
+
 @implementation PollingHelper
 
 @synthesize isPolling, pollingStatusIds, isError, connection;
@@ -65,7 +68,6 @@
 
 - (void)doPolling {
 	NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
-	//NSString *deviceId = @"96e79218965eb72c92a549dd5a330112";
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition pollingRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]];
 	NSLog(@"%@", [location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]);
@@ -90,7 +92,8 @@
 }
 
 
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
+
 	if (statusCode != 200) {
 		isError = YES;
 		switch (statusCode) {
@@ -100,9 +103,7 @@
 				[updateController checkConfigAndUpdate];
 				return;
 			case POLLING_TIMEOUT://polling timeout, need to refresh
-				isError = NO;
-
-				
+				isError = NO;				
 				if (isPolling == YES) {
 					[self doPolling];
 				}
@@ -113,19 +114,27 @@
 		[ViewHelper showAlertViewWithTitle:@"Polling Failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 		isPolling = NO;
 	} else {
+		[URLConnectionHelper setWifiActive:YES];
 		isError = NO;
 		if (isPolling == YES) {
 			[self doPolling];
 		}
-		
-
 	} 
 	
 }
 
 #pragma mark delegate method of NSURLConnection
 - (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-	if (!isError) {
+	
+	//if iphone is in sleep mode, retry polling after a while.
+	if (![URLConnectionHelper isWifiActive]) {
+		[NSTimer scheduledTimerWithTimeInterval:POLLING_RETRY_DELAY 
+																		 target:self 
+																	 selector:@selector(doPolling) 
+																	 userInfo:nil 
+																		repeats:NO];
+		
+	} else if (!isError) {
 		NSLog(@"Polling failed, %@",[error localizedDescription]);
 		isError = YES;
 	} 
@@ -149,7 +158,7 @@
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
 	NSLog(@"polling[%@]statusCode is %d",pollingStatusIds, [httpResp statusCode]);
 	
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 #pragma mark Delegate method of UpdateController
