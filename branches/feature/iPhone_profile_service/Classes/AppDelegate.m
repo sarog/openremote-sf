@@ -20,13 +20,13 @@
  */
 
 /*
-  * This is the entrypoint of the application.
-  *  After application have been started applicationDidFinishLaunching method will be called.
-  */
+ * This is the entrypoint of the application.
+ *  After application have been started applicationDidFinishLaunching method will be called.
+ */
 
 #import "AppDelegate.h"
 #import "NotificationConstant.h"
-
+#import "URLConnectionHelper.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -65,9 +65,23 @@
 	
 }
 
+// when it's launched by other apps.
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	[self applicationDidFinishLaunching:application];
 	return YES;
+}
+
+//when it wake up, WIFI is active.
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+	[defaultViewController refreshPolling];
+}
+
+
+// To save battery, it will disconnect from WIFI when in sleep mode. 
+// if its plugged into USB or a charger it remains connect.
+// locking a phone will not let it sleep at once until a couple of minutes. 
+- (void)applicationWillResignActive:(UIApplication *)application {
+	[URLConnectionHelper setWifiActive:NO];
 }
 
 - (void)checkConfigAndUpdate {
