@@ -245,7 +245,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* openremote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = openremote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* OpenRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* openremote_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = openremote_Prefix.pch; sourceTree = "<group>"; };
@@ -532,7 +532,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* openremote.app */,
+				1D6058910D05DD3D006BFB54 /* OpenRemote.app */,
 				8C4DFC66115414B300C2C7EE /* UnitTest.octest */,
 			);
 			name = Products;
@@ -926,7 +926,7 @@
 			);
 			name = OpenRemote;
 			productName = openremote;
-			productReference = 1D6058910D05DD3D006BFB54 /* openremote.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* OpenRemote.app */;
 			productType = "com.apple.product-type.application";
 		};
 		8C460E49109552C800C7A686 /* UnitTest */ = {
@@ -953,7 +953,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				ORGANIZATIONNAME = "OpenRemote Inc.";
+				ORGANIZATIONNAME = "OpenRemote, Inc.";
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -1244,7 +1244,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Debug */ = {
+		1D6058940D05DD3E006BFB54 /* Simulator iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1267,35 +1267,9 @@
 				PRODUCT_NAME = openremote;
 				SDKROOT = iphonesimulator4.0;
 			};
-			name = Debug;
+			name = "Simulator iOS 3.0";
 		};
-		1D6058950D05DD3E006BFB54 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
-				);
-				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
-				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				SDKROOT = iphoneos2.2.1;
-			};
-			name = Release;
-		};
-		8C460E4C109552C900C7A686 /* Debug */ = {
+		8C460E4C109552C900C7A686 /* Simulator iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1325,9 +1299,9 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 			};
-			name = Debug;
+			name = "Simulator iOS 3.0";
 		};
-		8C460E4D109552C900C7A686 /* Distribution */ = {
+		8C460E4D109552C900C7A686 /* Device Distro iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1354,41 +1328,9 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 			};
-			name = Distribution;
+			name = "Device Distro iOS 3.0";
 		};
-		8C460E4E109552C900C7A686 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				INFOPLIST_FILE = "UnitTest-Info.plist";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					SenTestingKit,
-					"-framework",
-					UIKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = UnitTest;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		8C599D660F7156E5001833AD /* Distribution */ = {
+		8C599D660F7156E5001833AD /* Device Distro iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1397,15 +1339,16 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphoneos4.1;
 			};
-			name = Distribution;
+			name = "Device Distro iOS 3.0";
 		};
-		8C599D670F7156E5001833AD /* Distribution */ = {
+		8C599D670F7156E5001833AD /* Device Distro iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1424,13 +1367,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = openremote;
+				PRODUCT_NAME = OpenRemote;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.1;
 			};
-			name = Distribution;
+			name = "Device Distro iOS 3.0";
 		};
 		8CDB7DCE10D53CCE00B52642 /* GCov_Build */ = {
 			isa = XCBuildConfiguration;
@@ -1509,7 +1453,7 @@
 			};
 			name = GCov_Build;
 		};
-		C01FCF4F08A954540054247B /* Debug */ = {
+		C01FCF4F08A954540054247B /* Simulator iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1524,23 +1468,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphonesimulator4.0;
 			};
-			name = Debug;
-		};
-		C01FCF5008A954540054247B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator4.0;
-			};
-			name = Release;
+			name = "Simulator iOS 3.0";
 		};
 /* End XCBuildConfiguration section */
 
@@ -1548,35 +1476,32 @@
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OpenRemote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058940D05DD3E006BFB54 /* Simulator iOS 3.0 */,
 				8CDB7DCF10D53CCE00B52642 /* GCov_Build */,
-				8C599D670F7156E5001833AD /* Distribution */,
-				1D6058950D05DD3E006BFB54 /* Release */,
+				8C599D670F7156E5001833AD /* Device Distro iOS 3.0 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = "Simulator iOS 3.0";
 		};
 		8C460E4F109552C900C7A686 /* Build configuration list for PBXNativeTarget "UnitTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8C460E4C109552C900C7A686 /* Debug */,
+				8C460E4C109552C900C7A686 /* Simulator iOS 3.0 */,
 				8CDB7DD010D53CCE00B52642 /* GCov_Build */,
-				8C460E4D109552C900C7A686 /* Distribution */,
-				8C460E4E109552C900C7A686 /* Release */,
+				8C460E4D109552C900C7A686 /* Device Distro iOS 3.0 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = "Simulator iOS 3.0";
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF4F08A954540054247B /* Simulator iOS 3.0 */,
 				8CDB7DCE10D53CCE00B52642 /* GCov_Build */,
-				8C599D660F7156E5001833AD /* Distribution */,
-				C01FCF5008A954540054247B /* Release */,
+				8C599D660F7156E5001833AD /* Device Distro iOS 3.0 */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = "Simulator iOS 3.0";
 		};
 /* End XCConfigurationList section */
 	};
