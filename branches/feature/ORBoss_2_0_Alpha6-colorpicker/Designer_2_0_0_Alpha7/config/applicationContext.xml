@@ -85,7 +85,7 @@
   		<property name="host" value="${mail.sender.host}" /> 
   		<property name="port" value="${mail.sender.port}" /> 
   		<property name="username" value="${mail.sender.username}" /> 
-  		<property name="password" value="${mail.sender.password}" /> 
+<!--  		<property name="password" value="${mail.sender.password}" />  -->
 		<property name="javaMailProperties">
 			<props>
 	  			<!--<prop key="mail.smtp.auth">${mail.smtp.auth.on}</prop>-->
