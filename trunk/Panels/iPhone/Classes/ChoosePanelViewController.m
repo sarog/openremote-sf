@@ -49,6 +49,7 @@
 	return self;
 }
 
+// Load panel list from remote controller server.
 - (void)requestPanelList {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
@@ -130,13 +131,14 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
+// Show login dialog for users, if users didn't login remote controller server.
 - (void)showLoginAlert {
 	
-	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Please Sign In" 
-																									 message:@"\n\n\n" // IMPORTANT
-																									delegate:self 
-																				 cancelButtonTitle:@"Cancel" 
-																				 otherButtonTitles:@"OK", nil];
+	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Controller Login" 
+													 message:@"\n\n\n" // IMPORTANT
+													delegate:self 
+										   cancelButtonTitle:@"Cancel" 
+										   otherButtonTitles:@"OK", nil];
 	
 	textField = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 50.0, 240.0, 25.0)]; 
 	textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -144,9 +146,8 @@
 	textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 	textField.returnKeyType = UIReturnKeyDone;
 	[textField setBackgroundColor:[UIColor whiteColor]];
-	if ([Definition sharedDefinition].username == nil) {
-		[textField setPlaceholder:@"username"];
-	} else {
+	[textField setPlaceholder:@"username"];
+	if ([Definition sharedDefinition].username != nil) {
 		[textField setText:[Definition sharedDefinition].username];
 	}
 	
@@ -163,7 +164,7 @@
 	[prompt addSubview:textField2];
 	
 	// set place
-	[prompt setTransform:CGAffineTransformMakeTranslation(0.0, 110.0)];
+	//[prompt setTransform:CGAffineTransformMakeTranslation(0.0, 110.0)];
 	[prompt show];
 	[prompt release];
 	
@@ -172,6 +173,7 @@
 	
 }
 
+#pragma mark alert delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
 		[Definition sharedDefinition].username = textField.text;
@@ -181,7 +183,8 @@
 	} 
 }
 
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+// Handle the server errors which are from controller server with status code.
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[self showLoginAlert];
@@ -231,7 +234,7 @@
 
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

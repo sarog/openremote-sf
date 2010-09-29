@@ -49,8 +49,10 @@
 	[super dealloc];
 }
 
+/**
+ * Assign the ScreenViewController array to paginationController with landscape boolean value.
+ */
 - (void)setViewControllers:(NSArray *)newViewControllers isLandscape:(BOOL)isLandscapeOrientation {
-	
 	isLandscape = isLandscapeOrientation;
 	CGSize size = [UIScreen mainScreen].bounds.size;
 	frameWidth = isLandscape ? size.height : size.width;
@@ -61,7 +63,7 @@
 	}
 	
 	[viewControllers release];
-	viewControllers = [newViewControllers copy];
+	viewControllers = [newViewControllers retain];
 	
 	//Recover last screen
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -71,6 +73,8 @@
 	if (lastScreenId > 0) {
 		for (int i = 0; i < [viewControllers count]; i++) {
 			if (lastScreenId == [(Screen *)[[viewControllers objectAtIndex:i] screen] screenId]) {
+				UIViewController *vc = [viewControllers objectAtIndex:i];
+				vc.view.bounds = scrollView.bounds;
 				selectedIndex = i;
 				break;
 			}
@@ -116,13 +120,13 @@
 			break;
 		}
 	}
-	if (index != -1) {
+	if (index != -1) {//found screen in current orientation
 		selectedIndex = index;
-		NSLog(@"switch to screen index = %d, id = %d", selectedIndex, screenId);
+		NSLog(@"switch to screen index = %d, id = %d animation=%d", selectedIndex, screenId, withAnimation);
 		[pageControl setCurrentPage:selectedIndex];
 		[self scrollToSelectedViewWithAnimation:withAnimation];
 	} else {
-		NSLog(@"switch to screen not found, id = %d", screenId);
+		// not found, may be in the opposite orientation, or a invalid screenId.
 		return NO;
 	}
 	
@@ -151,6 +155,7 @@
 	return YES;
 }
 
+// Save last screen's id while switching screen view for recovery of lastScreenView in RootViewController.
 - (void)saveLastScreen {
 	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
@@ -159,11 +164,13 @@
 	}
 }
 
+// Refresh the current screenView.
 - (void)updateViewForCurrentPage {
 	[self initViewForPage:selectedIndex];
 	[pageControl setCurrentPage:selectedIndex];
 }
 
+// Refresh the current screenView, previous screenView and next screenView.
 - (void)updateViewForCurrentPageAndBothSides {
 	[self updateViewForPage:selectedIndex - 1];
 	[self updateViewForPage:selectedIndex];
@@ -173,6 +180,7 @@
 	[self saveLastScreen];
 }
 
+// Init current screen view of paginationController with specified page index.
 - (void)initViewForPage:(NSUInteger)page {
 	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
@@ -193,6 +201,8 @@
 	}
 }
 
+
+// Refresh the screenView page index specified.
 - (void)updateViewForPage:(NSUInteger)page {
 	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
@@ -214,9 +224,19 @@
 
 //if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation {
+	
+	//HACK: clear 2nd view, it's a hack, beause 2nd view always cover 1st view.
+	//TODO: should fix this hack.
+	if (withAnimation == NO && selectedIndex == 0 && viewControllers.count > 1) {
+		UIViewController *vc = [viewControllers objectAtIndex:1];
+		[vc.view removeFromSuperview];
+	}
+	
 	[self updateViewForCurrentPage];
 	CGRect frame = scrollView.bounds;
 	
+	//HACK: make ContentSize larger to show last view correctly, it's a hack, beause last view is half.
+	//TODO: should fix this hack.
 	if (selectedIndex == pageControl.numberOfPages - 1) {
 		[scrollView setContentSize:CGSizeMake(frameWidth * (pageControl.numberOfPages + 0.5), frameHeight)];
 	} 
@@ -276,6 +296,8 @@
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)s {
+	//HACK: correct hacked larger ContentSize back to normal.
+	//TODO: should fix this hack.
 	[scrollView setContentSize:CGSizeMake(frameWidth * pageControl.numberOfPages, frameHeight)];
 }
 

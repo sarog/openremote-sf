@@ -25,14 +25,23 @@
 #import "PollingHelper.h"
 #import "Gesture.h"
 
-
+/**
+ * It's responsible for control render of screenView with screen model data.
+ */
 @interface ScreenViewController : UIViewController {
 	Screen *screen;
 	PollingHelper *polling;
 	CGPoint    gestureStartPoint;
 }
 
+/**
+ * Start polling of all sensor components in screenView.
+ */
 - (void)startPolling;
+
+/**
+ * Stop polling of all sensor components in screenView.
+ */
 - (void)stopPolling;
 - (void)performGesture:(Gesture *)gesture;
 

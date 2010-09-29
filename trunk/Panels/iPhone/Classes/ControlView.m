@@ -75,7 +75,7 @@
 	return self;
 }
 
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[Definition sharedDefinition].password = nil;
@@ -98,15 +98,7 @@
 }
 
 #pragma mark delegate methods of Protocol ControlDelegate.
-
 - (void)sendCommandRequest:(NSString *)commandType{
-	
-//	if ([[Definition sharedDefinition] password] == nil) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-//		return;
-//	}
-	
-	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
 	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
 	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
@@ -140,7 +132,7 @@
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
 	NSLog(@"control[%d]statusCode is %d",component.componentId, [httpResp statusCode]);
 	
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 #pragma mark dealloc

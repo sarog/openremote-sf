@@ -22,7 +22,16 @@
 #import <Foundation/Foundation.h>
 #import "XMLEntity.h"
 #import "TabBar.h"
+#import "Screen.h"
 
+/**
+ * Stores screens model data and parsed from element group in panel.xml.
+ * XML fragment example:
+ * <group id="27" name="Bedroom">
+ *    <include type="screen" ref="30" />
+ *    <include type="screen" ref="45" />
+ * </group>
+ */
 @interface Group : XMLEntity {
 	
 	int groupId;
@@ -37,8 +46,24 @@
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,readonly) TabBar *tabBar;
 
+/**
+ * Get all screens whose orientation is portrait.
+ */
 - (NSArray *) getPortraitScreens;
+
+/**
+ * Get all screens whose orientation is landscape.
+ */
 - (NSArray *) getLandscapeScreens;
+
+/**
+ * Find screen model in specified orientation screens of group containing by screen id.
+ */
 - (BOOL)canFindScreenById:(int)screenId inOrientation:(BOOL)isLandscape;
+
+/**
+ * Find screen model by screen id. returns nil if not found.
+ */
+- (Screen *) findScreenByScreenId:(int)screenId;
 
 @end

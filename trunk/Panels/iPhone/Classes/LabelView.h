@@ -23,6 +23,9 @@
 #import "ComponentView.h"
 #import "SensoryView.h"
 
+/**
+ * This is a view for rendering static text, dynamic text depending on its sensors.
+ */
 @interface LabelView : SensoryView {
 	UILabel *uiLabel;
 }

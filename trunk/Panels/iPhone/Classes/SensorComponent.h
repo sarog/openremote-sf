@@ -23,7 +23,9 @@
 #import "Component.h"
 #import "Sensor.h"
 
-//This is a base class, means a component with sensor
+/**
+ * This is super class of components which can polling status.
+ */
 @interface SensorComponent : Component {
 	Sensor *sensor;
 }

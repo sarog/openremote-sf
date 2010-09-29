@@ -25,17 +25,32 @@
 #import "ComponentView.h"
 #import "ControlDelegate.h"
 
+/**
+ * It's super class of all control views in screen view.
+ */
 @interface ControlView : ComponentView <ControlDelegate>{
 	NSTimer *controlTimer;
 	BOOL isError;
 }
 
-#pragma mark Class methods:
+/**
+ * Build controls with control model data and frame of its layout container.
+ */
 + (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame;
 
-#pragma mark Instance methods:
+/**
+ * Construct controlView instance with control model data and frame of its layout container.
+ */
 - (id)initWithControl:(Control *)c frame:(CGRect)frame;
-- (void)handleServerErrorWithStatusCode:(int) statusCode;
+
+/**
+ * Handle the server response which are from controller server with status code.
+ */
+- (void)handleServerResponseWithStatusCode:(int) statusCode;
+
+/**
+ * Cancel timer of repeated sending control command.
+ */
 - (void)cancelTimer;
 
 @end

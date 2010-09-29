@@ -56,13 +56,15 @@
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:29];
 		[button setBackgroundImage:buttonImage forState:UIControlStateNormal];
 		
-		button.titleLabel.font = [UIFont boldSystemFontOfSize:18];
-		[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-		button.titleLabel.shadowOffset = CGSizeMake(0, -2);
+		button.titleLabel.font = [UIFont boldSystemFontOfSize:13];
+		button.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
+		//[button setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
+		//button.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	}
 	[self setOn:NO];
 }
 
+// Override method of SensoryControlView.
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Switch *)component).sensor.sensorId;
@@ -97,6 +99,7 @@
 	canUseImage = onImage && offImage;
 }
 
+// Update the UI of swith view with polling status.
 - (void)setOn:(BOOL)on {
 	if (on) {
 		isOn = YES;
@@ -117,6 +120,7 @@
 	
 }
 
+// Send boolean control command to remote controller server.
 - (void)stateChanged:(id)sender {
 	if (isOn) {
 		[self sendCommandRequest:@"OFF"];

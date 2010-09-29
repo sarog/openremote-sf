@@ -43,7 +43,9 @@
 
 @synthesize screen, polling;
 
-
+/**
+ * Assign parameter screen model data to screenViewController.
+ */
 - (void)setScreen:(Screen *)s {
 	[s retain];
 	[screen release];
@@ -54,6 +56,10 @@
 	
 }
 
+/**
+ * Perform gesture action. Currently, the gesture should be one action of sliding from left to right, 
+ * sliding from right to left, sliding from top to bottom and sliding from bottom to top.
+ */
 - (void)performGesture:(Gesture *)gesture {
 	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
 	if (g) {
@@ -68,12 +74,14 @@
 
 // Implement loadView to create a view hierarchy programmatically.
 - (void)loadView {
-	ScreenView *view = [[ScreenView alloc] init];
+	ScreenView *v = [[ScreenView alloc] init];
 
 	//set Screen in ScreenView
-	[view setScreen:screen];
-	[self setView:view];
-	[view release];
+	[v setScreen:screen];
+	
+	[self setView:v];
+	[v setBackgroundColor:[UIColor blackColor]];
+	[v release];
 }
 
 - (void)startPolling {
@@ -83,12 +91,13 @@
 	[polling cancelPolling];
 }
 
+// Send control command for gesture actions.
 - (void)sendCommandRequest:(int)componentId {
 	
-	if ([[Definition sharedDefinition] password] == nil) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		return;
-	}
+//	if ([[Definition sharedDefinition] password] == nil) {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+//		return;
+//	}
 	
 	
 	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
@@ -111,13 +120,15 @@
 	[connection autorelease];	
 }
 
-- (void)handleServerErrorWithStatusCode:(int) statusCode {
+// Handle the server errors which are from controller server with status code.
+- (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
 			[Definition sharedDefinition].password = nil;
+			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+		} else {
+			[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
 		}
-		
-		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	}
 }
 
@@ -132,7 +143,7 @@
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
 	
-	[self handleServerErrorWithStatusCode:[httpResp statusCode]];
+	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
 

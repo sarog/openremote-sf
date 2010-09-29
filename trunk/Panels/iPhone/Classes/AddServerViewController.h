@@ -23,7 +23,9 @@
 #import <UIKit/UIKit.h>
 #import "TextFieldCell.h"
 
-
+/**
+ * Subclass of TableViewController for providing UI and functions of customizing controller server url.
+ */
 @interface AddServerViewController : UITableViewController<UITableViewDelegate, UITableViewDataSource,UITextFieldDelegate> {
 	NSMutableDictionary *editingItem;
 	TextFieldCell *serverUrlFieldCell;

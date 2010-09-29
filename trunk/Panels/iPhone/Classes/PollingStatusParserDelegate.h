@@ -22,11 +22,21 @@
 #import <Foundation/Foundation.h>
 #import "ControlView.h"
 
-// Parse the returned status XML from polling REST API
+/* 
+ NSXMLParser delegate: Parse the returned status XML from polling REST API
+ usually a status xml returned from Controller looks like:
+ <openremote>
+  <status id="1">on</status>
+  <status id="2">off</status>
+ </openremote>
+ 
+ 'id' is sensor id, element body is latest status.
+ so here sensor '1' is 'on'; sensor '2' is 'off'.
+*/
 @interface PollingStatusParserDelegate : NSObject {
 	
-	NSString *lastId;
-	NSMutableDictionary *statusMap;
+	NSString *lastId;                 //last sensor id while parsing
+	NSMutableDictionary *statusMap;   //contains sensor id and related latest status value
 
 }
 

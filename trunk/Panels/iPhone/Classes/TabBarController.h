@@ -23,14 +23,30 @@
 #import "TabBar.h"
 #import "GroupController.h"
 
+/**
+ * It's responsible for rendering tabbar and tabbar items with groupControllers.
+ */
 @interface TabBarController : UITabBarController <UITabBarControllerDelegate, UITableViewDelegate> {
 	TabBar *customziedTabBar;
 	GroupController *groupController;
 	BOOL isMoreViewShown;
 }
 
+/**
+ * Construct tabBarController with groupController and tabbar.
+ * The parameter tabBar can be localTabbar and globalTabBar.
+ */
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar;
+
+/**
+ * Update groupController tabBarController contained with specified parameter.
+ */
 - (void)updateGroupController:(GroupController *)groupControllerParam;
+
+/**
+ * Refresh tabbar items manually while groupController tabBarController contained changinng.
+ */
+- (void)updateTabItems;
 
 @property (nonatomic, retain) TabBar *customziedTabBar;
 @property (nonatomic, retain) GroupController *groupController;

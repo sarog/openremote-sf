@@ -24,6 +24,8 @@
 #import "NotificationConstant.h"
 #import "Slider.h"
 #import "DirectoryDefinition.h"
+#import	"AbsoluteLayoutContainerView.h"
+#import "GridCellView.h"
 
 
 @interface UIImage (RotateAdditions)
@@ -33,6 +35,8 @@
 CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 @implementation UIImage (RotateAdditions)
+
+// Rotate image with specified degrees
 - (UIImage *)imageRotatedByDegrees:(CGFloat)degrees {   
 	// calculate the size of the rotated view's containing box for our drawing space
 	UIView *rotatedViewBox = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.size.width, self.size.height)];
@@ -148,15 +152,18 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 }
 
+// Get Image from image cache directory with image name.
 - (UIImage *)getImageFromCacheByName:(NSString *)name {
 	UIImage *img = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:name]];
 	return [self transformToHorizontalWhenVertical:img];
 }
 
+// Rotate the specified image from horizontal to vertical.
 - (UIImage *)transformToHorizontalWhenVertical:(UIImage *)vImg {
 	return vertical ? [vImg imageRotatedByDegrees:90.0] : vImg;
 }
 
+// Override method of sensory view.
 - (void)setPollingStatus:(NSNotification *)notification {
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Slider *)component).sensor.sensorId;
@@ -186,13 +193,13 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 	sliderTip.hidden = YES;
 	[self clearSliderTipSubviews:sliderTip];
-	
 }
 
 -(void) touchDownSlider:(UISlider *)sender {
 	[self showTip:sliderTip ofSlider:uiSlider withSender:sender];
 }
 
+// Render the bubble tip while tapping slider thumb image.
 -(void) showTip:(UIImageView *)tip ofSlider:(UISlider *)uiSliderParam withSender:(UISlider *)sender {
 	tip.hidden = NO;
 	[self clearSliderTipSubviews:tip];
@@ -211,7 +218,15 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 	
 	tip.frame = CGRectMake(x - 40, y - 100, 80, 80);
-	[self.superview.superview bringSubviewToFront:self.superview];
+	
+	// SliderView is in the AbsoluteLayoutContainerView
+	if ([self.superview isMemberOfClass:[AbsoluteLayoutContainerView class]]) {
+		[self.superview.superview bringSubviewToFront:[self superview]];
+	}
+	// SliderView is in the GridCellView
+	else if ([self.superview isMemberOfClass:[GridCellView class]]) {
+		[self.superview.superview.superview bringSubviewToFront:[self superview]];
+	}
 	UILabel *tipText = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
 	tipText.font = [UIFont systemFontOfSize:40];
 	tipText.backgroundColor = [UIColor clearColor];

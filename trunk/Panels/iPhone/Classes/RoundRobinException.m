@@ -28,17 +28,14 @@
 	NSString *errorMessage = nil;
 	if (code != 200) {
 		switch (code) {
-			case CONTROLLER_TCP_SERVER_START_FAIL://450
-				errorMessage = @"The TCP server of controller didn't startup.";
+			case ROUNDROBIN_TCP_SERVER_START_FAIL://450
+				errorMessage = @"The round-robin TCP server of controller didn't startup.";
 				break;
-			case CONTROLLER_UDP_SERVER_START_FAIL://451
-				errorMessage = @"The UDP server of controller didn't startup.";
+			case ROUNDROBIN_UDP_SERVER_START_FAIL://451
+				errorMessage = @"The round-robin UDP server of controller didn't startup.";
 				break;
-			case CONTROLLER_UDP_CLIENT_ESTABLISH_FAIL://452
-				errorMessage = @"Established servers RESTful request fail.";
-				break;
-			case CONTROLLER_INVALID_ROUND_ROBIN_URL://453
-				errorMessage = @"The servers(roundrobin) url was invalid.";
+			case ROUNDROBIN_UDP_CLIENT_START_FAIL://452
+				errorMessage = @"The round-robin UDP client of controller didn't startup.";
 				break;
 		}
 		if (!errorMessage) {

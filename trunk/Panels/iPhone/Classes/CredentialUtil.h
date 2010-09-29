@@ -21,11 +21,16 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Util for appending HTTP Basic Authentication header for request to http basic authenticate.
+ */
 @interface CredentialUtil : NSObject {
 
 }
 
+/**
+ * Append HTTP Basic Authentication header into request.
+ */
 + (void)addCredentialToNSMutableURLRequest:(NSMutableURLRequest *)request;
 
 @end
