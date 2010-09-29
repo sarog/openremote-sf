@@ -87,6 +87,8 @@ public abstract class UIComponent extends BusinessEntity {
             result = new UILabel();
          } else if (uiComponent instanceof UIImage) {
             result = new UIImage();
+         } else if (uiComponent instanceof ColorPicker) {
+            result = new ColorPicker();
          } else if (uiComponent instanceof UITabbar) {
             return new UITabbar();
          }
@@ -115,6 +117,8 @@ public abstract class UIComponent extends BusinessEntity {
             return new UIImage((UIImage) uiComponent);
          }  else if (uiComponent instanceof UITabbar) {
             return new UITabbar((UITabbar)uiComponent);
+         }  else if (uiComponent instanceof ColorPicker) {
+            return new ColorPicker((ColorPicker)uiComponent);
          }
       }
       return null;
