@@ -43,6 +43,7 @@ import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORRoundRobinConnection;
 import org.openremote.android.console.util.ImageUtil;
+import org.openremote.android.console.view.ButtonView;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -90,8 +91,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private int screenSize;
    private HashMap<Integer, GroupView> groupViews;
    private ArrayList<Navigate> navigationHistory;
-   private static final int SWIPE_MIN_DISTANCE = 120;
-   private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+   private static final int SWIPE_MIN_DISTANCE = Screen.SCREEN_WIDTH / 4;
+   private static final int SWIPE_THRESHOLD_VELOCITY = 20;
 
    private boolean useLocalCache;
    private boolean isNavigetionBackward;
@@ -323,7 +324,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       if (currentGroupView == null) {
          return true;
       }
-      
       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
          Log.i("OpenRemote-FLING", "right to left");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
@@ -795,6 +795,17 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
       super.onConfigurationChanged(newConfig);
       lastConfigurationOrientation = newOrientation;
+   }
+
+   @Override
+   public boolean dispatchTouchEvent(MotionEvent ev) {
+       super.dispatchTouchEvent(ev);
+       if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+          ButtonView.MOUSE_MOVE = false;
+       } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+          ButtonView.MOUSE_MOVE = true;
+       }
+       return gestureScanner.onTouchEvent(ev);
    }
    
    
