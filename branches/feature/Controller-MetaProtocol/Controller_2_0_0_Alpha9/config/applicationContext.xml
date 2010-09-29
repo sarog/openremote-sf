@@ -137,6 +137,9 @@
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "mockup">mockupCommandBuilder</prop>
             <prop key = "livingColors">livingColorsBuilder</prop>
+            <prop key = "lights">lightsCommandBuilder</prop>
+            <prop key = "colors">colorsCommandBuilder</prop>
+            <prop key = "meta">metaCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -181,7 +184,18 @@
 	      
 	<bean id = "livingColorsBuilder" class = "org.openremote.controller.protocol.livingColors.LivingColorsCommandBuilder"
 	      scope = "prototype" />
-	      
+
+
+  <bean id = "metaCommandBuilder" class = "org.openremote.controller.protocol.meta.MetaCommandBuilder">
+    <property name="controlCommandService" ref="controlCommandService"></property>
+  </bean>
+
+  <bean id = "lightsCommandBuilder" class = "org.openremote.controller.protocol.lights.LightsCommandBuilder"/>
+  <bean id = "colorsCommandBuilder" class = "org.openremote.controller.protocol.colors.ColorsCommandBuilder"/>
+
+
+
+
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>
