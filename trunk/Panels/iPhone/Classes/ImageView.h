@@ -23,6 +23,9 @@
 #import "ComponentView.h"
 #import "SensoryView.h"
 
+/**
+ * This is a view for rendering static images, dynamic images and labels depending on its sensors.
+ */
 @interface ImageView : SensoryView {
 	UIImageView *defaultImageView;
 	BOOL removeSubviewsTag;

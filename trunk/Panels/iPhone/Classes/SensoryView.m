@@ -28,6 +28,7 @@
 
 #pragma mark instance methods.
 
+// Add notification observer for polling
 - (void) addPollingNotificationObserver {
 	int sensorId;
 	if ([component isKindOfClass:[Label class]]) {

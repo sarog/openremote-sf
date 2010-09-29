@@ -25,9 +25,15 @@
 
 extern NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW;
 
+/**
+ * ClippedUIImage is for clipping uiimage depending on parent view and align way.
+ */
 @interface ClippedUIImage : UIImage {
 }
 
+/**
+ * Clipping uiimage depending on parent view and align way.
+ */
 - (id) initWithUIImage:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView imageAlignToView:(NSString *)align;
 
 @end

@@ -21,7 +21,9 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ * Stores username and passsword of user. This is used to HttpBasicAuthentication.
+ */
 @interface User : NSObject {
 	NSString *username;
 	NSString *password;

@@ -61,14 +61,17 @@
 	return self;
 }
 
-- (BOOL)isNew {
-	return paginationController.selectedIndex == 0;
+- (BOOL)isOrientationLandscapeWithScreenId:(int)screenId {
+	for (int i = 0; i< group.screens.count; i++) {
+		Screen *s = (Screen *)[group.screens objectAtIndex:i];
+		if (s.screenId == screenId) {
+			return s.landscape;
+		}
+	}
+	return NO;
 }
 
-- (BOOL)switchToFirstScreen {
-	return [paginationController switchToFirstScreen];
-}
-
+// Detect the current orientation of handset.
 - (void)detectDeviceOrientation {
 	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	currentOrientation = [[UIDevice currentDevice] orientation];
@@ -93,6 +96,7 @@
 	[self willRotateToInterfaceOrientation:newOrientation duration:0];
 }
 
+// Check if current orientation is landscape.
 - (BOOL)isOrientationLandscape {
 	return UIInterfaceOrientationIsLandscape(currentOrientation);
 }
@@ -119,6 +123,7 @@
 	return group.groupId;
 }
 
+// Initializes screenViewController array of groupController with screen model array.
 - (NSMutableArray *)initScreenViewControllers:(NSArray *)screens {
 	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 	
@@ -132,40 +137,56 @@
 	return viewControllers;
 }
 
+// Get the paginationController of groupController.
 - (PaginationController *)currentPaginationController {	
-	return paginationController;
+	return [self isOrientationLandscape] ? landscapePaginationController : portraitPaginationController;
 }
 
+// Show the view of specified orientation depending on the parameter isLandScape specified.
 - (void)showLandscapeOrientation:(BOOL)isLandscape {
+	
 	NSArray *screens = isLandscape ? [group getLandscapeScreens] : [group getPortraitScreens];
-	if (screens.count > 0) {
-		[[paginationController currentScreenViewController] stopPolling];
-		if (lastPaginationController == nil) {
-			lastPaginationController = [[PaginationController alloc] init];
+	if (screens.count == 0) {
+		[self showErrorView];
+		return;
+	}
+	
+	if (isLandscape) {
+		if (landscapePaginationController == nil) {
+			landscapePaginationController = [[PaginationController alloc] init];
 			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
-			[lastPaginationController setViewControllers:viewControllers isLandscape:isLandscape];
+			[landscapePaginationController setViewControllers:viewControllers isLandscape:isLandscape];
 			[viewControllers release];
 		}
-		PaginationController *temp = lastPaginationController;
-		lastPaginationController = paginationController;
-		paginationController = temp;
-		[self setView:paginationController.view];
-		[[paginationController currentScreenViewController] startPolling];
+		[self setView:landscapePaginationController.view];
+		[[portraitPaginationController currentScreenViewController] stopPolling];
+		[[landscapePaginationController currentScreenViewController] startPolling];
 	} else {
-		[self showErrorView];
+		if (portraitPaginationController == nil) {
+			portraitPaginationController = [[PaginationController alloc] init];
+			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
+			[portraitPaginationController setViewControllers:viewControllers isLandscape:isLandscape];
+			[viewControllers release];
+		}
+		[self setView:portraitPaginationController.view];
+		[[landscapePaginationController currentScreenViewController] stopPolling];
+		[[portraitPaginationController currentScreenViewController] startPolling];
 	}
-
+	
 }
 
+// Show portrait orientation view.
 - (void)showPortrait {
 	NSLog(@"show portrait");
 	[self showLandscapeOrientation:NO];
 }
 
+// Show landscape orientation view.
 - (void)showLandscape {
 	NSLog(@"show landscape");
 	[self showLandscapeOrientation:YES];
 }
+
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -179,10 +200,9 @@
 	} 
 }
 
+// Show error view if some error occured.
 - (void)showErrorView {
-	errorViewController = [[ErrorViewController alloc] 
-															initWithErrorTitle:@"No Screen Found" 
-																				 message:@"Please associate screens with this group of this orientation."];
+	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Screen Found" message:@"Please associate screens with this group of this orientation."];
 	[errorViewController.view setFrame:[self getFullFrame]];
 	[self setView:errorViewController.view];	
 }
@@ -230,17 +250,27 @@
 	return [[self currentScreenViewController] performGesture:gesture];
 }
 
+//only if the following conditions happen, should we rotate.
+// 1) error view
+// 2) device consistent orientation changes between up/down or left/right
+// 3) current group has two-orientation (portrait/landscape) views 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	if (errorViewController.view == self.view) {
+		return YES;
+	}
 	if (UIInterfaceOrientationIsPortrait(currentOrientation) == UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+		NSLog(@"group consistent orientation ");
 		return YES;
 	}
 	if ([self currentScreenId] > 0) {
+		NSLog(@"group opposite orientation ");
 		return [[self currentScreen] inverseScreenId] > 0;
 	} else {
+		NSLog(@"group single orientation ");
 		return ![self hasNoViewInThatOrientation:UIInterfaceOrientationIsLandscape(interfaceOrientation)];
 	}
-
-	return YES;
+	
+	return NO;
 }
 
 
@@ -264,6 +294,16 @@
 	}
 }
 
+- (void)transformToOrientation:(UIInterfaceOrientation)thatOrientation {
+	currentOrientation = thatOrientation;
+	if (UIInterfaceOrientationIsPortrait(thatOrientation)) {
+		[self showPortrait];
+	} else {
+		[self showLandscape];
+	}
+}
+
+// Override this method for enable view rotating.
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
 	[self printOrientation:currentOrientation];
 	[self printOrientation:toInterfaceOrientation];
@@ -295,13 +335,13 @@
 		} 
 
 	}
+	[errorViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)dealloc {
-	[paginationController release];
-	[lastPaginationController release];
+	[landscapePaginationController release];
+	[portraitPaginationController release];
 	[errorViewController release];
-	//[group release];
 	
 	[super dealloc];
 }

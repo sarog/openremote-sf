@@ -46,10 +46,14 @@
 
 //find status element body
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
-	NSString *status = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	NSString *status = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];//trim found string
+	
+	//assign lastest status to sensor id
 	if (lastId && ![@"" isEqualToString:status]) {
 		NSLog(@"change %@ to %@  !!!", lastId, status);
 		[statusMap setObject:status forKey:lastId];
+		
+		// notify latest sensor status to component listener by sensor id
 		[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[lastId intValue]] object:self];
 	}
 }

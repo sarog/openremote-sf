@@ -35,6 +35,7 @@
 	return self;
 }
 
+// Customize view of users input custom controller server.
 - (void)viewWillAppear:(BOOL)animated {
 	if (editingItem == nil) {
 		self.editingItem = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"",@"url",[NSNumber numberWithBool:NO],@"choose",nil];
@@ -51,6 +52,8 @@
 	[serverUrlFieldCell.textField becomeFirstResponder];
 	
 }
+
+// Delegate method of UITextFieldDelegate and is called when 'return' key pressed. return NO to ignore.
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	NSLog(@"text field is %@",serverUrlFieldCell.textField.text);
 	NSString *url = [NSString stringWithFormat:@"http://%@",serverUrlFieldCell.textField.text];

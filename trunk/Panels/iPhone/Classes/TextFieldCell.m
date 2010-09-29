@@ -44,11 +44,13 @@
     return self;
 }
 
+// Override method of UIView.
 - (void)layoutSubviews {
 	// Place the subviews appropriately.
 	textField.frame = CGRectInset(self.contentView.bounds, 10, 0);
 }
 
+// Handler of TextFieldCell is selected.
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
 	[super setSelected:selected animated:animated];
 	// Update text color so that it matches expected selection behavior.
@@ -58,7 +60,6 @@
 		textField.textColor = [UIColor darkGrayColor];
 	}
 }
-
 
 - (void)dealloc {
 	[textField release];

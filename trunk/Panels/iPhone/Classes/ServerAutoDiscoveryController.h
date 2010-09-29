@@ -24,6 +24,9 @@
 #import "AsyncSocket.h"
 #import "AsyncUdpSocket.h"
 
+/**
+ * It's responsible for controller server  discovery automatically.
+ */
 @interface ServerAutoDiscoveryController : NSObject {
 	id theDelegate;
 	AsyncUdpSocket *udpSocket;

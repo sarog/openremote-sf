@@ -24,10 +24,22 @@
 #import "ViewHelper.h"
 #import "ServerAutoDiscoveryController.h"
 
-//Define a protocol 
+//Define a protocol for delegate implementation
 @protocol URLConnectionHelperDelegate <NSObject>
+
+/**
+ * This method will be called when request is finisehed with URLConnection.
+ */
 - (void)definitionURLConnectionDidFinishLoading:(NSData *)data;
+
+/**
+ * This method will be called when failed to request with URLConnection.
+ */
 - (void)definitionURLConnectionDidFailWithError:(NSError *)error;
+
+/**
+ * This method will be called when receive response from controller server with URLConnection.
+ */
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response;
 @end
 
@@ -42,8 +54,13 @@
 }
 
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)delegate;
-- (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d ;
-- (void)cancelConnection;
+- (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d;
+
+
+
+- (void)cancelConnection;                 // cancel a connection, actually ignore the callback.
++ (BOOL)isWifiActive;                     // get a flag that indicates WIFI is active or not.
++ (void)setWifiActive:(BOOL)active;       // set a flag that indicates WIFI is active or not.
 
 //reimplement +[NSURLConnection sendSynchronousRequest:returningResponse:error:]
 - (NSData *)sendSynchronousRequest:(NSURLRequest *)request returningResponse:(NSURLResponse **)response error:(NSError **)error;
