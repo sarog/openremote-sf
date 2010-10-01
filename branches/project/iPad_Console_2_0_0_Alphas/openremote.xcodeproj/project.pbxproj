@@ -254,7 +254,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* openremote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = openremote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* OpenRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* openremote_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = openremote_Prefix.pch; sourceTree = "<group>"; };
@@ -550,7 +550,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* openremote.app */,
+				1D6058910D05DD3D006BFB54 /* OpenRemote.app */,
 				8C4DFC66115414B300C2C7EE /* UnitTest.octest */,
 			);
 			name = Products;
@@ -961,7 +961,7 @@
 			);
 			name = OpenRemote;
 			productName = openremote;
-			productReference = 1D6058910D05DD3D006BFB54 /* openremote.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* OpenRemote.app */;
 			productType = "com.apple.product-type.application";
 		};
 		8C460E49109552C800C7A686 /* UnitTest */ = {
@@ -988,7 +988,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				ORGANIZATIONNAME = "OpenRemote Inc.";
+				ORGANIZATIONNAME = "OpenRemote, Inc.";
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -1294,8 +1294,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1308,13 +1308,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
+				PRODUCT_NAME = OpenRemote;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -1377,7 +1377,7 @@
 			};
 			name = Debug;
 		};
-		8C460E4D109552C900C7A686 /* Distribution */ = {
+		8C460E4D109552C900C7A686 /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1404,7 +1404,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 			};
-			name = Distribution;
+			name = "Ad-Hoc Distribution";
 		};
 		8C460E4E109552C900C7A686 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1438,23 +1438,26 @@
 			};
 			name = Release;
 		};
-		8C599D660F7156E5001833AD /* Distribution */ = {
+		8C599D660F7156E5001833AD /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.0;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = 2;
 			};
-			name = Distribution;
+			name = "Ad-Hoc Distribution";
 		};
-		8C599D670F7156E5001833AD /* Distribution */ = {
+		8C599D670F7156E5001833AD /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1474,29 +1477,30 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
-				PRODUCT_NAME = openremote;
+				PRODUCT_NAME = OpenRemote;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
-			name = Distribution;
+			name = "Ad-Hoc Distribution";
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos3.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -1523,7 +1527,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
-				8C599D670F7156E5001833AD /* Distribution */,
+				8C599D670F7156E5001833AD /* Ad-Hoc Distribution */,
 				1D6058950D05DD3E006BFB54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1533,7 +1537,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8C460E4C109552C900C7A686 /* Debug */,
-				8C460E4D109552C900C7A686 /* Distribution */,
+				8C460E4D109552C900C7A686 /* Ad-Hoc Distribution */,
 				8C460E4E109552C900C7A686 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -1543,7 +1547,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
-				8C599D660F7156E5001833AD /* Distribution */,
+				8C599D660F7156E5001833AD /* Ad-Hoc Distribution */,
 				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
