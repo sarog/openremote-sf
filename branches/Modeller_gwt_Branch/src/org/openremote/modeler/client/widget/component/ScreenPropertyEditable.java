@@ -89,7 +89,7 @@ public class ScreenPropertyEditable implements PropertyEditable {
 
    @Override
    public String getTitle() {
-      return "Screen Property";
+      return "Screen Pair Property";
    }
    
 }
