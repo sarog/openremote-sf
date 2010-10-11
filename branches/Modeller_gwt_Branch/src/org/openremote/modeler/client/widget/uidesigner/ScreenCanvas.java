@@ -92,6 +92,16 @@ public class ScreenCanvas extends ComponentContainer {
       setSize(canvas.getWidth(), canvas.getHeight());
       setBorders(true);
       setStyleAttribute("position", "relative");
+      if (screen.getGrids().size() > 0) {
+         List<UIGrid> grids = screen.getGrids();
+         for (UIGrid grid : grids) {
+            GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
+            this.add(gridContainer);
+            gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop()
+                  - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+            createGridDragSource(gridContainer, this);
+         }
+      }
       if (screen.getAbsolutes().size() > 0) {
          List<Absolute> absolutes = screen.getAbsolutes();
          for (Absolute absolute : absolutes) {
@@ -104,16 +114,6 @@ public class ScreenCanvas extends ComponentContainer {
             resizable.setMinHeight(10);
             resizable.setMinWidth(10);
             createDragSource(this, componentContainer);
-         }
-      }
-      if (screen.getGrids().size() > 0) {
-         List<UIGrid> grids = screen.getGrids();
-         for (UIGrid grid : grids) {
-            GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
-            this.add(gridContainer);
-            gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop()
-                  - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-            createGridDragSource(gridContainer, this);
          }
       }
       layout();
@@ -334,6 +334,9 @@ public class ScreenCanvas extends ComponentContainer {
                         y = getHeight() - controlContainer.getHeight();
                      }
                      controlContainer.setPosition(x, y);
+                     screen.removeAbsolute(controlContainer.getAbsolute());
+                     screen.addAbsolute(controlContainer.getAbsolute());
+                     controlContainer.el().updateZIndex(1);
                   } else {
                      MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                         public void handleEvent(MessageBoxEvent be) {
@@ -499,6 +502,13 @@ public class ScreenCanvas extends ComponentContainer {
             ce.cancelBubble();
             super.onComponentEvent(ce);
          }
+
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            this.el().updateZIndex(1);
+         }
+         
       };
       controlContainer.sinkEvents(Event.ONMOUSEUP);
       controlContainer.sinkEvents(Event.ONDBLCLICK);
