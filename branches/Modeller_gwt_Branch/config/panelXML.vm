@@ -66,12 +66,6 @@
   				<image src="${screen.getBackground().getImageSource().getImageFileName()}"/>
   			</background>
   		#end
-  		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------
-  		#foreach($absolute in $screen.getAbsolutes())
-  			<absolute left="${absolute.getLeft()}" top="${absolute.getTop()}" width="${absolute.getWidth()}" height="${absolute.getHeight()}">
-  				${absolute.getUiComponent().getPanelXml()}
-  			</absolute>
-  		#end
   		##--------------------------------------------------------------------grid---------------------------------------------------------------------------
   		#foreach($grid in $screen.getGrids())
   			<grid left="${grid.getLeft()}" top="${grid.getTop()}" width="${grid.getWidth()}" height="${grid.getHeight()}" rows="${grid.getRowCount()}" cols="${grid.getColumnCount()}">
@@ -81,6 +75,12 @@
   					</cell>
   				#end
   			</grid>
+  		#end
+  		##-----------------------------------------------------------------absolute---------------------------------------------------------------------------
+  		#foreach($absolute in $screen.getAbsolutes())
+  			<absolute left="${absolute.getLeft()}" top="${absolute.getTop()}" width="${absolute.getWidth()}" height="${absolute.getHeight()}">
+  				${absolute.getUiComponent().getPanelXml()}
+  			</absolute>
   		#end
   		##-----------------------------------------------------------------gesture---------------------------------------------------------------------------
   		#foreach($gesture in $screen.getGestures())
