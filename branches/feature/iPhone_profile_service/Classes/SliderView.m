@@ -105,7 +105,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	uiSlider.maximumValueImage = maximumValueImage;
 	
 	// TrackImages, thumbImage
-	uiSlider.backgroundColor = [UIColor clearColor];	
+	uiSlider.backgroundColor = [UIColor clearColor];
 	NSString *minTrackImageSrc = sliderModel.minTrackImage.src;
 	NSString *maxTrackImageSrc = sliderModel.maxTrackImage.src;
 	NSString *thumbImageSrc = sliderModel.thumbImage.src;
@@ -113,15 +113,32 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	UIImage *stretchedLeftTrack = [[self getImageFromCacheByName:minTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
 	UIImage *stretchedRightTrack = [[self getImageFromCacheByName:maxTrackImageSrc] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
 	UIImage *thumbImage = [self getImageFromCacheByName:thumbImageSrc];
-	if (stretchedRightTrack) {
-		[uiSlider setMaximumTrackImage:stretchedRightTrack forState:UIControlStateNormal];
-	}
 	if (stretchedLeftTrack) {
 		[uiSlider setMinimumTrackImage:stretchedLeftTrack forState:UIControlStateNormal];
 	}
+	// Default
+	else {
+		UIImage *sliderDefaultMinTrackImage = [[UIImage imageNamed:@"slider_default_min_track_image_.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+		[uiSlider setMinimumTrackImage:sliderDefaultMinTrackImage forState:UIControlStateNormal];
+	}
+	if (stretchedRightTrack) {
+		[uiSlider setMaximumTrackImage:stretchedRightTrack forState:UIControlStateNormal];
+	} 
+	// Default
+	else {
+		UIImage *sliderDefaultMaxTrackImage = [[UIImage imageNamed:@"slider_default_max_track_image_.png"] stretchableImageWithLeftCapWidth:10.0 topCapHeight:0.0];
+		[uiSlider setMaximumTrackImage:sliderDefaultMaxTrackImage forState:UIControlStateNormal];		
+	}
+	
 	if (thumbImage) {
 		[uiSlider setThumbImage: thumbImage forState:UIControlStateNormal];
 		[uiSlider setThumbImage: thumbImage forState:UIControlStateHighlighted];
+	} 
+	// Default
+	else {
+		UIImage *sliderDefaultThumbImage = [UIImage imageNamed:@"slider_default_thumb_image_.png"];
+		[uiSlider setThumbImage: sliderDefaultThumbImage forState:UIControlStateNormal];
+		[uiSlider setThumbImage: sliderDefaultThumbImage forState:UIControlStateHighlighted];
 	}
 	
 	sliderTip = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"slider_tip.png"]];
