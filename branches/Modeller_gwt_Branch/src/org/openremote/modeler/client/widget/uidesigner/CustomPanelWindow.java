@@ -216,7 +216,7 @@ public class CustomPanelWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
 
-      submitBtn.addSelectionListener(new SubmitListener());
+      submitBtn.addSelectionListener(new SubmitListener(submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
 
       form.addButton(submitBtn);
@@ -327,7 +327,10 @@ public class CustomPanelWindow extends FormWindow {
    }
    
    private class SubmitListener extends SelectionListener<ButtonEvent> {
-
+      private Button submitBtn;
+      public SubmitListener(Button submitBtn) {
+         this.submitBtn = submitBtn;
+      }
       @Override
       public void componentSelected(ButtonEvent ce) {
          if (!isValid()) return; 
@@ -337,6 +340,7 @@ public class CustomPanelWindow extends FormWindow {
             MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
             return;
          }
+         submitBtn.disable();
          if (panel == null) {
             panel = new Panel();
             panel.setOid(IDUtil.nextID());

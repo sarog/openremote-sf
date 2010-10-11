@@ -127,7 +127,7 @@ public class DeviceCommandWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       form.addButton(submitBtn);
 
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       if (deviceCommand == null) {
          info = new LabelField();
          info.setName(INFO_FIELD);

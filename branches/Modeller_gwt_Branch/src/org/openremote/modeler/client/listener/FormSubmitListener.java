@@ -21,6 +21,7 @@ package org.openremote.modeler.client.listener;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
@@ -33,7 +34,7 @@ public class FormSubmitListener extends SelectionListener<ButtonEvent> {
    
    /** The form. */
    private FormPanel form;
-   
+   private Button submitBtn;
    
    /**
     * Instantiates a new form submit listener.
@@ -41,9 +42,10 @@ public class FormSubmitListener extends SelectionListener<ButtonEvent> {
     * @param form
     *           the form
     */
-   public FormSubmitListener(FormPanel form) {
+   public FormSubmitListener(FormPanel form, Button submitBtn) {
       super();
       this.form = form;
+      this.submitBtn = submitBtn;
    }
 
 
@@ -54,6 +56,7 @@ public class FormSubmitListener extends SelectionListener<ButtonEvent> {
    @Override
    public void componentSelected(ButtonEvent ce) {
       if (form.isValid()) {
+         submitBtn.disable();
          form.submit();
       }
    }
