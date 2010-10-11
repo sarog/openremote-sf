@@ -172,7 +172,7 @@ public class SliderWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
       
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetButton.addSelectionListener(new FormResetListener(form));
       
       form.add(nameField);

@@ -127,6 +127,7 @@ public class WizardWindow extends CommonWindow {
          @Override
          public void componentSelected(ButtonEvent ce) {
             if (forms[currentStep].isValid()) {
+               finishBtn.disable();
                finish(currentStep, forms[currentStep]);
             }
          }

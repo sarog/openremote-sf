@@ -385,7 +385,7 @@ public class AccountManageWindow extends Dialog {
        */
       private void createButtons(final InviteUserWindow window) {
          Button send = new Button("Send invitation");
-         send.addSelectionListener(new FormSubmitListener(form));
+         send.addSelectionListener(new FormSubmitListener(form, send));
          Button cancel = new Button("Cancel");
          cancel.addSelectionListener(new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent ce) {
