@@ -45,6 +45,10 @@ public class ProtocolAttrDefinition implements Serializable {
    /** The label. */
    private String label;
 
+   private String value;
+   
+   private List<String> options = new ArrayList<String>();
+   
    /** The validators. */
    private List<ProtocolValidator> validators = new ArrayList<ProtocolValidator>();
 
@@ -102,6 +106,21 @@ public class ProtocolAttrDefinition implements Serializable {
       this.validators = validators;
    }
 
+   public String getValue() {
+      return value;
+   }
+
+   public List<String> getOptions() {
+      return options;
+   }
+
+   public void setValue(String value) {
+      this.value = value;
+   }
+
+   public void setOptions(List<String> options) {
+      this.options = options;
+   }
 
    /* (non-Javadoc)
     * @see java.lang.Object#equals(java.lang.Object)
