@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -67,7 +67,7 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 public class DeviceCommandWindow extends FormWindow {
    
    /** The Constant DEVICE_COMMAND_NAME. */
-   public static final String DEVICE_COMMAND_NAME = "name";
+   public static final String DEVICE_COMMAND_NAME = "device_command_name";
    
    /** The Constant DEVICE_COMMAND_PROTOCOL. */
    public static final String DEVICE_COMMAND_PROTOCOL = "protocol";
@@ -264,19 +264,45 @@ public class DeviceCommandWindow extends FormWindow {
       attrSet.setHeading(data.getLabel() + " attributes");
 
       for (ProtocolAttrDefinition attrDefinition : data.getData().getAttrs()) {
-         TextField<String> attrField = new TextField<String>();
-         attrField.setName(attrDefinition.getName());
-         TextField<String>.TextFieldMessages messages = attrField.getMessages();
-         attrField.setFieldLabel(attrDefinition.getLabel());
-         if (deviceCommand != null) {
+         List<String> options = attrDefinition.getOptions();
+         String value = "";
+         if (attrDefinition.getValue() != null) {
+            value = attrDefinition.getValue();
+         } else if (deviceCommand != null) {
             for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
                if (attrDefinition.getName().equals(attr.getName())) {
-                  attrField.setValue(attr.getValue());
+                  value = attr.getValue();
                }
             }
          }
-         setValidators(attrField, messages, attrDefinition.getValidators());
-         attrSet.add(attrField);
+
+         if (options.size() > 0) {
+            ComboBoxExt comboAttrField = new ComboBoxExt();
+            comboAttrField.setName(attrDefinition.getName());
+            comboAttrField.setFieldLabel(attrDefinition.getLabel());
+            ComboBoxExt.ComboBoxMessages comboBoxMessages = comboAttrField.getMessages();
+            for (String option : options) {
+               if (!"".equals(option)) {
+                  StringComboBoxData comboData = new StringComboBoxData(option, option);
+                  comboAttrField.getStore().add(comboData);
+                  if (value.equals(option)) {
+                     comboAttrField.setValue(comboData);
+                  }
+               }
+            }
+            setComboBoxValidators(comboAttrField, comboBoxMessages, attrDefinition.getValidators());
+            attrSet.add(comboAttrField);
+         } else {
+            TextField<String> attrField = new TextField<String>();
+            attrField.setName(attrDefinition.getName());
+            TextField<String>.TextFieldMessages messages = attrField.getMessages();
+            attrField.setFieldLabel(attrDefinition.getLabel());
+            if (!"".equals(value)) {
+               attrField.setValue(value);
+            }
+            setValidators(attrField, messages, attrDefinition.getValidators());
+            attrSet.add(attrField);
+         }
       }
       form.add(attrSet);
       form.layout();
@@ -288,30 +314,66 @@ public class DeviceCommandWindow extends FormWindow {
    /**
     * Sets the validators.
     * 
-    * @param attrFile the attr file
+    * @param attrField the attr file
     * @param messages the messages
     * @param protocolValidators the protocol validators
     */
-   private void setValidators(TextField<String> attrFile, TextField<String>.TextFieldMessages messages,
+   private void setValidators(TextField<String> attrField, TextField<String>.TextFieldMessages messages,
          List<ProtocolValidator> protocolValidators) {
       for (ProtocolValidator protocolValidator : protocolValidators) {
          if (protocolValidator.getType() == ProtocolValidator.ALLOW_BLANK_TYPE) {
             if (Boolean.valueOf(protocolValidator.getValue())) {
-               attrFile.setAllowBlank(true);
+               attrField.setAllowBlank(true);
             } else {
-               attrFile.setAllowBlank(false);
+               attrField.setAllowBlank(false);
                messages.setBlankText(protocolValidator.getMessage());
             }
          } else if (protocolValidator.getType() == ProtocolValidator.MAX_LENGTH_TYPE) {
-            attrFile.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
+            attrField.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
             messages.setMaxLengthText(protocolValidator.getMessage());
          } else if (protocolValidator.getType() == ProtocolValidator.MIN_LENGTH_TYPE) {
-            attrFile.setMinLength(Integer.valueOf(protocolValidator.getValue()));
+            attrField.setMinLength(Integer.valueOf(protocolValidator.getValue()));
             messages.setMinLengthText(protocolValidator.getMessage());
          } else if (protocolValidator.getType() == ProtocolValidator.REGEX_TYPE) {
-            attrFile.setRegex(protocolValidator.getValue());
+            attrField.setRegex(protocolValidator.getValue());
             messages.setRegexText(protocolValidator.getMessage());
          }
+      }
+   }
+   
+   private void setComboBoxValidators(ComboBoxExt comboField, ComboBoxExt.ComboBoxMessages messages,
+         List<ProtocolValidator> protocolValidators) {
+      for (ProtocolValidator protocolValidator : protocolValidators) {
+         if (protocolValidator.getType() == ProtocolValidator.ALLOW_BLANK_TYPE) {
+            if (Boolean.valueOf(protocolValidator.getValue())) {
+               comboField.setAllowBlank(true);
+            } else {
+               comboField.setAllowBlank(false);
+               messages.setBlankText(protocolValidator.getMessage());
+            }
+         } else if (protocolValidator.getType() == ProtocolValidator.MAX_LENGTH_TYPE) {
+            comboField.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
+            messages.setMaxLengthText(protocolValidator.getMessage());
+         } else if (protocolValidator.getType() == ProtocolValidator.MIN_LENGTH_TYPE) {
+            comboField.setMinLength(Integer.valueOf(protocolValidator.getValue()));
+            messages.setMinLengthText(protocolValidator.getMessage());
+         } else if (protocolValidator.getType() == ProtocolValidator.REGEX_TYPE) {
+            comboField.setRegex(protocolValidator.getValue());
+            messages.setRegexText(protocolValidator.getMessage());
+         }
+      }
+   }
+   
+   /**
+    * The data model to store String value in ComboBoxExt.
+    */
+   private class StringComboBoxData extends ComboBoxDataModel<String> {
+      private static final long serialVersionUID = 1L;
+      public StringComboBoxData(String label, String t) {
+         super(label, t);
+      }
+      public String toString() {
+         return super.getData();
       }
    }
 }
