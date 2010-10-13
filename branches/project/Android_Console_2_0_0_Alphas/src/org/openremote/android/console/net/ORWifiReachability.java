@@ -41,39 +41,69 @@ public class ORWifiReachability
 
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * Log category name used by this class.
+   */
   private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
 
 
+  // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * Thread lock to guarantee only one singleton is ever created.
+   */
+  private final static Boolean LOCK = true;
+
+  /**
+   * Singleton instance of this class.
+   */
   private static ORWifiReachability reachability;
-  private Context androidAppContext;
+
+
+  /**
+   * Returns a singleton instance of this class.
+   *
+   * @param androidAppContext   a global android application context for accessing services
+   *
+   * @return a single, shared instance of this class
+   */
+  public static ORWifiReachability getInstance(Context androidAppContext)
+  {
+    synchronized (LOCK)
+    {
+      if (reachability == null)
+      {
+        reachability = new ORWifiReachability(androidAppContext);
+      }
+    }
+
+    return reachability;
+  }
+
+
+  // Private Instance Fields ----------------------------------------------------------------------
 
   private WifiManager wifiManager;
+
   private ConnectivityManager connectivityManager;
 
   private ORWifiConnectionStatus wifiConnectionStatus;
 
 
-  private ORWifiReachability(Context androidAppContextParam)
-  {
-    super();
+  // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * Private singleton constructor.
+   *
+   * @param androidAppContext   a global android application context for accessing services
+   */
+  private ORWifiReachability(Context androidAppContext)
+  {
     wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
-    androidAppContext = androidAppContextParam;
     wifiManager = (WifiManager)androidAppContext.getSystemService(Context.WIFI_SERVICE);
     connectivityManager = (ConnectivityManager)androidAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
-  public static ORWifiReachability getInstance(Context androidAppContext)
-  {
-    if (reachability == null)
-    {
-      reachability = new ORWifiReachability(androidAppContext);
-    }
-
-    return reachability;
-  }
-	
   /**
    * Check whether network connectivity is possible.
    */
