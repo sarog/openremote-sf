@@ -54,7 +54,7 @@ public class ORWifiReachability
     wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
     androidAppContext = androidAppContextParam;
     wifiManager = (WifiManager)androidAppContext.getSystemService(Context.WIFI_SERVICE);
-    connectivityManager = (ConnectivityManager androidAppContext.getSystemService(Context.CONNECTIVITY_SERVICE); 
+    connectivityManager = (ConnectivityManager)androidAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   public static ORWifiReachability getInstance(Context androidAppContext)
@@ -77,20 +77,30 @@ public class ORWifiReachability
     return !ORWifiConnectionStatus.UNREACHABLE.equals(this.wifiConnectionStatus);
   }
 
-  /**
-   * Ensure that a network route exists to deliver traffic to the specified host via the specified network interface.
-   *
-   * @param ip The format must follow "xxx.xxx.xxx.xxx", eg: 192.168.1.11
-   */
-	public boolean checkIpString(String ip)
-  {
-//	   if (ip != null)
+
+// Commented out the following checkIPString method -- while it worked fine on
+// some devices (e.g. Google G1 with Android 1.5) it failed on others (e.g.
+// Samsung Galaxy on Android 2.1-update1) even though the configured IP address
+// can be routed (despite requestRouteToHost returning false). So relaxing the
+// requirements and blindly trusting that we can route the packets.
+//                                                                    - [JPL]
+//
+//
+//  /**
+//   * Ensure that a network route exists to deliver traffic to the specified host via the specified
+//   * network interface.
+//   *
+//   * @param ip The format must follow "xxx.xxx.xxx.xxx", eg: 192.168.1.11
+//   */
+//  public boolean checkIpString(String ip)
+//  {
+//     if (ip != null)
 //     {
-//	      return connectivityManager.requestRouteToHost(ConnectivityManager.TYPE_WIFI, (int) IpUitl.ipStringToLong(ip));
-//	   }
-//	   return false;
-    return true;
-  }
+//        return connectivityManager.requestRouteToHost(ConnectivityManager.TYPE_WIFI, (int) IpUitl.ipStringToLong(ip));
+//     }
+//     return false;
+//    return true;
+//  }
 
   private void localWifiConnectionStatus()
   {
