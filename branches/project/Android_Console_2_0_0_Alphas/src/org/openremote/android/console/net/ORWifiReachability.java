@@ -21,13 +21,13 @@
 
 package org.openremote.android.console.net;
 
-import org.openremote.android.console.util.IpUitl;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+import org.openremote.android.console.Constants;
 
 /**
  * Utilities for WiFi accessibility.
@@ -39,6 +39,12 @@ import android.util.Log;
 public class ORWifiReachability
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
+
+
+
   private static ORWifiReachability reachability;
   private Context androidAppContext;
 
@@ -46,6 +52,7 @@ public class ORWifiReachability
   private ConnectivityManager connectivityManager;
 
   private ORWifiConnectionStatus wifiConnectionStatus;
+
 
   private ORWifiReachability(Context androidAppContextParam)
   {
@@ -107,7 +114,9 @@ public class ORWifiReachability
     if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
     {
       this.wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
-      Log.i("INFO", "Wifi in handset wasn't enabled or wifi network didn't detect.");
+
+      Log.i(LOG_CATEGORY, "Wifi in handset wasn't enabled or wifi network didn't detect.");
+
       return;
     }
 
@@ -115,7 +124,8 @@ public class ORWifiReachability
 
     if (!wifiNetworkInfo.isAvailable()) // Indicates whether network connectivity is possible.
     {
-      Log.i("INFO", "Wifi network detected but wasn't available.");
+      Log.i(LOG_CATEGORY, "Wifi network detected but wasn't available.");
+
       this.wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
     }
 
