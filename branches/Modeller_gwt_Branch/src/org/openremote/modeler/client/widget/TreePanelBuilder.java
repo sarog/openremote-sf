@@ -611,10 +611,10 @@ public class TreePanelBuilder {
    public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel) {
 
       TreeFolderBean privateTemplatesBean = new TreeFolderBean();
-      privateTemplatesBean.setDisplayName("Private templates");
+      privateTemplatesBean.setDisplayName("My private templates");
 
       TreeFolderBean publicTemplatesBean = new TreeFolderBean();
-      publicTemplatesBean.setDisplayName("Public templates");
+      publicTemplatesBean.setDisplayName("My public templates");
 
       RpcProxy<List<BeanModel>> loadTemplateRPCProxy = new RpcProxy<List<BeanModel>>() {
 
