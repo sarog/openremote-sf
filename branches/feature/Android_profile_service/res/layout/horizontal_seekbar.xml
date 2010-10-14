@@ -14,7 +14,7 @@
 	        android:layout_alignParentLeft="true"
 	        android:layout_centerVertical="true"/>
 	
-		<SeekBar
+		<org.openremote.android.console.view.seekbar.ORSeekBar
 			android:id="@+id/horizontal_seekbar"
 			android:max="100"
 			android:progressDrawable="@drawable/progress_horizontal"
