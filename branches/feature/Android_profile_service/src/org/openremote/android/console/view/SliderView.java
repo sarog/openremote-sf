@@ -31,19 +31,21 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 import org.openremote.android.console.util.NumberFormat;
-import org.openremote.android.console.view.seekbar.vertical.VerticalSeekBar;
+import org.openremote.android.console.view.seekbar.ORSeekBar;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TableRow;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 /**
  * This class is responsible for rendering the slider in screen with the slider data.
@@ -51,12 +53,15 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
  * @author handy 2010-05-12
  *
  */
-public class SliderView extends SensoryControlView implements OnSeekBarChangeListener, VerticalSeekBar.OnSeekBarChangeListener {
+public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBarChangeListener {
    private static final int SEEK_BAR_PROGRESS_INIT_VALUE = 0;
    private static final int SEEK_BAR_PROGRESS_MAX = 100;
    
    private static final int SEEK_BAR_MIN_WIDTH = 29;
    private static final int SEEK_BAR_MIN_HEIGHT = 29;
+   
+   private static final int DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT = 26;
+   private static final int DEFAULT_VERTICAL_SEEK_BAR_WIDTH = 26;
    
    private static final int SEEK_BAR_MIN_IMAGE_WIDTH = 20;
    private static final int SEEK_BAR_MIN_IMAGE_HEIGHT = 20;
@@ -65,8 +70,8 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
    
    private Context context;
    private Slider slider;
-   private SeekBar horizontalSeekBar;
-   private VerticalSeekBar verticalSeekBar;
+   private ORSeekBar horizontalSeekBar;
+   private ORSeekBar verticalSeekBar;
    private int slideToBusinessValue = 0;
 
    protected SliderView(Context context, Slider slider) {
@@ -101,7 +106,57 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
             (ViewGroup) findViewById(R.id.vertical_seekbar_root_layout));
       
       // Get the seekbar instance from rootView(TableLayout).
-      verticalSeekBar = (VerticalSeekBar) seekBarRootView.findViewById(R.id.vertical_seekbar);
+      verticalSeekBar = (ORSeekBar) seekBarRootView.findViewById(R.id.vertical_seekbar);
+      
+      //Set custom track image, include minTrack and maxTrack.
+      Drawable maxTrackDrawable = null;
+      Drawable minTrackDrawable = null;
+      if (slider.getMaxTrackImage() != null) {
+         maxTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMaxTrackImage().getSrc());
+      }
+      if (slider.getMinTrackImage() != null) {
+         minTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMinTrackImage().getSrc());
+      }
+      if (maxTrackDrawable != null || minTrackDrawable != null) {
+         if (maxTrackDrawable == null) {
+            maxTrackDrawable = context.getResources().getDrawable(R.drawable.vertical_seekbar_background);
+         }
+         if (minTrackDrawable == null) {
+            minTrackDrawable = context.getResources().getDrawable(R.drawable.vertical_seekbar_progress);
+         }
+         int maxTrackWidth = maxTrackDrawable.getIntrinsicWidth();
+         int maxTrackHeight = maxTrackDrawable.getIntrinsicHeight();
+         if (maxTrackWidth > DEFAULT_VERTICAL_SEEK_BAR_WIDTH && maxTrackHeight > slider.getFrameHeight()) {
+            BitmapDrawable bd = (BitmapDrawable)maxTrackDrawable;
+            bd.setBounds(0, 0, DEFAULT_VERTICAL_SEEK_BAR_WIDTH, slider.getFrameHeight());
+            bd.setGravity(Gravity.TOP);
+         }
+         
+         int minTrackWidth = minTrackDrawable.getIntrinsicWidth();
+         int minTrackHeight = minTrackDrawable.getIntrinsicHeight();
+         if (minTrackWidth > DEFAULT_VERTICAL_SEEK_BAR_WIDTH && minTrackHeight > slider.getFrameHeight()) {
+            BitmapDrawable bd = (BitmapDrawable)minTrackDrawable;
+            bd.setBounds(0, 0, DEFAULT_VERTICAL_SEEK_BAR_WIDTH, slider.getFrameHeight());
+            bd.setGravity(Gravity.BOTTOM);
+         }
+         
+         Drawable[] lda = {
+               maxTrackDrawable,
+               new ClipDrawable(minTrackDrawable, 
+                     Gravity.BOTTOM, 
+                     ClipDrawable.VERTICAL)
+         };
+         LayerDrawable ld = new LayerDrawable(lda);
+         ld.setId(0, android.R.id.background);
+         ld.setId(1, android.R.id.progress);
+         if (ld.getIntrinsicWidth() < DEFAULT_VERTICAL_SEEK_BAR_WIDTH) {
+            verticalSeekBar.setMaxWidth(ld.getIntrinsicWidth());
+         }
+         verticalSeekBar.setProgressDrawable(ld);
+      }
+      
       verticalSeekBar.setMax(SEEK_BAR_PROGRESS_MAX);
       verticalSeekBar.setProgress(getProgressOfBusinessValue(SEEK_BAR_PROGRESS_INIT_VALUE));
       if (slider.isPassive()) {
@@ -163,7 +218,57 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
       ViewGroup seekBarRootView = (ViewGroup) inflater.inflate(R.layout.horizontal_seekbar,
             (ViewGroup) findViewById(R.id.horizontal_seekbar_root_layout));
       
-      horizontalSeekBar = (SeekBar) seekBarRootView.findViewById(R.id.horizontal_seekbar);
+      horizontalSeekBar = (ORSeekBar) seekBarRootView.findViewById(R.id.horizontal_seekbar);
+      
+      //Set custom track image, include minTrack and maxTrack.
+      Drawable maxTrackDrawable = null;
+      Drawable minTrackDrawable = null;
+      if (slider.getMaxTrackImage() != null) {
+         maxTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMaxTrackImage().getSrc());
+      }
+      if (slider.getMinTrackImage() != null) {
+         minTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + slider.getMinTrackImage().getSrc());
+      }
+      if (maxTrackDrawable != null || minTrackDrawable != null) {
+         if (maxTrackDrawable == null) {
+            maxTrackDrawable = context.getResources().getDrawable(R.drawable.horizontal_seekbar_background);
+         }
+         if (minTrackDrawable == null) {
+            minTrackDrawable = context.getResources().getDrawable(R.drawable.horizontal_seekbar_progress);
+         }
+         int maxTrackWidth = maxTrackDrawable.getIntrinsicWidth();
+         int maxTrackHeight = maxTrackDrawable.getIntrinsicHeight();
+         if (maxTrackHeight > DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT && maxTrackWidth > slider.getFrameWidth()) {
+            BitmapDrawable bd = (BitmapDrawable)maxTrackDrawable;
+            bd.setBounds(0, 0, slider.getFrameWidth(), DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT);
+            bd.setGravity(Gravity.RIGHT);
+         }
+         
+         int minTrackWidth = minTrackDrawable.getIntrinsicWidth();
+         int minTrackHeight = minTrackDrawable.getIntrinsicHeight();
+         if (minTrackHeight > DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT && minTrackWidth > slider.getFrameWidth()) {
+            BitmapDrawable bd = (BitmapDrawable)minTrackDrawable;
+            bd.setBounds(0, 0, slider.getFrameWidth(), DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT);
+            bd.setGravity(Gravity.LEFT);
+         }
+         
+         Drawable[] lda = {
+               maxTrackDrawable,
+               new ClipDrawable(minTrackDrawable, 
+                     Gravity.LEFT, 
+                     ClipDrawable.HORIZONTAL)
+         };
+         LayerDrawable ld = new LayerDrawable(lda);
+         ld.setId(0, android.R.id.background);
+         ld.setId(1, android.R.id.progress);
+         if (ld.getIntrinsicHeight() < DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT) {
+            horizontalSeekBar.setMaxHeight(ld.getIntrinsicHeight());
+         }
+         horizontalSeekBar.setProgressDrawable(ld);
+      }
+      
       horizontalSeekBar.setMax(SEEK_BAR_PROGRESS_MAX);
       horizontalSeekBar.setProgress(getProgressOfBusinessValue(SEEK_BAR_PROGRESS_INIT_VALUE));
       if (slider.isPassive()) {
@@ -255,34 +360,18 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
       }
   };
    
-   // The following three overided methods are for SeekBar.
    @Override
-   public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+   public void onProgressChanged(ORSeekBar seekBar, int progress, boolean fromUser) {
       slideToBusinessValue = (int)(((float)progress/SEEK_BAR_PROGRESS_MAX) * (slider.getMaxValue() - slider.getMinValue()) + slider.getMinValue());
    }
 
    @Override
-   public void onStartTrackingTouch(SeekBar seekBar) {
+   public void onStartTrackingTouch(ORSeekBar seekBar) {
    }
 
    @Override
-   public void onStopTrackingTouch(SeekBar seekBar) {
-      Log.i("OpenRemote-SLIDER", "Horizontally slide to business value " + slideToBusinessValue);
-      sendCommandRequest(String.valueOf(slideToBusinessValue));
-   }
-
-   @Override
-   public void onProgressChanged(VerticalSeekBar seekBar, int progress, boolean fromUser) {
-      slideToBusinessValue = (int)(((float)progress/SEEK_BAR_PROGRESS_MAX) * (slider.getMaxValue() - slider.getMinValue()) + slider.getMinValue());
-   }
-
-   @Override
-   public void onStartTrackingTouch(VerticalSeekBar seekBar) {
-   }
-
-   @Override
-   public void onStopTrackingTouch(VerticalSeekBar seekBar) {
-      Log.i("OpenRemote-VSLIDER", "Horizontally slide to business value " + slideToBusinessValue);
+   public void onStopTrackingTouch(ORSeekBar seekBar) {
+      Log.i("OpenRemote-SLIDER", "Slide to business value " + slideToBusinessValue);
       sendCommandRequest(String.valueOf(slideToBusinessValue));
    }
 }
