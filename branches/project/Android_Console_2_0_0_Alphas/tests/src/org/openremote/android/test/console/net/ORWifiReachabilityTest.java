@@ -20,16 +20,10 @@
  */
 package org.openremote.android.test.console.net;
 
-import junit.framework.TestCase;
-import org.openremote.android.console.net.ORWifiReachability;
-import android.test.mock.MockContext;
-import android.test.mock.MockApplication;
-import android.test.ApplicationTestCase;
-import android.test.AndroidTestCase;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.app.Application;
 import android.net.wifi.WifiManager;
+import android.test.AndroidTestCase;
+import org.openremote.android.console.net.ORWifiReachability;
 
 /**
  * Unit tests for {@link org.openremote.android.console.net.ORWifiReachability} class.
