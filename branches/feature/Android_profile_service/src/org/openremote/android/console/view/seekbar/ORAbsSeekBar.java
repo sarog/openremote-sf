@@ -191,7 +191,11 @@ public class ORAbsSeekBar extends ORProgressBar{
            if (thumbWidth > trackWidth) {
               int gapForCenteringTrack = (thumbWidth - trackWidth) / 2;
               if (thumb != null) {
-                 setThumbPos(h, thumb, scale, gapForCenteringTrack * -1);
+                 if (thumbWidth < w) {
+                    setThumbPos(h, thumb, scale, (w - thumbWidth) / 2);
+                 } else {
+                    setThumbPos(h, thumb, scale, gapForCenteringTrack * -1);
+                 }
               }
               if (d != null) {
                  // Canvas will be translated by the padding, so 0,0 is where we start drawing

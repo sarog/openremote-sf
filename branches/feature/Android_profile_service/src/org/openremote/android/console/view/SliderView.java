@@ -63,6 +63,8 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
    private static final int DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT = 26;
    private static final int DEFAULT_VERTICAL_SEEK_BAR_WIDTH = 26;
    
+   private static final int SEEK_BAR_MAX_SIZE = 9;
+   
    private static final int SEEK_BAR_MIN_IMAGE_WIDTH = 20;
    private static final int SEEK_BAR_MIN_IMAGE_HEIGHT = 20;
    private static final int SEEK_BAR_MAX_IMAGE_WIDTH = 20;
@@ -111,6 +113,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
       //Set custom track image, include minTrack and maxTrack.
       Drawable maxTrackDrawable = null;
       Drawable minTrackDrawable = null;
+      boolean clipImage = false;
       if (slider.getMaxTrackImage() != null) {
          maxTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
                + slider.getMaxTrackImage().getSrc());
@@ -132,6 +135,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
             BitmapDrawable bd = (BitmapDrawable)maxTrackDrawable;
             bd.setBounds(0, 0, DEFAULT_VERTICAL_SEEK_BAR_WIDTH, slider.getFrameHeight());
             bd.setGravity(Gravity.TOP);
+            clipImage = true;
          }
          
          int minTrackWidth = minTrackDrawable.getIntrinsicWidth();
@@ -140,6 +144,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
             BitmapDrawable bd = (BitmapDrawable)minTrackDrawable;
             bd.setBounds(0, 0, DEFAULT_VERTICAL_SEEK_BAR_WIDTH, slider.getFrameHeight());
             bd.setGravity(Gravity.BOTTOM);
+            clipImage = true;
          }
          
          Drawable[] lda = {
@@ -155,6 +160,9 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
             verticalSeekBar.setMaxWidth(ld.getIntrinsicWidth());
          }
          verticalSeekBar.setProgressDrawable(ld);
+      }
+      if (!clipImage) {
+         verticalSeekBar.setMaxWidth(SEEK_BAR_MAX_SIZE);
       }
       
       verticalSeekBar.setMax(SEEK_BAR_PROGRESS_MAX);
@@ -219,7 +227,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
             (ViewGroup) findViewById(R.id.horizontal_seekbar_root_layout));
       
       horizontalSeekBar = (ORSeekBar) seekBarRootView.findViewById(R.id.horizontal_seekbar);
-      
+      boolean clipImage = false;
       //Set custom track image, include minTrack and maxTrack.
       Drawable maxTrackDrawable = null;
       Drawable minTrackDrawable = null;
@@ -244,6 +252,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
             BitmapDrawable bd = (BitmapDrawable)maxTrackDrawable;
             bd.setBounds(0, 0, slider.getFrameWidth(), DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT);
             bd.setGravity(Gravity.RIGHT);
+            clipImage = true;
          }
          
          int minTrackWidth = minTrackDrawable.getIntrinsicWidth();
@@ -252,6 +261,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
             BitmapDrawable bd = (BitmapDrawable)minTrackDrawable;
             bd.setBounds(0, 0, slider.getFrameWidth(), DEFAULT_HORIZONTAL_SEEK_BAR_HEIGHT);
             bd.setGravity(Gravity.LEFT);
+            clipImage = true;
          }
          
          Drawable[] lda = {
@@ -268,7 +278,9 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
          }
          horizontalSeekBar.setProgressDrawable(ld);
       }
-      
+      if (!clipImage) {
+         horizontalSeekBar.setMaxHeight(SEEK_BAR_MAX_SIZE);
+      }
       horizontalSeekBar.setMax(SEEK_BAR_PROGRESS_MAX);
       horizontalSeekBar.setProgress(getProgressOfBusinessValue(SEEK_BAR_PROGRESS_INIT_VALUE));
       if (slider.isPassive()) {
