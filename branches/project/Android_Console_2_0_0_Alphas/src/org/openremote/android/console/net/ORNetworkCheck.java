@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.openremote.android.console.net;
 
 import org.apache.http.HttpResponse;
@@ -32,100 +31,109 @@ import android.util.Log;
 
 
 /**
- * This is responsible for network check.
+ * TODO
  * 
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author handy 2010-04-28
  */
-public class ORNetworkCheck {
-	
-	/**
-	 * Check all related to the specified controller server url.
-	 */
-	public static HttpResponse checkAllWithControllerServerURL(Context context, String controllerServerURL) {
-		AppSettingsModel.setCurrentServer(context, controllerServerURL);
-		return checkPanelXMlOfCurrentPanelIdentity(context);
-	}
-	
-	/**
-	 * Check if the RESTful url {controllerServerURL}/rest/panel/{panel identity} is available.
-	 */
-	private static HttpResponse checkPanelXMlOfCurrentPanelIdentity(Context context)
+public class ORNetworkCheck
+{
+
+  /**
+   * Check all related to the specified controller server url.
+   */
+  public static HttpResponse checkAllWithControllerServerURL(Context context, String controllerServerURL) {
+    AppSettingsModel.setCurrentServer(context, controllerServerURL);
+    return checkPanelXMlOfCurrentPanelIdentity(context);
+  }
+
+  /**
+   * Check if the RESTful url {controllerServerURL}/rest/panel/{panel identity} is available.
+   */
+  private static HttpResponse checkPanelXMlOfCurrentPanelIdentity(Context context)
   {
 
     HttpResponse response = checkControllerAvailable(context);
 
     Log.i("OpenRemote/checkPanelXMLofCurrentPanelIdentity", "HTTP Response: " + response);
 
-		if(response !=null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-			String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
-			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
-				return null;
+    if(response !=null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
+    {
+      String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
+
+      if (currentControllerServerURL == null || "".equals(currentControllerServerURL))
+      {
+        return null;
 			}
-			String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
-			if (currentPanelIdentity == null || "".equals(currentPanelIdentity)) {
-				return null;
-			}
-			String restfulPanelURL = currentControllerServerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
+
+      String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
+
+      if (currentPanelIdentity == null || "".equals(currentPanelIdentity))
+      {
+        return null;
+      }
+
+      String restfulPanelURL = currentControllerServerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
 
       Log.i("OpenRemote/HTTP", "Getting panel URL " + restfulPanelURL);
 
-			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
-		}
-		return response;
-	}
+      return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
+    }
 
-	/**
-	 * Check if the ControllerServerURL is available.
-	 */
-	private static HttpResponse checkControllerAvailable(Context context)
+    return response;
+  }
+
+  /**
+   * Check if the ControllerServerURL is available.
+   */
+  private static HttpResponse checkControllerAvailable(Context context)
   {
-		if (checkControllerIPAddress(context))
+    if (checkControllerIPAddress(context))
     {
-			String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
+      String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
 
       Log.i("OpenRemote/checkControllerAvailable", "currentControllerServerURL: " + currentControllerServerURL);
 
-			if (currentControllerServerURL == null || "".equals(currentControllerServerURL))
+      if (currentControllerServerURL == null || "".equals(currentControllerServerURL))
       {
-				return null;
-			}
+        return null;
+      }
 
-			return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, currentControllerServerURL, false);
-		}
+      return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, currentControllerServerURL, false);
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Check if the IP of controller is reachable.
-	 */
-	private static boolean checkControllerIPAddress(Context context)
+  /**
+   * Check if the IP of controller is reachable.
+   */
+  private static boolean checkControllerIPAddress(Context context)
   {
-	  if (!IPAutoDiscoveryClient.isNetworkTypeWIFI)
+    if (!IPAutoDiscoveryClient.isNetworkTypeWIFI)
     {
-	      return true;
-	  }
+        return true;
+    }
 
-		if (ORWifiReachability.getInstance(context).canReachWifiNetwork())
+    if (ORWifiReachability.getInstance(context).canReachWifiNetwork())
     {
-			String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
+      String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
 
       Log.i("OpenRemote/checkControllerIPAddress", "currentControllerServerURL: " + currentControllerServerURL);
 
-			if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
-				return false;
-			}
+      if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
+        return false;
+      }
 
-			String currentControllerServerIp = IpUitl.splitIpFromURL(currentControllerServerURL);
+      String currentControllerServerIp = IpUitl.splitIpFromURL(currentControllerServerURL);
 
       Log.i("OpenRemote/checkControllerIPAddress", "currentControllerServerIP: " + currentControllerServerIp);
 
       return true;
-			//return ORWifiReachability.getInstance(context).checkIpString(currentControllerServerIp);
-		}
+      //return ORWifiReachability.getInstance(context).checkIpString(currentControllerServerIp);
+    }
 
-		return false;
-	}
+    return false;
+  }
 
 }
