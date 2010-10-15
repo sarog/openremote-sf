@@ -23,7 +23,7 @@
 			 android:id="@+id/vertical_seekbar"
 			 app:vertical="true"
 		    android:progressDrawable="@drawable/progress_vertical"
-		    android:thumb="@drawable/seek_thumb"
+		    android:thumb="@drawable/slider_thumb"
 		    android:layout_height="fill_parent" 
 		    android:layout_width="26dip"/>
 	</TableRow>
