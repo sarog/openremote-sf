@@ -87,7 +87,6 @@ public class ORWifiReachability
 
   private ConnectivityManager connectivityManager;
 
-  private ORWifiConnectionStatus wifiConnectionStatus;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -99,19 +98,22 @@ public class ORWifiReachability
    */
   private ORWifiReachability(Context androidAppContext)
   {
-    wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
+    // TODO : this just initializes references to the two services -- the whole singleton construct isn't really needed [JPL]
+
     wifiManager = (WifiManager)androidAppContext.getSystemService(Context.WIFI_SERVICE);
     connectivityManager = (ConnectivityManager)androidAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
   }
 
   /**
    * Check whether network connectivity is possible.
+   *
+   * @return
    */
   public boolean canReachWifiNetwork()
   {
-    localWifiConnectionStatus();
+    ORWifiConnectionStatus status = localWifiConnectionStatus();
 
-    return !ORWifiConnectionStatus.UNREACHABLE.equals(this.wifiConnectionStatus);
+    return !ORWifiConnectionStatus.UNREACHABLE.equals(status);
   }
 
 
@@ -139,29 +141,32 @@ public class ORWifiReachability
 //    return true;
 //  }
 
-  private void localWifiConnectionStatus()
+  /**
+   * Detects the current WiFi status.
+   *
+   * @return
+   */
+  private ORWifiConnectionStatus localWifiConnectionStatus()
   {
     if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
     {
-      this.wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
+      Log.d(LOG_CATEGORY, "WiFi not enabled or WiFi network not detected.");
 
-      Log.i(LOG_CATEGORY, "Wifi in handset wasn't enabled or wifi network didn't detect.");
-
-      return;
+      return ORWifiConnectionStatus.UNREACHABLE;
     }
 
     NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-    if (!wifiNetworkInfo.isAvailable()) // Indicates whether network connectivity is possible.
+    if (!wifiNetworkInfo.isAvailable())
     {
-      Log.i(LOG_CATEGORY, "Wifi network detected but wasn't available.");
+      Log.d(LOG_CATEGORY, "Wifi network detected but wasn't available.");
 
-      this.wifiConnectionStatus = ORWifiConnectionStatus.UNREACHABLE;
+      return ORWifiConnectionStatus.UNREACHABLE;
     }
 
     else
     {
-      this.wifiConnectionStatus = ORWifiConnectionStatus.REACHABLE_VIA_WIFINETWORK;
+      return ORWifiConnectionStatus.REACHABLE_VIA_WIFINETWORK;
     }
   }
 
