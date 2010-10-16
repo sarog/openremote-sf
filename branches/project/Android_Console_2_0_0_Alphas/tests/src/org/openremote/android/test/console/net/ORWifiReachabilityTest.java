@@ -120,11 +120,11 @@ public class ORWifiReachabilityTest extends AndroidTestCase
   private String wifiRequired()
   {
     return
-        "\n******************************\n\n" +
+        "\n\n******************************\n\n" +
         " This test assumes availability of WiFi network.\n" +
         " If you're running in the emulator, WiFi may not be available.\n" +
         " Run the full test suite on an Android device to include this test.\n\n" +
-        "******************************";         
+        "******************************\n";
   }
 
 }
