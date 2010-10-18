@@ -24,7 +24,7 @@ import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.HTTPUtil;
-import org.openremote.android.console.util.IpUitl;
+import org.openremote.android.console.util.IpUtil;
 
 import android.content.Context;
 import android.util.Log;
@@ -149,14 +149,14 @@ public class ORNetworkCheck
 
     String controllerURL = AppSettingsModel.getCurrentServer(context);
 
-    Log.d(LOG_CATEGORY, "controllerURL: " + controllerURL);
+    Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
 
     if (controllerURL == null || "".equals(controllerURL))
     {
       return false;
     }
 
-    String controllerIPAddress = IpUitl.splitIpFromURL(controllerURL);  // TODO : class name has a typo
+    String controllerIPAddress = IpUtil.splitIpFromURL(controllerURL);  // TODO : class name has a typo
 
     Log.d(LOG_CATEGORY, "ControllerIPAddress: " + controllerIPAddress);
 
@@ -167,6 +167,7 @@ public class ORNetworkCheck
    * Detects the current WiFi status.
    *
    * @param ctx     global Android application context
+   *
    * @return TODO
    */
   private static boolean canReachWifiNetwork(Context ctx)
@@ -177,7 +178,7 @@ public class ORNetworkCheck
 
     if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
     {
-      Log.d(LOG_CATEGORY, "WiFi not enabled or WiFi network not detected.");
+      Log.i(LOG_CATEGORY, "WiFi not enabled or WiFi network not detected.");
 
       return false;
     }
@@ -186,7 +187,7 @@ public class ORNetworkCheck
 
     if (!wifiNetworkInfo.isAvailable())
     {
-      Log.d(LOG_CATEGORY, "Wifi network detected but wasn't available.");
+      Log.i(LOG_CATEGORY, "Wifi network detected but wasn't available.");
 
       return false;
     }
@@ -195,8 +196,6 @@ public class ORNetworkCheck
     {
       return true;
     }
-
-
 
   }
 
