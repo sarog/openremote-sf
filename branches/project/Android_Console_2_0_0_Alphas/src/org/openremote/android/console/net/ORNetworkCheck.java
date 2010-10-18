@@ -28,6 +28,9 @@ import org.openremote.android.console.util.IpUitl;
 
 import android.content.Context;
 import android.util.Log;
+import android.net.wifi.WifiManager;
+import android.net.NetworkInfo;
+import android.net.ConnectivityManager;
 
 
 /**
@@ -40,17 +43,38 @@ public class ORNetworkCheck
 {
 
   /**
-   * Check all related to the specified controller server url.
+   * Log category name used by this class.
    */
-  public static HttpResponse checkAllWithControllerServerURL(Context context, String controllerServerURL) {
-    AppSettingsModel.setCurrentServer(context, controllerServerURL);
-    return checkPanelXMlOfCurrentPanelIdentity(context);
+  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
+
+
+  
+  /**
+   * Verifies the network access to the currently configured controller URL.
+   *
+   * @param context               global Android application context
+   * @param controllerURL         an URL to a controller instance
+   *
+   * @return TODO
+   *
+   * TODO : Use URL class instead of string
+   */
+  public static HttpResponse verifyControllerURL(Context context, String controllerURL)
+  {
+    // TODO : modifying the settings probably doesn't belong here, as it is an undocumented side-effect
+    AppSettingsModel.setCurrentServer(context, controllerURL);
+
+    return checkPanelXMLOfCurrentPanelIdentity(context);
   }
 
   /**
    * Check if the RESTful url {controllerServerURL}/rest/panel/{panel identity} is available.
+   *
+   * @param context   a global Android application context
+   *
+   * @return TODO
    */
-  private static HttpResponse checkPanelXMlOfCurrentPanelIdentity(Context context)
+  private static HttpResponse checkPanelXMLOfCurrentPanelIdentity(Context context)
   {
 
     HttpResponse response = checkControllerAvailable(context);
@@ -84,7 +108,11 @@ public class ORNetworkCheck
   }
 
   /**
-   * Check if the ControllerServerURL is available.
+   * Check if the Controller URL is available.
+   *
+   * @param context   a global Android application context
+   *
+   * @return TODO
    */
   private static HttpResponse checkControllerAvailable(Context context)
   {
@@ -107,33 +135,75 @@ public class ORNetworkCheck
 
   /**
    * Check if the IP of controller is reachable.
+   *
+   * @param context   global Android application context
+   *
+   * @return TODO
    */
   private static boolean checkControllerIPAddress(Context context)
   {
-    if (!IPAutoDiscoveryClient.isNetworkTypeWIFI)
+
+    if (!IPAutoDiscoveryClient.isNetworkTypeWIFI)     // TODO : questionable use of global static field
     {
         return true;
     }
 
-    if (ORWifiReachability.getInstance(context).canReachWifiNetwork())
+    if (!canReachWifiNetwork(context))
     {
-      String currentControllerServerURL = AppSettingsModel.getCurrentServer(context);
-
-      Log.i("OpenRemote/checkControllerIPAddress", "currentControllerServerURL: " + currentControllerServerURL);
-
-      if (currentControllerServerURL == null || "".equals(currentControllerServerURL)) {
-        return false;
-      }
-
-      String currentControllerServerIp = IpUitl.splitIpFromURL(currentControllerServerURL);
-
-      Log.i("OpenRemote/checkControllerIPAddress", "currentControllerServerIP: " + currentControllerServerIp);
-
-      return true;
-      //return ORWifiReachability.getInstance(context).checkIpString(currentControllerServerIp);
+      return false;
     }
 
-    return false;
+    String controllerURL = AppSettingsModel.getCurrentServer(context);
+
+    Log.d("OpenRemote/CheckControllerIPAddress", "controllerURL: " + controllerURL);
+
+    if (controllerURL == null || "".equals(controllerURL))
+    {
+      return false;
+    }
+
+    String controllerIPAddress = IpUitl.splitIpFromURL(controllerURL);  // TODO : class name has a typo
+
+    Log.d("OpenRemote/CheckControllerIPAddress", "currentControllerIP: " + controllerIPAddress);
+
+    return true;
+  }
+
+  /**
+   * Detects the current WiFi status.
+   *
+   * @param ctx     global Android application context
+   * @return TODO
+   */
+  private static boolean canReachWifiNetwork(Context ctx)
+  {
+
+    WifiManager wifiManager = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
+    ConnectivityManager connectivityManager = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+    if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
+    {
+      Log.d(LOG_CATEGORY, "WiFi not enabled or WiFi network not detected.");
+
+      return false;
+    }
+
+    NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+    if (!wifiNetworkInfo.isAvailable())
+    {
+      Log.d(LOG_CATEGORY, "Wifi network detected but wasn't available.");
+
+      return false;
+    }
+
+    else
+    {
+      return true;
+    }
+
+
+
   }
 
 }
