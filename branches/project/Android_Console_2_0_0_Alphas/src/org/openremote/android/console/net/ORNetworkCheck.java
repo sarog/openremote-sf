@@ -20,11 +20,12 @@
  */
 package org.openremote.android.console.net;
 
+import java.net.HttpURLConnection;
+
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.HTTPUtil;
-import org.openremote.android.console.util.IpUtil;
 
 import android.content.Context;
 import android.util.Log;
@@ -51,7 +52,7 @@ public class ORNetworkCheck
 
 
 
-  // Class Members --------------------------------------------------------------------------------
+  // Public Class Methods -------------------------------------------------------------------------
   
   /**
    * Verifies the network access to the currently configured controller URL by checking if
@@ -71,70 +72,81 @@ public class ORNetworkCheck
     AppSettingsModel.setCurrentServer(context, url);
 
 
-    HttpResponse response = checkControllerAvailable(context);
+    HttpResponse response = isControllerAvailable(context);
 
     Log.d(LOG_CATEGORY, "HTTP Response: " + response);
 
-    if(response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
+    if (response == null)
+      return null;
+
+    int status = response.getStatusLine().getStatusCode();
+
+    if (status != HttpURLConnection.HTTP_OK)
+      return response;
+
+
+    String controllerURL = AppSettingsModel.getSecuredServer(context);
+
+    if (controllerURL == null || "".equals(controllerURL))
     {
-      String controllerURL = AppSettingsModel.getSecuredServer(context);
-
-      if (controllerURL == null || "".equals(controllerURL))
-      {
-        return null;
-			}
-
-      String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
-
-      if (currentPanelIdentity == null || "".equals(currentPanelIdentity))
-      {
-        return null;
-      }
-
-      String restfulPanelURL = controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
-
-      Log.i(LOG_CATEGORY, "Getting panel URL " + restfulPanelURL);
-
-      return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
+      return null;
     }
 
-    return response;
+    String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
+
+    if (currentPanelIdentity == null || "".equals(currentPanelIdentity))
+    {
+      return null;
+    }
+
+    String restfulPanelURL = controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
+
+    Log.i(LOG_CATEGORY, "Getting panel URL " + restfulPanelURL);
+
+    return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
   }
+
+
+
+  // Private Class Methods ------------------------------------------------------------------------
+
 
   /**
    * Check if the Controller URL is available.
    *
    * @param context   a global Android application context
    *
-   * @return TODO
+   * @return  returns the HTTP response from the attempt to connect to the configured controller
+   *          or null, in case of failure (note that the HTTP response code may also include
+   *          an error code from connection attempt).
    */
-  private static HttpResponse checkControllerAvailable(Context context)
+  private static HttpResponse isControllerAvailable(Context context)
   {
-    if (checkControllerIPAddress(context))
+    if (!hasWifiAndControllerConfig(context))
+      return null;
+
+    String controllerURL = AppSettingsModel.getSecuredServer(context);
+
+    Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
+
+    if (controllerURL == null || "".equals(controllerURL))
     {
-      String controllerURL = AppSettingsModel.getSecuredServer(context);
-
-      Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
-
-      if (controllerURL == null || "".equals(controllerURL))
-      {
-        return null;
-      }
-
-      return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
+      return null;
     }
 
-    return null;
+    return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
   }
 
+
   /**
-   * Check if the IP of controller is reachable.
+   * Checks availability of WiFi netowrk and whether we have a controller URL configured.
    *
    * @param context   global Android application context
    *
-   * @return TODO
+   * @return  true if we can reach wifi and controller URL has been configured in app's settings,
+   *          false otherwise
    */
-  private static boolean checkControllerIPAddress(Context context)
+  private static boolean hasWifiAndControllerConfig(Context context)
   {
 
     if (!IPAutoDiscoveryClient.isNetworkTypeWIFI)     // TODO : questionable use of global static field
@@ -142,25 +154,29 @@ public class ORNetworkCheck
         return true;
     }
 
+    // Do we have a WiFi connection? If not, give up...
+
     if (!canReachWifiNetwork(context))
     {
+      // TODO : could ask user if they want to turn on WiFi at this point...
+
       return false;
     }
 
+    // Has controller URL been configured...?
+
     String controllerURL = AppSettingsModel.getCurrentServer(context);
 
-    Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
+    Log.d(LOG_CATEGORY, "controllerURL: " + controllerURL);
 
     if (controllerURL == null || "".equals(controllerURL))
     {
       return false;
     }
-
-    String controllerIPAddress = IpUtil.splitIpFromURL(controllerURL);  // TODO : class name has a typo
-
-    Log.d(LOG_CATEGORY, "ControllerIPAddress: " + controllerIPAddress);
-
-    return true;
+    else
+    {
+      return true;
+    }
   }
 
   /**
@@ -168,7 +184,7 @@ public class ORNetworkCheck
    *
    * @param ctx     global Android application context
    *
-   * @return TODO
+   * @return true if WiFi is available, false otherwise
    */
   private static boolean canReachWifiNetwork(Context ctx)
   {
@@ -196,7 +212,6 @@ public class ORNetworkCheck
     {
       return true;
     }
-
   }
 
 }
