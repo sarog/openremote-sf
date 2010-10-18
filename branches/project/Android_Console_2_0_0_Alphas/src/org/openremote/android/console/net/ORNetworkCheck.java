@@ -34,7 +34,7 @@ import android.net.ConnectivityManager;
 
 
 /**
- * TODO
+ * TODO: Checks access to OpenRemote controller.
  * 
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author handy 2010-04-28
@@ -42,46 +42,41 @@ import android.net.ConnectivityManager;
 public class ORNetworkCheck
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
   /**
    * Log category name used by this class.
    */
   private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
 
 
+
+  // Class Members --------------------------------------------------------------------------------
   
   /**
-   * Verifies the network access to the currently configured controller URL.
+   * Verifies the network access to the currently configured controller URL by checking if
+   * REST API {controllerServerURL}/rest/panel/{panel identity} is available.
+
    *
    * @param context               global Android application context
    * @param controllerURL         an URL to a controller instance
    *
-   * @return TODO
-   *
-   * TODO : Use URL class instead of string
+   * @return TODO: returns null or HttpResponse
    */
   public static HttpResponse verifyControllerURL(Context context, String controllerURL)
   {
+    // TODO : Use URL class instead of string in param
+
+
     // TODO : modifying the settings probably doesn't belong here, as it is an undocumented side-effect
     AppSettingsModel.setCurrentServer(context, controllerURL);
 
-    return checkPanelXMLOfCurrentPanelIdentity(context);
-  }
-
-  /**
-   * Check if the RESTful url {controllerServerURL}/rest/panel/{panel identity} is available.
-   *
-   * @param context   a global Android application context
-   *
-   * @return TODO
-   */
-  private static HttpResponse checkPanelXMLOfCurrentPanelIdentity(Context context)
-  {
 
     HttpResponse response = checkControllerAvailable(context);
 
-    Log.i("OpenRemote/checkPanelXMLofCurrentPanelIdentity", "HTTP Response: " + response);
+    Log.d("OpenRemote/checkPanelXMLofCurrentPanelIdentity", "HTTP Response: " + response);
 
-    if(response !=null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
+    if(response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
     {
       String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
 
