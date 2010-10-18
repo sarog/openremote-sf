@@ -21,11 +21,14 @@
 
 package org.openremote.android.test.net;
 
+import java.net.HttpURLConnection;
+
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.test.AndroidTestCase;
+import android.os.SystemClock;
+import android.test.ActivityInstrumentationTestCase2;
 import org.apache.http.HttpResponse;
-import org.openremote.android.console.Constants;
+import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.net.ORNetworkCheck;
 
 /**
@@ -35,35 +38,169 @@ import org.openremote.android.console.net.ORNetworkCheck;
  * @author handy 2010-04-28
  *
  */
-public class ORNetworkCheckTest extends AndroidTestCase
+public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSettingsActivity>
 {
 
-  public void testReachability()
+  public ORNetworkCheckTest()
   {
-    Context context = getContext();
+    super("org.openremote.android.console", AppSettingsActivity.class);
+  }
 
-    WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+  /**
+   * TODO
+   */
+  public void testVerifyControllerURL()
+  {
+    WifiManager wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
+
+    enableWifi();
 
     if (!wifi.isWifiEnabled())
-    {
       fail(wifiRequired());
-    }
 
 
-    HttpResponse response = ORNetworkCheck.checkAllWithControllerServerURL(
-        context, "http://controller.openremote.org/test/controller"
+    HttpResponse response = ORNetworkCheck.verifyControllerURL(
+        getInstrumentation().getTargetContext(),
+        "http://controller.openremote.org/test/controller"
     );
 
-    assertNotNull("Got null HTTP response.", response);
+    assertNotNull("Got null HTTP response, was expecting: " + HttpURLConnection.HTTP_OK, response);
 
     int status = response.getStatusLine().getStatusCode();
 
-    assertTrue("Was expecting HTTP_SUCCESS, got " + status,
-               status == Constants.HTTP_SUCCESS);
+    assertTrue("Was expecting HTTP_OK, got " + status, status == HttpURLConnection.HTTP_OK);
   }
 
 
+  /**
+   * TODO
+   */
+  public void testVerifyControllerWrongURL()
+  {
+    WifiManager wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
+
+    enableWifi();
+
+    if (!wifi.isWifiEnabled())
+      fail(wifiRequired());
+
+    HttpResponse response = ORNetworkCheck.verifyControllerURL(
+        getInstrumentation().getTargetContext(), "http://controller.openremote.org/nothing/here"
+    );
+
+    assertNotNull("Got null HTTP response, was expecting: " + HttpURLConnection.HTTP_NOT_FOUND,
+                  response);
+
+    int status = response.getStatusLine().getStatusCode();
+
+    assertTrue("Was expecting 404, got " + status,
+               status == HttpURLConnection.HTTP_NOT_FOUND);
+  }
+
+
+
+  /**
+   * TODO
+   */
+  public void testVerifyControllerEmptyURL()
+  {
+    WifiManager wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
+
+    enableWifi();
+
+    if (!wifi.isWifiEnabled())
+      fail(wifiRequired());
+
+
+    HttpResponse response = ORNetworkCheck.verifyControllerURL(
+        getInstrumentation().getTargetContext(), ""
+    );
+
+    assertNull("Was expecting null, got " + response, response);
+  }
+
+
+//
+// Commented the following test out due to despite turning off wifi, actual devices tend to
+// automatically switch to a backup connection over 3G and still reach target (goal was to
+// test behavior when URL cannot be reached). There was no obvious API in connectivity manager
+// to switch off 3G connections -- it may exist elsewhere.
+//                                                                                    [JPL]
+//  /**
+//   * TODO
+//   */
+//  public void testVerifyControllerNoWifi()
+//  {
+//
+//    WifiManager wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
+//
+//    disableWifi();
+//
+//    if (wifi.isWifiEnabled())
+//      fail(noWifiWanted());
+//
+//
+//    HttpResponse response = ORNetworkCheck.verifyControllerURL(
+//        getInstrumentation().getTargetContext(), "http://controller.openremote.org/test/controller"
+//    );
+//
+//    int status = response.getStatusLine().getStatusCode();
+//
+//    assertNull("Was expecting null, got " + status, response);
+//
+//  }
+
+
+
+
+
   // Test helper methods --------------------------------------------------------------------------
+
+
+  private void enableWifi() 
+  {
+    enableWifi(true);
+  }
+
+  private void disableWifi()
+  {
+    enableWifi(false);
+  }
+
+  private void enableWifi(boolean enable)
+  {
+
+    WifiManager wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
+
+    if (enable && wifi.isWifiEnabled())
+      return;
+
+    if (!enable && !wifi.isWifiEnabled())
+      return;
+
+    if (enable && !wifi.isWifiEnabled())
+    {
+      if (!wifi.setWifiEnabled(true))
+        fail("Cannot enable WiFi");
+    }
+    else
+    {
+      wifi.disconnect();
+      wifi.setWifiEnabled(false);
+    }
+
+    // wait for it...
+
+    for (int iterations = 0; iterations < 10; iterations++)
+    {
+      SystemClock.sleep(1000);
+
+      if (enable && wifi.isWifiEnabled())
+        break;
+      if (!enable && !wifi.isWifiEnabled())
+        break;
+    }
+  }
 
 
   private String wifiRequired()
@@ -71,8 +208,19 @@ public class ORNetworkCheckTest extends AndroidTestCase
     return
         "\n\n******************************\n\n" +
         " This test assumes availability of WiFi network.\n" +
-        " If you're running in the emulator, WiFi may not be available.\n" +
-        " Run the full test suite on an Android device to include this test.\n\n" +
+        " If you're running tests in the emulator, WiFi may not be available.\n" +
+        " If you're running tests on a device, you may need to turn WiFi on.\n\n" +
         "******************************\n";
   }
+
+  private String noWifiWanted()
+  {
+    return
+        "\n\n******************************\n\n" +
+        " Testing for behavior when WiFi is not enabled.\n" +
+        " For some reason, could not disable the WiFi connection.\n\n" +
+        "******************************\n";
+  }
+
+
 }
