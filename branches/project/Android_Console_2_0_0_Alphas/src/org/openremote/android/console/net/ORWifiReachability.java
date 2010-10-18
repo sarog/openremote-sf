@@ -39,83 +39,83 @@ import org.openremote.android.console.Constants;
 public class ORWifiReachability
 {
 
-  // Constants ------------------------------------------------------------------------------------
-
-  /**
-   * Log category name used by this class.
-   */
-  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
-
-
-  // Class Members --------------------------------------------------------------------------------
-
-  /**
-   * Thread lock to guarantee only one singleton is ever created.
-   */
-  private final static Boolean LOCK = true;
-
-  /**
-   * Singleton instance of this class.
-   */
-  private static ORWifiReachability reachability;
-
-
-  /**
-   * Returns a singleton instance of this class.
-   *
-   * @param androidAppContext   a global android application context for accessing services
-   *
-   * @return a single, shared instance of this class
-   */
-  public static ORWifiReachability getInstance(Context androidAppContext)
-  {
-    synchronized (LOCK)
-    {
-      if (reachability == null)
-      {
-        reachability = new ORWifiReachability(androidAppContext);
-      }
-    }
-
-    return reachability;
-  }
-
-
-  // Private Instance Fields ----------------------------------------------------------------------
-
-  private WifiManager wifiManager;
-
-  private ConnectivityManager connectivityManager;
-
-
-
-  // Constructors ---------------------------------------------------------------------------------
-
-  /**
-   * Private singleton constructor.
-   *
-   * @param androidAppContext   a global android application context for accessing services
-   */
-  private ORWifiReachability(Context androidAppContext)
-  {
-    // TODO : this just initializes references to the two services -- the whole singleton construct isn't really needed [JPL]
-
-    wifiManager = (WifiManager)androidAppContext.getSystemService(Context.WIFI_SERVICE);
-    connectivityManager = (ConnectivityManager)androidAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-  }
-
-  /**
-   * Check whether network connectivity is possible.
-   *
-   * @return
-   */
-  public boolean canReachWifiNetwork()
-  {
-    ORWifiConnectionStatus status = localWifiConnectionStatus();
-
-    return !ORWifiConnectionStatus.UNREACHABLE.equals(status);
-  }
-
+//  // Constants ------------------------------------------------------------------------------------
+//
+//  /**
+//   * Log category name used by this class.
+//   */
+////  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
+//
+//
+//  // Class Members --------------------------------------------------------------------------------
+//
+//  /**
+//   * Thread lock to guarantee only one singleton is ever created.
+//   */
+//  private final static Boolean LOCK = true;
+//
+//  /**
+//   * Singleton instance of this class.
+//   */
+//  private static ORWifiReachability reachability;
+//
+//
+//  /**
+//   * Returns a singleton instance of this class.
+//   *
+//   * @param androidAppContext   a global android application context for accessing services
+//   *
+//   * @return a single, shared instance of this class
+//   */
+//  public static ORWifiReachability getInstance(Context androidAppContext)
+//  {
+//    synchronized (LOCK)
+//    {
+//      if (reachability == null)
+//      {
+//        reachability = new ORWifiReachability(androidAppContext);
+//      }
+//    }
+//
+//    return reachability;
+//  }
+//
+//
+//  // Private Instance Fields ----------------------------------------------------------------------
+//
+//  private WifiManager wifiManager;
+//
+//  private ConnectivityManager connectivityManager;
+//
+//
+//
+//  // Constructors ---------------------------------------------------------------------------------
+//
+//  /**
+//   * Private singleton constructor.
+//   *
+//   * @param androidAppContext   a global android application context for accessing services
+//   */
+//  private ORWifiReachability(Context androidAppContext)
+//  {
+//    // TODO : this just initializes references to the two services -- the whole singleton construct isn't really needed [JPL]
+//
+//    wifiManager = (WifiManager)androidAppContext.getSystemService(Context.WIFI_SERVICE);
+//    connectivityManager = (ConnectivityManager)androidAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+//  }
+//
+//  /**
+//   * Check whether network connectivity is possible.
+//   *
+//   * @return
+//   */
+//  public boolean canReachWifiNetwork()
+//  {
+//    ORWifiConnectionStatus status = localWifiConnectionStatus();
+//
+//    return !ORWifiConnectionStatus.UNREACHABLE.equals(status);
+//  }
+//
 
 // Commented out the following checkIPString method -- while it worked fine on
 // some devices (e.g. Google G1 with Android 1.5) it failed on others (e.g.
@@ -140,34 +140,34 @@ public class ORWifiReachability
 //     return false;
 //    return true;
 //  }
-
-  /**
-   * Detects the current WiFi status.
-   *
-   * @return
-   */
-  private ORWifiConnectionStatus localWifiConnectionStatus()
-  {
-    if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
-    {
-      Log.d(LOG_CATEGORY, "WiFi not enabled or WiFi network not detected.");
-
-      return ORWifiConnectionStatus.UNREACHABLE;
-    }
-
-    NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-    if (!wifiNetworkInfo.isAvailable())
-    {
-      Log.d(LOG_CATEGORY, "Wifi network detected but wasn't available.");
-
-      return ORWifiConnectionStatus.UNREACHABLE;
-    }
-
-    else
-    {
-      return ORWifiConnectionStatus.REACHABLE_VIA_WIFINETWORK;
-    }
-  }
+//
+//  /**
+//   * Detects the current WiFi status.
+//   *
+//   * @return
+//   */
+//  private ORWifiConnectionStatus localWifiConnectionStatus()
+//  {
+//    if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
+//    {
+//      Log.d(LOG_CATEGORY, "WiFi not enabled or WiFi network not detected.");
+//
+//      return ORWifiConnectionStatus.UNREACHABLE;
+//    }
+//
+//    NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+//
+//    if (!wifiNetworkInfo.isAvailable())
+//    {
+//      Log.d(LOG_CATEGORY, "Wifi network detected but wasn't available.");
+//
+//      return ORWifiConnectionStatus.UNREACHABLE;
+//    }
+//
+//    else
+//    {
+//      return ORWifiConnectionStatus.REACHABLE_VIA_WIFINETWORK;
+//    }
+//  }
 
 }
