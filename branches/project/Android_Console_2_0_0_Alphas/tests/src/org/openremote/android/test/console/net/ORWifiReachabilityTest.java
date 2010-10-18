@@ -33,51 +33,43 @@ import org.openremote.android.console.net.ORWifiReachability;
 public class ORWifiReachabilityTest extends AndroidTestCase
 {
 
-
-  /**
-   * Basic test to ensure the singleton is created correctly.
-   */
-  public void testSingletonCreation()
-  {
-    ORWifiReachability reachability1 = ORWifiReachability.getInstance(getContext());
-    ORWifiReachability reachability2 = ORWifiReachability.getInstance(getContext());
-
-    assertNotNull(reachability1);
-    assertNotNull(reachability2);
-
-    assertEquals(reachability1, reachability2);
-    assertEquals(reachability2, reachability1);
-  }
-
-  /**
-   * Basic test of {@link org.openremote.android.console.net.ORWifiReachability#canReachWifiNetwork()}
-   *
-   * NOTE: assumes WiFi is available, generally needs to be run on device, emulator tends not
-   *       to have access to localhost Wifi
-   */
-  public void testCanReachWifiNetwork()
-  {
-    Context ctx = getContext();
-    WifiManager wifi = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
-
-    if(!wifi.isWifiEnabled())
-      fail(wifiRequired());
-    
-    ORWifiReachability reachability = ORWifiReachability.getInstance(ctx);
-
-    assertTrue(reachability.canReachWifiNetwork());
-  }
-
-
-//    Currently commenting out as I can't get past :
 //
-//    java.lang.SecurityException:
-//    WifiService: Neither user 10035 nor current process has android.permission.CHANGE_WIFI_STATE.
+//  /**
+//   * Basic test to ensure the singleton is created correctly.
+//   */
+//  public void testSingletonCreation()
+//  {
+//    ORWifiReachability reachability1 = ORWifiReachability.getInstance(getContext());
+//    ORWifiReachability reachability2 = ORWifiReachability.getInstance(getContext());
 //
-//    Despite the <uses-permission> set in the test applications AndroidManifest.xml
+//    assertNotNull(reachability1);
+//    assertNotNull(reachability2);
 //
-//                                                                                      [JPL]
-//  
+//    assertEquals(reachability1, reachability2);
+//    assertEquals(reachability2, reachability1);
+//  }
+//
+//  /**
+//   * Basic test of {@link org.openremote.android.console.net.ORWifiReachability#canReachWifiNetwork()}
+//   *
+//   * NOTE: assumes WiFi is available, generally needs to be run on device, emulator tends not
+//   *       to have access to localhost Wifi
+//   */
+//  public void testCanReachWifiNetwork()
+//  {
+//    Context ctx = getContext();
+//    WifiManager wifi = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
+//
+//    if(!wifi.isWifiEnabled())
+//      fail(wifiRequired());
+//
+//    ORWifiReachability reachability = ORWifiReachability.getInstance(ctx);
+//
+//    assertTrue(reachability.canReachWifiNetwork());
+//  }
+//
+//
+//
 //  public void testCanReachWifiNetworkNotAvailable()
 //  {
 //    Context ctx = getContext();
@@ -97,35 +89,35 @@ public class ORWifiReachabilityTest extends AndroidTestCase
 //      wifi.setWifiEnabled(true);
 //    }
 //  }
-
-  // somewhat poor substitute for the above (but always works on emulator) will do for now
-  public void testCanReachWifiNetworkNotAvailable()
-  {
-    Context ctx = getContext();
-    WifiManager wifi = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
-
-    if (!wifi.isWifiEnabled())
-    {
-      ORWifiReachability reachability = ORWifiReachability.getInstance(ctx);
-
-      assertTrue(!reachability.canReachWifiNetwork());
-    }
-  }
-
-
-
-
-  // Helper methods for tests ---------------------------------------------------------------------
-
-  private String wifiRequired()
-  {
-    return
-        "\n\n******************************\n\n" +
-        " This test assumes availability of WiFi network.\n" +
-        " If you're running in the emulator, WiFi may not be available.\n" +
-        " Run the full test suite on an Android device to include this test.\n\n" +
-        "******************************\n";
-  }
+//
+//  // somewhat poor substitute for the above (but always works on emulator) will do for now
+//  public void testCanReachWifiNetworkNotAvailable()
+//  {
+//    Context ctx = getContext();
+//    WifiManager wifi = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
+//
+//    if (!wifi.isWifiEnabled())
+//    {
+//      ORWifiReachability reachability = ORWifiReachability.getInstance(ctx);
+//
+//      assertTrue(!reachability.canReachWifiNetwork());
+//    }
+//  }
+//
+//
+//
+//
+//  // Helper methods for tests ---------------------------------------------------------------------
+//
+//  private String wifiRequired()
+//  {
+//    return
+//        "\n\n******************************\n\n" +
+//        " This test assumes availability of WiFi network.\n" +
+//        " If you're running in the emulator, WiFi may not be available.\n" +
+//        " Run the full test suite on an Android device to include this test.\n\n" +
+//        "******************************\n";
+//  }
 
 }
 
