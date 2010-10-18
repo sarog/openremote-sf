@@ -56,31 +56,30 @@ public class ORNetworkCheck
   /**
    * Verifies the network access to the currently configured controller URL by checking if
    * REST API {controllerServerURL}/rest/panel/{panel identity} is available.
-
    *
    * @param context               global Android application context
-   * @param controllerURL         an URL to a controller instance
+   * @param url                   an URL to a controller instance
    *
    * @return TODO: returns null or HttpResponse
    */
-  public static HttpResponse verifyControllerURL(Context context, String controllerURL)
+  public static HttpResponse verifyControllerURL(Context context, String url)
   {
     // TODO : Use URL class instead of string in param
 
 
     // TODO : modifying the settings probably doesn't belong here, as it is an undocumented side-effect
-    AppSettingsModel.setCurrentServer(context, controllerURL);
+    AppSettingsModel.setCurrentServer(context, url);
 
 
     HttpResponse response = checkControllerAvailable(context);
 
-    Log.d("OpenRemote/checkPanelXMLofCurrentPanelIdentity", "HTTP Response: " + response);
+    Log.d(LOG_CATEGORY, "HTTP Response: " + response);
 
     if(response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
     {
-      String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
+      String controllerURL = AppSettingsModel.getSecuredServer(context);
 
-      if (currentControllerServerURL == null || "".equals(currentControllerServerURL))
+      if (controllerURL == null || "".equals(controllerURL))
       {
         return null;
 			}
@@ -92,9 +91,9 @@ public class ORNetworkCheck
         return null;
       }
 
-      String restfulPanelURL = currentControllerServerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
+      String restfulPanelURL = controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
 
-      Log.i("OpenRemote/HTTP", "Getting panel URL " + restfulPanelURL);
+      Log.i(LOG_CATEGORY, "Getting panel URL " + restfulPanelURL);
 
       return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
     }
@@ -113,16 +112,16 @@ public class ORNetworkCheck
   {
     if (checkControllerIPAddress(context))
     {
-      String currentControllerServerURL = AppSettingsModel.getSecuredServer(context);
+      String controllerURL = AppSettingsModel.getSecuredServer(context);
 
-      Log.i("OpenRemote/checkControllerAvailable", "currentControllerServerURL: " + currentControllerServerURL);
+      Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
 
-      if (currentControllerServerURL == null || "".equals(currentControllerServerURL))
+      if (controllerURL == null || "".equals(controllerURL))
       {
         return null;
       }
 
-      return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, currentControllerServerURL, false);
+      return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
     }
 
     return null;
@@ -150,7 +149,7 @@ public class ORNetworkCheck
 
     String controllerURL = AppSettingsModel.getCurrentServer(context);
 
-    Log.d("OpenRemote/CheckControllerIPAddress", "controllerURL: " + controllerURL);
+    Log.d(LOG_CATEGORY, "controllerURL: " + controllerURL);
 
     if (controllerURL == null || "".equals(controllerURL))
     {
@@ -159,7 +158,7 @@ public class ORNetworkCheck
 
     String controllerIPAddress = IpUitl.splitIpFromURL(controllerURL);  // TODO : class name has a typo
 
-    Log.d("OpenRemote/CheckControllerIPAddress", "currentControllerIP: " + controllerIPAddress);
+    Log.d(LOG_CATEGORY, "ControllerIPAddress: " + controllerIPAddress);
 
     return true;
   }
