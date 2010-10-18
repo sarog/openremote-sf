@@ -44,7 +44,10 @@ public class Constants
   public static final int MENU_ITEM_QUIT = Menu.FIRST + 3;
   public static final String ERROR = "error";
   public static final int DIALOG_ERROR_ID = 0;
+
   public static final int HTTP_SUCCESS = 200;
+  
+
   public static final String ACTIVITY = "activity";
   public static final String ELEMENT_OPENREMOTE = "openremote";
   public static final String ELEMENT_BUTTONS = "buttons";
@@ -61,4 +64,8 @@ public class Constants
   public static final String FILE_FOLDER_PATH = "/data/data/org.openremote.android.console/files/";
   public static final int SECURED_HTTP_PORT = 8443;
 
+  /**
+   * Prefix for logging so OpenRemote related entries can be easily filtered.
+   */
+  public final static String LOG_CATEGORY = "OpenRemote/";
 }
