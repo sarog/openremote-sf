@@ -22,6 +22,7 @@ package org.openremote.modeler.service.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +44,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicNameValuePair;
@@ -95,6 +97,7 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.utils.SelfCertificateSSLSocketFactory;
 import org.openremote.modeler.utils.UIComponentBox;
 
 import flexjson.ClassLocator;
@@ -138,7 +141,7 @@ public class TemplateServiceImpl implements TemplateService {
       log.debug("TemplateContent" + screenTemplate.getContent());
 
       try {
-         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+         String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
                + "/template/";
 
          /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
@@ -150,7 +153,8 @@ public class TemplateServiceImpl implements TemplateService {
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
          httpPost.setEntity(formEntity);
          HttpClient httpClient = new DefaultHttpClient();
-
+         addSelfCertificate(httpClient);
+         
          String result = httpClient.execute(httpPost, new ResponseHandler<String>() {
 
             @Override
@@ -180,6 +184,9 @@ public class TemplateServiceImpl implements TemplateService {
          } else {
             throw new BeehiveNotAvailableException();
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } catch (Exception e) {
          throw new BeehiveNotAvailableException("Failed to save screen as a template: " + (e.getMessage()==null?"":e.getMessage()), e);
       }
@@ -284,7 +291,7 @@ public class TemplateServiceImpl implements TemplateService {
 
       log.debug("Delete Template id: " + templateOid);
 
-      String deleteRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+      String deleteRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
             + "/template/" + templateOid;
 
       HttpDelete httpDelete = new HttpDelete();
@@ -293,6 +300,7 @@ public class TemplateServiceImpl implements TemplateService {
       try {
          httpDelete.setURI(new URI(deleteRestUrl));
          HttpClient httpClient = new DefaultHttpClient();
+         addSelfCertificate(httpClient);
          HttpResponse response = httpClient.execute(httpDelete);
 
          if (200 == response.getStatusLine().getStatusCode()) {
@@ -300,6 +308,9 @@ public class TemplateServiceImpl implements TemplateService {
          } else {
             throw new BeehiveNotAvailableException("Failed to delete template");
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } catch (Exception e) {
          throw new BeehiveNotAvailableException("Failed to delete template: " + e.getMessage(), e);
       }
@@ -308,14 +319,15 @@ public class TemplateServiceImpl implements TemplateService {
    public List<Template> getTemplates(boolean fromPrivate) {
       String shared = fromPrivate ? "private" : "public";
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
             + "/templates/" + shared;
 
       HttpGet httpGet = new HttpGet(restURL);
       httpGet.setHeader("Accept", "application/json");
       this.addAuthentication(httpGet);
       HttpClient httpClient = new DefaultHttpClient();
-
+      addSelfCertificate(httpClient);
+      
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
@@ -343,6 +355,9 @@ public class TemplateServiceImpl implements TemplateService {
          for (TemplateDTO dto : dtoes) {
             templates.add(dto.toTemplate());
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } catch (IOException e) {
          throw new BeehiveNotAvailableException("Failed to get template list, The beehive is not available right now ", e);
       }
@@ -356,14 +371,15 @@ public class TemplateServiceImpl implements TemplateService {
          newKeywords = TemplateService.NO_KEYWORDS;
       }
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveRESTRootUrl() + "templates/keywords/"
+      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "templates/keywords/"
             + newKeywords + "/page/"+page;
 
       HttpGet httpGet = new HttpGet(restURL);
       httpGet.setHeader("Accept", "application/json");
       this.addAuthentication(httpGet);
       HttpClient httpClient = new DefaultHttpClient();
-
+      addSelfCertificate(httpClient);
+      
       try {
          HttpResponse response = httpClient.execute(httpGet);
 
@@ -391,6 +407,9 @@ public class TemplateServiceImpl implements TemplateService {
          for (TemplateDTO dto : dtoes) {
             templates.add(dto.toTemplate());
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } catch (IOException e) {
          throw new BeehiveNotAvailableException("Failed to get template list, The beehive is not available right now ", e);
       }
@@ -1131,7 +1150,7 @@ public class TemplateServiceImpl implements TemplateService {
       params.add(new BasicNameValuePair("keywords",template.getKeywords()));
       
       try {
-         String saveRestUrl = configuration.getBeehiveRESTRootUrl() + "account/" + userService.getAccount().getOid()
+         String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
                + "/template/" + template.getOid();
          HttpPut httpPut = new HttpPut(saveRestUrl);
          addAuthentication(httpPut);
@@ -1139,6 +1158,7 @@ public class TemplateServiceImpl implements TemplateService {
          httpPut.setEntity(formEntity);
 
          HttpClient httpClient = new DefaultHttpClient();
+         addSelfCertificate(httpClient);
          HttpResponse response = httpClient.execute(httpPut);
          if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
             resourceService.saveTemplateResourcesToBeehive(template);
@@ -1147,6 +1167,9 @@ public class TemplateServiceImpl implements TemplateService {
          } else {
             throw new BeehiveNotAvailableException("Failed to update template:"+template.getName()+", Status code: "+response.getStatusLine().getStatusCode());
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } catch (Exception e) {
          throw new BeehiveNotAvailableException("Failed to save screen as a template: "
                + (e.getMessage() == null ? "" : e.getMessage()), e);
@@ -1253,5 +1276,10 @@ public class TemplateServiceImpl implements TemplateService {
             image.setSrc(accountPath+imageFileName);
          }
       }
+   }
+   
+   private void addSelfCertificate(HttpClient httpClient) {
+      Scheme sch = new Scheme("https", new SelfCertificateSSLSocketFactory(), configuration.getBeehiveHttpsPort());
+      httpClient.getConnectionManager().getSchemeRegistry().register(sch);
    }
 }

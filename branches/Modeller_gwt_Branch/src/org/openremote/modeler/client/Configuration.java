@@ -55,6 +55,10 @@ public class Configuration {
     */
    private String controllerConfigXsdPath;
 
+   private int beehiveHttpsPort;
+   
+   private String beehiveHttpsRESTRootUrl;
+   
    public String getPanelXsdPath() {
       return panelXsdPath;
    }
@@ -110,5 +114,22 @@ public class Configuration {
    public void setControllerConfigXsdPath(String controllerConfigXsdPath) {
       this.controllerConfigXsdPath = controllerConfigXsdPath;
    }
+
+   public int getBeehiveHttpsPort() {
+      return beehiveHttpsPort;
+   }
+
+   public void setBeehiveHttpsPort(int beehiveHttpsPort) {
+      this.beehiveHttpsPort = beehiveHttpsPort;
+   }
    
+   public String getBeehiveHttpsRESTRootUrl() {
+      if (beehiveHttpsRESTRootUrl == null) {
+         beehiveHttpsRESTRootUrl = beehiveRESTRootUrl;
+         if (beehiveRESTRootUrl.startsWith("http:")) {
+            beehiveHttpsRESTRootUrl = beehiveRESTRootUrl.replace("http:", "https:").replace(":8080", ":" + beehiveHttpsPort);
+         }
+      }
+      return beehiveHttpsRESTRootUrl;
+   }
 }
