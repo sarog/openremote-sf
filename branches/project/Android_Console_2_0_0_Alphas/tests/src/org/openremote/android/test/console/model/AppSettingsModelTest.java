@@ -36,8 +36,16 @@ import android.content.Context;
 public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSettingsActivity>
 {
 
+  // Instance Fields ------------------------------------------------------------------------------
+
+  /**
+   * Make Android application context available to all tests.
+   */
   private Context ctx;
 
+
+
+  // Constructors ---------------------------------------------------------------------------------
 
   public AppSettingsModelTest()
   {
@@ -45,11 +53,20 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   }
 
 
+
+  // Test Set Up ----------------------------------------------------------------------------------
+
+  /**
+   * Initialize Android application context for each test.
+   */
   public void setUp()
   {
     this.ctx = getInstrumentation().getTargetContext();
   }
 
+  /**
+   * Reset application settings after each test.
+   */
   public void tearDown()
   {
     AppSettingsModel.setUseSSL(ctx, false);
@@ -57,6 +74,8 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   }
 
 
+
+  // Tests ----------------------------------------------------------------------------------------
   
   /**
    * Test basic set/get on Controller URL setting.
@@ -117,7 +136,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
 
   /**
-   * TODO
+   * Test basic controller URL modifications when SSL is enabled.
    */
   public void testGetHTTPSControllerURL()
   {
@@ -125,28 +144,63 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
     String controller = AppSettingsModel.getSecuredServer(ctx);
 
+    // should return controller URL as-is, since SSL still disabled...
+
     assertTrue("Expected 'http://controller.openremote.org/test', got '" + controller + "'.",
                 controller.equals("http://controller.openremote.org/test"));
 
 
+    // Turn on SSL...
 
     AppSettingsModel.setUseSSL(ctx, true);
 
     controller = AppSettingsModel.getSecuredServer(ctx);
 
+    // Should have HTTPS added, but if not port specified (meaning port 80 is used for HTTP)
+    // then SSL should default to 443 (port does not need to be explicitly specified)...
+
     assertTrue("Expected 'https://controller.openremote.org/test', got '" + controller + "'.",
                 controller.equals("https://controller.openremote.org/test"));
 
+  }
+
+  /**
+   * Tests controller URL modifications when SSL is turned on and specific ports are used.
+   */
+  public void testGetHTTPSControllerURLWithExplicitPort()
+  {
+    AppSettingsModel.setUseSSL(ctx, true);
+
+    // Controller URL with explicit port setting...
+
+    AppSettingsModel.setCurrentServer(ctx, "http://controller.openremote.org/test:8111");
+
+    String controller = AppSettingsModel.getSecuredServer(ctx);
+
+    // Will return https at port 8443 which is the default Tomcat SSL port (fine by us,
+    // we expect most controller instances run on Tomcat runtime and connected to directly)...
+
+    assertTrue(
+        "Expected 'https://controller.openremote.org/test:" +
+        AppSettingsModel.DEFAULT_SSL_PORT + "', got '" + controller + "'.",
+        controller.equals("https://controller.openremote.org/test:" +
+        AppSettingsModel.DEFAULT_SSL_PORT)
+    );
 
 
-    AppSettingsModel.setCurrentServer(ctx, "http://controller.openremote.org/test:8080");
+    // Test explicit port setting...
+
+    AppSettingsModel.setSSLPort(ctx, 5000);
 
     controller = AppSettingsModel.getSecuredServer(ctx);
 
-    assertTrue("Expected 'https://controller.openremote.org/test:8443', got '" + controller + "'.",
-                controller.equals("https://controller.openremote.org/test:8443"));
+    assertTrue("Expected 'https://controller.openremote.org/test:5000', got '" + controller + "'.",
+                controller.equals("https://controller.openremote.org/test:5000"));
 
 
+
+    // If explicit port is set to HTTPD default SSL port (443), it is still included in the URL.
+    // Strictly not necessary but does no harm either...
 
     AppSettingsModel.setSSLPort(ctx, 443);
 
@@ -156,20 +210,21 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
                 controller.equals("https://controller.openremote.org/test:443"));
 
 
+    // Reset back to defaults and make sure we still get the original controller URL...
 
     AppSettingsModel.setUseSSL(ctx, false);
     AppSettingsModel.setSSLPort(ctx, AppSettingsModel.DEFAULT_SSL_PORT);
 
     controller = AppSettingsModel.getSecuredServer(ctx);
 
-    assertTrue("Expected 'http://controller.openremote.org/test:8080', got '" + controller + "'.",
-                controller.equals("http://controller.openremote.org/test:8080"));
+    assertTrue("Expected 'http://controller.openremote.org/test:8111', got '" + controller + "'.",
+                controller.equals("http://controller.openremote.org/test:8111"));
 
   }
 
 
   /**
-   * TODO
+   * Basic SSL enabled on/off test.
    */
   public void testEnableSSL()
   {
@@ -180,6 +235,17 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
     AppSettingsModel.setUseSSL(ctx, false);
 
     assertTrue(!AppSettingsModel.isUseSSL(ctx));
-      
+  }
+
+  /**
+   * Basic set/get SSL port test.
+   */
+  public void testSetSSLPort()
+  {
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == AppSettingsModel.DEFAULT_SSL_PORT);
+
+    AppSettingsModel.setSSLPort(ctx, 9999);
+
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == 9999);
   }
 }
