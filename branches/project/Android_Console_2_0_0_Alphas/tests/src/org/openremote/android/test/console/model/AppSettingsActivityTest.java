@@ -44,12 +44,21 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
     super("org.openremote.android.console", AppSettingsActivity.class);
   }
 
+
+
   public void setUp()
   {
     this.ctx = getInstrumentation().getTargetContext();
   }
 
+  public void tearDown()
+  {
+    AppSettingsModel.setUseSSL(ctx, false);
+    AppSettingsModel.setSSLPort(ctx, AppSettingsModel.DEFAULT_SSL_PORT);
+  }
 
+
+  
   /**
    * Test basic set/get on Controller URL setting.
    */
@@ -117,8 +126,61 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
 
     String controller = AppSettingsModel.getSecuredServer(ctx);
 
+    assertTrue("Expected 'http://controller.openremote.org/test', got '" + controller + "'.",
+                controller.equals("http://controller.openremote.org/test"));
+
+
+
+    AppSettingsModel.setUseSSL(ctx, true);
+
+    controller = AppSettingsModel.getSecuredServer(ctx);
+
+    assertTrue("Expected 'https://controller.openremote.org/test', got '" + controller + "'.",
+                controller.equals("https://controller.openremote.org/test"));
+
+
+
+    AppSettingsModel.setCurrentServer(ctx, "http://controller.openremote.org/test:8080");
+
+    controller = AppSettingsModel.getSecuredServer(ctx);
+
     assertTrue("Expected 'https://controller.openremote.org/test:8443', got '" + controller + "'.",
                 controller.equals("https://controller.openremote.org/test:8443"));
+
+
+
+    AppSettingsModel.setSSLPort(ctx, 443);
+
+    controller = AppSettingsModel.getSecuredServer(ctx);
+
+    assertTrue("Expected 'https://controller.openremote.org/test:443', got '" + controller + "'.",
+                controller.equals("https://controller.openremote.org/test:443"));
+
+
+
+    AppSettingsModel.setUseSSL(ctx, false);
+    AppSettingsModel.setSSLPort(ctx, AppSettingsModel.DEFAULT_SSL_PORT);
+
+    controller = AppSettingsModel.getSecuredServer(ctx);
+
+    assertTrue("Expected 'http://controller.openremote.org/test:8080', got '" + controller + "'.",
+                controller.equals("http://controller.openremote.org/test:8080"));
+
   }
 
+
+  /**
+   * TODO
+   */
+  public void testEnableSSL()
+  {
+    AppSettingsModel.setUseSSL(ctx, true);
+
+    assertTrue(AppSettingsModel.isUseSSL(ctx));
+
+    AppSettingsModel.setUseSSL(ctx, false);
+
+    assertTrue(!AppSettingsModel.isUseSSL(ctx));
+      
+  }
 }
