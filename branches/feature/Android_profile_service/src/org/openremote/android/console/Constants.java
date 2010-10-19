@@ -45,6 +45,7 @@ public class Constants
   public static final String ERROR = "error";
   public static final int DIALOG_ERROR_ID = 0;
 
+  // TODO : can be replaced with HttpURLConnection.HTTP_OK
   public static final int HTTP_SUCCESS = 200;
   
 
