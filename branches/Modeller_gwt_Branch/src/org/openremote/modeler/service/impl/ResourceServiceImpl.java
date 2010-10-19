@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,6 +50,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -112,6 +114,7 @@ import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.openremote.modeler.utils.FileUtilsExt;
 import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.ProtocolCommandContainer;
+import org.openremote.modeler.utils.SelfCertificateSSLSocketFactory;
 import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
@@ -903,8 +906,9 @@ public class ResourceServiceImpl implements ResourceService {
    public void saveResourcesToBeehive(Collection<Panel> panels) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
+      addSelfCertificate(httpClient);
       HttpPost httpPost = new HttpPost();
-      String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      String beehiveRootRestURL = configuration.getBeehiveHttpsRESTRootUrl();
       this.addAuthentication(httpPost);
 
       String url = beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/openremote.zip";
@@ -923,6 +927,8 @@ public class ResourceServiceImpl implements ResourceService {
          }
       } catch (NullPointerException e) {
          LOGGER.warn("There no resource to upload to beehive at this time. ");
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + beehiveRootRestURL + " refused.", e);
       } catch (IOException e) {
          throw new BeehiveNotAvailableException(e.getMessage(), e);
       } catch (URISyntaxException e) {
@@ -933,8 +939,9 @@ public class ResourceServiceImpl implements ResourceService {
    public void saveTemplateResourcesToBeehive(Template template) {
       boolean share = template.getShareTo() == Template.PUBLIC;
       HttpClient httpClient = new DefaultHttpClient();
+      addSelfCertificate(httpClient);
       HttpPost httpPost = new HttpPost();
-      String beehiveRootRestURL = configuration.getBeehiveRESTRootUrl();
+      String beehiveRootRestURL = configuration.getBeehiveHttpsRESTRootUrl();
       String url = "";
       if (!share) {
          url = beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/template/" + template.getOid()
@@ -965,6 +972,8 @@ public class ResourceServiceImpl implements ResourceService {
          }
       } catch (NullPointerException e) {
          LOGGER.warn("There are no template resources for template \"" + template.getName() + "\"to save to beehive!");
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + beehiveRootRestURL + " refused.", e);
       } catch (IOException e) {
          throw new BeehiveNotAvailableException("Failed to save template to Beehive", e);
       } catch (URISyntaxException e) {
@@ -983,7 +992,8 @@ public class ResourceServiceImpl implements ResourceService {
    public void downloadResourcesForTemplate(long templateOid) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
-      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "account/"
+      addSelfCertificate(httpClient);
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveHttpsRESTRootUrl() + "account/"
             + userService.getAccount().getOid() + "/template/" + templateOid + "/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
@@ -1021,6 +1031,9 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to download resources for template, status code: "
                   + response.getStatusLine().getStatusCode());
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } catch (IOException ioException) {
          throw new BeehiveNotAvailableException("I/O exception in handling user's template.zip file: "
                + ioException.getMessage(), ioException);
@@ -1048,7 +1061,8 @@ public class ResourceServiceImpl implements ResourceService {
    private void downloadOpenRemoteZip() throws IOException {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
-      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTRootUrl() + "user/"
+      addSelfCertificate(httpClient);
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveHttpsRESTRootUrl() + "user/"
             + userService.getCurrentUser().getUsername() + "/openremote.zip");
 
       LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
@@ -1094,6 +1108,9 @@ public class ResourceServiceImpl implements ResourceService {
             throw new BeehiveNotAvailableException("Failed to download resources, status code: "
                   + response.getStatusLine().getStatusCode());
          }
+      } catch (ConnectException e) {
+         throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
+               + " refused.", e);
       } finally {
          if (inputStream != null) {
             try {
@@ -1291,5 +1308,10 @@ public class ResourceServiceImpl implements ResourceService {
    private void addAuthentication(AbstractHttpMessage httpMessage) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
             + encode(userService.getCurrentUser().getUsername() + ":" + userService.getCurrentUser().getPassword()));
+   }
+
+   private void addSelfCertificate(HttpClient httpClient) {
+      Scheme sch = new Scheme("https", new SelfCertificateSSLSocketFactory(), configuration.getBeehiveHttpsPort());
+      httpClient.getConnectionManager().getSchemeRegistry().register(sch);
    }
 }

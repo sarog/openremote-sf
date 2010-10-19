@@ -22,6 +22,7 @@
 		<property name="webappServerRoot" value="${webapp.server.root}" />
 		<property name="controllerConfigPath" value="${controller.config.xml.path}" />
 		<property name="controllerConfigXsdPath" value="${controller.config.xsd.path}" />
+		<property name="beehiveHttpsPort" value="${beehive.https.port}" />
 	</bean>
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
