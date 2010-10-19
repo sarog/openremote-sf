@@ -33,17 +33,16 @@ import android.content.Context;
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<AppSettingsActivity>
+public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSettingsActivity>
 {
 
   private Context ctx;
 
 
-  public AppSettingsActivityTest()
+  public AppSettingsModelTest()
   {
     super("org.openremote.android.console", AppSettingsActivity.class);
   }
-
 
 
   public void setUp()
