@@ -89,23 +89,24 @@ public class AppSettingsModel implements Serializable
    */
   public static String getSecuredServer(Context context)
   {
-    String currentServer = getCurrentServer(context);
+    String controllerURL = getCurrentServer(context);
 
-    if (isUseSSL(context))
+    if (!isUseSSL(context))
+      return controllerURL;
+
+
+    if (controllerURL.indexOf("http:") != -1)
     {
-       if (currentServer.indexOf("http:") != -1)
-       {
-          currentServer = currentServer.replaceFirst("http:", "https:");
-       }
-
-       if (currentServer.indexOf(":") != -1) {
-          currentServer = currentServer.replaceFirst("\\:\\d+", ":" + getSSLPort(context));
-       }
-
-       Log.i("SECURE", currentServer);
+      controllerURL = controllerURL.replaceFirst("http:", "https:");
+    }
+    
+    if (controllerURL.indexOf(":") != -1) {
+      controllerURL = controllerURL.replaceFirst("\\:\\d+", ":" + getSSLPort(context));
     }
 
-    return currentServer;
+    Log.i("SECURE", controllerURL);  // todo : log category
+
+    return controllerURL;
   }
 
 
@@ -189,38 +190,75 @@ public class AppSettingsModel implements Serializable
    public static String getCustomServers(Context context) {
       return context.getSharedPreferences(CUSTOM_SERVERS, 0).getString(CUSTOM_SERVERS, "");
    }
+
+
+  /**
+   * TODO
+   *
+   * @param context   TODO
+   *
+   * @return  TODO
+   */
+  public static boolean isUseSSL(Context context)
+  {
+    // TODO : really bad naming, needs to be fixed
+    
+    return context.getSharedPreferences(
+        APP_SETTINGS,
+        Context.MODE_PRIVATE
+    ).getBoolean(USE_SSL, false);
+  }
+
+  /**
+   * TODO
+   *
+   * @param context     TODO
+   * @param enableSSL   TODO
+   */
+  public static void setUseSSL(Context context, boolean enableSSL)
+  {
+    SharedPreferences.Editor editor = context.getSharedPreferences(
+        APP_SETTINGS,
+        Context.MODE_PRIVATE
+    ).edit();
+
+    editor.putBoolean(USE_SSL, enableSSL);
+    editor.commit();
+  }
+
+
+  /**
+   * TODO
+   *
+   * @param context   global Android application context
+   *
+   * @return
+   */
+  public static int getSSLPort(Context context)
+  {
+    return context.getSharedPreferences(
+        APP_SETTINGS,
+        Context.MODE_PRIVATE
+    ).getInt(SSL_PORT, DEFAULT_SSL_PORT);
+  }
    
-   public static boolean isUseSSL(Context context) {
-      return context.getSharedPreferences(APP_SETTINGS, 0).getBoolean(USE_SSL, false);
-   }
-   
-   /**
-    * Sets use security or not.
-    * 
-    * @param context  TODO
-    * @param isUseSSL TODO
-    */
-   public static void setUseSSL(Context context, boolean isUseSSL) {
-      SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
-      editor.putBoolean(USE_SSL, isUseSSL);
-      editor.commit();
-   }
-   
-   public static int getSSLPort(Context context) {
-      return context.getSharedPreferences(APP_SETTINGS, 0).getInt(SSL_PORT, DEFAULT_SSL_PORT);
-   }
-   
-   /**
-    * Sets the ssl port.
-    * 
-    * @param context the context
-    * @param sslPort the ssl port
-    */
-   public static void setSSLPort(Context context, int sslPort) {
-      SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
-      editor.putInt(SSL_PORT, sslPort);
-      editor.commit();
-   }
+  /**
+   * Sets the SSL port for controller URL.
+   *
+   * @param context  global Android application context
+   * @param sslPort  TODO
+   */
+  public static void setSSLPort(Context context, int sslPort)
+  {
+    SharedPreferences.Editor editor = context.getSharedPreferences(
+        APP_SETTINGS,
+        Context.MODE_PRIVATE
+    ).edit();
+
+    editor.putInt(SSL_PORT, sslPort);
+    editor.commit();
+  }
+
 
 
   // Constructors ---------------------------------------------------------------------------------
