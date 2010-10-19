@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.openremote.android.test.net;
+package org.openremote.android.test.console.net;
 
 import java.net.HttpURLConnection;
 
