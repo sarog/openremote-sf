@@ -51,7 +51,10 @@ public class AppSettingsModel implements Serializable
   // Constants ------------------------------------------------------------------------------------
 
   /**
-   * TODO
+   * Constant that can be used to set configuration back to a default SSL port. This is interpreted
+   * based on configured controller URL value -- if there's no explicit port in the controller
+   * URL, default SSL port will be 443, if an explicit port has been configured in controller
+   * URL, we guess it is for OpenRemote/Runtime and default to SSL port 8443.
    */
   public final static int DEFAULT_SSL_PORT  = -1;
 
@@ -113,6 +116,8 @@ public class AppSettingsModel implements Serializable
    */
   public static String getCurrentServer(Context context)
   {
+    // TODO: return URL instead of String
+
     return context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE)
                   .getString(CURRENT_SERVER, "");
   }
@@ -158,6 +163,8 @@ public class AppSettingsModel implements Serializable
    */
   public static String getSecuredServer(Context context)
   {
+    // TODO : return URL instead of string
+
     try
     {
       URL configuredControllerURL = new URL(getCurrentServer(context));
@@ -285,11 +292,11 @@ public class AppSettingsModel implements Serializable
 
 
   /**
-   * TODO
+   * Return current SSL status.
    *
-   * @param context   TODO
+   * @param   context   global Android application context
    *
-   * @return  TODO
+   * @return  true if SSL over HTTP has been enabled, false otherwise
    */
   public static boolean isUseSSL(Context context)
   {
@@ -302,10 +309,10 @@ public class AppSettingsModel implements Serializable
   }
 
   /**
-   * TODO
+   * Enable/disable SSL over HTTP communication.
    *
-   * @param context     TODO
-   * @param enableSSL   TODO
+   * @param context     global Android application context
+   * @param enableSSL   true to enable SSL, false to disable
    */
   public static void setUseSSL(Context context, boolean enableSSL)
   {
@@ -320,11 +327,23 @@ public class AppSettingsModel implements Serializable
 
 
   /**
-   * TODO
+   * Returns a configured SSL port number. <p>
    *
-   * @param context   global Android application context
+   * If SSL port has not been configured, attempts to inspect the user-configured controller URL
+   * and makes a best guess for the appropriate port number:  <p>
    *
-   * @return
+   * If user-configured URL does not contain an explicit port (so defaulting to httpd port 80)
+   * then returns httpd default SSL port 443.  <p>
+   *
+   * If user-configured URL contains an explicit port number then returns the default SSL port
+   * of OpenRemote/Tomcat runtime, 8443 (making a guess here that the explicit URL port is
+   * configured normally to connect direct to OR/Tomcat runtime).
+   *
+   *
+   * @param   context   global Android application context
+   *
+   * @return  configured SSL port value or 443 or 8443 default ports depending how controller
+   *          URL has been configured
    */
   public static int getSSLPort(Context context)
   {
@@ -366,10 +385,18 @@ public class AppSettingsModel implements Serializable
    * Sets the SSL port for controller URL.
    *
    * @param context  global Android application context
-   * @param sslPort  TODO
+   * @param sslPort  SSL port number (0 to 65535) or {@link #DEFAULT_SSL_PORT}.
+   *
+   * @throws  IllegalArgumentException if the port number is not within the required range
    */
   public static void setSSLPort(Context context, int sslPort)
   {
+    if (sslPort < 0 && sslPort != DEFAULT_SSL_PORT)
+      throw new IllegalArgumentException("negative port number");
+
+    if (sslPort > 65535)
+      throw new IllegalArgumentException("port number too large");
+
     SharedPreferences.Editor editor = context.getSharedPreferences(
         APP_SETTINGS,
         Context.MODE_PRIVATE
