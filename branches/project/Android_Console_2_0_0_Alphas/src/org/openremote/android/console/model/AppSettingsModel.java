@@ -174,7 +174,7 @@ public class AppSettingsModel implements Serializable
       String host = configuredControllerURL.getHost();
       String file = configuredControllerURL.getFile();
 
-      if (isUseSSL(context))
+      if (isSSLEnabled(context))
       {
         protocol = "https";
 
@@ -298,10 +298,8 @@ public class AppSettingsModel implements Serializable
    *
    * @return  true if SSL over HTTP has been enabled, false otherwise
    */
-  public static boolean isUseSSL(Context context)
+  public static boolean isSSLEnabled(Context context)
   {
-    // TODO : really bad naming, needs to be fixed
-    
     return context.getSharedPreferences(
         APP_SETTINGS,
         Context.MODE_PRIVATE
@@ -314,7 +312,7 @@ public class AppSettingsModel implements Serializable
    * @param context     global Android application context
    * @param enableSSL   true to enable SSL, false to disable
    */
-  public static void setUseSSL(Context context, boolean enableSSL)
+  public static void enableSSL(Context context, boolean enableSSL)
   {
     SharedPreferences.Editor editor = context.getSharedPreferences(
         APP_SETTINGS,
