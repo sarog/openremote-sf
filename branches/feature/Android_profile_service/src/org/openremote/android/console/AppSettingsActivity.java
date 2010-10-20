@@ -203,13 +203,13 @@ public class AppSettingsActivity extends GenericActivity {
     */
    private void initSSLState() {
       ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
-      sslBtn.setChecked(AppSettingsModel.isUseSSL(this));
+      sslBtn.setChecked(AppSettingsModel.isSSLEnabled(this));
       sslBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-               AppSettingsModel.setUseSSL(AppSettingsActivity.this, true);
+               AppSettingsModel.enableSSL(AppSettingsActivity.this, true);
             } else {
-               AppSettingsModel.setUseSSL(AppSettingsActivity.this, false);
+               AppSettingsModel.enableSSL(AppSettingsActivity.this, false);
             }
          }
       });
