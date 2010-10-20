@@ -42,6 +42,13 @@ import org.openremote.android.console.net.ORNetworkCheck;
 public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSettingsActivity>
 {
 
+  // TODO :
+  //   these tests are integration tests requiring a WiFi connection to a public controller
+  //   instance at controller.openremote.org/test -- they should be separated from unit tests.
+  //
+  //                                                                          [JPL]
+
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
@@ -49,8 +56,11 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    */
   private Context ctx;
 
-
+  /**
+   * Reference to Android wifi manager shared between tests.
+   */
   private WifiManager wifi;
+
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -59,6 +69,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   {
     super("org.openremote.android.console", AppSettingsActivity.class);
   }
+
 
 
   // Test Set Up ----------------------------------------------------------------------------------
@@ -70,7 +81,6 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
     wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
 
     enableWifi();
-
 
     AppSettingsModel.setCurrentPanelIdentity(ctx, null);
   }
@@ -87,13 +97,14 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
   
   /**
-   * TODO
+   * Connect to controller.openremote.org/test/controller and attempt to verify the existence
+   * of "SimpleName" panel design.
    */
   public void testVerifyControllerURL()
   {
     try
     {
-      AppSettingsModel.setCurrentPanelIdentity(ctx, "iPhone");
+      AppSettingsModel.setCurrentPanelIdentity(ctx, "SimpleName");
 
       if (!wifi.isWifiEnabled())
         fail(wifiRequired());
@@ -117,7 +128,8 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
 
   /**
-   * TODO
+   * Connect to controller.openremote.org/test/controller instance and attempt to verify a panel
+   * design ID that does not exist.
    *
    */
   public void testVerifyControllerURLWrongPanelName()
@@ -147,7 +159,40 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
 
   /**
-   * TODO
+   * Connect to controller.openremote.org/test/controller instance and attempt to verify a
+   * panel design ID that has white space in the name.
+   *
+   */
+  public void testVerifyControllerURLSpacesInPanelName()
+  {
+    try
+    {
+      AppSettingsModel.setCurrentPanelIdentity(ctx, "Name With Spaces");
+
+      if (!wifi.isWifiEnabled())
+        fail(wifiRequired());
+
+      HttpResponse response = ORNetworkCheck.verifyControllerURL(
+          ctx, "http://controller.openremote.org/test/controller"
+      );
+
+      assertNotNull("Got null response, was expecting " + HttpURLConnection.HTTP_OK, response);
+
+      int status = response.getStatusLine().getStatusCode();
+
+      assertTrue("Was expecting " + HttpURLConnection.HTTP_OK + " response, got : " + status,
+                 status == HttpURLConnection.HTTP_OK);
+    }
+    finally
+    {
+      AppSettingsModel.setCurrentPanelIdentity(ctx, null);
+    }
+  }
+
+
+
+  /**
+   * Test behavior when controller URL has been set to a non-existent location.
    */
   public void testVerifyControllerWrongURL()
   {
@@ -179,7 +224,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
 
   /**
-   * TODO
+   * Test behavior when controller URL has not been configured.
    */
   public void testVerifyControllerEmptyURL()
   {

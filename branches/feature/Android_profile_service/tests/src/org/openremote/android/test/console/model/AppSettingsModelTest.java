@@ -69,7 +69,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
    */
   public void tearDown()
   {
-    AppSettingsModel.setUseSSL(ctx, false);
+    AppSettingsModel.enableSSL(ctx, false);
     AppSettingsModel.setSSLPort(ctx, AppSettingsModel.DEFAULT_SSL_PORT);
   }
 
@@ -154,7 +154,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
     // Turn on SSL...
 
-    AppSettingsModel.setUseSSL(ctx, true);
+    AppSettingsModel.enableSSL(ctx, true);
 
     controller = AppSettingsModel.getSecuredServer(ctx);
 
@@ -171,7 +171,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
    */
   public void testGetHTTPSControllerURLWithExplicitPort()
   {
-    AppSettingsModel.setUseSSL(ctx, true);
+    AppSettingsModel.enableSSL(ctx, true);
 
     // Controller URL with explicit port setting...
 
@@ -211,7 +211,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
     // Reset back to defaults and make sure we still get the original controller URL...
 
-    AppSettingsModel.setUseSSL(ctx, false);
+    AppSettingsModel.enableSSL(ctx, false);
     AppSettingsModel.setSSLPort(ctx, AppSettingsModel.DEFAULT_SSL_PORT);
 
     controller = AppSettingsModel.getSecuredServer(ctx);
@@ -227,7 +227,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
    */
   public void testGetHTTPSControllerURLWithExplicitPort2()
   {
-    AppSettingsModel.setUseSSL(ctx, true);
+    AppSettingsModel.enableSSL(ctx, true);
 
     AppSettingsModel.setCurrentServer(ctx, "http://controller.openremote.org/test");
 
@@ -245,13 +245,13 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
    */
   public void testEnableSSL()
   {
-    AppSettingsModel.setUseSSL(ctx, true);
+    AppSettingsModel.enableSSL(ctx, true);
 
-    assertTrue(AppSettingsModel.isUseSSL(ctx));
+    assertTrue(AppSettingsModel.isSSLEnabled(ctx));
 
-    AppSettingsModel.setUseSSL(ctx, false);
+    AppSettingsModel.enableSSL(ctx, false);
 
-    assertTrue(!AppSettingsModel.isUseSSL(ctx));
+    assertTrue(!AppSettingsModel.isSSLEnabled(ctx));
   }
 
   /**
