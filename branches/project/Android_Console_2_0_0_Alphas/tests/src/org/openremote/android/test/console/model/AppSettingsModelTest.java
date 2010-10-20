@@ -223,7 +223,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
 
   /**
-   * TODO
+   * Making sure if explicit SSL port has been configured, it is used.
    */
   public void testGetHTTPSControllerURLWithExplicitPort2()
   {
@@ -279,7 +279,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   }
 
   /**
-   * TODO
+   * In case of config failure, still try to give a reasonable return value
    */
   public void testGetSSLPortWithNullController()
   {
@@ -290,4 +290,39 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
     assertTrue(AppSettingsModel.getSSLPort(ctx) == 8443);
   }
 
+  /**
+   * Tests setSSLPort edge cases
+   */
+  public void testSetGetSSLPortEdgeCases()
+  {
+    AppSettingsModel.setSSLPort(ctx, 0);
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == 0);
+
+    AppSettingsModel.setSSLPort(ctx, 65535);
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == 65535);
+
+    AppSettingsModel.setSSLPort(ctx, AppSettingsModel.DEFAULT_SSL_PORT);
+
+    try
+    {
+      AppSettingsModel.setSSLPort(ctx, -100);
+
+      fail("should not get here");
+    }
+    catch (IllegalArgumentException e)
+    {
+      // this is fine
+    }
+
+    try
+    {
+      AppSettingsModel.setSSLPort(ctx, 100000);
+
+      fail("should not get here");
+    }
+    catch (IllegalArgumentException e)
+    {
+      // this is fine
+    }
+  }
 }
