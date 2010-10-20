@@ -21,6 +21,8 @@
 package org.openremote.android.console.model;
 
 import java.io.Serializable;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import org.openremote.android.console.Constants;
 
@@ -48,15 +50,53 @@ public class AppSettingsModel implements Serializable
 
   // Constants ------------------------------------------------------------------------------------
 
-  public static final int DEFAULT_SSL_PORT = 8443;
+  /**
+   * TODO
+   */
+  public final static int DEFAULT_SSL_PORT  = -1;
+
+
+  /**
+   * Default SSL port for Tomcat runtime. We default to this port if SSL is enabled and an
+   * explicit port has been set in the controller URL (we are assuming explicit port exists to
+   * connect to OpenRemote/Tomcat runtime so we default to Tomcat's default SSL port).
+   */
+  private static final int DEFAULT_TOMCAT_SSL_PORT = 8443;
+
+  /**
+   * Default SSL port for HTTPD. We default to this port if the user configured controller URL
+   * has no explicit port (therefore using default httpd port 80) and therefore we default to
+   * port 443 for SSL (this usually only applies when controller is hosted behind an httpd server).
+   */
+  private static final int DEFAULT_HTTPD_SSL_PORT = 443;
+
+
+  /**
+   * Common log category for this class
+   */
+  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "Settings";
 
 
   private static final String APP_SETTINGS = "appSettings";
   private static final String CUSTOM_SERVERS = "customServers";
   private static final String CURRENT_SERVER = "currentServer";
   private static final String AUTO_MODE = "autoMode";
+
+  /**
+   * Stores the current panel ID this application is rendering (controller may store several
+   * panel designs)
+   */
   private static final String CURRENT_PANEL_IDENTITY = "currentPanelIdentity";
+
+  /**
+   * Indicates whether encrypted HTTP communication is used between this application
+   * and controller.
+   */
   private static final String USE_SSL = "useSSL";
+
+  /**
+   * The port number to connect to if encrypted SSL communication is used.
+   */
   private static final String SSL_PORT = "sslPort";
 
 
@@ -64,11 +104,12 @@ public class AppSettingsModel implements Serializable
 
   /**
    * Returns controller URL from appSettings.xml. Note that this method always returns the
-   * configured URL regardless of whether SSL has been configured or not.
+   * (user) configured URL regardless of whether SSL has been configured or not.
    *
-   * @param context  global Android application context
+   * @param   context  global Android application context
    *
-   * @return TODO
+   * @return  Returns the (user) configured URL to controller, as-is, or empty string if nothing
+   *          has been stored
    */
   public static String getCurrentServer(Context context)
   {
@@ -80,33 +121,84 @@ public class AppSettingsModel implements Serializable
   /**
    * Returns controller URL. <p>
    *
-   * This method will return the configured URL if SSL has not been configured, otherwise the
-   * configured controller URL is modified to use HTTPS instead.
+   * This method will return the user configured URL if SSL has not been configured (assuming
+   * a valid URL has been entered), otherwise the returned controller URL is modified to use
+   * HTTPS instead. <p>
    *
-   * @param context  global Android application context
+   * If an explicit SSL port has been configured, it is added to the returned URL.  <p>
    *
-   * @return TODO
+   * For example, if user-configured controller URL is
+   * 'http://controller.openremote.org/test/controller' : <p>
+   *
+   *  - Returns the same URL string if SSL has not been turned on <br>
+   *  - Returns 'https://controller.openremote.org:443/test/controller' if SSL has been turned on
+   *
+   * <p>
+   *
+   * If user-configured controller URL has an explicit port number (case of default OpenRemote
+   * runtime/Tomcat installation) then URL 'http://controller.openremote.org:8080/test/controller'
+   * is translated as follows: <p>
+   *
+   * - Same URL if SSL has not been turned on <br>
+   * - Returns 'https://controller.openremote.org:8443/test/controller' if SSL has been turned on
+   *   but no specific SSL port has been configured (same applies regardless what explicit port
+   *   number user has configured in the original URL)
+   *
+   * <p>
+   *
+   * If both SSL has been enabled and explicit SSL port has been configured then the URL is
+   * transformed as expected with HTTPS protocol schema and SSL port number, regardless whether
+   * the original URL included explicit port or not.
+   *
+   *
+   * @param   context  global Android application context
+   *
+   * @return  modified controller URL according to SSL settings, or null if the user-configured
+   *          controller URL is malformed.
    */
   public static String getSecuredServer(Context context)
   {
-    String controllerURL = getCurrentServer(context);
-
-    if (!isUseSSL(context))
-      return controllerURL;
-
-
-    if (controllerURL.indexOf("http:") != -1)
+    try
     {
-      controllerURL = controllerURL.replaceFirst("http:", "https:");
-    }
-    
-    if (controllerURL.indexOf(":") != -1) {
-      controllerURL = controllerURL.replaceFirst("\\:\\d+", ":" + getSSLPort(context));
-    }
+      URL configuredControllerURL = new URL(getCurrentServer(context));
 
-    Log.i("SECURE", controllerURL);  // todo : log category
+      int port = configuredControllerURL.getPort();
+      String protocol = configuredControllerURL.getProtocol();
+      String host = configuredControllerURL.getHost();
+      String file = configuredControllerURL.getFile();
 
-    return controllerURL;
+      if (isUseSSL(context))
+      {
+        protocol = "https";
+
+        if (getSSLPort(context) == -1 && port == -1)
+        {
+          port = DEFAULT_HTTPD_SSL_PORT;
+        }
+
+        else if (getSSLPort(context) == -1)
+        {
+          port = DEFAULT_TOMCAT_SSL_PORT;
+        }
+
+        else
+        {
+          port = getSSLPort(context);
+        }
+      }
+
+      String realURL = new URL(protocol, host, port, file).toExternalForm();
+
+      Log.d(LOG_CATEGORY, realURL);
+
+      return realURL;
+    }
+    catch (MalformedURLException e)
+    {
+      // TODO : should propagate malformed URL up to user, so they know they messed up, requires API modification
+
+      return null;
+    }
   }
 
 
@@ -236,10 +328,38 @@ public class AppSettingsModel implements Serializable
    */
   public static int getSSLPort(Context context)
   {
-    return context.getSharedPreferences(
-        APP_SETTINGS,
-        Context.MODE_PRIVATE
-    ).getInt(SSL_PORT, DEFAULT_SSL_PORT);
+    int port = context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getInt(SSL_PORT, -1);
+
+    if (port != -1)
+      return port;
+
+    String configuredControllerURL = getCurrentServer(context);
+
+    try
+    {
+      int configuredPort = new URL(configuredControllerURL).getPort();
+
+      if (configuredPort == -1)
+      {
+        return DEFAULT_HTTPD_SSL_PORT;
+      }
+      else
+      {
+        return DEFAULT_TOMCAT_SSL_PORT;
+      }
+
+    }
+    catch (MalformedURLException e)
+    {
+      //   if we enforce proper URL on controller URL set, we can assume this only occurs
+      //   as programming error, no need to propagate back up to user
+
+      Log.e(LOG_CATEGORY, "Controller URL is invalid", e);
+
+      // Best guess return value...
+
+      return DEFAULT_TOMCAT_SSL_PORT;
+    }
   }
    
   /**
