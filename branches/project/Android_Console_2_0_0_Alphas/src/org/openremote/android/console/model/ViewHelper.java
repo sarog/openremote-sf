@@ -105,7 +105,7 @@ public class ViewHelper {
 				Intent intent = new Intent();
 				intent.setClass(context, AppSettingsActivity.class);
 				context.startActivity(intent);
-				Log.i("INFO", "To setting after click setting btn in alertView of switch controller fail while console loading.");
+				Log.i("OpenRemote-INFO", "To setting after click setting btn in alertView of switch controller fail while console loading.");
 			}
 			alertDialog.hide();
 		}
