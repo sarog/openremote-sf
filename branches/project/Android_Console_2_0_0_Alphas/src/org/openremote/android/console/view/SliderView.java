@@ -223,7 +223,7 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
    @Override
    public void addPollingSensoryListener() {
       final Integer sensorId = ((Slider)getComponent()).getSensor().getSensorId();
-      Log.i("SLIDER", "sensor id is " + sensorId);
+      Log.i("OpenRemote-SLIDER", "sensor id is " + sensorId);
       if (sensorId > 0) {
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + sensorId, new OREventListener() {
             public void handleEvent(OREvent event) {
@@ -232,7 +232,7 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
                try {
                   valueInt = Integer.parseInt(value);
                } catch (NumberFormatException e) {
-                  Log.e("SLIDER", "The returned format of polling value " + value + " for slider is wrong", e);
+                  Log.e("OpenRemote-SLIDER", "The returned format of polling value " + value + " for slider is wrong", e);
                   return;
                }
                pollingValueUIHandler.sendEmptyMessage(valueInt);
@@ -267,7 +267,7 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
 
    @Override
    public void onStopTrackingTouch(SeekBar seekBar) {
-      Log.i("SLIDER", "Horizontally slide to business value " + slideToBusinessValue);
+      Log.i("OpenRemote-SLIDER", "Horizontally slide to business value " + slideToBusinessValue);
       sendCommandRequest(String.valueOf(slideToBusinessValue));
    }
 
@@ -282,7 +282,7 @@ public class SliderView extends SensoryControlView implements OnSeekBarChangeLis
 
    @Override
    public void onStopTrackingTouch(VerticalSeekBar seekBar) {
-      Log.i("VSLIDER", "Horizontally slide to business value " + slideToBusinessValue);
+      Log.i("OpenRemote-VSLIDER", "Horizontally slide to business value " + slideToBusinessValue);
       sendCommandRequest(String.valueOf(slideToBusinessValue));
    }
 }

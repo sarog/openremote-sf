@@ -108,7 +108,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-      Log.i("ORIENTATION", "onCreate:" + display.getOrientation());
+      Log.i("OpenRemote-ORIENTATION", "onCreate:" + display.getOrientation());
       if (display != null && display.getOrientation() == 1) {
          isLandscape = true;
          lastConfigurationOrientation = Configuration.ORIENTATION_LANDSCAPE;
@@ -321,18 +321,18 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
       
       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "right to left");
+         Log.i("OpenRemote-FLING", "right to left");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
          moveRight();
       } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "left to right");
+         Log.i("OpenRemote-FLING", "left to right");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
          moveLeft();
       } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "bottom to top");
+         Log.i("OpenRemote-FLING", "bottom to top");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
       } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "top to bottom");
+         Log.i("OpenRemote-FLING", "top to bottom");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
       }
       return true;
@@ -778,7 +778,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    @Override
    public void onConfigurationChanged(Configuration newConfig) {
       int newOrientation = newConfig.orientation;
-      Log.i("ORIENTATION", "orientation:" + newOrientation);
+      Log.i("OpenRemote-ORIENTATION", "orientation:" + newOrientation);
       if (lastConfigurationOrientation != newOrientation) {
          if (newOrientation == Configuration.ORIENTATION_PORTRAIT) {
             isLandscape = false;
