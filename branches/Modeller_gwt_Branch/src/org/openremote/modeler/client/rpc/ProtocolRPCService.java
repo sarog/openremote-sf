@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -34,9 +34,17 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface ProtocolRPCService extends RemoteService {
 
    /**
-    * Gets all the protocols.
+    * Gets all the xml defined protocols.
     * 
     * @return the protocols
     */
    Map<String, ProtocolDefinition> getProtocols();
+   
+   /**
+    * Save ui defined protocol name and values.
+    * 
+    * @param uiProtocols the ui protocols
+    */
+   void saveUIProtocolNameAndValues(Map<String, String> uiProtocols);
+   
 }

@@ -82,6 +82,10 @@ public class ProtocolCommandContainer {
       for (String protocolDisplayName : protocolDisplayNames) {
          protocolEvents.put(protocolDisplayName, new ArrayList<Command>());
       }
+      Set<String> uiProtocolDisplayNames = ProtocolContainer.getInstance().getUIProtocols().keySet();
+      for (String uiProtocolDisplayName : uiProtocolDisplayNames) {
+         protocolEvents.put(uiProtocolDisplayName, new ArrayList<Command>());
+      }
    }
    
    /**

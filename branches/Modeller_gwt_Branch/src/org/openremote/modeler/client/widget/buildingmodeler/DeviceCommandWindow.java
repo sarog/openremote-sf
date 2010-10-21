@@ -30,9 +30,10 @@ import org.openremote.modeler.client.model.ComboBoxDataModel;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
-import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.protocol.AbstractProtocolFieldSet;
+import org.openremote.modeler.client.widget.buildingmodeler.protocol.ProtocolManager;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
@@ -159,7 +160,7 @@ public class DeviceCommandWindow extends FormWindow {
             for (Field<?> f : list) {
                if (DEVICE_COMMAND_PROTOCOL.equals(f.getName())) {
                   Field<BaseModelData> p = (Field<BaseModelData>) f;
-                  attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
+                  attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(StringComboBoxData.getDisplayProperty())
                         .toString());
                } else {
                   if (f.getValue() != null && !"".equals(f.getValue().toString()) && ! INFO_FIELD.equals(f.getName())) {
@@ -189,7 +190,7 @@ public class DeviceCommandWindow extends FormWindow {
          }
 
       });
-      createFields(Protocols.getInstance());
+      createFields();
       add(form);
    }
    
@@ -198,7 +199,8 @@ public class DeviceCommandWindow extends FormWindow {
     * 
     * @param protocols the protocols
     */
-   private void createFields(Map<String, ProtocolDefinition> protocols) {
+   private void createFields() {
+      List<String> protocolNames = ProtocolManager.getInstance().getProtocolNames();
       TextField<String> nameField = new TextField<String>();
       nameField.setName(DEVICE_COMMAND_NAME);
       nameField.setFieldLabel("Name");
@@ -211,21 +213,26 @@ public class DeviceCommandWindow extends FormWindow {
       protocol.setAllowBlank(false);
       protocol.ensureDebugId(DebugId.DEVICE_COMMAND_PROTOCOL_FIELD);
       
-      for (String key : protocols.keySet()) {
-         if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
-            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
+      for (String protocolName : protocolNames) {
+         if (!protocolName.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+            StringComboBoxData data = new StringComboBoxData(protocolName, protocolName);
             protocol.getStore().add(data);
          }
       }
+//      for (String key : protocols.keySet()) {
+//         if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
+//            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
+//            protocol.getStore().add(data);
+//         }
+//      }
 
-      protocol.setDisplayField(ComboBoxDataModel.getDisplayProperty());
+      protocol.setDisplayField(StringComboBoxData.getDisplayProperty());
       protocol.setEmptyText("Please Select Protocol...");
-      protocol.setValueField(ComboBoxDataModel.getDisplayProperty());
+      protocol.setValueField(StringComboBoxData.getDisplayProperty());
 
       form.add(nameField);
       form.add(protocol);
       protocol.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
-         @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
             if (form.getItems().size() > 2) {
                if (info == null) {
@@ -234,16 +241,15 @@ public class DeviceCommandWindow extends FormWindow {
                   form.getItem(3).removeFromParent();
                }
             }
-            addAttrs((ComboBoxDataModel<ProtocolDefinition>) se.getSelectedItem());
+            addAttrs((StringComboBoxData) se.getSelectedItem());
          }
       });
 
       if (deviceCommand != null) {
          String protocolName = deviceCommand.getProtocol().getType();
          nameField.setValue(deviceCommand.getName());
-         if (protocols.containsKey(protocolName)) {
-            ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(protocolName, protocols
-                  .get(protocolName));
+         if (protocolNames.contains(protocolName)) {
+            StringComboBoxData data = new StringComboBoxData(protocolName, protocolName);
             protocol.setValue(data);
          }
 //         protocol.disable();
@@ -256,55 +262,68 @@ public class DeviceCommandWindow extends FormWindow {
     * 
     * @param data the data
     */
-   private void addAttrs(ComboBoxDataModel<ProtocolDefinition> data) {
-      FieldSet attrSet = new FieldSet();
-      FormLayout layout = new FormLayout();
-      layout.setLabelWidth(80);
-      attrSet.setLayout(layout);
-      attrSet.setHeading(data.getLabel() + " attributes");
+   private void addAttrs(StringComboBoxData data) {
+      String protocolName = data.getLabel();
+      ProtocolDefinition xmProtocol = ProtocolManager.getInstance().getXmlProtocol(protocolName);
+      if (xmProtocol != null) {
+         FieldSet attrSet = new FieldSet();
+         FormLayout layout = new FormLayout();
+         layout.setLabelWidth(80);
+         attrSet.setLayout(layout);
+         attrSet.setHeading(protocolName + " attributes");
 
-      for (ProtocolAttrDefinition attrDefinition : data.getData().getAttrs()) {
-         List<String> options = attrDefinition.getOptions();
-         String value = "";
-         if (attrDefinition.getValue() != null) {
-            value = attrDefinition.getValue();
-         } else if (deviceCommand != null) {
-            for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
-               if (attrDefinition.getName().equals(attr.getName())) {
-                  value = attr.getValue();
-               }
+         for (ProtocolAttrDefinition attrDefinition : xmProtocol.getAttrs()) {
+            List<String> options = attrDefinition.getOptions();
+            String value = "";
+            if (attrDefinition.getValue() != null) {
+               value = attrDefinition.getValue();
             }
-         }
-
-         if (options.size() > 0) {
-            ComboBoxExt comboAttrField = new ComboBoxExt();
-            comboAttrField.setName(attrDefinition.getName());
-            comboAttrField.setFieldLabel(attrDefinition.getLabel());
-            ComboBoxExt.ComboBoxMessages comboBoxMessages = comboAttrField.getMessages();
-            for (String option : options) {
-               if (!"".equals(option)) {
-                  StringComboBoxData comboData = new StringComboBoxData(option, option);
-                  comboAttrField.getStore().add(comboData);
-                  if (value.equals(option)) {
-                     comboAttrField.setValue(comboData);
+            if (deviceCommand != null) {
+               for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
+                  if (attrDefinition.getName().equals(attr.getName())) {
+                     value = attr.getValue();
                   }
                }
             }
-            setComboBoxValidators(comboAttrField, comboBoxMessages, attrDefinition.getValidators());
-            attrSet.add(comboAttrField);
-         } else {
-            TextField<String> attrField = new TextField<String>();
-            attrField.setName(attrDefinition.getName());
-            TextField<String>.TextFieldMessages messages = attrField.getMessages();
-            attrField.setFieldLabel(attrDefinition.getLabel());
-            if (!"".equals(value)) {
-               attrField.setValue(value);
+
+            if (options.size() > 0) {
+               ComboBoxExt comboAttrField = new ComboBoxExt();
+               comboAttrField.setName(attrDefinition.getName());
+               comboAttrField.setFieldLabel(attrDefinition.getLabel());
+               ComboBoxExt.ComboBoxMessages comboBoxMessages = comboAttrField.getMessages();
+               for (String option : options) {
+                  if (!"".equals(option)) {
+                     StringComboBoxData comboData = new StringComboBoxData(option, option);
+                     comboAttrField.getStore().add(comboData);
+                     if (value.equals(option)) {
+                        comboAttrField.setValue(comboData);
+                     }
+                  }
+               }
+               setComboBoxValidators(comboAttrField, comboBoxMessages, attrDefinition.getValidators());
+               attrSet.add(comboAttrField);
+            } else {
+               TextField<String> attrField = new TextField<String>();
+               attrField.setName(attrDefinition.getName());
+               TextField<String>.TextFieldMessages messages = attrField.getMessages();
+               attrField.setFieldLabel(attrDefinition.getLabel());
+               if (!"".equals(value)) {
+                  attrField.setValue(value);
+               }
+               setValidators(attrField, messages, attrDefinition.getValidators());
+               attrSet.add(attrField);
             }
-            setValidators(attrField, messages, attrDefinition.getValidators());
-            attrSet.add(attrField);
+         }
+         form.add(attrSet);
+      } else {
+         AbstractProtocolFieldSet protocolSet = ProtocolManager.getInstance().getUIProtocol(protocolName);
+         if (protocolSet != null) {
+            form.add(protocolSet);
+            if (deviceCommand != null) {
+               protocolSet.initFiledValuesByProtocol(deviceCommand.getProtocol());
+            }
          }
       }
-      form.add(attrSet);
       form.layout();
       if (isRendered()) {
          center();

@@ -46,4 +46,11 @@ public class ProtocolController extends BaseGWTSpringController implements Proto
       return ProtocolContainer.getInstance().getProtocols();
    }
 
+   /**
+    * {@inheritDoc}
+    */
+   public void saveUIProtocolNameAndValues(Map<String, String> uiProtocols) {
+      ProtocolContainer.setUIProtocols(uiProtocols);
+   }
+
 }

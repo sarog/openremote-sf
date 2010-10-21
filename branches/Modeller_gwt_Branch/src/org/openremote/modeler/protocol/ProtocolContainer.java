@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -39,6 +39,9 @@ public class ProtocolContainer implements Serializable {
    /** The protocols. */
    private static Map<String, ProtocolDefinition> protocols = new HashMap<String, ProtocolDefinition>();
 
+   /** Include ui hard coded protocols, the key is prototolDisplayName, and the value is protocolType. */
+   private static Map<String, String> uiProtocols = new HashMap<String, String>();
+   
    /**
     * Gets the protocols.
     * 
@@ -108,6 +111,20 @@ public class ProtocolContainer implements Serializable {
     */
    public static String findTagName(String protocolDisplayName) {
       ProtocolDefinition protocolDefinition = protocols.get(protocolDisplayName);
-      return protocolDefinition == null ? "" : protocolDefinition.getTagName();
+      String tagName = "";
+      tagName = protocolDefinition == null ? "" : protocolDefinition.getTagName();
+      tagName = "".equals(tagName)? uiProtocols.get(protocolDisplayName) : tagName;
+      return tagName;
+   }
+   
+   /**
+    * 
+    */
+   public static void setUIProtocols(Map<String, String> protocols) {
+      uiProtocols = protocols;
+   }
+   
+   public Map<String, String> getUIProtocols() {
+      return uiProtocols;
    }
 }
