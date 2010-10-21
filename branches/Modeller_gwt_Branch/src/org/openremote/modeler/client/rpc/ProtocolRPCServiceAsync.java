@@ -40,4 +40,6 @@ public interface ProtocolRPCServiceAsync {
     * 
     */
    void getProtocols(AsyncCallback<Map<String, ProtocolDefinition>> callback);
+
+   void saveUIProtocolNameAndValues(Map<String, String> uiProtocols, AsyncCallback<Void> callback);
 }

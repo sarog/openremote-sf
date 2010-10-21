@@ -33,8 +33,8 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.client.rpc.AuthorityRPCServiceAsync;
 import org.openremote.modeler.client.utils.IDUtil;
-import org.openremote.modeler.client.utils.Protocols;
 import org.openremote.modeler.client.widget.AccountManageWindow;
+import org.openremote.modeler.client.widget.buildingmodeler.protocol.ProtocolManager;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
 import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.selenium.DebugId;
@@ -104,7 +104,8 @@ public class ApplicationView implements View {
     * @see org.openremote.modeler.client.view.View#initialize()
     */
    public void initialize() {
-      Protocols.getInstance(); // get protocol definition from xml files
+      ProtocolManager.getInstance(); // Initialize protocol manager.
+      
       viewport = new Viewport();
       viewport.setLayout(new BorderLayout());
       final AuthorityRPCServiceAsync auth = (AuthorityRPCServiceAsync) GWT.create(AuthorityRPCService.class);
