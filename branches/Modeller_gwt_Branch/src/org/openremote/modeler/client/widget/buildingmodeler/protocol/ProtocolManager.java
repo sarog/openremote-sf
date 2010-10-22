@@ -87,7 +87,7 @@ public class ProtocolManager {
     * Each UI hard coded protocol must be registered here.
     */
    private void registerUIProtocols() {
-//      registerUIProtocol(new MockProtocolFieldSet());
+      registerUIProtocol(new MockProtocolFieldSet());
    }
    
    private void registerUIProtocol(AbstractProtocolFieldSet protocolFieldSet) {
