@@ -93,6 +93,8 @@ public class Configuration extends CustomConfiguration {
    
    private String beehiveRESTRootUrl;
 
+   private int beehiveHttpsPort;
+   
    private String webappName;
 
   /**
@@ -426,6 +428,14 @@ public class Configuration extends CustomConfiguration {
    
    public void setWebappName(String webappName) {
       this.webappName = webappName;
+   }
+
+   public int getBeehiveHttpsPort() {
+      return beehiveHttpsPort;
+   }
+
+   public void setBeehiveHttpsPort(int beehiveHttpsPort) {
+      this.beehiveHttpsPort = beehiveHttpsPort;
    }
    
 }

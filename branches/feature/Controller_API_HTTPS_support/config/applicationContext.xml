@@ -64,6 +64,7 @@
     <property name = "resourceUpload" value = "${resource.upload.enable}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
+    <property name = "beehiveHttpsPort" value="${beehive.https.port}" />
     <property name = "webappName" value="${controller.applicationname}" />
     <property name = "comPort" value = "${com.port}"/>
   </bean>
