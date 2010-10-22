@@ -318,10 +318,10 @@ public class DeviceCommandWindow extends FormWindow {
       } else {
          AbstractProtocolFieldSet protocolSet = ProtocolManager.getInstance().getUIProtocol(protocolName);
          if (protocolSet != null) {
+            List<ProtocolAttr> protocolAttrs = deviceCommand == null ? null : deviceCommand.getProtocol()
+                  .getAttributes();
+            protocolSet.initFiledValuesByProtocol(protocolAttrs);
             form.add(protocolSet);
-            if (deviceCommand != null) {
-               protocolSet.initFiledValuesByProtocol(deviceCommand.getProtocol());
-            }
          }
       }
       form.layout();

@@ -19,7 +19,9 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler.protocol;
 
-import org.openremote.modeler.domain.Protocol;
+import java.util.List;
+
+import org.openremote.modeler.domain.ProtocolAttr;
 
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
@@ -74,11 +76,20 @@ public abstract class AbstractProtocolFieldSet extends FieldSet {
    protected abstract void initFields();
    
    /**
-    * Instantiates the filed values by the stored command's protocol, it used in edit command.
-    * Must be override by sub class for editing the command's protocol.
+    * Instantiates the filed values by the stored command's protocol attributes.
+    * If protocolAttrs is null, clear all field's value.
+    * 
+    * <pre>{@code
+    *    if (protocolAttrs == null) {
+    *       colorField.clear();
+    *    } else {
+    *       for (ProtocolAttr protocolAttr : protocolAttrs) {
+    *          if (colorField.getName().equals(protocolAttr.getName())) {
+    *             colorField.setValue(protocolAttr.getValue());
+    *          }
+    *       }
+    *    }
+    * </pre>
     */
-   public void initFiledValuesByProtocol(Protocol protocol) {
-      if (protocol == null) return;
-      if (!protocol.getType().equals(getProtocolType())) return;
-   }
+   public abstract void initFiledValuesByProtocol(List<ProtocolAttr> protocolAttrs);
 }
