@@ -465,30 +465,66 @@ public class TreePanelBuilder {
             super.onClick(tpe);
             BeanModel beanModel = this.getSelectionModel().getSelectedItem();
             if (beanModel != null && beanModel.getBean() instanceof ScreenPairRef) {
-               ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
-               screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
-               screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
-               ScreenTab screenTabItem = screenPanel.getScreenItem();
-               if (screenTabItem != null) {
-                  if (screen == screenTabItem.getScreenPair()) {
-                     screenTabItem.updateTouchPanel();
-                     screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                  } else {
-                     screenTabItem = new ScreenTab(screen);
-                     screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
-                     screenPanel.setScreenItem(screenTabItem);
+               updateScreenTab(screenPanel, beanModel);
+            }
+            if (beanModel != null) {
+               // update screen tab.
+               if (beanModel.getBean() instanceof GroupRef) {
+                  BeanModel screenPairRefBean = panelTreeStore.getChild(beanModel, 0);
+                  if (screenPairRefBean != null) {
+                     ScreenTab screenTabItem = screenPanel.getScreenItem();
+                     if (screenTabItem != null) {
+                        if (!((GroupRef) beanModel.getBean()).getGroup().equals(
+                              screenTabItem.getScreenPair().getParentGroup())) {
+                           updateScreenTab(screenPanel, screenPairRefBean);
+                        }
+                     } else {
+                        updateScreenTab(screenPanel, screenPairRefBean);
+                     }
                   }
+               } else if (beanModel.getBean() instanceof Panel) {
+                  BeanModel groupRefBean = panelTreeStore.getChild(beanModel, 0);
+                  if (groupRefBean != null) {
+                     BeanModel screenPairRefBean = panelTreeStore.getChild(groupRefBean, 0);
+                     if (screenPairRefBean != null) {
+                        ScreenTab screenTabItem = screenPanel.getScreenItem();
+                        if (screenTabItem != null) {
+                           if (!((Panel) beanModel.getBean()).equals(
+                                 screenTabItem.getScreenPair().getParentGroup().getParentPanel())) {
+                              updateScreenTab(screenPanel, screenPairRefBean);
+                           }
+                        } else {
+                           updateScreenTab(screenPanel, screenPairRefBean);
+                        }
+                     }
+                  }
+               }
+               // update property panel.
+               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
+                     .getPropertyEditable(beanModel, this)));
+            }
+         }
+
+         private void updateScreenTab(final ScreenPanel screenPanel, BeanModel beanModel) {
+            ScreenPair screen = ((ScreenPairRef) beanModel.getBean()).getScreen();
+            screen.setTouchPanelDefinition(((ScreenPairRef) beanModel.getBean()).getTouchPanelDefinition());
+            screen.setParentGroup(((ScreenPairRef) beanModel.getBean()).getGroup());
+            ScreenTab screenTabItem = screenPanel.getScreenItem();
+            if (screenTabItem != null) {
+               if (screen == screenTabItem.getScreenPair()) {
+                  screenTabItem.updateTouchPanel();
+                  screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
                } else {
                   screenTabItem = new ScreenTab(screen);
                   screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
                   screenPanel.setScreenItem(screenTabItem);
                }
-               screenTabItem.updateScreenIndicator();
+            } else {
+               screenTabItem = new ScreenTab(screen);
+               screenTabItem.updateTabbarForScreenCanvas((ScreenPairRef) beanModel.getBean());
+               screenPanel.setScreenItem(screenTabItem);
             }
-            if (beanModel != null) {
-               this.fireEvent(PropertyEditEvent.PropertyEditEvent, new PropertyEditEvent(PropertyEditableFactory
-                     .getPropertyEditable(beanModel, this)));
-            }
+            screenTabItem.updateScreenIndicator();
          }
 
          @SuppressWarnings("unchecked")
