@@ -25,12 +25,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
@@ -160,7 +172,45 @@ public class FileServiceImpl implements FileService {
    
    private boolean downloadOpenremoteZipFromBeehiveAndUnzip(String username, String password) {
       HttpClient httpClient = new DefaultHttpClient();
-      HttpGet httpGet = new HttpGet(PathUtil.addSlashSuffix(configuration.getBeehiveRESTRootUrl()) + "user/" + username
+      String beehiveRESTRootUrl = configuration.getBeehiveRESTRootUrl();
+      beehiveRESTRootUrl = beehiveRESTRootUrl.replace("http:", "https:");
+      // Create a self certificate manager.
+      TrustManager easyTrustManager = new X509TrustManager() {
+         @Override
+         public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+         }
+         @Override
+         public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+         }
+         @Override
+         public X509Certificate[] getAcceptedIssuers() {
+            return null;
+         }
+      };
+      
+      try {
+         URL uri = new URL(beehiveRESTRootUrl);
+         int beehivePort = uri.getPort();
+         if (beehivePort != -1) {
+            beehiveRESTRootUrl = beehiveRESTRootUrl.replace(":" + beehivePort, ":" + configuration.getBeehiveHttpsPort());
+         }
+         
+         // Register the https scheme. 
+         SSLContext sslContext = SSLContext.getInstance("TLS");
+         sslContext.init(null, new TrustManager[] {easyTrustManager}, null);
+         SSLSocketFactory sf = new SSLSocketFactory(sslContext);
+         sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+         Scheme sch = new Scheme("https", sf, 8443);
+         httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+      } catch (MalformedURLException e1) {
+         logger.error("failed to construct url " + beehiveRESTRootUrl);
+      } catch (NoSuchAlgorithmException e) {
+         logger.error("no TLS algorithm.");
+      } catch (KeyManagementException e) {
+         logger.error("failed to init SSLContext.");
+      }
+      
+      HttpGet httpGet = new HttpGet(PathUtil.addSlashSuffix(beehiveRESTRootUrl) + "user/" + username
             + "/openremote.zip");
       
       httpGet.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
