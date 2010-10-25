@@ -19,9 +19,7 @@
 */
 package org.openremote.android.test.console.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.openremote.android.console.bindings.AbsoluteLayoutContainer;
 import org.openremote.android.console.bindings.Gesture;
@@ -50,11 +47,20 @@ import org.openremote.android.console.bindings.TabBarItem;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.util.FileUtil;
 
+import android.content.Context;
+import android.test.InstrumentationTestCase;
+
 /**
  * The Class test to parse panel.xml.
  */
-public class FileUtilTest extends TestCase {
+public class FileUtilTest extends InstrumentationTestCase {
 
+   private Context ctx;
+
+   public void setUp() {
+     this.ctx = getInstrumentation().getContext();
+   }
+   
    /**
     * Test parse panel_grid_button.xml.
     */
@@ -245,7 +251,7 @@ public class FileUtilTest extends TestCase {
       while (ids.hasNext()) {
          pollingStatusIds = pollingStatusIds + "," + ids.next();
       }
-      Assert.assertEquals("59,62,61,60", pollingStatusIds);
+      Assert.assertEquals("59,60,61,62", pollingStatusIds);
    }
 
    /**
@@ -408,7 +414,7 @@ public class FileUtilTest extends TestCase {
       while (ids.hasNext()) {
          pollingStatusIds = pollingStatusIds + "," + ids.next();
       }
-      Assert.assertEquals("59,62,61,60", pollingStatusIds);
+      Assert.assertEquals("59,60,61,62", pollingStatusIds);
 
    }
 
@@ -1158,11 +1164,10 @@ public class FileUtilTest extends TestCase {
     * @return the input stream
     */
    private InputStream readFile(String fileName) {
-      File file = new File(FileUtilTest.class.getResource("./fixture/" + fileName + ".xml").getFile());
       try {
-         return new FileInputStream(file);
-      } catch (FileNotFoundException e) {
-         e.printStackTrace();
+         return ctx.getAssets().open("fixture/" + fileName + ".xml");
+      } catch (IOException e) {
+         fail("Can't read file: " + "assets/fixture/" + fileName + ".xml");
          return null;
       }
    }
