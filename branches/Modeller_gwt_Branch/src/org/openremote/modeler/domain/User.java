@@ -233,6 +233,8 @@ public class User extends BusinessEntity {
          userRole = Constants.ROLE_MODELER_DISPLAYNAME;
       } else if(roleStrs.contains(Role.ROLE_DESIGNER)) {
          userRole = Constants.ROLE_DESIGNER_DISPLAYNAME;
+      } else if(roleStrs.contains(Role.ROLE_GUEST)) {
+         userRole = Constants.ROLE_GUEST;
       }
       return userRole;
    }

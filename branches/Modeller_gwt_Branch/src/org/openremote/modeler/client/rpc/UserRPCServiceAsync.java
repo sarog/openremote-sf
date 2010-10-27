@@ -39,4 +39,6 @@ public interface UserRPCServiceAsync {
 
    void getUserId(AsyncCallback<Long> callback);
 
+   void createGuestUser(String email, AsyncCallback<User> callback);
+
 }

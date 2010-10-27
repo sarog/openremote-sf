@@ -52,11 +52,11 @@ public class UserServiceTest {
       
       userService.initRoles();
       allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 3);
+      Assert.assertEquals(allRoles.size(), 4);
       
       userService.initRoles();
       allRoles = genericDAO.loadAll(Role.class);
-      Assert.assertEquals(allRoles.size(), 3);
+      Assert.assertEquals(allRoles.size(), 4);
       
    }
    

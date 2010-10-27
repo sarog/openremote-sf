@@ -82,4 +82,15 @@ public interface UserRPCService extends RemoteService {
     * @return the user id
     */
    Long getUserId();
+   
+   /**
+    * Creates a guest user.
+    * 
+    * The email is the username, and "guest" is the password.
+    * 
+    * @return the user
+    * 
+    * @throws UserInvitationException the user invitation exception
+    */
+   User createGuestUser(String email) throws UserInvitationException;
 }
