@@ -74,6 +74,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       boolean hasDesignerRole = false;
       boolean hasModelerRole = false;
       boolean hasAdminRole = false;
+      boolean hasGuestRole = false;
       List<Role> allRoles = genericDAO.loadAll(Role.class);
       for (Role r : allRoles) {
          if (r.getName().equals(Role.ROLE_DESIGNER)) {
@@ -82,6 +83,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             hasModelerRole = true;
          } else if (r.getName().equals(Role.ROLE_ADMIN)) {
             hasAdminRole = true;
+         } else if (r.getName().equals(Role.ROLE_GUEST)) {
+            hasGuestRole = true;
          }
       }
       if (!hasDesignerRole) {
@@ -97,6 +100,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       if (!hasAdminRole) {
          Role r = new Role();
          r.setName(Role.ROLE_ADMIN);
+         genericDAO.save(r);
+      }
+      if (!hasGuestRole) {
+         Role r = new Role();
+         r.setName(Role.ROLE_GUEST);
          genericDAO.save(r);
       }
       
@@ -381,6 +389,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             user.addRole(role);
          } else if (role.getName().equals(Role.ROLE_DESIGNER) && roles.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
             user.addRole(role);
+         } else if (role.getName().equals(Role.ROLE_GUEST) && roles.indexOf(Constants.ROLE_GUEST) != -1) {
+            user.addRole(role);
          }
       }
    }
@@ -455,6 +465,47 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          return true;
       }
       return false;
+   }
+
+   public User createGusetUser(String email) {
+      if (!isUsernameAvailable(email)) {
+         throw new UserInvitationException("Failed to create guest user.");
+      }
+      User currentUser = getCurrentUser();
+      final String host = currentUser.getUsername();
+      final User user = new User(currentUser.getAccount());
+      String rawPassword = "guest";
+      user.setUsername(email);
+      user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_GUEST));
+      user.setEmail(email);
+      user.setRawPassword(rawPassword);
+      user.setPassword(new Md5PasswordEncoder().encodePassword(rawPassword, email));
+      user.setValid(true);
+      MimeMessagePreparator preparator = new MimeMessagePreparator() {
+         @SuppressWarnings("unchecked")
+         public void prepare(MimeMessage mimeMessage) throws Exception {
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            message.setSubject("OpenRemote Guest User");
+            message.setTo(user.getEmail());
+            message.setFrom(mailSender.getUsername());
+            Map model = new HashMap();
+            model.put("host", host);
+            model.put("username", user.getUsername());
+            model.put("password", user.getRawPassword());
+            String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
+                 Constants.CREATE_GUEST_EMAIL_VM_NAME, "UTF-8", model);
+            message.setText(text, true);
+         }
+      };
+      try {
+         this.mailSender.send(preparator);
+         log.info("Sent 'OpenRemote Guest User' email to " + email);
+         genericDAO.save(user);
+         return user;
+      } catch (MailException e) {
+         log.error("Can't send 'OpenRemote Guest User' email", e);
+         throw new UserInvitationException("Failed to create guest user.");
+      }
    }
    
 }

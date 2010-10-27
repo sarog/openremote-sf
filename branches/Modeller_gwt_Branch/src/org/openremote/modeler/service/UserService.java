@@ -171,4 +171,15 @@ public interface UserService {
     * @return true, if successful
     */
    boolean resetPassword(long uid, String password, String passwordToken);
+   
+   /**
+    * Creates a guest user and sends a email to the guest user.
+    * 
+    * The email is the username, and "guest" is the password.
+    * 
+    * @return the user
+    * 
+    */
+   User createGusetUser(String email);
+   
 }
