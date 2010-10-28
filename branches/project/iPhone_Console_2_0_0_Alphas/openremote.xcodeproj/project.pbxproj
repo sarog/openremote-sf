@@ -155,6 +155,12 @@
 		8C65FDF51096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C65FDF61096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C6682490F53FFF5007C45D4 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
+		8C6878A41266B961004CDF7D /* slider_default_max_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */; };
+		8C6878A51266B961004CDF7D /* slider_default_min_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */; };
+		8C6878A61266B961004CDF7D /* slider_default_thumb_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */; };
+		8C6878A71266B961004CDF7D /* slider_default_max_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */; };
+		8C6878A81266B961004CDF7D /* slider_default_min_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */; };
+		8C6878A91266B961004CDF7D /* slider_default_thumb_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */; };
 		8C72E7160F541FAB006CC0DF /* StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C72E7150F541FAB006CC0DF /* StringUtils.m */; };
 		8C7BE4230FA0395F00F18AA1 /* ViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */; };
 		8C7BE48B0FA0431700F18AA1 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
@@ -380,6 +386,9 @@
 		8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingStatusParserDelegate.m; sourceTree = "<group>"; };
 		8C6682470F53FFF5007C45D4 /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
 		8C6682480F53FFF5007C45D4 /* FileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtils.m; sourceTree = "<group>"; };
+		8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slider_default_max_track_image_.png; path = image/slider_default_max_track_image_.png; sourceTree = "<group>"; };
+		8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slider_default_min_track_image_.png; path = image/slider_default_min_track_image_.png; sourceTree = "<group>"; };
+		8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slider_default_thumb_image_.png; path = image/slider_default_thumb_image_.png; sourceTree = "<group>"; };
 		8C72E7140F541FAB006CC0DF /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
 		8C72E7150F541FAB006CC0DF /* StringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringUtils.m; sourceTree = "<group>"; };
 		8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewHelper.h; sourceTree = "<group>"; };
@@ -565,6 +574,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */,
+				8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */,
+				8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */,
 				8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */,
 				8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */,
 				8C3DE3001163492C00DD4EE7 /* btn_green.png */,
@@ -995,6 +1007,9 @@
 				8C3DE30F1163492C00DD4EE7 /* slider_tip.png in Resources */,
 				8C09289B11B63D1900674C4F /* ErrorViewController~iPhone.xib in Resources */,
 				8C09289C11B63D1900674C4F /* InitViewController~iPhone.xib in Resources */,
+				8C6878A41266B961004CDF7D /* slider_default_max_track_image_.png in Resources */,
+				8C6878A51266B961004CDF7D /* slider_default_min_track_image_.png in Resources */,
+				8C6878A61266B961004CDF7D /* slider_default_thumb_image_.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1036,6 +1051,9 @@
 				8C579703116B9DD000ED63EA /* panel_local_tabbar.xml in Resources */,
 				8C579704116B9DD000ED63EA /* panel_portrait_landscape.xml in Resources */,
 				8C579705116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml in Resources */,
+				8C6878A71266B961004CDF7D /* slider_default_max_track_image_.png in Resources */,
+				8C6878A81266B961004CDF7D /* slider_default_min_track_image_.png in Resources */,
+				8C6878A91266B961004CDF7D /* slider_default_thumb_image_.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1263,9 +1281,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = openremote;
-				SDKROOT = iphonesimulator4.0;
+				PRODUCT_NAME = OpenRemote;
+				SDKROOT = iphonesimulator4.1;
 			};
 			name = "Simulator iOS 3.0";
 		};
@@ -1334,17 +1353,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.1;
+				PROVISIONING_PROFILE = "365D5E5E-05D3-4064-BD24-BCD94C30080C";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "365D5E5E-05D3-4064-BD24-BCD94C30080C";
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Device Distro iOS 3.0";
 		};
@@ -1380,14 +1400,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = GCov_Build;
 		};
@@ -1410,11 +1432,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = openremote;
 				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos4.1;
 			};
 			name = GCov_Build;
 		};
@@ -1457,16 +1480,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphonesimulator4.1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Simulator iOS 3.0";
 		};
