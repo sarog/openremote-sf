@@ -85,13 +85,25 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   {
     String state = virtualDevices.get(address);
 
-    if (state.equalsIgnoreCase("on"))
-      return "on";
-
-    if (state.equalsIgnoreCase("off"))
+    if (state == null)
+    {
       return "off";
+    }
 
-    return "off";
+    else if (state.equalsIgnoreCase("on"))
+    {
+      return "on";
+    }
+
+    else if (state.equalsIgnoreCase("off"))
+    {
+      return "off";
+    }
+
+    else
+    {
+      return "off";
+    }
   }
 }
 
