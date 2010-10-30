@@ -29,7 +29,6 @@ package org.openremote.controller.command;
 public interface Command
 {
         
-    /** The Constant STATUS_COMMAND. */
     public final static String STATUS_COMMAND = "status";
     
     /** 
