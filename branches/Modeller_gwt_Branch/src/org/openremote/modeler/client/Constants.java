@@ -83,6 +83,7 @@ public class Constants {
    public static final String REG_POSITIVEINT = "^[1-9][0-9]*$";
    public static final String REG_NONNEGATIVEINT = "^\\d+$";
    public static final String REG_INTEGER = "^-?\\d+$";
+   public static final String REG_EMAIL = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
    
    public final static String OPENREMOTE_WEBSITE= "http://www.openremote.org";
    
