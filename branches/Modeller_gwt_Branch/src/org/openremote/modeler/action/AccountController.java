@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import nl.captcha.Captcha;
 
 import org.apache.commons.lang.StringUtils;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
@@ -94,7 +95,7 @@ public class AccountController extends MultiActionController {
          registerMav.addObject("email_blank", true);
          return registerMav;
       }
-      if (!email.matches("^[a-zA-Z0-9_\\.]+@[a-zA-Z0-9-]+\\.[a-zA-Z]+$")) {
+      if (!email.matches(Constants.REG_EMAIL)) {
          registerMav.addObject("email_invalid", true);
          return registerMav;
       }
