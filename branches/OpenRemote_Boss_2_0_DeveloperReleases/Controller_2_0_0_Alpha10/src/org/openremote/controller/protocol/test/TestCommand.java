@@ -15,7 +15,8 @@ public class TestCommand implements ExecutableCommand, StatusCommand {
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
    private String commandValue;
-   
+
+
    public TestCommand() {
       super();
    }
