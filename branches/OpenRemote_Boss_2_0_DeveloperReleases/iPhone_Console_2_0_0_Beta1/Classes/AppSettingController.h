@@ -24,11 +24,11 @@
 #import "ServerAutoDiscoveryController.h"
 #import "UpdateController.h"
 #import "FileUtils.h"
-
+#import "GetPanelsController.h"
 /**
  * Render the UI of AppSetting view and provide functions of setting about panel client.
  */
-@interface AppSettingController : UITableViewController <UITextFieldDelegate> {
+@interface AppSettingController : UITableViewController <UITextFieldDelegate,GetPanelsDelegate> {
 	NSString *pathToUserCopyOfPlist;
 	BOOL autoDiscovery;
 	NSMutableArray *serverArray;
