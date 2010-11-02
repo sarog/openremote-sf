@@ -56,7 +56,8 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    private RemoteActionXMLParser remoteActionXMLParser;
    private CommandFactory commandFactory;
    private ControllerXMLListenSharingData controllerXMLListenSharingData;
-   private Logger logger = Logger.getLogger(this.getClass().getName());
+
+   private Logger logger = Logger.getLogger("INIT");
    
    /**
     * {@inheritDoc}
@@ -75,15 +76,24 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
          return;
       }
       
-      if (sensorElements != null) {
-         for (Element sensorElement : sensorElements) {
+      if (sensorElements != null)
+      {
+         for (Element sensorElement : sensorElements)
+         {
             String sensorID = sensorElement.getAttributeValue("id");
+
+System.out.println("============ ADDING SENSOR ID " + sensorID);
+           
+
             Sensor sensor = new Sensor(Integer.parseInt(sensorID), 
                   sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), 
                   getStatusCommand(document, sensorElement),
                   getStateMap(sensorElement));
+
             sensors.add(sensor);
+
             controllerXMLListenSharingData.addSensor(sensor);
+
             statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "N/A");
          }
       }
