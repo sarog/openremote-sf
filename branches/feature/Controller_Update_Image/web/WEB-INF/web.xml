@@ -120,6 +120,15 @@
     	<servlet-class>org.openremote.controller.rest.RoundRobinRESTServlet</servlet-class>
     </servlet>
     
+    <servlet>
+    	<description>
+    	Gets changed image names by panel name and device id.
+    	</description>
+    	<display-name>ImageChangeRESTServlet</display-name>
+    	<servlet-name>ImageChangeRESTServlet</servlet-name>
+    	<servlet-class>org.openremote.controller.rest.ImageChangeRESTServlet</servlet-class>
+    </servlet>
+    
     <servlet-mapping>
         <servlet-name>resourceServlet</servlet-name>
         <url-pattern>/resources/*</url-pattern>
@@ -149,6 +158,10 @@
     <servlet-mapping>
     	<servlet-name>RoundRobinRESTServlet</servlet-name>
     	<url-pattern>/rest/servers</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>ImageChangeRESTServlet</servlet-name>
+    	<url-pattern>/rest/imagechanges/*</url-pattern>
     </servlet-mapping>
 
 

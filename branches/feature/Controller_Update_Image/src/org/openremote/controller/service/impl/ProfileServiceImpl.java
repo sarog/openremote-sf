@@ -22,8 +22,14 @@ package org.openremote.controller.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -47,6 +53,8 @@ import org.openremote.controller.utils.PathUtil;
  */
 public class ProfileServiceImpl implements ProfileService {
 
+   private static final Logger logger = Logger.getLogger(ProfileServiceImpl.class);
+   
    private static final String TABBAR_ELEMENT_NAME = "tabbar";
    private Configuration configuration;
 
@@ -94,6 +102,90 @@ public class ProfileServiceImpl implements ProfileService {
       return output(doc);
    }
 
+   public Map<String, Set<String>> getImageNamesSortByPanelName() {
+      String panelXMLPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.PANEL_XML;
+      return getImageNamesSortByPanelName(panelXMLPath);
+   }
+   
+   @SuppressWarnings("unchecked")
+   @Override
+   public Map<String, Set<String>> getImageNamesSortByPanelName(String panelXMLPath) {
+      // Define the returned variable
+      Map<String, Set<String>> imageNames = new HashMap<String, Set<String>>();
+      File panelXMLFile = new File(panelXMLPath);
+      if (!panelXMLFile.exists() || !panelXMLFile.isFile()) {
+         logger.info("No file panel.xml");
+         return imageNames;
+      }
+      
+      Document doc = getAllPanelsDocument(panelXMLPath);
+      List<Element> panelElements = queryElementByElementName(doc, "panel");
+      if (panelElements == null || panelElements.size() == 0) {
+         logger.info("No panel in panel.xml");
+         return imageNames;
+      }
+      
+      // Gets all panel names.
+      List<String> panelNames = new ArrayList<String>();
+      for (Element panelElement : panelElements) {
+         panelNames.add(panelElement.getAttributeValue("name"));
+      }
+      
+      // Gets image names by panel.
+      if (panelNames.size() > 0) {
+         for (String panelName : panelNames) {
+            Set<String> panelImageNames = new HashSet<String>();
+            Document panelDoc = getProfileDocumentByPanelName(panelXMLPath, panelName);
+            
+            // Gets image names from image nodes.
+            List<Element> imageElements = queryElementByElementName(panelDoc, "image");
+            for (Element imageElement : imageElements) {
+               String image = imageElement.getAttributeValue("src");
+               if (image != null) {
+                  panelImageNames.add(image);
+               }
+            }
+            
+            // Gets image names from state nodes, which is included in image or switch nodes.
+            List<Element> stateElements = queryElementByElementName(panelDoc, "state");
+            for (Element stateElement : stateElements) {
+               String stateParent = stateElement.getParentElement().getParentElement().getName();
+               if ("image".equals(stateParent) || "switch".equals(stateParent)) {
+                  String image = stateElement.getAttributeValue("value");
+                  if (image != null) {
+                     panelImageNames.add(image);
+                  }
+               }
+            }
+            
+            // Gets image names from slider nodes.
+            List<Element> sliderElements = queryElementByElementName(panelDoc, "slider");
+            for (Element sliderElement : sliderElements) {
+               String thumbImage = sliderElement.getAttributeValue("thumbImage");
+               if (thumbImage != null) {
+                  panelImageNames.add(thumbImage);
+               }
+               List<Element> children = sliderElement.getChildren();
+               for (Element child : children) {
+                  if ("min".equals(child.getName()) || "max".equals(child.getName())) {
+                     String image = child.getAttributeValue("image");
+                     if (image != null) {
+                        panelImageNames.add(image);
+                     }
+                     String trackImage = child.getAttributeValue("trackImage");
+                     if (trackImage != null) {
+                        panelImageNames.add(trackImage);
+                     }
+                  }
+               }
+            }
+            
+            imageNames.put(panelName, panelImageNames);
+         }
+      }
+      return imageNames;
+   }
+   
    private Document getAllPanelsDocument(String xmlPath) {
       Document doc = buildXML(xmlPath);
       Element root = (Element) doc.getRootElement();

@@ -1,5 +1,8 @@
 package org.openremote.controller.service;
 
+import java.util.Map;
+import java.util.Set;
+
 import junit.framework.Assert;
 
 import org.junit.Before;
@@ -124,5 +127,26 @@ public class ProfileServiceTest {
    public void getGetPanelByName5() {
       String result = generateXMLByPanelName2("\"\'test test\"");
       System.out.println(result);
+   }
+   
+   @Test
+   public void getGetImageNamesSortByPanelName() {
+      Map<String, Set<String>> imageNames = service.getImageNamesSortByPanelName(xmlPath);
+      Set<String> panelNames = imageNames.keySet();
+      
+      Assert.assertEquals(3, panelNames.size());
+      Assert.assertTrue(panelNames.contains("father"));
+      Assert.assertTrue(panelNames.contains("me"));
+      Assert.assertTrue(panelNames.contains("mother"));
+      
+      Set<String> fatherPanelImages = imageNames.get("father");
+      Assert.assertEquals(6, fatherPanelImages.size());
+      
+      Set<String> mePanelImages = imageNames.get("me");
+      Assert.assertEquals(0, mePanelImages.size());
+      
+      Set<String> motherPanelImages = imageNames.get("mother");
+      Assert.assertEquals(6, motherPanelImages.size());
+      
    }
 }

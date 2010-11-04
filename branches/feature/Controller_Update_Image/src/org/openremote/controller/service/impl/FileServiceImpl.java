@@ -158,6 +158,15 @@ public class FileServiceImpl implements FileService {
       return downloadOpenremoteZipFromBeehiveAndUnzip(username, password);
    }
    
+   @Override
+   public long getResourceTimeStamp(String relativePath) {
+      File file = new File(PathUtil.addSlashSuffix(configuration.getResourcePath()) + relativePath);
+      if (file.exists() && file.isFile()) {
+         return file.lastModified();
+      }
+      return 0;
+   }
+   
    private boolean downloadOpenremoteZipFromBeehiveAndUnzip(String username, String password) {
       HttpClient httpClient = new DefaultHttpClient();
       HttpGet httpGet = new HttpGet(PathUtil.addSlashSuffix(configuration.getBeehiveRESTRootUrl()) + "user/" + username

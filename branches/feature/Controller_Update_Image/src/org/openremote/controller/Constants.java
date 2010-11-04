@@ -63,6 +63,8 @@ public class Constants {
    /** The Constant XML_STATUS_RESULT_ELEMENT_NAME composed xml-formatted status results. */
    public static final String STATUS_XML_STATUS_RESULT_ELEMENT_NAME = "status";
    
+   public static final String IMAGES_XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openremote.org http://www.openremote.org/schemas/images.xsd\">\n";
+   
    public static final String SENSORS_ELEMENT_NAME = "sensors";
    
    public static final String INCLUDE_ELEMENT_NAME = "include";
@@ -78,6 +80,8 @@ public class Constants {
    
    /** The Constant XML_TAIL of composed xml-formatted status results. */
    public static final String STATUS_XML_TAIL = "</openremote>";
+   
+   public static final String IMAGES_XML_TAIL = STATUS_XML_TAIL;
 
    public static final String HTTP_BASIC_AUTH_HEADER_NAME = "Authorization";
 
