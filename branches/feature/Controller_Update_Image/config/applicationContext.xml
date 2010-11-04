@@ -124,6 +124,11 @@
     <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
 	
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
+	
+	<!-- Image content change service -->
+	<bean id = "imageContentChangeService" class="org.openremote.controller.service.impl.ImageContentChangeServiceImpl" />
+	
+	<bean id = "imageContentTimeStampData" class="org.openremote.controller.image.ImageContentTimeStampData" />
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">

@@ -63,4 +63,14 @@ public interface FileService {
     */
    boolean syncConfigurationWithModeler(String username, String password);
 
+   /**
+    * Gets the time stamp(last modified time) of the relativePath.
+    * 
+    * @param relativePath
+    *           the relative path
+    * 
+    * @return the resource time stamp
+    */
+   long getResourceTimeStamp(String relativePath);
+   
 }

@@ -52,6 +52,10 @@ public class ControlCommandException extends ControllerException {
    public final static int INVALID_ELEMENT = 429;
    
    public final static int INVALID_REFERENCE = 430;
+   
+   public final static int INVALID_IMAGE_CHANGE_URL = 431;
+   
+   public final static int NO_IMAGE_CHANGE = 432;
 
    /**
     * Instantiates a new button command exception.

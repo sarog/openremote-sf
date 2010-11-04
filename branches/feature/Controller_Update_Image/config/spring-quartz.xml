@@ -22,11 +22,34 @@
        		<value>*/15 * * * * ?</value>
 		</property>
     </bean>
+    
+    <!-- imageContentChangeListenJob -->
+	<bean name="imageContentChangeListenJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass">
+			<value>org.openremote.controller.image.ImageContentChangeListener</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+			  <entry key="imageContentChangeService" value-ref="imageContentChangeService" />
+			  <entry key="imageContentTimeStampData" value-ref="imageContentTimeStampData" />
+			</map>
+		</property>             
+	</bean>
+        
+    <bean id="imageContentChangeListenJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+       		<ref bean="imageContentChangeListenJob" />
+		</property>
+		<property name="cronExpression">
+       		<value>*/30 * * * * ?</value>
+		</property>
+    </bean>
 	
 	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref local="controllerXMLChangeListenJobTrigger"/>
+				<ref local="imageContentChangeListenJobTrigger"/>
 			</list>
 		</property>
 	</bean>

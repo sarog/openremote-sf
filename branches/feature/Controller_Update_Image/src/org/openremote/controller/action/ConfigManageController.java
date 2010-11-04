@@ -30,8 +30,10 @@ import org.openremote.controller.exception.BeehiveNotAvailableException;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ForbiddenException;
 import org.openremote.controller.exception.ResourceNotFoundException;
+import org.openremote.controller.image.ImageContentTimeStampData;
 import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.FileService;
+import org.openremote.controller.service.ImageContentChangeService;
 import org.openremote.controller.spring.SpringContext;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -53,6 +55,12 @@ public class ConfigManageController extends MultiActionController {
    /** MUST use <code>SpringContext</code> to keep the same context as <code>InitCachedStatusDBListener</code> */
    private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService) SpringContext
          .getInstance().getBean("controllerXMLChangeService");
+   
+   private ImageContentChangeService imageContentChangeService = (ImageContentChangeService) SpringContext
+   .getInstance().getBean("imageContentChangeService");
+   
+   private ImageContentTimeStampData imageContentTimeStampData = (ImageContentTimeStampData) SpringContext
+   .getInstance().getBean("imageContentTimeStampData");
 
    /**
     * Upload zip.
@@ -73,6 +81,8 @@ public class ConfigManageController extends MultiActionController {
             boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
             if (success) {
                controllerXMLChangeService.refreshController();
+               imageContentTimeStampData.clear();
+               imageContentChangeService.refreshImageContentTimeStamps();
             }
             response.getWriter().print(success ? Constants.OK : null);
          } else {
@@ -93,6 +103,8 @@ public class ConfigManageController extends MultiActionController {
          success = fileService.syncConfigurationWithModeler(username, password);
          if (success) {
             controllerXMLChangeService.refreshController();
+            imageContentTimeStampData.clear();
+            imageContentChangeService.refreshImageContentTimeStamps();
          }
          response.getWriter().print(success ? Constants.OK : null);
       } catch (ForbiddenException e) {

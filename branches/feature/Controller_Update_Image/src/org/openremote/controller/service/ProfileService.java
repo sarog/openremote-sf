@@ -18,6 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package org.openremote.controller.service;
+
+import java.util.Map;
+import java.util.Set;
+
 /**
  * This service is used to provide some profile related method. such as: get profile by panel id, 
  * get profile by panel name, get all panels. etc...
@@ -74,5 +78,22 @@ public interface ProfileService {
     * @return A xml string that contains all the panels. 
     */
    String getPanelsXML(String xmlPath);
+   
+   /**
+    * Gets the image names sorted by panel name from panel.xml.
+    * attention : This method will read panel.xml by your configuration, you should put panel.xml into your ${resource.path}
+    * @return the image names sorted by panel name.
+    * The key is panel name and the value is image names.
+    */
+   Map<String, Set<String>> getImageNamesSortByPanelName();
+   
+   /**
+    * Gets the image names sorted by panel name from panel.xml.
+    * @param panleXMLPath The path of file panel.xml
+    * @return the image names sorted by panel name.
+    * The key is panel name and the value is image names.
+    */
+   Map<String, Set<String>> getImageNamesSortByPanelName(String panelXMLPath);
+   
    
 }
