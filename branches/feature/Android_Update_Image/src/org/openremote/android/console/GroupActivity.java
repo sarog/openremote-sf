@@ -22,6 +22,7 @@ package org.openremote.android.console;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.bindings.Gesture;
@@ -36,12 +37,14 @@ import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
 import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
+import org.openremote.android.console.model.PollingHelper;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORRoundRobinConnection;
+import org.openremote.android.console.util.HTTPUtil;
 import org.openremote.android.console.util.ImageUtil;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
@@ -52,6 +55,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -97,6 +101,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private boolean isNavigetionBackward;
    private boolean isLandscape = false;
 
+   private Handler updateImageHandeler;
+   private Runnable updateImageTask;
+   
+   /** The interval is 30000 ms. */
+   private final int UPDATE_IMAGE_INTERVAL = 30000;
 
    private int lastConfigurationOrientation = -1;
    
@@ -131,8 +140,52 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
       initOrientationListener();
 
+      startUpdateImagesTask();
    }
 
+   /**
+    * Start update images task for tracking the image content changes in controller.
+    */
+   private void startUpdateImagesTask() {
+      if (updateImageHandeler != null && updateImageTask != null) {
+         return;
+      }
+      PollingHelper.readDeviceId(this);
+      String serverUrl = AppSettingsModel.getCurrentServer(this);
+      String panel = AppSettingsModel.getCurrentPanelIdentity(this);
+      final String getUpdateImagesUrl = serverUrl + "/rest/imagechanges/" + panel + "/" + PollingHelper.deviceId;
+      
+      updateImageHandeler = new Handler();
+      updateImageTask = new Runnable() {
+         public void run() {
+            List<String> updatedImages = HTTPUtil.getUpdatedImages(Main.applicationContext, getUpdateImagesUrl);
+            if (updatedImages != null && updatedImages.size() > 0) {
+               int size = updatedImages.size();
+               for (int i = 0; i < size; i++) {
+                  String updatedImage = updatedImages.get(i);
+                  HTTPUtil.downLoadImageIgnoreCache(Main.applicationContext, AppSettingsModel.getSecuredServer(Main.applicationContext), updatedImage);
+                  ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + updatedImage, null);
+               }
+            }
+            updateImageHandeler.postDelayed(this, UPDATE_IMAGE_INTERVAL);
+         }
+      };
+      Log.i(Constants.LOG_CATEGORY + "UpdateImages", "UpdateImagesTask started.");
+      updateImageHandeler.post(updateImageTask);
+   }
+   
+   /**
+    * If the activity is not visible or finished, cancel update images task.
+    */
+   private void cancelUpdateImagesTask() {
+      if (updateImageHandeler != null && updateImageTask != null) {
+         updateImageHandeler.removeCallbacks(updateImageTask);
+         updateImageTask = null;
+         updateImageHandeler = null;
+      }
+      Log.i(Constants.LOG_CATEGORY + "UpdateImages", "UpdateImagesTask canceled.");
+   }
+   
    /**
     * Inits a orientation listener, set request orientation be sensor when the current screen's orientation equals device orientation.
     */
@@ -498,6 +551,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    protected void onStop() {
       super.onStop();
       cancelCurrentPolling();
+      cancelUpdateImagesTask();
    }
 
    /**
@@ -509,12 +563,14 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    protected void onDestroy() {
       super.onDestroy();
       cancelCurrentPolling();
+      cancelUpdateImagesTask();
    }
 
    @Override
    protected void onPause() {
       super.onPause();
       cancelCurrentPolling();
+      cancelUpdateImagesTask();
    }
 
    /**
@@ -535,6 +591,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
       }
       startCurrentPolling();
+      startUpdateImagesTask();
    }
 
    /**

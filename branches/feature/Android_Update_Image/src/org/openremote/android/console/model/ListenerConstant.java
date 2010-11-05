@@ -31,6 +31,7 @@ public class ListenerConstant {
    public static final String ListenerRefreshAcitivitiesView = "refreshAcitivitiesViewListener";
    public static final String ListenerRefreshGroupsView = "refreshGroupsViewListener";
    public static final String ListenerPollingStatusIdFormat = "polling_status_";
+   public static final String LISTENER_IMAGE_CHANGE_FORMAT = "image_change_";
    public static final String ListenerNavigateTo = "navigateToListener";
    public static final String ListenerPopulateCredentialView = "ListenerPopulateCredentialView";
    public static final String ListenerPopulateSettingsView = "ListenerPopulateSettingsView";

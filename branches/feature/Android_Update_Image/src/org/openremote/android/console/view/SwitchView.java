@@ -69,14 +69,30 @@ public class SwitchView extends SensoryControlView {
     * @param switchComponent the switch component
     */
    private void initSwitch(Switch switchComponent) {
-      int width = switchComponent.getFrameWidth();
-      int height = switchComponent.getFrameHeight();
+      final int width = switchComponent.getFrameWidth();
+      final int height = switchComponent.getFrameHeight();
       button.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (switchComponent.getOnImage() != null) {
+         final String onImageName = switchComponent.getOnImage().getSrc();
          onImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc(), width, height);
+         ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + onImageName, new OREventListener() {
+            public void handleEvent(OREvent event) {
+               onImage = null;
+               onImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + onImageName, width, height);
+               handler.sendEmptyMessage(1);
+            }
+         });
       }
       if (switchComponent.getOffImage() != null) {
-         offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc(), width, height);
+         final String offImageName = switchComponent.getOffImage().getSrc();
+         offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + offImageName, width, height);
+         ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + offImageName, new OREventListener() {
+            public void handleEvent(OREvent event) {
+               offImage = null;
+               offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + offImageName, width, height);
+               handler.sendEmptyMessage(2);
+            }
+         });
       }
       if (onImage != null && offImage != null) {
          canUseImage = true;
@@ -146,22 +162,40 @@ public class SwitchView extends SensoryControlView {
       }
    }
    
-   /** The handler is for updating switch state by polling result. */
+   /** The handler is for updating switch state by polling result or image changed. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
-         if (canUseImage) {
+         switch (msg.what) {
+         case 0: // polling result
+            if (canUseImage) {
+               if (isOn) {
+                  button.setBackgroundDrawable(onImage);
+               } else {
+                  button.setBackgroundDrawable(offImage);
+               }
+            } else {
+               if (isOn) {
+                  button.setText("ON");
+               } else {
+                  button.setText("OFF");
+               }
+            }
+            break;
+         case 1: // on image changed
             if (isOn) {
                button.setBackgroundDrawable(onImage);
-            } else {
+            }
+            break;
+         case 2: // off image changed
+            if (!isOn) {
                button.setBackgroundDrawable(offImage);
             }
-         } else {
-            if (isOn) {
-               button.setText("ON");
-            } else {
-               button.setText("OFF");
-            }
+            break;
+
+         default:
+            // do nothing.
+            break;
          }
          super.handleMessage(msg);
       }

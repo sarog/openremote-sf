@@ -53,6 +53,7 @@ public class Main extends GenericActivity {
     public static final String LOAD_RESOURCE = "loadResource";
     public static boolean isRefreshingController;
     public static Toast loadingToast;
+    public static Context applicationContext;
     
     /** Called when the activity is first created. */
     @Override
@@ -60,6 +61,8 @@ public class Main extends GenericActivity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        
+        applicationContext = getApplicationContext();
         
         loadingToast = Toast.makeText(this, "Refreshing from Controller...", Integer.MAX_VALUE);
         if (!isRefreshingController) {

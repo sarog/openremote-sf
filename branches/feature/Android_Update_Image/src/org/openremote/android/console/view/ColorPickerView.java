@@ -22,11 +22,17 @@ package org.openremote.android.console.view;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.ColorPicker;
 import org.openremote.android.console.bindings.Image;
+import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.OREvent;
+import org.openremote.android.console.model.OREventListener;
+import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -43,6 +49,7 @@ public class ColorPickerView extends ControlView {
    private int lastXposition;
    private int lastYposition;
    public static final int MIN_VALID_MOVE_DISTANCE = 2;
+   private BitmapDrawable backgroundImage;
    
    public ColorPickerView(Context context, ColorPicker colorPicker) {
       super(context);
@@ -61,14 +68,22 @@ public class ColorPickerView extends ControlView {
     * @param height the component's height
     * @param image
     */
-   private void initView(Context context, int width, int height, Image image) {
+   private void initView(Context context, final int width, final int height, Image image) {
       imageView = new ImageView(context);
-      final BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + image.getSrc(), width, height);
-      if (bd == null) {
+      final  String imageName = image.getSrc();
+      backgroundImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + imageName, width, height);
+      ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + imageName, new OREventListener() {
+         public void handleEvent(OREvent event) {
+            backgroundImage = null;
+            backgroundImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + imageName, width, height);
+            handler.sendEmptyMessage(0);
+         }
+      });
+      if (backgroundImage == null) {
          return;
       }
       imageView.setLayoutParams(new FrameLayout.LayoutParams(width, height));
-      imageView.setBackgroundDrawable(bd);
+      imageView.setBackgroundDrawable(backgroundImage);
       imageView.setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
             int x = (int) event.getX();
@@ -79,12 +94,12 @@ public class ColorPickerView extends ControlView {
              */
             if (event.getAction() == MotionEvent.ACTION_MOVE) {
                if (Math.abs(lastXposition - x) > MIN_VALID_MOVE_DISTANCE || Math.abs(lastYposition - y) > MIN_VALID_MOVE_DISTANCE){
-                  colorPicked(bd, x, y);
+                  colorPicked(backgroundImage, x, y);
                   lastXposition = x;
                   lastYposition = y;
                }
             } else if(event.getAction() == MotionEvent.ACTION_UP) {
-               colorPicked(bd, x, y);
+               colorPicked(backgroundImage, x, y);
             }
             return true;
          }
@@ -106,4 +121,14 @@ public class ColorPickerView extends ControlView {
       addView(imageView);
    }
    
+   /** The handler is for updating background image. */
+   private Handler handler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         if (msg.what == 0) {
+            imageView.setBackgroundDrawable(backgroundImage);
+         }
+         super.handleMessage(msg);
+      }
+  };
 }

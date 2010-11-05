@@ -19,19 +19,23 @@
 */
 package org.openremote.android.console.view;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Background;
 import org.openremote.android.console.bindings.LayoutContainer;
 import org.openremote.android.console.bindings.Screen;
+import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.OREvent;
+import org.openremote.android.console.model.OREventListener;
+import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.PollingHelper;
+import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
 
@@ -39,6 +43,7 @@ public class ScreenView extends AbsoluteLayout {
 
    private Screen screen;
    private PollingHelper polling;
+   private ImageView backgroudView;
    /**
     * Instantiates a new screen view.
     * 
@@ -75,56 +80,62 @@ public class ScreenView extends AbsoluteLayout {
     * @param screen
     */
    private void addBackground() {
-      ImageView backgroudView = new ImageView(this.getContext());
+      backgroudView = new ImageView(this.getContext());
+      Drawable backgroudDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+            + screen.getBackgroundSrc());
+      backgroudView.setBackgroundDrawable(backgroudDrawable);
+      if (backgroudDrawable == null) {
+         return;
+      }
+      AbsoluteLayout.LayoutParams layoutParams = initBackgroundLayoutParams(backgroudDrawable.getIntrinsicWidth(),
+            backgroudDrawable.getIntrinsicHeight());
+      addView(backgroudView, layoutParams);
+      addBackgroundUpdateListener(screen.getBackgroundSrc());
+   }
+
+   /**
+    * @param imageWidth
+    * @param imageHeight
+    * @return
+    */
+   private AbsoluteLayout.LayoutParams initBackgroundLayoutParams(int imageWidth, int imageHeight) {
       int left = 0;
       int top = 0;
       int screenWidth = Screen.SCREEN_WIDTH;
       int screenHeight = Screen.SCREEN_HEIGHT - Screen.SCREEN_STATUS_BAR_HEIGHT;
-      try {
-         Bitmap backgroudBitMap = BitmapFactory.decodeStream(this.getContext().openFileInput(screen.getBackgroundSrc()));
-         backgroudView.setImageBitmap(backgroudBitMap);
-         if (backgroudBitMap == null) {
-            return;
-         }
-         int imageWidth = backgroudBitMap.getWidth();
-         int imageHeight = backgroudBitMap.getHeight();
-         Background background = screen.getBackground();
-         if (!background.isFillScreen()) {
-            if (background.isBackgroundImageAbsolutePosition()) {
-               left = background.getBackgroundImageAbsolutePositionLeft();
-               top = background.getBackgroundImageAbsolutePositionTop();
-            } else {
-               String backgroundImageRelativePosition = background.getBackgroundImageRelativePosition();
-               if ("top_left".equals(backgroundImageRelativePosition)) {
-               } else if ("top".equals(backgroundImageRelativePosition)) {
-                  left = (screenWidth - imageWidth) / 2;
-               } else if ("top_right".equals(backgroundImageRelativePosition)) {
-                  left = screenWidth - imageWidth;
-               } else if ("left".equals(backgroundImageRelativePosition)) {
-                  top = (screenHeight - imageHeight) / 2;
-               } else if ("center".equals(backgroundImageRelativePosition)) {
-                  left = (screenWidth - imageWidth) / 2;
-                  top = (screenHeight - imageHeight) / 2;
-               } else if ("right".equals(backgroundImageRelativePosition)) {
-                  left = screenWidth - imageWidth;
-                  top = (screenHeight - imageHeight) / 2;
-               } else if ("bottom".equals(backgroundImageRelativePosition)) {
-                  left = (screenWidth - imageWidth) / 2;
-                  top = screenHeight - imageHeight;
-               } else if ("bottom_left".equals(backgroundImageRelativePosition)) {
-                  top = screenHeight - imageHeight;
-               } else if ("bottom_right".equals(backgroundImageRelativePosition)) {
-                  left = screenWidth - imageWidth;
-                  top = screenHeight - imageHeight;
-               }
+      Background background = screen.getBackground();
+      if (!background.isFillScreen()) {
+         if (background.isBackgroundImageAbsolutePosition()) {
+            left = background.getBackgroundImageAbsolutePositionLeft();
+            top = background.getBackgroundImageAbsolutePositionTop();
+         } else {
+            String backgroundImageRelativePosition = background.getBackgroundImageRelativePosition();
+            if ("top_left".equals(backgroundImageRelativePosition)) {
+            } else if ("top".equals(backgroundImageRelativePosition)) {
+               left = (screenWidth - imageWidth) / 2;
+            } else if ("top_right".equals(backgroundImageRelativePosition)) {
+               left = screenWidth - imageWidth;
+            } else if ("left".equals(backgroundImageRelativePosition)) {
+               top = (screenHeight - imageHeight) / 2;
+            } else if ("center".equals(backgroundImageRelativePosition)) {
+               left = (screenWidth - imageWidth) / 2;
+               top = (screenHeight - imageHeight) / 2;
+            } else if ("right".equals(backgroundImageRelativePosition)) {
+               left = screenWidth - imageWidth;
+               top = (screenHeight - imageHeight) / 2;
+            } else if ("bottom".equals(backgroundImageRelativePosition)) {
+               left = (screenWidth - imageWidth) / 2;
+               top = screenHeight - imageHeight;
+            } else if ("bottom_left".equals(backgroundImageRelativePosition)) {
+               top = screenHeight - imageHeight;
+            } else if ("bottom_right".equals(backgroundImageRelativePosition)) {
+               left = screenWidth - imageWidth;
+               top = screenHeight - imageHeight;
             }
          }
-         addView(backgroudView, new AbsoluteLayout.LayoutParams(imageWidth, imageHeight, left, top));
-      } catch (FileNotFoundException e) {
-         Log.e("ScreenView", "screen background file" + screen.getBackgroundSrc() + " not found.", e);
-      } catch (OutOfMemoryError e) {
-         Log.e("OutOfMemoryError", screen.getBackgroundSrc() + ": bitmap size exceeds VM budget");
       }
+      AbsoluteLayout.LayoutParams layoutParams = new AbsoluteLayout.LayoutParams(imageWidth, imageHeight, left, top);
+      return layoutParams;
    }
 
    /**
@@ -153,4 +164,25 @@ public class ScreenView extends AbsoluteLayout {
       return screen;
    }
    
+   private void addBackgroundUpdateListener(String imageName) {
+      ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + imageName, new OREventListener() {
+         public void handleEvent(OREvent event) {
+            updateBackgroundUIHandler.sendEmptyMessage(0);
+         }
+      });
+   }
+   private Handler updateBackgroundUIHandler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         Drawable backgroudDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               + screen.getBackgroundSrc());
+         backgroudView.setBackgroundDrawable(backgroudDrawable);
+         if (backgroudDrawable == null) {
+            return;
+         }
+         backgroudView.setLayoutParams(initBackgroundLayoutParams(backgroudDrawable.getIntrinsicWidth(),
+               backgroudDrawable.getIntrinsicHeight()));
+         super.handleMessage(msg);
+      }
+   };
 }

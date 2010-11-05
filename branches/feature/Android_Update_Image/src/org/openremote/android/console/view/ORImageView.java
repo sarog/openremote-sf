@@ -48,6 +48,8 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
    private String newStatus;
    private int width;
    private int height;
+   private String imageName;
+   
    public ORImageView(Context context, Image image) {
       super(context);
       setComponent(image);
@@ -57,9 +59,12 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
          height = image.getFrameHeight();
          imageView = new ImageView(context);
          textView = new TextView(getContext());
-         addImageView(image.getSrc());
+         imageName = image.getSrc();
+         addImageView(imageName);
          if (image.getSensor() != null) {
             addPollingSensoryListener();
+         } else {
+            addImageUpdateListener();
          }
       }
    }
@@ -95,34 +100,48 @@ public class ORImageView extends ComponentView implements SensoryDelegate {
 
    }
    
-   /** The handler is for update image view by polling result. */
+   private void addImageUpdateListener() {
+      ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + imageName, new OREventListener() {
+         public void handleEvent(OREvent event) {
+            handler.sendEmptyMessage(1);
+         }
+      });
+   }
+   
+   /** The handler is for updating image view by polling result and updated image content. */
    private Handler handler = new Handler() {
       @Override
       public void handleMessage(Message msg) {
-         String newValue = ((Image)getComponent()).getSensor().getStateValue(newStatus);
-         if (newValue != null) {
-            removeAllViews();
-            addImageView(newValue);
-         } else if (((Image)getComponent()).getLabel() != null) {
-            Label label = ((Image)getComponent()).getLabel();
-            if (label.getSensor() != null) {
-               if (label.getText() != null) {
-                  textView.setText(label.getText());
-               }
-               if (label.getFontSize() > 0) {
-                  textView.setTextSize(label.getFontSize());
-               }
-               if (label.getColor() != null) {
-                  textView.setTextColor(Color.parseColor(label.getColor()));
+         int what = msg.what;
+         if (what == 0) { // polling result
+            String newValue = ((Image)getComponent()).getSensor().getStateValue(newStatus);
+            if (newValue != null) {
+               removeAllViews();
+               addImageView(newValue);
+            } else if (((Image)getComponent()).getLabel() != null) {
+               Label label = ((Image)getComponent()).getLabel();
+               if (label.getSensor() != null) {
+                  if (label.getText() != null) {
+                     textView.setText(label.getText());
+                  }
+                  if (label.getFontSize() > 0) {
+                     textView.setTextSize(label.getFontSize());
+                  }
+                  if (label.getColor() != null) {
+                     textView.setTextColor(Color.parseColor(label.getColor()));
+                  }
+                  
+                  newValue = label.getSensor().getStateValue(newStatus);
+                  if (newValue != null) {
+                     removeAllViews();
+                     addView(textView);
+                  }
                }
                
-               newValue = label.getSensor().getStateValue(newStatus);
-               if (newValue != null) {
-                  removeAllViews();
-                  addView(textView);
-               }
             }
-            
+         } else if (what == 1) { // updated image content
+            removeAllViews();
+            addImageView(imageName);
          }
          super.handleMessage(msg);
       }
