@@ -55,7 +55,7 @@ public class Template extends BusinessEntity {
    }
    
 //   @Column(nullable = false, columnDefinition = Constant.TEXT_COLUMN_DEFINITION)
-   @Column(nullable = false )
+   @Column(nullable = false, length = 16777215 )
    @Lob
    public String getContent() {
       return content;
