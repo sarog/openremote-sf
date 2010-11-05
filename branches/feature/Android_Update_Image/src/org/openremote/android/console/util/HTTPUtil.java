@@ -26,6 +26,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -39,6 +45,10 @@ import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.util.Log;
@@ -99,6 +109,61 @@ public class HTTPUtil {
          Log.e("UnsupportedEncodingException", "Failed to encode percent : " + uri, e);
       }
       return encodedUri;
+   }
+   
+   public static List<String> getUpdatedImages(Context context, String url) {
+      HttpParams params = new BasicHttpParams();
+      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+      HttpClient client = new DefaultHttpClient(params);
+      int statusCode = ControllerException.CONTROLLER_UNAVAILABLE;
+      try {
+         URL uri = new URL(url);
+         if ("https".equals(uri.getProtocol())) {
+            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+            client.getConnectionManager().getSchemeRegistry().register(sch);
+         }
+         HttpGet get = new HttpGet(url);
+         SecurityUtil.addCredentialToHttpRequest(context, get);
+         HttpResponse response = client.execute(get);
+         statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == Constants.HTTP_SUCCESS) {
+            return parseUpdateImages(response.getEntity().getContent());
+         }
+      } catch (MalformedURLException e) {
+         Log.e("HTTPUtil", "Create URL fail:" + url);
+      } catch (IllegalArgumentException e) {
+         Log.e("IllegalArgumentException", "Get update images failed.", e);
+      } catch (ClientProtocolException cpe) {
+         Log.e("ClientProtocolException", "Get update images failed.", cpe);
+      } catch (IOException ioe) {
+         Log.e("IOException", "Get update images failed.", ioe);
+      }
+      return null;
+   }
+   
+   private static List<String> parseUpdateImages(InputStream inputStream) {
+      try {
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder builder = factory.newDocumentBuilder();
+         Document dom = builder.parse(inputStream);
+         Element root = dom.getDocumentElement();
+         
+         NodeList nodeList = root.getElementsByTagName("image");
+         int nodeNums = nodeList.getLength();
+         List<String> images = new ArrayList<String>();
+         for (int i = 0; i < nodeNums; i++) {
+            images.add(nodeList.item(i).getFirstChild().getNodeValue());
+         }
+         return images;
+      } catch (ParserConfigurationException e) {
+         Log.e(Constants.LOG_CATEGORY + "UpdateImages", "Parse updateImages failed", e);
+      } catch (SAXException e) {
+         Log.e(Constants.LOG_CATEGORY + "UpdateImages", "Parse updateImages failed", e);
+      } catch (IOException e) {
+         Log.e(Constants.LOG_CATEGORY + "UpdateImages", "Parse updateImages failed", e);
+      }
+      return null;
    }
    
    /**

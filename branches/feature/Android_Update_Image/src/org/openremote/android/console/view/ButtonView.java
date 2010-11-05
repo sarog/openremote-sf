@@ -25,11 +25,15 @@ import java.util.TimerTask;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.OREvent;
+import org.openremote.android.console.model.OREventListener;
 import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -62,20 +66,35 @@ public class ButtonView extends ControlView {
     * @param button the button
     */
    private void initButton(final ORButton button) {
-      int width = button.getFrameWidth();
-      int height = button.getFrameHeight();
+      final int width = button.getFrameWidth();
+      final int height = button.getFrameHeight();
       uiButton.setId(button.getComponentId());
       uiButton.setText(button.getName());
       uiButton.setTextSize(Constants.DEFAULT_FONT_SIZE);
       uiButton.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (button.getDefaultImage() != null) {
-         defaultImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc(), width, height);
+         final String defaultImageName = button.getDefaultImage().getSrc();
+         defaultImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + defaultImageName, width, height);
+         ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + defaultImageName, new OREventListener() {
+            public void handleEvent(OREvent event) {
+               defaultImage = null;
+               defaultImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + defaultImageName, width, height);
+               handler.sendEmptyMessage(0);
+            }
+         });
          if (defaultImage != null) {
             uiButton.setBackgroundDrawable(defaultImage);
          }
       }
       if (button.getPressedImage() != null) {
-         pressedImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc(), width, height);
+         final String pressedImageName = button.getPressedImage().getSrc();
+         pressedImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + pressedImageName, width, height);
+         ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + pressedImageName, new OREventListener() {
+            public void handleEvent(OREvent event) {
+               pressedImage = null;
+               pressedImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + pressedImageName, width, height);
+            }
+         });
       }
       View.OnTouchListener touchListener = new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
@@ -121,4 +140,15 @@ public class ButtonView extends ControlView {
    private void sendCommand() {
       sendCommandRequest("click");
    }
+   
+   /** The handler is for updating default image. */
+   private Handler handler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+         if (msg.what == 0) {
+            uiButton.setBackgroundDrawable(defaultImage);
+         }
+         super.handleMessage(msg);
+      }
+  };
 }

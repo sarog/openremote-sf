@@ -68,7 +68,7 @@ public class PollingHelper {
    private HttpGet httpGet;
    private String serverUrl;
    private Context context;
-   private static String deviceId = null;
+   public static String deviceId = null;
    private Handler handler;
    private static final int NETWORK_ERROR = 0;
    
@@ -241,7 +241,7 @@ public class PollingHelper {
     * 
     * @param context the context
     */
-   private static void readDeviceId(Context context) {
+   public static void readDeviceId(Context context) {
       if (deviceId == null) {
          TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
          if (IPAutoDiscoveryClient.isNetworkTypeWIFI) {
