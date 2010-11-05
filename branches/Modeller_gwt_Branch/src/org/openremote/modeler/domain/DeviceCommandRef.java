@@ -126,6 +126,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
       if (deviceCommand == null) {
          if (other.deviceCommand != null) return false;
       } else if (!deviceCommand.equals(other.deviceCommand)) return false;
+      if (this.getOid() != other.getOid()) return false;
       return true;
    }
    
