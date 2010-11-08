@@ -67,6 +67,7 @@ public class ScreenImage extends ScreenComponent {
       if (!"".equals(uiImage.getImageSource().getSrc().trim())) {
          image.setUrl(uiImage.getImageSource().getSrc());
       }
+      setStyleAttribute("overflow", "hidden");
       add(image);
       layout();
    }
