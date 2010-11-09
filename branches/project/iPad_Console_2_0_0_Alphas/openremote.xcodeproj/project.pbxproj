@@ -1288,11 +1288,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Debug */ = {
+		1D6058940D05DD3E006BFB54 /* Simulator 3.2 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
@@ -1313,10 +1313,10 @@
 				PRODUCT_NAME = OpenRemote;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphonesimulator3.2;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
-			name = Debug;
+			name = "Simulator 3.2";
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1345,7 +1345,7 @@
 			};
 			name = Release;
 		};
-		8C460E4C109552C900C7A686 /* Debug */ = {
+		8C460E4C109552C900C7A686 /* Simulator 3.2 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1375,7 +1375,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = octest;
 			};
-			name = Debug;
+			name = "Simulator 3.2";
 		};
 		8C460E4D109552C900C7A686 /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
@@ -1485,24 +1485,24 @@
 			};
 			name = "Ad-Hoc Distribution";
 		};
-		C01FCF4F08A954540054247B /* Debug */ = {
+		C01FCF4F08A954540054247B /* Simulator 3.2 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphonesimulator3.2;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
-			name = Debug;
+			name = "Simulator 3.2";
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1526,32 +1526,32 @@
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OpenRemote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058940D05DD3E006BFB54 /* Simulator 3.2 */,
 				8C599D670F7156E5001833AD /* Ad-Hoc Distribution */,
 				1D6058950D05DD3E006BFB54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = "Simulator 3.2";
 		};
 		8C460E4F109552C900C7A686 /* Build configuration list for PBXNativeTarget "UnitTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8C460E4C109552C900C7A686 /* Debug */,
+				8C460E4C109552C900C7A686 /* Simulator 3.2 */,
 				8C460E4D109552C900C7A686 /* Ad-Hoc Distribution */,
 				8C460E4E109552C900C7A686 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = "Simulator 3.2";
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF4F08A954540054247B /* Simulator 3.2 */,
 				8C599D660F7156E5001833AD /* Ad-Hoc Distribution */,
 				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = "Simulator 3.2";
 		};
 /* End XCConfigurationList section */
 	};
