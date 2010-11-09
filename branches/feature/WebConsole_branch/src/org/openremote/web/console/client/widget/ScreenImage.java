@@ -36,6 +36,8 @@ import com.google.gwt.http.client.URL;
  */
 public class ScreenImage extends ScreenComponent implements SensoryDelegate {
 
+   protected com.google.gwt.user.client.ui.Image imageView = new com.google.gwt.user.client.ui.Image();
+   
    /** The linked label. */
    private Text linkedLabel;
    
@@ -56,19 +58,20 @@ public class ScreenImage extends ScreenComponent implements SensoryDelegate {
    
    private void initImage(Image image) {
       setSize(image.getFrameWidth(), image.getFrameHeight());
-      setStyleName("image-style");
+      imageView.setStyleName("image-style");
       if (image.getSrc() != null) {
-         setImageBackground(image.getSrc());
+         setImageUrl(image.getSrc());
       }
+      add(imageView);
    }
    
    /**
-    * Sets the image background as the image.
+    * Sets the image url.
     * 
-    * @param imageSrc the new image background
+    * @param imageSrc the new image url
     */
-   private void setImageBackground(String imageSrc) {
-      setStyleAttribute("backgroundImage", "url(" + ClientDataBase.getResourceRootPath() + URL.encode(imageSrc) + ")");
+   private void setImageUrl(String imageSrc) {
+      imageView.setUrl(ClientDataBase.getResourceRootPath() + URL.encode(imageSrc));
    }
    
    /* (non-Javadoc)
@@ -93,9 +96,11 @@ public class ScreenImage extends ScreenComponent implements SensoryDelegate {
                   if (linkedLabel != null) {
                      linkedLabel.hide();
                   }
-                  setImageBackground(newValue);
+                  setImageUrl(newValue);
+                  imageView.setVisible(true);
                } else if (((Image)getComponent()).getLabel() != null) {
                   Label label = ((Image)getComponent()).getLabel();
+                  imageView.setVisible(false);
                   linkedLabel.show();
                   if (label.getSensor() != null) {
                      newValue = label.getSensor().getStateValue(newStatus);

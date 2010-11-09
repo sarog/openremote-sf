@@ -28,6 +28,7 @@ import org.openremote.web.console.client.utils.ORListenerManager;
 import org.openremote.web.console.client.widget.ScreenSwitch;
 import org.openremote.web.console.domain.Switch;
 
+import com.extjs.gxt.ui.client.core.El;
 import com.extjs.gxt.ui.client.core.Template;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -44,6 +45,7 @@ public class SwitchButton extends Button {
    private boolean hasIcon;
    private String onImageUrl;
    private String offImageUrl;
+   private El imageEL;
    
    public SwitchButton(Switch uiSwitch) {
       this.uiSwitch = uiSwitch;
@@ -63,10 +65,12 @@ public class SwitchButton extends Button {
       // default set off state.
       if (hasIcon) {
          buttonSelector = "div";
-         template = new Template("<div style=\"height:100%; background: url(" + offImageUrl
-               + ") no-repeat 0 0;\"><div style=\"outline:none;\"></div></div>");
+         template = new Template("<div style=\"height:100%;\"><img src=\"" + offImageUrl + "\" /><div style=\"outline:none;\"></div></div>");
       }
       super.onRender(target, index);
+      if (hasIcon) {
+         imageEL = el().selectNode("img");
+      }
    }
    
    @Override
@@ -116,14 +120,14 @@ public class SwitchButton extends Button {
                if (isOn && Switch.OFF.equals(value)) {
                   isOn = false;
                   if (hasIcon) {
-                     setStyleAttribute("backgroundImage", "url(" + offImageUrl + ")");
+                     updateImage(offImageUrl);
                   } else {
                      setText("OFF");
                   }
                } else if (!isOn && Switch.ON.equals(value)) {
                   isOn = true;
                   if (hasIcon) {
-                     setStyleAttribute("backgroundImage", "url(" + onImageUrl + ")");
+                     updateImage(onImageUrl);
                   } else {
                      setText("ON");
                   }
@@ -131,6 +135,12 @@ public class SwitchButton extends Button {
                
             }
          });
+      }
+   }
+   
+   private void updateImage(String imageUrl) {
+      if (imageEL != null) {
+         imageEL.setElementAttribute("src", imageUrl);
       }
    }
 }

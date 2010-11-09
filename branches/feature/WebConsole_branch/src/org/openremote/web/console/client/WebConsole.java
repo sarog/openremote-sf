@@ -21,7 +21,6 @@ package org.openremote.web.console.client;
 
 import org.openremote.web.console.client.event.SubmitEvent;
 import org.openremote.web.console.client.listener.SubmitListener;
-import org.openremote.web.console.client.polling.JsonResultReader;
 import org.openremote.web.console.client.rpc.AsyncServiceFactory;
 import org.openremote.web.console.client.rpc.AsyncSuccessCallback;
 import org.openremote.web.console.client.utils.ClientDataBase;
@@ -42,7 +41,6 @@ import com.extjs.gxt.ui.client.widget.Text;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
