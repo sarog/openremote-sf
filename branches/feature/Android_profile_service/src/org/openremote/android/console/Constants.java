@@ -64,7 +64,7 @@ public class Constants
   public static final String PANEL_XML = "panel.xml";
   public static final String FILE_FOLDER_PATH = "/data/data/org.openremote.android.console/files/";
   public static final int SECURED_HTTP_PORT = 8443;
-
+  public static final String REG_NO_PROTOCOL_URL = "[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
   /**
    * Prefix for logging so OpenRemote related entries can be easily filtered.
    */

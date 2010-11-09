@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This is the add custom server screen. Mainly it configures the URL of 
@@ -68,10 +69,15 @@ public class AddServerActivity extends GenericActivity {
             public void onClick(View v) {
                 String url = ((EditText) ((View) v.getParent())
                         .findViewWithTag(Constants.URL)).getText().toString();
-                Intent intent = getIntent();
-                intent.setData(Uri.parse(url));
-                setResult(Constants.RESULT_CONTROLLER_URL, intent);
-                finish();
+                if (url != null && url.matches(Constants.REG_NO_PROTOCOL_URL)) {
+                   Intent intent = getIntent();
+                   intent.setData(Uri.parse(url));
+                   setResult(Constants.RESULT_CONTROLLER_URL, intent);
+                   finish();
+                } else {
+                   Toast toast = Toast.makeText(getApplicationContext(), "URL format is not correct.", 1);
+                   toast.show();
+                }
             }
         });
         layout.addView(tv);
