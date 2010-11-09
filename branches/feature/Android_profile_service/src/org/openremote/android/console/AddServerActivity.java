@@ -19,6 +19,9 @@
  */
 package org.openremote.android.console;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -67,17 +70,22 @@ public class AddServerActivity extends GenericActivity {
 
             @Override
             public void onClick(View v) {
-                String url = ((EditText) ((View) v.getParent())
+                String noProtocolUrl = ((EditText) ((View) v.getParent())
                         .findViewWithTag(Constants.URL)).getText().toString();
-                if (url != null && url.matches(Constants.REG_NO_PROTOCOL_URL)) {
-                   Intent intent = getIntent();
-                   intent.setData(Uri.parse(url));
-                   setResult(Constants.RESULT_CONTROLLER_URL, intent);
-                   finish();
-                } else {
-                   Toast toast = Toast.makeText(getApplicationContext(), "URL format is not correct.", 1);
-                   toast.show();
+                if (noProtocolUrl == null) {
+                   return;
                 }
+                try {
+                  String httpUrl = "http://" + noProtocolUrl;
+                  new URL(httpUrl);
+                  Intent intent = getIntent();
+                  intent.setData(Uri.parse(noProtocolUrl));
+                  setResult(Constants.RESULT_CONTROLLER_URL, intent);
+                  finish();
+               } catch (MalformedURLException e) {
+                  Toast toast = Toast.makeText(getApplicationContext(), "URL format is not correct.", 1);
+                  toast.show();
+               }
             }
         });
         layout.addView(tv);
