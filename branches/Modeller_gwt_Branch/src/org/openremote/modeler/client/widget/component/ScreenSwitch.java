@@ -60,7 +60,6 @@ public class ScreenSwitch extends ScreenComponent {
     */
    private void initial() {
       addStyleName("screen-btn");
-      setStyleAttribute("overflow", "hidden");
       switchTable.setWidget(1, 1, center);
       add(switchTable);
    }
