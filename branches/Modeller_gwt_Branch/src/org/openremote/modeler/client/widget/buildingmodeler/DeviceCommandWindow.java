@@ -54,6 +54,7 @@ import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
@@ -286,7 +287,21 @@ public class DeviceCommandWindow extends FormWindow {
                }
             }
 
-            if (options.size() > 0) {
+            if (attrDefinition.isCheckBox()) {
+               CheckBox checkBox = new CheckBox() {
+                  protected void afterRender() {
+                     super.afterRender();
+                     // make the checkBox be left alignment
+                     this.setInputStyleAttribute("left", "0px");
+                  }
+               };
+               checkBox.setFieldLabel(attrDefinition.getLabel());
+               checkBox.setName(attrDefinition.getName());
+               if (!"".equals(value)) {
+                  checkBox.setValue(Boolean.valueOf(value));
+               }
+               attrSet.add(checkBox);
+            } else if (options.size() > 0) {
                ComboBoxExt comboAttrField = new ComboBoxExt();
                comboAttrField.setName(attrDefinition.getName());
                comboAttrField.setFieldLabel(attrDefinition.getLabel());

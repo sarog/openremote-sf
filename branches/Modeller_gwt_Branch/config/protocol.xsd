@@ -36,6 +36,7 @@
 			<xsd:attribute name="label" type="xsd:string" use="required" />
 			<xsd:attribute name="value" type="xsd:string" use="optional" />
 			<xsd:attribute name="options" type="xsd:string" use="optional" />
+			<xsd:attribute name="isCheckBox" type="xsd:boolean" use="optional" default="false"/>
 		</xsd:complexType>
 	</xsd:element>
 

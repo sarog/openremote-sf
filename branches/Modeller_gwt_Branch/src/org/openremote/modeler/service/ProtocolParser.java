@@ -84,6 +84,8 @@ public class ProtocolParser {
    /** The Constant OPTIONS_ATTR_NAME for the attr predefined values. */
    private static final String OPTIONS_ATTR_NAME = "options";
    
+   private static final String ISCHECKBOX_ATTR_NAME = "isCheckBox";
+   
    /** The Constant DISPLAY_NAME_ATTR_NAME. */
    private static final String DISPLAY_NAME_ATTR_NAME = "displayName";
    
@@ -163,6 +165,7 @@ public class ProtocolParser {
          attrDefinition.setLabel(attr.attributeValue(LABEL_ATTR_NAME));
          attrDefinition.setName(attr.attributeValue(NAME_ATTR_NAME));
          attrDefinition.setValue(attr.attributeValue(VALUE_ATTR_NAME));
+         attrDefinition.setCheckBox(Boolean.valueOf(attr.attributeValue(ISCHECKBOX_ATTR_NAME)));
          String options = attr.attributeValue(OPTIONS_ATTR_NAME);
          if (options != null && !"".endsWith(options)) {
             String[] optionArray = options.split(",");
@@ -171,7 +174,9 @@ public class ProtocolParser {
          Element validationsElement = attr.element(VALIDATIONS_ElEMENT_NAME);
 
          // parse validators start
-         attrDefinition.getValidators().addAll(parseValidators(validationsElement));
+         if (validationsElement != null) {
+            attrDefinition.getValidators().addAll(parseValidators(validationsElement));
+         }
 
          attrs.add(attrDefinition);
 

@@ -52,6 +52,7 @@ public class ProtocolAttrDefinition implements Serializable {
    /** The validators. */
    private List<ProtocolValidator> validators = new ArrayList<ProtocolValidator>();
 
+   private boolean isCheckBox;
    /**
     * Gets the name.
     * 
@@ -120,6 +121,14 @@ public class ProtocolAttrDefinition implements Serializable {
 
    public void setOptions(List<String> options) {
       this.options = options;
+   }
+
+   public boolean isCheckBox() {
+      return isCheckBox;
+   }
+
+   public void setCheckBox(boolean isCheckBox) {
+      this.isCheckBox = isCheckBox;
    }
 
    /* (non-Javadoc)
