@@ -51,7 +51,7 @@
 		//offUIImage = [[ClippedUIImage alloc] initWithUIImage:offUIImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
 		
 		//use top-left alignment		
-		[button setFrame:[self bounds]];
+		[button setFrame:CGRectMake(0, 0, onUIImage.size.width, onUIImage.size.height)];
 		[button.imageView setContentMode:UIViewContentModeTopLeft];
 	} else {
 		[button setFrame:[self bounds]];
