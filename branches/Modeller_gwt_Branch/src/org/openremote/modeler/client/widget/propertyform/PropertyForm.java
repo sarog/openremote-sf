@@ -21,6 +21,7 @@ package org.openremote.modeler.client.widget.propertyform;
 
 import org.openremote.modeler.client.event.AbsoluteBoundsEvent;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
+import org.openremote.modeler.client.event.WidgetLayerControlEvent;
 import org.openremote.modeler.client.icon.Icons;
 import org.openremote.modeler.client.listener.AbsoluteBoundsListener;
 import org.openremote.modeler.client.model.ORBounds;
@@ -34,6 +35,7 @@ import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import org.openremote.modeler.client.widget.uidesigner.GridLayoutContainerHandle;
 import org.openremote.modeler.domain.Absolute;
 
+import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
@@ -41,12 +43,16 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.util.Margins;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
+import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.layout.RowData;
+import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.core.client.GWT;
 
 /**
@@ -68,6 +74,7 @@ public class PropertyForm extends FormPanel {
       LayoutContainer layoutContainer = (LayoutContainer)componentContainer.getParent();
       if (layoutContainer instanceof AbsoluteLayoutContainer) {
          addAbsolutePositionAndSizeProperties((ComponentContainer)layoutContainer);
+         addAbsoluteLayerControl((AbsoluteLayoutContainer)layoutContainer);
       }
    }
 
@@ -149,6 +156,34 @@ public class PropertyForm extends FormPanel {
       });
    }
 
+   private void addAbsoluteLayerControl(final AbsoluteLayoutContainer absoluteContainer) {
+      LayoutContainer buttonContainer = new LayoutContainer();
+      buttonContainer.setSize(150, 25);
+      buttonContainer.setLayout(new RowLayout(Orientation.HORIZONTAL));
+      
+      Button upButton = new Button("Up");
+      Button downButton = new Button("Down");
+      upButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            absoluteContainer.fireEvent(WidgetLayerControlEvent.WIDGET_LAYER_UP, new WidgetLayerControlEvent(
+                  WidgetLayerControlEvent.WIDGET_LAYER_UP));
+         }
+      });
+      downButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+         public void componentSelected(ButtonEvent ce) {
+            absoluteContainer.fireEvent(WidgetLayerControlEvent.WIDGET_LAYER_DOWN, new WidgetLayerControlEvent(
+                  WidgetLayerControlEvent.WIDGET_LAYER_DOWN));
+         }
+      });
+      
+      buttonContainer.add(upButton, new RowData(0.5, 1, new Margins(2)));
+      buttonContainer.add(downButton, new RowData(0.5, 1, new Margins(2)));
+      
+      AdapterField layerField = new AdapterField(buttonContainer);
+      layerField.setFieldLabel("Layer");
+      add(layerField);
+   }
+   
    /**
     * Adds the delete button to delete select component.
     */

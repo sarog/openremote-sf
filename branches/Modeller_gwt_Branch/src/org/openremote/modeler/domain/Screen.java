@@ -336,4 +336,44 @@ public class Screen extends BusinessEntity {
       }
       return imageSources;
    }
+   
+   @Transient
+   @JSON(include=false)
+   public List<Absolute> getOverlappedAbsolutes(Absolute absolute) {
+      List<Absolute> overlappedAbsolutes = new ArrayList<Absolute>();
+      if (!absolutes.contains(absolute)) {
+         return overlappedAbsolutes;
+      }
+      int Al = absolute.getLeft();
+      int At = absolute.getTop();
+      int Ar = Al + absolute.getWidth();
+      int Ab = At + absolute.getHeight();
+      
+      for (Absolute overlappedAbsolute : absolutes) {
+         if (overlappedAbsolute == absolute) {
+            continue;
+         }
+         if (isOverlapped(Al, At, Ar, Ab, overlappedAbsolute)) {
+            overlappedAbsolutes.add(overlappedAbsolute);
+         }
+      }
+      return overlappedAbsolutes;
+   }
+   
+   private boolean isOverlapped(int Al, int At, int Ar, int Ab, Absolute overlappedAbsolute) {
+      int Bl = overlappedAbsolute.getLeft();
+      int Bt = overlappedAbsolute.getTop();
+      int Br = Bl + overlappedAbsolute.getWidth();
+      int Bb = Bt + overlappedAbsolute.getHeight();
+      
+      // overlapped
+      if ((Al < Br) && (Ar > Bl) && (At < Bb) && (Ab > Bt)) {
+         return true;
+      }
+      // full overlapped
+      if ((Al == Bl) && (Ar == Br) && (At == Bt) && (Ab == Bb)) {
+         return true;
+      }
+      return false;
+   }
 }

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.event.WidgetDeleteEvent;
+import org.openremote.modeler.client.event.WidgetLayerControlEvent;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenButton;
@@ -80,6 +81,10 @@ public class ScreenCanvas extends ComponentContainer {
 
    private ScreenIndicator screenIndicator;
 
+   private static final int GRID_Z_INDEX = 9;
+   
+   private int absoluteZIndex = GRID_Z_INDEX;
+   
    /**
     * Instantiates a new screen canvas.
     * 
@@ -334,9 +339,9 @@ public class ScreenCanvas extends ComponentContainer {
                         y = getHeight() - controlContainer.getHeight();
                      }
                      controlContainer.setPosition(x, y);
-                     screen.removeAbsolute(controlContainer.getAbsolute());
-                     screen.addAbsolute(controlContainer.getAbsolute());
-                     controlContainer.el().updateZIndex(1);
+//                     screen.removeAbsolute(controlContainer.getAbsolute());
+//                     screen.addAbsolute(controlContainer.getAbsolute());
+//                     controlContainer.el().updateZIndex(1);
                   } else {
                      MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                         public void handleEvent(MessageBoxEvent be) {
@@ -506,7 +511,7 @@ public class ScreenCanvas extends ComponentContainer {
          @Override
          protected void afterRender() {
             super.afterRender();
-            this.el().updateZIndex(1);
+            this.el().setZIndex(++absoluteZIndex);
          }
          
       };
@@ -518,6 +523,18 @@ public class ScreenCanvas extends ComponentContainer {
             controlContainer.removeFromParent();
          }
 
+      });
+      controlContainer.addListener(WidgetLayerControlEvent.WIDGET_LAYER_UP, new Listener<WidgetLayerControlEvent>() {
+         public void handleEvent(WidgetLayerControlEvent be) {
+            System.out.println("handle up event");
+            makeAbsoluteUp(screen.getOverlappedAbsolutes(absolute), absolute);
+         }
+      });
+      controlContainer.addListener(WidgetLayerControlEvent.WIDGET_LAYER_DOWN, new Listener<WidgetLayerControlEvent>() {
+         public void handleEvent(WidgetLayerControlEvent be) {
+            // TODO Auto-generated method stub
+            makeAbsoluteDown(screen.getOverlappedAbsolutes(absolute), absolute);
+         }
       });
       new KeyNav<ComponentEvent>() {
          @Override
@@ -550,6 +567,66 @@ public class ScreenCanvas extends ComponentContainer {
       return controlContainer;
    }
 
+   private void makeAbsoluteUp(List<Absolute> overlappedAbsolutes, Absolute sourceAbsolute) {
+      int sourceZIndex = sourceAbsolute.getBelongsTo().el().getZIndex();
+      int minUpZIndex = sourceZIndex;
+      int size = 0;
+      Absolute upAbsolute = null;
+      for (Absolute absolute : overlappedAbsolutes) {
+         int overlappedZIndex = absolute.getBelongsTo().el().getZIndex();
+         if (overlappedZIndex > sourceZIndex) {
+            if (size == 0) {
+               minUpZIndex = overlappedZIndex;
+               upAbsolute= absolute;
+            } else if (overlappedZIndex < minUpZIndex) {
+               minUpZIndex = overlappedZIndex;
+               upAbsolute= absolute;
+            }
+            size ++;
+         }
+      }
+      
+      if (upAbsolute != null) {
+         List<Absolute> absolutes = screen.getAbsolutes();
+         int sourceIndex = absolutes.indexOf(sourceAbsolute);
+         int upIndex = absolutes.indexOf(upAbsolute);
+         absolutes.set(sourceIndex, upAbsolute);
+         absolutes.set(upIndex, sourceAbsolute);
+         upAbsolute.getBelongsTo().setZIndex(sourceZIndex);
+         sourceAbsolute.getBelongsTo().setZIndex(minUpZIndex);
+      }
+   }
+   
+   private void makeAbsoluteDown(List<Absolute> overlappedAbsolutes, Absolute sourceAbsolute) {
+      int sourceZIndex = sourceAbsolute.getBelongsTo().el().getZIndex();
+      int maxDownZIndex = sourceZIndex;
+      int size = 0;
+      Absolute downAbsolute = null;
+      for (Absolute absolute : overlappedAbsolutes) {
+         int overlappedZIndex = absolute.getBelongsTo().el().getZIndex();
+         if (overlappedZIndex < sourceZIndex) {
+            if (size == 0) {
+               maxDownZIndex = overlappedZIndex;
+               downAbsolute= absolute;
+            } else if (overlappedZIndex > maxDownZIndex) {
+               maxDownZIndex = overlappedZIndex;
+               downAbsolute= absolute;
+            }
+            size ++;
+         }
+      }
+      
+      if (downAbsolute != null) {
+         List<Absolute> absolutes = screen.getAbsolutes();
+         int sourceIndex = absolutes.indexOf(sourceAbsolute);
+         int downIndex = absolutes.indexOf(downAbsolute);
+         absolutes.set(sourceIndex, downAbsolute);
+         absolutes.set(downIndex, sourceAbsolute);
+         downAbsolute.getBelongsTo().setZIndex(sourceZIndex);
+         sourceAbsolute.getBelongsTo().setZIndex(maxDownZIndex);
+      }
+   }
+   
    /**
     * Creates the new absolute layout container after drag from tree.
     * 
@@ -599,7 +676,7 @@ public class ScreenCanvas extends ComponentContainer {
          @Override
          protected void afterRender() {
             super.afterRender();
-            this.setZIndex(100); // set z-index to make drop widget on grid cell is possible(after reopen the screen).
+            this.setZIndex(GRID_Z_INDEX); // set z-index to make drop widget on grid cell is possible(after reopen the screen).
          }
 
       };
