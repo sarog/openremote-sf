@@ -90,11 +90,15 @@ public class ConfigManageController extends MultiActionController {
       String password = request.getParameter("password");
       boolean success = false;
       try {
-         success = fileService.syncConfigurationWithModeler(username, password);
-         if (success) {
-            controllerXMLChangeService.refreshController();
+         if (configuration.isResourceUpload()) {
+            success = fileService.syncConfigurationWithModeler(username, password);
+            if (success) {
+               controllerXMLChangeService.refreshController();
+            }
+            response.getWriter().print(success ? Constants.OK : null);
+         } else {
+            response.getWriter().print("disabled");
          }
-         response.getWriter().print(success ? Constants.OK : null);
       } catch (ForbiddenException e) {
          response.getWriter().print("forbidden");
       } catch (BeehiveNotAvailableException e) {
