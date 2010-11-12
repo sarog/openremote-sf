@@ -51,6 +51,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -219,7 +220,16 @@ public class AppSettingsActivity extends GenericActivity {
       sslPortText.setOnKeyListener(new OnKeyListener() {
          public boolean onKey(View v, int keyCode, KeyEvent event) {
             if (keyCode == KeyEvent.KEYCODE_ENTER) {
-               AppSettingsModel.setSSLPort(AppSettingsActivity.this, Integer.valueOf(((EditText)v).getText().toString()));
+               String sslPortStr = ((EditText)v).getText().toString();
+               try {
+                   int sslPort = Integer.parseInt(sslPortStr.trim());
+                   AppSettingsModel.setSSLPort(AppSettingsActivity.this, sslPort);
+               }
+               catch (NumberFormatException ex) {
+                  Toast toast = Toast.makeText(getApplicationContext(), "SSL port format is not correct.", 1);
+                  toast.show();
+                  return false;
+               }
             }
             return false;
          }
