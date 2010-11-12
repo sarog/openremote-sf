@@ -526,13 +526,11 @@ public class ScreenCanvas extends ComponentContainer {
       });
       controlContainer.addListener(WidgetLayerControlEvent.WIDGET_LAYER_UP, new Listener<WidgetLayerControlEvent>() {
          public void handleEvent(WidgetLayerControlEvent be) {
-            System.out.println("handle up event");
             makeAbsoluteUp(screen.getOverlappedAbsolutes(absolute), absolute);
          }
       });
       controlContainer.addListener(WidgetLayerControlEvent.WIDGET_LAYER_DOWN, new Listener<WidgetLayerControlEvent>() {
          public void handleEvent(WidgetLayerControlEvent be) {
-            // TODO Auto-generated method stub
             makeAbsoluteDown(screen.getOverlappedAbsolutes(absolute), absolute);
          }
       });
