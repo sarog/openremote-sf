@@ -73,6 +73,7 @@ public class ScreenTabbarItem extends ScreenComponent {
 
    @Override
    public void setName(String name) {
+      name = (name == null ? "" : name);
       uiTabbarItem.setName(name);
       center.setText(name);
       layout();
