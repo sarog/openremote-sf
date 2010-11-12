@@ -41,7 +41,7 @@ public class ORControllerServerSwitcherTest extends ActivityInstrumentationTestC
 
 	@MediumTest
 	public void testDetectGroupMembers() {
-		AppSettingsModel.setCurrentServer(getActivity(), "http://192.168.100.108:8080/controller");
+		AppSettingsModel.setCurrentServer(getActivity(), "http://192.168.100.113:8080/controller");
 		ORControllerServerSwitcher.detectGroupMembers(getActivity());
 		Log.i("TEST INFO", ORControllerServerSwitcher.findAllGroupMembersFromFile(getActivity()).toString());
 	}
