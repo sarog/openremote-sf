@@ -111,10 +111,11 @@ SwitchView = (function() {
      * Render changed status value if there is no images for changed status render.
      */
     function renderSwithValue() {
-        $(self.getCanvas()).html("<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
-                        "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" +
-                        Constants.OFF.toUpperCase() +
-                        "</div>" + 
+        $(self.getCanvas()).html(
+                        "<img id='switchImageSRC" + self.getID() + "' src='' style='display:none;' />" +
+                        "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
+                            "<div id='switchBtnName" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" +
+                                Constants.OFF.toUpperCase() + "</div>" + 
                        "</div>");
         updateViewWithStatus(Constants.OFF.toUpperCase());
     }
@@ -136,8 +137,12 @@ SwitchView = (function() {
         } else {
           imageSRC = self.offImageName;
         }
-        $(self.getCanvas()).css("background", "url('" + ConnectionUtils.getResourceURL(imageSRC) + "') no-repeat left top");
+        $(self.getCanvas()).css("background", "url('')");
+        $("#switchImageSRC"+self.getID()).attr("src", ConnectionUtils.getResourceURL(imageSRC));
+        $("#switchImageSRC"+self.getID()).css("display", "inline");
       } else {
+        $("#switchImageSRC"+self.getID()).css("display", "none");
+        $(self.getCanvas()).css("background", "url('./mobile/css/jquery/images/ui-bg_glass_75_e6e6e6_1x400.png') repeat-x scroll 50% 50% #E6E6E6");
         $("#switchBtnName"+self.getID()).text(self.currentStatus);
       }
     }
