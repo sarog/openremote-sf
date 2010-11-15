@@ -26,7 +26,8 @@ ImageView = (function() {
       var defaultImageSRC = ConnectionUtils.getResourceURL(self.component.src);
       var canvas = $("<div />", {
         "id" : self.getID(),
-        "html" : "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
+        "html" : "<img id='imageSRC" + self.getID() + "' src='" + defaultImageSRC + "' />" +
+                "<div style='position:static;display:table-cell;vertical-align:middle;top:50%'>" + 
                     "<div id='textSRC" + self.getID() + "' style='position:relative;top:-50%;width:100%;text-align:center'>" +
                     "</div>" + 
                  "</div>",
@@ -36,7 +37,6 @@ ImageView = (function() {
         }
       });
       self.setCanvas(canvas);
-      DEFAULT_CSS_STYLE.background = "url('" + defaultImageSRC + "') no-repeat scroll left top";
       
       self.setCss(DEFAULT_CSS_STYLE);
     }
@@ -54,7 +54,8 @@ ImageView = (function() {
         var sensorState = sensorStates[i];
         if (sensorState.name == newStatus) {
           var imageSRC = ConnectionUtils.getResourceURL(sensorState.value);
-          $(self.getCanvas()).css("background", "url('" + imageSRC + "') no-repeat scroll left top")
+          $("#imageSRC"+self.getID()).css({"display" : "inline"});
+          $("#imageSRC"+self.getID()).attr({"src" : imageSRC});
           updateView = true;
           break;
         }
@@ -75,7 +76,7 @@ ImageView = (function() {
               "color" : includedLabelOfImage.color,
               "font-size" : includedLabelOfImage.fontSize
             };
-            $(self.getCanvas()).css({"background" : ""});
+            $("#imageSRC"+self.getID()).css({"display" : "none"});
             $("#textSRC"+self.getID()).text(labelSensorState.value);
             $("#textSRC"+self.getID()).css(css);
           }
