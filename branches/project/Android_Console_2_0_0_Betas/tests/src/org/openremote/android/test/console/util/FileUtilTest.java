@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -243,15 +244,12 @@ public class FileUtilTest extends InstrumentationTestCase {
       Assert.assertEquals(1, cells.get(3).getColspan());
       Assert.assertEquals(2, cells.get(4).getColspan());
 
-      Iterator<Integer> ids = screens[0].getPollingComponentsIds().iterator();
-      String pollingStatusIds = "";
-      if (ids.hasNext()) {
-         pollingStatusIds = ids.next().toString();
-      }
-      while (ids.hasNext()) {
-         pollingStatusIds = pollingStatusIds + "," + ids.next();
-      }
-      Assert.assertEquals("59,60,61,62", pollingStatusIds);
+      Set<Integer> ids = screens[0].getPollingComponentsIds();
+      Assert.assertEquals(4, ids.size());
+      Assert.assertTrue(ids.contains(59));
+      Assert.assertTrue(ids.contains(60));
+      Assert.assertTrue(ids.contains(61));
+      Assert.assertTrue(ids.contains(62));
    }
 
    /**
@@ -406,15 +404,12 @@ public class FileUtilTest extends InstrumentationTestCase {
       Assert.assertEquals(1, cells.get(3).getColspan());
       Assert.assertEquals(2, cells.get(4).getColspan());
 
-      Iterator<Integer> ids = screens[0].getPollingComponentsIds().iterator();
-      String pollingStatusIds = "";
-      if (ids.hasNext()) {
-         pollingStatusIds = ids.next().toString();
-      }
-      while (ids.hasNext()) {
-         pollingStatusIds = pollingStatusIds + "," + ids.next();
-      }
-      Assert.assertEquals("59,60,61,62", pollingStatusIds);
+      Set<Integer> ids = screens[0].getPollingComponentsIds();
+      Assert.assertEquals(4, ids.size());
+      Assert.assertTrue(ids.contains(59));
+      Assert.assertTrue(ids.contains(60));
+      Assert.assertTrue(ids.contains(61));
+      Assert.assertTrue(ids.contains(62));
 
    }
 
