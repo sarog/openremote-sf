@@ -1,19 +1,22 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
- */
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.service.impl;
 
 import java.io.File;
@@ -68,6 +71,7 @@ import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.DeviceCommandRef;
 import org.openremote.modeler.domain.DeviceMacro;
@@ -152,7 +156,7 @@ public class ResourceServiceImpl implements ResourceService {
    private UserService userService;
 
    private ControllerConfigService controllerConfigService = null;
-
+   
    /**
     * {@inheritDoc}
     */
@@ -378,6 +382,7 @@ public class ResourceServiceImpl implements ResourceService {
          } else if (command instanceof CommandRefItem) {
             DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
                   .getOid());
+            protocolEventContainer.removeDeviceCommand(deviceCommand);
             addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
          } else {
             return new ArrayList<Command>();
@@ -619,6 +624,16 @@ public class ResourceServiceImpl implements ResourceService {
    public String getControllerXML(Collection<Screen> screens, long maxOid) {
 
       /*
+       * Get all sensors and commands from database.
+       */
+      List<Sensor> dbSensors = userService.getAccount().getSensors();
+      List<Device> allDevices = userService.getAccount().getDevices();
+      List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
+      for (Device device : allDevices) {
+         allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
+      }
+      
+      /*
        * store the max oid
        */
       MaxId maxId = new MaxId(maxOid + 1);
@@ -630,8 +645,9 @@ public class ResourceServiceImpl implements ResourceService {
       initUIComponentBox(screens, uiComponentBox);
       Map<String, Object> context = new HashMap<String, Object>();
       ProtocolCommandContainer eventContainer = new ProtocolCommandContainer();
+      eventContainer.setAllDBDeviceCommands(allDBDeviceCommands);
       ProtocolContainer protocolContainer = ProtocolContainer.getInstance();
-      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId);
+      Collection<Sensor> sensors = getAllSensorWithoutDuplicate(screens, maxId, dbSensors);
       Collection<UISwitch> switchs = (Collection<UISwitch>) uiComponentBox.getUIComponentsByType(UISwitch.class);
       Collection<UIComponent> buttons = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(UIButton.class);
       Collection<UIComponent> gestures = (Collection<UIComponent>) uiComponentBox.getUIComponentsByType(Gesture.class);
@@ -650,6 +666,7 @@ public class ResourceServiceImpl implements ResourceService {
       context.put("resouceServiceImpl", this);
       context.put("protocolContainer", protocolContainer);
       context.put("sensors", sensors);
+      context.put("dbSensors", dbSensors);
       context.put("gestures", gestures);
       context.put("uiSliders", uiSliders);
       context.put("labels", uiLabels);
@@ -686,7 +703,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId) {
+   private Set<Sensor> getAllSensorWithoutDuplicate(Collection<Screen> screens, MaxId maxId, List<Sensor> dbSensors) {
       Set<Sensor> sensorWithoutDuplicate = new HashSet<Sensor>();
       Collection<Sensor> allSensors = new ArrayList<Sensor>();
 
@@ -703,6 +720,15 @@ public class ResourceServiceImpl implements ResourceService {
          }
       }
 
+      List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
+      for (Sensor dbSensor : dbSensors) {
+         for (Sensor clientSensor : sensorWithoutDuplicate) {
+            if (dbSensor.getOid() == clientSensor.getOid()) {
+               duplicateDBSensors.add(dbSensor);
+            }
+         }
+      }
+      dbSensors.removeAll(duplicateDBSensors);
       /*
        * reset sensor oid, avoid duplicated id in export xml. make sure same sensors have same oid.
        */
@@ -1305,6 +1331,39 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
+   /**
+    * 
+    * This method is calling by controllerXML.vm, to export sensors which from database.
+    */
+   public Long getMaxId(MaxId maxId) {
+      return maxId.maxId();
+   }
+   
+   /**
+    * Adds the data base commands into protocolEventContainer.
+    * 
+    * @param protocolEventContainer
+    *           the protocol event container
+    * @param maxId
+    *           the max id
+    */
+   public void addDataBaseCommands(ProtocolCommandContainer protocolEventContainer, MaxId maxId) {
+      List<DeviceCommand> dbDeviceCommands = protocolEventContainer.getAllDBDeviceCommands();
+      for (DeviceCommand deviceCommand : dbDeviceCommands) {
+         String protocolType = deviceCommand.getProtocol().getType();
+         List<ProtocolAttr> protocolAttrs = deviceCommand.getProtocol().getAttributes();
+
+         Command uiButtonEvent = new Command();
+         uiButtonEvent.setId(maxId.maxId());
+         uiButtonEvent.setProtocolDisplayName(protocolType);
+         for (ProtocolAttr protocolAttr : protocolAttrs) {
+            uiButtonEvent.getProtocolAttrs().put(protocolAttr.getName(), protocolAttr.getValue());
+         }
+         uiButtonEvent.setLabel(deviceCommand.getName());
+         protocolEventContainer.addUIButtonEvent(uiButtonEvent);
+      }
+   }
+   
    private void addAuthentication(AbstractHttpMessage httpMessage) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
             + encode(userService.getCurrentUser().getUsername() + ":" + userService.getCurrentUser().getPassword()));
