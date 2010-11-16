@@ -261,10 +261,13 @@ public class AccountManageWindow extends Dialog {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
             String html = (String) model.get(property);
+            String username = (String) model.get("username");
             if (cureentUserId == (Long) model.get("oid")) {
                html += "<b> - me</b>";
+            } else {
+               html = html + " -<br/>" + "<b>" + username + "</b>";
             }
-            return "<span title='" + (String) model.get("username") + "'>" + html + "</span>";
+            return "<span title='" + username + "'>" + html + "</span>";
          }
       };
 
