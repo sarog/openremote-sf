@@ -26,6 +26,7 @@
 		338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
+		33959D7112797D1300A8F0FA /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33959D7012797D1300A8F0FA /* GetPanelsController.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
@@ -155,6 +156,12 @@
 		8C65FDF51096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C65FDF61096F33C006FC19F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		8C6682490F53FFF5007C45D4 /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
+		8C6878A41266B961004CDF7D /* slider_default_max_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */; };
+		8C6878A51266B961004CDF7D /* slider_default_min_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */; };
+		8C6878A61266B961004CDF7D /* slider_default_thumb_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */; };
+		8C6878A71266B961004CDF7D /* slider_default_max_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */; };
+		8C6878A81266B961004CDF7D /* slider_default_min_track_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */; };
+		8C6878A91266B961004CDF7D /* slider_default_thumb_image_.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */; };
 		8C72E7160F541FAB006CC0DF /* StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C72E7150F541FAB006CC0DF /* StringUtils.m */; };
 		8C7BE4230FA0395F00F18AA1 /* ViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */; };
 		8C7BE48B0FA0431700F18AA1 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
@@ -264,6 +271,8 @@
 		338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClippedUIImage.m; sourceTree = "<group>"; };
 		338D306A10D8DD000043BFE9 /* UIViewUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewUtil.h; sourceTree = "<group>"; };
 		338D306B10D8DD000043BFE9 /* UIViewUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewUtil.m; sourceTree = "<group>"; };
+		33959D6F12797D1300A8F0FA /* GetPanelsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPanelsController.h; sourceTree = "<group>"; };
+		33959D7012797D1300A8F0FA /* GetPanelsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPanelsController.m; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
 		33981B1010B103260076DB59 /* DataBaseService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseService.m; sourceTree = "<group>"; };
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -380,6 +389,9 @@
 		8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PollingStatusParserDelegate.m; sourceTree = "<group>"; };
 		8C6682470F53FFF5007C45D4 /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
 		8C6682480F53FFF5007C45D4 /* FileUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtils.m; sourceTree = "<group>"; };
+		8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slider_default_max_track_image_.png; path = image/slider_default_max_track_image_.png; sourceTree = "<group>"; };
+		8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slider_default_min_track_image_.png; path = image/slider_default_min_track_image_.png; sourceTree = "<group>"; };
+		8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slider_default_thumb_image_.png; path = image/slider_default_thumb_image_.png; sourceTree = "<group>"; };
 		8C72E7140F541FAB006CC0DF /* StringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtils.h; sourceTree = "<group>"; };
 		8C72E7150F541FAB006CC0DF /* StringUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringUtils.m; sourceTree = "<group>"; };
 		8C7BE4210FA0395F00F18AA1 /* ViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewHelper.h; sourceTree = "<group>"; };
@@ -565,6 +577,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8C6878A11266B961004CDF7D /* slider_default_max_track_image_.png */,
+				8C6878A21266B961004CDF7D /* slider_default_min_track_image_.png */,
+				8C6878A31266B961004CDF7D /* slider_default_thumb_image_.png */,
 				8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */,
 				8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */,
 				8C3DE3001163492C00DD4EE7 /* btn_green.png */,
@@ -892,6 +907,8 @@
 				33DF56CD10CCF6B50005446D /* TabBarController.m */,
 				8CC1E07C10DB491400155CC0 /* DefaultViewController.h */,
 				8CC1E07D10DB491400155CC0 /* DefaultViewController.m */,
+				33959D6F12797D1300A8F0FA /* GetPanelsController.h */,
+				33959D7012797D1300A8F0FA /* GetPanelsController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -995,6 +1012,9 @@
 				8C3DE30F1163492C00DD4EE7 /* slider_tip.png in Resources */,
 				8C09289B11B63D1900674C4F /* ErrorViewController~iPhone.xib in Resources */,
 				8C09289C11B63D1900674C4F /* InitViewController~iPhone.xib in Resources */,
+				8C6878A41266B961004CDF7D /* slider_default_max_track_image_.png in Resources */,
+				8C6878A51266B961004CDF7D /* slider_default_min_track_image_.png in Resources */,
+				8C6878A61266B961004CDF7D /* slider_default_thumb_image_.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1036,6 +1056,9 @@
 				8C579703116B9DD000ED63EA /* panel_local_tabbar.xml in Resources */,
 				8C579704116B9DD000ED63EA /* panel_portrait_landscape.xml in Resources */,
 				8C579705116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml in Resources */,
+				8C6878A71266B961004CDF7D /* slider_default_max_track_image_.png in Resources */,
+				8C6878A81266B961004CDF7D /* slider_default_min_track_image_.png in Resources */,
+				8C6878A91266B961004CDF7D /* slider_default_thumb_image_.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1145,6 +1168,7 @@
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
 				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
 				8CEFDA7111BF34DD00CEDC24 /* LoadingHUDView.m in Sources */,
+				33959D7112797D1300A8F0FA /* GetPanelsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1263,9 +1287,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = openremote;
-				SDKROOT = iphonesimulator4.0;
+				PRODUCT_NAME = OpenRemote;
+				SDKROOT = iphonesimulator4.1;
 			};
 			name = "Simulator iOS 3.0";
 		};
@@ -1345,6 +1370,7 @@
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos4.1;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = "Device Distro iOS 3.0";
 		};
@@ -1380,14 +1406,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphonesimulator3.1;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = GCov_Build;
 		};
@@ -1410,11 +1438,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = openremote;
 				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				SDKROOT = iphoneos2.2.1;
+				SDKROOT = iphoneos4.1;
 			};
 			name = GCov_Build;
 		};
@@ -1453,20 +1482,96 @@
 			};
 			name = GCov_Build;
 		};
+		973D3959127E3A5400BEB1B2 /* App Store Release / Target iOS 3.0 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				PROVISIONING_PROFILE = "C0E0E2F9-E18B-425D-A6DF-76B129D946E4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C0E0E2F9-E18B-425D-A6DF-76B129D946E4";
+				SDKROOT = iphoneos4.1;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = "App Store Release / Target iOS 3.0";
+		};
+		973D395A127E3A5400BEB1B2 /* App Store Release / Target iOS 3.0 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = OpenRemote;
+				PROVISIONING_PROFILE = "C0E0E2F9-E18B-425D-A6DF-76B129D946E4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C0E0E2F9-E18B-425D-A6DF-76B129D946E4";
+				SDKROOT = iphoneos4.1;
+			};
+			name = "App Store Release / Target iOS 3.0";
+		};
+		973D395B127E3A5400BEB1B2 /* App Store Release / Target iOS 3.0 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = "UnitTest-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					SenTestingKit,
+					"-framework",
+					UIKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = UnitTest;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = "App Store Release / Target iOS 3.0";
+		};
 		C01FCF4F08A954540054247B /* Simulator iOS 3.0 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "Don't Code Sign";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphonesimulator4.1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Simulator iOS 3.0";
 		};
@@ -1479,6 +1584,7 @@
 				1D6058940D05DD3E006BFB54 /* Simulator iOS 3.0 */,
 				8CDB7DCF10D53CCE00B52642 /* GCov_Build */,
 				8C599D670F7156E5001833AD /* Device Distro iOS 3.0 */,
+				973D395A127E3A5400BEB1B2 /* App Store Release / Target iOS 3.0 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator iOS 3.0";
@@ -1489,6 +1595,7 @@
 				8C460E4C109552C900C7A686 /* Simulator iOS 3.0 */,
 				8CDB7DD010D53CCE00B52642 /* GCov_Build */,
 				8C460E4D109552C900C7A686 /* Device Distro iOS 3.0 */,
+				973D395B127E3A5400BEB1B2 /* App Store Release / Target iOS 3.0 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator iOS 3.0";
@@ -1499,6 +1606,7 @@
 				C01FCF4F08A954540054247B /* Simulator iOS 3.0 */,
 				8CDB7DCE10D53CCE00B52642 /* GCov_Build */,
 				8C599D660F7156E5001833AD /* Device Distro iOS 3.0 */,
+				973D3959127E3A5400BEB1B2 /* App Store Release / Target iOS 3.0 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator iOS 3.0";

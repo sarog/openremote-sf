@@ -38,6 +38,7 @@
 - (void)deleteAllRow;
 - (void)updateTableView;
 - (void)saveSettings;
+- (void)updatePanelIdentityView;
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath;
 - (BOOL)isAutoServerSection:(NSIndexPath *)indexPath;
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
@@ -163,7 +164,7 @@
 	autoDiscovery = s.on;
 	
 	[self deleteAllRow];
-	
+
 	if (autoDiscovery) {
 		[self showSpinner];
 		[AppSettingsDefinition removeAllAutoServer];
@@ -314,7 +315,7 @@
 	
 }
 
-// Update controller server list in tableview.
+// Updates controller server list in tableview, and updates panel identity view in tableview.
 - (void)updateTableView {
 	UITableView *tv = (UITableView *)self.view;
 	[tv beginUpdates];
@@ -332,7 +333,22 @@
 	[tv endUpdates];
 	
 	[insertIndexPaths release];
+	
+	[self updatePanelIdentityView];	
+	
 	[self forceHideSpinner:NO];
+}
+
+// Updates panel identity view, but not persistes identity data into appSettings.plist.
+- (void)updatePanelIdentityView {
+	UITableView *tv = (UITableView *)self.view;
+	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
+	identityCell.textLabel.text = @"None";
+	
+	[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
+	
+	GetPanelsController *getPanelsController = [[GetPanelsController alloc] initWithDelegate:self];
+	[getPanelsController release];
 }
 
 // Cancle(Dismiss) appSettings view.
@@ -645,13 +661,15 @@
 			if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
 				[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
 				oldCell.accessoryType = UITableViewCellAccessoryNone;
-			} 
+			} 			
 		} 
 		if (cell.accessoryType == UITableViewCellAccessoryNone) {
 			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 			cell.accessoryType = UITableViewCellAccessoryCheckmark;
 		} 
-		
+		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
+			[self updatePanelIdentityView];
+		}
 		currentSelectedServerIndex = indexPath;
 	}
 	
@@ -666,6 +684,24 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
 	return YES;
+}
+
+#pragma mark Delegate method of GetPanelsDelegate
+// After select a controller URL, get panel list from the controller.
+// If only one panel is available, automatically choose it.
+- (void)onGetPanels:(NSMutableArray*)panels {
+	NSArray *newArray = nil;
+	newArray = panels;
+
+	if (newArray.count == 1) {
+		[[AppSettingsDefinition getPanelIdentityDic] setObject:[newArray objectAtIndex:0] forKey:@"identity"];
+	} else {
+		[[AppSettingsDefinition getPanelIdentityDic] setObject:@"None" forKey:@"identity"];
+	}	
+	
+	UITableView *tv = (UITableView *)self.view;
+	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
+	identityCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
 }
 
 - (void)dealloc {
