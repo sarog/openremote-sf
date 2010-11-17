@@ -19,29 +19,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <Foundation/Foundation.h>
 
-#import <UIKit/UIKit.h>
-#import "ServerAutoDiscoveryController.h"
-#import "UpdateController.h"
-#import "FileUtils.h"
-#import "GetPanelsController.h"
+//Define a protocol for delegate implementation
+@protocol GetPanelsDelegate <NSObject>
+
 /**
- * Render the UI of AppSetting view and provide functions of setting about panel client.
+ * This method will be called after panels have loaded.
  */
-@interface AppSettingController : UITableViewController <UITextFieldDelegate,GetPanelsDelegate> {
-	NSString *pathToUserCopyOfPlist;
-	BOOL autoDiscovery;
-	NSMutableArray *serverArray;
-	NSIndexPath *currentSelectedServerIndex;
-	ServerAutoDiscoveryController *autoDiscoverController;
-	UIBarButtonItem *done;
-	UIBarButtonItem *cancel;
-	BOOL isEditing;
-	UIActivityIndicatorView *loadingView;
-	UpdateController *updateController;
-	NSTimer *getAutoServersTimer;
-	UIActivityIndicatorView *spinner;
-	UITextField *portField;
+- (void) onGetPanels:(NSMutableArray*)panels;
+
+@end
+
+
+@interface GetPanelsController : NSObject {
+	NSMutableArray *panels;
 	
+	id<GetPanelsDelegate> _delegate;
 }
+
 @end
