@@ -65,14 +65,13 @@ public class FileUtil {
    /**
     * Parses the panel from panel.xml.
     * 
-    * @param context the context
     */
    public static void parsePanelXML(Context context) {
       if (context.getFileStreamPath(Constants.PANEL_XML).exists()) {
          try {
             parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
          } catch (FileNotFoundException e) {
-            Log.e("FileUtil", "panel.xml not found.", e);
+            Log.e("OpenRemote-FileUtil", "panel.xml not found.", e);
          }
       }
    }
@@ -125,13 +124,12 @@ public class FileUtil {
    /**
     * Clear images from cache.
     * 
-    * @param context the context
     */
    public static void clearImagesInCache(Context context) {
       String[] fileNames = context.fileList();
       for (int i = 0; i < fileNames.length; i++) {
          if (fileNames[i].toLowerCase().matches("^.+\\.(png|gif|jpg|bmp)$")) {
-            Log.i("CLEAR IMAGE", fileNames[i]);
+            Log.i("OpenRemote-CLEAR IMAGE", fileNames[i]);
             context.deleteFile(fileNames[i]);
          }
       }

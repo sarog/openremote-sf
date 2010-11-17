@@ -83,8 +83,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    /**
     * Sets the touch listener when touch the panel item.
     * 
-    * @param context the context
-    * @param orConnectionDelegate the or connection delegate
+    * @param orConnectionDelegate the delegate to handle the connection
     */
    private void setOntouchListener(final Context context, final PanelSelectSpinnerView orConnectionDelegate) {
       setOnTouchListener(new OnTouchListener() {
@@ -105,7 +104,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    public void urlConnectionDidFailWithException(Exception e) {
       ViewHelper.showAlertViewWithTitle(getContext(), "Error", "Can not get panel identity list.");
       setDefaultAdapterContent();
-      Log.e("PANEL LIST", "Can not get panel identity list", e);
+      Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
    }
 
    @Override
@@ -123,13 +122,13 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
             arrayAdapter.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
          }
       } catch (IOException e) {
-         Log.e("PANEL LIST", "The data is from ORConnection is bad", e);
+         Log.e("OpenRemote-PANEL LIST", "The data is from ORConnection is bad", e);
          return;
       } catch (ParserConfigurationException e) {
-         Log.e("PANEL LIST", "Cant build new Document builder", e);
+         Log.e("OpenRemote-PANEL LIST", "Cant build new Document builder", e);
          return;
       } catch (SAXException e) {
-         Log.e("PANEL LIST", "Parse data error", e);
+         Log.e("OpenRemote-PANEL LIST", "Parse data error", e);
          return;
       }
       String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
@@ -160,13 +159,12 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
                @Override
                public void onClick(View v) {
                   super.onClick(v);
-                  Log.e("", "login success");
                   requestPanelList(getContext(), PanelSelectSpinnerView.this);
                }
                
             });
          } else {
-            // The following code customizes the dialog, becaurse the finish method should do after dialog show and click ok.
+            // The following code customizes the dialog, because the finish method should do after dialog show and click ok.
             AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
             alertDialog.setTitle("Panel List Not Found");
             alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
@@ -199,8 +197,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    /**
     * Request panel identity list from controller.
     * 
-    * @param context the context
-    * @param ORConnectionDelegate the oR connection delegate
+    * @param ORConnectionDelegate the delegate to handle the connection
     */
    private void requestPanelList(final Context context, final PanelSelectSpinnerView ORConnectionDelegate) {
       sendCount++;
@@ -209,5 +206,11 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       }
    }
 
+   public void setOnlyPanel(String panelName) {
+      if (arrayAdapter != null) {
+         arrayAdapter.clear();
+         arrayAdapter.add(panelName);
+      }
+   }
    
 }
