@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="Lutron HomeWorks" tagName="lutron_homeworks">
+		<attr name="address" label="Address">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<!-- message is option -->
+				<!-- <regex message="Address should be ">(\d\.){3}\d</regex> -->
+			</validations>
+		</attr>
+		<attr name="command" label="Lutron Command">
+			<validations>
+				<allowBlank>false</allowBlank>
+				<maxLength>10</maxLength>
+				<regex message="Command must be one of RAISE, LOWER, STOP, SCENE, PRESS, RELEASE, HOLD, DOUBLE_TAP.">RAISE|LOWER|STOP|SCENE|PRESS|RELEASE|HOLD|DOUBLE_TAP</regex>
+			</validations>
+		</attr>
+		<attr name="scene" label="Scene to select">
+			<validations>
+				<allowBlank>true</allowBlank>
+				<maxLength>2</maxLength>
+				<regex message="Numbers only">\d+</regex>
+			</validations>
+		</attr>
+		<attr name="key" label="Key to act on">
+			<validations>
+				<allowBlank>true</allowBlank>
+				<maxLength>2</maxLength>
+				<regex message="Number only">\d+</regex>
+			</validations>
+		</attr>
+	</protocol>
+</openremote>

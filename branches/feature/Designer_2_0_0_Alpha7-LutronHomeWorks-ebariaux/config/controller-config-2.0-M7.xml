@@ -208,4 +208,43 @@ If it's true, controller will auto-detect its groupmembers with multicast.
    			</hint>
 		</config>
 	</category>
+	<category name="lutron_homeworks">
+		<description>
+   			<![CDATA[
+   				Configuration for the Lutron HomeWorks Processor used by protocol of the same name.
+                A username / password must be defined in order for communication to be possible.
+                The IP and port numbers are optional, they will first try to be detected using the AMX DDDP beacon.
+   			]]>
+   		</description>
+		<config name="lutron_homeworks.username" value="openremote">
+			<hint>
+   				<![CDATA[
+   					User name used for connection to Lutron HomeWorks processor, as defined on Link 9 in HomeWorks configuration.
+   				]]>
+   			</hint>
+		</config>
+		<config name="lutron_homeworks.password" value="openremote">
+			<hint>
+   				<![CDATA[
+   					Password used for connection to Lutron HomeWorks processor, as defined on Link 9 in HomeWorks configuration.
+   				]]>
+   			</hint>
+		</config>
+		<config name="lutron_homeworks.address" value="192.168.1.1"
+			validation="(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)">
+			<hint>
+   				<![CDATA[
+					 Address of the Lutron HomeWorks processor, to be filled in only of autodiscovery is not desired.
+   				]]>
+   			</hint>
+		</config>
+		<config name="lutron_homeworks.port" value="23"
+			validation="\d+">
+			<hint>
+   				<![CDATA[
+   					Telnet port of the Lutron HomeWorks processor, to be filled in only of autodiscovery is not desired.
+   				]]>
+   			</hint>
+		</config>
+	</category>
 </configs>
