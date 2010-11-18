@@ -22,31 +22,21 @@ package org.openremote.controller.suite;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-import org.openremote.controller.net.MulticastAutoDiscoveryTest;
-import org.openremote.controller.utils.MacrosIrDelayUtilTest;
+import org.openremote.controller.protocol.virtual.SwitchStatusTest;
 
 /**
- * Collects *all* unit tests.
+ * All OpenRemote Virtual protocol tests aggregated here.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 @RunWith(Suite.class)
-@SuiteClasses(
-{
-   AllControlBuilderTests.class,
-   AllServiceTests.class,
-   AllRESTfulAPIMockTests.class,
-   MacrosIrDelayUtilTest.class,
-   AllCommandBuildersTests.class,
-   MulticastAutoDiscoveryTest.class,
-   RoundRobinTests.class,
-   AllUtilTests.class,
-   KNXTests.class,
-   VirtualProtocolTests.class
-}
+@Suite.SuiteClasses(
+   {
+       SwitchStatusTest.class
+   }
 )
-public class AllTests
+public class VirtualProtocolTests
 {
 
 }
+
