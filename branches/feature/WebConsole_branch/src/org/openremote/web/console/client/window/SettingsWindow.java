@@ -76,6 +76,9 @@ public class SettingsWindow extends FormWindow {
    private ToggleButton autoButton;
    private ContentPanel customServerContainer;
    private ContentPanel autoServerContainer;
+   private ComboBox<ModelData> panelListCombo;
+   private boolean requestOnePanel;
+   private String selectedPanel = "";
    
    public SettingsWindow() {
       super();
@@ -186,7 +189,19 @@ public class SettingsWindow extends FormWindow {
       }
      });
      
-     customServerContainer = new ContentPanel();
+     customServerContainer = new ContentPanel() {
+        @Override
+        public void show() {
+           super.show();
+           if (customServerGrid.getSelectionModel().getSelectedItem() != null) {
+              ClientDataBase.appSetting.setCurrentServer(customServerGrid.getSelectionModel().getSelectedItem().getValue());
+              requestOnePanelIdentity();
+           } else {
+              ClientDataBase.appSetting.setCurrentServer("");
+              panelListCombo.setValue(null);
+           }
+        }
+     };
      customServerContainer.setHeaderVisible(false);
      customServerContainer.setBodyBorder(false);
      customServerContainer.setLayout(new FitLayout());
@@ -204,10 +219,13 @@ public class SettingsWindow extends FormWindow {
             @Override
             public void afterSubmit(SubmitEvent be) {
                if (be.getData() != null) {
-                  StringModelData newData = new StringModelData("customServer", be.getData().toString());
+                  String newCustomServer = be.getData().toString();
+                  StringModelData newData = new StringModelData("customServer", newCustomServer);
                   customServerGrid.getStore().add(newData);
                   customServerGrid.getSelectionModel().select(newData, false);
-                  ClientDataBase.appSetting.addCustomServer(be.getData().toString());
+                  ClientDataBase.appSetting.addCustomServer(newCustomServer);
+                  ClientDataBase.appSetting.setCurrentServer(newCustomServer);
+                  requestOnePanelIdentity();
                }
             }
             
@@ -260,6 +278,7 @@ public class SettingsWindow extends FormWindow {
          public void selectionChanged(SelectionChangedEvent<StringModelData> se) {
             if (se.getSelectedItem() != null) {
                ClientDataBase.appSetting.setCurrentServer(se.getSelectedItem().getValue());
+               requestOnePanelIdentity();
             }
          }
         });
@@ -290,6 +309,9 @@ public class SettingsWindow extends FormWindow {
                      }
                   }
                   autoServerGrid.getSelectionModel().select(currentServerIndex, false);
+                  ClientDataBase.appSetting.setCurrentServer(autoServers.get(currentServerIndex));
+                  requestOnePanelIdentity();
+                  
                }
             });
          }
@@ -313,7 +335,7 @@ public class SettingsWindow extends FormWindow {
    private void addPanelIdentityField() {
 
       final ListStore<ModelData> store = new ListStore<ModelData>();
-      final ComboBox<ModelData> panelListCombo = new ComboBox<ModelData>();
+      panelListCombo = new ComboBox<ModelData>();
       panelListCombo.setStore(store);
       panelListCombo.setFieldLabel("Panel Identity");
       panelListCombo.setDisplayField("name");
@@ -328,25 +350,48 @@ public class SettingsWindow extends FormWindow {
          store.add(value);
          panelListCombo.setValue(value);
       }
+      
       panelListCombo.addListener(Events.TriggerClick, new Listener<FieldEvent>() {
          public void handleEvent(FieldEvent be) {
             String currentServer = ClientDataBase.getSecuredServer();
+            store.removeAll();
+            panelListCombo.setValue(null);
             if (!"".equals(currentServer)) {
-               store.removeAll();
+               mask("Loading panel identities...");
                AsyncServiceFactory.getPanelIdentityServiceAsync().getPanelNames(currentServer,
                      ClientDataBase.userInfo.getUsername(), ClientDataBase.userInfo.getPassword(),
                      new AsyncSuccessCallback<List<String>>() {
                   public void onSuccess(List<String> panels) {
+                     unmask();
                      if (panels != null) {
-                        for (String panel : panels) {
-                           store.add(new StringModelData("name", panel));
+                        if (requestOnePanel) {
+                           if (panels.size() == 1) {
+                              StringModelData value = new StringModelData("name", panels.get(0));
+                              store.add(value);
+                              panelListCombo.setValue(value);
+                           }
+                        } else {
+                           for (String panel : panels) {
+                              store.add(new StringModelData("name", panel));
+                           }
+                           panelListCombo.expand();
                         }
-                        panelListCombo.expand();
                      }
+                     requestOnePanel = false;
                   }
+
+                  @Override
+                  public void onFailure(Throwable caught) {
+                     super.onFailure(caught);
+                     unmask();
+                     requestOnePanel = false;
+                  }
+                  
                });
             } else {
-               MessageBox.alert("WARN", "Please select a controller server.", null);
+               if (!requestOnePanel) {
+                  MessageBox.alert("WARN", "Please select a controller server.", null);
+               }
             }
          }
       });
@@ -354,7 +399,9 @@ public class SettingsWindow extends FormWindow {
       panelListCombo.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @Override
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
-            ClientDataBase.appSetting.setCurrentPanelIdentity(se.getSelectedItem().get("name").toString());
+            if (se.getSelectedItem() != null) {
+               selectedPanel = se.getSelectedItem().get("name").toString();
+            }
          }
 
       });
@@ -429,7 +476,15 @@ public class SettingsWindow extends FormWindow {
     */
    private void addButtons() {
       Button okButton = new Button("OK");
-      okButton.addSelectionListener(new FormSubmitListener(form));
+      okButton.addSelectionListener(new FormSubmitListener(form) {
+         public void componentSelected(ButtonEvent ce) {
+            if (!"".equals(selectedPanel)) {
+               ClientDataBase.appSetting.setCurrentPanelIdentity(selectedPanel);
+            }
+            super.componentSelected(ce);
+         }
+         
+      });
 
       Button cancelButton = new Button("Cancel");
       cancelButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
@@ -450,5 +505,10 @@ public class SettingsWindow extends FormWindow {
             hide();
          }
       });
+   }
+   
+   private void requestOnePanelIdentity() {
+      requestOnePanel = true;
+      panelListCombo.fireEvent(Events.TriggerClick, new FieldEvent(panelListCombo));
    }
 }
