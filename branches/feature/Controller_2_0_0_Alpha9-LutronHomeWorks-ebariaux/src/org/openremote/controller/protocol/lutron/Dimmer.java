@@ -1,20 +1,9 @@
 package org.openremote.controller.protocol.lutron;
 
-public class Dimmer {
+public class Dimmer extends HomeWorksDevice {
 
-	/**
-	 * Gateway we're associated with. This is the gateway we'll use to send the commands.
-	 */
-	private LutronHomeWorksGateway gateway;
-	
-	/**
-	 * Address of this Dimmer module in the Lutron system.
-	 */
-	private LutronHomeWorksAddress address;
-	
 	public Dimmer(LutronHomeWorksGateway gateway, LutronHomeWorksAddress address) {
-		this.gateway = gateway;
-		this.address = address;
+		super(gateway, address);
 	}
 	
 	public void raise() {

@@ -47,7 +47,7 @@ public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableC
 	   */
 	  public void send()
 	  {
-		  Keypad keypad = gateway.getKeypad(address);
+		  Keypad keypad = (Keypad) gateway.getHomeWorksDevice(address, Keypad.class);
 		  if ("PRESS".equals(name)) {
 			  keypad.press(key);
 		  } else if ("RELEASE".equals(name)) {
