@@ -40,11 +40,7 @@ public class LoginDialog extends Dialog {
    private EditText passwordText;
    private Button loginButton;
    public LoginDialog(Context context) {
-      
-	   super(context);
-
-	  new Exception("REMOVE ME IN LOGINDIALOG").printStackTrace();
-	  
+      super(context);
       setContentView(R.layout.login_view);
       getWindow().setLayout(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
       setTitle(R.string.login);

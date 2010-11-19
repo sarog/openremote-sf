@@ -117,8 +117,6 @@ public class ORConnection {
 
    /** Execute the http request.*/
    public void execute() {
-//	   Log.e("LOGTRACE",Log.getStackTraceString(new Exception()));
-   	
       new Thread(new Runnable() {
          public void run() {
             try {
@@ -165,9 +163,6 @@ public class ORConnection {
     */
    private void connectionDidReceiveData() {
       try {
-    	 
-    	Log.e("LOGTRACE",Log.getStackTraceString(new Exception()));
-    	
          if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
             delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
          } else {

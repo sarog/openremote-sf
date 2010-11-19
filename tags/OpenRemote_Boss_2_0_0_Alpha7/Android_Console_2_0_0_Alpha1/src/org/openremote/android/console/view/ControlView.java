@@ -36,15 +36,10 @@ import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORUnBlockConnection;
 
-import org.openremote.android.controller.service.ControlCommandService;
-
-
 import android.content.Context;
 
 /**
  * The super class of all control view, include ButtonView, SwitchView and SliderView.
- * 
- * @author marcf (for the NO_ORB parts)
  */
 public class ControlView extends ComponentView implements ORConnectionDelegate {
 
@@ -78,18 +73,9 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
     * @return true, if successful
     */
    public boolean sendCommandRequest(String commandType) {
-	   // If we have an ORB then we go through it with an HTTP method.
-	  if (AppSettingsModel.hasORB(context)) {
-		  new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
+      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
             + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
-		  return true;
-	  }
-	  // IF we don't have an ORB then we are in the local case, look up service and call it. 
-	  else 
-	  {
-		  ControlCommandService.getInstance(context).trigger(getComponent().getComponentId(), commandType);
-		  return true;
-	  }
+      return true;
    }
 
    /**

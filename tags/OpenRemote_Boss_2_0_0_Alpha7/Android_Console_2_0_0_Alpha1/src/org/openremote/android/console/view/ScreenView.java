@@ -58,6 +58,7 @@ public class ScreenView extends AbsoluteLayout {
          addBackground();
 
       }
+
       ArrayList<LayoutContainer> layouts = screen.getLayouts();
       for (int i = 0; i < layouts.size(); i++) {
          LayoutContainerView la = LayoutContainerView.buildWithLayoutContainer(context, layouts.get(i));
