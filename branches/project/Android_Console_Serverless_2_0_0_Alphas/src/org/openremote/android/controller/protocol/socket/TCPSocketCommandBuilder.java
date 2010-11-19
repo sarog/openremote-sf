@@ -26,7 +26,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.openremote.android.controller.command.CommandBuilder;
 import org.openremote.android.controller.command.ExecutableCommand;
-import org.openremote.android.controller.utils.CommandUtil;
+import org.openremote.android.controller.util.CommandUtil;
 
 
 /**

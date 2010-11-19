@@ -17,7 +17,7 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.android.controller.utils;
+package org.openremote.android.controller.util;
 
 import org.w3c.dom.Element;
 import org.openremote.android.controller.command.Command;
