@@ -38,7 +38,7 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
 	   */
 	  public void send()
 	  {
-		  Dimmer dimmer = gateway.getDimmer(address);
+		  Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
 		  if ("RAISE".equals(name)) {
 			  dimmer.raise();
 		  } else if ("LOWER".equals(name)) {

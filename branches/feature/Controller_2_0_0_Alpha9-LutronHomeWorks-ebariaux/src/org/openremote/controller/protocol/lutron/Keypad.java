@@ -1,20 +1,9 @@
 package org.openremote.controller.protocol.lutron;
 
-public class Keypad {
+public class Keypad extends HomeWorksDevice {
 
-	/**
-	 * Gateway we're associated with. This is the gateway we'll use to send the commands.
-	 */
-	private LutronHomeWorksGateway gateway;
-	
-	/**
-	 * Address of this Keypad module in the Lutron system.
-	 */
-	private LutronHomeWorksAddress address;
-	
 	public Keypad(LutronHomeWorksGateway gateway, LutronHomeWorksAddress address) {
-		this.gateway = gateway;
-		this.address = address;
+		super(gateway, address);
 	}
 	
 	public void press(Integer key) {

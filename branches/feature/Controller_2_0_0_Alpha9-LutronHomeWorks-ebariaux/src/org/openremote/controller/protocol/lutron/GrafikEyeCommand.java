@@ -59,6 +59,7 @@ public class GrafikEyeCommand extends LutronHomeWorksCommand implements Executab
 	   */
 	  public void send()
 	  {
-		  gateway.getGrafikEye(address).selectScene(scene);
+		  GrafikEye grafikEye = (GrafikEye) gateway.getHomeWorksDevice(address, GrafikEye.class);
+		  grafikEye.selectScene(scene);
 	  }
 }
