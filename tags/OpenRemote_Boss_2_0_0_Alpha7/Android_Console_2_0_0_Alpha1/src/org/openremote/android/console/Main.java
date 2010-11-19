@@ -46,6 +46,7 @@ import android.widget.Toast;
  * 
  * @author Andrew C. Oliver <acoliver at osintegrators.com> 
  *         Tomsky
+ *  @author <a href="mailto:marcf@openremote.org">Marc Fleury</a>
  */
 public class Main extends GenericActivity {
 
@@ -57,6 +58,7 @@ public class Main extends GenericActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -71,11 +73,43 @@ public class Main extends GenericActivity {
         
         checkNetType();
         readDisplayMetrics();        
+        	
+        // If there are no server and panel in storage, get them in background
         if(!checkServerAndPanel()) {        
            new AsyncResourceLoader(this).execute((Void) null);
         }
     }
-    
+
+
+    /**
+     * Forward to settings view.
+     */
+    private void doSettings() {
+        Intent i = new Intent();
+        i.setClassName(this.getClass().getPackage().getName(),
+              AppSettingsActivity.class.getName());
+        startActivity(i);
+        finish();
+    }
+
+    /**
+     * Check server and panel.
+     * If server or panel is empty, do settings and return true;
+     * else return false.
+     * 
+     * @return true, if successful
+     */
+    private boolean checkServerAndPanel () {
+       Log.i("toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
+       // If there is nothing do the settings. 
+       if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
+    	   doSettings();
+          return true;
+       }
+       // If there is something return false that will trigger an AsyncResourceloader
+       return false;
+    }
+
     /**
      * Display toast with message "switching controller".
      */
@@ -119,33 +153,6 @@ public class Main extends GenericActivity {
       Screen.SCREEN_HEIGHT = dm.heightPixels;
     }
     
-    /**
-     * Check server and panel.
-     * If server or panel is empty, do settings and return true;
-     * else return false.
-     * 
-     * @return true, if successful
-     */
-    private boolean checkServerAndPanel () {
-       Log.i("toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
-       if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || 
-             TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
-          doSettings();
-          return true;
-       }
-       return false;
-    }
-
-    /**
-     * Forward to settings view.
-     */
-    private void doSettings() {
-        Intent i = new Intent();
-        i.setClassName(this.getClass().getPackage().getName(),
-              AppSettingsActivity.class.getName());
-        startActivity(i);
-        finish();
-    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         Main.populateMenu(menu);
@@ -175,6 +182,5 @@ public class Main extends GenericActivity {
         configItem.setIcon(R.drawable.ic_menu_manage);
         MenuItem quit = menu.add(0, Constants.MENU_ITEM_QUIT, 0, R.string.quit);
         quit.setIcon(R.drawable.ic_menu_close_clear_cancel);
-    }
-   
+    }  
 }

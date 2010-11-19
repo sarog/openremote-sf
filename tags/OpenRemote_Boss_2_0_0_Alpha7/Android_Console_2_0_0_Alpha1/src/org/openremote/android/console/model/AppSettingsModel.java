@@ -32,6 +32,7 @@ import android.util.Log;
  * 
  * @author Tomsky Wang
  * @author Dan Cong
+ * @author <a href="mailto:marcf@openremote.org">Marc Fleury</a>@author Marc Fleury
  *
  */
 public class AppSettingsModel implements Serializable {
@@ -41,6 +42,7 @@ public class AppSettingsModel implements Serializable {
    private static final String CUSTOM_SERVERS = "customServers";
    private static final String CURRENT_SERVER = "currentServer";
    private static final String AUTO_MODE = "autoMode";
+   private static final String HAS_ORB = "hasORB";
    private static final String CURRENT_PANEL_IDENTITY = "currentPanelIdentity";
    private static final String USE_SSL = "useSSL";
    private static final String SSL_PORT = "sslPort";
@@ -109,6 +111,19 @@ public class AppSettingsModel implements Serializable {
    public static boolean isAutoMode(Context context) {
       return context.getSharedPreferences(APP_SETTINGS, 0).getBoolean(AUTO_MODE, true);
    }
+   
+   public static void setHasORB(Context context, boolean hasORB) {
+	   
+	   SharedPreferences.Editor editor = context.getSharedPreferences(APP_SETTINGS, 0).edit();
+	   editor.putBoolean(HAS_ORB, hasORB);
+	   editor.commit();
+   }
+
+   public static boolean hasORB(Context context) {
+	      return context.getSharedPreferences(APP_SETTINGS, 0).getBoolean(HAS_ORB, false);
+   }
+
+   
    
    public static String getCurrentPanelIdentity(Context context) {
       return context.getSharedPreferences(APP_SETTINGS, 0).getString(CURRENT_PANEL_IDENTITY, "");

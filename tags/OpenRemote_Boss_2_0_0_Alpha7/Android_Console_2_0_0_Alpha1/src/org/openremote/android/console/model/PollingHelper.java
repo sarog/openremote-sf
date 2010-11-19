@@ -114,6 +114,11 @@ public class PollingHelper {
     * Request current status and start polling.
     */
    public void requestCurrentStatusAndStartPolling() {
+	   
+	   
+	   System.out.println("REFACTOR ME IN POLLING HELPER: REMOVED ALL POLLING");
+	   return;
+	   /*
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
       
@@ -139,6 +144,7 @@ public class PollingHelper {
       while (isPolling) {
          doPolling();
       }
+      */
    }
 
    private void doPolling() {
