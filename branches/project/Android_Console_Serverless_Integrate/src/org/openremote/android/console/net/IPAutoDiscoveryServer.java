@@ -57,11 +57,11 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
          autoServers.clear();
          srvr.setSoTimeout(1000);
       } catch (BindException e) {
-         Log.e("AUTO DISCOVER", "auto discovery server setup failed, the address is already in use");
+         Log.e("OpenRemote-AUTO DISCOVER", "auto discovery server setup failed, the address is already in use");
          autoServers.clear();
          return autoServers;
       } catch (IOException e) {
-         Log.e("AUTO DISCOVER", "auto discovery server setup failed", e);
+         Log.e("OpenRemote-AUTO DISCOVER", "auto discovery server setup failed", e);
          autoServers.clear();
          return autoServers;
       }
@@ -74,7 +74,7 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
                autoServers.add(line);
             }
             connectionSocket.close();
-            Log.i("AUTO DISCOVER", "auto discovery result: " + autoServers);
+            Log.i("OpenRemote-AUTO DISCOVER", "auto discovery result: " + autoServers);
             Thread.sleep(3);
          } catch (SocketTimeoutException e) {
             moreQuotes = false;
@@ -87,7 +87,7 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
       try {
          srvr.close();
       } catch (IOException e) {
-         Log.e("AUTO DISCOVER", "auto discovery ServerSocket close failed " , e);
+         Log.e("OpenRemote-AUTO DISCOVER", "auto discovery ServerSocket close failed " , e);
          return autoServers;
       }
       return autoServers;

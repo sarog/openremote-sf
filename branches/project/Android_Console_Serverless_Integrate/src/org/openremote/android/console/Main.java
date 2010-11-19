@@ -92,23 +92,6 @@ public class Main extends GenericActivity {
         finish();
     }
 
-    /**
-     * Check server and panel.
-     * If server or panel is empty, do settings and return true;
-     * else return false.
-     * 
-     * @return true, if successful
-     */
-    private boolean checkServerAndPanel () {
-       Log.i("toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
-       // If there is nothing do the settings. 
-       if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
-    	   doSettings();
-          return true;
-       }
-       // If there is something return false that will trigger an AsyncResourceloader
-       return false;
-    }
 
     /**
      * Display toast with message "switching controller".
@@ -153,6 +136,25 @@ public class Main extends GenericActivity {
       Screen.SCREEN_HEIGHT = dm.heightPixels;
     }
     
+
+  /**
+   * Check server and panel.
+   * If server or panel is empty, do settings and return true;
+   * else return false.
+   *
+   * @return true, if successful
+   */
+  private boolean checkServerAndPanel () {
+     Log.i("OpenRemote-toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
+     // If there is nothing do the settings.
+     if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
+       doSettings();
+        return true;
+     }
+     // If there is something return false that will trigger an AsyncResourceloader
+     return false;
+  }
+
 
     public boolean onCreateOptionsMenu(Menu menu) {
         Main.populateMenu(menu);
