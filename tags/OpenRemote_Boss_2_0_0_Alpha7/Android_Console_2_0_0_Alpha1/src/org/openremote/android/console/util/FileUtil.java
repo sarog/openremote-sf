@@ -91,20 +91,26 @@ public class FileUtil {
                XMLEntityDataBase.globalTabBar = new TabBar(nodes.item(i));
             }
          }
-
+         System.out.println("ABOUT TO CLEAR screens");
+         new Exception().printStackTrace();
          XMLEntityDataBase.screens.clear();
          NodeList screenNodes = root.getElementsByTagName("screen");
          int screenNum = screenNodes.getLength();
          for (int i = 0; i < screenNum; i++) {
             Screen screen = new Screen(screenNodes.item(i));
             XMLEntityDataBase.screens.put(screen.getScreenId(), screen);
+            System.out.println("REFACTOR, FILEUTIL: NEW SCREEN :"+ screen.getScreenId());
          }
+
+         System.out.println("ABOUT TO CLEAR GROUPS");
+         new Exception().printStackTrace();
 
          XMLEntityDataBase.groups.clear();
          NodeList groupNodes = root.getElementsByTagName("group");
          int groupNum = groupNodes.getLength();
          for (int i = 0; i < groupNum; i++) {
             Group group = new Group(groupNodes.item(i));
+            System.out.println("I have a group: "+group.getGroupId());
             XMLEntityDataBase.groups.put(group.getGroupId(), group);
          }
       } catch (ParserConfigurationException e) {

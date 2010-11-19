@@ -55,16 +55,22 @@ import android.widget.Spinner;
 
 /**
  * The PanelSelectSpinnerView is request panel identity from controller and display as a combobox.
+ * 
+ * @author Finalist
+ * @author <a href="mailto:marcf@openremote.org">Marc Fleury</a>@author Marc Fleury
  */
 public class PanelSelectSpinnerView extends Spinner implements ORConnectionDelegate {
 
    private ArrayAdapter<String> arrayAdapter;
    public static final String  CHOOSE_PANEL = "choose panel";
    private int sendCount;
+   private int sendCountLocal;
    private int touchCount;
+   private Context context;
    
    public PanelSelectSpinnerView(Context context) {
       super(context);
+      this.context = context;
       setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT));
       arrayAdapter = new ArrayAdapter<String>(context, R.layout.simple_spinner_item_center);
@@ -90,16 +96,36 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
             touchCount++;
-            if (touchCount%2== 1 && "".equals(AppSettingsActivity.currentServer)) {
+            
+            boolean hasORB = AppSettingsModel.hasORB(context);
+            if (touchCount%2== 1 && "".equals(AppSettingsActivity.currentServer) && hasORB) {
                ViewHelper.showAlertViewWithTitle(context, "Warning",
                      "No controller. Please configure Controller URL manually.");
                return true;
             }
-            requestPanelList(context, orConnectionDelegate);
+            
+            if (!hasORB) requestPanelListLocal();
+            else requestPanelList(context, orConnectionDelegate);
             return false;
          }
       });
    }
+   
+   /**
+    * In case there is no ORB then we get the panel.xml LOCALLY.
+    *  REFACTOR ME
+    * 
+    */
+   private void requestPanelListLocal() {
+	  sendCountLocal++;
+	      
+	  try {
+		  if (sendCountLocal%2 ==1)
+			  urlConnectionDidReceiveData(context.openFileInput("panel.xml"));
+	   }
+	   catch (IOException e) {e.printStackTrace();}
+   }
+   
    
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
@@ -119,8 +145,11 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
 
          NodeList nodeList = root.getElementsByTagName("panel");
          int nodeNums = nodeList.getLength();
+         new Exception().printStackTrace();
+         System.out.println("THE NUMBER OF PANELS"+nodeNums);
          for (int i = 0; i < nodeNums; i++) {
-            arrayAdapter.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
+        	 System.out.println("PANEL S:DLFKJDS: "+nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
+        	 arrayAdapter.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
          }
       } catch (IOException e) {
          Log.e("PANEL LIST", "The data is from ORConnection is bad", e);

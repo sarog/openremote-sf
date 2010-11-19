@@ -72,7 +72,7 @@ import android.widget.LinearLayout;
  * 
  * @author Tomsky Wang
  * @author Dan Cong
- * 
+ * @author marcf@openremote.org
  */
 
 public class GroupActivity extends GenericActivity implements OnGestureListener, ORConnectionDelegate {
@@ -200,12 +200,16 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private void recoverLastGroupScreen() {
 
       int lastGroupID = UserCache.getLastGroupId(this);
+      
+      System.out.println("LAST GROUP ID:"+ lastGroupID);
       Group lastGroup = XMLEntityDataBase.getGroup(lastGroupID);
+      System.out.println("Last Group object "+lastGroup);
       if (lastGroup == null) {
+         System.out.println("I am in the null section of lastgroupscreen");
          lastGroup = XMLEntityDataBase.getFirstGroup();
       }
       if (lastGroup == null || lastGroup.getScreens().size() == 0) {
-         if (!useLocalCache) {
+    	  if (!useLocalCache) {
             ViewHelper.showAlertViewWithSetting(this, "No Group Found", "please config Settings again");
          }
          return;
@@ -223,13 +227,18 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       currentScreenViewFlipper = currentGroupView.getScreenViewFlipperByOrientation(isLandscape);
 
       int lastScreenID = UserCache.getLastScreenId(this);
+      System.out.println("LAST SCREEN ID:"+ lastScreenID);
+
+      
       if (lastScreenID > 0 && lastGroup.canfindScreenByIdAndOrientation(lastScreenID, isLandscape)) {
-         currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, isLandscape));
+    	  System.out.println("I set teh display with lastScreenID "+lastScreenID);
+    	  currentScreenViewFlipper.setDisplayedChild(getScreenIndex(lastScreenID, isLandscape));
       }
       contentLayout = new LinearLayout(this);
       contentLayout.addView(currentScreenViewFlipper);
       this.setContentView(contentLayout);
       ScreenView currentScreenView = (ScreenView) currentScreenViewFlipper.getCurrentView();
+      System.out.println("The CurrentSCreenView "+currentScreenView.getScreen().getScreenId());
       if (currentScreenView == null) {
          return;
       }
@@ -519,7 +528,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    /**
     * When the activity is resumed, close the loading toast if it is not null,
-    * indicate use cached content if load resources from controller error,
     * register the orientation sensor listener, start current screen's polling.
     *  
     * @see org.openremote.android.console.GenericActivity#onResume()
@@ -531,7 +539,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          Main.loadingToast.cancel();
       }
       if (getIntent().getDataString() != null) {
-         useLocalCache = true;
+    	  useLocalCache = true;
+         // marcf: commented out the Alert in case of localCache. 
          ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
       }
       startCurrentPolling();
@@ -735,7 +744,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
                   .exceptionMessageOfCode(responseCode));
          }
       }
-
    }
 
    /**

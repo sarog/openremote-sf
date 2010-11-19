@@ -43,6 +43,7 @@ public class UserCache implements Serializable {
       editor.putInt(LAST_GROUP_ID, lastGroupId);
       editor.putInt(LAST_Screen_ID, lastScreenId);
       editor.commit();
+      System.out.println(" GROUPID "+lastGroupId+ " lastScreenId "+lastScreenId);
    }
    
    public static int getLastGroupId(Context context) {
