@@ -45,7 +45,7 @@ public class AddServerActivity extends GenericActivity {
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        Log.d(this.toString(), "onCreate for configure activity");
+        Log.d("OpenRemote-" + this.toString(), "onCreate for configure activity");
         
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);

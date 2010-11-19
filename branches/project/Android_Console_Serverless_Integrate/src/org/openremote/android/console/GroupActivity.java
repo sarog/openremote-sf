@@ -43,6 +43,7 @@ import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORRoundRobinConnection;
 import org.openremote.android.console.util.ImageUtil;
+import org.openremote.android.console.view.ButtonView;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -90,8 +91,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private int screenSize;
    private HashMap<Integer, GroupView> groupViews;
    private ArrayList<Navigate> navigationHistory;
-   private static final int SWIPE_MIN_DISTANCE = 120;
-   private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+   private static final int SWIPE_MIN_DISTANCE = Screen.SCREEN_WIDTH / 4;
+   private static final int SWIPE_THRESHOLD_VELOCITY = 20;
 
    private boolean useLocalCache;
    private boolean isNavigetionBackward;
@@ -108,7 +109,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-      Log.i("ORIENTATION", "onCreate:" + display.getOrientation());
+      Log.i("OpenRemote-ORIENTATION", "onCreate:" + display.getOrientation());
       if (display != null && display.getOrientation() == 1) {
          isLandscape = true;
          lastConfigurationOrientation = Configuration.ORIENTATION_LANDSCAPE;
@@ -143,14 +144,18 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
             if (orientation > 315 || orientation < 45  || (orientation > 135 && orientation < 225)) {
                // portrait
                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                     && !currentScreen.isLandscape()) {
+                     && !currentScreen.isLandscape() && currentScreen.getInverseScreenId() > 0) {
                   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               } else if (!currentScreen.isLandscape() && currentScreen.getInverseScreenId() == 0) {
+                  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                }
             } else if ((orientation > 225 && orientation < 315) || (orientation > 45 && orientation < 135)) {
                // landscape
                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                     && currentScreen.isLandscape()) {
+                     && currentScreen.isLandscape() && currentScreen.getInverseScreenId() > 0) {
                   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               } else if (currentScreen.isLandscape() && currentScreen.getInverseScreenId() == 0) {
+                  setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                }
             }
          }
@@ -328,20 +333,19 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       if (currentGroupView == null) {
          return true;
       }
-      
       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "right to left");
+         Log.i("OpenRemote-FLING", "right to left");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
          moveRight();
       } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "left to right");
+         Log.i("OpenRemote-FLING", "left to right");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
          moveLeft();
       } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "bottom to top");
+         Log.i("OpenRemote-FLING", "bottom to top");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
       } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-         Log.i("fling", "top to bottom");
+         Log.i("OpenRemote-FLING", "top to bottom");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
       }
       return true;
@@ -786,7 +790,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    @Override
    public void onConfigurationChanged(Configuration newConfig) {
       int newOrientation = newConfig.orientation;
-      Log.i("ORIENTATION", "orientation:" + newOrientation);
+      Log.i("OpenRemote-ORIENTATION", "orientation:" + newOrientation);
       if (lastConfigurationOrientation != newOrientation) {
          if (newOrientation == Configuration.ORIENTATION_PORTRAIT) {
             isLandscape = false;
@@ -799,6 +803,17 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       }
       super.onConfigurationChanged(newConfig);
       lastConfigurationOrientation = newOrientation;
+   }
+
+   @Override
+   public boolean dispatchTouchEvent(MotionEvent ev) {
+       super.dispatchTouchEvent(ev);
+       if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+          ButtonView.MOUSE_MOVE = false;
+       } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+          ButtonView.MOUSE_MOVE = true;
+       }
+       return gestureScanner.onTouchEvent(ev);
    }
    
    

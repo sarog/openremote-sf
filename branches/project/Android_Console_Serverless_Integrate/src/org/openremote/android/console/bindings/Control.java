@@ -41,7 +41,7 @@ public class Control extends Component {
    public static Component buildWithXML(Node node) {
       Component component = null;
       if (node == null) {
-         Log.e("COMPONENT", "The node is null in buildWithXML.");
+         Log.e("OpenRemote-COMPONENT", "The node is null in buildWithXML.");
          return null;
       }
       if (BUTTON.equals(node.getNodeName())) {
