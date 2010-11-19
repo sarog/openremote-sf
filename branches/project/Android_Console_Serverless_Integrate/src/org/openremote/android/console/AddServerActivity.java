@@ -19,6 +19,9 @@
  */
 package org.openremote.android.console;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -32,6 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This is the add custom server screen. Mainly it configures the URL of 
@@ -66,12 +70,22 @@ public class AddServerActivity extends GenericActivity {
 
             @Override
             public void onClick(View v) {
-                String url = ((EditText) ((View) v.getParent())
+                String noProtocolUrl = ((EditText) ((View) v.getParent())
                         .findViewWithTag(Constants.URL)).getText().toString();
-                Intent intent = getIntent();
-                intent.setData(Uri.parse(url));
-                setResult(Constants.RESULT_CONTROLLER_URL, intent);
-                finish();
+                if (noProtocolUrl == null) {
+                   return;
+                }
+                try {
+                  String httpUrl = "http://" + noProtocolUrl;
+                  new URL(httpUrl);
+                  Intent intent = getIntent();
+                  intent.setData(Uri.parse(noProtocolUrl));
+                  setResult(Constants.RESULT_CONTROLLER_URL, intent);
+                  finish();
+               } catch (MalformedURLException e) {
+                  Toast toast = Toast.makeText(getApplicationContext(), "URL format is not correct.", 1);
+                  toast.show();
+               }
             }
         });
         layout.addView(tv);
