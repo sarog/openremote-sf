@@ -388,34 +388,35 @@ public class AppSettingsActivity extends GenericActivity {
 		return sslLayout;
 	}
 
-	/**
-	 * Set the ssl switch state and ssl port value.
-	 */
-	private void initSSLState() {
-		ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
-		sslBtn.setChecked(AppSettingsModel.isUseSSL(this));
-		sslBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked) {
-					AppSettingsModel.setUseSSL(AppSettingsActivity.this, true);
-				} else {
-					AppSettingsModel.setUseSSL(AppSettingsActivity.this, false);
-				}
-			}
-		});
 
-		EditText sslPortText = (EditText)findViewById(R.id.ssl_port);
-		sslPortText.setText("" + AppSettingsModel.getSSLPort(this));
-		sslPortText.setOnKeyListener(new OnKeyListener() {
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_ENTER) {
-					AppSettingsModel.setSSLPort(AppSettingsActivity.this, Integer.valueOf(((EditText)v).getText().toString()));
-				}
-				return false;
-			}
-		});
+  /**
+   * Set the ssl switch state and ssl port value.
+   */
+  private void initSSLState() {
+     ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
+     sslBtn.setChecked(AppSettingsModel.isSSLEnabled(this));
+     sslBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+           if (isChecked) {
+              AppSettingsModel.enableSSL(AppSettingsActivity.this, true);
+           } else {
+              AppSettingsModel.enableSSL(AppSettingsActivity.this, false);
+           }
+        }
+     });
 
-	}
+     EditText sslPortText = (EditText)findViewById(R.id.ssl_port);
+     sslPortText.setText("" + AppSettingsModel.getSSLPort(this));
+     sslPortText.setOnKeyListener(new OnKeyListener() {
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+           if (keyCode == KeyEvent.KEYCODE_ENTER) {
+              AppSettingsModel.setSSLPort(AppSettingsActivity.this, Integer.valueOf(((EditText)v).getText().toString()));
+           }
+           return false;
+        }
+     });
+
+  }
 
 	/**
 	 * Adds the onclick listener on done button.
@@ -456,17 +457,18 @@ public class AppSettingsActivity extends GenericActivity {
 		});
 	}
 
-	/**
-	 * Finish the settings activity.
-	 */
-	private void addOnclickListenerOnCancelButton() {
-		Button cancelButton = (Button)findViewById(R.id.setting_cancel);
-		cancelButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				finish();
-			}
-		});
-	}
+
+  /**
+   * Finish the settings activity.
+   */
+  private void addOnclickListenerOnCancelButton() {
+     Button cancelButton = (Button)findViewById(R.id.setting_cancel);
+     cancelButton.setOnClickListener(new OnClickListener() {
+        public void onClick(View v) {
+           finish();
+        }
+     });
+  }
 
 	/**
 	 * Creates the clear image cache button, add listener for clear image cache.
