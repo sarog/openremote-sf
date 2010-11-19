@@ -63,15 +63,15 @@ public class PollingStatusParser {
             String lastId = nodeList.item(i).getAttributes().getNamedItem("id").getNodeValue();
             String newStatus = nodeList.item(i).getFirstChild().getNodeValue();
             statusMap.put(lastId, newStatus);
-            Log.i("OpenRemote-POLLING", "set " + lastId + " to new status: " + newStatus);
+            Log.i("OpenRemote/POLLING", "set " + lastId + " to new status: " + newStatus);
             ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + lastId, null);
          }
       } catch (ParserConfigurationException e) {
-         Log.e("OpenRemote-POLLING", "failed", e);
+         Log.e("OpenRemote/POLLING", "failed", e);
       } catch (SAXException e) {
-         Log.e("OpenRemote-POLLING", "failed", e);
+         Log.e("OpenRemote/POLLING", "failed", e);
       } catch (IOException e) {
-         Log.e("OpenRemote-POLLING", "failed", e);
+         Log.e("OpenRemote/POLLING", "failed", e);
       }
    }
 }

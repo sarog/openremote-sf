@@ -36,7 +36,7 @@ public class Constants
 
 
   public static final long BINDING_VERSION = 1L;
-  public static final long DEFAULT_FONT_SIZE = 16;
+  public static final long DEFAULT_FONT_SIZE = 11;
   public static final long MODEL_VERSION = 2L;
   public static final long CACHE_VERSION = 3L;
   public static final int MENU_ITEM_SETTING = Menu.FIRST + 1;
@@ -65,6 +65,7 @@ public class Constants
   public static final String PANEL_XML = "panel.xml";
   public static final String FILE_FOLDER_PATH = "/data/data/org.openremote.android.console/files/";
   public static final int SECURED_HTTP_PORT = 8443;
+  
   /**
    * Prefix for logging so OpenRemote related entries can be easily filtered.
    */
