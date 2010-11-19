@@ -46,10 +46,9 @@ public class Constants {
    public static final String ELEMENT_BUTTONS = "buttons";
    public static final String URL = "url";
    public static final String LOADER = "loader";
-   public static final int REQUEST_CODE_ADD_SERVER= 1;
+   public static final int REQUEST_CODE = 1;
    public static final int RESULT_CONTROLLER_URL = 2;
    public static final int RESULT_PANEL_SELECTED = 3;
-   public static final int REQUEST_CODE_LOGIN_VIEW= 4;
    public static final String MULTICAST_ADDRESS = "224.0.1.100";
    public static final String NON_WIFI_MULTICAST_ADDRESS = "10.0.2.2";
    public static final int MULTICAST_PORT = 3333;

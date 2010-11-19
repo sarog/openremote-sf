@@ -49,7 +49,6 @@ import android.widget.TextView;
  * 
  * @author handy 2010-05-10
  * @author Dan Cong
- * @author <a href="mailto:marcf@openremote.org">Marc Fleury</a>
  *
  */
 public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLoaderResult> {
@@ -62,6 +61,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    
    public AsyncResourceLoader(Activity activity) {
       this.activity = activity;
+      
    }
    
    /** 
@@ -72,35 +72,17 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
    @Override
    protected AsyncResourceLoaderResult doInBackground(Void... params) {
       AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
-      boolean isDownloadSuccess = true;
+      boolean isDownloadSuccess = false;
       String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
       publishProgress("panel: " + panelName);
       String serverUrl = AppSettingsModel.getSecuredServer(activity);
-            
-      // We have no ORB but we should have the files locally in cache
-      if (!AppSettingsModel.hasORB(activity)) {
-    	  FileUtil.parsePanelXML(activity);
-//          result.setCanUseLocalCache(true);
-		  result.setAction(TO_GROUP);
-		  
-          Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-          String imageName = "";
-          while (images.hasNext()) {
-             imageName = images.next();
-             publishProgress(imageName);
-             HTTPUtil.downLoadImage(activity, AppSettingsModel.getSecuredServer(activity), imageName);
-          }
-          return result;
-      }
-      
+
       HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, AppSettingsModel.getCurrentServer(activity));
       isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
-      
+
       if (isDownloadSuccess) {
-         
-    	 int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
-         System.out.println("PANEL NAME "+panelName);
-    	 if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
+         int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
+         if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
             Log.i("DOWNLOAD", "Download file panel.xml fail.");
             if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
              result.setAction(TO_LOGIN);
@@ -138,7 +120,6 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                HTTPUtil.downLoadImage(activity, AppSettingsModel.getSecuredServer(activity), imageName);
             }
          }
-         
       } else { // Download failed.
          if (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == ControllerException.UNAUTHORIZED) {
             result.setAction(TO_LOGIN);
@@ -201,9 +182,9 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       switch (result.getAction()) {
       case TO_GROUP:
          intent.setClass(activity, GroupActivity.class);
-/*         if (result.isCanUseLocalCache()) {
+         if (result.isCanUseLocalCache()) {
             intent.setData(Uri.parse(ControllerException.exceptionMessageOfCode(result.getStatusCode())));
-         } */
+         }
          break;
       case TO_LOGIN:
          intent.setClass(activity, LoginViewActivity.class);
