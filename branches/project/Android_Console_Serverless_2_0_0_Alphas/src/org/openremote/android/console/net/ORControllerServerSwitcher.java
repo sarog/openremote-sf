@@ -75,7 +75,7 @@ public class ORControllerServerSwitcher {
 	 * Detect the groupmembers of current server url 
 	 */
 	public static boolean detectGroupMembers(Context context) {
-		Log.i("GROUP MEMBER", "Detecting group members with current controller server url "
+		Log.i("OpenRemote/GROUP MEMBER", "Detecting group members with current controller server url "
             + AppSettingsModel.getCurrentServer(context));
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
@@ -85,7 +85,7 @@ public class ORControllerServerSwitcher {
       HttpGet httpGet = new HttpGet(url + "/rest/servers");
 		
 		if (httpGet == null) {
-			Log.e("GROUP MEMBER", "Create HttpRequest fail.");
+			Log.e("OpenRemote/GROUP MEMBER", "Create HttpRequest fail.");
 			return false;
 		}
 		SecurityUtil.addCredentialToHttpRequest(context, httpGet);		
@@ -113,39 +113,39 @@ public class ORControllerServerSwitcher {
 						   for (int i = 0; i < nodeNums; i++) {
 							   groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
 						   }
-						   Log.i("GROUP MEMBER", "Detected groupmembers. Groupmembers are " + groupMembers);
+						   Log.i("OpenRemote/GROUP MEMBER", "Detected groupmembers. Groupmembers are " + groupMembers);
 						   return saveGroupMembersToFile(context, groupMembers);
 						} catch (IOException e) {
-							Log.e("GROUP MEMBER", "The data is from ORConnection is bad", e);
+							Log.e("OpenRemote/GROUP MEMBER", "The data is from ORConnection is bad", e);
 						} catch (ParserConfigurationException e) {
-							Log.e("GROUP MEMBER", "Cant build new Document builder", e);
+							Log.e("OpenRemote/GROUP MEMBER", "Cant build new Document builder", e);
 						} catch (SAXException e) {
-							Log.e("GROUP MEMBER", "Parse data error", e);
+							Log.e("OpenRemote/GROUP MEMBER", "Parse data error", e);
 						}
 					
 				} else {
-				   Log.e("GROUP MEMBER", "detectGroupMembers Parse data error");
+				   Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error");
 				}
 			} catch (IllegalStateException e) {
-			   Log.e("GROUP MEMBER", "detectGroupMembers Parse data error", e);
+			   Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
 			} catch (IOException e) {
-			   Log.e("GROUP MEMBER", "detectGroupMembers Parse data error", e);
+			   Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
 			}
 	   } catch (MalformedURLException e) {
-         Log.e("GROUP MEMBER", "Create URL fail:" + url);
+         Log.e("OpenRemote/GROUP MEMBER", "Create URL fail:" + url);
 	   } catch (ConnectException e) {
-         Log.e("GROUP MEMBER", "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
+         Log.e("OpenRemote/GROUP MEMBER", "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
       } catch (ClientProtocolException e) {
-         Log.e("GROUP MEMBER", "Can't Detect groupmembers with current controller server "
+         Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
                + AppSettingsModel.getCurrentServer(context), e);
       } catch (SocketTimeoutException e) {
-         Log.e("GROUP MEMBER", "Can't Detect groupmembers with current controller server "
+         Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
                + AppSettingsModel.getCurrentServer(context), e);
       } catch (IOException e) {
-         Log.e("GROUP MEMBER", "Can't Detect groupmembers with current controller server "
+         Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
                + AppSettingsModel.getCurrentServer(context), e);
       } catch (IllegalArgumentException e) {
-         Log.e("GROUP MEMBER", "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
+         Log.e("OpenRemote/GROUP MEMBER", "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
       }
       return false;
 	}
@@ -183,20 +183,20 @@ public class ORControllerServerSwitcher {
 		String availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
 		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
 		if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL)) {
-			Log.i("GROUP MEMBER", "Got a available controller url from groupmembers" + allGroupMembers);
+			Log.i("OpenRemote/GROUP MEMBER", "Got a available controller url from groupmembers" + allGroupMembers);
 			switchControllerWithURL(context, availableGroupMemberURL);
 		} else {
-			Log.i("GROUP MEMBER", "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
+			Log.i("OpenRemote/GROUP MEMBER", "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
 			if (!detectGroupMembers(context)) {
 			   ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
 			   return SWITCH_CONTROLLER_FAIL;
 			}
 			availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
 			if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL)) {
-				Log.i("GROUP MEMBER", "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
+				Log.i("OpenRemote/GROUP MEMBER", "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
 				switchControllerWithURL(context, availableGroupMemberURL);
 			} else {
-				Log.i("GROUP MEMBER", "There's no controller server available.");
+				Log.i("OpenRemote/GROUP MEMBER", "There's no controller server available.");
 				ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
 				return SWITCH_CONTROLLER_FAIL;
 			}
@@ -209,9 +209,9 @@ public class ORControllerServerSwitcher {
 	 */
 	private static String getOneAvailableFromGroupMemberURLs(Context context) {
 		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
-		Log.i("GROUP MEMBER", "Checking a available controller url from groupmembers " + allGroupMembers);
+		Log.i("OpenRemote/GROUP MEMBER", "Checking a available controller url from groupmembers " + allGroupMembers);
 		for (String controllerServerURL : allGroupMembers) {
-		   HttpResponse response = ORNetworkCheck.checkAllWithControllerServerURL(context, controllerServerURL);
+		   HttpResponse response = ORNetworkCheck.verifyControllerURL(context, controllerServerURL);
 			if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
 				if (!AppSettingsModel.isAutoMode(context)) {//custom model
 					String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerServerURL);
@@ -237,11 +237,11 @@ public class ORControllerServerSwitcher {
 	 */
 	private static void switchControllerWithURL(Context context, String availableGroupMemberURL) {
 	   if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentServer(context))) {
-	      Log.i("GROUP MEMBER", "The current server is already: " + availableGroupMemberURL + ", should not switch to self.");
+	      Log.i("OpenRemote/GROUP MEMBER", "The current server is already: " + availableGroupMemberURL + ", should not switch to self.");
 	      return;
 	   }
 	   Main.prepareToastForSwitchingController();
-		Log.i("GROUP MEMBER", "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
+		Log.i("OpenRemote/GROUP MEMBER", "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
 		AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
 		Intent intent = new Intent();
 		intent.setClass(context, Main.class);

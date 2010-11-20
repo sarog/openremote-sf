@@ -63,7 +63,7 @@ public class ScreenView extends AbsoluteLayout {
          LayoutContainerView la = LayoutContainerView.buildWithLayoutContainer(context, layouts.get(i));
          if (la != null) {
             LayoutContainer layout = layouts.get(i);
-            addView(la, new AbsoluteLayout.LayoutParams(layout.getWidth(), layout.getHeight(), layout.getLeft(), layout
+            addView(la, new AbsoluteLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, layout.getLeft(), layout
                   .getTop()));
          }
       }
@@ -120,9 +120,9 @@ public class ScreenView extends AbsoluteLayout {
          }
          addView(backgroudView, new AbsoluteLayout.LayoutParams(imageWidth, imageHeight, left, top));
       } catch (FileNotFoundException e) {
-         Log.e("ScreenView", "screen background file" + screen.getBackgroundSrc() + " not found.", e);
+         Log.e("OpenRemote-ScreenView", "screen background file" + screen.getBackgroundSrc() + " not found.", e);
       } catch (OutOfMemoryError e) {
-         Log.e("OutOfMemoryError", screen.getBackgroundSrc() + ": bitmap size exceeds VM budget");
+         Log.e("OpenRemote-OutOfMemoryError", screen.getBackgroundSrc() + ": bitmap size exceeds VM budget");
       }
    }
 

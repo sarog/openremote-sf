@@ -95,7 +95,7 @@ public class PollingHelper {
          @Override
          public void handleMessage(Message msg) {
             isPolling = false;
-            Log.i("POLLING", "polling failed and canceled." + msg.what);
+            Log.i("OpenRemote/POLLING", "polling failed and canceled." + msg.what);
             // only if the network is error, server error and request error, 
             // switch controller server, or endless loop would happen to switch server.
             int statusCode = msg.what;
@@ -137,7 +137,7 @@ public class PollingHelper {
             client.getConnectionManager().getSchemeRegistry().register(sch);
          }
       } catch (MalformedURLException e) {
-         Log.e("POLLING", "Create URL fail:" + serverUrl);
+         Log.e("OpenRemote/POLLING", "Create URL fail:" + serverUrl);
       }
       isPolling = true;
       handleRequest(serverUrl + "/rest/status/" + pollingStatusIds);
@@ -152,7 +152,7 @@ public class PollingHelper {
          httpGet.abort();
          httpGet = null;
       }
-      Log.i("POLLING", "polling start");
+      Log.i("OpenRemote/POLLING", "polling start");
       handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
    }
 
@@ -162,7 +162,7 @@ public class PollingHelper {
     * @param requestUrl the request url
     */
    private void handleRequest(String requestUrl) {
-      Log.i("POLLING", requestUrl);
+      Log.i("OpenRemote/POLLING", requestUrl);
       httpGet = new HttpGet(requestUrl);
       if (!httpGet.isAborted()) {
          SecurityUtil.addCredentialToHttpRequest(context, httpGet);
@@ -177,28 +177,28 @@ public class PollingHelper {
             }
             return;
          } catch (SocketTimeoutException e) {
-            Log.i("POLLING", "polling [" + pollingStatusIds +"] socket timeout.");
+            Log.i("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] socket timeout.");
          } catch (ClientProtocolException e) {
             isPolling = false;
-            Log.e("POLLING", "polling [" + pollingStatusIds +"] failed.", e);
+            Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed.", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (SocketException e) {
             isPolling = false;
-            Log.e("POLLING", "polling [" + pollingStatusIds +"] failed.", e);
+            Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed.", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (IllegalArgumentException e) {
             isPolling = false;
-            Log.e("POLLING", "polling [" + pollingStatusIds +"] failed", e);
+            Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (OutOfMemoryError e) {
             isPolling = false;
-            Log.e("POLLING", "OutOfMemoryError");
+            Log.e("OpenRemote/POLLING", "OutOfMemoryError");
          } catch (InterruptedIOException e) {
             isPolling = false;
-            Log.i("POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
+            Log.i("OpenRemote/POLLING", "last polling [" + pollingStatusIds +"] has been shut down");
          } catch (IOException e) {
             isPolling = false;
-            Log.i("POLLING", "last polling [" + pollingStatusIds +"] already aborted");
+            Log.i("OpenRemote/POLLING", "last polling [" + pollingStatusIds +"] already aborted");
          }
          
       }
@@ -208,7 +208,7 @@ public class PollingHelper {
     * Cancel the polling, abort http request.
     */
    public void cancelPolling() {
-      Log.i("POLLING", "polling [" + pollingStatusIds +"] canceled");
+      Log.i("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] canceled");
       isPolling = false;
       if (httpGet != null) {
          httpGet.abort();

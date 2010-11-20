@@ -29,7 +29,7 @@ import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
@@ -45,21 +45,22 @@ s */
 public class SwitchView extends SensoryControlView {
 
    private Button button;
-   private BitmapDrawable onImage;
-   private BitmapDrawable offImage;
+   private Drawable onImage;
+   private Drawable offImage;
    private boolean isOn;
    private boolean canUseImage;
    public SwitchView(Context context, Switch switchComponent) {
       super(context);
       setComponent(switchComponent);
       if (switchComponent != null) {
-         button = new Button(context);
+         button = new Button(context, null, android.R.attr.buttonStyleSmall);
          button.setTextSize(Constants.DEFAULT_FONT_SIZE);
          initSwitch(switchComponent);
          if (switchComponent.getSensor() != null) {
             addPollingSensoryListener();
          }
       }
+      setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
    }
 
    /**
@@ -73,10 +74,11 @@ public class SwitchView extends SensoryControlView {
       int height = switchComponent.getFrameHeight();
       button.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (switchComponent.getOnImage() != null) {
-         onImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc(), width, height);
+         onImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
+         button.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
       }
       if (switchComponent.getOffImage() != null) {
-         offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc(), width, height);
+         offImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
       }
       if (onImage != null && offImage != null) {
          canUseImage = true;
