@@ -75,6 +75,9 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       boolean isDownloadSuccess = true;
       String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
       publishProgress("panel: " + panelName);
+
+      Log.i("OpenRemote/DOWNLOAD", "Getting panel: " + panelName);
+
       String serverUrl = AppSettingsModel.getSecuredServer(activity);
             
       // We have no ORB but we should have the files locally in cache
@@ -93,7 +96,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
           return result;
       }
       
-      HttpResponse checkResponse = ORNetworkCheck.checkAllWithControllerServerURL(activity, AppSettingsModel.getCurrentServer(activity));
+      HttpResponse checkResponse = ORNetworkCheck.verifyControllerURL(activity, AppSettingsModel.getCurrentServer(activity));
       isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
       
       if (isDownloadSuccess) {
@@ -101,7 +104,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
     	 int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
          System.out.println("PANEL NAME "+panelName);
     	 if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
-            Log.i("DOWNLOAD", "Download file panel.xml fail.");
+            Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail.");
             if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
              result.setAction(TO_LOGIN);
              result.setStatusCode(downLoadPanelXMLStatusCode);
@@ -109,23 +112,23 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
             }
             
             if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-               Log.i("DOWNLOAD", "Download file panel.xml fail, so use local cache.");
+               Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail, so use local cache.");
                FileUtil.parsePanelXML(activity);
                result.setCanUseLocalCache(true);
                result.setStatusCode(downLoadPanelXMLStatusCode);
                result.setAction(TO_GROUP);
             } else {
-               Log.i("DOWNLOAD", "No local cache is available, ready to switch controller.");
+               Log.i("OpenRemote/DOWNLOAD", "No local cache is available, ready to switch controller.");
                result.setAction(SWITCH_TO_OTHER_CONTROLER);
                return result;
             }
          } else { // download panel xml success.
-            Log.i("DOWNLOAD", "Download file panel.xml successfully.");
+            Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml successfully.");
             if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
                FileUtil.parsePanelXML(activity);
                result.setAction(TO_GROUP);
             } else {
-               Log.i("DOWNLOAD","No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
+               Log.i("OpenRemote/DOWNLOAD","No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
                result.setAction(SWITCH_TO_OTHER_CONTROLER);
                return result;
             }
@@ -147,7 +150,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          }
          
          if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-            Log.i("DOWNLOAD", "Download failed, so use local cache.");
+            Log.i("OpenRemote/DOWNLOAD", "Download failed, so use local cache.");
             FileUtil.parsePanelXML(activity);
             result.setCanUseLocalCache(true);
             result.setAction(TO_GROUP);
@@ -157,7 +160,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                result.setStatusCode(checkResponse.getStatusLine().getStatusCode());
             }
          } else {
-            Log.i("DOWNLOAD", "No local cache is available, ready to switch controller.");
+            Log.i("OpenRemote/DOWNLOAD", "No local cache is available, ready to switch controller.");
             result.setAction(SWITCH_TO_OTHER_CONTROLER);
             return result;
          }
@@ -209,7 +212,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          intent.setClass(activity, LoginViewActivity.class);
          intent.setData(Uri.parse(Main.LOAD_RESOURCE));
          break;
-      case SWITCH_TO_OTHER_CONTROLER:
+      case SWITCH_TO_OTHER_CONTROLER:  // this fails on samsung
          ORControllerServerSwitcher.doSwitch(activity);
          return;
       default:

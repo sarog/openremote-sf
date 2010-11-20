@@ -49,7 +49,7 @@ public class ImageUtil {
       try {
          d = Drawable.createFromPath(pathName);
       } catch (OutOfMemoryError e) {
-         Log.e("OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
+         Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
       }
       return d;
    }
@@ -79,9 +79,9 @@ public class ImageUtil {
       try {
          activity.setContentView(layoutResID);
       } catch (InflateException e) {
-         Log.e("OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
+         Log.e("OpenRemote-OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
       } catch (OutOfMemoryError e) {
-         Log.e("OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
+         Log.e("OpenRemote-OutOfMemoryError", "unable to setContentView, bitmap size exceeds VM budget");
       }
    }
    

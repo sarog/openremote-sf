@@ -18,10 +18,12 @@
 	<TableRow
 		android:layout_height="fill_parent"
 		android:gravity = "center">
-		<org.openremote.android.console.view.seekbar.vertical.VerticalSeekBar
-			android:id="@+id/vertical_seekbar"
+		<org.openremote.android.console.view.seekbar.ORSeekBar
+		   xmlns:app="http://schemas.android.com/apk/res/org.openremote.android.console"
+			 android:id="@+id/vertical_seekbar"
+			 app:vertical="true"
 		    android:progressDrawable="@drawable/progress_vertical"
-		    android:thumb="@drawable/seek_thumb"
+		    android:thumb="@drawable/slider_thumb"
 		    android:layout_height="fill_parent" 
 		    android:layout_width="26dip"/>
 	</TableRow>
