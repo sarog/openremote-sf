@@ -92,6 +92,7 @@ public class ORNetworkCheck
       return null;
     }
 
+    // TODO: (marcf) not sure what this is doing here.  If there is no panel then controller URL is kosher? why?
     String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
 
     if (currentPanelIdentity == null || "".equals(currentPanelIdentity))

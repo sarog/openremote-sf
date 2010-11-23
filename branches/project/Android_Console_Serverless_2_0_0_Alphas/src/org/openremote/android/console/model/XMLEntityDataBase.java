@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.openremote.android.console.bindings.Panel;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Label;
 import org.openremote.android.console.bindings.Screen;
@@ -36,6 +37,9 @@ public class XMLEntityDataBase {
    public static TabBar globalTabBar = null;
    public static final Map<Integer, Group> groups = new LinkedHashMap<Integer, Group>();
    public static final HashMap<Integer, Screen> screens = new HashMap<Integer, Screen>();
+   /** Panels */
+   public static final HashMap<String, Panel> panels = new LinkedHashMap<String, Panel>();
+
    
    /** The all panel's labels. */
    public static final HashMap<Integer, Label> labels = new HashMap<Integer, Label>();
@@ -43,17 +47,6 @@ public class XMLEntityDataBase {
    /** The all panel's images. */
    public static final HashSet<String> imageSet = new HashSet<String>();
    
-   /**
-    * Gets the first group of current panel, if not found return null.
-    * 
-    * @return the first group
-    */
-   public static Group getFirstGroup() {
-      if (!groups.isEmpty()) {
-         return groups.get(groups.keySet().iterator().next());
-      }
-      return null;
-   }
    
    /**
     * Gets the group of current panel by id, if not found return null.
@@ -81,5 +74,12 @@ public class XMLEntityDataBase {
          return screens.get(screenId);
       }
       return null;
+   }
+   
+   public static Panel getPanel(String panelId) {
+	   if (!panels.isEmpty()) {
+		   return panels.get(panelId);
+	   }
+	   return null;
    }
 }

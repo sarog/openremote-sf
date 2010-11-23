@@ -47,6 +47,7 @@ import org.xml.sax.SAXException;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -148,7 +149,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		mainLayout.setBackgroundColor(0);
 		mainLayout.setTag(R.string.settings);
 
-    loadingPanelProgress = new ProgressDialog(this);
+		loadingPanelProgress = new ProgressDialog(this);
 
 		// The scroll view contains appSettingsView, it is scrollable and contains the main functional views.
 		ScrollView scroll = new ScrollView(this);
@@ -180,7 +181,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		appSettingsView.addView(createClearImageCacheButton());
 
 
-		//		appSettingsView.addView(createSSLLayout());
+		//appSettingsView.addView(createSSLLayout());
 
 
 		scroll.addView(appSettingsView);
@@ -257,15 +258,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		
 		return refreshLayout;
 	}
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
+
 	/*
 	 * A helper method to check if credentials exist and if not to start the LoginView activity
 	 * 
@@ -338,17 +331,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		hasORBLayout.addView(infoText);
 		return hasORBLayout;
 	}
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
-	//NEW
+
 
 	/**
 	 * Creates the image cache text view.
@@ -462,23 +445,33 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		Button doneButton = (Button)findViewById(R.id.setting_done);
 		doneButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
+				
+				//Do we have an ORB
 				boolean hasORB= AppSettingsModel.hasORB(AppSettingsActivity.this);
-				if (!hasORB) {            
 
-					// REFACTOR ME.  If we have no ORB we still put something in the registry for the rest of the app to work 
+				// If we have no ORB we still put something in the registry for the rest of the app to work 
+				if (!hasORB)             
 					AppSettingsModel.setCurrentServer(AppSettingsActivity.this, "NO ORB");
-				}
+				
 				if ("".equals(currentServer) && hasORB) {
 					ViewHelper.showAlertViewWithTitle(AppSettingsActivity.this, "Warning",
 					"No controller. Please configure Controller URL manually.");
 					return;
 				}
 
+				// What panel was selected
 				String selectedPanel = (String)panelSelectSpinnerView.getSelectedItem();
 				System.out.println("REFACTOR ME: APPSETTINGACTIVITY : Panel Selected : "+selectedPanel);
 				
+				// The user has changed the panel, save that information
 				if (!TextUtils.isEmpty(selectedPanel) && !selectedPanel.equals(PanelSelectSpinnerView.CHOOSE_PANEL)) {
+					
+					// First get the settings model with the name
 					AppSettingsModel.setCurrentPanelIdentity(AppSettingsActivity.this, selectedPanel);
+				
+					// Invalidate UserCache so we know to restart rendering in Group Activity
+					UserCache.saveCurrentGroupIdAndScreenId(AppSettingsActivity.this, 0, 0);
+					
 				} else {
 					ViewHelper.showAlertViewWithTitle(AppSettingsActivity.this, "Warning",
 					"No Panel. Please configure Panel Identity manually.");
@@ -724,7 +717,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 					customListView.setItemChecked(customeListAdapter.getCount() - 1, true);
 					AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
 					writeCustomServerToFile();
-          requestPanelList();
+					requestPanelList();
 				}
 			}
 		}
