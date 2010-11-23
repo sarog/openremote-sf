@@ -74,11 +74,9 @@ public class Main extends GenericActivity {
         checkNetType();
         readDisplayMetrics();        
         	
-        // If there are no server and panel in storage, get them in background
-        if(!checkServerAndPanel()) {        
-           new AsyncResourceLoader(this).execute((Void) null);
-        }
-    }
+        //Check that we have what we need locally. 
+        getPanels();
+     }
 
 
     /**
@@ -144,15 +142,29 @@ public class Main extends GenericActivity {
    *
    * @return true, if successful
    */
-  private boolean checkServerAndPanel () {
+  private void getPanels () {
+	  
      Log.i("OpenRemote-toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
-     // If there is nothing do the settings.
+     
+     // Let's check if we have panels in memory (no server will trigger this as well)
      if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
-       doSettings();
-        return true;
+       
+    	 // Let's forward to the AppSettingsActivity
+    	 doSettings(); // will not return, activity finish()
      }
-     // If there is something return false that will trigger an AsyncResourceloader
-     return false;
+     
+     else  {
+    	 /*
+    	  * We have selected a panel and a server (or no orb) 
+    	  * 
+    	  * In case of an ORB: we will start downloading the panel definitions and the graphics that go with it
+    	  * 
+    	  * In case of no ORB: we work from memory where all the files have been downloaded in the "doSettings"
+    	  * 
+    	  */
+    	 new AsyncResourceLoader(this).execute((Void) null);
+     }
+     
   }
 
 

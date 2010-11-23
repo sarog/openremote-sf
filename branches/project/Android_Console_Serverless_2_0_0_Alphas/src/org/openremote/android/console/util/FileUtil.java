@@ -19,7 +19,9 @@
 */
 package org.openremote.android.console.util;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,6 +33,7 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
+import org.openremote.android.console.bindings.Panel;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -63,10 +66,25 @@ public class FileUtil {
    }
 
    /**
-    * Parses the panel from panel.xml.
+    * Parses the panel from panel.xml in memory
     * 
     */
    public static void parsePanelXML(Context context) {
+	   
+		try {
+
+			BufferedReader buf = new BufferedReader(new FileReader(context.getFileStreamPath("panel.xml")));
+
+			String nextLine = buf.readLine();
+
+			while (nextLine != null) {		
+
+				System.out.println(nextLine);
+
+				nextLine = buf.readLine();
+			} 
+		}
+		catch (IOException e) {e.printStackTrace();}
       if (context.getFileStreamPath(Constants.PANEL_XML).exists()) {
          try {
             parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
@@ -76,7 +94,12 @@ public class FileUtil {
       }
    }
    
+   /*
+    * This method parses the panel.xml file.  It creates in memory objects in the XMLEntityDatabase.
+    * 
+    */
    public static void parsePanelXMLInputStream(InputStream fIn) {
+	   
       try {
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
@@ -90,8 +113,8 @@ public class FileUtil {
                XMLEntityDataBase.globalTabBar = new TabBar(nodes.item(i));
             }
          }
-         System.out.println("ABOUT TO CLEAR screens");
-         new Exception().printStackTrace();
+         
+         
          XMLEntityDataBase.screens.clear();
          NodeList screenNodes = root.getElementsByTagName("screen");
          int screenNum = screenNodes.getLength();
@@ -101,16 +124,21 @@ public class FileUtil {
             System.out.println("REFACTOR, FILEUTIL: NEW SCREEN :"+ screen.getScreenId());
          }
 
-         System.out.println("ABOUT TO CLEAR GROUPS");
-         new Exception().printStackTrace();
-
          XMLEntityDataBase.groups.clear();
          NodeList groupNodes = root.getElementsByTagName("group");
          int groupNum = groupNodes.getLength();
          for (int i = 0; i < groupNum; i++) {
             Group group = new Group(groupNodes.item(i));
-            System.out.println("I have a group: "+group.getGroupId());
             XMLEntityDataBase.groups.put(group.getGroupId(), group);
+         }
+         
+
+         XMLEntityDataBase.panels.clear();
+         NodeList panelNodes  = root.getElementsByTagName("panel");
+         int panelNum = panelNodes.getLength();
+         for (int i =0; i< panelNum ; i++) {
+        	 Panel panel = new Panel(panelNodes.item(i));
+        	 XMLEntityDataBase.panels.put(panel.getPanelName(), panel);
          }
       } catch (ParserConfigurationException e) {
          e.printStackTrace();

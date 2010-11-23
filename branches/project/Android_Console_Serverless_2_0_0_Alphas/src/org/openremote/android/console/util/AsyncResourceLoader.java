@@ -20,6 +20,8 @@
 
 package org.openremote.android.console.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Iterator;
 
 import org.apache.http.HttpResponse;
@@ -34,6 +36,7 @@ import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.ORNetworkCheck;
+import org.openremote.android.console.Constants;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -76,33 +79,31 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
       publishProgress("panel: " + panelName);
 
-      Log.i("OpenRemote/DOWNLOAD", "Getting panel: " + panelName);
-
       String serverUrl = AppSettingsModel.getSecuredServer(activity);
             
-      // We have no ORB but we should have the files locally in cache
+      /*
+       *  We have no ORB the files are in cache when downloaded from options.  We just work from memory
+       */
       if (!AppSettingsModel.hasORB(activity)) {
+    	  
+    	  // Populate the Repository with the panel.xml information
     	  FileUtil.parsePanelXML(activity);
-//          result.setCanUseLocalCache(true);
-		  result.setAction(TO_GROUP);
-		  
-          Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-          String imageName = "";
-          while (images.hasNext()) {
-             imageName = images.next();
-             publishProgress(imageName);
-             HTTPUtil.downLoadImage(activity, AppSettingsModel.getSecuredServer(activity), imageName);
-          }
-          return result;
+    	  // And forward to rendering
+   		  result.setAction(TO_GROUP);
+   		  return result;
       }
       
+      /*
+       * We have an ORB locally on the network.  We download panel definitions and images from the ORB. 
+       */
       HttpResponse checkResponse = ORNetworkCheck.verifyControllerURL(activity, AppSettingsModel.getCurrentServer(activity));
       isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
       
       if (isDownloadSuccess) {
          
-    	 int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
-         System.out.println("PANEL NAME "+panelName);
+    	 // Download the FULL panel set
+    	 int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, Constants.PANEL_XML);
+    	 
     	 if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
             Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail.");
             if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
@@ -123,7 +124,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
                return result;
             }
          } else { // download panel xml success.
-            Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml successfully.");
+            Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml from ORB successfully.");
             if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
                FileUtil.parsePanelXML(activity);
                result.setAction(TO_GROUP);
@@ -204,9 +205,9 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       switch (result.getAction()) {
       case TO_GROUP:
          intent.setClass(activity, GroupActivity.class);
-/*         if (result.isCanUseLocalCache()) {
+         if (result.isCanUseLocalCache()) {
             intent.setData(Uri.parse(ControllerException.exceptionMessageOfCode(result.getStatusCode())));
-         } */
+         } 	
          break;
       case TO_LOGIN:
          intent.setClass(activity, LoginViewActivity.class);

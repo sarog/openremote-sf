@@ -94,9 +94,11 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    private void setOntouchListener(final Context context, final PanelSelectSpinnerView orConnectionDelegate) {
       setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
-            touchCount++;
-            
+         
+        	touchCount++;
+         
             boolean hasORB = AppSettingsModel.hasORB(context);
+            
             if (touchCount%2== 1 && "".equals(AppSettingsActivity.currentServer) && hasORB) {
                ViewHelper.showAlertViewWithTitle(context, "Warning",
                      "No controller. Please configure Controller URL manually.");
@@ -104,7 +106,9 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
             }
             
             if (!hasORB) requestPanelListLocal();
+            
             else requestPanelList(context, orConnectionDelegate);
+            
             return false;
          }
       });
@@ -144,10 +148,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
 
          NodeList nodeList = root.getElementsByTagName("panel");
          int nodeNums = nodeList.getLength();
-         new Exception().printStackTrace();
-         System.out.println("THE NUMBER OF PANELS"+nodeNums);
          for (int i = 0; i < nodeNums; i++) {
-        	 System.out.println("PANEL S:DLFKJDS: "+nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
         	 arrayAdapter.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
          }
       } catch (IOException e) {
@@ -160,6 +161,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
          Log.e("OpenRemote-PANEL LIST", "Parse data error", e);
          return;
       }
+      // Get the currently used panel so we can display below
       String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
       int panelCount = arrayAdapter.getCount();
       if (!TextUtils.isEmpty(panel)) {
@@ -167,8 +169,9 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
             arrayAdapter.add(panel);
          } else {
             for (int i = 0; i < panelCount; i++) {
+            	// Show which panel is currently selected
                if (panel.equals(arrayAdapter.getItem(i))) {
-                  this.setSelection(i, true);
+            	   this.setSelection(i, true);
                   break;
                }
             }
@@ -241,5 +244,4 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
          arrayAdapter.add(panelName);
       }
    }
-   
 }

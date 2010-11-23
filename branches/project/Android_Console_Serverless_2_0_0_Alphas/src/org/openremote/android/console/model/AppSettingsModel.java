@@ -38,7 +38,7 @@ import android.util.Log;
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Tomsky Wang
  * @author Dan Cong
- * @author <a href="mailto:marcf@openremote.org">Marc Fleury</a>@author Marc Fleury
+ * @author <a href="mailto:marcf@openremote.org">Marc Fleury</a>
  *
  */
 public class AppSettingsModel implements Serializable
@@ -263,7 +263,7 @@ public class AppSettingsModel implements Serializable
    
    
   /**
-   * Returns the current, in-use panel identity from application's settings.
+   * Returns the current, in-use panel identity.
    *  
    * @param context   global Android application context
    *

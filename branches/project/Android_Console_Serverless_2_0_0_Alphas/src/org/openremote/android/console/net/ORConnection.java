@@ -165,10 +165,7 @@ public class ORConnection {
     */
    private void connectionDidReceiveData() {
       try {
-    	 
-    	Log.e("LOGTRACE",Log.getStackTraceString(new Exception()));
-    	
-         if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
+    	  if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
             delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
          } else {
             Log.e("OpenRemote-ORConnection", "Get the entity's content of httpresponse fail."); 
