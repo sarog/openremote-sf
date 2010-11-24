@@ -209,12 +209,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 		// The current Group being displayed is here. 
 		int currentGroupId = UserCache.getCurrentGroupId(this);
 		
-		System.out.println("CURRENT GROUP ID "+currentGroupId);
-
 		// Under that ID there is something in the XML tree
 		Group currentGroup = XMLEntityDataBase.getGroup(currentGroupId);
-	
-		System.out.println("Current Group object "+currentGroup);
 		
 		// At first there will be no "current Group"
 		if (currentGroup == null || currentGroup.getScreens().size() == 0) {
@@ -224,13 +220,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 			// This may be first use, so just get the panel and the first group
 			String panelID = AppSettingsModel.getCurrentPanelIdentity(this);
 			
-			System.out.println("Printing out panelID :"+panelID);
-			
 			// Get the Panel
 			Panel panel = XMLEntityDataBase.getPanel(panelID);
-			
+							
 			// And get the first group as "current group"
 			currentGroup = panel.getGroups().getFirst();
+					
 		}
 
 		screenSize = currentGroup.getScreenSizeByOrientation(isLandscape);
@@ -246,17 +241,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
 		int currentScreenID = UserCache.getCurrentScreenId(this);
 		
-		System.out.println("CURRENT SCREEN ID: "+ currentScreenID);
-
 
 		if (currentScreenID > 0 && currentGroup.canfindScreenByIdAndOrientation(currentScreenID, isLandscape)) {
-			System.out.println("I set the display with currentScreenID "+currentScreenID);
 			currentScreenViewFlipper.setDisplayedChild(getScreenIndex(currentScreenID, isLandscape));
-		}
-		
-		// This is the first time and i can't find a screen. 
-		else if (currentScreenID == 0){
-			
 		}
 		
 		// The layout
@@ -565,10 +552,15 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 		if (Main.loadingToast != null) {
 			Main.loadingToast.cancel();
 		}
+		//
 		if (getIntent().getDataString() != null) {
+			
+			// TODO: REFACTOR we should not have the "locaCache" property based on the presence of 
+			// a string passed through "intent.dataString" 
+			// This should be explicit. 
 			useLocalCache = true;
-			// marcf: commented out the Alert in case of localCache. 
-			ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
+			// TODO: marcf: commented out the Alert in case of localCache. Until refactor above is done 
+//			ViewHelper.showAlertViewWithSetting(this, "Using cached content", getIntent().getDataString());
 		}
 		startCurrentPolling();
 	}

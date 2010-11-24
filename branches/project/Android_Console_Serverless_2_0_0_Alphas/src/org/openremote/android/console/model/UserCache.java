@@ -39,12 +39,10 @@ public class UserCache implements Serializable {
    private static final String PASSWORD = "password";
    
    public static void saveCurrentGroupIdAndScreenId(Context context, int lastGroupId, int lastScreenId) {
-	  new Exception().printStackTrace();
       SharedPreferences.Editor editor = context.getSharedPreferences(USER_CACHE, 0).edit();
       editor.putInt(LAST_GROUP_ID, lastGroupId);
       editor.putInt(LAST_Screen_ID, lastScreenId);
       editor.commit();
-      System.out.println(" GROUPID "+lastGroupId+ " lastScreenId "+lastScreenId);
    }
    
    public static int getCurrentGroupId(Context context) {

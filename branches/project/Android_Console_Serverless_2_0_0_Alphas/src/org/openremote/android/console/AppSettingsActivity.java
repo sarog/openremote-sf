@@ -142,6 +142,11 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
 		this.hasORB = AppSettingsModel.hasORB(AppSettingsActivity.this);
 
+		// First if we have nothing in memory and we have no ORB we need to get the information from the web
+		if (!hasORB && !getFileStreamPath(Constants.PANEL_XML).exists()) {
+			new ServerlessConfigurator(AppSettingsActivity.this).configure();
+		}
+		
 		// The main layout contains all application configuration items.
 		LinearLayout mainLayout = new LinearLayout(this);
 		mainLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -160,14 +165,16 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		appSettingsView.setOrientation(LinearLayout.VERTICAL);
 
 
-		// First we ask the user if the setup has an ORB 
+		// First we display the hasORB entry
 		appSettingsView.addView(createHasORBLayout());
 
 		
 		if (!hasORB) { 
+			Log.i("OpenRemote/Settings","hasORB = false");
 			populateNoORBView();
 		}
 		if (hasORB) {
+			Log.i("OpenRemote/Settings","hasORB = true");
 			populateORBView();
 		}
 
@@ -181,16 +188,15 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		appSettingsView.addView(createClearImageCacheButton());
 
 
-		//appSettingsView.addView(createSSLLayout());
-
-
 		scroll.addView(appSettingsView);
-		//initSSLState();
-
+		
 		mainLayout.addView(scroll);
 		mainLayout.addView(createDoneAndCancelLayout());
 
 		setContentView(mainLayout);
+		
+		if (hasORB) initSSLState();
+		
 		addOnclickListenerOnDoneButton();
 		addOnclickListenerOnCancelButton();
 		progressLayout = (LinearLayout)findViewById(R.id.choose_controller_progress);
@@ -214,6 +220,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		} else {
 			appSettingsView.addView(constructCustomServersView(),3);
 		}
+		
+		appSettingsView.addView(createSSLLayout(), 4);
 	}
 
 	public void removeORBView() {
@@ -259,24 +267,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		return refreshLayout;
 	}
 
-	/*
-	 * A helper method to check if credentials exist and if not to start the LoginView activity
-	 * 
-	 */
-	private void checkForCredentials() {
-
-		// Check that username and password are stored somewhere
-		String username = UserCache.getUsername(this);
-
-		// If it isn't then assume a fresh install and get the username and password through a new activity
-		if (username.trim() =="") {
-			Intent i = new Intent();
-			i.setClassName(this.getClass().getPackage().getName(),
-					LoginViewActivity.class.getName());
-			startActivity(i);
-		}
-
-	}
 	/**
 	 * First question asked to the user: do you have a controller? 
 	 * 
@@ -305,6 +295,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 		hasORBButton.setChecked(hasORB);
 		hasORBButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				AppSettingsModel.setHasORB(AppSettingsActivity.this, isChecked);		
 				if (isChecked) {
 					AppSettingsModel.setHasORB(AppSettingsActivity.this, true);
 					removeNoORBView();
@@ -314,7 +305,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 					removeORBView();
 					populateNoORBView();
 				}
-				AppSettingsModel.setHasORB(AppSettingsActivity.this, isChecked);
 			}
 		});
 
@@ -391,7 +381,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 	private LinearLayout createSSLLayout() {
 		LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
 		LinearLayout sslLayout = (LinearLayout)inflater.inflate(R.layout.ssl_field_view, null);
-
 		return sslLayout;
 	}
 
@@ -402,6 +391,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    */
   private void initSSLState() {
      ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
+     
      sslBtn.setChecked(AppSettingsModel.isSSLEnabled(this));
      sslBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -461,7 +451,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 
 				// What panel was selected
 				String selectedPanel = (String)panelSelectSpinnerView.getSelectedItem();
-				System.out.println("REFACTOR ME: APPSETTINGACTIVITY : Panel Selected : "+selectedPanel);
 				
 				// The user has changed the panel, save that information
 				if (!TextUtils.isEmpty(selectedPanel) && !selectedPanel.equals(PanelSelectSpinnerView.CHOOSE_PANEL)) {

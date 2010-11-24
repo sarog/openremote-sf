@@ -61,7 +61,10 @@ public class HTTPUtil {
     * @return the int
     */
    public static int downLoadPanelXml(Context context, String serverUrl, String panelName) {
-      return downLoadFile(context, serverUrl + "/rest/panel/" + encodePercentUri(panelName), Constants.PANEL_XML);
+
+	   return downLoadFile(context, serverUrl + "/" + Constants.PANEL_XML, Constants.PANEL_XML);
+
+      //return downLoadFile(context, serverUrl + "/rest/panel/" + encodePercentUri(panelName), Constants.PANEL_XML);
    }
 
    public static int downLoadImage(Context context, String serverUrl, String imageName) {

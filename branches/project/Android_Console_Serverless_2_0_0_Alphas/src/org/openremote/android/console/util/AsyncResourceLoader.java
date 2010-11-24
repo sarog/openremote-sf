@@ -101,8 +101,8 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       
       if (isDownloadSuccess) {
          
-    	 // Download the FULL panel set
-    	 int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, Constants.PANEL_XML);
+    	 // Download the panel set
+    	 int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
     	 
     	 if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
             Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail.");
