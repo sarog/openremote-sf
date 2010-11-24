@@ -87,7 +87,6 @@ public class ServerlessConfigurator  {
 		//get password
 		password = UserCache.getPassword(activity);
 		
-		System.out.println("I seem to have username and passweird :"+username+"/"+password);
 		// Assemble the URI to get the file from OpenRemote
 		HttpGet httpGet = new HttpGet(beehiveRoot+username+"/openremote.zip");
 
@@ -135,20 +134,6 @@ public class ServerlessConfigurator  {
 
 		Log.i("ServerlessConfigurator","Done downloading and unzipping files from OR.org");
 
-		try {
-
-			BufferedReader buf = new BufferedReader(new FileReader(activity.getFileStreamPath("controller.xml")));
-
-			String nextLine = buf.readLine();
-
-			while (nextLine != null) {		
-
-				System.out.println(nextLine);
-
-				nextLine = buf.readLine();
-			} 
-		}
-		catch (IOException e) {e.printStackTrace();}
 	}
 
 	/*
@@ -195,24 +180,25 @@ public class ServerlessConfigurator  {
 			// Define variable for reading stream
 			byte[] buffer = new byte[1024]; int len = 0;
 
-			//Save stream
 			while ((len = inputStream.read(buffer)) != -1) { fos.write(buffer, 0, len);}
 
+			Log.i("OpenRemote/DOWNLOAD","Done downloading file from internet");
+			//Save stream
+		
 			zis = new ZipInputStream(activity.openFileInput("openremote.zip"));
 
 			ZipEntry zipEntry;
 
 			while ((zipEntry = zis.getNextEntry()) != null) {
 
-				System.out.println("new File in ZIP" + zipEntry.getName());
+				Log.i("OpenRemote/DOWNLOAD", "new File in ZIP" + zipEntry.getName());
+				
 				fos2 = activity.openFileOutput(zipEntry.getName(),activity.MODE_WORLD_READABLE);
 
-				int b;
+				byte[] buffer2 = new byte[1024]; int len2 = 0;
+				
+				while ((len2 = zis.read(buffer2)) != -1) {fos2.write(buffer2, 0, len2);}
 
-				while ((b = zis.read()) != -1) {
-
-					fos2.write(b);
-				}
 			}
 
 		} catch (IOException e) {e.printStackTrace();}
