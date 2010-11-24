@@ -60,9 +60,7 @@ public class ControlCommandService {
       //Execute all commands in this command macro
       for (ExecutableCommand executableCommand : executableCommands) {
          if (executableCommand != null) {
-        	 System.out.println("GET TO THE SEND");
             executableCommand.send();
-        	 System.out.println("GOT TO TEH SEND");
          } else {
    //         throw new Exception("ExecutableCommand is null");
         	 (new Exception("Executable Command is null")).printStackTrace();

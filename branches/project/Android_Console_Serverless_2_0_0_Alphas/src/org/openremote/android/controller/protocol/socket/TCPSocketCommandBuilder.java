@@ -49,12 +49,10 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
       // Get the properties as elements
       NodeList properties= element.getElementsByTagName("property");
       
-      System.out.println("I got childrenDFSJLJK:LSDKJF:DSLK "+properties.getLength());
       for (int i = 0; i< properties.getLength(); i++) {
     	  
     	  Element property = (Element) properties.item(i);
-    	 
-    	  System.out.println("NEW PROPERTY"+ property);
+    	
     	  if("name".equals(property.getAttribute("name"))){
               tcpEvent.setName(property.getAttribute("value"));
            } else if("port".equals(property.getAttribute("name"))){
