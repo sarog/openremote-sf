@@ -79,6 +79,8 @@ public class AddServerActivity extends GenericActivity {
                   String httpUrl = "http://" + noProtocolUrl;
                   new URL(httpUrl);
                   Intent intent = getIntent();
+                  
+                  // TODO: avoid passing critical data through Intent. 
                   intent.setData(Uri.parse(noProtocolUrl));
                   setResult(Constants.RESULT_CONTROLLER_URL, intent);
                   finish();

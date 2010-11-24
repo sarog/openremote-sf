@@ -48,6 +48,7 @@ import android.util.Log;
  * 
  * @author Tomsky Wang
  * @author Dan Cong
+ * <a href="mailto:marcf@openremote.org">Marc Fleury</a>
  *
  */
 public class FileUtil {
@@ -71,20 +72,6 @@ public class FileUtil {
     */
    public static void parsePanelXML(Context context) {
 	   
-		try {
-
-			BufferedReader buf = new BufferedReader(new FileReader(context.getFileStreamPath("panel.xml")));
-
-			String nextLine = buf.readLine();
-
-			while (nextLine != null) {		
-
-				System.out.println(nextLine);
-
-				nextLine = buf.readLine();
-			} 
-		}
-		catch (IOException e) {e.printStackTrace();}
       if (context.getFileStreamPath(Constants.PANEL_XML).exists()) {
          try {
             parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
@@ -121,7 +108,6 @@ public class FileUtil {
          for (int i = 0; i < screenNum; i++) {
             Screen screen = new Screen(screenNodes.item(i));
             XMLEntityDataBase.screens.put(screen.getScreenId(), screen);
-            System.out.println("REFACTOR, FILEUTIL: NEW SCREEN :"+ screen.getScreenId());
          }
 
          XMLEntityDataBase.groups.clear();
@@ -132,7 +118,6 @@ public class FileUtil {
             XMLEntityDataBase.groups.put(group.getGroupId(), group);
          }
          
-
          XMLEntityDataBase.panels.clear();
          NodeList panelNodes  = root.getElementsByTagName("panel");
          int panelNum = panelNodes.getLength();
