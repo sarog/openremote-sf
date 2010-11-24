@@ -78,8 +78,7 @@ public class ButtonBuilder extends ComponentBuilder {
     		    	// XPath will find the corresponding line
     		        Element commandElement = remoteActionXMLParser.getElementById(commandID);    		    	
 	    		    ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
-	    		    
-	    		    System.out.println("I have a command "+ command);
+	    		
 	    		    button.addExecutableCommand(command);
     		    }
     	   }
