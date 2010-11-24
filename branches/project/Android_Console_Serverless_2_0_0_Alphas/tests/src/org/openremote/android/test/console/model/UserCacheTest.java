@@ -39,7 +39,7 @@ public class UserCacheTest extends InstrumentationTestCase {
     * Reset user cache after each test.
     */
    public void tearDown() {
-      UserCache.saveLastGroupIdAndScreenId(ctx, 0, 0);
+      UserCache.saveCurrentGroupIdAndScreenId(ctx, 0, 0);
       UserCache.saveUser(ctx, "", "");
    }
    
@@ -47,8 +47,8 @@ public class UserCacheTest extends InstrumentationTestCase {
     * Test get empty group id and screen id, if there has not been set.
     */
    public void testGetEmptyGroupIdAndScreenId() {
-      assertEquals(0, UserCache.getLastGroupId(ctx));
-      assertEquals(0, UserCache.getLastScreenId(ctx));
+      assertEquals(0, UserCache.getCurrentGroupId(ctx));
+      assertEquals(0, UserCache.getCurrentScreenId(ctx));
    }
    
    /**
@@ -58,10 +58,10 @@ public class UserCacheTest extends InstrumentationTestCase {
       int groupId = 1;
       int screenId = 10;
       
-      UserCache.saveLastGroupIdAndScreenId(ctx, groupId, screenId);
+      UserCache.saveCurrentGroupIdAndScreenId(ctx, groupId, screenId);
       
-      assertEquals(groupId, UserCache.getLastGroupId(ctx));
-      assertEquals(screenId, UserCache.getLastScreenId(ctx));
+      assertEquals(groupId, UserCache.getCurrentGroupId(ctx));
+      assertEquals(screenId, UserCache.getCurrentScreenId(ctx));
    }
    
    /**
