@@ -57,6 +57,9 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
    }
    
    public void testAutoDiscoveryServers() {
+
+    fail ("test currently hangs on this branch" );
+
 	   TelephonyManager telmgr = (TelephonyManager)getActivity().getSystemService(Context.TELEPHONY_SERVICE);
        boolean isEmulator = "000000000000000".equalsIgnoreCase(telmgr.getDeviceId()); 
 	   if (!isEmulator) {

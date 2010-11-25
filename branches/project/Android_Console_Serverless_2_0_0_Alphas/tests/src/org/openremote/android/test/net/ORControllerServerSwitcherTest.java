@@ -36,7 +36,9 @@ import android.util.Log;
 public class ORControllerServerSwitcherTest extends ActivityInstrumentationTestCase2<AppSettingsActivity> {
 	
 	public ORControllerServerSwitcherTest() {
+
 		super("org.openremote.android.console", AppSettingsActivity.class);
+
 	}
 
 	@MediumTest
@@ -47,6 +49,9 @@ public class ORControllerServerSwitcherTest extends ActivityInstrumentationTestC
 	}
 	
 	public void testDoSwitch() {
+       
+          fail("test currently hangs on this branch");
+
 		ORControllerServerSwitcher.doSwitch(getActivity());
 	}
 
