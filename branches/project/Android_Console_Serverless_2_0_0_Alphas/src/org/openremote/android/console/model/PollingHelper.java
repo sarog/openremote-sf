@@ -183,9 +183,11 @@ public class PollingHelper {
             Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed.", e);
             handler.sendEmptyMessage(NETWORK_ERROR);
          } catch (SocketException e) {
-            isPolling = false;
-            Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed.", e);
-            handler.sendEmptyMessage(NETWORK_ERROR);
+        	if (isPolling) {
+        		isPolling = false;
+        		Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed.", e);
+        		handler.sendEmptyMessage(NETWORK_ERROR);
+        	}
          } catch (IllegalArgumentException e) {
             isPolling = false;
             Log.e("OpenRemote/POLLING", "polling [" + pollingStatusIds +"] failed", e);

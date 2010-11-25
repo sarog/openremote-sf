@@ -33,6 +33,8 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
 
+import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
@@ -55,6 +57,12 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
    }
    
    public void testAutoDiscoveryServers() {
+	   TelephonyManager telmgr = (TelephonyManager)getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+       boolean isEmulator = "000000000000000".equalsIgnoreCase(telmgr.getDeviceId()); 
+	   if (!isEmulator) {
+		   getActivity().finish();
+		   return;
+	   }
       // Initialize the IPAutoDiscoveryServer.
       final IPAutoDiscoveryServer auto = new IPAutoDiscoveryServer();
       
@@ -80,10 +88,11 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
          fail("Can't auto discovery servers!");
       } catch (ExecutionException e) {
          fail("Can't auto discovery servers!");
+      } finally {
+    	  // Close the AppSettingsActivity.
+    	  getActivity().finish();
       }
       
-      // Close the AppSettingsActivity.
-      getActivity().finish();
    }
    
 }
