@@ -18,6 +18,9 @@
 		33267E7210E47C5B00E3AE42 /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
 		33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
 		33267ED510E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
+		3335C188129E656B0007E6FC /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
+		3335C189129E65800007E6FC /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33959D7012797D1300A8F0FA /* GetPanelsController.m */; };
+		3335C18E129E66FF0007E6FC /* AppSettingsDefinitionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3335C18D129E66FF0007E6FC /* AppSettingsDefinitionTest.m */; };
 		3338CDB710C5036C0067C94D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB410C5036C0067C94D /* ImageView.m */; };
 		3338CDB810C5036C0067C94D /* LabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB610C5036C0067C94D /* LabelView.m */; };
 		3338CDB910C5036C0067C94D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB410C5036C0067C94D /* ImageView.m */; };
@@ -263,6 +266,8 @@
 		33267E7010E47C5B00E3AE42 /* NSDateHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDateHelper.m; sourceTree = "<group>"; };
 		33267ED210E4895E00E3AE42 /* RoundRobinException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundRobinException.h; sourceTree = "<group>"; };
 		33267ED310E4895E00E3AE42 /* RoundRobinException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundRobinException.m; sourceTree = "<group>"; };
+		3335C18C129E66DD0007E6FC /* AppSettingsDefinitionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppSettingsDefinitionTest.h; path = Test/AppSettingsDefinitionTest.h; sourceTree = "<group>"; };
+		3335C18D129E66FF0007E6FC /* AppSettingsDefinitionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppSettingsDefinitionTest.m; path = Test/AppSettingsDefinitionTest.m; sourceTree = "<group>"; };
 		3338CDB310C5036C0067C94D /* ImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
 		3338CDB410C5036C0067C94D /* ImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageView.m; sourceTree = "<group>"; };
 		3338CDB510C5036C0067C94D /* LabelView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelView.h; sourceTree = "<group>"; };
@@ -623,6 +628,15 @@
 			name = db;
 			sourceTree = "<group>";
 		};
+		3335C18B129E66860007E6FC /* config */ = {
+			isa = PBXGroup;
+			children = (
+				3335C18D129E66FF0007E6FC /* AppSettingsDefinitionTest.m */,
+				3335C18C129E66DD0007E6FC /* AppSettingsDefinitionTest.h */,
+			);
+			name = config;
+			sourceTree = "<group>";
+		};
 		338C3CD210D60F3F0029D62B /* view */ = {
 			isa = PBXGroup;
 			children = (
@@ -683,6 +697,7 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				3335C18B129E66860007E6FC /* config */,
 				8CEFDA5011BF323E00CEDC24 /* util */,
 				338C3CD210D60F3F0029D62B /* view */,
 				8CEB4E7810B27F3700A67721 /* panelxml */,
@@ -974,7 +989,6 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -1022,6 +1036,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3335C188129E656B0007E6FC /* appSettings.plist in Resources */,
 				8CECF3E210E9DD1400C0E1BB /* database.db in Resources */,
 				8C3DE3101163492C00DD4EE7 /* btn_green.png in Resources */,
 				8C3DE3111163492C00DD4EE7 /* button.png in Resources */,
@@ -1176,6 +1191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3335C189129E65800007E6FC /* GetPanelsController.m in Sources */,
 				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
@@ -1262,6 +1278,7 @@
 				8C57970A116B9DFE00ED63EA /* DataBaseServiceTest.m in Sources */,
 				8CEFDA5711BF32E200CEDC24 /* StringUtilsTest.m in Sources */,
 				8CEFDA7011BF34DD00CEDC24 /* LoadingHUDView.m in Sources */,
+				3335C18E129E66FF0007E6FC /* AppSettingsDefinitionTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
