@@ -76,6 +76,9 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
   public void setUp()
   {
+
+    fail ("Tests hang on this branch");
+
     this.ctx = getInstrumentation().getTargetContext();
 
     wifi = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
@@ -228,6 +231,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    */
   public void testVerifyControllerEmptyURL()
   {
+
     if (!wifi.isWifiEnabled())
       fail(wifiRequired());
 
