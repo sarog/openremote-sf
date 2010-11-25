@@ -44,7 +44,6 @@ import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORRoundRobinConnection;
 import org.openremote.android.console.util.ImageUtil;
-import org.openremote.android.console.view.ButtonView;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -264,6 +263,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 		addNaviagateListener();
 	}
 
+
 	/**
 	 * If the activity resumed, handle the navigation.
 	 */
@@ -331,35 +331,39 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 		return false;
 	}
 
-	/**
-	 * Detect the gesture and handle it.
-	 * Support fling type: "right to left", "left to right", "bottom to top" and "top to bottom".
-	 * 
-	 * @see android.view.GestureDetector.OnGestureListener#onFling(android.view.MotionEvent, android.view.MotionEvent, float, float)
-	 */
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		// The panel or group is empty.
-		if (currentGroupView == null) {
-			return true;
-		}
-		if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-			Log.i("OpenRemote-FLING", "right to left");
-			onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
-			moveRight();
-		} else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-			Log.i("OpenRemote-FLING", "left to right");
-			onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
-			moveLeft();
-		} else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-			Log.i("OpenRemote-FLING", "bottom to top");
-			onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
-		} else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-			Log.i("OpenRemote-FLING", "top to bottom");
-			onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
-		}
-		return true;
-	}
+
+  /**
+   * Detect the gesture and handle it.
+   * Support fling type: "right to left", "left to right", "bottom to top" and "top to bottom".
+   *
+   * @see android.view.GestureDetector.OnGestureListener#onFling(android.view.MotionEvent, android.view.MotionEvent, float, float)
+   */
+  @Override
+  public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+     // The panel or group is empty.
+     if (currentGroupView == null) {
+        return false;
+     }
+     if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+        Log.i("OpenRemote-FLING", "right to left");
+        onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
+        return moveRight();
+     } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+        Log.i("OpenRemote-FLING", "left to right");
+        onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
+        return moveLeft();
+     } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+        Log.i("OpenRemote-FLING", "bottom to top");
+        onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
+        return true;
+     } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+        Log.i("OpenRemote-FLING", "top to bottom");
+        onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
+        return true;
+     }
+     return false;
+  }
+
 
 	/**
 	 * Handle screen gesture by type.
@@ -820,16 +824,16 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 		lastConfigurationOrientation = newOrientation;
 	}
 
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		super.dispatchTouchEvent(ev);
-		if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-			ButtonView.MOUSE_MOVE = false;
-		} else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-			ButtonView.MOUSE_MOVE = true;
-		}
-		return gestureScanner.onTouchEvent(ev);
-	}
 
 
+   @Override
+   public boolean dispatchTouchEvent(MotionEvent ev) {
+	   boolean handled = gestureScanner.onTouchEvent(ev);
+	   if (!handled) {
+		   handled = super.dispatchTouchEvent(ev);
+	   }
+       return handled;
+   }
+   
+   
 }

@@ -40,7 +40,6 @@ public class ButtonView extends ControlView {
    private Button uiButton;
    private BitmapDrawable defaultImage;
    private BitmapDrawable pressedImage;
-   public static boolean MOUSE_MOVE;
    
    /** The Constant REPEAT_CMD_INTERVAL. */
    public final static long REPEAT_CMD_INTERVAL = 300;
@@ -108,9 +107,7 @@ public class ButtonView extends ControlView {
                }
                if (button.getNavigate() != null) {
                   uiButton.setPressed(false);
-                  if (!MOUSE_MOVE) {
-                     ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerNavigateTo, button.getNavigate());
-                  }
+                  ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerNavigateTo, button.getNavigate());
                }
             }
             return false;
