@@ -642,7 +642,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       if (statusCode != Constants.HTTP_SUCCESS) {
          loadingPanelProgress.dismiss();
          if (statusCode == ControllerException.UNAUTHORIZED) {
-            LoginDialog loginDialog = new LoginDialog(getApplicationContext());
+            LoginDialog loginDialog = new LoginDialog(this);
             loginDialog.setOnClickListener(loginDialog.new OnloginClickListener() {
                @Override
                public void onClick(View v) {
@@ -653,7 +653,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
             });
          } else {
             // The following code customizes the dialog, because the finish method should do after dialog show and click ok.
-            AlertDialog alertDialog = new AlertDialog.Builder(getApplicationContext()).create();
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Panel List Not Found");
             alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
