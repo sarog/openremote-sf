@@ -300,7 +300,7 @@ public class AppSettingsModel implements Serializable
    }
    
    public static String getCustomServers(Context context) {
-      return context.getSharedPreferences(CUSTOM_SERVERS, 0).getString(CUSTOM_SERVERS, "");
+      return context.getSharedPreferences(CUSTOM_SERVERS, 0).getString(CUSTOM_SERVERS, "http://controller.openremote.org/android/controller");
    }
 
 
