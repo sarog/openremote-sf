@@ -57,6 +57,17 @@ static NSString *unsavedChosenServerUrl = nil;
 	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
 }
 
+// Reload settingsData from appSettings.plist for the test.
++ (void)reloadDataForTest {
+	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
+	NSString *settingFilePath = [thisBundle pathForResource:@"appSettings" ofType:@"plist"];
+	if (settingsData) {
+		[settingsData release];
+		settingsData = nil;
+	}
+	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:settingFilePath];
+}
+
 // Get the specified section with index from appSettings.plist .
 +(NSMutableDictionary *)getSectionWithIndex:(int)index {
 	return [[self getAppSettings] objectAtIndex:index];
@@ -136,6 +147,14 @@ static NSString *unsavedChosenServerUrl = nil;
 
 // Set SSL port
 + (void)setSslPort:(int)port {
+	if (port <0 && port != DEFAULT_SSL_PORT){
+		NSLog(@"negative port number");
+		return;
+	}
+	if (port > 65535) {
+		NSLog(@"port number too large");
+		return;
+	}
 	[[self getSecurityDic] setValue:[NSNumber numberWithInt:port] forKey:@"port"];
 }
 
@@ -204,9 +223,15 @@ static NSString *unsavedChosenServerUrl = nil;
 
 // Change current server url panel client use to specified url .
 + (void)setCurrentServerUrl:(NSString *)url {
-	[url retain];
-	[currentServerUrl release];
-	currentServerUrl = url;
+	if(url) {
+		[url retain];
+		[currentServerUrl release];
+		currentServerUrl = url;
+	} else {
+		[currentServerUrl release];
+		currentServerUrl = @"";
+	}
+	
 }
 
 // Get panel identity current panel client use from appSettings.plist .
