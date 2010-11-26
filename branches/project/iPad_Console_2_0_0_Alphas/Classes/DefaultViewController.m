@@ -186,6 +186,16 @@
 				[self rerenderTabbarWithNewOrientation];
 				[currentGroupController switchToScreen:screen.screenId];
 			}
+		} else {			
+			if ([currentGroupController currentScreenId] == 0 && [[currentGroupController.group screens] count] > 0) {
+				NSLog(@"last screen id not exist,and the current orientation has no screen.");
+				Screen *screen = [[currentGroupController.group screens] objectAtIndex:0];
+				if ([currentGroupController isOrientationLandscape] != screen.landscape) {
+					[self transformToOppositeOrientation];
+					[self rerenderTabbarWithNewOrientation];
+					[currentGroupController switchToScreen:screen.screenId];
+				}
+			}
 		}
 		
 		[self saveLastGroupIdAndScreenId];
