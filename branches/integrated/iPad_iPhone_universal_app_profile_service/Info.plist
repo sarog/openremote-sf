@@ -8,8 +8,14 @@
 	<string>OpenRemote</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>iPadAppIcon.png</string>
+		<string>iPhoneAppIcon.png</string>
+		<string>Icon-Small-50.png</string>
+	</array>
 	<key>CFBundleIdentifier</key>
-	<string>cn.finalist.iphonedemo</string>
+	<string>org.openremote.iPhone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -32,12 +38,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>iPadAppIcon.png</string>
-		<string>iPhoneAppIcon.png</string>
-		<string>Icon-Small-50.png</string>
 	</array>
 </dict>
 </plist>
