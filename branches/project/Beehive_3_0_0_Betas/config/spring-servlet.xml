@@ -8,6 +8,7 @@
                 <prop key="lirc.html">modelController</prop>
                 <prop key="remoteSection.html">remoteSectionController</prop>
                 <prop key="index.html">beehiveDatabaseController</prop>
+                <prop key="database.html">beehiveLIRCDatabaseController</prop>
                 <prop key="changes.htm">lircRevisionChangesController</prop>
                 <prop key="sync.htm">lircSyncController</prop>
                 <prop key="history.htm">lircHistoryController</prop>
@@ -63,6 +64,12 @@
     
     <bean id="beehiveDatabaseController" class="org.openremote.beehive.controller.BeehiveDatabaseController">
         <property name="index" value="beehiveDatabase"/>
+        <property name="cmpSelectContainer" value="cmpSelectContainer"/>
+        <property name="cmpLircDetails" value="cmpLircDetails"/>
+    </bean>
+    
+    <bean id="beehiveLIRCDatabaseController" class="org.openremote.beehive.controller.BeehiveLIRCDatabaseController">
+        <property name="index" value="lircBeehiveDatabase"/>
         <property name="cmpSelectContainer" value="cmpSelectContainer"/>
         <property name="cmpLircDetails" value="cmpLircDetails"/>
     </bean>
