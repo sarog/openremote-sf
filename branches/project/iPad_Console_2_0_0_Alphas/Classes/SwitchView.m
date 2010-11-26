@@ -47,10 +47,12 @@
 	if (canUseImage) {		
 		onUIImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:onImage]];
 		offUIImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:offImage]];
-		onUIImage = [[ClippedUIImage alloc] initWithUIImage:onUIImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
-		offUIImage = [[ClippedUIImage alloc] initWithUIImage:offUIImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
-		//use top-left alignment
+		//onUIImage = [[ClippedUIImage alloc] initWithUIImage:onUIImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
+		//offUIImage = [[ClippedUIImage alloc] initWithUIImage:offUIImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
+		
+		//use top-left alignment		
 		[button setFrame:CGRectMake(0, 0, onUIImage.size.width, onUIImage.size.height)];
+		[button.imageView setContentMode:UIViewContentModeTopLeft];
 	} else {
 		[button setFrame:[self bounds]];
 		UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:29];
