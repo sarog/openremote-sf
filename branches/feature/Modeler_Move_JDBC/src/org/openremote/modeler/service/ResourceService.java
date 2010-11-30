@@ -86,13 +86,13 @@ public interface ResourceService {
    
    void initResources(Collection<Panel> panels,long maxOid);
    
-   PanelsAndMaxOid restore();
+   PanelsAndMaxOid restore(String password);
    
    boolean canRestore();
    
-   void saveResourcesToBeehive(Collection<Panel> panels);
-   void saveTemplateResourcesToBeehive(Template Template);
-   void downloadResourcesForTemplate(long templateOid); 
+   void saveResourcesToBeehive(Collection<Panel> panels, String password);
+   void saveTemplateResourcesToBeehive(Template Template, String password);
+   void downloadResourcesForTemplate(long templateOid, String password); 
    
    File getTemplateResource(Template template); 
 }

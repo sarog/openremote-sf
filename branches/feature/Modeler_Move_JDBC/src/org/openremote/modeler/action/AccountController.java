@@ -160,7 +160,7 @@ public class AccountController extends MultiActionController {
       boolean success = userService.checkInvitation(userOid, hostOid, aid);
       if (success) {
          User u = userService.getUserById(Long.valueOf(userOid));
-         acceptMav.addObject("email", u.getEmail());
+         acceptMav.addObject("email", u.getUsername());
          acceptMav.addObject("uid", u.getOid());
       }
       acceptMav.addObject("isChecked", success);
@@ -266,10 +266,10 @@ public class AccountController extends MultiActionController {
          forgetMav.addObject("isUserAvailable", false);
          return forgetMav;
       }
-      User user = userService.forgetPassword(username);
-      if (user != null) {
+      String email = userService.forgetPassword(username);
+      if (email != null) {
          forgetMav.addObject("needReset", true);
-         forgetMav.addObject("email", user.getEmail());
+         forgetMav.addObject("email", email);
       }
       return forgetMav;
    }

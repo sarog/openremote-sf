@@ -31,10 +31,24 @@ import org.openremote.modeler.domain.User;
  */
 public interface UserService {
    
+   /**
+    * Initialize the user groups in crowd, as the user role in modeler is according to crowd's group.
+    * There are three groups: ADMIN, MODELER and DESIGNER.
+    */
    void initRoles();
 
+   /**
+    * Save the new user and account into database, no .
+    * 
+    * @param user the user
+    */
    void saveUser(User user);
    
+   /**
+    * Update the user with database.
+    * 
+    * @param user the user
+    */
    void updateUser(User user);
    
    User getUserById(long id);
@@ -70,8 +84,15 @@ public interface UserService {
     * 
     * @return true, if success
     */
-   boolean sendRegisterActivationEmail(User user);
+   boolean sendRegisterActivationEmail(User user, String email, String passwords);
    
+   /**
+    * Checks if is username can be create in crowd, as the username is unique.
+    * 
+    * @param username the username
+    * 
+    * @return true, if is username available
+    */
    boolean isUsernameAvailable(String username);
    
    User getCurrentUser();
@@ -122,16 +143,16 @@ public interface UserService {
    List<User> getPendingInviteesByAccount(User currentUser);
    
    /**
-    * Update user roles by the user id.
+    * Update invited or pending user roles by the user id.
     * 
     * @param uid the uid
     * @param roles the roles
     * 
     * @return the user
     */
-   User updateUserRoles(long uid, String roles);
+   User updateUserRoles(long uid, String roles, boolean pending);
    
-   void deleteUser(long uid);
+   void deleteUser(long uid, boolean isPending);
    
    /**
     * Gets the users who can access the current account.
@@ -149,7 +170,7 @@ public interface UserService {
     * 
     * @return the user
     */
-   User forgetPassword(String username);
+   String forgetPassword(String username);
    
    /**
     * Check password token from the url which forward from the user email.
@@ -162,7 +183,7 @@ public interface UserService {
    User checkPasswordToken(long uid, String passwordToken);
    
    /**
-    * Change the user password if the passwordToken is equals to the database and set it into database.
+    * Change the user password if the passwordToken is equals to the database stored token.
     * 
     * @param uid the uid
     * @param password the password
@@ -171,6 +192,12 @@ public interface UserService {
     * @return true, if successful
     */
    boolean resetPassword(long uid, String password, String passwordToken);
+   /**
+    * create a new user account if the user had passed crowd authorisation but no account in modeler.
+    * 
+    * @param username the username
+    */
+   void initUserAccount(String username);
    
    /**
     * Creates a guest user and sends a email to the guest user.

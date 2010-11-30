@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,21 +19,11 @@
 */
 package org.openremote.modeler.domain;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.openremote.modeler.client.Constants;
-
 
 
 /**
@@ -47,40 +37,33 @@ public class User extends BusinessEntity {
 
    private static final long serialVersionUID = 6064996041309363949L;
 
+   /** Same as the principal name which registered in crowd. */
    private String username;
    
-   private String password;
-   
-   private String rawPassword;
-   
-   private String email;
-   
-   private boolean valid;
-   
-   private transient Timestamp registerTime;
+   /** Same as the principal email which registered in crowd, get it from crowd and transient store */
+   private transient String email;
    
    /** The account containing all business entities. */
    private Account account;
    
-   private List<Role> roles;
-   
+   /** The token is for the user reset password. */
    private String token;
+   
+   /** Store the pending user's role, its a display name, like "Building Modeler","UI Designer". */
+   private String pendingRoleName;
+   
+   /** Get the principal's groups from crowd, transform them into role display name, like "Building Modeler","UI Designer". */
+   private transient String role;
    
    /**
     * Instantiates a new user.
     */
    public User() {
       account  = new Account();
-      valid = false;// need to be activated by email
-      registerTime = new Timestamp(System.currentTimeMillis());
-      roles = new ArrayList<Role>();
    }
 
    public User(Account account) {
       this.account = account;
-      valid = false;// need to be activated by email
-      registerTime = new Timestamp(System.currentTimeMillis());
-      roles = new ArrayList<Role>();
    }
    /**
     * Gets the username.
@@ -102,25 +85,6 @@ public class User extends BusinessEntity {
    }
    
    /**
-    * Gets the password.
-    * 
-    * @return the password
-    */
-   @Column(nullable = false)
-   public String getPassword() {
-      return password;
-   }
-   
-   /**
-    * Sets the password.
-    * 
-    * @param password the new password
-    */
-   public void setPassword(String password) {
-      this.password = password;
-   }
-   
-   /**
     * Gets the account.
     * 
     * @return the account
@@ -137,38 +101,9 @@ public class User extends BusinessEntity {
     */
    public void setAccount(Account account) {
       this.account = account;
-//      account.setUser(this);
    }
    
-   /**
-    * Gets the roles.
-    * 
-    * @return the roles
-    */
-   @ManyToMany
-   @JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_oid") }, inverseJoinColumns = { @JoinColumn(name = "role_oid") })
-   public List<Role> getRoles() {
-      return roles;
-   }
-   
-   /**
-    * Sets the roles.
-    * 
-    * @param roles the new roles
-    */
-   public void setRoles(List<Role> roles) {
-      this.roles = roles;
-   }
-   
-   /**
-    * Adds the role.
-    * 
-    * @param role the role
-    */
-   public void addRole(Role role) {
-      roles.add(role);
-   }
-
+   @Transient
    public String getEmail() {
       return email;
    }
@@ -177,38 +112,6 @@ public class User extends BusinessEntity {
       this.email = email;
    }
 
-   public boolean isValid() {
-      return valid;
-   }
-
-   public void setValid(boolean valid) {
-      this.valid = valid;
-   }
-
-
-   @Transient
-   public String getRegisterTimeAsString() {
-      return registerTime.toString().replaceAll("\\.\\d+", "");
-   }
-   
-   @Column(name = "register_time")
-   public Timestamp getRegisterTime() {
-      return registerTime;
-   }
-
-   public void setRegisterTime(Timestamp registerTime) {
-      this.registerTime = registerTime;
-   }
-
-   @Transient
-   public String getRawPassword() {
-      return rawPassword;
-   }
-
-   public void setRawPassword(String rawPassword) {
-      this.rawPassword = rawPassword;
-   }
-   
    @Column(name = "token")
    public String getToken() {
       return token;
@@ -218,24 +121,24 @@ public class User extends BusinessEntity {
       this.token = token;
    }
 
+   
+   public void setRole(String role) {
+      this.role = role;
+   }
+
    @Transient
    public String getRole() {
-      List<String> roleStrs = new ArrayList<String>();
-      for (Role role : roles) {
-         roleStrs.add(role.getName());
-      }
-      String userRole = null;
-      if (roleStrs.contains(Role.ROLE_ADMIN)) {
-         userRole = Constants.ROLE_ADMIN_DISPLAYNAME;
-      } else if(roleStrs.contains(Role.ROLE_MODELER) && roleStrs.contains(Role.ROLE_DESIGNER)) {
-         userRole = Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME;
-      } else if (roleStrs.contains(Role.ROLE_MODELER)) {
-         userRole = Constants.ROLE_MODELER_DISPLAYNAME;
-      } else if(roleStrs.contains(Role.ROLE_DESIGNER)) {
-         userRole = Constants.ROLE_DESIGNER_DISPLAYNAME;
-      } else if(roleStrs.contains(Role.ROLE_GUEST)) {
-         userRole = Constants.ROLE_GUEST;
-      }
-      return userRole;
+      return role;
    }
+
+   @Column(name = "pending_role_name")
+   public String getPendingRoleName() {
+      return pendingRoleName;
+   }
+
+   public void setPendingRoleName(String pendingRoleName) {
+      this.pendingRoleName = pendingRoleName;
+   }
+   
+   
 }

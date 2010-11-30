@@ -43,7 +43,7 @@ public class TemplateServiceTest {
       screenPair.setOid(IDUtil.nextID());
       screenPair.setPortraitScreen(screen);
       Template template = new Template("emptyScreen", screenPair);
-      Template t2 = templateService.saveTemplate(template);
+      Template t2 = templateService.saveTemplate(template,"test");
       System.out.println(t2.getContent());
    }
 
@@ -63,7 +63,7 @@ public class TemplateServiceTest {
       Absolute absolute = new Absolute();
       absolute.setUiComponent(btn);
       screen.addAbsolute(absolute);
-      templateService.saveTemplate(template);
+      templateService.saveTemplate(template,"test");
       System.out.println(template.getContent());
    }
 
@@ -101,7 +101,7 @@ public class TemplateServiceTest {
       gesture.getCommands().add(new UICommand());
       screen.addGesture(gesture);
 
-      templateService.saveTemplate(template);
+      templateService.saveTemplate(template,"test");
       System.out.println(template.getContent());
       ScreenPair screenPair2 = templateService.buildScreen(template);
       Screen screen2 = screenPair2.getPortraitScreen();
@@ -146,7 +146,7 @@ public class TemplateServiceTest {
       gesture.getCommands().add(new UICommand());
       screen.addGesture(gesture);
 
-      templateService.saveTemplate(template);
+      templateService.saveTemplate(template,"test");
       System.out.println(template.getContent());
    }
 }

@@ -37,24 +37,27 @@ public interface TemplateService {
    /**
     * Save a template to the beehive.
     * @param template The template you want to save. 
+    * @param password The current user password.
     * @return The template after being saved. 
     */
-   Template saveTemplate(Template template);
+   Template saveTemplate(Template template, String password);
    /*
    String getTemplateContent(Screen screen);*/
    /**
     * Build a screen from a template. 
     * @param template The template you want to use to build a screen. 
+    * @param password The current user password.
     * @return A wrap class consist of screen and its device set.  
     */
-   ScreenFromTemplate buildFromTemplate(Template template);
+   ScreenFromTemplate buildFromTemplate(Template template, String password);
    
    /**
     * Delete a template by template's oid.
     * @param templateOid
+    * @param password The current user password.
     * @return <tt>true</tt> if success ,<tt>false</tt> if not. 
     */
-   boolean deleteTemplate(long templateOid);
+   boolean deleteTemplate(long templateOid, String password);
    
    /**
     * Build a screen from template. The command information is not rebuild to DB. 
@@ -73,11 +76,11 @@ public interface TemplateService {
    ScreenFromTemplate reBuildCommand(ScreenPair screen);
    
    
-   Template updateTemplate(Template template);
+   Template updateTemplate(Template template, String password);
    
    String getTemplateContent(ScreenPair screen);
    
-   List<Template> getTemplates(boolean isFromPrivate);
+   List<Template> getTemplates(boolean isFromPrivate, String password);
    
-   List<Template> getTemplatesByKeywordsAndPage(String keywords,int page);
+   List<Template> getTemplatesByKeywordsAndPage(boolean shared, String keywords,int page, String password);
 }

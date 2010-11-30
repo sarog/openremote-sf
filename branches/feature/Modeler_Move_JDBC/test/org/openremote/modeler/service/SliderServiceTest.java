@@ -9,6 +9,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
+import org.openremote.modeler.domain.User;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.testng.Assert;
@@ -24,7 +25,9 @@ public class SliderServiceTest {
       userService = (UserService)SpringTestContext.getInstance().getBean("userService");
       sliderService = (SliderService) SpringTestContext.getInstance().getBean("sliderService");
       
-      userService.createUserAccount("test", "test", "test@email.com");
+      User user = new User();
+      user.setUsername("test");
+      userService.saveUser(user);
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
    }

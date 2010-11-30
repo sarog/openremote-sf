@@ -82,7 +82,6 @@ public class SensorServiceTest {
       Account account = new Account();
       user.setAccount(account);
       user.setUsername("user1");
-      user.setPassword("xxxx");
       
       Sensor sensorInDB = sensorService.saveSensor(sensor);
       account.getSensors().add(sensor);
@@ -122,7 +121,6 @@ public class SensorServiceTest {
       Account account = new Account();
       user.setAccount(account);
       user.setUsername("user2");
-      user.setPassword("YYYYY");
       
       RangeSensor sensorInDB = (RangeSensor)sensorService.saveSensor(sensor);
       account.getSensors().add(sensor);
@@ -163,7 +161,6 @@ public class SensorServiceTest {
       Account account = new Account();
       user.setAccount(account);
       user.setUsername("user3");
-      user.setPassword("ZZZZZ");
       
       CustomSensor sensorInDB = (CustomSensor)sensorService.saveSensor(sensor);
       account.getSensors().add(sensor);

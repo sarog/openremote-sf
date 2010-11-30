@@ -31,9 +31,9 @@ public interface UserRPCServiceAsync {
 
    void getPendingInviteesByAccount(AsyncCallback<List<User>> callback);
 
-   void updateUserRoles(long uid, String roles, AsyncCallback<User> callback);
+   void updateUserRoles(long uid, String roles, boolean isPending, AsyncCallback<User> callback);
 
-   void deleteUser(long uid, AsyncCallback<Void> callback);
+   void deleteUser(long uid, boolean isPending, AsyncCallback<Void> callback);
 
    void getAccountAccessUsers(AsyncCallback<List<User>> callback);
 

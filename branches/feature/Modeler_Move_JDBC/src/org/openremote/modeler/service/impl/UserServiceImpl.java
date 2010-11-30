@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,7 +19,10 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +55,17 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import com.atlassian.crowd.integration.authentication.PasswordCredential;
+import com.atlassian.crowd.integration.exception.InvalidAuthorizationTokenException;
+import com.atlassian.crowd.integration.exception.ObjectNotFoundException;
+import com.atlassian.crowd.integration.model.UserConstants;
+import com.atlassian.crowd.integration.service.soap.client.SecurityServerClient;
+import com.atlassian.crowd.integration.service.soap.client.SecurityServerClientFactory;
+import com.atlassian.crowd.integration.soap.SOAPAttribute;
+import com.atlassian.crowd.integration.soap.SOAPGroup;
+import com.atlassian.crowd.integration.soap.SOAPPrincipal;
+import com.atlassian.crowd.integration.soap.SearchRestriction;
+
 /**
  * The service implementation for UserService.
  * 
@@ -74,40 +88,44 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       boolean hasDesignerRole = false;
       boolean hasModelerRole = false;
       boolean hasAdminRole = false;
-      boolean hasGuestRole = false;
-      List<Role> allRoles = genericDAO.loadAll(Role.class);
-      for (Role r : allRoles) {
-         if (r.getName().equals(Role.ROLE_DESIGNER)) {
-            hasDesignerRole = true;
-         } else if (r.getName().equals(Role.ROLE_MODELER)) {
-            hasModelerRole = true;
-         } else if (r.getName().equals(Role.ROLE_ADMIN)) {
-            hasAdminRole = true;
-         } else if (r.getName().equals(Role.ROLE_GUEST)) {
-            hasGuestRole = true;
-         }
-      }
-      if (!hasDesignerRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_DESIGNER);
-         genericDAO.save(r);
-      }
-      if (!hasModelerRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_MODELER);
-         genericDAO.save(r);
-      }
-      if (!hasAdminRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_ADMIN);
-         genericDAO.save(r);
-      }
-      if (!hasGuestRole) {
-         Role r = new Role();
-         r.setName(Role.ROLE_GUEST);
-         genericDAO.save(r);
-      }
       
+      SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+      try {
+         String[] groupNames = crowdClient.findAllGroupNames();
+         for (String groupName : groupNames) {
+            if (groupName.equals(Constants.DESIGNER)) {
+               hasDesignerRole = true;
+            } else if (groupName.equals(Constants.MODELER)) {
+               hasModelerRole = true;
+            } else if (groupName.equals(Constants.ADMIN)) {
+               hasAdminRole = true;
+            }
+         }
+         // If there is no group in crowd, add it.
+         if (!hasDesignerRole) {
+            SOAPGroup group = new SOAPGroup();
+            group.setActive(true);
+            group.setDescription("openremote designer");
+            group.setName(Constants.DESIGNER);
+            crowdClient.addGroup(group);
+         }
+         if (!hasModelerRole) {
+            SOAPGroup group = new SOAPGroup();
+            group.setActive(true);
+            group.setDescription("openremote modeler");
+            group.setName(Constants.MODELER);
+            crowdClient.addGroup(group);
+         }
+         if (!hasAdminRole) {
+            SOAPGroup group = new SOAPGroup();
+            group.setActive(true);
+            group.setDescription("openremote admin");
+            group.setName(Constants.ADMIN);
+            crowdClient.addGroup(group);
+         }
+      } catch (Exception e) {
+         log.error("Can't init role in crowd", e);
+      }
    }
    
    /**
@@ -132,15 +150,43 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
       }
-      User user = new User();
-      user.setUsername(username);
-      user.setRawPassword(password);
-      user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
-      user.setEmail(email);
       if (isUsernameAvailable(username)) {
-         user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_ADMIN));
+         SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+         
+         /**
+          * Create a new principal, its name is equals the username.
+          */
+         SOAPPrincipal principal = new SOAPPrincipal();
+         principal.setActive(false);
+         principal.setName(username);
+         
+         /**
+          * Create principal attributes.
+          * The email, firstname and lastname are required.
+          */
+         SOAPAttribute[] soapAttributes = new SOAPAttribute[4];
+         soapAttributes[0] = buildAttribute(UserConstants.EMAIL, email);
+         soapAttributes[1] = buildAttribute(UserConstants.FIRSTNAME, username);
+         soapAttributes[2] = buildAttribute(UserConstants.LASTNAME, username);
+         soapAttributes[3] = buildAttribute(UserConstants.DISPLAYNAME, username);
+         
+         principal.setAttributes(soapAttributes);
+         
+         /**
+          * Create the principal's password credentials, it represent the password.
+          */
+         PasswordCredential credentials = new PasswordCredential(password);
+         try {
+            principal = crowdClient.addPrincipal(principal, credentials);
+            crowdClient.addPrincipalToGroup(username, Constants.ADMIN);
+         } catch (Exception e) {
+            log.error("Can't create user " + username + " with role 'ADMIN'.", e);
+            return false;
+         }
+         User user = new User();
+         user.setUsername(username);
          saveUser(user);
-         return sendRegisterActivationEmail(user);
+         return sendRegisterActivationEmail(user, email, password);
       } else {
          return false;
       }
@@ -173,10 +219,10 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
-    public boolean sendRegisterActivationEmail(final User user) {
-       if (user == null || user.getOid() == 0 || StringUtils.isEmpty(user.getEmail())
-            || StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword())) {
-         return false;
+    public boolean sendRegisterActivationEmail(final User user, final String email, final String password) {
+       if (user == null || user.getOid() == 0 || StringUtils.isEmpty(email)
+             || StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(password)) {
+          return false;
        }
        
        MimeMessagePreparator preparator = new MimeMessagePreparator() {
@@ -184,34 +230,35 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
           public void prepare(MimeMessage mimeMessage) throws Exception {
              MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
              message.setSubject("OpenRemote Boss 2.0 Account Registration Confirmation");
-             message.setTo(user.getEmail());
+             message.setTo(email);
              message.setFrom(mailSender.getUsername());
              Map model = new HashMap();
              model.put("user", user);
-             String rpwd = user.getRawPassword();
+             model.put("registerTime", new Timestamp(System.currentTimeMillis()).toString().replaceAll("\\.\\d+", ""));
+             String rpwd = password;
              StringBuffer maskPwd = new StringBuffer();
              maskPwd.append(rpwd.substring(0, 1));
              for (int i = 0; i < rpwd.length() - 2; i++) {
-               maskPwd.append("*");
+                maskPwd.append("*");
              }
              maskPwd.append(rpwd.substring(rpwd.length() - 1));
              model.put("maskPassword", maskPwd.toString());
              model.put("webapp", configuration.getWebappServerRoot());
-             model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()));
+             model.put("aid", new Md5PasswordEncoder().encodePassword(user.getUsername(), email));
              String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-                  Constants.REGISTRATION_ACTIVATION_EMAIL_VM_NAME, "UTF-8", model);
+                   Constants.REGISTRATION_ACTIVATION_EMAIL_VM_NAME, "UTF-8", model);
              message.setText(text, true);
           }
        };
        try {
           this.mailSender.send(preparator);
-          log.info("Sent 'Modeler Account Registration Confirmation' email to " + user.getEmail());
+          log.info("Sent 'Modeler Account Registration Confirmation' email to " + email);
           return true;
        } catch (MailException e) {
           log.error("Can't send 'Modeler Account Registration Confirmation' email", e);
           return false;
        }
-   }
+    }
 
     /**
     * {@inheritDoc}
@@ -226,18 +273,41 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
       User user = getUserById(id);
       if (user != null && aid != null) {
-         if (new Md5PasswordEncoder().encodePassword(user.getUsername(), user.getPassword()).equals(aid)) {
-            user.setValid(true);
-            updateUser(user);
-            setDefaultConfigsForAccount(user.getAccount());
-            return true;
+         String username = user.getUsername();
+         SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+         try {
+            SOAPPrincipal principal = crowdClient.findPrincipalByName(username);
+            if (new Md5PasswordEncoder().encodePassword(username, principal.getAttribute(UserConstants.EMAIL).getValues()[0]).equals(aid)) {
+               SOAPAttribute soapAttribute = new SOAPAttribute();
+               soapAttribute.setValues(new String[1]);
+               soapAttribute.setName(UserConstants.ACTIVE);
+               soapAttribute.getValues()[0] = Boolean.toString(true);
+               crowdClient.updatePrincipalAttribute(username, soapAttribute);
+               setDefaultConfigsForAccount(user.getAccount());
+               return true;
+            }
+            
+         } catch (Exception e) {
+            log.error("Can't active user " + username +" in crowd", e);
          }
       }
       return false;
    }
    
    public boolean isUsernameAvailable(String username) {
-      return genericDAO.getByNonIdField(User.class, "username", username) == null;
+      SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+      try {
+         if (crowdClient.findPrincipalByName(username) == null){
+            return true;
+         }
+      } catch (RemoteException e) {
+         e.printStackTrace();
+      } catch (InvalidAuthorizationTokenException e) {
+         e.printStackTrace();
+      } catch (ObjectNotFoundException e) {
+         return true;
+      }
+      return false;
    }
 
    public void setMailSender(JavaMailSenderImpl mailSender) {
@@ -258,20 +328,17 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
 
    public User inviteUser(String email, String role, User currentUser) {
-      User invitee = null;
-      if (isUsernameAvailable(email)) {
+      User invitee = getPendingUserbyName(email);
+      if (invitee == null) {
          invitee = new User(currentUser.getAccount());
-         invitee.setEmail(email);
          invitee.setUsername(email);
-         invitee.setPassword("pending password");
-         convertRoleStringToRole(role, invitee, genericDAO.loadAll(Role.class));
+         invitee.setPendingRoleName(role);
          genericDAO.save(invitee);
          if (!sendInvitation(invitee, currentUser)) {
             throw new UserInvitationException("Failed to send invitation.");
          }
          return invitee;
       } else {
-         invitee = genericDAO.getByNonIdField(User.class, "username", email);
          if (!sendInvitation(invitee, currentUser)) {
             throw new UserInvitationException("Failed to send invitation.");
          }
@@ -279,8 +346,16 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   private User getPendingUserbyName(String email) {
+      User user = genericDAO.getByNonIdField(User.class, "username", email);
+      if (user != null && user.getPendingRoleName() != null) {
+         return user;
+      }
+      return null;
+   }
+   
    public boolean sendInvitation(final User invitee, final User currentUser) {
-       if (invitee == null || invitee.getOid() == 0 || StringUtils.isEmpty(invitee.getEmail())) {
+       if (invitee == null || invitee.getOid() == 0 || StringUtils.isEmpty(invitee.getUsername())) {
          return false;
        }
        
@@ -289,15 +364,15 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
           public void prepare(MimeMessage mimeMessage) throws Exception {
              MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
              message.setSubject("Invitation to Share an OpenRemote Boss 2.0 Account");
-             message.setTo(invitee.getEmail());
+             message.setTo(invitee.getUsername());
              message.setFrom(mailSender.getUsername());
              Map model = new HashMap();
              model.put("uid", invitee.getOid());
-             model.put("role", invitee.getRole());
+             model.put("role", invitee.getPendingRoleName());
              model.put("cid", currentUser.getOid());
-             model.put("host", currentUser.getEmail());
+             model.put("host", currentUser.getUsername());
              model.put("webapp", configuration.getWebappServerRoot());
-             model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getEmail(), currentUser.getPassword()));
+             model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getUsername(), currentUser.getUsername()));
              String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
                   Constants.REGISTRATION_INVITATION_EMAIL_VM_NAME, "UTF-8", model);
              message.setText(text, true);
@@ -329,7 +404,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       User user = getUserById(uid);
       User hostUser = getUserById(hid);
       if (user != null && hostUser != null && aid != null) {
-         if (new Md5PasswordEncoder().encodePassword(user.getEmail(), hostUser.getPassword()).equals(aid)) {
+         if (new Md5PasswordEncoder().encodePassword(user.getUsername(), hostUser.getUsername()).equals(aid)) {
             return true;
          }
       }
@@ -347,12 +422,38 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          return false;
       }
       if (isUsernameAvailable(username)) {
+         SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+         SOAPPrincipal principal = new SOAPPrincipal();
+         
+         principal.setActive(true);
+         principal.setName(username);
+         
+         SOAPAttribute[] soapAttributes = new SOAPAttribute[4];
+         
+         soapAttributes[0] = buildAttribute(UserConstants.EMAIL, email);
+         soapAttributes[1] = buildAttribute(UserConstants.FIRSTNAME, username);
+         soapAttributes[2] = buildAttribute(UserConstants.LASTNAME, username);
+         soapAttributes[3] = buildAttribute(UserConstants.DISPLAYNAME, username);
+         
+         principal.setAttributes(soapAttributes);
+         
+         // our password
+         PasswordCredential credentials = new PasswordCredential(password);
          User user = getUserById(id);
-         user.setValid(true);
+         // have the security server add it
+         try {
+            principal = crowdClient.addPrincipal(principal, credentials);
+            List<String> roles = convertDisplayRoleStringToRoleList(user.getPendingRoleName());
+            for (String role : roles) {
+               crowdClient.addPrincipalToGroup(username, role);
+            }
+         } catch (Exception e) {
+            log.error("Can't create invited user " + username + ".", e);
+            return false;
+         }
+         
          user.setUsername(username);
-         user.setRawPassword(password);
-         user.setPassword(new Md5PasswordEncoder().encodePassword(password, username));
-         user.setEmail(email);
+         user.setPendingRoleName(null);
          updateUser(user);
          return true;
       } else {
@@ -365,38 +466,78 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
       sameAccountUsers.remove(currentUser);
       for (User invitee : sameAccountUsers) {
-         if(!invitee.isValid()) {
-            Hibernate.initialize(invitee.getRoles());
+         if(invitee.getPendingRoleName() != null) {
             invitees.add(invitee);
          }
       }
       return invitees;
    }
 
-   public User updateUserRoles(long uid, String roles) {
+   public User updateUserRoles(long uid, String roles, boolean isPending) {
       User user = getUserById(uid);
-      user.getRoles().clear();
-      convertRoleStringToRole(roles, user, genericDAO.loadAll(Role.class));
-      Hibernate.initialize(user.getRoles());
+      if (isPending) {
+         user.setPendingRoleName(roles);
+         updateUser(user);
+      } else {
+         String username = user.getUsername();
+         List<String> newGroups = convertDisplayRoleStringToRoleList(roles);
+         SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+         SearchRestriction[] searchRestrictions = new SearchRestriction[0];
+         try {
+            SOAPGroup[] soapgroups = crowdClient.searchGroups(searchRestrictions);
+            for (SOAPGroup soapgroup : soapgroups) {
+               List<String> members = new ArrayList<String>(Arrays.asList(soapgroup.getMembers()));
+               if (members.contains(username)) {
+                  crowdClient.removePrincipalFromGroup(username, soapgroup.getName());
+               }
+            }
+            for (String group : newGroups) {
+               crowdClient.addPrincipalToGroup(username, group);
+            }
+            user.setRole(roles);
+         } catch (Exception e) {
+            log.error("Can't update user roles.", e);
+         }
+      }
       return user;
    }
 
-   private void convertRoleStringToRole(String roles, User user, List<Role> allRoles) {
-      for (Role role : allRoles) {
-         if(role.getName().equals(Role.ROLE_ADMIN) && roles.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
-            user.addRole(role);
-         } else if (role.getName().equals(Role.ROLE_MODELER) && roles.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
-            user.addRole(role);
-         } else if (role.getName().equals(Role.ROLE_DESIGNER) && roles.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
-            user.addRole(role);
-         } else if (role.getName().equals(Role.ROLE_GUEST) && roles.indexOf(Constants.ROLE_GUEST) != -1) {
-            user.addRole(role);
-         }
+   /**
+    * Convert the display role name to role list.
+    * e.g.: "Building Modeler & UI Designer" to (MODELER,DESIGNER). 
+    * 
+    * @param rolestr the rolestr
+    * 
+    * @return the list< string>
+    */
+   private List<String> convertDisplayRoleStringToRoleList(String rolestr) {
+      List<String> roles = new ArrayList<String>();
+      if (rolestr == null) {
+         return roles;
       }
+      if (rolestr.indexOf(Constants.ROLE_ADMIN_DISPLAYNAME) != -1) {
+         roles.add(Constants.ADMIN);
+      }
+      if (rolestr.indexOf(Constants.ROLE_MODELER_DISPLAYNAME) != -1) {
+         roles.add(Constants.MODELER);
+      }
+      if (rolestr.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
+         roles.add(Constants.DESIGNER);
+      }
+      return roles;
    }
 
-   public void deleteUser(long uid) {
+   public void deleteUser(long uid, boolean isPending) {
       User user = getUserById(uid);
+      if (!isPending) {
+         SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+         try {
+            crowdClient.removePrincipal(user.getUsername());
+         } catch (Exception e) {
+            log.error("Can't remove user " + user.getUsername() + " in crowd.", e);
+            return;
+         }
+      }
       genericDAO.delete(user);
    }
 
@@ -404,33 +545,87 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       List<User> accessUsers = new ArrayList<User>();
       List<User> sameAccountUsers = currentUser.getAccount().getUsers();
       sameAccountUsers.remove(currentUser);
-      accessUsers.add(currentUser);
-      Hibernate.initialize(currentUser.getRoles());
-      for (User accessUser : sameAccountUsers) {
-         if(accessUser.isValid()) {
-            Hibernate.initialize(accessUser.getRoles());
-            accessUsers.add(accessUser);
+      SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+      SearchRestriction[] searchRestrictions = new SearchRestriction[0];
+      try {
+         SOAPGroup[] groups = crowdClient.searchGroups(searchRestrictions);
+         initUserProperties(currentUser, crowdClient, groups);
+         accessUsers.add(currentUser);
+         for (User accessUser : sameAccountUsers) {
+            if (accessUser.getPendingRoleName() == null) {
+               initUserProperties(accessUser, crowdClient, groups);
+               accessUsers.add(accessUser);
+            }
          }
+      } catch (Exception e) {
+         log.error("Can't find groups in crowd when initialize user properties.", e);
       }
       return accessUsers;
    }
 
-   public User forgetPassword(String username) {
+   /**
+    * Inits the user's email and role properties from crowd.
+    * 
+    * @param user the user
+    * @param crowdClient the crowd client
+    * @param groups the groups
+    */
+   private void initUserProperties(User user, SecurityServerClient crowdClient, SOAPGroup[] groups) {
+      String username = user.getUsername();
+      try {
+         SOAPPrincipal principal = crowdClient.findPrincipalByName(username);
+         user.setEmail(principal.getAttribute(UserConstants.EMAIL).getValues()[0]);
+         List<String> roleStrs = new ArrayList<String>();
+         for (SOAPGroup group : groups) {
+            List<String> members = new ArrayList<String>(Arrays.asList(group.getMembers()));
+            if (members.contains(username)) {
+               roleStrs.add(group.getName());
+            }
+         }
+         if (roleStrs.contains(Constants.ADMIN)) {
+            user.setRole(Constants.ROLE_ADMIN_DISPLAYNAME);
+         } else if(roleStrs.contains(Constants.MODELER) && roleStrs.contains(Constants.DESIGNER)) {
+            user.setRole(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
+         } else if (roleStrs.contains(Constants.MODELER)) {
+            user.setRole(Constants.ROLE_MODELER_DISPLAYNAME);
+         } else if(roleStrs.contains(Constants.DESIGNER)) {
+            user.setRole(Constants.ROLE_DESIGNER_DISPLAYNAME);
+         }
+         
+      } catch (Exception e) {
+         log.error("Can't find user " + username + " in crowd when initialize user properties.", e);
+      }
+   }
+   
+   public String forgetPassword(String username) {
+      SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+      String sendTo = "";
+      try {
+         SOAPPrincipal principal = crowdClient.findPrincipalByName(username);
+         sendTo = principal.getAttribute(UserConstants.EMAIL).getValues()[0];
+      } catch (Exception e) {
+         log.error("Can't get " + username + "'s email from crowd when forget password.", e);
+         return null;
+      }
       final User user = genericDAO.getByNonIdField(User.class, "username", username);
-      final String passwordToken = UUID.randomUUID().toString();
+      final String paswordToken = UUID.randomUUID().toString();
+      final String email = sendTo;
+      if ("".equals(email)) {
+         return null;
+      }
       
       MimeMessagePreparator preparator = new MimeMessagePreparator() {
          @SuppressWarnings("unchecked")
          public void prepare(MimeMessage mimeMessage) throws Exception {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             message.setSubject("OpenRemote Password Assistance");
-            message.setTo(user.getEmail());
+            message.setTo(email);
             message.setFrom(mailSender.getUsername());
             Map model = new HashMap();
             model.put("webapp", configuration.getWebappServerRoot());
             model.put("username", user.getUsername());
             model.put("uid", user.getOid());
-            model.put("aid", passwordToken);
+            model.put("aid", paswordToken);
             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
                  Constants.FORGET_PASSWORD_EMAIL_VM_NAME, "UTF-8", model);
             message.setText(text, true);
@@ -438,10 +633,10 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       };
       try {
          this.mailSender.send(preparator);
-         log.info("Sent 'Reset password' email to " + user.getEmail());
-         user.setToken(passwordToken);
+         log.info("Sent 'Reset password' email to " + email);
+         user.setToken(paswordToken);
          updateUser(user);
-         return user;
+         return email;
       } catch (MailException e) {
          log.error("Can't send 'Reset password' email", e);
          return null;
@@ -459,12 +654,35 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    public boolean resetPassword(long uid, String password, String passwordToken) {
       User user = getUserById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
-         user.setPassword(new Md5PasswordEncoder().encodePassword(password, user.getUsername()));
-         user.setToken(null);
-         updateUser(user);
-         return true;
+         PasswordCredential credentials = new PasswordCredential(password);
+         try {
+            SecurityServerClientFactory.getSecurityServerClient().updatePrincipalCredential(user.getUsername(), credentials);
+            user.setToken(null);
+            updateUser(user);
+            return true;
+         } catch (Exception e) {
+            log.error("Reset password error.", e);
+         }
       }
       return false;
+   }
+   
+   private SOAPAttribute buildAttribute(String key, String value) {
+      SOAPAttribute attribute = new SOAPAttribute();
+
+      attribute.setName(key);
+      attribute.setValues(new String[1]);
+      attribute.getValues()[0] = value;
+
+      return attribute;
+   }
+
+   public void initUserAccount(String username) {
+      if (genericDAO.getByNonIdField(User.class, "username", username) == null) {
+         User user = new User();
+         user.setUsername(username);
+         saveUser(user);
+      }
    }
 
    public User createGusetUser(String email) {
@@ -474,13 +692,13 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       User currentUser = getCurrentUser();
       final String host = currentUser.getUsername();
       final User user = new User(currentUser.getAccount());
-      String rawPassword = "guest";
+//      String rawPassword = "guest";
       user.setUsername(email);
-      user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_GUEST));
-      user.setEmail(email);
-      user.setRawPassword(rawPassword);
-      user.setPassword(new Md5PasswordEncoder().encodePassword(rawPassword, email));
-      user.setValid(true);
+//      user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_GUEST));
+//      user.setEmail(email);
+//      user.setRawPassword(rawPassword);
+//      user.setPassword(new Md5PasswordEncoder().encodePassword(rawPassword, email));
+//      user.setValid(true);
       MimeMessagePreparator preparator = new MimeMessagePreparator() {
          @SuppressWarnings("unchecked")
          public void prepare(MimeMessage mimeMessage) throws Exception {
@@ -491,7 +709,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             Map model = new HashMap();
             model.put("host", host);
             model.put("username", user.getUsername());
-            model.put("password", user.getRawPassword());
+//            model.put("password", user.getRawPassword());
             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
                  Constants.CREATE_GUEST_EMAIL_VM_NAME, "UTF-8", model);
             message.setText(text, true);

@@ -19,6 +19,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath:spring-context.xml
+			classpath:applicationContext-CrowdClient.xml
 			classpath:applicationContext-security.xml
        </param-value>
 	</context-param>
@@ -82,6 +83,16 @@
         </listener-class>
     </listener>
     
+    <filter>
+		<filter-name>loginFilter</filter-name>
+		<filter-class>
+			org.openremote.modeler.filter.LoginFilter
+        </filter-class>
+	</filter>
+	<filter-mapping>
+    	<filter-name>loginFilter</filter-name>
+    	<url-pattern>/j_security_check</url-pattern>
+    </filter-mapping>
     <filter>
 		<filter-name>userTimeoutFilter</filter-name>
 		<filter-class>

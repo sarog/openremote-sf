@@ -40,7 +40,6 @@
                 <value>org.openremote.modeler.domain.CommandDelay</value> 
                 <value>org.openremote.modeler.domain.DeviceMacroItem</value> 
                 <value>org.openremote.modeler.domain.User</value> 
-                <value>org.openremote.modeler.domain.Role</value> 
                 <value>org.openremote.modeler.domain.Account</value> 
                 <value>org.openremote.modeler.domain.Sensor</value> 
                 <value>org.openremote.modeler.domain.CommandRefItem</value> 

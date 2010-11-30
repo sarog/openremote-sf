@@ -54,6 +54,7 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.SwitchCommandOffRef;
 import org.openremote.modeler.domain.SwitchCommandOnRef;
 import org.openremote.modeler.domain.SwitchSensorRef;
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.domain.component.Gesture;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
@@ -88,7 +89,9 @@ public class ResourceServiceImplTest {
       deviceCommandService = (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
       deviceMacroService = (DeviceMacroService) SpringTestContext.getInstance().getBean("deviceMacroService");
       userService = (UserService) SpringTestContext.getInstance().getBean("userService");
-      userService.createUserAccount("test", "test", "test");
+      User user = new User();
+      user.setUsername("test");
+      userService.saveUser(user);
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       /*------------xml validation-------------*/
       configuration = (Configuration) SpringTestContext.getInstance().getBean("configuration");
@@ -131,7 +134,7 @@ public class ResourceServiceImplTest {
       sensorRef.setOid(IDUtil.nextID());
       sensorRef.setSensor(sensor);
       switchToggle.setSwitchSensorRef(sensorRef);
-      label.setSensor(sensor);
+      label.setSensorAndInitSensorLink(sensor);
       
       UISwitch absSwitch = new UISwitch();      //UISwitch
       absSwitch.setOid(IDUtil.nextID());
@@ -146,7 +149,7 @@ public class ResourceServiceImplTest {
       gridSwitch.setSwitchCommand(switchToggle); 
       
       UIImage uiImage = new UIImage(IDUtil.nextID()); //UIImage
-      uiImage.setSensor(sensor);
+      uiImage.setSensorAndInitSensorLink(sensor);
       uiImage.setLabel(label);
          
       /*---------------widget-------------------*/

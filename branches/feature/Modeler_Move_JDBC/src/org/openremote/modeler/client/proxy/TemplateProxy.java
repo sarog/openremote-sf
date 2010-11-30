@@ -145,8 +145,8 @@ public class TemplateProxy {
       });
    }
    
-   public static void searchTemplates(final String keywords, final int page, final AsyncCallback<List<Template>> callback) {
-      AsyncServiceFactory.getTemplateRPCServiceAsync().searchTemplates (keywords, page,new AsyncCallback<List<Template>>() {
+   public static void searchTemplates(final boolean shared, final String keywords, final int page, final AsyncCallback<List<Template>> callback) {
+      AsyncServiceFactory.getTemplateRPCServiceAsync().searchTemplates (shared, keywords, page,new AsyncCallback<List<Template>>() {
 
          @Override
          public void onFailure(Throwable caught) {
