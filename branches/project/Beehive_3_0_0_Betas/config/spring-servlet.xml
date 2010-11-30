@@ -70,8 +70,6 @@
     
     <bean id="beehiveLIRCDatabaseController" class="org.openremote.beehive.controller.BeehiveLIRCDatabaseController">
         <property name="index" value="lircBeehiveDatabase"/>
-        <property name="cmpSelectContainer" value="cmpSelectContainer"/>
-        <property name="cmpLircDetails" value="cmpLircDetails"/>
     </bean>
    
    <bean id="lircRevisionChangesController" class="org.openremote.beehive.controller.LIRCRevisionChangesController">
