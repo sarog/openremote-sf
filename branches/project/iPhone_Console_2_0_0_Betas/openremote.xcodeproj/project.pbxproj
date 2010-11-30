@@ -45,7 +45,6 @@
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C09289B11B63D1900674C4F /* ErrorViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */; };
 		8C09289C11B63D1900674C4F /* InitViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */; };
-		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -296,8 +295,6 @@
 		8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ErrorViewController~iPhone.xib"; sourceTree = "<group>"; };
 		8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "InitViewController~iPhone.xib"; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
-		8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zUIAccelerometer.h; sourceTree = "<group>"; };
-		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
@@ -791,8 +788,6 @@
 			children = (
 				8CEFDA6E11BF34DC00CEDC24 /* LoadingHUDView.h */,
 				8CEFDA6F11BF34DC00CEDC24 /* LoadingHUDView.m */,
-				8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */,
-				8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */,
 				8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */,
 				8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */,
 				8CF6A27E0FBD3782006ED733 /* AsyncUdpSocket.h */,
@@ -1181,7 +1176,6 @@
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
-				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
 				8CEFDA7111BF34DD00CEDC24 /* LoadingHUDView.m in Sources */,
 				33959D7112797D1300A8F0FA /* GetPanelsController.m in Sources */,
 			);

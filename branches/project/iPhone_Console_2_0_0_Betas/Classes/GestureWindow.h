@@ -21,9 +21,6 @@
 
 #import <UIKit/UIKit.h>
 #import "LoadingHUDView.h"
-/*accelerometer simulator*/
-#import "zUIAccelerometer.h"
-/*accelerometer simulator*/
 
 #define MINIMUM_GESTURE_LENGTH      80
 #define MAXIMUM_VARIANCE            40
@@ -31,7 +28,7 @@
 /**
  * GestureWindow is mainly for receiving the gesture of users in screen.
  */
-@interface GestureWindow : UIWindow <UIAccelerometerDelegate, zUIAccelerometerDelegate> {
+@interface GestureWindow : UIWindow <UIAccelerometerDelegate> {
 	CGPoint previousTouchLocation;
 	UIInterfaceOrientation orientation;
 	id theDelegate;
