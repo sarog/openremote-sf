@@ -19,13 +19,15 @@
 */
 package org.openremote.beehive.api.service.impl;
 
+import org.apache.log4j.Logger;
 import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.Code;
 import org.openremote.beehive.domain.User;
-import org.springframework.security.providers.encoding.Md5PasswordEncoder;
 
+import com.atlassian.crowd.integration.http.HttpAuthenticator;
+import com.atlassian.crowd.integration.http.HttpAuthenticatorFactory;
 import com.sun.syndication.io.impl.Base64;
 
 /**
@@ -35,6 +37,8 @@ import com.sun.syndication.io.impl.Base64;
  */
 public class AccountServiceImpl extends BaseAbstractService<Code> implements AccountService {
 
+   private static Logger log = Logger.getLogger(AccountServiceImpl.class);
+   
    @Override
    public void save(Account a) {
       genericDAO.save(a);
@@ -63,12 +67,14 @@ public class AccountServiceImpl extends BaseAbstractService<Code> implements Acc
             if (accId == 0L || accId != accountId) {
                return false;
             }
-            User user = loadByUsername(username);
             if (!isPasswordEncoded) {
-               password = new Md5PasswordEncoder().encodePassword(password, username);
-            }
-            if (user != null && user.getPassword().equals(password)) {
-               return true;
+               HttpAuthenticator authenticator = HttpAuthenticatorFactory.getHttpAuthenticator();
+               try {
+                  authenticator.verifyAuthentication(username, password);
+                  return true;
+               } catch (Exception e) {
+                  log.error("Can't verify user " + username, e);
+               }
             }
          }
       }
@@ -78,7 +84,7 @@ public class AccountServiceImpl extends BaseAbstractService<Code> implements Acc
 
    @Override
    public boolean isHTTPBasicAuthorized(long accountId, String credentials) {
-      return isHTTPBasicAuthorized(accountId, credentials, true);
+      return isHTTPBasicAuthorized(accountId, credentials, false);
    }
 
    @Override
@@ -95,9 +101,12 @@ public class AccountServiceImpl extends BaseAbstractService<Code> implements Acc
          if (arr.length == 2) {
             String username = arr[0];
             String password = arr[1];
-            User user = loadByUsername(username);
-            if (user != null && user.getPassword().equals(password)) {
+            HttpAuthenticator authenticator = HttpAuthenticatorFactory.getHttpAuthenticator();
+            try {
+               authenticator.verifyAuthentication(username, password);
                return true;
+            } catch (Exception e) {
+               log.error("Can't verify user " + username, e);
             }
          }
       }

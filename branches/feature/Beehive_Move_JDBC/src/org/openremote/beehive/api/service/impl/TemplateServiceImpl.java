@@ -57,23 +57,7 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
    }
 
    public List<TemplateDTO> loadPublicTemplatesByKeywordsAndPage(String keywords, int page) {
-      List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
-      DetachedCriteria critera = DetachedCriteria.forClass(Template.class);
-      critera.add(Restrictions.eq("shared", true));
-      if (keywords != null && keywords.trim().length() > 0) {
-         String[] kwords = keywords.split(KEYWORDS_SEPERATOR);
-         for (String keyword : kwords) {
-            critera.add(Restrictions.like("keywords", keyword, MatchMode.ANYWHERE));
-         }
-      }
-      List<Template> templates = genericDAO.findPagedDateByDetachedCriteria(critera, TEMPLATE_SIZE_PER_PAGE,
-            (TEMPLATE_SIZE_PER_PAGE) * page);
-      if (templates != null && templates.size() > 0) {
-         for (Template template : templates) {
-            templateDTOs.add(template.toDTO());
-         }
-      }
-      return templateDTOs;
+      return loadTemplates(true, 0, keywords, page);
    }
 
    @Override
@@ -190,6 +174,49 @@ public class TemplateServiceImpl extends BaseAbstractService<Template> implement
       } catch (ObjectNotFoundException e) {
          return null;
       }
+   }
+
+   public List<TemplateDTO> loadPrivateTemplatesByKeywordsAndPage(long accountOid, String keywords, int page) {
+      return loadTemplates(false, accountOid, keywords, page);
+   }
+   
+   /**
+    * Load public or private templates by keywords and page.
+    * 
+    * @param shared
+    *             public or private
+    * @param accountOid 
+    *             the account oid, if equals 0, load public templates
+    * @param keywords
+    *             search template by keywords
+    * @param page
+    *             get the current page's results
+    * 
+    * @return the list< template dt o>
+    */
+   private List<TemplateDTO> loadTemplates(boolean shared, long accountOid, String keywords, int page) {
+      List<TemplateDTO> templateDTOs = new ArrayList<TemplateDTO>();
+      DetachedCriteria critera = DetachedCriteria.forClass(Template.class);
+      if (shared && accountOid == 0) {
+         critera.add(Restrictions.eq("shared", true));
+      } else {
+         critera.add(Restrictions.eq("account", genericDAO.getById(Account.class, accountOid)));
+         critera.add(Restrictions.eq("shared", false));
+      }
+      if (keywords != null && keywords.trim().length() > 0) {
+         String[] kwords = keywords.split(KEYWORDS_SEPERATOR);
+         for (String keyword : kwords) {
+            critera.add(Restrictions.like("keywords", keyword, MatchMode.ANYWHERE));
+         }
+      }
+      List<Template> templates = genericDAO.findPagedDateByDetachedCriteria(critera, TEMPLATE_SIZE_PER_PAGE,
+            (TEMPLATE_SIZE_PER_PAGE) * page);
+      if (templates != null && templates.size() > 0) {
+         for (Template template : templates) {
+            templateDTOs.add(template.toDTO());
+         }
+      }
+      return templateDTOs;
    }
 
 }

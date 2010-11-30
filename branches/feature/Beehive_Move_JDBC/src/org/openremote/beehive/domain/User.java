@@ -86,7 +86,7 @@ public class User extends BusinessEntity {
     * 
     * @return the password
     */
-   @Column(nullable = false)
+//   @Column(nullable = false)
    public String getPassword() {
       return password;
    }

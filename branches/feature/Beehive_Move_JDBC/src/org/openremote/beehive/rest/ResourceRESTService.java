@@ -202,7 +202,7 @@ public class ResourceRESTService extends RESTBaseService{
     *  
     */
    protected boolean authorize(String username, String credentials) {
-      return authorize(username, credentials, true);
+      return authorize(username, credentials, false);
    }
    
    private boolean authorize(String username, String credentials, boolean isPasswordEncoded) {
