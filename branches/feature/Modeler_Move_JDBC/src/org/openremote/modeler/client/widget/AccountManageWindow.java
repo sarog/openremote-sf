@@ -340,7 +340,7 @@ public class AccountManageWindow extends Dialog {
       combo.add(Constants.ROLE_MODELER_DISPLAYNAME);
       combo.add(Constants.ROLE_DESIGNER_DISPLAYNAME);
       combo.add(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
-      combo.add(Constants.ROLE_GUEST);
+      combo.add(Constants.ROLE_GUEST_DISPLAYNAME);
       combo.setValue(combo.findModel((String) model.get(property)));
       combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>() {
          public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
@@ -430,7 +430,7 @@ public class AccountManageWindow extends Dialog {
          roleList.getStore().add(
                new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME,
                      Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME));
-         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_GUEST, Constants.ROLE_GUEST));
+         roleList.getStore().add(new ComboBoxDataModel<String>(Constants.ROLE_GUEST_DISPLAYNAME, Constants.ROLE_GUEST_DISPLAYNAME));
          roleList.setValue(new ComboBoxDataModel<String>(Constants.ROLE_MODELER_DISPLAYNAME,
                Constants.ROLE_MODELER_DISPLAYNAME));
          form.add(emailField);

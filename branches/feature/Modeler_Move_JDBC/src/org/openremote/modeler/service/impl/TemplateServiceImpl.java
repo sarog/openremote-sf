@@ -65,7 +65,6 @@ import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.domain.Protocol;
 import org.openremote.modeler.domain.ProtocolAttr;
-import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.Screen;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Sensor;
