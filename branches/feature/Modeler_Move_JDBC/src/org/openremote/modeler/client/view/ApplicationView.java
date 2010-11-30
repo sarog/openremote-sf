@@ -36,7 +36,6 @@ import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.AccountManageWindow;
 import org.openremote.modeler.client.widget.buildingmodeler.protocol.ProtocolManager;
 import org.openremote.modeler.client.widget.uidesigner.ImportZipWindow;
-import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style;

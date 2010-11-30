@@ -35,13 +35,11 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
-import org.hibernate.Hibernate;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
-import org.openremote.modeler.domain.Role;
 import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
@@ -88,6 +86,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       boolean hasDesignerRole = false;
       boolean hasModelerRole = false;
       boolean hasAdminRole = false;
+      boolean hasGuestRole = false;
       
       SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
       try {
@@ -99,6 +98,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
                hasModelerRole = true;
             } else if (groupName.equals(Constants.ADMIN)) {
                hasAdminRole = true;
+            } else if (groupName.equals(Constants.GUEST)) {
+            	hasGuestRole = true;
             }
          }
          // If there is no group in crowd, add it.
@@ -122,6 +123,13 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             group.setDescription("openremote admin");
             group.setName(Constants.ADMIN);
             crowdClient.addGroup(group);
+         }
+         if (!hasGuestRole) {
+        	 SOAPGroup group = new SOAPGroup();
+        	 group.setActive(true);
+        	 group.setDescription("openremote guest");
+        	 group.setName(Constants.GUEST);
+        	 crowdClient.addGroup(group);
          }
       } catch (Exception e) {
          log.error("Can't init role in crowd", e);
@@ -524,6 +532,9 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       if (rolestr.indexOf(Constants.ROLE_DESIGNER_DISPLAYNAME) != -1) {
          roles.add(Constants.DESIGNER);
       }
+      if (rolestr.indexOf(Constants.ROLE_GUEST_DISPLAYNAME) != -1) {
+    	  roles.add(Constants.GUEST);
+      }
       return roles;
    }
 
@@ -590,6 +601,8 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             user.setRole(Constants.ROLE_MODELER_DISPLAYNAME);
          } else if(roleStrs.contains(Constants.DESIGNER)) {
             user.setRole(Constants.ROLE_DESIGNER_DISPLAYNAME);
+         } else if(roleStrs.contains(Constants.GUEST)) {
+        	 user.setRole(Constants.ROLE_GUEST_DISPLAYNAME);
          }
          
       } catch (Exception e) {
@@ -692,13 +705,9 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       User currentUser = getCurrentUser();
       final String host = currentUser.getUsername();
       final User user = new User(currentUser.getAccount());
-//      String rawPassword = "guest";
+      final String rawPassword = "guest";
       user.setUsername(email);
-//      user.addRole(genericDAO.getByNonIdField(Role.class, "name", Role.ROLE_GUEST));
-//      user.setEmail(email);
-//      user.setRawPassword(rawPassword);
-//      user.setPassword(new Md5PasswordEncoder().encodePassword(rawPassword, email));
-//      user.setValid(true);
+      user.setEmail(email);
       MimeMessagePreparator preparator = new MimeMessagePreparator() {
          @SuppressWarnings("unchecked")
          public void prepare(MimeMessage mimeMessage) throws Exception {
@@ -709,7 +718,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             Map model = new HashMap();
             model.put("host", host);
             model.put("username", user.getUsername());
-//            model.put("password", user.getRawPassword());
+            model.put("password", rawPassword);
             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
                  Constants.CREATE_GUEST_EMAIL_VM_NAME, "UTF-8", model);
             message.setText(text, true);
@@ -718,7 +727,40 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       try {
          this.mailSender.send(preparator);
          log.info("Sent 'OpenRemote Guest User' email to " + email);
-         genericDAO.save(user);
+         
+         SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
+         
+         /**
+          * Create a new principal, its name is equals the username.
+          */
+         SOAPPrincipal principal = new SOAPPrincipal();
+         principal.setActive(false);
+         principal.setName(email);
+         
+         /**
+          * Create principal attributes.
+          * The email, firstname and lastname are required.
+          */
+         SOAPAttribute[] soapAttributes = new SOAPAttribute[4];
+         soapAttributes[0] = buildAttribute(UserConstants.EMAIL, email);
+         soapAttributes[1] = buildAttribute(UserConstants.FIRSTNAME, email);
+         soapAttributes[2] = buildAttribute(UserConstants.LASTNAME, email);
+         soapAttributes[3] = buildAttribute(UserConstants.DISPLAYNAME, email);
+         
+         principal.setAttributes(soapAttributes);
+         
+         /**
+          * Create the principal's password credentials, it represent the password.
+          */
+         PasswordCredential credentials = new PasswordCredential("guest");
+         try {
+            principal = crowdClient.addPrincipal(principal, credentials);
+            crowdClient.addPrincipalToGroup(email, Constants.GUEST);
+         } catch (Exception e) {
+            log.error("Can't create user " + email + " with role 'GUEST'.", e);
+            throw new UserInvitationException("Failed to create guest user.");
+         }
+         saveUser(user);
          return user;
       } catch (MailException e) {
          log.error("Can't send 'OpenRemote Guest User' email", e);
