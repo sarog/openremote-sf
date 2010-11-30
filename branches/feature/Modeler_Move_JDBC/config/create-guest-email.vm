@@ -1,0 +1,25 @@
+<html>
+<body>
+
+<h2>Welcome to OpenRemote Boss 2.0 Online</h2>
+
+<p>
+${host} has invited you to download a design to your controller using  
+your own email address and password with guest role.
+</p>
+
+<p>
+To download the design, please input username and password in your controller and click the "Sync with Modeler" button.<br/><br/>
+The Following is the username and password:<br/>
+<b>Username:</b>${username}<br/>
+<b>Password:</b>${password}<br/>
+You can't use this user to access OpenRemote Boss 2.0 Online.
+</p>
+
+
+<p>
+For questions or concerns about your guest role, please use public forums on
+<a href="http://www.openremote.org/display/forums/OpenRemote+Forums">http://www.openremote.org/display/forums/OpenRemote+Forums</a>
+</p>
+</body>
+</html>
