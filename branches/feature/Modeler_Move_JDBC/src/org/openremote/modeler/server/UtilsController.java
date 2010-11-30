@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -71,6 +71,8 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    private static final String UI_DESIGNER_LAYOUT_SCREEN_KEY = "screenList";
    
    private static final String UI_DESIGNER_LAYOUT_MAXID = "maxID";
+   
+   public static final String CURRENT_PASSWORD = "currentPassword";
   
    /**
     * {@inheritDoc}
@@ -154,7 +156,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
                getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
                autoSaveResponse.setUpdated(true);
                resourceService.initResources(panels, maxID);
-               resourceService.saveResourcesToBeehive(panels);
+               resourceService.saveResourcesToBeehive(panels, getPassword());
             }
             LOGGER.info("Auto save UI designerLayout sucessfully");
          }
@@ -172,7 +174,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
             getThreadLocalRequest().getSession().setAttribute(UI_DESIGNER_LAYOUT_MAXID, maxID);
             autoSaveResponse.setUpdated(true);
             resourceService.initResources(panels, maxID);
-            resourceService.saveResourcesToBeehive(panels);
+            resourceService.saveResourcesToBeehive(panels, getPassword());
          }
          LOGGER.info("manual save UI DesingerLayout successfully");
       }
@@ -232,7 +234,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
 
    @Override
    public PanelsAndMaxOid restore() {
-      PanelsAndMaxOid result = resourceService.restore();
+      PanelsAndMaxOid result = resourceService.restore(getPassword());
       if(result!=null){
          Collection<Panel> panels = result.getPanels();
          long maxOid = result.getMaxOid();
@@ -248,7 +250,7 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    }
    
    public ScreenFromTemplate buildScreenFromTemplate(Template template){
-      return screenTemplateService.buildFromTemplate(template);
+      return screenTemplateService.buildFromTemplate(template, getPassword());
    }
 
    @Override
@@ -312,5 +314,18 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    
    public String getOnLineTestURL () {
       return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getCurrentUser().getUsername();
+   }
+   
+   /**
+    * Gets current user's password from session.
+    * 
+    * @return the password
+    */
+   private String getPassword() {
+      Object password = getThreadLocalRequest().getSession().getAttribute(CURRENT_PASSWORD);
+      if (password != null) {
+         return password.toString();
+      }
+      return "";
    }
 }

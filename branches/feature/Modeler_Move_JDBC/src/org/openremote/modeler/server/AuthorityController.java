@@ -22,6 +22,7 @@ package org.openremote.modeler.server;
 
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.rpc.AuthorityRPCService;
+import org.openremote.modeler.service.UserService;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
@@ -34,6 +35,8 @@ public class AuthorityController extends BaseGWTSpringController implements Auth
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = 9014403953508227827L;
 
+   private UserService userService;
+   
    /**
     * {@inheritDoc}
     * 
@@ -48,9 +51,16 @@ public class AuthorityController extends BaseGWTSpringController implements Auth
          for (int i = 0; i < authorities.length; i++) {
             authority.addRole(authorities[i].getAuthority());
          }
+         userService.initUserAccount(auth.getName());
       } else {
          authority = null;
       }
       return authority;
    }
+
+   public void setUserService(UserService userService) {
+      this.userService = userService;
+   }
+   
+   
 }

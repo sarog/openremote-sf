@@ -7,6 +7,7 @@ import java.util.Set;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.domain.User;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
@@ -23,8 +24,9 @@ public class ControllerConfigServiceTest {
    
    @BeforeClass
    public void saveFromDefault(){
-            
-      userService.createUserAccount("test", "test", UserServiceTest.TEST_EMAIL);
+      User user = new User();
+      user.setUsername("test");
+      userService.saveUser(user);
       SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
       XmlParser.initControllerConfig(categories, configs);
       configService.saveAll(configs);
@@ -46,7 +48,6 @@ public class ControllerConfigServiceTest {
             Assert.assertNotNull(cfg.getHint());
             Assert.assertNotNull(cfg.getValidation());
             Assert.assertNotNull(cfg.getOptions());
-//            System.out.println(cfg);
          }
       }
    }

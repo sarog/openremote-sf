@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -42,29 +42,29 @@ public class TemplateController extends BaseGWTSpringController implements Templ
    
    @Override
    public ScreenFromTemplate buildScreeFromTemplate(Template template) {
-      return templateService.buildFromTemplate(template);
+      return templateService.buildFromTemplate(template, getPassword());
    }
 
    @Override
    public List<Template> getTemplates(boolean isFromPrivate) {
-      return templateService.getTemplates(isFromPrivate);
+      return templateService.getTemplates(isFromPrivate, getPassword());
    }
 
    @Override
    public Template saveTemplate(Template template) {
-      return templateService.saveTemplate(template);
+      return templateService.saveTemplate(template, getPassword());
    }
    @Override
    public Boolean deleteTemplate(long templateId){
-      return templateService.deleteTemplate(templateId);
+      return templateService.deleteTemplate(templateId, getPassword());
    }
    public void setTemplateService(TemplateService templateService) {
       this.templateService = templateService;
    }
 
    @Override
-   public List<Template> searchTemplates(String keywords, int page) {
-      return templateService.getTemplatesByKeywordsAndPage(keywords, page);
+   public List<Template> searchTemplates(boolean shared, String keywords, int page) {
+      return templateService.getTemplatesByKeywordsAndPage(shared, keywords, page, getPassword());
    }
 
    @Override
@@ -84,15 +84,27 @@ public class TemplateController extends BaseGWTSpringController implements Templ
             oldTemplate.setContent(oldContent);
             template.setContent(newContent);
             if (!template.equals(oldTemplate)) {
-               result = templateService.updateTemplate(template);
+               result = templateService.updateTemplate(template, getPassword());
                getThreadLocalRequest().getSession().setAttribute(TEMPLATE_IN_EDITING, template);
             }
          } else {
-            result = templateService.updateTemplate(template);
+            result = templateService.updateTemplate(template, getPassword());
             getThreadLocalRequest().getSession().setAttribute(TEMPLATE_IN_EDITING, template);
          }
       }
       return result;
    }
 
+   /**
+    * Gets current user's password from session.
+    * 
+    * @return the password
+    */
+   private String getPassword() {
+      Object password = getThreadLocalRequest().getSession().getAttribute(UtilsController.CURRENT_PASSWORD);
+      if (password != null) {
+         return password.toString();
+      }
+      return "";
+   }
 }

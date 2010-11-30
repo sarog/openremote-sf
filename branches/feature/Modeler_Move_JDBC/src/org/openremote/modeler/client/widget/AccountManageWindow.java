@@ -195,18 +195,18 @@ public class AccountManageWindow extends Dialog {
       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            return createRoleCombo(model, property);
+            return createRoleCombo(model, property, true);
          }
       };
 
       GridCellRenderer<BeanModel> buttonRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            return createDeleteButton(model, store);
+            return createDeleteButton(model, store, true);
          }
       };
 
-      ColumnConfig roleColumn = new ColumnConfig("role", "Role", 190);
+      ColumnConfig roleColumn = new ColumnConfig("pendingRoleName", "Role", 190);
       roleColumn.setRenderer(comboRenderer);
       invitedUserConfigs.add(roleColumn);
 
@@ -237,7 +237,7 @@ public class AccountManageWindow extends Dialog {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
             if (cureentUserId != (Long) model.get("oid")) {
-               return createRoleCombo(model, property);
+               return createRoleCombo(model, property, false);
             } else {
                return (String) model.get(property);
             }
@@ -248,7 +248,7 @@ public class AccountManageWindow extends Dialog {
       GridCellRenderer<BeanModel> buttonRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            Button deleteButton = createDeleteButton(model, store);
+            Button deleteButton = createDeleteButton(model, store, false);
             if (cureentUserId == (Long) model.get("oid")) {
                deleteButton.disable();
                deleteButton.hide();
@@ -330,7 +330,7 @@ public class AccountManageWindow extends Dialog {
     * 
     * @return the simple combo box< string>
     */
-   private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property) {
+   private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property, final boolean isPending) {
       SimpleComboBox<String> combo = new SimpleComboBox<String>();
       combo.setWidth(182);
       combo.setForceSelection(true);
@@ -345,15 +345,23 @@ public class AccountManageWindow extends Dialog {
       combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>() {
          public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
             final String roleStrs = se.getSelectedItem().getValue();
-            if (!roleStrs.equals(model.get("role"))) {
-               AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User) model.getBean()).getOid(),
-                     roleStrs, new AsyncSuccessCallback<User>() {
+            if (isPending) {
+               if (!roleStrs.equals(model.get("pendingRoleName"))) {
+                  AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getOid(), roleStrs, isPending, new AsyncSuccessCallback<User>() {
+                     public void onSuccess(User user) {
+                        ((User)model.getBean()).setPendingRoleName(user.getPendingRoleName());
+                        Info.display("Change role", "Change pending user role to " + roleStrs + " success.");
+                     }
+                  });
+               }
+            } else if (!roleStrs.equals(model.get("role"))) {
+                  AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getOid(), roleStrs, isPending, new AsyncSuccessCallback<User>() {
                         public void onSuccess(User user) {
-                           ((User) model.getBean()).setRoles(user.getRoles());
+                        ((User)model.getBean()).setRole(user.getRole());
                            Info.display("Change role", "Change role to " + roleStrs + " success.");
                         }
                      });
-
+                  
             }
          }
 
@@ -371,18 +379,17 @@ public class AccountManageWindow extends Dialog {
     * 
     * @return the button
     */
-   private Button createDeleteButton(final BeanModel model, final ListStore<BeanModel> store) {
+   private Button createDeleteButton(final BeanModel model, final ListStore<BeanModel> store, final boolean isPending) {
       Button deleteButton = new Button();
       deleteButton.setIcon(icons.delete());
       deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((User) model.getBean()).getOid(),
-                  new AsyncSuccessCallback<Void>() {
-                     public void onSuccess(Void result) {
-                        store.remove(model);
-                        Info.display("Delete user", "Delete user " + model.get("username").toString() + " success.");
-                     }
-                  });
+            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((User)model.getBean()).getOid(), isPending, new AsyncSuccessCallback<Void>() {
+               public void onSuccess(Void result) {
+                  store.remove(model);
+                  Info.display("Delete user", "Delete user " + model.get("username").toString() + " success.");
+               }
+            });
          }
       });
       return deleteButton;

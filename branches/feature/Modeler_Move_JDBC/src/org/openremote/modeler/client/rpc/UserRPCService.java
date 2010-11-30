@@ -53,21 +53,21 @@ public interface UserRPCService extends RemoteService {
    List<User> getPendingInviteesByAccount();
    
    /**
-    * Update the invited user roles.
+    * Update the invited or pending user roles.
     * 
     * @param uid the uid
     * @param roles the roles
     * 
     * @return the user
     */
-   User updateUserRoles(long uid, String roles);
+   User updateUserRoles(long uid, String roles, boolean isPending);
    
    /**
     * Delete the invited user by user id.
     * 
     * @param uid the uid
     */
-   void deleteUser(long uid);
+   void deleteUser(long uid, boolean isPending);
    
    /**
     * Gets the users who can access the current account.

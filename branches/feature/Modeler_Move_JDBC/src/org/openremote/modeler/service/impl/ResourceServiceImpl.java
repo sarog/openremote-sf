@@ -889,10 +889,10 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   public PanelsAndMaxOid restore() {
+   public PanelsAndMaxOid restore(String password) {
       // First, try to down openremote.zip from beehive.
       try {
-         downloadOpenRemoteZip();
+         downloadOpenRemoteZip(password);
       } catch (IOException e) {
          LOGGER.error("Beehive no available !" + e.getMessage());
       }
@@ -929,13 +929,13 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @SuppressWarnings("all")
-   public void saveResourcesToBeehive(Collection<Panel> panels) {
+   public void saveResourcesToBeehive(Collection<Panel> panels, String password) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
       HttpPost httpPost = new HttpPost();
       String beehiveRootRestURL = configuration.getBeehiveHttpsRESTRootUrl();
-      this.addAuthentication(httpPost);
+      this.addAuthentication(httpPost, password);
 
       String url = beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/openremote.zip";
 
@@ -962,7 +962,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   public void saveTemplateResourcesToBeehive(Template template) {
+   public void saveTemplateResourcesToBeehive(Template template, String password) {
       boolean share = template.getShareTo() == Template.PUBLIC;
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
@@ -987,7 +987,7 @@ public class ResourceServiceImpl implements ResourceService {
          MultipartEntity entity = new MultipartEntity();
          entity.addPart("resource", resource);
 
-         this.addAuthentication(httpPost);
+         this.addAuthentication(httpPost, password);
          httpPost.setEntity(entity);
 
          HttpResponse response = httpClient.execute(httpPost);
@@ -1015,7 +1015,7 @@ public class ResourceServiceImpl implements ResourceService {
    }
 
    @Override
-   public void downloadResourcesForTemplate(long templateOid) {
+   public void downloadResourcesForTemplate(long templateOid, String password) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
@@ -1023,7 +1023,7 @@ public class ResourceServiceImpl implements ResourceService {
             + userService.getAccount().getOid() + "/template/" + templateOid + "/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
-      this.addAuthentication(httpGet);
+      this.addAuthentication(httpGet, password);
 
       try {
          HttpResponse response = httpClient.execute(httpGet);
@@ -1084,7 +1084,7 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
 
-   private void downloadOpenRemoteZip() throws IOException {
+   private void downloadOpenRemoteZip(String password) throws IOException {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
@@ -1097,7 +1097,7 @@ public class ResourceServiceImpl implements ResourceService {
       FileOutputStream fos = null;
 
       try {
-         this.addAuthentication(httpGet);
+         this.addAuthentication(httpGet, password);
          HttpResponse response = httpClient.execute(httpGet);
 
          if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
@@ -1364,9 +1364,9 @@ public class ResourceServiceImpl implements ResourceService {
       }
    }
    
-   private void addAuthentication(AbstractHttpMessage httpMessage) {
+   private void addAuthentication(AbstractHttpMessage httpMessage, String password) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getCurrentUser().getUsername() + ":" + userService.getCurrentUser().getPassword()));
+            + encode(userService.getCurrentUser().getUsername() + ":" + password));
    }
 
    private void addSelfCertificate(HttpClient httpClient) {

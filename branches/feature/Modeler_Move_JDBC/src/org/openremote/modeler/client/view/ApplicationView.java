@@ -143,20 +143,20 @@ public class ApplicationView implements View {
    private void createNorth() {
       ToolBar applicationToolBar = new ToolBar();
       List<String> roles = authority.getRoles();
-      if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
+      if (roles.contains(Constants.ROLE_ADMIN) || (roles.contains(Constants.ROLE_DESIGNER) && roles.contains(Constants.ROLE_MODELER))) {
          applicationToolBar.add(createBMButton());
          applicationToolBar.add(createUDButton());
          SeparatorToolItem separatorItem = new SeparatorToolItem();
          separatorItem.setWidth("20");
          applicationToolBar.add(separatorItem);
-         if (roles.contains(Role.ROLE_ADMIN)) {
+         if (roles.contains(Constants.ROLE_ADMIN)) {
             applicationToolBar.add(createAccountManageButton());
          }
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
          applicationToolBar.add(createOnLineTestBtn());
-      } else if (roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
+      } else if (roles.contains(Constants.ROLE_DESIGNER) && !roles.contains(Constants.ROLE_MODELER)) {
          initSaveAndExportButtons();
          applicationToolBar.add(saveButton);
          applicationToolBar.add(exportButton);
@@ -186,13 +186,13 @@ public class ApplicationView implements View {
             } else {
                modelerContainer.remove(uiDesignerView);
                modelerContainer.add(buildingModelerView);
-               Cookies.setCookie(Constants.CURRETN_ROLE, Role.ROLE_MODELER);
+               Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_MODELER);
                modelerContainer.layout();
             }
          }
       });
       bmButton.setToggleGroup("modeler-switch");
-      if (Cookies.getCookie(Constants.CURRETN_ROLE) == null || Role.ROLE_MODELER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+      if (Cookies.getCookie(Constants.CURRETN_ROLE) == null || Constants.ROLE_MODELER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
          bmButton.toggle(true);
       }
       return bmButton;
@@ -214,13 +214,13 @@ public class ApplicationView implements View {
             } else {
                modelerContainer.remove(buildingModelerView);
                modelerContainer.add(uiDesignerView);
-               Cookies.setCookie(Constants.CURRETN_ROLE, Role.ROLE_DESIGNER);
+               Cookies.setCookie(Constants.CURRETN_ROLE, Constants.ROLE_DESIGNER);
                modelerContainer.layout();
             }
          }
       });
       udButton.setToggleGroup("modeler-switch");
-      if (Role.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+      if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
          udButton.toggle(true);
       }
       return udButton;
@@ -376,18 +376,18 @@ public class ApplicationView implements View {
       List<String> roles = authority.getRoles();
       modelerContainer = new LayoutContainer();
       modelerContainer.setLayout(new FitLayout());
-      if (roles.contains(Role.ROLE_ADMIN) || (roles.contains(Role.ROLE_DESIGNER) && roles.contains(Role.ROLE_MODELER))) {
+      if (roles.contains(Constants.ROLE_ADMIN) || (roles.contains(Constants.ROLE_DESIGNER) && roles.contains(Constants.ROLE_MODELER))) {
          this.buildingModelerView = new BuildingModelerView();
          this.uiDesignerView = new UIDesignerView();
-         if (Role.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
+         if (Constants.ROLE_DESIGNER.equals(Cookies.getCookie(Constants.CURRETN_ROLE))) {
             modelerContainer.add(uiDesignerView);
          } else {
             modelerContainer.add(buildingModelerView);
          }
-      } else if (roles.contains(Role.ROLE_MODELER) && !roles.contains(Role.ROLE_DESIGNER)) {
+      } else if (roles.contains(Constants.ROLE_MODELER) && !roles.contains(Constants.ROLE_DESIGNER)) {
          this.buildingModelerView = new BuildingModelerView();
          modelerContainer.add(buildingModelerView);
-      } else if(roles.contains(Role.ROLE_DESIGNER) && !roles.contains(Role.ROLE_MODELER)) {
+      } else if(roles.contains(Constants.ROLE_DESIGNER) && !roles.contains(Constants.ROLE_MODELER)) {
          this.uiDesignerView = new UIDesignerView();
          modelerContainer.add(uiDesignerView);
       }

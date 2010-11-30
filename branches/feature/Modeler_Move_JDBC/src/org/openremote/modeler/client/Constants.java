@@ -130,4 +130,14 @@ public class Constants {
    public static final String ROLE_MODELER_DESIGNER_DISPLAYNAME = "Building Modeler & UI Designer";
    public static final String ROLE_ADMIN_DISPLAYNAME = "Admin";
    public static final String ROLE_GUEST = "Guest";
+   
+   /** The three Constants is for comparing role with spring security's grantedAuthority. */
+   public static final String ROLE_MODELER = "ROLE_MODELER";
+   public static final String ROLE_DESIGNER = "ROLE_DESIGNER";
+   public static final String ROLE_ADMIN = "ROLE_ADMIN";
+   
+   /** The three Constants is for corresponding with crowd groups. */
+   public static final String MODELER = "MODELER";
+   public static final String DESIGNER = "DESIGNER";
+   public static final String ADMIN = "ADMIN";
 }

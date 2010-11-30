@@ -50,12 +50,12 @@ public class UserController extends BaseGWTSpringControllerWithHibernateSupport 
       return userService.getPendingInviteesByAccount(userService.getCurrentUser());
    }
 
-   public User updateUserRoles(long uid, String roles) {
-      return userService.updateUserRoles(uid, roles);
+   public User updateUserRoles(long uid, String roles, boolean pending) {
+      return userService.updateUserRoles(uid, roles, pending);
    }
 
-   public void deleteUser(long uid) {
-      userService.deleteUser(uid);
+   public void deleteUser(long uid, boolean isPending) {
+      userService.deleteUser(uid, isPending);
    }
 
    public List<User> getAccountAccessUsers() {

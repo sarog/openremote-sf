@@ -127,7 +127,7 @@ public class TemplateServiceImpl implements TemplateService {
 
    @Override
 
-   public Template saveTemplate(Template screenTemplate) {
+   public Template saveTemplate(Template screenTemplate, String password) {
 
       log.debug("save Template Name: " + screenTemplate.getName());
 
@@ -149,7 +149,7 @@ public class TemplateServiceImpl implements TemplateService {
          }*/
 
          HttpPost httpPost = new HttpPost(saveRestUrl);
-         addAuthentication(httpPost);
+         addAuthentication(httpPost, password);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
          httpPost.setEntity(formEntity);
          HttpClient httpClient = new DefaultHttpClient();
@@ -180,7 +180,7 @@ public class TemplateServiceImpl implements TemplateService {
                   .indexOf("</id>")));
             screenTemplate.setOid(templateOid);
             // save the resources (eg:images) to beehive.
-            resourceService.saveTemplateResourcesToBeehive(screenTemplate);
+            resourceService.saveTemplateResourcesToBeehive(screenTemplate, password);
          } else {
             throw new BeehiveNotAvailableException();
          }
@@ -227,12 +227,12 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    @Override
-   public ScreenFromTemplate buildFromTemplate(Template template) {
+   public ScreenFromTemplate buildFromTemplate(Template template, String password) {
       ScreenPair screen = buildScreen(template);
       resetImageSourceLocationForScreen(screen);
       
       // ---------------download resources (eg:images) from beehive.
-      resourceService.downloadResourcesForTemplate(template.getOid());
+      resourceService.downloadResourcesForTemplate(template.getOid(), password);
       return reBuildCommand(screen);
    }
 
@@ -287,7 +287,7 @@ public class TemplateServiceImpl implements TemplateService {
    }
    
    @Override
-   public boolean deleteTemplate(long templateOid) {
+   public boolean deleteTemplate(long templateOid, String password) {
 
       log.debug("Delete Template id: " + templateOid);
 
@@ -295,7 +295,7 @@ public class TemplateServiceImpl implements TemplateService {
             + "/template/" + templateOid;
 
       HttpDelete httpDelete = new HttpDelete();
-      addAuthentication(httpDelete);
+      addAuthentication(httpDelete, password);
 
       try {
          httpDelete.setURI(new URI(deleteRestUrl));
@@ -316,7 +316,7 @@ public class TemplateServiceImpl implements TemplateService {
       }
    }
 
-   public List<Template> getTemplates(boolean fromPrivate) {
+   public List<Template> getTemplates(boolean fromPrivate, String password) {
       String shared = fromPrivate ? "private" : "public";
       List<Template> templates = new ArrayList<Template>();
       String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
@@ -324,7 +324,7 @@ public class TemplateServiceImpl implements TemplateService {
 
       HttpGet httpGet = new HttpGet(restURL);
       httpGet.setHeader("Accept", "application/json");
-      this.addAuthentication(httpGet);
+      this.addAuthentication(httpGet, password);
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
       
@@ -365,18 +365,19 @@ public class TemplateServiceImpl implements TemplateService {
       return templates;
    }
    
-   public List<Template> getTemplatesByKeywordsAndPage(String keywords,int page) {
+   public List<Template> getTemplatesByKeywordsAndPage(boolean shared, String keywords,int page, String password) {
+      String share = shared ? "public" : "private";
       String newKeywords = keywords;
       if (keywords == null || keywords.trim().length() == 0) {
          newKeywords = TemplateService.NO_KEYWORDS;
       }
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "templates/keywords/"
-            + newKeywords + "/page/"+page;
+      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid() + "/templates/" + share + "/keywords/"
+      + newKeywords + "/page/"+page;
 
       HttpGet httpGet = new HttpGet(restURL);
       httpGet.setHeader("Accept", "application/json");
-      this.addAuthentication(httpGet);
+      this.addAuthentication(httpGet, password);
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
       
@@ -916,7 +917,6 @@ public class TemplateServiceImpl implements TemplateService {
       account.setSwitches(new ArrayList<Switch>());
       account.setDevices(new ArrayList<Device>());
       account.setUsers(new ArrayList<User>());
-      userService.getCurrentUser().setRoles(new ArrayList<Role>());
 
       for (Device device : devices ) {
          device.setAccount(null);
@@ -974,10 +974,10 @@ public class TemplateServiceImpl implements TemplateService {
       return new String(Base64.encodeBase64(namePassword.getBytes()));
    }
    
-   private void addAuthentication(AbstractHttpMessage httpMessage) {
+   private void addAuthentication(AbstractHttpMessage httpMessage, String password) {
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
             + encode(userService.getCurrentUser().getUsername() + ":"
-                  + userService.getCurrentUser().getPassword()));
+                  + password));
    }
    
    private TemplateList buildTemplateListFromJson(String templatesJson) {
@@ -1141,7 +1141,7 @@ public class TemplateServiceImpl implements TemplateService {
    }
 
    @Override
-   public Template updateTemplate(Template template) {
+   public Template updateTemplate(Template template, String password) {
       template.setContent(getTemplateContent(template.getScreen()));
       List<NameValuePair> params = new ArrayList<NameValuePair>();
       params.add(new BasicNameValuePair("name", template.getName()));
@@ -1153,7 +1153,7 @@ public class TemplateServiceImpl implements TemplateService {
          String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
                + "/template/" + template.getOid();
          HttpPut httpPut = new HttpPut(saveRestUrl);
-         addAuthentication(httpPut);
+         addAuthentication(httpPut, password);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");
          httpPut.setEntity(formEntity);
 
@@ -1161,7 +1161,7 @@ public class TemplateServiceImpl implements TemplateService {
          addSelfCertificate(httpClient);
          HttpResponse response = httpClient.execute(httpPut);
          if (HttpServletResponse.SC_OK == response.getStatusLine().getStatusCode()) {
-            resourceService.saveTemplateResourcesToBeehive(template);
+            resourceService.saveTemplateResourcesToBeehive(template, password);
          } else if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
             return null;
          } else {
