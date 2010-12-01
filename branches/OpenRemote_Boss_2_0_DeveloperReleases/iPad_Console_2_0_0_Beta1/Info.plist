@@ -15,7 +15,7 @@
 		<string>Icon-Small-50.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>org.openremote.iPhone</string>
+	<string>org.openremote.iPad</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -28,9 +28,9 @@
 	<string>2.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIStatusBarHidden</key>
-	<true/>
 	<key>UIRequiresPersistentWiFi</key>
+	<true/>
+	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

@@ -59,13 +59,6 @@
 		accelerometer.delegate = self; 
 		accelerometer.updateInterval = 1.0f/60.0f; 
 		
-//		/*accelerometer simulator, see http://www.iphonearch.com/topic/6/iphone-accelerometer-simulator/*/
-//		zUIAccelerometer *am;
-//    am = [zUIAccelerometer alloc];
-//    [am setDelegate:self];
-//    [am startFakeAccelerometer];    
-//		/*accelerometer simulator*/
-		
 
 	}
 	
@@ -127,25 +120,6 @@
 	}
 	[super sendEvent:event];
 }
-
-/*accelerometer simulator*/
-//- (void)accelerometer:(zUIAccelerometer *)accelerometer didAccelerate:(zUIAcceleration *)acceleration {
-//
-//	if (acceleration.y <= -0.5f) {
-//		orientation = UIInterfaceOrientationPortrait;
-//	} else if (acceleration.x >= 0.5f) {
-//		orientation = UIInterfaceOrientationLandscapeRight;
-//	} else if (acceleration.y >= 0.5f) {
-//		orientation = UIInterfaceOrientationPortraitUpsideDown;
-//	} else if (acceleration.x <= -0.5f) {
-//		orientation = UIInterfaceOrientationLandscapeLeft;
-//	} else {
-//		orientation = UIInterfaceOrientationPortrait;
-//	}
-//
-//
-//}
-/*accelerometer simulator*/
 
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration { 
