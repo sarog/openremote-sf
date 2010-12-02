@@ -182,25 +182,6 @@ public class DeviceBeanModelProxy {
    }
    
    /**
-    * Save device.
-    * 
-    * @param device
-    *           the device
-    * @param callback
-    *           the callback
-    */
-   public static void saveDevice(Device device, final AsyncSuccessCallback<BeanModel> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
-         public void onSuccess(Device result) {
-            BeanModel deviceModel = result.getBeanModel();
-            BeanModelDataBase.deviceTable.insert(deviceModel);
-            callback.onSuccess(deviceModel);
-         }
-      });
-   }
-
-   
-   /**
     * Update device.
     * 
     * @param deviceModel the device model
