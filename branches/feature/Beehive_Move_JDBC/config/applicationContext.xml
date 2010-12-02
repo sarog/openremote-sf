@@ -27,6 +27,8 @@
                 <value>org.openremote.beehive.domain.Template</value>
                 <value>org.openremote.beehive.domain.User</value>
                 <value>org.openremote.beehive.domain.Account</value>
+                <value>org.openremote.beehive.domain.modeler.Device</value>
+                <value>org.openremote.beehive.domain.modeler.DeviceAttr</value>
                 <value>org.openremote.beehive.domain.modeler.ControllerConfig</value>
             </list>
         </property>

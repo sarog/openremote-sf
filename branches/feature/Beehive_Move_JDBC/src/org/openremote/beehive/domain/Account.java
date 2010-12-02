@@ -27,6 +27,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.openremote.beehive.domain.modeler.Device;
+
 
 /**
  * The Class Account.
@@ -40,9 +42,12 @@ public class Account extends BusinessEntity {
 
    private List<User> users;
    
+   private List<Device> devices;
+   
    private List<Template> templates;
 
    public Account() {
+      devices = new ArrayList<Device>();
       templates = new ArrayList<Template>();
    }
 
@@ -55,6 +60,15 @@ public class Account extends BusinessEntity {
       this.users = users;
    }
 
+   @OneToMany(mappedBy = "account")
+   public List<Device> getDevices() {
+      return devices;
+   }
+
+   public void setDevices(List<Device> devices) {
+      this.devices = devices;
+   }
+   
    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
    public List<Template> getTemplates() {
       return templates;
