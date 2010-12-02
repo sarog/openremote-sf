@@ -244,6 +244,7 @@ public class Device extends BusinessEntity {
     * @return the display name
     */
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return getName();
    }
@@ -299,5 +300,13 @@ public class Device extends BusinessEntity {
          sensorRefItems.add(slider.getSliderSensorRef());
       }
       return sensorRefItems;
+   }
+   
+   public void toSimple() {
+      deviceAttrs = null;
+      account = null;
+      sensors = null;
+      switchs = null;
+      sliders = null;
    }
 }

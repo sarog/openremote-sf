@@ -30,7 +30,7 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
 /**
  * The server side implementation of the RPC service <code>DeviceRPCService</code>.
  */
-public class DeviceController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceRPCService {
+public class DeviceController extends BaseGWTSpringController implements DeviceRPCService {
 
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -6698924847005128888L;
@@ -96,16 +96,6 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
       this.userService = userService;
    }
 
-   /**
-    * {@inheritDoc}
-    * 
-    * @see org.openremote.modeler.client.rpc.DeviceRPCService#loadAll(org.openremote.modeler.domain.Account)
-    */
-   public List<Device> loadAll(Account account) {
-      return null;
-   }
-
-   
    /**
     * {@inheritDoc}
     * 

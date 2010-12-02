@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -40,21 +42,21 @@ public interface DeviceRPCService extends RemoteService {
     * 
     * @return the device
     */
-   Device saveDevice(Device device);
+   Device saveDevice(Device device) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Update device.
     * 
     * @param device the device
     */
-   void updateDevice(Device device);
+   void updateDevice(Device device) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Delete device.
     * 
     * @param id the id
     */
-   void deleteDevice(long id);
+   void deleteDevice(long id) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Load by id.
@@ -63,7 +65,7 @@ public interface DeviceRPCService extends RemoteService {
     * 
     * @return the device
     */
-   Device loadById(long id);
+   Device loadById(long id) throws BeehiveJDBCException, NotAuthenticatedException;
    
 
    /**
@@ -71,16 +73,7 @@ public interface DeviceRPCService extends RemoteService {
     * 
     * @return the list< device>
     */
-   List<Device> loadAll();
-   
-   /**
-    * Load all.
-    * 
-    * @param account the account
-    * 
-    * @return the list< device>
-    */
-   List<Device> loadAll(Account account);
+   List<Device> loadAll() throws BeehiveJDBCException, NotAuthenticatedException;
    
    Account getAccount();
 }
