@@ -348,5 +348,16 @@ public class GenericDAO extends HibernateDaoSupport {
       getHibernateTemplate().flush();
    }
   
-   
+   public <T> void saveOrUpdateAll(List<T> objects) {
+      getHibernateTemplate().saveOrUpdateAll(objects);
+   }
+
+   /**
+    * update
+    * 
+    * @param arg0
+    */
+   public void update(Object arg0) {
+      this.getHibernateTemplate().update(arg0);
+   }
 }

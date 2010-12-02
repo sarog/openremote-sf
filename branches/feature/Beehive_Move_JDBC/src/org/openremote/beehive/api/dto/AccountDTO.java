@@ -19,27 +19,15 @@
 */
 package org.openremote.beehive.api.dto;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import javax.xml.bind.annotation.XmlElement;
-
-/**
- * Business entity class for all DTO entities with the common property oid.
- * 
- * @author allen 2009-2-17
- * 
- */
-public abstract class BusinessEntityDTO implements Serializable {
-
-   private static final long serialVersionUID = -3871334485197341321L;
-   private long id;
-
-   @XmlElement(name = "id")
-   public long getId() {
-      return id;
+@SuppressWarnings("serial")
+@XmlRootElement(name = "account")
+public class AccountDTO extends BusinessEntityDTO {
+   
+   public AccountDTO() {
    }
-
-   public void setId(long id) {
-      this.id = id;
+   public AccountDTO(long id) {
+      setId(id);
    }
 }

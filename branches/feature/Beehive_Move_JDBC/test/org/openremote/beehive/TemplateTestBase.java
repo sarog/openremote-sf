@@ -28,7 +28,6 @@ public class TemplateTestBase extends TestBase {
 
       User user = new User();
       user.setUsername("dan");
-      user.setPassword("cong");
       genericDAO.save(user);
       
       Account a = new Account();

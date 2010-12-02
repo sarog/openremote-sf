@@ -113,6 +113,11 @@ public class AccountServiceImpl extends BaseAbstractService<Code> implements Acc
 
       return false;
    }
+
+   @Override
+   public Account getById(long id) {
+	  return genericDAO.getById(Account.class, id);
+   }
    
 
 }

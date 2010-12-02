@@ -17,29 +17,13 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.dto;
+package org.openremote.beehive.api.service;
 
-import java.io.Serializable;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import org.openremote.beehive.domain.modeler.ControllerConfig;
 
-/**
- * Business entity class for all DTO entities with the common property oid.
- * 
- * @author allen 2009-2-17
- * 
- */
-public abstract class BusinessEntityDTO implements Serializable {
+public interface ControllerConfigService {
 
-   private static final long serialVersionUID = -3871334485197341321L;
-   private long id;
-
-   @XmlElement(name = "id")
-   public long getId() {
-      return id;
-   }
-
-   public void setId(long id) {
-      this.id = id;
-   }
+   void saveConfigurationsToAccount(List<ControllerConfig> contollerConfigs, long accountId);
 }
