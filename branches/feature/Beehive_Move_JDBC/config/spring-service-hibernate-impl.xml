@@ -24,6 +24,7 @@
             <tx:method name="update*" propagation="REQUIRED"/>
             <tx:method name="merge*" propagation="REQUIRED"/>
             <tx:method name="sync*" propagation="REQUIRED"/>
+            <tx:method name="get*" propagation="REQUIRED"/>
         </tx:attributes>
     </tx:advice>
 
@@ -75,4 +76,8 @@
 		parent="abstractService">
 	</bean>
 	<bean id="resourceService" class="org.openremote.beehive.api.service.impl.ResourceServiceImpl" parent="abstractService"/>
+	<bean id="userService" class="org.openremote.beehive.api.service.impl.UserServiceImpl"
+	   parent="abstractService"/>
+	<bean id="controllerConfigService" class="org.openremote.beehive.api.service.impl.ControllerConfigServiceImpl"
+	   parent="abstractService"/>
 </beans>

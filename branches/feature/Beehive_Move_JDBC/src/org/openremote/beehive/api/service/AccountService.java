@@ -44,4 +44,5 @@ public interface AccountService {
    
    long queryAccountIdByUsername(String username);
 
+   Account getById(long id);
 }
