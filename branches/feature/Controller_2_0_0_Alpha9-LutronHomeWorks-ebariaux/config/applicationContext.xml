@@ -41,6 +41,7 @@
         <list>
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
+            <value>classpath:lutron_homeworks.properties</value>
           </list>
       </property>
   </bean>
@@ -78,6 +79,15 @@
       <property name="roundRobinTCPServerSocketPort" value="${controller.roundrobin.tcpserver.port}" />
       <property name="groupMemberCandidateURLs" value="${controller.groupmember.candidate.urls}" />
   </bean>
+
+  <bean id="lutronHomeWorksConfig" class="org.openremote.controller.LutronHomeWorksConfig">
+    <property name="userName" value="${lutron_homeworks.username}" />
+    <property name="password" value="${lutron_homeworks.password}" />
+    <property name="address" value="${lutron_homeworks.address}" />
+    <property name="port" value="${lutron_homeworks.port}" />
+  </bean>
+  
+  <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
     <!-- service for control command from panel -->
     <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
@@ -136,6 +146,7 @@
            	<prop key = "http">httpGetCommandBuilder</prop>
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "mockup">mockupCommandBuilder</prop>
+            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -177,6 +188,10 @@
    -->
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
+	      
+	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
+		<property name="gateway" ref="lutronHomeWorksGateway"></property>
+	</bean>
 	      
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
