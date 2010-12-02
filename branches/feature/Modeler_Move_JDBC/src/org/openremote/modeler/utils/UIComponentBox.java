@@ -51,7 +51,7 @@ public class UIComponentBox {
        */
       UIComponent oldComponent = null;
       for (UIComponent uiComponent : components) {
-         if (uiComponent.getOid() == component.getOid()) {
+         if (uiComponent.getId() == component.getId()) {
             oldComponent = uiComponent;
             break;
          }

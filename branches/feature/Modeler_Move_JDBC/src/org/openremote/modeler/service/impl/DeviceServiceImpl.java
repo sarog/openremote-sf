@@ -115,7 +115,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       critera.add(Restrictions.eq("name", device.getName()));
       critera.add(Restrictions.eq("model", device.getModel()));
       critera.add(Restrictions.eq("vendor", device.getVendor()));
-      critera.add(Restrictions.eq("account.oid", device.getAccount().getOid()));
+      critera.add(Restrictions.eq("account.oid", device.getAccount().getId()));
       return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
    }
 }

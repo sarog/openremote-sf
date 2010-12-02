@@ -343,7 +343,7 @@ public class CustomPanelWindow extends FormWindow {
          submitBtn.disable();
          if (panel == null) {
             panel = new Panel();
-            panel.setOid(IDUtil.nextID());
+            panel.setId(IDUtil.nextID());
             Panel.increaseDefaultNameIndex();
             customPanel = new TouchPanelDefinition();
             customPanel.setCanvas(new TouchPanelCanvasDefinition(Integer.valueOf(screenWidthField.getRawValue()),
@@ -364,19 +364,19 @@ public class CustomPanelWindow extends FormWindow {
             
             Group defaultGroup = new Group();
             defaultGroup.setParentPanel(panel);
-            defaultGroup.setOid(IDUtil.nextID());
+            defaultGroup.setId(IDUtil.nextID());
             defaultGroup.setName(Constants.DEFAULT_GROUP);
             GroupRef groupRef = new GroupRef(defaultGroup);
             panel.addGroupRef(groupRef);
             groupRef.setPanel(panel);
             
             Screen defaultScreen = new Screen();
-            defaultScreen.setOid(IDUtil.nextID());
+            defaultScreen.setId(IDUtil.nextID());
             defaultScreen.setName(Constants.DEFAULT_SCREEN);
             defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());
             
             ScreenPair screenPair = new ScreenPair();
-            screenPair.setOid(IDUtil.nextID());
+            screenPair.setId(IDUtil.nextID());
             screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
             screenPair.setPortraitScreen(defaultScreen);
             screenPair.setParentGroup(defaultGroup);

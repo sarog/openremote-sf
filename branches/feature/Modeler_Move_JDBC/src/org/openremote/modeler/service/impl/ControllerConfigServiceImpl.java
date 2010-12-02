@@ -36,7 +36,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    @Override
    public Set<ControllerConfig>listAllConfigsByCategoryNameForAccount(String categoryName,Account account) {
       String hql = "select cfg from ControllerConfig cfg where cfg.category like ? and cfg.account.oid=?";
-      Object[] args = new Object[]{categoryName,account.getOid()};
+      Object[] args = new Object[]{categoryName,account.getId()};
       List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, args);
       Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
@@ -47,7 +47,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
 
    @Override
    public ControllerConfig update(ControllerConfig config) {
-      ControllerConfig cfg = genericDAO.loadById(ControllerConfig.class, config.getOid());
+      ControllerConfig cfg = genericDAO.loadById(ControllerConfig.class, config.getId());
       cfg.setCategory(config.getCategory());
       cfg.setHint(config.getHint());
       cfg.setName(config.getName());
@@ -82,7 +82,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    @Override
    public Set<ControllerConfig> listAllByAccount(Account account) {
       String hql = "select cfg from ControllerConfig cfg where cfg.account.oid=?";
-      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, account.getOid());
+      List<ControllerConfig> configs = genericDAO.getHibernateTemplate().find(hql, account.getId());
       Set<ControllerConfig> configSet = new LinkedHashSet<ControllerConfig>();
       configSet.addAll(configs);
       initializeConfigs(configSet);

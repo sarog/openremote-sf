@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -32,7 +34,15 @@ import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.openremote.modeler.client.Configuration;
@@ -44,6 +54,7 @@ import org.openremote.modeler.domain.User;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.utils.JsonGenerator;
 import org.openremote.modeler.utils.XmlParser;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -63,6 +74,8 @@ import com.atlassian.crowd.integration.soap.SOAPAttribute;
 import com.atlassian.crowd.integration.soap.SOAPGroup;
 import com.atlassian.crowd.integration.soap.SOAPPrincipal;
 import com.atlassian.crowd.integration.soap.SearchRestriction;
+
+import flexjson.JSONDeserializer;
 
 /**
  * The service implementation for UserService.
@@ -140,7 +153,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     * {@inheritDoc}
     */
    public User getUserById(long id) {
-      return genericDAO.getById(User.class, id);
+      return getUserFromBeehive("get/" + id);
    }
    
    /**
@@ -148,7 +161,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     */
     public Account getAccount() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return genericDAO.getByNonIdField(User.class, "username", username).getAccount();
+        return getUserByName(username).getAccount();
     }
     
     /**
@@ -193,8 +206,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          }
          User user = new User();
          user.setUsername(username);
-         saveUser(user);
-         return sendRegisterActivationEmail(user, email, password);
+         return sendRegisterActivationEmail(saveUser(user), email, password);
       } else {
          return false;
       }
@@ -203,32 +215,80 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
     * {@inheritDoc}
     */
-    public void saveUser(User user) {
-        genericDAO.save(user.getAccount());
-        genericDAO.save(user);
+    public User saveUser(User user) {
+       HttpClient httpClient = new DefaultHttpClient();
+       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTManageUserUrl() + "create");
+       String[] includes = {"user","username","token","pendingRoleName"};
+       String[] excludes = {"account","email","role"};
+       httpPost.setHeader("Content-Type", "application/json"); 
+       httpPost.addHeader("Accept", "application/json");
+       String json = JsonGenerator.deepSerializerObjectInclude(user, includes, excludes);
+       try {
+          httpPost.setEntity(new StringEntity(json,"UTF-8"));
+          HttpResponse response = httpClient.execute(httpPost);
+          if (response.getStatusLine().getStatusCode() == 200) {
+             String userJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<User>().use(null, User.class).deserialize(userJson);
+          }
+       } catch (UnsupportedEncodingException e) {
+          log.error("Save user to beehive failed", e);
+       } catch (ClientProtocolException e) {
+          log.error("Save user to beehive failed", e);
+       } catch (IOException e) {
+          log.error("Save user to beehive failed", e);
+       }
+       return null;
     }
     /**
      * {@inheritDoc}
      */
     public void updateUser(User user) {
-       genericDAO.update(user);
+       HttpClient httpClient = new DefaultHttpClient();
+       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTManageUserUrl() + "update");
+       String[] includes = {"user","username","token","pendingRoleName"};
+       String[] excludes = {"account","email","role"};
+       httpPost.setHeader("Content-Type", "application/json"); 
+       String json = JsonGenerator.deepSerializerObjectInclude(user, includes, excludes);
+       try {
+          httpPost.setEntity(new StringEntity(json,"UTF-8"));
+          httpClient.execute(httpPost);
+       } catch (UnsupportedEncodingException e) {
+          log.error("Update user to beehive failed", e);
+       } catch (ClientProtocolException e) {
+          log.error("Update user to beehive failed", e);
+       } catch (IOException e) {
+          log.error("Update user to beehive failed", e);
+       }
     }
     
     private void setDefaultConfigsForAccount(Account account){
        Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
        Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
        XmlParser.initControllerConfig(categories, allDefaultConfigs);
-       for(ControllerConfig cfg : allDefaultConfigs){
-          cfg.setAccount(account);
+       String[] excludes = {"*.class","id"};
+       String json = JsonGenerator.serializerObjectExcludeWithRoot(allDefaultConfigs, excludes, "controllerConfigs");
+       
+       HttpClient httpClient = new DefaultHttpClient();
+       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTControllerCongigUrl() + "save/" + account.getId());
+       httpPost.setHeader("Content-Type", "application/json");
+       
+       try {
+          httpPost.setEntity(new StringEntity(json,"UTF-8"));
+          httpClient.execute(httpPost);
+       } catch (UnsupportedEncodingException e) {
+          log.error("Can't save default controllerConfigs to account.", e);
+       } catch (ClientProtocolException e) {
+          log.error("Can't save default controllerConfigs to account.", e);
+       } catch (IOException e) {
+          log.error("Can't save default controllerConfigs to account.", e);
        }
-       genericDAO.getHibernateTemplate().saveOrUpdateAll(allDefaultConfigs);
     }
     
     /**
      * {@inheritDoc}
      */
     public boolean sendRegisterActivationEmail(final User user, final String email, final String password) {
-       if (user == null || user.getOid() == 0 || StringUtils.isEmpty(email)
+       if (user == null || user.getId() == 0 || StringUtils.isEmpty(email)
              || StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(password)) {
           return false;
        }
@@ -272,12 +332,12 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     * {@inheritDoc}
     */
    @Override
-   public boolean activateUser(String userOid, String aid) {
+   public User activateUser(String userOid, String aid) {
       long id = 0;
       try {
          id = Long.valueOf(userOid);
       } catch (NumberFormatException e) {
-         return false;
+         return null;
       }
       User user = getUserById(id);
       if (user != null && aid != null) {
@@ -292,14 +352,14 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
                soapAttribute.getValues()[0] = Boolean.toString(true);
                crowdClient.updatePrincipalAttribute(username, soapAttribute);
                setDefaultConfigsForAccount(user.getAccount());
-               return true;
+               return user;
             }
             
          } catch (Exception e) {
             log.error("Can't active user " + username +" in crowd", e);
          }
       }
-      return false;
+      return null;
    }
    
    public boolean isUsernameAvailable(String username) {
@@ -332,7 +392,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
 
    public User getCurrentUser() {
       String username = SecurityContextHolder.getContext().getAuthentication().getName();
-      return genericDAO.getByNonIdField(User.class, "username", username);
+      return getUserByName(username);
    }
 
    public User inviteUser(String email, String role, User currentUser) {
@@ -363,7 +423,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
    
    public boolean sendInvitation(final User invitee, final User currentUser) {
-       if (invitee == null || invitee.getOid() == 0 || StringUtils.isEmpty(invitee.getUsername())) {
+       if (invitee == null || invitee.getId() == 0 || StringUtils.isEmpty(invitee.getUsername())) {
          return false;
        }
        
@@ -375,9 +435,9 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
              message.setTo(invitee.getUsername());
              message.setFrom(mailSender.getUsername());
              Map model = new HashMap();
-             model.put("uid", invitee.getOid());
+             model.put("uid", invitee.getId());
              model.put("role", invitee.getPendingRoleName());
-             model.put("cid", currentUser.getOid());
+             model.put("cid", currentUser.getId());
              model.put("host", currentUser.getUsername());
              model.put("webapp", configuration.getWebappServerRoot());
              model.put("aid", new Md5PasswordEncoder().encodePassword(invitee.getUsername(), currentUser.getUsername()));
@@ -620,7 +680,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          log.error("Can't get " + username + "'s email from crowd when forget password.", e);
          return null;
       }
-      final User user = genericDAO.getByNonIdField(User.class, "username", username);
+      final User user = getUserByName(username);   
       final String paswordToken = UUID.randomUUID().toString();
       final String email = sendTo;
       if ("".equals(email)) {
@@ -637,7 +697,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             Map model = new HashMap();
             model.put("webapp", configuration.getWebappServerRoot());
             model.put("username", user.getUsername());
-            model.put("uid", user.getOid());
+            model.put("uid", user.getId());
             model.put("aid", paswordToken);
             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
                  Constants.FORGET_PASSWORD_EMAIL_VM_NAME, "UTF-8", model);
@@ -656,6 +716,35 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   private User getUserByName(String username) {
+      return getUserFromBeehive("getbyname/" + username);
+   }
+   
+   /**
+    * Gets the user from beehive.
+    * 
+    * @param url the url can be "getbyname/username" or "get/userId".
+    * 
+    * @return the user from beehive
+    */
+   private User getUserFromBeehive(String url) {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTManageUserUrl() + url);
+      httpGet.addHeader("Accept", "application/json");
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         if (response.getStatusLine().getStatusCode() == 200) {
+             String userJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<User>().use(null, User.class).deserialize(userJson);
+          }
+      } catch (ClientProtocolException e) {
+         log.error("Can't get user by username from beehive.", e);
+      } catch (IOException e) {
+         log.error("Can't get user by username from beehive.", e);
+      }
+      return null;
+   }
+   
    public User checkPasswordToken(long uid, String passwordToken) {
       User user = getUserById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {
@@ -691,7 +780,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
 
    public void initUserAccount(String username) {
-      if (genericDAO.getByNonIdField(User.class, "username", username) == null) {
+      if (getUserByName(username) == null) {
          User user = new User();
          user.setUsername(username);
          saveUser(user);

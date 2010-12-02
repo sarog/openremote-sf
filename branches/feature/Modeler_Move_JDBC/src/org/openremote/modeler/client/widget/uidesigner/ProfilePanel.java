@@ -528,7 +528,7 @@ public class ProfilePanel extends ContentPanel {
          @Override
          public void componentSelected(MenuEvent ce) {
             final Group group = new Group();
-            group.setOid(IDUtil.nextID());
+            group.setId(IDUtil.nextID());
             GroupRef groupRef = new GroupRef(group);
             BeanModel selectedBeanModel = panelTree.getSelectionModel().getSelectedItem();
             if (selectedBeanModel != null) {
@@ -600,7 +600,7 @@ public class ProfilePanel extends ContentPanel {
                      screen.setParentGroup(groupRef.getGroup());
                      screenRef = new ScreenPairRef(screen);
                      screenRef.setTouchPanelDefinition(screen.getTouchPanelDefinition());
-                     screenRef.setOid(IDUtil.nextID());
+                     screenRef.setId(IDUtil.nextID());
                      groupRef.getGroup().addScreenRef(screenRef);
                      screenRef.setGroup(groupRef.getGroup());
                      updatePanelTree(screenRef);

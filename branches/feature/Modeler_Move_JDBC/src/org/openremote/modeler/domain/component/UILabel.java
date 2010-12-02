@@ -69,7 +69,7 @@ public class UILabel extends UIComponent implements SensorOwner {
    }
 
    public UILabel(UILabel uiLabel) {
-      setOid(uiLabel.getOid());
+      setId(uiLabel.getId());
       this.text = uiLabel.text;
       this.fontSize = uiLabel.fontSize;
       this.color = uiLabel.color;
@@ -130,7 +130,7 @@ public class UILabel extends UIComponent implements SensorOwner {
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<label id=\"" + getOid() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
+      sb.append("<label id=\"" + getId() + "\" fontSize=\"" + fontSize + "\" color=\"#" + color + "\" text=\"" + StringUtils.escapeXml(text)
             + "\">\n");
       if (sensor != null) {
          sb.append(sensorLink.getXMLString());

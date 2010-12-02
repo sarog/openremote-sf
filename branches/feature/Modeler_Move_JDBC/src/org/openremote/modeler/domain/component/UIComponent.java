@@ -91,7 +91,7 @@ public abstract class UIComponent extends BusinessEntity {
             return new UITabbar();
          }
       }
-      result.setOid(IDUtil.nextID());
+      result.setId(IDUtil.nextID());
       return result;
    }
 
@@ -137,7 +137,7 @@ public abstract class UIComponent extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      return (int) getOid();
+      return (int) getId();
    }
 
 }

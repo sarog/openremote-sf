@@ -81,7 +81,7 @@ public class SensorLink extends BusinessEntity {
    public String getXMLString() {
       if (sensor != null) {
          StringBuilder sb = new StringBuilder();
-         sb.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\">");
+         sb.append("<link type=\"sensor\" ref=\"" + sensor.getId() + "\">");
          for (LinkerChild child : linkerChildren) {
             sb.append(child.toString());
          }

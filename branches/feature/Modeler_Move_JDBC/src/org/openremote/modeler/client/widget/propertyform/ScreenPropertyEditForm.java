@@ -109,7 +109,7 @@ public class ScreenPropertyEditForm extends PropertyForm {
                screenPair.setOrientation(OrientationType.PORTRAIT);
                if (screenPair.getPortraitScreen() == null) {
                   Screen screen = new Screen();
-                  screen.setOid(IDUtil.nextID());
+                  screen.setId(IDUtil.nextID());
                   screen.setName(screenPair.getName());
                   screenPair.setPortraitScreen(screen);
                }
@@ -128,7 +128,7 @@ public class ScreenPropertyEditForm extends PropertyForm {
                if (screenPair.getLandscapeScreen() == null) {
                   Screen screen = new Screen();
                   screen.setLandscape(true);
-                  screen.setOid(IDUtil.nextID());
+                  screen.setId(IDUtil.nextID());
                   screen.setName(screenPair.getName());
                   screenPair.setLandscapeScreen(screen);
                }
@@ -146,14 +146,14 @@ public class ScreenPropertyEditForm extends PropertyForm {
                screenPair.setOrientation(OrientationType.BOTH);
                if (screenPair.getPortraitScreen() == null) {
                   Screen screen = new Screen();
-                  screen.setOid(IDUtil.nextID());
+                  screen.setId(IDUtil.nextID());
                   screen.setName(screenPair.getName());
                   screenPair.setPortraitScreen(screen);
                }
                if (screenPair.getLandscapeScreen() == null) {
                   Screen screen = new Screen();
                   screen.setLandscape(true);
-                  screen.setOid(IDUtil.nextID());
+                  screen.setId(IDUtil.nextID());
                   screen.setName(screenPair.getName());
                   screenPair.setLandscapeScreen(screen);
                }

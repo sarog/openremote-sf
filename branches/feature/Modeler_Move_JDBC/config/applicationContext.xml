@@ -29,6 +29,7 @@
 		parent="baseSessionFactory">
 		<property name="annotatedClasses">
 			<list>
+			<!-- 
 				<value>org.openremote.modeler.domain.Protocol</value> 
                 <value>org.openremote.modeler.domain.ProtocolAttr</value>
                 <value>org.openremote.modeler.domain.Device</value>
@@ -56,6 +57,7 @@
                 <value>org.openremote.modeler.domain.Switch</value>
                 <value>org.openremote.modeler.domain.Slider</value> 
                 <value>org.openremote.modeler.domain.ControllerConfig</value>
+                -->
 			</list>
 		</property>
 		<property name="mappingResources">

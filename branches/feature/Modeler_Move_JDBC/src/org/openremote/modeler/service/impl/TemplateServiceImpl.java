@@ -140,7 +140,7 @@ public class TemplateServiceImpl implements TemplateService {
       log.debug("TemplateContent" + screenTemplate.getContent());
 
       try {
-         String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
+         String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId()
                + "/template/";
 
          /*if (screenTemplate.getShareTo() == Template.PUBLIC) {
@@ -177,7 +177,7 @@ public class TemplateServiceImpl implements TemplateService {
          if (result.indexOf("<id>") != -1 && result.indexOf("</id>") != -1) {
             long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
                   .indexOf("</id>")));
-            screenTemplate.setOid(templateOid);
+            screenTemplate.setId(templateOid);
             // save the resources (eg:images) to beehive.
             resourceService.saveTemplateResourcesToBeehive(screenTemplate, password);
          } else {
@@ -231,7 +231,7 @@ public class TemplateServiceImpl implements TemplateService {
       resetImageSourceLocationForScreen(screen);
       
       // ---------------download resources (eg:images) from beehive.
-      resourceService.downloadResourcesForTemplate(template.getOid(), password);
+      resourceService.downloadResourcesForTemplate(template.getId(), password);
       return reBuildCommand(screen);
    }
 
@@ -290,7 +290,7 @@ public class TemplateServiceImpl implements TemplateService {
 
       log.debug("Delete Template id: " + templateOid);
 
-      String deleteRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
+      String deleteRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId()
             + "/template/" + templateOid;
 
       HttpDelete httpDelete = new HttpDelete();
@@ -318,7 +318,7 @@ public class TemplateServiceImpl implements TemplateService {
    public List<Template> getTemplates(boolean fromPrivate, String password) {
       String shared = fromPrivate ? "private" : "public";
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
+      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId()
             + "/templates/" + shared;
 
       HttpGet httpGet = new HttpGet(restURL);
@@ -371,7 +371,7 @@ public class TemplateServiceImpl implements TemplateService {
          newKeywords = TemplateService.NO_KEYWORDS;
       }
       List<Template> templates = new ArrayList<Template>();
-      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid() + "/templates/" + share + "/keywords/"
+      String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId() + "/templates/" + share + "/keywords/"
       + newKeywords + "/page/"+page;
 
       HttpGet httpGet = new HttpGet(restURL);
@@ -785,7 +785,7 @@ public class TemplateServiceImpl implements TemplateService {
          List<Device> sameDevices = deviceService.loadSameDevices(device);
          if (! createNew) {
             if (sameDevices != null && sameDevices.size() >0) {
-               device.setOid(sameDevices.get(0).getOid());
+               device.setId(sameDevices.get(0).getId());
             } else {
                deviceService.saveDevice(device);
                isHasNewCmd = true;
@@ -807,7 +807,7 @@ public class TemplateServiceImpl implements TemplateService {
          if (! createNew) {
             List<DeviceCommand> sameCmds = deviceCommandService.loadSameCommands(deviceCommand);
             if (sameCmds != null && sameCmds.size() >0) {
-               deviceCommand.setOid(sameCmds.get(0).getOid());
+               deviceCommand.setId(sameCmds.get(0).getId());
             } else {
                deviceCommandService.save(deviceCommand);
                isHasNewCmd = true;
@@ -826,7 +826,7 @@ public class TemplateServiceImpl implements TemplateService {
          if (! createNew) {
             List<Sensor> sameSensors = sensorService.loadSameSensors(sensor);
             if (sameSensors != null && sameSensors.size() >0) {
-               sensor.setOid(sameSensors.get(0).getOid());
+               sensor.setId(sameSensors.get(0).getId());
             } else {
                sensorService.saveSensor(sensor);
                isHasNewCmd = true;
@@ -847,7 +847,7 @@ public class TemplateServiceImpl implements TemplateService {
          if (! createNew) {
             List<Switch> swhs = switchService.loadSameSwitchs(switchToggle);
             if (swhs !=null && swhs.size() >0) {
-               switchToggle.setOid(swhs.get(0).getOid());
+               switchToggle.setId(swhs.get(0).getId());
             } else {
                switchService.save(switchToggle);
             }
@@ -865,7 +865,7 @@ public class TemplateServiceImpl implements TemplateService {
          if (! createNew) {
             List<Slider> sameSliders = sliderService.loadSameSliders(slider);
             if (sameSliders != null && sameSliders.size() >0) {
-               slider.setOid(sameSliders.get(0).getOid());
+               slider.setId(sameSliders.get(0).getId());
             } else {
                sliderService.save(slider);
             }
@@ -957,7 +957,7 @@ public class TemplateServiceImpl implements TemplateService {
             macro.setAccount(userService.getAccount());
             List<DeviceMacro> sameMacro = deviceMacroService.loadSameMacro(macro);
             if (sameMacro != null && sameMacro.size() >0) {
-               macro.setOid(sameMacro.get(0).getOid());
+               macro.setId(sameMacro.get(0).getId());
             } else {
                this.deviceMacroService.saveDeviceMacro(macro);
             }
@@ -1132,7 +1132,7 @@ public class TemplateServiceImpl implements TemplateService {
          Template template = new Template();
          template.setName(name);
          template.setContent(content);
-         template.setOid(id);
+         template.setId(id);
          template.setKeywords(keywords);
          template.setShared(shared);
          return template;
@@ -1149,8 +1149,8 @@ public class TemplateServiceImpl implements TemplateService {
       params.add(new BasicNameValuePair("keywords",template.getKeywords()));
       
       try {
-         String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getOid()
-               + "/template/" + template.getOid();
+         String saveRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId()
+               + "/template/" + template.getId();
          HttpPut httpPut = new HttpPut(saveRestUrl);
          addAuthentication(httpPut, password);
          UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(params, "UTF-8");

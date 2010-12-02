@@ -145,7 +145,7 @@ public class TemplatePanel extends ContentPanel {
             } else {
                for (final BeanModel templateBeanModel : templateBeanModels) {
                   Template template = templateBeanModel.getBean();
-                  Long oid = template.getOid();
+                  Long oid = template.getId();
                   TemplateProxy.deleteTemplateById(oid, new AsyncSuccessCallback<Boolean>() {
                      @Override
                      public void onSuccess(Boolean success) {
@@ -302,7 +302,7 @@ public class TemplatePanel extends ContentPanel {
 
             @Override
             public void onSuccess(Template result) {
-               if (result != null && result.getOid() == templateInEditing.getOid()) {
+               if (result != null && result.getId() == templateInEditing.getId()) {
                   templateInEditing.setContent(result.getContent());
                   Info.display("Success", "Save template " + templateInEditing.getName()+" successfully !");
                   // stop auto-saving when the template preview tab has been closed. 
@@ -323,7 +323,7 @@ public class TemplatePanel extends ContentPanel {
 
    public synchronized void  setTemplateInEditing(final Template templateInEditing) {
       if (templateInEditing != null && this.templateInEditing != null ) {
-         if (templateInEditing.getOid() == this.templateInEditing.getOid()) return;
+         if (templateInEditing.getId() == this.templateInEditing.getId()) return;
       }
       if (this.templateInEditing != null) {
          // 1, save previous template.
@@ -340,7 +340,7 @@ public class TemplatePanel extends ContentPanel {
             @Override
             public void onSuccess(Template result) {
                // 2, make sure the content for the previous template be updated. 
-               if (result.getOid() == TemplatePanel.this.templateInEditing.getOid()){
+               if (result.getId() == TemplatePanel.this.templateInEditing.getId()){
                   TemplatePanel.this.templateInEditing.setContent(result.getContent());
                   Info.display("Success", "Save template " + TemplatePanel.this.templateInEditing.getName() + " successfully !");
                }

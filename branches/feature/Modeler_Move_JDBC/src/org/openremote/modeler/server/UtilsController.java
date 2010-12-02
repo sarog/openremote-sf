@@ -71,8 +71,6 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
    private static final String UI_DESIGNER_LAYOUT_SCREEN_KEY = "screenList";
    
    private static final String UI_DESIGNER_LAYOUT_MAXID = "maxID";
-   
-   public static final String CURRENT_PASSWORD = "currentPassword";
   
    /**
     * {@inheritDoc}
@@ -316,16 +314,4 @@ public class UtilsController extends BaseGWTSpringController implements UtilsRPC
       return configuration.getBeehiveRESTRootUrl()+"user/"+userService.getCurrentUser().getUsername();
    }
    
-   /**
-    * Gets current user's password from session.
-    * 
-    * @return the password
-    */
-   private String getPassword() {
-      Object password = getThreadLocalRequest().getSession().getAttribute(CURRENT_PASSWORD);
-      if (password != null) {
-         return password.toString();
-      }
-      return "";
-   }
 }

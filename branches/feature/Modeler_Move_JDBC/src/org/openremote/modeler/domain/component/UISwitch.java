@@ -53,7 +53,7 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
    }
 
    public UISwitch(UISwitch swh) {
-      this.setOid(swh.getOid());
+      this.setId(swh.getId());
       this.onImage = swh.onImage;
       this.offImage = swh.offImage;
       this.switchCommand = swh.switchCommand;
@@ -117,9 +117,9 @@ public class UISwitch extends UIControl implements SensorOwner ,ImageSourceOwner
    @JSON(include=false)
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
-      xmlContent.append("        <switch id=\"" + getOid() + "\">\n");
+      xmlContent.append("        <switch id=\"" + getId() + "\">\n");
       if (getSensor() != null) {
-         xmlContent.append("<link type=\"sensor\" ref=\"" + getSensor().getOid() + "\">");
+         xmlContent.append("<link type=\"sensor\" ref=\"" + getSensor().getId() + "\">");
          if (onImage != null && onImage.getSrc() != null) {
             xmlContent.append("          <state name=\"on\" value=\"" + onImage.getImageFileName() + "\"/>\n");
          }

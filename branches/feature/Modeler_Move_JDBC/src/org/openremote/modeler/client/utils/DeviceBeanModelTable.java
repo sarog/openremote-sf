@@ -106,9 +106,9 @@ public class DeviceBeanModelTable extends BeanModelTable {
                   if (sourceBeanModel.getBean() instanceof Device) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   } else if (sourceBeanModel.getBean() instanceof DeviceCommand) {
-                     sourceParentBeanModelOid = ((DeviceCommand) sourceBeanModel.getBean()).getDevice().getOid();
+                     sourceParentBeanModelOid = ((DeviceCommand) sourceBeanModel.getBean()).getDevice().getId();
                   }
-                  if (((BusinessEntity) parentBeanModel.getBean()).getOid() == sourceParentBeanModelOid) {
+                  if (((BusinessEntity) parentBeanModel.getBean()).getId() == sourceParentBeanModelOid) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   }
                }
@@ -158,7 +158,7 @@ public class DeviceBeanModelTable extends BeanModelTable {
          }
       } else if (beanModel.getBean() instanceof DeviceCommand) {
          DeviceCommand deviceCommand = (DeviceCommand) beanModel.getBean();
-         ChangeListener changeListener = insertListeners.get(deviceCommand.getDevice().getOid());
+         ChangeListener changeListener = insertListeners.get(deviceCommand.getDevice().getId());
          if (changeListener != null) {
             changeListener.modelChanged(evt);
          }

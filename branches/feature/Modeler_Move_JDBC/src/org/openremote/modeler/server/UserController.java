@@ -63,7 +63,7 @@ public class UserController extends BaseGWTSpringControllerWithHibernateSupport 
    }
 
    public Long getUserId() {
-      return userService.getCurrentUser().getOid();
+      return userService.getCurrentUser().getId();
    }
 
    public User createGuestUser(String email) {

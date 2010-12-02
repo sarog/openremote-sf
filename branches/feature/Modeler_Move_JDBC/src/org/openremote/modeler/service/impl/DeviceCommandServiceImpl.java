@@ -96,7 +96,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.DeviceCommandService#update(org.openremote.modeler.domain.DeviceCommand)
     */
    public DeviceCommand update(DeviceCommand deviceCommand) {
-      DeviceCommand old = loadById(deviceCommand.getOid());
+      DeviceCommand old = loadById(deviceCommand.getId());
       genericDAO.delete(old.getProtocol());
       old.setName(deviceCommand.getName());
       old.setProtocol(deviceCommand.getProtocol());
@@ -130,7 +130,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    public List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand) {
       List<DeviceCommand> tmpResult = new ArrayList<DeviceCommand>();
       DetachedCriteria critera = DetachedCriteria.forClass(DeviceCommand.class);
-      critera.add(Restrictions.eq("device.oid", deviceCommand.getDevice().getOid()));
+      critera.add(Restrictions.eq("device.oid", deviceCommand.getDevice().getId()));
       critera.add(Restrictions.eq("name", deviceCommand.getName()));
       if (deviceCommand.getSectionId() != null) {
          critera.add(Restrictions.eq("sectionId", deviceCommand.getSectionId()));

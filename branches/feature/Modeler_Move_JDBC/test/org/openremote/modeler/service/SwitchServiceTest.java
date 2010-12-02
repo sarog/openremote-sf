@@ -93,11 +93,11 @@ public class SwitchServiceTest {
       service.save(swh2);
 
       Switch switchFromTable = service.loadAll().get(0);
-      Assert.assertEquals(swh.getOid(), 1);
-      Assert.assertEquals(swh2.getOid(), 2);
-      Assert.assertTrue(swh.getSwitchCommandOffRef().getOid()>=1);
-      Assert.assertTrue(swh.getSwitchCommandOnRef().getOid()>=1);
-      Assert.assertTrue(swh.getSwitchSensorRef().getOid()>=1);
+      Assert.assertEquals(swh.getId(), 1);
+      Assert.assertEquals(swh2.getId(), 2);
+      Assert.assertTrue(swh.getSwitchCommandOffRef().getId()>=1);
+      Assert.assertTrue(swh.getSwitchCommandOnRef().getId()>=1);
+      Assert.assertTrue(swh.getSwitchSensorRef().getId()>=1);
       Assert.assertEquals(switchFromTable.getSwitchCommandOnRef().getDeviceCommand().getName(), "testLirc");
       Assert.assertEquals(switchFromTable.getSwitchCommandOffRef().getDeviceCommand().getName(), "testLirc");
    }
@@ -137,14 +137,14 @@ public class SwitchServiceTest {
       
       swh.setSwitchCommandOnRef(swhOnCmdRef);
       swh.setSwitchCommandOffRef(swhOffCmdRef);
-      swh.setOid(1);
+      swh.setId(1);
       swh.setName("testUpdate");
       service.update(swh);
 
       Collection<Switch> switchs = service.loadAll();
       Assert.assertEquals(switchs.size(), 2);
       for (Switch s : switchs) {
-         if (s.getOid() == 1) {
+         if (s.getId() == 1) {
             Assert.assertEquals(s.getName(), "testUpdate");
             Assert.assertTrue(s.getSwitchCommandOffRef().getDeviceCommand().getName().equals("testLirc2"));
             Assert.assertTrue(s.getSwitchCommandOnRef().getDeviceCommand().getName().equals("testLirc2"));
@@ -163,7 +163,7 @@ public class SwitchServiceTest {
    @Test(dependsOnMethods = "testUpdate")
    public void testDelte() {
       Switch swh = new Switch();
-      swh.setOid(1);
+      swh.setId(1);
       service.delete(1);
       Collection<Switch> switchs = service.loadAll();
       Assert.assertEquals(switchs.size(), 1);

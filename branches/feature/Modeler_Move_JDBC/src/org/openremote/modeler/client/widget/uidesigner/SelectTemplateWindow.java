@@ -141,7 +141,7 @@ public class SelectTemplateWindow extends Dialog{
                
                Template template = new Template();
                template.setContent(content);
-               template.setOid(oid);
+               template.setId(oid);
                template.setName(name);
                String templateName = "<p><b>Template info</b></p>";
                if (template.getName() != null){
@@ -171,7 +171,7 @@ public class SelectTemplateWindow extends Dialog{
                
                Template template = new Template();
                template.setContent(content);
-               template.setOid(oid);
+               template.setId(oid);
                template.setName(name);
                TemplateProxy.buildScreenFromTemplate(template, new AsyncSuccessCallback<ScreenFromTemplate>(){
 

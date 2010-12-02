@@ -78,7 +78,7 @@ public class SensorRefItem extends BusinessEntity {
       if (obj == null) return false;
       if (obj.getClass() != this.getClass()) return false;
       SensorRefItem other = (SensorRefItem) obj;
-      if (other.getOid() != this.getOid()) return false;
+      if (other.getId() != this.getId()) return false;
       if (sensor == null) {
          if(other.sensor != null) return false;
       } else if (! sensor.equals(other.sensor)) return false;

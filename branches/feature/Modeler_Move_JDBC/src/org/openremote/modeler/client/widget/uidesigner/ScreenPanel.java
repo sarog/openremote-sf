@@ -78,14 +78,14 @@ public class ScreenPanel extends LayoutContainer {
       addListener(Events.Add, new Listener<ContainerEvent>() {
          public void handleEvent(ContainerEvent be) {
             final ScreenTab screenTab = (ScreenTab) be.getItem();
-            BeanModelDataBase.screenTable.addChangeListener(screenTab.getScreenPair().getOid(),
+            BeanModelDataBase.screenTable.addChangeListener(screenTab.getScreenPair().getId(),
                   getScreenChangeListener(screenTab));
          }
       });
       addListener(Events.Remove, new Listener<ContainerEvent>() {                
          public void handleEvent(ContainerEvent be) {
             final ScreenTab screenTab = (ScreenTab) be.getItem();
-            BeanModelDataBase.screenTable.removeChangeListener(screenTab.getScreenPair().getOid(),
+            BeanModelDataBase.screenTable.removeChangeListener(screenTab.getScreenPair().getId(),
                   getScreenChangeListener(screenTab));
          }
       });

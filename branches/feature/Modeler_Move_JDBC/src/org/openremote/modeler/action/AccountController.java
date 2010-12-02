@@ -134,10 +134,10 @@ public class AccountController extends MultiActionController {
       String userOid = request.getParameter("uid");
       String aid = request.getParameter("aid");
       
-      boolean success = userService.activateUser(userOid, aid);
+      User user = userService.activateUser(userOid, aid);
+      boolean success = user == null ? false : true;
       if (success) {
-         User u = userService.getUserById(Long.valueOf(userOid));
-         loginMav.addObject("username", u.getUsername());
+         loginMav.addObject("username", user.getUsername());
       }
       loginMav.addObject("isActivated", success);
       return loginMav;
@@ -161,7 +161,7 @@ public class AccountController extends MultiActionController {
       if (success) {
          User u = userService.getUserById(Long.valueOf(userOid));
          acceptMav.addObject("email", u.getUsername());
-         acceptMav.addObject("uid", u.getOid());
+         acceptMav.addObject("uid", u.getId());
       }
       acceptMav.addObject("isChecked", success);
       return acceptMav;
@@ -349,11 +349,6 @@ public class AccountController extends MultiActionController {
       }
       if (!password.equals(password2)) {
          resetMav.addObject("password_error", true);
-         return resetMav;
-      }
-      
-      if (userService.getUserById(Long.valueOf(uid)) == null) {
-         resetMav.addObject("isUserExist", false);
          return resetMav;
       }
       

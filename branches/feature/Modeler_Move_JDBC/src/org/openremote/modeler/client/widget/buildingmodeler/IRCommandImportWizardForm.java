@@ -96,7 +96,7 @@ public class IRCommandImportWizardForm extends IRCommandImportForm {
                   }
 
                };
-               if (getDevice().getOid() == 0L) {
+               if (getDevice().getId() == 0L) {
                   DeviceBeanModelProxy.saveDeviceWithCommands(getDevice(), modelDatas, callback);
                } else {
                   //TODO update function

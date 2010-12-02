@@ -42,7 +42,7 @@ public interface UserService {
     * 
     * @param user the user
     */
-   void saveUser(User user);
+   User saveUser(User user);
    
    /**
     * Update the user with database.
@@ -72,9 +72,9 @@ public interface UserService {
     *           user oid
     * @param aid
     *           activation id
-    * @return true if success
+    * @return user if success
     */
-   boolean activateUser(String userOid, String aid);
+   User activateUser(String userOid, String aid);
    
    /**
     * Send register activation email.

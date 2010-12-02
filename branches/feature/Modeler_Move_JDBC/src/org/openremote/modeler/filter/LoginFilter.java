@@ -30,7 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.openremote.modeler.server.UtilsController;
+import org.openremote.modeler.server.BaseGWTSpringController;
 
 /**
  * Store the password in session after the user login.
@@ -46,7 +46,7 @@ public class LoginFilter implements Filter {
          ServletException {
       String password = request.getParameter("j_password");
       HttpSession session = ((HttpServletRequest)request).getSession(false);
-      session.setAttribute(UtilsController.CURRENT_PASSWORD, password);
+      session.setAttribute(BaseGWTSpringController.CURRENT_PASSWORD, password);
       chain.doFilter(request, response);
    }
 

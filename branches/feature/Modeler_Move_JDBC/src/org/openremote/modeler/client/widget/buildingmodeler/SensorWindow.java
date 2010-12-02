@@ -465,7 +465,7 @@ public class SensorWindow extends FormWindow {
                   List<BeanModel> states = grid.getStore().getModels();
                   for (BeanModel stateModel : states) {
                      State state = stateModel.getBean();
-                     state.setOid(0);
+                     state.setId(0);
                      state.setSensor((CustomSensor) sensor);
                      ((CustomSensor) sensor).addState(state);
                   }

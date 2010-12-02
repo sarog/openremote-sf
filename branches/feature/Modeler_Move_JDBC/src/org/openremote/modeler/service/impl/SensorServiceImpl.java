@@ -68,16 +68,16 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       Sensor old = null;
       
       if (SensorType.RANGE == sensor.getType()) {
-         old = genericDAO.loadById(RangeSensor.class, sensor.getOid());
+         old = genericDAO.loadById(RangeSensor.class, sensor.getId());
          RangeSensor rangeSensor = (RangeSensor)sensor;
          ((RangeSensor) old).setMax(rangeSensor.getMax());
          ((RangeSensor) old).setMin(rangeSensor.getMin());
       } else if (SensorType.CUSTOM == sensor.getType()) {
-         old = genericDAO.loadById(CustomSensor.class, sensor.getOid());
+         old = genericDAO.loadById(CustomSensor.class, sensor.getId());
          genericDAO.deleteAll(((CustomSensor)old).getStates());
          ((CustomSensor)old).setStates(((CustomSensor) sensor).getStates());
       } else {
-         old = genericDAO.loadById(Sensor.class, sensor.getOid());
+         old = genericDAO.loadById(Sensor.class, sensor.getId());
       }
       
       old.setName(sensor.getName());
@@ -105,7 +105,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
       critera.add(Restrictions.eq("name", sensor.getName()));
       critera.add(Restrictions.eq("type", sensor.getType()));
-      critera.add(Restrictions.eq("device.oid", sensor.getDevice().getOid()));
+      critera.add(Restrictions.eq("device.oid", sensor.getDevice().getId()));
       result = genericDAO.findByDetachedCriteria(critera);
       
       if (result != null) {

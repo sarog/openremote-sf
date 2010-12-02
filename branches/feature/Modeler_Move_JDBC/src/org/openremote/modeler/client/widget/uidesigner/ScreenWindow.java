@@ -162,10 +162,10 @@ public class ScreenWindow extends FormWindow {
 
    private ScreenPairRef createScreenRef(GroupRef selectedGroup) {
       screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       screen.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
+      screenPair.setId(IDUtil.nextID());
       screenPair.setTouchPanelDefinition(selectedGroup.getPanel().getTouchPanelDefinition());
       screenPair.setPortraitScreen(screen);
       screenPair.setParentGroup(selectedGroup.getGroup());

@@ -151,7 +151,7 @@ public class NewScreenFromTemplateWindow extends FormWindow {
             public void onSuccess(ScreenFromTemplate result) {
                NewScreenFromTemplateWindow.this.unmask();
                screen = result.getScreen();
-               screen.setOid(IDUtil.nextID());
+               screen.setId(IDUtil.nextID());
                screen.setName(nameField.getValue());
                fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(result));
             }

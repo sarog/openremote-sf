@@ -38,9 +38,9 @@ public class TemplateServiceTest {
 //   @Test
    public void getJson4EmptyScreen() {
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
+      screenPair.setId(IDUtil.nextID());
       screenPair.setPortraitScreen(screen);
       Template template = new Template("emptyScreen", screenPair);
       Template t2 = templateService.saveTemplate(template,"test");
@@ -51,14 +51,14 @@ public class TemplateServiceTest {
    public void getJosn4ScreenHasOneButton() {
 
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
+      screenPair.setId(IDUtil.nextID());
       screenPair.setPortraitScreen(screen);
       Template template = new Template("screenHasButton", screenPair);
 
       UIButton btn = new UIButton();
-      btn.setOid(IDUtil.nextID());
+      btn.setId(IDUtil.nextID());
 
       Absolute absolute = new Absolute();
       absolute.setUiComponent(btn);
@@ -70,33 +70,33 @@ public class TemplateServiceTest {
 //   @Test
    public void testGetScreenFromTemplate() {
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
+      screenPair.setId(IDUtil.nextID());
       screenPair.setPortraitScreen(screen);
       Template template = new Template("screenHasButton", screenPair);
 
       UIButton btn = new UIButton();
-      btn.setOid(IDUtil.nextID());
+      btn.setId(IDUtil.nextID());
       btn.setUiCommand(new UICommand());
       UISwitch uiSwitch = new UISwitch();
-      uiSwitch.setOid(IDUtil.nextID());
+      uiSwitch.setId(IDUtil.nextID());
       uiSwitch.setSwitchCommand(new Switch());
       Absolute absolute = new Absolute();
       absolute.setUiComponent(btn);
 
       Cell cell = new Cell();
-      cell.setOid(IDUtil.nextID());
+      cell.setId(IDUtil.nextID());
       cell.setUiComponent(uiSwitch);
       UIGrid grid = new UIGrid(10, 10, 320, 240, 4, 4);
-      grid.setOid(IDUtil.nextID());
+      grid.setId(IDUtil.nextID());
       grid.addCell(cell);
 
       screen.addAbsolute(absolute);
       screen.addGrid(grid);
 
       Gesture gesture = new Gesture();
-      gesture.setOid(IDUtil.nextID());
+      gesture.setId(IDUtil.nextID());
       gesture.setUiCommand(new UICommand());
       gesture.getCommands().add(new UICommand());
       screen.addGesture(gesture);
@@ -115,33 +115,33 @@ public class TemplateServiceTest {
 //   @Test
    public void testSaveTemplate() {
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
+      screenPair.setId(IDUtil.nextID());
       screenPair.setPortraitScreen(screen);
       Template template = new Template("screenHasButton", screenPair);
 
       UIButton btn = new UIButton();
-      btn.setOid(IDUtil.nextID());
+      btn.setId(IDUtil.nextID());
       btn.setUiCommand(new UICommand());
       UISwitch uiSwitch = new UISwitch();
-      uiSwitch.setOid(IDUtil.nextID());
+      uiSwitch.setId(IDUtil.nextID());
       uiSwitch.setSwitchCommand(new Switch());
       Absolute absolute = new Absolute();
       absolute.setUiComponent(btn);
 
       Cell cell = new Cell();
-      cell.setOid(IDUtil.nextID());
+      cell.setId(IDUtil.nextID());
       cell.setUiComponent(uiSwitch);
       UIGrid grid = new UIGrid(10, 10, 320, 240, 4, 4);
-      grid.setOid(IDUtil.nextID());
+      grid.setId(IDUtil.nextID());
       grid.addCell(cell);
 
       screen.addAbsolute(absolute);
       screen.addGrid(grid);
 
       Gesture gesture = new Gesture();
-      gesture.setOid(IDUtil.nextID());
+      gesture.setId(IDUtil.nextID());
       gesture.setUiCommand(new UICommand());
       gesture.getCommands().add(new UICommand());
       screen.addGesture(gesture);

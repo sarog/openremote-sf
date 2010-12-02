@@ -65,7 +65,7 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
    }
 
    public UIImage(UIImage uiImage) {
-      this.setOid(uiImage.getOid());
+      this.setId(uiImage.getId());
       this.imageSource = uiImage.imageSource;
       this.sensor = uiImage.sensor;
       this.label = uiImage.label;
@@ -122,12 +122,12 @@ public class UIImage extends UIComponent implements SensorOwner, ImageSourceOwne
    @Override
    public String getPanelXml() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<image id=\"" + getOid() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
+      sb.append("<image id=\"" + getId() + "\" src=\"" + imageSource.getImageFileName() + "\"> ");
       if (sensor != null) {
          sb.append(sensorLink.getXMLString());
       }
       if (label != null && label.isRemoved()==false) {
-         sb.append("<include type=\"label\" ref=\"" + label.getOid() + "\"/>\n");
+         sb.append("<include type=\"label\" ref=\"" + label.getId() + "\"/>\n");
       }
       sb.append("</image>");
       return sb.toString();

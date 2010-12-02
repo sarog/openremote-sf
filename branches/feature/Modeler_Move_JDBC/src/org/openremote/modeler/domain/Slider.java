@@ -96,7 +96,7 @@ public class Slider extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      return (int) getOid();
+      return (int) getId();
    }
 
    @Override
@@ -105,7 +105,7 @@ public class Slider extends BusinessEntity {
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
       Slider other = (Slider) obj;
-      if (this.getOid() != other.getOid()) return false;
+      if (this.getId() != other.getId()) return false;
       if (device == null) {
          if (other.device != null) return false;
       } else if (!device.equals(other.device)) return false;
@@ -135,7 +135,7 @@ public class Slider extends BusinessEntity {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
       if (this.device != null) {
-         if (other.device == null || this.device.getOid() != other.device.getOid()) return false;
+         if (other.device == null || this.device.getId() != other.device.getId()) return false;
       } else if (other.device != null) return false;
       if (this.setValueCmd != null) {
          if (other.setValueCmd == null || !this.setValueCmd.equalsWithoutCompareOid(other.getSetValueCmd())) return false;

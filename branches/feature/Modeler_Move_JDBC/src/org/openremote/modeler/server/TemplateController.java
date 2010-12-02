@@ -95,16 +95,4 @@ public class TemplateController extends BaseGWTSpringController implements Templ
       return result;
    }
 
-   /**
-    * Gets current user's password from session.
-    * 
-    * @return the password
-    */
-   private String getPassword() {
-      Object password = getThreadLocalRequest().getSession().getAttribute(UtilsController.CURRENT_PASSWORD);
-      if (password != null) {
-         return password.toString();
-      }
-      return "";
-   }
 }

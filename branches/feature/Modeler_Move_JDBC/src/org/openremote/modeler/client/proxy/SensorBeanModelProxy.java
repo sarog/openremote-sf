@@ -51,7 +51,7 @@ public class SensorBeanModelProxy {
          });
       } else {
          Sensor sensor = (Sensor) beanModel.getBean();
-         AsyncServiceFactory.getSensorRPCServiceAsync().getById(sensor.getOid(), new AsyncSuccessCallback<Sensor>() {
+         AsyncServiceFactory.getSensorRPCServiceAsync().getById(sensor.getId(), new AsyncSuccessCallback<Sensor>() {
             public void onSuccess(Sensor result) {
                List<BeanModel> beanModels = new ArrayList<BeanModel>();
                if (result.getSensorCommandRef() != null) {
@@ -87,7 +87,7 @@ public class SensorBeanModelProxy {
    
    public static void deleteSensor(final BeanModel beanModel, final AsyncCallback<Boolean> callback) {
       Sensor sensor = beanModel.getBean();
-      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getOid(), new AsyncSuccessCallback<Boolean>() {
+      AsyncServiceFactory.getSensorRPCServiceAsync().deleteSensor(sensor.getId(), new AsyncSuccessCallback<Boolean>() {
          public void onSuccess(Boolean result) {
             if (result) {
                BeanModelDataBase.sensorTable.delete(beanModel);

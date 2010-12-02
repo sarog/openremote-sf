@@ -363,11 +363,11 @@ public class ResourceServiceImpl implements ResourceService {
          if (command instanceof DeviceMacroItem) {
             if (command instanceof DeviceCommandRef) {
                DeviceCommand deviceCommand = deviceCommandService.loadById(((DeviceCommandRef) command)
-                     .getDeviceCommand().getOid());
+                     .getDeviceCommand().getId());
                addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
             } else if (command instanceof DeviceMacroRef) {
                DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
-               deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+               deviceMacro = deviceMacroService.loadById(deviceMacro.getId());
                for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
                   oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,
                         maxId));
@@ -381,7 +381,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
          } else if (command instanceof CommandRefItem) {
             DeviceCommand deviceCommand = deviceCommandService.loadById(((CommandRefItem) command).getDeviceCommand()
-                  .getOid());
+                  .getId());
             protocolEventContainer.removeDeviceCommand(deviceCommand);
             addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
          } else {
@@ -489,7 +489,7 @@ public class ResourceServiceImpl implements ResourceService {
          } else if (deviceMacroItem instanceof DeviceMacroRef) {
             DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
             if (deviceMacro != null) {
-               deviceMacro = deviceMacroService.loadById(deviceMacro.getOid());
+               deviceMacro = deviceMacroService.loadById(deviceMacro.getId());
                for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
                   deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
                }
@@ -580,7 +580,7 @@ public class ResourceServiceImpl implements ResourceService {
                "groupRefs.group.screenRefs.screen.grids.uiComponent.sensor",
                "groupRefs.group.screenRefs.screen.grids.cells.uiComponent.sensor" };
          String[] excludePropertyNames = { "panelName", "*.displayName", "*.panelXml" };
-         return JsonGenerator.serializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
+         return JsonGenerator.deepSerializerObjectInclude(panels, includedPropertyNames, excludePropertyNames);
       } catch (Exception e) {
          LOGGER.error(e);
          return "";
@@ -630,7 +630,7 @@ public class ResourceServiceImpl implements ResourceService {
       List<Device> allDevices = userService.getAccount().getDevices();
       List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
       for (Device device : allDevices) {
-         allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getOid()));
+         allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getId()));
       }
       
       /*
@@ -723,7 +723,7 @@ public class ResourceServiceImpl implements ResourceService {
       List<Sensor> duplicateDBSensors = new ArrayList<Sensor>();
       for (Sensor dbSensor : dbSensors) {
          for (Sensor clientSensor : sensorWithoutDuplicate) {
-            if (dbSensor.getOid() == clientSensor.getOid()) {
+            if (dbSensor.getId() == clientSensor.getId()) {
                duplicateDBSensors.add(dbSensor);
             }
          }
@@ -743,7 +743,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
          }
          for (Sensor s : sensorsWithSameOid) {
-            s.setOid(currentSensorId);
+            s.setId(currentSensorId);
          }
       }
       return sensorWithoutDuplicate;
@@ -937,7 +937,7 @@ public class ResourceServiceImpl implements ResourceService {
       String beehiveRootRestURL = configuration.getBeehiveHttpsRESTRootUrl();
       this.addAuthentication(httpPost, password);
 
-      String url = beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/openremote.zip";
+      String url = beehiveRootRestURL + "account/" + userService.getAccount().getId() + "/openremote.zip";
 
       try {
          httpPost.setURI(new URI(url));
@@ -970,10 +970,10 @@ public class ResourceServiceImpl implements ResourceService {
       String beehiveRootRestURL = configuration.getBeehiveHttpsRESTRootUrl();
       String url = "";
       if (!share) {
-         url = beehiveRootRestURL + "account/" + userService.getAccount().getOid() + "/template/" + template.getOid()
+         url = beehiveRootRestURL + "account/" + userService.getAccount().getId() + "/template/" + template.getId()
                + "/resource/";
       } else {
-         url = beehiveRootRestURL + "account/0/template/" + template.getOid() + "/resource/";
+         url = beehiveRootRestURL + "account/0/template/" + template.getId() + "/resource/";
       }
       try {
          httpPost.setURI(new URI(url));
@@ -1020,7 +1020,7 @@ public class ResourceServiceImpl implements ResourceService {
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
       HttpGet httpGet = new HttpGet(configuration.getBeehiveHttpsRESTRootUrl() + "account/"
-            + userService.getAccount().getOid() + "/template/" + templateOid + "/resource");
+            + userService.getAccount().getId() + "/template/" + templateOid + "/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
       this.addAuthentication(httpGet, password);

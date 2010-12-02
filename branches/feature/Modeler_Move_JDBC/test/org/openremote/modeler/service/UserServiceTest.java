@@ -62,7 +62,7 @@ public class UserServiceTest {
    @Test
    public void sendActivationEmailSuccessfully() {
       User user = new User();
-      user.setOid(11111);
+      user.setId(11111);
       user.setUsername(TEST_USERNAME);
       Assert.assertTrue(userService.sendRegisterActivationEmail(user, TEST_EMAIL, TEST_PASSWORD));
    }
@@ -82,14 +82,14 @@ public class UserServiceTest {
    @Test
    public void sendActivationEmailWihtoutUsername() {
       User user = new User();
-      user.setOid(11111);
+      user.setId(11111);
       Assert.assertFalse(userService.sendRegisterActivationEmail(user, TEST_EMAIL, TEST_PASSWORD));
    }
    
    @Test
    public void sendActivationEmailWihtoutPassword() {
       User user = new User();
-      user.setOid(11111);
+      user.setId(11111);
       user.setUsername(TEST_USERNAME);
       Assert.assertFalse(userService.sendRegisterActivationEmail(user, TEST_EMAIL, null));
    }
@@ -97,7 +97,7 @@ public class UserServiceTest {
    @Test
    public void sendActivationEmailWihtoutEmail() {
       User user = new User();
-      user.setOid(11111);
+      user.setId(11111);
       user.setUsername(TEST_USERNAME);
       Assert.assertFalse(userService.sendRegisterActivationEmail(user, null, TEST_PASSWORD));
    }
@@ -117,7 +117,7 @@ public class UserServiceTest {
       try {
          SOAPPrincipal principal = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal.isActive());
-         Assert.assertFalse(userService.activateUser(null, null));
+         Assert.assertNull(userService.activateUser(null, null));
          SOAPPrincipal principal2 = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal2.isActive());
       } catch (Exception e) {
@@ -130,7 +130,7 @@ public class UserServiceTest {
       try {
          SOAPPrincipal principal = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal.isActive());
-         Assert.assertFalse(userService.activateUser("a", null));
+         Assert.assertNull(userService.activateUser("a", null));
          SOAPPrincipal principal2 = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal2.isActive());
       } catch (Exception e) {
@@ -143,7 +143,7 @@ public class UserServiceTest {
       try {
          SOAPPrincipal principal = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal.isActive());
-         Assert.assertFalse(userService.activateUser("1", "asdfsd"));
+         Assert.assertNull(userService.activateUser("1", "asdfsd"));
          SOAPPrincipal principal2 = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal2.isActive());
       } catch (Exception e) {
@@ -157,7 +157,7 @@ public class UserServiceTest {
          SOAPPrincipal principal = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertFalse(principal.isActive());
          String sig = new Md5PasswordEncoder().encodePassword(principal.getName(), principal.getAttribute(UserConstants.EMAIL).getValues()[0]);
-         Assert.assertTrue(userService.activateUser("1", sig));
+         Assert.assertNotNull(userService.activateUser("1", sig));
          SOAPPrincipal principal2 = crowdClient.findPrincipalByName(TEST_USERNAME);
          Assert.assertTrue(principal2.isActive());
       } catch (Exception e) {
@@ -177,18 +177,18 @@ public class UserServiceTest {
 //   @Test(dependsOnMethods = { "inviteUser" })
    public void checkInvitation() {
       User currentUser = userService.getUserById(1L);
-      Assert.assertTrue(userService.checkInvitation(String.valueOf(invitee.getOid()), ""+1, new Md5PasswordEncoder().encodePassword(TEST_EMAIL, currentUser.getUsername())));
+      Assert.assertTrue(userService.checkInvitation(String.valueOf(invitee.getId()), ""+1, new Md5PasswordEncoder().encodePassword(TEST_EMAIL, currentUser.getUsername())));
    }
    
 //   @Test(dependsOnMethods = { "checkInvitation" })
    public void updateUserRoles() {
-      User user = userService.updateUserRoles(invitee.getOid(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME, true);
+      User user = userService.updateUserRoles(invitee.getId(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME, true);
       Assert.assertEquals(user.getPendingRoleName(), Constants.ROLE_MODELER_DESIGNER_DISPLAYNAME);
    }
    
 //   @Test(dependsOnMethods = { "updateUserRoles" })
    public void createInviteeAccount() {
-      Assert.assertTrue(userService.createInviteeAccount(String.valueOf(invitee.getOid()), "tomsky.wang", "hahahaha", TEST_EMAIL));
+      Assert.assertTrue(userService.createInviteeAccount(String.valueOf(invitee.getId()), "tomsky.wang", "hahahaha", TEST_EMAIL));
    }
    
 //   @Test(dependsOnMethods = { "createInviteeAccount" })

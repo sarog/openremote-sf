@@ -63,7 +63,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       super();
    }
    public UIButton(UIButton btn) {
-      this.setOid(btn.getOid());
+      this.setId(btn.getId());
       this.name = btn.name;
       this.repeate = btn.repeate;
       this.image = btn.image;
@@ -153,7 +153,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    @Override
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
-      xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + StringUtils.escapeXml(getName()) + "\"");
+      xmlContent.append("        <button id=\"" + getId() + "\" name=\"" + StringUtils.escapeXml(getName()) + "\"");
       if (uiCommand != null) {
          xmlContent.append(" hasControlCommand=\"true\"");
       }

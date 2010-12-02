@@ -111,9 +111,9 @@ private List<DeviceMacroInsertListener<BeanModel>> deviceMacroInsertListeners = 
                      return;
                   } else if (sourceBeanModel.getBean() instanceof DeviceMacroItem) {
                      DeviceMacroItem deviceMacroItem = (DeviceMacroItem) sourceBeanModel.getBean();
-                     sourceParentBeanModelOid = deviceMacroItem.getParentDeviceMacro().getOid();
+                     sourceParentBeanModelOid = deviceMacroItem.getParentDeviceMacro().getId();
                   }
-                  if (((BusinessEntity) parentBeanModel.getBean()).getOid() == sourceParentBeanModelOid) {
+                  if (((BusinessEntity) parentBeanModel.getBean()).getId() == sourceParentBeanModelOid) {
                      treeStore.add(parentBeanModel, sourceBeanModel, false);
                   }
                }
@@ -212,7 +212,7 @@ private List<DeviceMacroInsertListener<BeanModel>> deviceMacroInsertListeners = 
          }
       } else if (beanModel.getBean() instanceof DeviceMacroItem) {
          DeviceMacroItem deviceMacroItem = (DeviceMacroItem) beanModel.getBean();
-         ChangeListener changeListener = insertListeners.get(deviceMacroItem.getParentDeviceMacro().getOid());
+         ChangeListener changeListener = insertListeners.get(deviceMacroItem.getParentDeviceMacro().getId());
          if (changeListener != null) {
             changeListener.modelChanged(evt);
          }

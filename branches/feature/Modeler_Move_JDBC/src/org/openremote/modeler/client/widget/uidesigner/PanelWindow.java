@@ -167,26 +167,26 @@ public class PanelWindow extends FormWindow {
                return;
             }
             if (panelModel == null) {
-               panel.setOid(IDUtil.nextID());
+               panel.setId(IDUtil.nextID());
                Panel.increaseDefaultNameIndex();
                ComboBoxDataModel<TouchPanelDefinition> prededinedPanel = (ComboBoxDataModel<TouchPanelDefinition>) predefinedPanel
                      .getValue();
                panel.setTouchPanelDefinition(prededinedPanel.getData());
                Group defaultGroup = new Group();
                defaultGroup.setParentPanel(panel);
-               defaultGroup.setOid(IDUtil.nextID());
+               defaultGroup.setId(IDUtil.nextID());
                defaultGroup.setName(Constants.DEFAULT_GROUP);
                GroupRef groupRef = new GroupRef(defaultGroup);
                panel.addGroupRef(groupRef);
                groupRef.setPanel(panel);
 //               if (createScreen.getValue()) {
                   Screen defaultScreen = new Screen();
-                  defaultScreen.setOid(IDUtil.nextID());
+                  defaultScreen.setId(IDUtil.nextID());
                   defaultScreen.setName(Constants.DEFAULT_SCREEN);
                   defaultScreen.setTouchPanelDefinition(panel.getTouchPanelDefinition());
                   
                   ScreenPair screenPair = new ScreenPair();
-                  screenPair.setOid(IDUtil.nextID());
+                  screenPair.setId(IDUtil.nextID());
                   screenPair.setTouchPanelDefinition(panel.getTouchPanelDefinition());
                   screenPair.setPortraitScreen(defaultScreen);
                   screenPair.setParentGroup(defaultGroup);
