@@ -111,6 +111,6 @@ public class ScreenPairRef extends BusinessEntity {
     */
    @Transient
    public long getScreenId() {
-      return screen.getOid();
+      return screen.getId();
    }
 }

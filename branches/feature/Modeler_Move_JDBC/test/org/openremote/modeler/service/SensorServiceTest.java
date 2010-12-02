@@ -183,7 +183,7 @@ public class SensorServiceTest {
    public void delete() {
       List<Sensor> sensors = genericDAO.loadAll(Sensor.class);
       for (Sensor sensor : sensors) {
-         sensorService.deleteSensor(sensor.getOid());
+         sensorService.deleteSensor(sensor.getId());
       }
       sensors = genericDAO.loadAll(Sensor.class);
       Assert.assertEquals(sensors.size(), 0);

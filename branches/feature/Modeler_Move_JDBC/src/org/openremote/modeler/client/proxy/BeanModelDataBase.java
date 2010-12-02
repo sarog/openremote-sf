@@ -100,10 +100,10 @@ public class BeanModelDataBase {
          DeviceMacroItem deviceMacroItem = (DeviceMacroItem) deviceMacroItemBeanModel.getBean();
          if (deviceMacroItem instanceof DeviceMacroRef) {
             DeviceMacroRef deviceMacroRef = (DeviceMacroRef) deviceMacroItem;
-            return deviceMacroRef.getTargetDeviceMacro().getOid();
+            return deviceMacroRef.getTargetDeviceMacro().getId();
          } else if (deviceMacroItem instanceof DeviceCommandRef) {
             DeviceCommandRef deviceCommandRef = (DeviceCommandRef) deviceMacroItem;
-            return deviceCommandRef.getDeviceCommand().getOid();
+            return deviceCommandRef.getDeviceCommand().getId();
          }
       }
       return 0;
@@ -112,7 +112,7 @@ public class BeanModelDataBase {
    public static long getOriginalCommandRefItemBeanModelId(BeanModel commandRefItemBeanModel) {
       if (commandRefItemBeanModel.getBean() instanceof CommandRefItem) {
          CommandRefItem deviceMacroItem = (CommandRefItem) commandRefItemBeanModel.getBean();
-         return deviceMacroItem.getDeviceCommand().getOid();
+         return deviceMacroItem.getDeviceCommand().getId();
       }
       return 0;
    }
@@ -136,17 +136,17 @@ public class BeanModelDataBase {
             return Constants.MACROS_OID;
          }
       } else if (beanModel.getBean() instanceof Device) {
-         return ((Device) beanModel.getBean()).getOid();
+         return ((Device) beanModel.getBean()).getId();
       } else if (beanModel.getBean() instanceof DeviceCommand) {
-         return ((DeviceCommand) beanModel.getBean()).getOid();
+         return ((DeviceCommand) beanModel.getBean()).getId();
       } else if (beanModel.getBean() instanceof DeviceMacro) {
-         return ((DeviceMacro) beanModel.getBean()).getOid();
+         return ((DeviceMacro) beanModel.getBean()).getId();
       } else if (beanModel.getBean() instanceof DeviceCommandRef) {
          DeviceCommandRef deviceCommandRef = (DeviceCommandRef) beanModel.getBean();
-         return deviceCommandRef.getDeviceCommand().getDevice().getOid();
+         return deviceCommandRef.getDeviceCommand().getDevice().getId();
       } else if (beanModel.getBean() instanceof CommandRefItem) {
          CommandRefItem commandRefItem = (CommandRefItem) beanModel.getBean();
-         return commandRefItem.getDeviceCommand().getDevice().getOid();
+         return commandRefItem.getDeviceCommand().getDevice().getId();
       }
       return 0L;
    }
@@ -164,7 +164,7 @@ public class BeanModelDataBase {
       }
       if (beanModel.getBean() instanceof BusinessEntity) {
          BusinessEntity entity = (BusinessEntity) beanModel.getBean();
-         return entity.getOid();
+         return entity.getId();
       }
       return 0;
    }
@@ -181,8 +181,8 @@ public class BeanModelDataBase {
          BeanModelTable beanModelTable) {
       List<BeanModel> list = new ArrayList<BeanModel>();
       for (BusinessEntity businessEntity : businessEntities) {
-         if (beanModelTable.get(businessEntity.getOid()) != null) {
-            list.add(beanModelTable.get(businessEntity.getOid()));
+         if (beanModelTable.get(businessEntity.getId()) != null) {
+            list.add(beanModelTable.get(businessEntity.getId()));
          }
       }
       return list;

@@ -180,7 +180,7 @@ public class PathConfig {
    }
    
    public String userFolder(Account account) {
-      return tempFolder()+account.getOid()+File.separator;
+      return tempFolder()+account.getId()+File.separator;
    }
    /**
     * Gets the zip url.
@@ -194,7 +194,7 @@ public class PathConfig {
    }
 
    public String getZipUrl(Account account) {
-      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + account.getOid() + "/";
+      return configuration.getWebappServerRoot() + "/" + RESOURCEFOLDER + "/" + account.getId() + "/";
    }
    /**
     * Gets the relative resource path.
@@ -209,7 +209,7 @@ public class PathConfig {
    }
    
    public String getRelativeResourcePath(String fileName, Account account) {
-      return RESOURCEFOLDER + "/" + account.getOid() + "/" + fileName;
+      return RESOURCEFOLDER + "/" + account.getId() + "/" + fileName;
    }
    
    /**

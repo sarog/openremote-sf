@@ -62,22 +62,22 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
 
    @Override
    public Switch update(Switch switchToggle) {
-      Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
+      Switch old = genericDAO.loadById(Switch.class, switchToggle.getId());
       old.setName(switchToggle.getName());
       if (switchToggle.getSwitchCommandOffRef() != null
-            && old.getSwitchCommandOffRef().getOid() != switchToggle.getSwitchCommandOffRef().getOid()) {
+            && old.getSwitchCommandOffRef().getId() != switchToggle.getSwitchCommandOffRef().getId()) {
          genericDAO.delete(old.getSwitchCommandOffRef());
          old.setSwitchCommandOffRef(switchToggle.getSwitchCommandOffRef());
          switchToggle.getSwitchCommandOffRef().setOffSwitch(old);
       }
       if (switchToggle.getSwitchCommandOnRef() != null
-            && old.getSwitchCommandOnRef().getOid() != switchToggle.getSwitchCommandOnRef().getOid()) {
+            && old.getSwitchCommandOnRef().getId() != switchToggle.getSwitchCommandOnRef().getId()) {
          genericDAO.delete(old.getSwitchCommandOnRef());
          old.setSwitchCommandOnRef(switchToggle.getSwitchCommandOnRef());
          switchToggle.getSwitchCommandOnRef().setOnSwitch(old);
       }
       if (old.getSwitchSensorRef() != null
-            && old.getSwitchSensorRef().getOid() != switchToggle.getSwitchSensorRef().getOid()) {
+            && old.getSwitchSensorRef().getId() != switchToggle.getSwitchSensorRef().getId()) {
          genericDAO.delete(old.getSwitchSensorRef());
          old.setSwitchSensorRef(switchToggle.getSwitchSensorRef());
          switchToggle.getSwitchSensorRef().setSwitchToggle(old);
@@ -96,7 +96,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    public List<Switch> loadSameSwitchs(Switch swh) {
       List<Switch> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Switch.class);
-      critera.add(Restrictions.eq("device.oid", swh.getDevice().getOid()));
+      critera.add(Restrictions.eq("device.oid", swh.getDevice().getId()));
       critera.add(Restrictions.eq("name", swh.getName()));
       result = genericDAO.findByDetachedCriteria(critera);
       if (result != null) {

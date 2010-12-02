@@ -236,9 +236,9 @@ public class TemplateCreateWindow extends FormWindow
 
          @Override
          public void onSuccess(Template result) {
-            Info.display("Success", "Template is saved successfully:(id: " + result.getOid()+")");
+            Info.display("Success", "Template is saved successfully:(id: " + result.getId()+")");
             TemplateCreateWindow.this.unmask();
-            result.getBeanModel().set("id", result.getOid());
+            result.getBeanModel().set("id", result.getId());
             fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
             hide();
          }
@@ -265,7 +265,7 @@ public class TemplateCreateWindow extends FormWindow
 
          @Override
          public void onSuccess(Template result) {
-            Info.display("Success", "Template is updated successfully:(id: " + result.getOid()+")");
+            Info.display("Success", "Template is updated successfully:(id: " + result.getId()+")");
             TemplateCreateWindow.this.unmask();
             fireEvent(SubmitEvent.SUBMIT,new SubmitEvent(result));
             hide();

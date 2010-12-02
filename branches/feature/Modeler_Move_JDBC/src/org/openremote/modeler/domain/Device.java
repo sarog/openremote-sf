@@ -250,7 +250,7 @@ public class Device extends BusinessEntity {
 
    @Override
    public int hashCode() {
-      return (int) getOid();
+      return (int) getId();
    }
 
    @Override
@@ -268,7 +268,7 @@ public class Device extends BusinessEntity {
       if (vendor == null) {
          if (other.vendor != null) return false;
       } else if (!vendor.equals(other.vendor)) return false;
-      return other.getOid() == getOid();
+      return other.getId() == getId();
    }
 
    @Transient

@@ -132,7 +132,7 @@ public class GestureWindow extends Dialog {
       
       for (int i = 0; i < gestureTypes.length; i++) {
          Gesture gesture = new Gesture(gestureTypes[i]);
-         gesture.setOid(IDUtil.nextID());
+         gesture.setId(IDUtil.nextID());
          gestureMaps.put(gestureTypes[i].toString(), gesture);
          BeanModel gestureBeanModel = gesture.getBeanModel();
          gestureStore.add(gestureBeanModel);

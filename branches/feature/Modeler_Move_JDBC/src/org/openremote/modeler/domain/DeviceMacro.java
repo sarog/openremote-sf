@@ -144,7 +144,7 @@ public class DeviceMacro extends BusinessEntity {
       int result = 1;
       result = prime * result + ((name == null) ? 0 : name.hashCode());
       return (int) (result^0xFFFF^getOid());*/
-      return (int) getOid();
+      return (int) getId();
    }
 
    @Override
@@ -156,7 +156,7 @@ public class DeviceMacro extends BusinessEntity {
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
-      return this.getOid() == other.getOid();
+      return this.getId() == other.getId();
    }
    
    public boolean equalsWitoutCompareOid(DeviceMacro other) {

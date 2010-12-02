@@ -109,7 +109,7 @@ public class ResourceServiceImplTest {
       
       /*---------------widget-------------------*/
       UIButton absBtn = new UIButton();            //UIButton
-      absBtn.setOid(IDUtil.nextID());
+      absBtn.setId(IDUtil.nextID());
       absBtn.setName("abs_btn1");
       ImageSource defaultImage = new ImageSource("default.jpg");
       ImageSource pressedImage = new ImageSource("pressed.jpg");
@@ -121,23 +121,23 @@ public class ResourceServiceImplTest {
       label.setColor("000fff000");
       
       UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
+      gridBtn.setId(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       
       Switch switchToggle = new Switch();
-      switchToggle.setOid(IDUtil.nextID());
+      switchToggle.setId(IDUtil.nextID());
       Sensor sensor = new Sensor();
       sensor.setType(SensorType.SWITCH);
-      sensor.setOid(IDUtil.nextID());
+      sensor.setId(IDUtil.nextID());
       sensor.setName("testSensro");
       SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
-      sensorRef.setOid(IDUtil.nextID());
+      sensorRef.setId(IDUtil.nextID());
       sensorRef.setSensor(sensor);
       switchToggle.setSwitchSensorRef(sensorRef);
       label.setSensorAndInitSensorLink(sensor);
       
       UISwitch absSwitch = new UISwitch();      //UISwitch
-      absSwitch.setOid(IDUtil.nextID());
+      absSwitch.setId(IDUtil.nextID());
       ImageSource onImage = new ImageSource("on.jpg");
       ImageSource offImage = new ImageSource("off.jpg");
       absSwitch.setOnImage(onImage);
@@ -145,7 +145,7 @@ public class ResourceServiceImplTest {
       absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
+      gridSwitch.setId(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle); 
       
       UIImage uiImage = new UIImage(IDUtil.nextID()); //UIImage
@@ -157,11 +157,11 @@ public class ResourceServiceImplTest {
       
       /*---------------screen-------------------*/
       Screen screen1 = new Screen();
-      screen1.setOid(IDUtil.nextID());
+      screen1.setId(IDUtil.nextID());
       screen1.setName("screen1");
       
       Screen screen2 = new Screen();
-      screen2.setOid(IDUtil.nextID());
+      screen2.setId(IDUtil.nextID());
       screen2.setName("screen1");
       
       Absolute abs1 = new Absolute();
@@ -192,23 +192,23 @@ public class ResourceServiceImplTest {
       screen2.addGrid(grid2);
       
       ScreenPair screenPair1 = new ScreenPair();
-      screenPair1.setOid(IDUtil.nextID());
+      screenPair1.setId(IDUtil.nextID());
       screenPair1.setPortraitScreen(screen1);
       
       ScreenPair screenPair2 = new ScreenPair();
-      screenPair2.setOid(IDUtil.nextID());
+      screenPair2.setId(IDUtil.nextID());
       screenPair2.setPortraitScreen(screen2);
       
       screenRefs.add(new ScreenPairRef(screenPair1));
       screenRefs.add(new ScreenPairRef(screenPair2));
       /*---------------group-------------------*/
       Group group1 = new Group();
-      group1.setOid(IDUtil.nextID());
+      group1.setId(IDUtil.nextID());
       group1.setName("group1");
       group1.setScreenRefs(screenRefs);
       
       Group group2 = new Group();
-      group2.setOid(IDUtil.nextID());
+      group2.setId(IDUtil.nextID());
       group2.setName("group1");
       group2.setScreenRefs(screenRefs);
       
@@ -216,13 +216,13 @@ public class ResourceServiceImplTest {
       groupRefs.add(new GroupRef(group2));
       /*---------------panel------------------*/
       Panel panel1 = new Panel();
-      panel1.setOid(IDUtil.nextID());
+      panel1.setId(IDUtil.nextID());
       panel1.setGroupRefs(groupRefs);
       panel1.setGroupRefs(groupRefs);
       panel1.setName("panel1");
       
       Panel panel2 = new Panel();
-      panel2.setOid(IDUtil.nextID());
+      panel2.setId(IDUtil.nextID());
       panel2.setGroupRefs(groupRefs);
       panel2.setGroupRefs(groupRefs);
       panel2.setName("panel2");
@@ -235,7 +235,7 @@ public class ResourceServiceImplTest {
    public void testPanelTabbarWithNavigateToGroupAndScreen() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
+      nav.setId(IDUtil.nextID());
       nav.setToGroup(1L);
       nav.setToScreen(2L);
       UITabbarItem item = new UITabbarItem();
@@ -260,12 +260,12 @@ public void testScreenHasGesture() {
    List<Gesture> gestures = new ArrayList<Gesture>();
    
    Navigate nav = new Navigate();
-   nav.setOid(IDUtil.nextID());
+   nav.setId(IDUtil.nextID());
    nav.setToGroup(1L);
    nav.setToScreen(2L);
    Gesture gesture = new Gesture();
    gesture.setNavigate(nav);
-   gesture.setOid(IDUtil.nextID());
+   gesture.setId(IDUtil.nextID());
    gesture.setType(GestureType.swipe_bottom_to_top);
    
    gestures.add(gesture);
@@ -274,16 +274,16 @@ public void testScreenHasGesture() {
    p.setName("panel has a navigate");
    
    final Screen screen1 = new Screen();
-   screen1.setOid(IDUtil.nextID());
+   screen1.setId(IDUtil.nextID());
    screen1.setName("screen1");
    screen1.setGestures(gestures);
    ScreenPair screenPair = new ScreenPair();
-   screenPair.setOid(IDUtil.nextID());
+   screenPair.setId(IDUtil.nextID());
    screenPair.setPortraitScreen(screen1);
    screenRefs.add(new ScreenPairRef(screenPair));
    
    Group group1 = new Group();
-   group1.setOid(IDUtil.nextID());
+   group1.setId(IDUtil.nextID());
    group1.setName("group1");
    group1.setScreenRefs(screenRefs);
    
@@ -300,7 +300,7 @@ public void testScreenHasGesture() {
    public void testPanelTabbarWithNavigateToLogical() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
+      nav.setId(IDUtil.nextID());
       nav.setToLogical(ToLogicalType.back);
       UITabbarItem item = new UITabbarItem();
       item.setNavigate(nav);
@@ -320,7 +320,7 @@ public void testScreenHasGesture() {
    public void testPanelNavigateHasImage() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
+      nav.setId(IDUtil.nextID());
       nav.setToLogical(ToLogicalType.back);
       
       ImageSource image = new ImageSource();
@@ -344,7 +344,7 @@ public void testScreenHasGesture() {
    public void testGroupNavigateHasImage() {
       Collection<Panel> panelWithJustOneNavigate = new ArrayList<Panel>();
       Navigate nav = new Navigate();
-      nav.setOid(IDUtil.nextID());
+      nav.setId(IDUtil.nextID());
       nav.setToLogical(ToLogicalType.back);
       
       ImageSource image = new ImageSource();
@@ -362,7 +362,7 @@ public void testScreenHasGesture() {
       
       Group group = new Group();
       group.setName("groupName");
-      group.setOid(IDUtil.nextID());
+      group.setId(IDUtil.nextID());
       group.setTabbarItems(items);
       
       p.addGroupRef(new GroupRef(group));
@@ -374,7 +374,7 @@ public void testScreenHasGesture() {
    public void testScreenHasBackgrouond() {
       Collection<Panel> panel = new ArrayList<Panel>();
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       
       screen.getBackground().setImageSource(new ImageSource("http://finalist.cn/logo.jpg"));
       
@@ -383,9 +383,9 @@ public void testScreenHasGesture() {
       
       Group group = new Group();
       group.setName("groupName");
-      group.setOid(IDUtil.nextID());
+      group.setId(IDUtil.nextID());
       ScreenPair screenPair = new ScreenPair();
-      screenPair.setOid(IDUtil.nextID());
+      screenPair.setId(IDUtil.nextID());
       screenPair.setPortraitScreen(screen);
       
       group.addScreenRef(new ScreenPairRef(screenPair));
@@ -398,7 +398,7 @@ public void testScreenHasGesture() {
    public void testgetControllXMWithEmptyScreen() {
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       screen.setName("EmptyScreen");
       
       screens.add(screen);
@@ -409,50 +409,50 @@ public void testScreenHasGesture() {
    public void testGetControllerXMLWithButtonAndSwitchButNoCmd() {
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       screen.setName("screenWithButtonAndSwitch");
       
       UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
+      absBtn.setId(IDUtil.nextID());
       absBtn.setName("abs_btn1");
       
       UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
+      gridBtn.setId(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       
       
       Switch switchToggle = new Switch();
-      switchToggle.setOid(IDUtil.nextID());
+      switchToggle.setId(IDUtil.nextID());
       Sensor sensor = new Sensor();
       sensor.setType(SensorType.SWITCH);
-      sensor.setOid(IDUtil.nextID());
+      sensor.setId(IDUtil.nextID());
       sensor.setName("testSensro");
       SwitchSensorRef sensorRef = new SwitchSensorRef(switchToggle);
-      sensorRef.setOid(IDUtil.nextID());
+      sensorRef.setId(IDUtil.nextID());
       sensorRef.setSensor(sensor);
       switchToggle.setSwitchSensorRef(sensorRef);
       
       UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
+      absSwitch.setId(IDUtil.nextID());
       absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
+      gridSwitch.setId(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle);
       Absolute abs1 = new Absolute();
-      abs1.setOid(IDUtil.nextID());
+      abs1.setId(IDUtil.nextID());
       abs1.setUiComponent(absBtn);
       Absolute abs2 = new Absolute();
-      abs2.setOid(IDUtil.nextID());
+      abs2.setId(IDUtil.nextID());
       abs2.setUiComponent(absSwitch);
       
       UIGrid grid1 = new UIGrid(10,10,20,20,4,4);
-      grid1.setOid(IDUtil.nextID());
+      grid1.setId(IDUtil.nextID());
       Cell c1 = new Cell();
       c1.setUiComponent(gridBtn);
       grid1.addCell(c1);
       UIGrid grid2 = new UIGrid(10,10,34,20,5,4);
-      grid2.setOid(IDUtil.nextID());
+      grid2.setId(IDUtil.nextID());
       Cell c2 = new Cell();
       c2.setUiComponent(gridSwitch);
       grid2.addCell(c2);
@@ -480,21 +480,21 @@ public void testScreenHasGesture() {
       DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       screen.setName("screenWithButtonAndSwitch");
       
       UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
+      absBtn.setId(IDUtil.nextID());
       absBtn.setName("abs_btn1");
       absBtn.setUiCommand(cmdRef);
       
       UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
+      gridBtn.setId(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       gridBtn.setUiCommand(cmdRef);
       
       UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
+      absSwitch.setId(IDUtil.nextID());
       
       Switch switchToggle = new Switch();
       
@@ -510,7 +510,7 @@ public void testScreenHasGesture() {
       absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
+      gridSwitch.setId(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle);
       
       Absolute abs1 = new Absolute();
@@ -548,11 +548,11 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
    DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
    List<Screen> screens = new ArrayList<Screen>();
    Screen screen = new Screen();
-   screen.setOid(IDUtil.nextID());
+   screen.setId(IDUtil.nextID());
    screen.setName("screenWithButtonAndSwitch");
    List<Gesture> gestures = new ArrayList<Gesture>();
    Gesture gesture = new Gesture();
-   gesture.setOid(IDUtil.nextID());
+   gesture.setId(IDUtil.nextID());
    gesture.setUiCommand(cmdRef);
    gestures.add(gesture);
    screen.setGestures(gestures);
@@ -580,21 +580,21 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       DeviceCommandRef cmdRef = new DeviceCommandRef(cmd);
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       screen.setName("screenWithButtonAndSwitch");
       
       UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
+      absBtn.setId(IDUtil.nextID());
       absBtn.setName("abs_btn1");
       absBtn.setUiCommand(cmdRef);
       
       UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
+      gridBtn.setId(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       gridBtn.setUiCommand(cmdRef);
       
       UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
+      absSwitch.setId(IDUtil.nextID());
       
       Switch switchToggle = new Switch();
       SwitchCommandOnRef onCommand = new SwitchCommandOnRef();
@@ -607,7 +607,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       switchToggle.setSwitchCommandOnRef(onCommand);
       
       Sensor sensor = new Sensor();
-      sensor.setOid(IDUtil.nextID());
+      sensor.setId(IDUtil.nextID());
       sensor.setType(SensorType.SWITCH);
       sensor.setName("testSensor");
       SensorCommandRef sensorCmdRef = new SensorCommandRef();
@@ -621,7 +621,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       absSwitch.setSwitchCommand(switchToggle);
       
       UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
+      gridSwitch.setId(IDUtil.nextID());
       gridSwitch.setSwitchCommand(switchToggle);
       
       Absolute abs1 = new Absolute();
@@ -725,27 +725,27 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       
       List<Screen> screens = new ArrayList<Screen>();
       Screen screen = new Screen();
-      screen.setOid(IDUtil.nextID());
+      screen.setId(IDUtil.nextID());
       screen.setName("screenWithButtonAndSwitch");
       
       UIButton absBtn = new UIButton();
-      absBtn.setOid(IDUtil.nextID());
+      absBtn.setId(IDUtil.nextID());
       absBtn.setName("abs_btn1");
       absBtn.setUiCommand(macroRef);
       
       UIButton gridBtn = new UIButton();
-      gridBtn.setOid(IDUtil.nextID());
+      gridBtn.setId(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
       gridBtn.setUiCommand(macroRef);
       
       UISwitch absSwitch = new UISwitch();
-      absSwitch.setOid(IDUtil.nextID());
+      absSwitch.setId(IDUtil.nextID());
 //      absSwitch.setOnCommand(macroRef);
 //      absSwitch.setOffCommand(macroRef);
 //      absSwitch.setStatusCommand(macroRef);
       
       UISwitch gridSwitch = new UISwitch();
-      gridSwitch.setOid(IDUtil.nextID());
+      gridSwitch.setId(IDUtil.nextID());
 //      gridSwitch.setOnCommand(macroRef);
 //      gridSwitch.setOffCommand(macroRef);
 //      gridSwitch.setStatusCommand(macroRef);

@@ -183,7 +183,7 @@ public class TemplateProxy {
     */
    private static void initOid(ScreenPair screenPair) {
       if (screenPair != null) {
-         screenPair.setOid(IDUtil.nextID());
+         screenPair.setId(IDUtil.nextID());
          if (screenPair.getOrientation().equals(OrientationType.PORTRAIT)) {
             initScreenOid(screenPair.getPortraitScreen());
          } else if (screenPair.getOrientation().equals(OrientationType.LANDSCAPE)) {
@@ -197,17 +197,17 @@ public class TemplateProxy {
    
    private static void initScreenOid(Screen screen) {
       if (screen != null) {
-         screen.setOid(IDUtil.nextID());
+         screen.setId(IDUtil.nextID());
          for (Absolute abs : screen.getAbsolutes()) {
-            abs.getUiComponent().setOid(IDUtil.nextID());
+            abs.getUiComponent().setId(IDUtil.nextID());
          }
          for (UIGrid grid : screen.getGrids()) {
             for (Cell cell : grid.getCells()) {
-               cell.getUiComponent().setOid(IDUtil.nextID());
+               cell.getUiComponent().setId(IDUtil.nextID());
             }
          }
          for (Gesture gesture : screen.getGestures()) {
-            gesture.setOid(IDUtil.nextID());
+            gesture.setId(IDUtil.nextID());
          }
       }
    }

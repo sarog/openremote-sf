@@ -104,7 +104,7 @@ public class DeviceCommandWindow extends FormWindow {
     */
    public DeviceCommandWindow(final DeviceCommand command) {
       super();
-      AsyncServiceFactory.getDeviceCommandServiceAsync().loadById(command.getOid(),
+      AsyncServiceFactory.getDeviceCommandServiceAsync().loadById(command.getId(),
             new AsyncSuccessCallback<DeviceCommand>() {
          public void onSuccess(DeviceCommand cmd) {
             command.setProtocol(cmd.getProtocol());

@@ -121,8 +121,8 @@ public class ScreenPair extends RefedEntity {
     */
    public void setInverseScreenIds() {
       if (orientation.equals(OrientationType.BOTH)) {
-         portraitScreen.setInverseScreenId(landscapeScreen.getOid());
-         landscapeScreen.setInverseScreenId(portraitScreen.getOid());
+         portraitScreen.setInverseScreenId(landscapeScreen.getId());
+         landscapeScreen.setInverseScreenId(portraitScreen.getId());
       }
    }
    
@@ -143,12 +143,12 @@ public class ScreenPair extends RefedEntity {
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       if(orientation.equals(OrientationType.PORTRAIT)) {
-         xmlContent.append("<include type=\"screen\" ref=\"" + portraitScreen.getOid() + "\"/>");
+         xmlContent.append("<include type=\"screen\" ref=\"" + portraitScreen.getId() + "\"/>");
       } else if (orientation.equals(OrientationType.LANDSCAPE)) {
-         xmlContent.append("<include type=\"screen\" ref=\"" + landscapeScreen.getOid() + "\"/>");
+         xmlContent.append("<include type=\"screen\" ref=\"" + landscapeScreen.getId() + "\"/>");
       } else if (orientation.equals(OrientationType.BOTH)) {
-         xmlContent.append("<include type=\"screen\" ref=\"" + portraitScreen.getOid() + "\"/>");
-         xmlContent.append("<include type=\"screen\" ref=\"" + landscapeScreen.getOid() + "\"/>");
+         xmlContent.append("<include type=\"screen\" ref=\"" + portraitScreen.getId() + "\"/>");
+         xmlContent.append("<include type=\"screen\" ref=\"" + landscapeScreen.getId() + "\"/>");
       }
       return xmlContent.toString();
    }

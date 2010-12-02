@@ -147,7 +147,7 @@ public class DeviceCommand extends BusinessEntity {
 
    @Override 
    public int hashCode() {
-      return (int) getOid();
+      return (int) getId();
    }
    
    @Override
@@ -168,7 +168,7 @@ public class DeviceCommand extends BusinessEntity {
       if (sectionId == null) {
          if (other.sectionId != null) return false;
       } else if (!sectionId.equals(other.sectionId)) return false;
-      return this.getOid() == other.getOid();
+      return this.getId() == other.getId();
    }
    /**
     * This method is used for checking whether same device command exists when try to rebuild command for user from template. 
@@ -179,7 +179,7 @@ public class DeviceCommand extends BusinessEntity {
       if (other == null) return false;
       if (device == null) {
          if (other.device != null) return false;
-      } else if (other.device != null && device.getOid() != other.device.getOid()) return false;
+      } else if (other.device != null && device.getId() != other.device.getId()) return false;
       if (name == null) {
          if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;

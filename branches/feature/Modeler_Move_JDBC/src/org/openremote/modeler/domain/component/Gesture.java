@@ -71,7 +71,7 @@ public class Gesture extends UIControl {
    @Override
    public String getPanelXml() {
       StringBuilder XMLContent = new StringBuilder();
-      XMLContent.append("<gesture id=\""+getOid()+"\" ");
+      XMLContent.append("<gesture id=\""+getId()+"\" ");
       if (uiCommand != null) {
          XMLContent.append("hasControlCommand=\"true\" ");
       }

@@ -73,6 +73,6 @@ public class GroupRef extends BusinessEntity {
    
    @Transient
    public long getGroupId() {
-      return group.getOid();
+      return group.getId();
    }
 }

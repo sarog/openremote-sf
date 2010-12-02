@@ -70,7 +70,7 @@ public class DeviceBeanModelProxy {
       } else if(beanModel.getBean() instanceof Device){
          final List<BeanModel> beanModels = new ArrayList<BeanModel>();
          Device device = (Device) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getOid(), new AsyncSuccessCallback<Device>(){
+         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getId(), new AsyncSuccessCallback<Device>(){
 
             @Override
             public void onSuccess(Device result) {
@@ -126,7 +126,7 @@ public class DeviceBeanModelProxy {
       } else if(beanModel.getBean() instanceof Device){
          final List<BeanModel> beanModels = new ArrayList<BeanModel>();
          Device device = (Device) beanModel.getBean();
-         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getOid(), new AsyncSuccessCallback<Device>(){
+         AsyncServiceFactory.getDeviceServiceAsync().loadById(device.getId(), new AsyncSuccessCallback<Device>(){
 
             @Override
             public void onSuccess(Device result) {
@@ -246,7 +246,7 @@ public class DeviceBeanModelProxy {
             for (BeanModel beanModel : beanModels) {
                BeanModelDataBase.deviceCommandTable.delete(beanModel.<DeviceCommand> getBean().getOid());
             }*/
-            AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getOid(), new AsyncSuccessCallback<Void>() {
+            AsyncServiceFactory.getDeviceServiceAsync().deleteDevice(device.getId(), new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
                   //1, remove switches and sliders.
                   removeAllSwitchsForDevice(device);
@@ -256,7 +256,7 @@ public class DeviceBeanModelProxy {
                   //3, remove device commands. 
                   removeAllDeviceCommandsForDevice(device);
                   //4, remove device
-                  BeanModelDataBase.deviceTable.delete(device.getOid());
+                  BeanModelDataBase.deviceTable.delete(device.getId());
                   callback.onSuccess(result);
                }
             });

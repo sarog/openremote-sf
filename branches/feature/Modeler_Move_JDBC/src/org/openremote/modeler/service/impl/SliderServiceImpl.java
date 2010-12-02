@@ -57,7 +57,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
 
    @Override
    public Slider update(Slider slider) {
-      Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
+      Slider oldSlider = genericDAO.loadById(Slider.class, slider.getId());
       if (oldSlider.getSliderSensorRef() != null) {
          genericDAO.delete(oldSlider.getSliderSensorRef());
       }
@@ -76,7 +76,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          }
          oldSlider.setSetValueCmd(null);
       } else if (slider.getSetValueCmd() != null && oldSlider.getSetValueCmd() != null
-            && slider.getSetValueCmd().getOid() != oldSlider.getSetValueCmd().getOid()) {
+            && slider.getSetValueCmd().getId() != oldSlider.getSetValueCmd().getId()) {
          genericDAO.delete(oldSlider.getSetValueCmd());
          slider.getSetValueCmd().setSlider(oldSlider);
          oldSlider.setSetValueCmd(slider.getSetValueCmd());
@@ -87,7 +87,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    public List<Slider> loadSameSliders(Slider slider) {
       List<Slider> result = null;
       DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
-      critera.add(Restrictions.eq("device.oid", slider.getDevice().getOid()));
+      critera.add(Restrictions.eq("device.oid", slider.getDevice().getId()));
       critera.add(Restrictions.eq("name", slider.getName()));
       result = genericDAO.findByDetachedCriteria(critera);
       if (result != null) {

@@ -315,7 +315,7 @@ public class BeanModelTable {
     */
    private long getIdFromBeanModel(BeanModel beanModel) {
       BusinessEntity businessEntity = beanModel.getBean();
-      return businessEntity.getOid();
+      return businessEntity.getId();
    }
 
 

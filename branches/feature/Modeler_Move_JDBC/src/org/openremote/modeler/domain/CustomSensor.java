@@ -60,7 +60,7 @@ public class CustomSensor extends Sensor {
    @Override
    public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append("<link type=\"sensor\" ref=\"" + getOid() + "\">\n");
+      sb.append("<link type=\"sensor\" ref=\"" + getId() + "\">\n");
       for (State state : states) {
          sb.append("\t<state name=\"" + state.getName() + "\"/>\n");
       }

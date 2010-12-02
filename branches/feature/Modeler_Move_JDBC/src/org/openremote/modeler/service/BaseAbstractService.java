@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,10 +22,15 @@ package org.openremote.modeler.service;
 
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.message.AbstractHttpMessage;
 import org.hibernate.criterion.DetachedCriteria;
+import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.BusinessEntity;
 import org.openremote.modeler.utils.GenericUtil;
+import org.openremote.modeler.utils.UserPasswordMap;
+import org.springframework.security.context.SecurityContextHolder;
 
 /**
  * The common service for all the services.
@@ -94,5 +99,19 @@ public abstract class BaseAbstractService<T extends BusinessEntity> {
       return DetachedCriteria.forClass(GenericUtil.getClassForGenericType(this.getClass()));
    }
 
+   protected String getCurrentUsername() {
+      return SecurityContextHolder.getContext().getAuthentication().getName();
+   }
+   
+   protected void addAuthentication(AbstractHttpMessage httpMessage) {
+      String username = getCurrentUsername();
+      httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+            + encode(username + ":" + UserPasswordMap.get(username)));
+   }
+   
+   private String encode(String namePassword) {
+      if (namePassword == null) return null;
+      return new String(Base64.encodeBase64(namePassword.getBytes()));
+   }
 }
 

@@ -57,8 +57,8 @@ public class SliderServiceTest {
       sliderService.save(slider);
       sliderService.save(slider2);
 
-      Assert.assertEquals(slider.getOid(), 1);
-      Assert.assertEquals(slider2.getOid(), 2);
+      Assert.assertEquals(slider.getId(), 1);
+      Assert.assertEquals(slider2.getId(), 2);
       Slider sliderFromTable = sliderService.loadAll().get(0);
       Assert.assertEquals(sliderFromTable.getSetValueCmd().getDeviceCommand().getName(), "testLirc");
    }
@@ -73,7 +73,7 @@ public class SliderServiceTest {
       sliderService.update(slider);
 
       for (Slider s : sliders) {
-         if (s.getOid() == 1) {
+         if (s.getId() == 1) {
             Assert.assertEquals(s.getName(), "testUpdate");
             break;
          }
@@ -89,7 +89,7 @@ public class SliderServiceTest {
    @Test(dependsOnMethods = "testUpdate")
    public void testDelte() {
       Slider slider = new Slider();
-      slider.setOid(1);
+      slider.setId(1);
       sliderService.delete(1);
       Collection<Slider> switchs = sliderService.loadAll();
       Assert.assertEquals(switchs.size(), 1);

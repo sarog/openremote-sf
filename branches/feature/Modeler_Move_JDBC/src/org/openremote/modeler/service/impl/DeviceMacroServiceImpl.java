@@ -102,7 +102,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
-      DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getOid());
+      DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getId());
       if (old.getAccount() == null) {
          old.setAccount(userService.getAccount());
       }
@@ -111,7 +111,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
 
       old.setName(deviceMacro.getName());
       for (DeviceMacroItem deviceMacroItem : deviceMacro.getDeviceMacroItems()) {
-         deviceMacroItem.setOid(0);
+         deviceMacroItem.setId(0);
          deviceMacroItem.setParentDeviceMacro(old);
       }
       old.getDeviceMacroItems().addAll(deviceMacro.getDeviceMacroItems());
@@ -133,7 +133,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    public List<DeviceMacro> loadSameMacro(DeviceMacro macro) {
       List<DeviceMacro> results = null;
       DetachedCriteria critera = DetachedCriteria.forClass(DeviceMacro.class);
-      critera.add(Restrictions.eq("account.oid", macro.getAccount().getOid()));
+      critera.add(Restrictions.eq("account.oid", macro.getAccount().getId()));
       critera.add(Restrictions.eq("name", macro.getName()));
       results = genericDAO.findByDetachedCriteria(critera);
       if (results != null && results.size() >0) {

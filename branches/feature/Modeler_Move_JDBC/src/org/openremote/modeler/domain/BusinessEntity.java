@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -53,8 +53,8 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = -4133577592315343274L;
    
-   /** The oid. */
-   private long oid;
+   /** The id. */
+   private long id;
 
    /**
     * Instantiates a new business entity.
@@ -68,29 +68,29 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
     * 
     * @param oid the oid
     */
-   public BusinessEntity(long oid) {
+   public BusinessEntity(long id) {
       super();
-      this.oid = oid;
+      this.id = id;
    }
 
    /**
-    * Gets the oid.
+    * Gets the id.
     * 
-    * @return the oid
+    * @return the id
     */
    @Id
    @GeneratedValue(strategy = GenerationType.AUTO)
-   public long getOid() {
-      return oid;
+   public long getId() {
+      return id;
    }
 
    /**
-    * Sets the oid.
+    * Sets the id.
     * 
-    * @param oid the new oid
+    * @param oid the new id
     */
-   public void setOid(long oid) {
-      this.oid = oid;
+   public void setId(long id) {
+      this.id = id;
    }
 
    /**
@@ -128,6 +128,7 @@ public abstract class BusinessEntity extends LightEntity implements Serializable
     * @return the display name
     */
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return "unKnown";
    }

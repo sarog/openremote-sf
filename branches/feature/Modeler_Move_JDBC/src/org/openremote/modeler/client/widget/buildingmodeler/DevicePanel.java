@@ -665,13 +665,13 @@ public class DevicePanel extends ContentPanel {
             Slider slider = (Slider)o;
             if (slider.getSliderSensorRef() != null) {
                Sensor s = slider.getSliderSensorRef().getSensor();
-               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
+               BeanModelDataBase.sensorTable.addChangeListener(s.getId(), getDragSourceBeanModelChangeListener(beanModel));
             }
          } else if (o instanceof Switch) {
             Switch swh = (Switch)o;
             if (swh.getSwitchSensorRef() != null) {
                Sensor s = swh.getSwitchSensorRef().getSensor();
-               BeanModelDataBase.sensorTable.addChangeListener(s.getOid(), getDragSourceBeanModelChangeListener(beanModel));
+               BeanModelDataBase.sensorTable.addChangeListener(s.getId(), getDragSourceBeanModelChangeListener(beanModel));
             }
          }
       }

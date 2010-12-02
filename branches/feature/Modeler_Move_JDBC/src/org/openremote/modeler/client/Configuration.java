@@ -132,4 +132,12 @@ public class Configuration {
       }
       return beehiveHttpsRESTRootUrl;
    }
+   
+   public String getBeehiveRESTManageUserUrl() {
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "manageuser/" : beehiveRESTRootUrl + "/manageuser/";
+   }
+   
+   public String getBeehiveRESTControllerCongigUrl() {
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "controllerconfig/" : beehiveRESTRootUrl + "/controllerconfig/";
+   }
 }

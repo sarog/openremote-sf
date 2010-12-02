@@ -114,7 +114,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
 
    @Override
    public int hashCode() {
-      return (int) getOid();
+      return (int) getId();
    }
 
    @Override
@@ -126,7 +126,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
       if (deviceCommand == null) {
          if (other.deviceCommand != null) return false;
       } else if (!deviceCommand.equals(other.deviceCommand)) return false;
-      if (this.getOid() != other.getOid()) return false;
+      if (this.getId() != other.getId()) return false;
       return true;
    }
    

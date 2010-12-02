@@ -20,9 +20,11 @@
 
 package org.openremote.modeler.server;
 
+import org.apache.commons.lang.StringUtils;
 import org.openremote.modeler.auth.Authority;
 import org.openremote.modeler.client.rpc.AuthorityRPCService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.utils.UserPasswordMap;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.context.SecurityContextHolder;
@@ -46,12 +48,17 @@ public class AuthorityController extends BaseGWTSpringController implements Auth
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       Authority authority = new Authority();
       if (auth != null) {
-         authority.setUsername(auth.getName());
+         String username = auth.getName();
+         String password = getPassword();
+         if (!StringUtils.isEmpty(password)) {
+            UserPasswordMap.put(username, password);
+         }
+         authority.setUsername(username);
          GrantedAuthority[] authorities = auth.getAuthorities();
          for (int i = 0; i < authorities.length; i++) {
             authority.addRole(authorities[i].getAuthority());
          }
-         userService.initUserAccount(auth.getName());
+         userService.initUserAccount(username);
       } else {
          authority = null;
       }

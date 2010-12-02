@@ -347,7 +347,7 @@ public class AccountManageWindow extends Dialog {
             final String roleStrs = se.getSelectedItem().getValue();
             if (isPending) {
                if (!roleStrs.equals(model.get("pendingRoleName"))) {
-                  AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getOid(), roleStrs, isPending, new AsyncSuccessCallback<User>() {
+                  AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getId(), roleStrs, isPending, new AsyncSuccessCallback<User>() {
                      public void onSuccess(User user) {
                         ((User)model.getBean()).setPendingRoleName(user.getPendingRoleName());
                         Info.display("Change role", "Change pending user role to " + roleStrs + " success.");
@@ -355,7 +355,7 @@ public class AccountManageWindow extends Dialog {
                   });
                }
             } else if (!roleStrs.equals(model.get("role"))) {
-                  AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getOid(), roleStrs, isPending, new AsyncSuccessCallback<User>() {
+                  AsyncServiceFactory.getUserRPCServiceAsync().updateUserRoles(((User)model.getBean()).getId(), roleStrs, isPending, new AsyncSuccessCallback<User>() {
                         public void onSuccess(User user) {
                         ((User)model.getBean()).setRole(user.getRole());
                            Info.display("Change role", "Change role to " + roleStrs + " success.");
@@ -384,7 +384,7 @@ public class AccountManageWindow extends Dialog {
       deleteButton.setIcon(icons.delete());
       deleteButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
          public void componentSelected(ButtonEvent ce) {
-            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((User)model.getBean()).getOid(), isPending, new AsyncSuccessCallback<Void>() {
+            AsyncServiceFactory.getUserRPCServiceAsync().deleteUser(((User)model.getBean()).getId(), isPending, new AsyncSuccessCallback<Void>() {
                public void onSuccess(Void result) {
                   store.remove(model);
                   Info.display("Delete user", "Delete user " + model.get("username").toString() + " success.");

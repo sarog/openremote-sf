@@ -69,8 +69,8 @@ public class DeviceServiceTest {
       device.setModel("MP8640");
       device.setVendor("3m");
       deviceService.saveDevice(device);
-      deviceService.deleteDevice(device.getOid());
-      Device deviceInDB = deviceService.loadById(device.getOid());
+      deviceService.deleteDevice(device.getId());
+      Device deviceInDB = deviceService.loadById(device.getId());
       deviceInDB.getName(); //throws ObjectNotFoundException
    }
    
@@ -109,16 +109,16 @@ public class DeviceServiceTest {
       device.setModel("MP8640");
       device.setVendor("3m");
       deviceService.saveDevice(device);
-      Device deviceInDB = deviceService.loadById(device.getOid());
+      Device deviceInDB = deviceService.loadById(device.getId());
       
       deviceInDB.setName("aaa");
       deviceInDB.setVendor("sony");
       deviceInDB.setModel("tv");
       deviceService.updateDevice(deviceInDB);
       
-      device = deviceService.loadById(device.getOid());
+      device = deviceService.loadById(device.getId());
       Assert.assertEquals(deviceInDB.getName(), device.getName());
       
-      deviceService.deleteDevice(device.getOid());
+      deviceService.deleteDevice(device.getId());
    }
 }

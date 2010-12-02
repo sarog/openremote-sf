@@ -74,7 +74,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
     * @param uiSlider the ui slider
     */
    public UISlider(UISlider uiSlider) {
-      this.setOid(uiSlider.getOid());
+      this.setId(uiSlider.getId());
       this.vertical = uiSlider.isVertical();
       this.thumbImage = uiSlider.getThumbImage();
       this.minImage = uiSlider.getMinImage();
@@ -150,7 +150,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    @Override
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
-      xmlContent.append("        <slider id=\"" + getOid() + "\" ");
+      xmlContent.append("        <slider id=\"" + getId() + "\" ");
       if (isThumbUploaded()) {
          xmlContent.append("thumbImage=\"" + thumbImage.getImageFileName() + "\" ");
       }
@@ -166,7 +166,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       if (getSensor() != null) {
          Sensor sensor = getSensor();
          if (sensor.getType() == SensorType.RANGE || sensor.getType() == SensorType.LEVEL) {
-            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\" />\n");
+            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getId() + "\" />\n");
             if (sensor.getType() == SensorType.RANGE) {
                RangeSensor rangeSensor = (RangeSensor) getSensor();
                min = rangeSensor.getMin();

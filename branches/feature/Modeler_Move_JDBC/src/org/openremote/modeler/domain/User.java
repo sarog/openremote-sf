@@ -40,7 +40,7 @@ public class User extends BusinessEntity {
    /** Same as the principal name which registered in crowd. */
    private String username;
    
-   /** Same as the principal email which registered in crowd, get it from crowd and transient store */
+   /** Same as the principal email which registered in crowd, get it from crowd and temporary store */
    private transient String email;
    
    /** The account containing all business entities. */

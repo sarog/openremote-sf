@@ -129,7 +129,7 @@ public class DeviceMacroBeanModelProxy {
       Iterator<DeviceMacroItem> macroItemIterator = deviceMacro.getDeviceMacroItems().iterator();
       while (macroItemIterator.hasNext()) {
          DeviceMacroItem deviceMacroItem = macroItemIterator.next();
-         BeanModelDataBase.deviceMacroItemTable.delete(deviceMacroItem.getOid());
+         BeanModelDataBase.deviceMacroItemTable.delete(deviceMacroItem.getId());
          macroItemIterator.remove();
       }
       deviceMacro.getDeviceMacroItems().addAll(getMacroItems(items, deviceMacro));
@@ -154,7 +154,7 @@ public class DeviceMacroBeanModelProxy {
     */
    public static void deleteDeviceMacro(final BeanModel deviceMacroBeanModel, final AsyncSuccessCallback<Void> callback) {
       DeviceMacro deviceMacro = deviceMacroBeanModel.getBean();
-      AsyncServiceFactory.getDeviceMacroServiceAsync().deleteDeviceMacro(deviceMacro.getOid(),
+      AsyncServiceFactory.getDeviceMacroServiceAsync().deleteDeviceMacro(deviceMacro.getId(),
             new AsyncSuccessCallback<Void>() {
                @Override
                public void onSuccess(Void result) {

@@ -37,6 +37,8 @@ public class BaseGWTSpringController extends RemoteServiceServlet implements Con
    /** The Constant serialVersionUID. */
    private static final long serialVersionUID = 8359963960220818310L;
    
+   public static final String CURRENT_PASSWORD = "currentPassword";
+   
    /** The servlet context. */
    private ServletContext servletContext;
 
@@ -68,4 +70,16 @@ public class BaseGWTSpringController extends RemoteServiceServlet implements Con
       return null;
    }
 
+   /**
+    * Gets current user's password from session.
+    * 
+    * @return the password
+    */
+   protected String getPassword() {
+      Object password = getThreadLocalRequest().getSession().getAttribute(CURRENT_PASSWORD);
+      if (password != null) {
+         return password.toString();
+      }
+      return "";
+   }
 }
