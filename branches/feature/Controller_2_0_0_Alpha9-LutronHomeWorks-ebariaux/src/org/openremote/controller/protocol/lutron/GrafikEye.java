@@ -15,6 +15,10 @@ public class GrafikEye extends HomeWorksDevice {
 	 */
 	private Integer selectedScene;
 
+	public Integer getSelectedScene() {
+		return selectedScene;
+	}
+
 	public GrafikEye(LutronHomeWorksGateway gateway, LutronHomeWorksAddress address) {
 		super(gateway, address);
 	}
@@ -22,4 +26,10 @@ public class GrafikEye extends HomeWorksDevice {
 	public void selectScene(Integer scene) {
 		this.gateway.sendCommand("GSS, " + address + ", " + scene); 
 	}
+	
+	@Override
+	public void processUpdate(String info) {
+		selectedScene = Integer.parseInt(info);
+	}
+
 }

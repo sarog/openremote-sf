@@ -25,6 +25,7 @@ import java.util.Map;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Configuration;
+import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.spring.SpringContext;
@@ -45,6 +46,10 @@ public class ConfigFactory {
    
    private static RoundRobinConfig getRoundRobinConfig() {
       return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
+   }
+   
+   private static LutronHomeWorksConfig getLutronHomeWorksConfig() {
+	   return (LutronHomeWorksConfig) SpringContext.getInstance().getBean("lutronHomeWorksConfig");
    }
    
    public static Configuration getCustomBasicConfigFromDefaultControllerXML() {
@@ -71,6 +76,14 @@ public class ConfigFactory {
       return config;
    }
 
+   public static LutronHomeWorksConfig getCustomLutronHomeWorksConfigFromDefaultControllerXML() {
+
+	      Map<String, String> attrMap = parseCustomConfigAttrMap();
+	      LutronHomeWorksConfig config = getLutronHomeWorksConfig();
+	      config.setCustomAttrMap(attrMap);
+	      return config;
+	   }
+
    public static RoundRobinConfig getCustomRoundRobinConfigFromControllerXML(Document doc) {
 
       Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
@@ -78,6 +91,14 @@ public class ConfigFactory {
       config.setCustomAttrMap(attrMap);
       return config;
    }
+
+   public static LutronHomeWorksConfig getCustomLutronHomeWorksConfigFromControllerXML(Document doc) {
+
+	      Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
+	      LutronHomeWorksConfig config = getLutronHomeWorksConfig();
+	      config.setCustomAttrMap(attrMap);
+	      return config;
+	   }
 
    private static Map<String, String> parseCustomConfigAttrMap() {
       Element element = null;

@@ -1,10 +1,14 @@
 package org.openremote.controller.protocol.lutron;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.exception.NoSuchCommandException;
 
-public class GrafikEyeCommand extends LutronHomeWorksCommand implements ExecutableCommand {
+public class GrafikEyeCommand extends LutronHomeWorksCommand implements ExecutableCommand, StatusCommand {
 
 	// Class Members
 	// --------------------------------------------------------------------------------
@@ -62,4 +66,12 @@ public class GrafikEyeCommand extends LutronHomeWorksCommand implements Executab
 		  GrafikEye grafikEye = (GrafikEye) gateway.getHomeWorksDevice(address, GrafikEye.class);
 		  grafikEye.selectScene(scene);
 	  }
+
+	@Override
+	public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
+		System.out.println("GrafikEye.read, sensorType " + sensorType);
+		System.out.println("State map " + stateMap);
+		GrafikEye grafikEye = (GrafikEye) gateway.getHomeWorksDevice(address, GrafikEye.class);
+		return Integer.toString(grafikEye.getSelectedScene());
+	}
 }

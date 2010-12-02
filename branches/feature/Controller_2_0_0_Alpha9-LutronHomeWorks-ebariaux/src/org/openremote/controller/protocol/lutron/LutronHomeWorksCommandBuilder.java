@@ -54,8 +54,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 	// Instance Fields
 	// ------------------------------------------------------------------------------
 
-	// TODO : inject service dependency
-	private final LutronHomeWorksGateway gateway = new LutronHomeWorksGateway();
+	private LutronHomeWorksGateway gateway;
 
 	// Constructors
 	// ---------------------------------------------------------------------------------
@@ -180,5 +179,14 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 		return cmd;
 
 	}
+	
+	public LutronHomeWorksGateway getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(LutronHomeWorksGateway gateway) {
+		this.gateway = gateway;
+	}
+
 
 }
