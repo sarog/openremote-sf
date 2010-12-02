@@ -44,6 +44,7 @@ public class BeehiveApplication extends Application {
       singletons.add(new PublicTemplatesRestService());
       singletons.add(new UserRESTService());
       singletons.add(new ControllerConfigRESTService());
+      singletons.add(new DeviceRESTService());
    }
 
    @Override
