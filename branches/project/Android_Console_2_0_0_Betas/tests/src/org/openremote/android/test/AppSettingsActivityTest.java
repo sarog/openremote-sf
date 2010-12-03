@@ -23,7 +23,9 @@ package org.openremote.android.test;
 import android.test.ActivityInstrumentationTestCase2;
 import android.app.Activity;
 import android.widget.EditText;
+import android.widget.ToggleButton;
 import android.view.KeyEvent;
+import android.view.View;
 import android.content.Context;
 import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.R;
@@ -38,21 +40,73 @@ import junit.framework.Assert;
 public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<AppSettingsActivity>
 {
 
-  private EditText sslEditField;
+  /**
+   * Global Android app context.
+   */
   private Context ctx;
+
+  /**
+   * SSL Port editable text field UI widget.
+   */
+  private EditText sslEditField;
+
+  /**
+   * SSL Toggle (on/off)
+   */
+  private ToggleButton sslToggle;
+
+  /**
+   * Reference to the current activity being tested.
+   */
+  private Activity activity;
+
+
+  // Constructors ---------------------------------------------------------------------------------
 
   public AppSettingsActivityTest()
   {
     super("org.openremote.android.console", AppSettingsActivity.class);
   }
 
+
+  // Test Setup -----------------------------------------------------------------------------------
+
   @Override protected void setUp()
   {
-    Activity activity = this.getActivity();
+    activity = this.getActivity();
     ctx = getInstrumentation().getTargetContext();
 
-    sslEditField = (EditText)activity.findViewById(R.id.ssl_port);
+    View sslPortView = activity.findViewById(R.id.ssl_port);
+    View sslToggleView = activity.findViewById(R.id.ssl_toggle);
+
+    if (!(sslPortView instanceof EditText))
+    {
+      fail(
+          "\n\n*************************************\n" +
+          "SSL Port view has changed from assumed EditText type.\n" +
+          "Update the test suite accordingly." +
+          "\n*************************************\n\n"
+      );
+    }
+
+    if (!(sslToggleView instanceof ToggleButton))
+    {
+      fail(
+          "\n\n*************************************\n" +
+          "SSL Toggle view has changed from assumed ToggleButton type. \n" +
+          "Update the test suite accordingly." +
+          "\n*************************************\n\n"
+      );
+    }
+
+    sslEditField = (EditText)sslPortView;
+    sslToggle = (ToggleButton)sslToggleView;
   }
+
+
+
+  // SSL Port Setting Tests -----------------------------------------------------------------------
+
 
 
   /**
@@ -60,10 +114,15 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
    */
   public void testValidSSLPorts()
   {
+
+    toggleSSL(true);
+
     sslEditField.setText("1234");
     sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
 
-    Assert.assertTrue(AppSettingsModel.getSSLPort(ctx) == 1234);
+    int sslPort = AppSettingsModel.getSSLPort(activity);
+
+    Assert.assertTrue("Expected SSL port value 1234, got " + sslPort, sslPort == 1234);
 
     sslEditField.setText("8443");
     sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
@@ -105,5 +164,122 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
 
     assertTrue(AppSettingsModel.getSSLPort(ctx) == 8443);
   }
+
+
+  /**
+   * Test SSL port values with invalid input -- should allow numbers only
+   */
+  public void testInvalidInputOnSSLPortField()
+  {
+    AppSettingsModel.setSSLPort(ctx, 8443);
+
+    sslEditField.setText("abc");
+    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == 8443);
+  }
+
+
+
+  // SSL toggle and SSL port mutual exclusion tests -----------------------------------------------
+
+
+  /**
+   * Test the SSL toggle and SSL port edit field mutual exclusion and inclusion -- when SSL is
+   * on/off, the port edit field should be enabled/disabled
+   */
+  public void testSSLTogglePortMutualExclusionAndInclusion()
+  {
+    toggleSSL(true);
+
+    // check the toggle is visible, checked, enabled and focusable..
+
+    assertTrue(sslToggle.getVisibility() == View.VISIBLE);
+
+    assertTrue(sslToggle.isChecked());
+    assertTrue(sslToggle.isClickable());
+    assertTrue(sslToggle.isEnabled());
+    assertTrue(sslToggle.isFocusable());
+
+    // check the port edit field is visible, enabled, focusable in all modes...
+    
+    assertTrue(sslEditField.getVisibility() == View.VISIBLE);
+    assertTrue(sslEditField.isEnabled());
+    assertTrue(sslEditField.isFocusable());
+    assertTrue(sslEditField.isFocusableInTouchMode());
+
+
+    // click toggle...
+
+    sslToggle.performClick();
+
+    // check the toggle is unchecked, but still visible, enabled and focusable..
+
+    assertTrue(sslToggle.getVisibility() == View.VISIBLE);
+
+    assertTrue(!sslToggle.isChecked());
+    assertTrue(sslToggle.isClickable());
+    assertTrue(sslToggle.isEnabled());
+    assertTrue(sslToggle.isFocusable());
+
+
+    // check the port edit field is visible, disabled, and not focusable in all modes...
+
+    assertTrue(sslEditField.getVisibility() == View.VISIBLE);
+    assertTrue(!sslEditField.isEnabled());
+    assertTrue(!sslEditField.isFocusable());
+    assertTrue(!sslEditField.isFocusableInTouchMode());
+    
+  }
+
+
+  /**
+   * Tests the SSL Port widget text value is rolled back to previous valid value if new
+   * incorrect value was entered.
+   */
+  public void testIncorrectValueUIRollback()
+  {
+    toggleSSL(true);
+
+    sslEditField.setText("5000");
+
+    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == 5000);
+
+    sslEditField.setText("100000");
+
+    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+
+    assertTrue(AppSettingsModel.getSSLPort(ctx) == 5000);
+
+    assertTrue(sslEditField.getText().toString().equals("5000"));
+
+  }
+
+
+
+  // Private Helpers ------------------------------------------------------------------------------
+
+  /**
+   * Toggle SSL ToggleButton in UI thread.
+   *
+   * @param toggle  SSL true or false
+   */
+  private void toggleSSL(final boolean toggle)
+  {
+    activity.runOnUiThread(
+        new Runnable()
+        {
+          public void run()
+          {
+            sslToggle.setChecked(toggle);
+          }
+        }
+    );
+
+    getInstrumentation().waitForIdleSync();
+  }
+
 }
 
