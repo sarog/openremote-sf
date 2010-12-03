@@ -140,6 +140,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       OrientationEventListener orientationListener = new OrientationEventListener(this) {
          @Override
          public void onOrientationChanged(int orientation) {
+            if (currentScreen == null) {
+               setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               return;
+            }
             if (orientation > 315 || orientation < 45  || (orientation > 135 && orientation < 225)) {
                // portrait
                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -759,6 +763,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
     * Display the current screen's inverse screen.
     */
    private void rotateToIntefaceOrientation() {
+      if (currentScreen == null) return;
       int inverseScreenId = currentScreen.getInverseScreenId();
       if (currentGroupView != null) {
          cancelCurrentPolling();
