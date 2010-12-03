@@ -23,6 +23,7 @@
 #import "AddServerViewController.h"
 #import "TextFieldCell.h"
 #import "AppSettingsDefinition.h"
+#import "ViewHelper.h"
 
 @implementation AddServerViewController
 
@@ -57,6 +58,11 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	NSLog(@"text field is %@",serverUrlFieldCell.textField.text);
 	NSString *url = [NSString stringWithFormat:@"http://%@",serverUrlFieldCell.textField.text];
+	NSURL *nsUrl = [NSURL URLWithString:url];
+	if ([nsUrl scheme] == nil) {
+		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
+		return NO;
+	}
 	NSLog(@"set url to %@",url);
 	[editingItem setValue:url forKey:@"url"];
 	if (newItem) {
