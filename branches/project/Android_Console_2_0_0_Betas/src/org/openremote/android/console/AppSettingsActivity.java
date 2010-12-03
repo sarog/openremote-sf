@@ -252,6 +252,14 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
                   toast.show();
                   return false;
                }
+
+               catch (IllegalArgumentException e)
+               {
+                 Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), 2);
+                 toast.show();
+
+                 return false;
+               }
             }
             return false;
          }
