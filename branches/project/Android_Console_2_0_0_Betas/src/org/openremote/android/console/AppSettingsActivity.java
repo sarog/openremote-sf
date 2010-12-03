@@ -48,6 +48,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -56,6 +57,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
@@ -221,52 +225,109 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       return sslLayout;
    }
 
-   /**
-    * Set the ssl switch state and ssl port value.
-    */
-   private void initSSLState() {
-      ToggleButton sslBtn = (ToggleButton)findViewById(R.id.ssl_toggle);
-      sslBtn.setChecked(AppSettingsModel.isSSLEnabled(this));
-      sslBtn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-               AppSettingsModel.enableSSL(AppSettingsActivity.this, true);
-            } else {
-               AppSettingsModel.enableSSL(AppSettingsActivity.this, false);
-            }
-         }
-      });
-      
-      EditText sslPortText = (EditText)findViewById(R.id.ssl_port);
-      sslPortText.setText("" + AppSettingsModel.getSSLPort(this));
-      sslPortText.setOnKeyListener(new OnKeyListener() {
-         public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_ENTER) {
-               String sslPortStr = ((EditText)v).getText().toString();
-               try {
-                   int sslPort = Integer.parseInt(sslPortStr.trim());
-                   AppSettingsModel.setSSLPort(AppSettingsActivity.this, sslPort);
-               }
-               catch (NumberFormatException ex) {
-                  Toast toast = Toast.makeText(getApplicationContext(), "SSL port format is not correct.", 1);
-                  toast.show();
-                  return false;
-               }
+  /**
+   * Initializes the SSL related UI widget properties and event handlers to deal with user
+   * interactions.
+   */
+  private void initSSLState()
+  {
+    // Get UI Widget references...
 
-               catch (IllegalArgumentException e)
-               {
-                 Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), 2);
-                 toast.show();
+    final ToggleButton sslToggleButton = (ToggleButton)findViewById(R.id.ssl_toggle);
+    final EditText sslPortEditField = (EditText)findViewById(R.id.ssl_port);
 
-                 return false;
-               }
+    // Configure UI to current settings state...
+
+    boolean sslEnabled = AppSettingsModel.isSSLEnabled(this);
+
+    sslToggleButton.setChecked(sslEnabled);
+    sslPortEditField.setText("" + AppSettingsModel.getSSLPort(this));
+
+    // If SSL is off, disable the port edit field by default...
+
+    if (!sslEnabled)
+    {
+      sslPortEditField.setEnabled(false);
+      sslPortEditField.setFocusable(false);
+      sslPortEditField.setFocusableInTouchMode(false);
+    }
+
+    // Manage state changes to SSL toggle...
+
+    sslToggleButton.setOnCheckedChangeListener(
+        new OnCheckedChangeListener()
+        {
+          public void onCheckedChanged(CompoundButton buttonView, boolean isEnabled)
+          {
+
+            // If SSL is being disabled, and the user had soft keyboard open, close it...
+
+            if (!isEnabled)
+            {
+              InputMethodManager input = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+              input.hideSoftInputFromWindow(sslPortEditField.getWindowToken(), 0);
             }
-            return false;
-         }
-      });
+
+            // Set SSL state in config model accordingly...
+
+            AppSettingsModel.enableSSL(AppSettingsActivity.this, isEnabled);
+
+            // Enable/Disable SSL Port text field according to SSL toggle on/off state...
+
+            sslPortEditField.setEnabled(isEnabled);
+            sslPortEditField.setFocusable(isEnabled);
+            sslPortEditField.setFocusableInTouchMode(isEnabled);
+          }
+        }
+    );
+
+
+    // ...
+
+
+    sslPortEditField.setOnKeyListener(new OnKeyListener()
+    {
+      public boolean onKey(View v, int keyCode, KeyEvent event)
+      {
+        if (keyCode == KeyEvent.KEYCODE_ENTER)
+        {
+           String sslPortStr = ((EditText)v).getText().toString();
+
+           try
+           {
+               int sslPort = Integer.parseInt(sslPortStr.trim());
+               AppSettingsModel.setSSLPort(AppSettingsActivity.this, sslPort);
+           }
+
+           catch (NumberFormatException ex)
+           {
+              Toast toast = Toast.makeText(getApplicationContext(), "SSL port format is not correct.", 1);
+              toast.show();
+
+              return false;
+           }
+
+           catch (IllegalArgumentException e)
+           {
+             Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), 2);
+             toast.show();
+
+             sslPortEditField.setText("" + AppSettingsModel.getSSLPort(AppSettingsActivity.this));
+             
+             return false;
+           }
+        }
+
+        return false;
+      }
+
+    });
       
-   }
-   
+  }
+
+
+
+
    /**
     * Adds the onclick listener on done button.
     * 
