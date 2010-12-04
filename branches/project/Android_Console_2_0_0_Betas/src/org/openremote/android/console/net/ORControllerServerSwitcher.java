@@ -244,19 +244,33 @@ public class ORControllerServerSwitcher
   }
 
 
-	/**
-	 * Get the groupmembers from the file group_members.xml .
-	 */
-	@SuppressWarnings("unchecked")
-	public static List<String> findAllGroupMembersFromFile(Context context) {
-		List<String> groupMembers = new ArrayList<String>();
-		Map<String, String> groupMembersMap = (Map<String, String>) context.getSharedPreferences(SERIALIZE_GROUP_MEMBERS_FILE_NAME, 0).getAll();
-		for(int i = 0; i <groupMembersMap.size(); i++) {
-			groupMembers.add(groupMembersMap.get(i+""));
-		}
-		return groupMembers;
-	}
-	
+  /**
+   * Get the groupmembers from the file group_members.xml .
+   *
+   * @param context   global Android application context
+   *
+   * @return  list of controller URLs
+   */
+  @SuppressWarnings("unchecked")
+  public static List<String> findAllGroupMembersFromFile(Context context)
+  {
+    // TODO: Use URL in the API instead of strings
+
+    List<String> groupMembers = new ArrayList<String>();
+
+    Map<String, String> groupMembersMap =
+        (Map<String, String>) context.getSharedPreferences(SERIALIZE_GROUP_MEMBERS_FILE_NAME, 0).getAll();
+
+    for(int i = 0; i <groupMembersMap.size(); i++)
+    {
+      groupMembers.add(groupMembersMap.get(i+""));
+    }
+
+    return groupMembers;
+  }
+
+
+
 	/** 
 	 * Get a available controller server url and switch to it.
    *
