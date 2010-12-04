@@ -84,10 +84,18 @@ public class ORConnection
 
   /**
    * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b>
-   * and param <b>isUseSSLfor</b> with url caller,<br /> and then the caller can deal with the
+   * and param <b>isUseSSLfor</b> with url caller, and then the caller can deal with the
    * httprequest result within ORConnectionDelegate instance.
+   *
+   * @param context               global Android application context
+   * @param httpMethod            enum POST or GET
+   * @param useHTTPAuth           indicates whether the HTTP 'Authentication' header should be added
+   *                              to the HTTP request
+   * @param url                   the URL to connect to
+   * @param delegateParam         callback delegate to deal with return values, data and exceptions
    */
-  public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam)
+  public ORConnection (final Context context, ORHttpMethod httpMethod, boolean useHTTPAuth,
+                       String url, ORConnectionDelegate delegateParam)
   {
     initHandler(context);
 
@@ -131,7 +139,7 @@ public class ORConnection
        return;
     }
 
-    if (isNeedHttpBasicAuth)
+    if (useHTTPAuth)
     {
        SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
     }
