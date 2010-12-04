@@ -22,6 +22,8 @@
 package org.openremote.android.test.console.net;
 
 import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
+import java.io.IOException;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
@@ -99,8 +101,10 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   /**
    * Connect to controller.openremote.org/test/controller and attempt to verify the existence
    * of "SimpleName" panel design.
+   *
+   * @throws IOException  if connecting to remote controller fails for every reason
    */
-  public void testVerifyControllerURL()
+  public void testVerifyControllerURL() throws IOException
   {
     try
     {
@@ -131,8 +135,9 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    * Connect to controller.openremote.org/test/controller instance and attempt to verify a panel
    * design ID that does not exist.
    *
+   * @throws IOException if connecting to the remote test controller fails for any reason
    */
-  public void testVerifyControllerURLWrongPanelName()
+  public void testVerifyControllerURLWrongPanelName() throws IOException
   {
     try
     {
@@ -162,15 +167,16 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    * Connect to controller.openremote.org/test/controller instance and attempt to verify a
    * panel design ID that has white space in the name.
    *
+   * @throws IOException if remote test controller can't be accessed
    */
-  public void testVerifyControllerURLSpacesInPanelName()
+  public void testVerifyControllerURLSpacesInPanelName() throws IOException
   {
     try
     {
       AppSettingsModel.setCurrentPanelIdentity(ctx, "Name With Spaces");
 
-      if (!wifi.isWifiEnabled())
-        fail(wifiRequired());
+      //if (!wifi.isWifiEnabled())
+      //  fail(wifiRequired());
 
       HttpResponse response = ORNetworkCheck.verifyControllerURL(
           ctx, "http://controller.openremote.org/test/controller"
@@ -193,13 +199,16 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
   /**
    * Test behavior when controller URL has been set to a non-existent location.
+   *
+   * @throws IOException if something happens to the connection, invalid URL path should only
+   *                     result an HTTP error code
    */
-  public void testVerifyControllerWrongURL()
+  public void testVerifyControllerWrongURL() throws IOException
   {
     try
     {
-      if (!wifi.isWifiEnabled())
-        fail(wifiRequired());
+      //if (!wifi.isWifiEnabled())
+      //  fail(wifiRequired());
 
       AppSettingsModel.setCurrentPanelIdentity(ctx, "something");
 
@@ -226,10 +235,10 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   /**
    * Test behavior when controller URL has not been configured.
    */
-  public void testVerifyControllerEmptyURL()
+  public void testVerifyControllerEmptyURL() throws IOException
   {
-    if (!wifi.isWifiEnabled())
-      fail(wifiRequired());
+    //if (!wifi.isWifiEnabled())
+    //  fail(wifiRequired());
 
 
     HttpResponse response = ORNetworkCheck.verifyControllerURL(ctx, "");
@@ -238,13 +247,25 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   }
 
 
+  /**
+   *
+   */
   public void testControllerAtUnknownHost()
   {
-    HttpResponse response = ORNetworkCheck.verifyControllerURL(
-        ctx, "http://controller.openremotetest.org/test/controller"
-    );
+    try
+    {
+      HttpResponse response = ORNetworkCheck.verifyControllerURL(
+          ctx, "http://controller.openremotetest.org/test/controller"
+      );
 
-    assertNull("Was expecting null, got " + response, response);
+      fail ("Should not get here...");
+    }
+    catch (IOException e)
+    {
+      // expected
+
+      assertTrue(e instanceof UnknownHostException);
+    }
   }
 
 

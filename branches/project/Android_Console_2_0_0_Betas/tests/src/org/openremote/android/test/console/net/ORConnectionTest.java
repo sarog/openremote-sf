@@ -21,6 +21,9 @@
 package org.openremote.android.test.console.net;
 
 import java.net.HttpURLConnection;
+import java.net.UnknownHostException;
+import java.net.MalformedURLException;
+import java.io.IOException;
 
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORHttpMethod;
@@ -81,8 +84,10 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
   /**
    * Tests a basic GET through {@link ORConnection#checkURLWithHTTPProtocol} method.
+   *
+   * @throws IOException see checkURLWithHTTPProtocol javadoc for details
    */
-  public void testURLConnectionBasicGET()
+  public void testURLConnectionBasicGET() throws IOException
   {
     final String URL = "http://controller.openremote.org/test/controller";
     final String HTTP_CONTENT_TYPE_HEADER = "content-type";
@@ -127,28 +132,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   /**
    * Tests a GET behavior on an unknown (no DNS resolution) host.
    */
-  public void testURLConnectionUnknownHost()
-  {
-    final String URL = "http://controller.openremotetest.org/test/controller";
-
-    final boolean NO_HTTP_AUTH = false;
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, URL, NO_HTTP_AUTH
-    );
-
-
-    // This is currently expected but very bad design -- incorrectly configured URL errors
-    // should be propagated to user
-
-    assertTrue(response == null);
-  }
-
-  /**
-   * Tests a GET behavior on an unknown (no DNS resolution) host.
-   */
-  public void testURLConnectionUnknownHost_BAD_API_DESIGN()
+  public void testURLConnectionUnknownHost() throws IOException
   {
     final String URL = "http://controller.openremotetest.org/test/controller";
 
@@ -161,13 +145,32 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
           activity, ORHttpMethod.GET, URL, NO_HTTP_AUTH
       );
 
-      fail (
-          "should create an exception with error details rather than non-informative null return value"
-      );
+      fail ("Should not get here...");
     }
-    catch (Throwable t)
+    catch (UnknownHostException e)
     {
-      // *ANY* exception would be better than returning null...
+      // expected...
+    }
+  }
+
+
+  public void testURLConnectionWithNullArg() throws IOException
+  {
+    final String URL = null;
+
+    final boolean NO_HTTP_AUTH = false;
+
+    try
+    {
+      HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
+          activity, ORHttpMethod.GET, URL, NO_HTTP_AUTH
+      );
+
+      fail ("Should not get here...");
+    }
+    catch (MalformedURLException e)
+    {
+      // expected...
     }
   }
 
