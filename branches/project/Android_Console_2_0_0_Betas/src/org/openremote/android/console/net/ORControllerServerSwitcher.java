@@ -204,33 +204,34 @@ public class ORControllerServerSwitcher {
 		return SWITCH_CONTROLLER_SUCCESS;
 	}
 
-	/**
-	 * Check all groupmembers' url and get a available one, this function deponds on the WIFI network.
-	 */
-	private static String getOneAvailableFromGroupMemberURLs(Context context) {
-		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
-		Log.i("OpenRemote/GROUP MEMBER", "Checking a available controller url from groupmembers " + allGroupMembers);
-		for (String controllerServerURL : allGroupMembers) {
-		   HttpResponse response = ORNetworkCheck.verifyControllerURL(context, controllerServerURL);
-			if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-				if (!AppSettingsModel.isAutoMode(context)) {//custom model
-					String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerServerURL);
-					String customServerURLs = AppSettingsModel.getCustomServers(context);
-					if (!customServerURLs.contains(selectedControllerServerURL)) {
-						customServerURLs = StringUtil.removeControllerServerURLSelected(customServerURLs);
-						if (customServerURLs.contains(controllerServerURL)) {
-							customServerURLs = customServerURLs.replaceAll(controllerServerURL, selectedControllerServerURL);
-						} else {
-							customServerURLs = customServerURLs + "," + selectedControllerServerURL;
-						}
-						AppSettingsModel.setCustomServers(context, customServerURLs);
-					}
-				}
-				return controllerServerURL;
-			}
-		}
-		return null;
-	}
+  /**
+   * Check all groupmembers' url and get a available one, this function deponds on the WIFI network.
+   */
+	private static String getOneAvailableFromGroupMemberURLs(Context context)
+  {
+    List<String> allGroupMembers = findAllGroupMembersFromFile(context);
+    Log.i("OpenRemote/GROUP MEMBER", "Checking a available controller url from groupmembers " + allGroupMembers);
+    for (String controllerServerURL : allGroupMembers) {
+       HttpResponse response = ORNetworkCheck.verifyControllerURL(context, controllerServerURL);
+      if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
+        if (!AppSettingsModel.isAutoMode(context)) {//custom model
+          String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerServerURL);
+          String customServerURLs = AppSettingsModel.getCustomServers(context);
+          if (!customServerURLs.contains(selectedControllerServerURL)) {
+            customServerURLs = StringUtil.removeControllerServerURLSelected(customServerURLs);
+            if (customServerURLs.contains(controllerServerURL)) {
+              customServerURLs = customServerURLs.replaceAll(controllerServerURL, selectedControllerServerURL);
+            } else {
+              customServerURLs = customServerURLs + "," + selectedControllerServerURL;
+            }
+            AppSettingsModel.setCustomServers(context, customServerURLs);
+          }
+        }
+        return controllerServerURL;
+      }
+    }
+    return null;
+  }
 
 	/**
 	 * Switch to the controller identified by the availableGroupMemberURL
