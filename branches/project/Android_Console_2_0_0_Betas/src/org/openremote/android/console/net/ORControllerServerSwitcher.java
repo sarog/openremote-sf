@@ -286,13 +286,13 @@ public class ORControllerServerSwitcher
 
 		if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
     {
-			Log.i("OpenRemote/GROUP MEMBER", "Got a available controller url from groupmembers" + allGroupMembers);
+			Log.i(LOG_CATEGORY, "Got a available controller url from groupmembers" + allGroupMembers);
 			switchControllerWithURL(context, availableGroupMemberURL);
 		}
 
     else
     {
-			Log.i("OpenRemote/GROUP MEMBER", "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
+			Log.i(LOG_CATEGORY, "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
 
 			if (!detectGroupMembers(context))
       {
@@ -304,20 +304,23 @@ public class ORControllerServerSwitcher
 
 			if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
       {
-				Log.i("OpenRemote/GROUP MEMBER", "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
+				Log.i(LOG_CATEGORY, "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
 				switchControllerWithURL(context, availableGroupMemberURL);
 			}
 
       else
       {
-				Log.i("OpenRemote/GROUP MEMBER", "There's no controller server available.");
+				Log.i(LOG_CATEGORY, "There's no controller server available.");
 				ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
+
 				return SWITCH_CONTROLLER_FAIL;
 			}
 		}
 
 		return SWITCH_CONTROLLER_SUCCESS;
 	}
+
+
 
   /**
    * Check all groupmembers' url and get a available one, this function deponds on the WIFI network.
