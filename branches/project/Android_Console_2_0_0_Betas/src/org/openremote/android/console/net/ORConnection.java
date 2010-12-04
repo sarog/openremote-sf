@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -245,10 +247,34 @@ public class ORConnection
    *                      or any other IO error occured (generic IOException)
    */
   public static HttpResponse checkURLWithHTTPProtocol(Context context, ORHttpMethod httpMethod,
-                                                      String url, boolean useHTTPAuth)
+                                                      String urlString, boolean useHTTPAuth)
       throws IOException
   {
-    // TODO : use URL class instead of string
+    // TODO : could move this method to ORNetworkCheck class, no one else is using it.
+    //
+    // TODO : use URL in the API instead of string
+    //
+    // Validate the URL by creating a proper URL instance from the string... it will throw
+    // an MalformedURLException (IOException) in case the URL was invalid.
+    //
+    // This can go away when the API is fixed...
+
+    URL targetURL = new URL(urlString);
+    URI targetURI;
+
+    try
+    {
+      targetURI = targetURL.toURI();
+    }
+    catch (URISyntaxException e)
+    {
+      // Not sure if we're ever going to hit this, but in case we do, just convert to
+      // MalformedURLException...
+
+      throw new MalformedURLException(
+          "Could not convert " + urlString + " to a compliant URI: " + e.getMessage()
+      );
+    }
 
     HttpRequestBase request = null;
     HttpResponse response = null;
@@ -264,30 +290,35 @@ public class ORConnection
 
     if (ORHttpMethod.POST.equals(httpMethod))
     {
-       request = new HttpPost(url);
+       request = new HttpPost(targetURI);
     }
 
     else if (ORHttpMethod.GET.equals(httpMethod))
     {
-       request = new HttpGet(url);
+       request = new HttpGet(targetURI);
     }
 
-    if (request == null)
-    {
-       Log.i(LOG_CATEGORY, "checking URL creation failed:" + url);
-       return null;
-    }
+//    if (request == null)
+//    {
+//       Log.i(LOG_CATEGORY, "checking URL creation failed:" + targetURL);
+//       return null;
+//    }
 
     if (useHTTPAuth)
     {
        SecurityUtil.addCredentialToHttpRequest(context, request);
     }
 
-    URL uri = new URL(url);
+    //URL uri = new URL(url);
 
-    if ("https".equals(uri.getProtocol()))
+    if ("https".equals(targetURL.getProtocol()))
     {
-      Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+      Scheme sch = new Scheme(
+          targetURL.getProtocol(),
+          new SelfCertificateSSLSocketFactory(),
+          targetURL.getPort()
+      );
+
       client.getConnectionManager().getSchemeRegistry().register(sch);
     }
 
