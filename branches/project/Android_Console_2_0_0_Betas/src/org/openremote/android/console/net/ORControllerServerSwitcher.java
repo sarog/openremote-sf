@@ -271,54 +271,74 @@ public class ORControllerServerSwitcher
 
 
 
-	/** 
-	 * Get a available controller server url and switch to it.
+  /**
+   * Get a available controller server url and switch to it.
    *
    * @param context global Android application context
    *
    * @return  TODO
-	 */
-	public static int doSwitch(Context context)
+   */
+  public static int doSwitch(Context context)
   {
     String availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
 
-		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
+    List<String> allGroupMembers = findAllGroupMembersFromFile(context);
 
-		if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
+    if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
     {
-			Log.i(LOG_CATEGORY, "Got a available controller url from groupmembers" + allGroupMembers);
-			switchControllerWithURL(context, availableGroupMemberURL);
-		}
+      Log.i(LOG_CATEGORY, "Got a available controller url from groupmembers" + allGroupMembers);
+
+      switchControllerWithURL(context, availableGroupMemberURL);
+    }
 
     else
     {
-			Log.i(LOG_CATEGORY, "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
+      Log.i(
+          LOG_CATEGORY,
+          "Didn't get a available controller url from groupmembers " + allGroupMembers +
+          ". Try to detect groupmembers again."
+      );
 
-			if (!detectGroupMembers(context))
+      if (!detectGroupMembers(context))
       {
-			   ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
-			   return SWITCH_CONTROLLER_FAIL;
-			}
+         ViewHelper.showAlertViewWithSetting(
+             context,
+             "Update fail",
+             "There's no controller server available. Leave this problem?"
+         );
 
-  	  availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
+         return SWITCH_CONTROLLER_FAIL;
+      }
 
-			if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
+      availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
+
+      if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
       {
-				Log.i(LOG_CATEGORY, "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
-				switchControllerWithURL(context, availableGroupMemberURL);
-			}
+        Log.i(
+            LOG_CATEGORY,
+            "Got a available controller url from groupmembers " + allGroupMembers +
+            " in second groupmembers detection attempt."
+        );
+
+        switchControllerWithURL(context, availableGroupMemberURL);
+      }
 
       else
       {
-				Log.i(LOG_CATEGORY, "There's no controller server available.");
-				ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
+        Log.i(LOG_CATEGORY, "There's no controller server available.");
 
-				return SWITCH_CONTROLLER_FAIL;
-			}
-		}
+        ViewHelper.showAlertViewWithSetting(
+            context,
+            "Update fail",
+            "There's no controller server available. Leave this problem?"
+        );
 
-		return SWITCH_CONTROLLER_SUCCESS;
-	}
+        return SWITCH_CONTROLLER_FAIL;
+      }
+    }
+
+    return SWITCH_CONTROLLER_SUCCESS;
+  }
 
 
 
