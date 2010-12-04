@@ -349,11 +349,11 @@ public class ORControllerServerSwitcher
    *
    * @return  TODO
    */
-	private static String getOneAvailableFromGroupMemberURLs(Context context)
+  private static String getOneAvailableFromGroupMemberURLs(Context context)
   {
     List<String> allGroupMembers = findAllGroupMembersFromFile(context);
 
-    Log.i("OpenRemote/GROUP MEMBER", "Checking a available controller url from groupmembers " + allGroupMembers);
+    Log.i(LOG_CATEGORY, "Checking a available controller url from groupmembers " + allGroupMembers);
 
     for (String controllerServerURL : allGroupMembers)
     {
@@ -400,20 +400,36 @@ public class ORControllerServerSwitcher
     return null;
   }
 
-	/**
-	 * Switch to the controller identified by the availableGroupMemberURL
-	 */
-	private static void switchControllerWithURL(Context context, String availableGroupMemberURL) {
-	   if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentServer(context))) {
-	      Log.i("OpenRemote/GROUP MEMBER", "The current server is already: " + availableGroupMemberURL + ", should not switch to self.");
-	      return;
-	   }
-	   Main.prepareToastForSwitchingController();
-		Log.i("OpenRemote/GROUP MEMBER", "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
-		AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
-		Intent intent = new Intent();
-		intent.setClass(context, Main.class);
-		context.startActivity(intent);
-	}
+
+
+  /**
+   * Switch to the controller identified by the availableGroupMemberURL
+   *
+   * @param context                 global Android application context
+   * @param availableGroupMemberURL TODO
+   */
+  private static void switchControllerWithURL(Context context, String availableGroupMemberURL)
+  {
+    if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentServer(context)))
+    {
+      Log.i(
+          LOG_CATEGORY,
+          "The current server is already: " + availableGroupMemberURL +
+          ", should not switch to self."
+      );
+
+      return;
+    }
+
+    Main.prepareToastForSwitchingController();
+    
+    Log.i(LOG_CATEGORY, "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
+
+    AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
+
+    Intent intent = new Intent();
+    intent.setClass(context, Main.class);
+    context.startActivity(intent);
+  }
 	
 }
