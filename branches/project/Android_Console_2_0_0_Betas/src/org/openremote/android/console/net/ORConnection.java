@@ -247,6 +247,8 @@ public class ORConnection
 
     HttpParams params = new BasicHttpParams();
 
+    // TODO : seems like timeouts ought to be externalized...
+
     HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
     HttpConnectionParams.setSoTimeout(params, 5 * 1000);
 
