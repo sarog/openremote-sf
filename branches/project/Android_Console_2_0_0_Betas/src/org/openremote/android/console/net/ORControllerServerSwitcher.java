@@ -217,19 +217,33 @@ public class ORControllerServerSwitcher
   }
 
 
-	/**
-	 * Serialize the groupmembers into file named group_members.xml .
-	 */
-	private static boolean saveGroupMembersToFile(Context context, List<String> groupMembers) {
-		SharedPreferences.Editor editor = context.getSharedPreferences(SERIALIZE_GROUP_MEMBERS_FILE_NAME, 0).edit();
-		editor.clear();
-		editor.commit();
-		for (int i = 0; i < groupMembers.size(); i++) {
-			editor.putString(i+"", groupMembers.get(i));
-		}
-		return editor.commit();
-	}
-	
+  /**
+   * Serialize the groupmembers into file named group_members.xml .
+   *
+   * @param context       global Android application context
+   * @param groupMembers  controller cluster group members
+   *
+   * @return  true if save was successful, false otherwise
+   */
+  private static boolean saveGroupMembersToFile(Context context, List<String> groupMembers)
+  {
+    // TODO: Use URL class instead of String
+
+    SharedPreferences.Editor editor =
+        context.getSharedPreferences(SERIALIZE_GROUP_MEMBERS_FILE_NAME, 0).edit();
+
+    editor.clear();
+    editor.commit();
+
+    for (int i = 0; i < groupMembers.size(); i++)
+    {
+      editor.putString(i+"", groupMembers.get(i));
+    }
+
+    return editor.commit();
+  }
+
+
 	/**
 	 * Get the groupmembers from the file group_members.xml .
 	 */
