@@ -238,6 +238,16 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   }
 
 
+  public void testControllerAtUnknownHost()
+  {
+    HttpResponse response = ORNetworkCheck.verifyControllerURL(
+        ctx, "http://controller.openremotetest.org/test/controller"
+    );
+
+    assertNull("Was expecting null, got " + response, response);
+  }
+
+
 //
 // Commented the following test out due to despite turning off wifi, actual devices tend to
 // automatically switch to a backup connection over 3G and still reach target (goal was to
