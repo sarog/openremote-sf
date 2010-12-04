@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -236,11 +237,18 @@ public class ORConnection
    *                        to the HTTP request
    *
    * @return TODO
+   *
+   * @throws IOException  if the URL cannot be resolved by DNS (UnknownHostException),
+   *                      if the URL was not correctly formed (MalformedURLException),
+   *                      if the connection timed out (SocketTimeoutException),
+   *                      there was an error in the HTTP protocol (ClientProtocolException),
+   *                      or any other IO error occured (generic IOException)
    */
-  public static HttpResponse checkURLWithHTTPProtocol(
-     Context context, ORHttpMethod httpMethod, String url, boolean useHTTPAuth)
+  public static HttpResponse checkURLWithHTTPProtocol(Context context, ORHttpMethod httpMethod,
+                                                      String url, boolean useHTTPAuth)
+      throws IOException
   {
-   // TODO : use URL class instead of string
+    // TODO : use URL class instead of string
 
     HttpRequestBase request = null;
     HttpResponse response = null;
@@ -275,43 +283,15 @@ public class ORConnection
        SecurityUtil.addCredentialToHttpRequest(context, request);
     }
 
-    try
+    URL uri = new URL(url);
+
+    if ("https".equals(uri.getProtocol()))
     {
-       URL uri = new URL(url);
-
-       if ("https".equals(uri.getProtocol()))
-       {
-          Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-          client.getConnectionManager().getSchemeRegistry().register(sch);
-       }
-
-       response = client.execute(request);
+      Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+      client.getConnectionManager().getSchemeRegistry().register(sch);
     }
 
-    catch (MalformedURLException e)
-    {
-       Log.e(LOG_CATEGORY, "Create URL fail:" + url);
-    }
-
-    catch (ClientProtocolException e)
-    {
-       Log.i(LOG_CATEGORY, "checking URL failed:" + url + ", " + e.getMessage());
-    }
-
-    catch (SocketTimeoutException e)
-    {
-       Log.i(LOG_CATEGORY, "checking URL failed:" + url + ", " + e.getMessage());
-    }
-
-    catch (IOException e)
-    {
-       Log.i(LOG_CATEGORY, "checking URL failed:" + url + ", " + e.getMessage());
-    }
-
-    catch (OutOfMemoryError e)
-    {
-       Log.i(LOG_CATEGORY, "checking URL failed:" + url + ", " + e.getMessage());
-    }
+    response = client.execute(request);
 
     return response;
   }
