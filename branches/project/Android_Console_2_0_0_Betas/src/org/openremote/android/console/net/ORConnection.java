@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2010, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.openremote.android.console.net;
 
@@ -46,60 +47,99 @@ import android.os.Message;
 import android.util.Log;
 
 /**
+ * TODO
+ *
  * This is responsible for manage the connection of android console to controller
  * 
  * @author handy 2010-04-27
  *
  */
 
-public class ORConnection {   
-   private HttpClient httpClient;
-   private HttpRequestBase httpRequest;
-   private HttpResponse httpResponse;
-   protected ORConnectionDelegate delegate;
-   private Context context;
-   protected Handler handler;
-   
-   public static final int SUCCESS = 1;
-   public static final int ERROR = 0;
-   
-   /** 
-    * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b> and param <b>isUseSSLfor</b> with url caller,<br />
-    * and then the caller can deal with the httprequest result within ORConnectionDelegate instance.
-    */
-   public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam) {
-      initHandler(context);
-      delegate = delegateParam;
-      this.context = context;
-      HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
-      httpClient = new DefaultHttpClient(params);
-      if (ORHttpMethod.POST.equals(httpMethod)) {
-         httpRequest = new HttpPost(url);
-      } else if (ORHttpMethod.GET.equals(httpMethod)) {
-         httpRequest = new HttpGet(url);
-      }
-      
-      try {
-         URL uri = new URL(url);
-         if ("https".equals(uri.getProtocol())) {
-            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-            httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-         }
-      } catch (MalformedURLException e) {
-         Log.e("OpenRemote-ORConnection", "Create URL fail:" + url);
-      }
-      if (httpRequest == null) {
-         Log.e("OpenRemote-ORConnection", "Create HttpRequest fail:" + url);
-         return;
-      }
-      
-      if (isNeedHttpBasicAuth) {
-         SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
-      }
-      execute();
-   }
+public class ORConnection
+{
+
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Log category for this class with a common OpenRemote prefix.
+   */
+  public final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "HTTPConnection";
+
+
+  public static final int SUCCESS = 1;
+  public static final int ERROR = 0;
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private HttpClient httpClient;
+  private HttpRequestBase httpRequest;
+  private HttpResponse httpResponse;
+  protected ORConnectionDelegate delegate;
+  private Context context;
+  protected Handler handler;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * Establish the HttpBasicAuthentication httpconnection depend on param <b>isNeedHttpBasicAuth</b>
+   * and param <b>isUseSSLfor</b> with url caller,<br /> and then the caller can deal with the
+   * httprequest result within ORConnectionDelegate instance.
+   */
+  public ORConnection (final Context context, ORHttpMethod httpMethod, boolean isNeedHttpBasicAuth, String url, ORConnectionDelegate delegateParam)
+  {
+    initHandler(context);
+
+    delegate = delegateParam;
+    this.context = context;
+
+    HttpParams params = new BasicHttpParams();
+    HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
+    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+
+    httpClient = new DefaultHttpClient(params);
+
+    if (ORHttpMethod.POST.equals(httpMethod))
+    {
+       httpRequest = new HttpPost(url);
+    }
+    else if (ORHttpMethod.GET.equals(httpMethod))
+    {
+       httpRequest = new HttpGet(url);
+    }
+
+    try
+    {
+       URL uri = new URL(url);
+
+       if ("https".equals(uri.getProtocol()))
+       {
+          Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+          httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+       }
+    }
+
+    catch (MalformedURLException e)
+    {
+       Log.e("OpenRemote-ORConnection", "Create URL fail:" + url);
+    }
+
+    if (httpRequest == null)
+    {
+       Log.e("OpenRemote-ORConnection", "Create HttpRequest fail:" + url);
+       return;
+    }
+
+    if (isNeedHttpBasicAuth)
+    {
+       SecurityUtil.addCredentialToHttpRequest(context, httpRequest);
+    }
+
+    execute();
+  }
+
+
 
    protected void initHandler(final Context context) {
       handler = new Handler() {
@@ -180,9 +220,17 @@ public class ORConnection {
    *
    * Establish the httpconnection with url for caller and then the caller can deal with the
    * httprequest result within ORConnectionDelegate instance. if check failed, return null.
+   *
+   * @param context         global Android application context
+   * @param httpMethod      enum POST or GET
+   * @param url             the URL to connect to
+   * @param useHTTPAuth     indicates whether the HTTP 'Authentication' header should be added
+   *                        to the HTTP request
+   *
+   * @return TODO
    */
   public static HttpResponse checkURLWithHTTPProtocol(
-     Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth)
+     Context context, ORHttpMethod httpMethod, String url, boolean useHTTPAuth)
   {
    // TODO : use URL class instead of string
 
@@ -212,7 +260,7 @@ public class ORConnection {
        return null;
     }
 
-    if (isNeedBasicAuth)
+    if (useHTTPAuth)
     {
        SecurityUtil.addCredentialToHttpRequest(context, request);
     }
