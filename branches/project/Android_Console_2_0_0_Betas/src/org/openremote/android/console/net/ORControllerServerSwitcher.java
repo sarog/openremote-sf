@@ -87,8 +87,8 @@ public class ORControllerServerSwitcher
    */
   public static boolean detectGroupMembers(Context context)
   {
-    Log.i("OpenRemote/GROUP MEMBER", "Detecting group members with current controller server url "
-            + AppSettingsModel.getCurrentServer(context));
+    Log.i(LOG_CATEGORY, "Detecting group members with current controller server url " +
+          AppSettingsModel.getCurrentServer(context));
 
     HttpParams params = new BasicHttpParams();
     HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
@@ -99,7 +99,8 @@ public class ORControllerServerSwitcher
 
     if (httpGet == null)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Create HttpRequest fail.");
+      Log.e(LOG_CATEGORY, "Create HttpRequest fail.");
+
       return false;
     }
 
@@ -143,73 +144,73 @@ public class ORControllerServerSwitcher
                groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
              }
 
-             Log.i("OpenRemote/GROUP MEMBER", "Detected groupmembers. Groupmembers are " + groupMembers);
+             Log.i(LOG_CATEGORY, "Detected groupmembers. Groupmembers are " + groupMembers);
 
              return saveGroupMembersToFile(context, groupMembers);
           }
           catch (IOException e)
           {
-            Log.e("OpenRemote/GROUP MEMBER", "The data is from ORConnection is bad", e);
+            Log.e(LOG_CATEGORY, "The data is from ORConnection is bad", e);
           }
           catch (ParserConfigurationException e)
           {
-            Log.e("OpenRemote/GROUP MEMBER", "Cant build new Document builder", e);
+            Log.e(LOG_CATEGORY, "Cant build new Document builder", e);
           }
           catch (SAXException e)
           {
-            Log.e("OpenRemote/GROUP MEMBER", "Parse data error", e);
+            Log.e(LOG_CATEGORY, "Parse data error", e);
           }
         }
 
         else
         {
-          Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error");
+          Log.e(LOG_CATEGORY, "detectGroupMembers Parse data error");
         }
       }
 
       catch (IllegalStateException e)
       {
-        Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
+        Log.e(LOG_CATEGORY, "detectGroupMembers Parse data error", e);
       }
 
       catch (IOException e)
       {
-        Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
+        Log.e(LOG_CATEGORY, "detectGroupMembers Parse data error", e);
       }
 
     }
 
     catch (MalformedURLException e)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Create URL fail:" + url);
+      Log.e(LOG_CATEGORY, "Create URL fail:" + url);
     }
 
     catch (ConnectException e)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
+      Log.e(LOG_CATEGORY, "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
     }
 
     catch (ClientProtocolException e)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
-            + AppSettingsModel.getCurrentServer(context), e);
+      Log.e(LOG_CATEGORY, "Can't Detect groupmembers with current controller server " +
+            AppSettingsModel.getCurrentServer(context), e);
     }
 
     catch (SocketTimeoutException e)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
-             + AppSettingsModel.getCurrentServer(context), e);
+      Log.e(LOG_CATEGORY, "Can't Detect groupmembers with current controller server " +
+            AppSettingsModel.getCurrentServer(context), e);
     }
 
     catch (IOException e)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
-            + AppSettingsModel.getCurrentServer(context), e);
+      Log.e(LOG_CATEGORY, "Can't Detect groupmembers with current controller server " +
+            AppSettingsModel.getCurrentServer(context), e);
     }
 
     catch (IllegalArgumentException e)
     {
-      Log.e("OpenRemote/GROUP MEMBER", "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
+      Log.e(LOG_CATEGORY, "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
     }
 
     return false;
