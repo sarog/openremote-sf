@@ -212,9 +212,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          intent.setClass(activity, LoginViewActivity.class);
          intent.setData(Uri.parse(Main.LOAD_RESOURCE));
          break;
-      case SWITCH_TO_OTHER_CONTROLER:  // this fails on samsung
+      case SWITCH_TO_OTHER_CONTROLER:
+        
          ORControllerServerSwitcher.doSwitch(activity);
          return;
+
       default:
          ViewHelper.showAlertViewWithTitle(activity, "Send Request Error", ControllerException.exceptionMessageOfCode(result.getStatusCode()));
          return;
