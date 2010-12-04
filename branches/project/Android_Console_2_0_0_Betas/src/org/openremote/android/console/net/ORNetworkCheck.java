@@ -63,6 +63,8 @@ public class ORNetworkCheck
    * @param url                   an URL to a controller instance
    *
    * @return TODO: returns null or HttpResponse
+   *
+   * @throws IOException TODO
    */
   public static HttpResponse verifyControllerURL(Context context, String url) throws IOException
   {
@@ -120,6 +122,8 @@ public class ORNetworkCheck
    * @return  returns the HTTP response from the attempt to connect to the configured controller
    *          or null, in case of failure (note that the HTTP response code may also include
    *          an error code from connection attempt).
+   *
+   * @throws IOException TODO
    */
   private static HttpResponse isControllerAvailable(Context context) throws IOException
   {
@@ -127,13 +131,6 @@ public class ORNetworkCheck
       return null;
 
     String controllerURL = AppSettingsModel.getSecuredServer(context);
-
-    Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
-
-    if (controllerURL == null || "".equals(controllerURL))
-    {
-      return null;  // TODO : fix this, it is stupid -- throw an exception instead
-    }
 
     return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
   }
