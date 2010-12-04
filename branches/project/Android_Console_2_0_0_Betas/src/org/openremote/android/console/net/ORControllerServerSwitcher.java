@@ -351,6 +351,8 @@ public class ORControllerServerSwitcher
    */
   private static String getOneAvailableFromGroupMemberURLs(Context context)
   {
+    // TODO : Use URL class in API
+
     List<String> allGroupMembers = findAllGroupMembersFromFile(context);
 
     Log.i(LOG_CATEGORY, "Checking a available controller url from groupmembers " + allGroupMembers);
@@ -381,22 +383,32 @@ public class ORControllerServerSwitcher
 
       if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
       {
-        if (!AppSettingsModel.isAutoMode(context)) {//custom model
+        if (!AppSettingsModel.isAutoMode(context))
+        {
           String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerServerURL);
           String customServerURLs = AppSettingsModel.getCustomServers(context);
-          if (!customServerURLs.contains(selectedControllerServerURL)) {
+
+          if (!customServerURLs.contains(selectedControllerServerURL))
+          {
             customServerURLs = StringUtil.removeControllerServerURLSelected(customServerURLs);
-            if (customServerURLs.contains(controllerServerURL)) {
+
+            if (customServerURLs.contains(controllerServerURL))
+            {
               customServerURLs = customServerURLs.replaceAll(controllerServerURL, selectedControllerServerURL);
-            } else {
+            }
+
+            else
+            {
               customServerURLs = customServerURLs + "," + selectedControllerServerURL;
             }
+
             AppSettingsModel.setCustomServers(context, customServerURLs);
           }
         }
         return controllerServerURL;
       }
     }
+
     return null;
   }
 
