@@ -75,92 +75,147 @@ public class ORControllerServerSwitcher
    */
   public final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "Failover";
 
-	private static final String SERIALIZE_GROUP_MEMBERS_FILE_NAME = "group_members";
-	public static final int SWITCH_CONTROLLER_SUCCESS = 1;
-	public static final int SWITCH_CONTROLLER_FAIL = 2;
+  private static final String SERIALIZE_GROUP_MEMBERS_FILE_NAME = "group_members";
+  public static final int SWITCH_CONTROLLER_SUCCESS = 1;
+  public static final int SWITCH_CONTROLLER_FAIL = 2;
 
 
   // Class Members --------------------------------------------------------------------------------
 
-	/**
-	 * Detect the groupmembers of current server url 
-	 */
-	public static boolean detectGroupMembers(Context context) {
-		Log.i("OpenRemote/GROUP MEMBER", "Detecting group members with current controller server url "
+  /**
+   * Detect the groupmembers of current server url
+   */
+  public static boolean detectGroupMembers(Context context)
+  {
+    Log.i("OpenRemote/GROUP MEMBER", "Detecting group members with current controller server url "
             + AppSettingsModel.getCurrentServer(context));
-      HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
-      HttpClient httpClient = new DefaultHttpClient(params);
-      String url = AppSettingsModel.getSecuredServer(context);
-      HttpGet httpGet = new HttpGet(url + "/rest/servers");
-		
-		if (httpGet == null) {
-			Log.e("OpenRemote/GROUP MEMBER", "Create HttpRequest fail.");
-			return false;
-		}
-		SecurityUtil.addCredentialToHttpRequest(context, httpGet);		
-	   try {
-	      URL uri = new URL(url);
-         if ("https".equals(uri.getProtocol())) {
-            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-            httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-         }
-	    	HttpResponse httpResponse = httpClient.execute(httpGet);
-	    	
-	    	try {
-				if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
-					InputStream data = httpResponse.getEntity().getContent();
-					
-					try{
-						   DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-						   DocumentBuilder builder = factory.newDocumentBuilder();
-						   Document dom = builder.parse(data);
-						   Element root = dom.getDocumentElement();
-						   
-						   NodeList nodeList = root.getElementsByTagName("server");
-						   int nodeNums = nodeList.getLength();
-						   List<String> groupMembers = new ArrayList<String>();
-						   for (int i = 0; i < nodeNums; i++) {
-							   groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
-						   }
-						   Log.i("OpenRemote/GROUP MEMBER", "Detected groupmembers. Groupmembers are " + groupMembers);
-						   return saveGroupMembersToFile(context, groupMembers);
-						} catch (IOException e) {
-							Log.e("OpenRemote/GROUP MEMBER", "The data is from ORConnection is bad", e);
-						} catch (ParserConfigurationException e) {
-							Log.e("OpenRemote/GROUP MEMBER", "Cant build new Document builder", e);
-						} catch (SAXException e) {
-							Log.e("OpenRemote/GROUP MEMBER", "Parse data error", e);
-						}
-					
-				} else {
-				   Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error");
-				}
-			} catch (IllegalStateException e) {
-			   Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
-			} catch (IOException e) {
-			   Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
-			}
-	   } catch (MalformedURLException e) {
-         Log.e("OpenRemote/GROUP MEMBER", "Create URL fail:" + url);
-	   } catch (ConnectException e) {
-         Log.e("OpenRemote/GROUP MEMBER", "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
-      } catch (ClientProtocolException e) {
-         Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
-               + AppSettingsModel.getCurrentServer(context), e);
-      } catch (SocketTimeoutException e) {
-         Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
-               + AppSettingsModel.getCurrentServer(context), e);
-      } catch (IOException e) {
-         Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
-               + AppSettingsModel.getCurrentServer(context), e);
-      } catch (IllegalArgumentException e) {
-         Log.e("OpenRemote/GROUP MEMBER", "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
-      }
+
+    HttpParams params = new BasicHttpParams();
+    HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+    HttpClient httpClient = new DefaultHttpClient(params);
+    String url = AppSettingsModel.getSecuredServer(context);
+    HttpGet httpGet = new HttpGet(url + "/rest/servers");
+
+    if (httpGet == null)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Create HttpRequest fail.");
       return false;
-	}
-	
+    }
+
+    SecurityUtil.addCredentialToHttpRequest(context, httpGet);
+
+
+    // TODO : fix the exception handling in this method -- it is ridiculous.
+
+
+    try
+    {
+      URL uri = new URL(url);
+
+      if ("https".equals(uri.getProtocol()))
+      {
+        Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+        httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+      }
+
+      HttpResponse httpResponse = httpClient.execute(httpGet);
+
+      try
+      {
+        if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
+        {
+          InputStream data = httpResponse.getEntity().getContent();
+
+          try
+          {
+             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+             DocumentBuilder builder = factory.newDocumentBuilder();
+             Document dom = builder.parse(data);
+             Element root = dom.getDocumentElement();
+
+             NodeList nodeList = root.getElementsByTagName("server");
+             int nodeNums = nodeList.getLength();
+             List<String> groupMembers = new ArrayList<String>();
+
+             for (int i = 0; i < nodeNums; i++)
+             {
+               groupMembers.add(nodeList.item(i).getAttributes().getNamedItem("url").getNodeValue());
+             }
+
+             Log.i("OpenRemote/GROUP MEMBER", "Detected groupmembers. Groupmembers are " + groupMembers);
+
+             return saveGroupMembersToFile(context, groupMembers);
+          }
+          catch (IOException e)
+          {
+            Log.e("OpenRemote/GROUP MEMBER", "The data is from ORConnection is bad", e);
+          }
+          catch (ParserConfigurationException e)
+          {
+            Log.e("OpenRemote/GROUP MEMBER", "Cant build new Document builder", e);
+          }
+          catch (SAXException e)
+          {
+            Log.e("OpenRemote/GROUP MEMBER", "Parse data error", e);
+          }
+        }
+
+        else
+        {
+          Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error");
+        }
+      }
+
+      catch (IllegalStateException e)
+      {
+        Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
+      }
+
+      catch (IOException e)
+      {
+        Log.e("OpenRemote/GROUP MEMBER", "detectGroupMembers Parse data error", e);
+      }
+
+    }
+
+    catch (MalformedURLException e)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Create URL fail:" + url);
+    }
+
+    catch (ConnectException e)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Connection refused: " + AppSettingsModel.getCurrentServer(context), e);
+    }
+
+    catch (ClientProtocolException e)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
+            + AppSettingsModel.getCurrentServer(context), e);
+    }
+
+    catch (SocketTimeoutException e)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
+             + AppSettingsModel.getCurrentServer(context), e);
+    }
+
+    catch (IOException e)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Can't Detect groupmembers with current controller server "
+            + AppSettingsModel.getCurrentServer(context), e);
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      Log.e("OpenRemote/GROUP MEMBER", "Host name can be null :" + AppSettingsModel.getCurrentServer(context), e);
+    }
+
+    return false;
+  }
+
+
 	/**
 	 * Serialize the groupmembers into file named group_members.xml .
 	 */
