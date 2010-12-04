@@ -175,51 +175,87 @@ public class ORConnection {
       }
    }
    
-   /** 
-    * Establish the httpconnection with url for caller and then the caller can deal with the
-    * httprequest result within ORConnectionDelegate instance. if check failed, return null.
-    */
-   public static HttpResponse checkURLWithHTTPProtocol (Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth) {
-      HttpRequestBase request = null;
-      HttpResponse response = null;
-      
-      HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
-      HttpConnectionParams.setSoTimeout(params, 5 * 1000);
-      HttpClient client = new DefaultHttpClient(params);
-      if (ORHttpMethod.POST.equals(httpMethod)) {
-         request = new HttpPost(url);
-      } else if (ORHttpMethod.GET.equals(httpMethod)) {
-         request = new HttpGet(url);
-      }
-      
-      if (request == null) {
-         Log.i("OpenRemote-ORConnection", "checking URL creation failed:" + url);
-         return null;
-      }
-      if (isNeedBasicAuth) {
-         SecurityUtil.addCredentialToHttpRequest(context, request);
-      }
-      
-      try {
-         URL uri = new URL(url);
-         if ("https".equals(uri.getProtocol())) {
-            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-            client.getConnectionManager().getSchemeRegistry().register(sch);
-         }
-         response = client.execute(request);
-      } catch (MalformedURLException e) {
-         Log.e("OpenRemote-ORConnection", "Create URL fail:" + url);
-      } catch (ClientProtocolException e) {
-         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
-      } catch (SocketTimeoutException e) {
-         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
-      } catch (IOException e) {
-         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
-      } catch (OutOfMemoryError e) {
-         Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
-      }
-      return response;
-   }
-   
+  /**
+   * TODO
+   *
+   * Establish the httpconnection with url for caller and then the caller can deal with the
+   * httprequest result within ORConnectionDelegate instance. if check failed, return null.
+   */
+  public static HttpResponse checkURLWithHTTPProtocol(
+     Context context, ORHttpMethod httpMethod, String url, boolean isNeedBasicAuth)
+  {
+   // TODO : use URL class instead of string
+
+    HttpRequestBase request = null;
+    HttpResponse response = null;
+
+    HttpParams params = new BasicHttpParams();
+
+    HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
+    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+
+    HttpClient client = new DefaultHttpClient(params);
+
+    if (ORHttpMethod.POST.equals(httpMethod))
+    {
+       request = new HttpPost(url);
+    }
+
+    else if (ORHttpMethod.GET.equals(httpMethod))
+    {
+       request = new HttpGet(url);
+    }
+
+    if (request == null)
+    {
+       Log.i("OpenRemote-ORConnection", "checking URL creation failed:" + url);
+       return null;
+    }
+
+    if (isNeedBasicAuth)
+    {
+       SecurityUtil.addCredentialToHttpRequest(context, request);
+    }
+
+    try
+    {
+       URL uri = new URL(url);
+
+       if ("https".equals(uri.getProtocol()))
+       {
+          Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+          client.getConnectionManager().getSchemeRegistry().register(sch);
+       }
+
+       response = client.execute(request);
+    }
+
+    catch (MalformedURLException e)
+    {
+       Log.e("OpenRemote-ORConnection", "Create URL fail:" + url);
+    }
+
+    catch (ClientProtocolException e)
+    {
+       Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+    }
+
+    catch (SocketTimeoutException e)
+    {
+       Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+    }
+
+    catch (IOException e)
+    {
+       Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+    }
+
+    catch (OutOfMemoryError e)
+    {
+       Log.i("OpenRemote-ORConnection", "checking URL failed:" + url + ", " + e.getMessage());
+    }
+
+    return response;
+  }
+
 }
