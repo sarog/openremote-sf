@@ -21,6 +21,7 @@
 package org.openremote.android.console.net;
 
 import java.net.HttpURLConnection;
+import java.io.IOException;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
@@ -63,7 +64,7 @@ public class ORNetworkCheck
    *
    * @return TODO: returns null or HttpResponse
    */
-  public static HttpResponse verifyControllerURL(Context context, String url)
+  public static HttpResponse verifyControllerURL(Context context, String url) throws IOException
   {
     // TODO : Use URL class instead of string in param
 
@@ -77,7 +78,7 @@ public class ORNetworkCheck
     Log.d(LOG_CATEGORY, "HTTP Response: " + response);
 
     if (response == null)
-      return null;
+      return null;  // TODO : fix this, it is stupid - throw an exception
 
     int status = response.getStatusLine().getStatusCode();
 
@@ -89,14 +90,14 @@ public class ORNetworkCheck
 
     if (controllerURL == null || "".equals(controllerURL))
     {
-      return null;
+      return null;  // TODO : fix this, it is stupid - throw an exception
     }
 
     String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
 
     if (currentPanelIdentity == null || "".equals(currentPanelIdentity))
     {
-      return null;
+      return null;  // TODO : fix this, it is stupid - throw an exception
     }
 
     String restfulPanelURL = controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
@@ -120,7 +121,7 @@ public class ORNetworkCheck
    *          or null, in case of failure (note that the HTTP response code may also include
    *          an error code from connection attempt).
    */
-  private static HttpResponse isControllerAvailable(Context context)
+  private static HttpResponse isControllerAvailable(Context context) throws IOException
   {
     if (!hasWifiAndControllerConfig(context))
       return null;
@@ -131,7 +132,7 @@ public class ORNetworkCheck
 
     if (controllerURL == null || "".equals(controllerURL))
     {
-      return null;
+      return null;  // TODO : fix this, it is stupid -- throw an exception instead
     }
 
     return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
