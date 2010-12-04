@@ -288,28 +288,26 @@ public class ORConnection
 
     HttpClient client = new DefaultHttpClient(params);
 
-    if (ORHttpMethod.POST.equals(httpMethod))
+    switch (httpMethod)
     {
-       request = new HttpPost(targetURI);
+      case POST:
+        request = new HttpPost(targetURI);
+        break;
+
+      case GET:
+        request = new HttpGet(targetURI);
+        break;
+
+      default:
+        throw new IOException("Unsupported HTTP Method: " + httpMethod);
     }
 
-    else if (ORHttpMethod.GET.equals(httpMethod))
-    {
-       request = new HttpGet(targetURI);
-    }
-
-//    if (request == null)
-//    {
-//       Log.i(LOG_CATEGORY, "checking URL creation failed:" + targetURL);
-//       return null;
-//    }
 
     if (useHTTPAuth)
     {
        SecurityUtil.addCredentialToHttpRequest(context, request);
     }
 
-    //URL uri = new URL(url);
 
     if ("https".equals(targetURL.getProtocol()))
     {
