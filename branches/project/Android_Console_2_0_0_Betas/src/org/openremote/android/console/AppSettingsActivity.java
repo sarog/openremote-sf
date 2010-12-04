@@ -662,8 +662,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 
    /**
     * Request panel identity list from controller.
-    * 
-    * @param ORConnectionDelegate the delegate to handle the connection
     */
    private void requestPanelList() {
       setEmptySpinnerContent();
