@@ -1,23 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2010, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.android.console.net;
 
 import java.io.IOException;
@@ -65,11 +65,22 @@ import android.util.Log;
  * @author handy 2010-04-29
  *
  */
-public class ORControllerServerSwitcher {
+public class ORControllerServerSwitcher
+{
+
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Common log category for fail-over functionality.
+   */
+  public final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "Failover";
 
 	private static final String SERIALIZE_GROUP_MEMBERS_FILE_NAME = "group_members";
 	public static final int SWITCH_CONTROLLER_SUCCESS = 1;
 	public static final int SWITCH_CONTROLLER_FAIL = 2;
+
+
+  // Class Members --------------------------------------------------------------------------------
 
 	/**
 	 * Detect the groupmembers of current server url 
@@ -178,42 +189,91 @@ public class ORControllerServerSwitcher {
 	
 	/** 
 	 * Get a available controller server url and switch to it.
+   *
+   * @param context global Android application context
+   *
+   * @return  TODO
 	 */
-	public static int doSwitch(Context context) {
-		String availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
+	public static int doSwitch(Context context)
+  {
+    String availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
+
 		List<String> allGroupMembers = findAllGroupMembersFromFile(context);
-		if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL)) {
+
+		if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
+    {
 			Log.i("OpenRemote/GROUP MEMBER", "Got a available controller url from groupmembers" + allGroupMembers);
 			switchControllerWithURL(context, availableGroupMemberURL);
-		} else {
+		}
+
+    else
+    {
 			Log.i("OpenRemote/GROUP MEMBER", "Didn't get a available controller url from groupmembers " + allGroupMembers + ". Try to detect groupmembers again.");
-			if (!detectGroupMembers(context)) {
+
+			if (!detectGroupMembers(context))
+      {
 			   ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
 			   return SWITCH_CONTROLLER_FAIL;
 			}
-			availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
-			if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL)) {
+
+  	  availableGroupMemberURL = getOneAvailableFromGroupMemberURLs(context);
+
+			if (availableGroupMemberURL != null && !"".equals(availableGroupMemberURL))
+      {
 				Log.i("OpenRemote/GROUP MEMBER", "Got a available controller url from groupmembers " + allGroupMembers + " in second groupmembers detection attempt.");
 				switchControllerWithURL(context, availableGroupMemberURL);
-			} else {
+			}
+
+      else
+      {
 				Log.i("OpenRemote/GROUP MEMBER", "There's no controller server available.");
 				ViewHelper.showAlertViewWithSetting(context, "Update fail", "There's no controller server available. Leave this problem?");
 				return SWITCH_CONTROLLER_FAIL;
 			}
 		}
+
 		return SWITCH_CONTROLLER_SUCCESS;
 	}
 
   /**
    * Check all groupmembers' url and get a available one, this function deponds on the WIFI network.
+   *
+   * @param context global Android application context
+   *
+   * @return  TODO
    */
 	private static String getOneAvailableFromGroupMemberURLs(Context context)
   {
     List<String> allGroupMembers = findAllGroupMembersFromFile(context);
+
     Log.i("OpenRemote/GROUP MEMBER", "Checking a available controller url from groupmembers " + allGroupMembers);
-    for (String controllerServerURL : allGroupMembers) {
-       HttpResponse response = ORNetworkCheck.verifyControllerURL(context, controllerServerURL);
-      if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
+
+    for (String controllerServerURL : allGroupMembers)
+    {
+      HttpResponse response = null;
+
+      try
+      {
+        response = ORNetworkCheck.verifyControllerURL(context, controllerServerURL);
+      }
+      catch (IOException e)
+      {
+        // TODO :
+        //
+        //    In case of a fail-over scenario, don't propagate the exception higher up.
+        //    The logic depends on null return values and since there are no tests to back it
+        //    up, leaving it untouched for now.
+        //
+        //    Logging and keeping the null.
+        //                                                                                [JPL]
+
+        Log.i("", "TODO: need to refactor this logic to rely on exception instead of null return values");
+        Log.i("", "Error was " + e.getMessage(), e);
+      }
+
+
+      if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
+      {
         if (!AppSettingsModel.isAutoMode(context)) {//custom model
           String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerServerURL);
           String customServerURLs = AppSettingsModel.getCustomServers(context);
