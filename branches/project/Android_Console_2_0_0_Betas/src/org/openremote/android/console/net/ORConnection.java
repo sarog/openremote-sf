@@ -24,10 +24,9 @@ package org.openremote.android.console.net;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -111,6 +110,27 @@ public class ORConnection
 
     httpClient = new DefaultHttpClient(params);
 
+
+    try
+    {
+       URL targetUrl = new URL(url);
+       targetUrl.toURI();
+       if ("https".equals(targetUrl.getProtocol()))
+       {
+          Scheme sch = new Scheme(targetUrl.getProtocol(), new SelfCertificateSSLSocketFactory(), targetUrl.getPort());
+          httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+       }
+    }
+
+    catch (MalformedURLException e)
+    {
+       Log.e(LOG_CATEGORY, "Create URL fail:" + url);
+       return;
+    } catch (URISyntaxException e) {
+       Log.e(LOG_CATEGORY, "Could not convert " + url + " to a compliant URI");
+       return;
+   }
+
     if (ORHttpMethod.POST.equals(httpMethod))
     {
        httpRequest = new HttpPost(url);
@@ -119,23 +139,7 @@ public class ORConnection
     {
        httpRequest = new HttpGet(url);
     }
-
-    try
-    {
-       URL uri = new URL(url);
-
-       if ("https".equals(uri.getProtocol()))
-       {
-          Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-          httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-       }
-    }
-
-    catch (MalformedURLException e)
-    {
-       Log.e(LOG_CATEGORY, "Create URL fail:" + url);
-    }
-
+    
     if (httpRequest == null)
     {
        Log.e(LOG_CATEGORY, "Create HttpRequest fail:" + url);
