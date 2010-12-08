@@ -82,4 +82,6 @@
 	   parent="abstractService"/>
 	<bean id="deviceService" class="org.openremote.beehive.api.service.impl.DeviceServiceImpl"
 	   parent="abstractService"/>
+	<bean id="deviceCommandService" class="org.openremote.beehive.api.service.impl.DeviceCommandServiceImpl"
+	   parent="abstractService"/>
 </beans>
