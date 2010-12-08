@@ -43,7 +43,7 @@
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
-#define TIMEOUT_INTERVAL 2
+#define TIMEOUT_INTERVAL 5
 
 @interface UpdateController (private)
 - (void)checkNetworkAndUpdate;
