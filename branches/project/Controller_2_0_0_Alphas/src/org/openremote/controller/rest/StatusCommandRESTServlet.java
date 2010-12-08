@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
@@ -74,6 +75,7 @@ public class StatusCommandRESTServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
         
         String url = request.getRequestURL().toString();
         String regexp = "rest\\/status\\/(.*)";
