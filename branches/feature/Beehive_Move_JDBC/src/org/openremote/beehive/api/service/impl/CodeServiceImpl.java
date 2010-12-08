@@ -40,6 +40,7 @@ public class CodeServiceImpl extends BaseAbstractService<Code> implements CodeSe
          CodeDTO codeDTO = new CodeDTO();
          try {
             BeanUtils.copyProperties(codeDTO, code);
+            codeDTO.setId(code.getOid());
             codeDTO.setRemoteName(code.getRemoteSection().getRemoteOptions().get(0).getValue());
          } catch (IllegalAccessException e) {
             // TODO handle exception

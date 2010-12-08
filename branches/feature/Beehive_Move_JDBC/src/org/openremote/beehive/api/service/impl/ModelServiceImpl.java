@@ -71,6 +71,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          ModelDTO modelDTO = new ModelDTO();
          try {
             BeanUtils.copyProperties(modelDTO, model);
+            modelDTO.setId(model.getOid());
          } catch (IllegalAccessException e) {
             // TODO handle exception
             e.printStackTrace();
@@ -92,6 +93,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
          ModelDTO modelDTO = new ModelDTO();
          try {
             BeanUtils.copyProperties(modelDTO, model);
+            modelDTO.setId(model.getOid());
          } catch (IllegalAccessException e) {
             // TODO handle exception
             e.printStackTrace();
@@ -123,6 +125,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       ModelDTO modelDTO = new ModelDTO();
       try {
          BeanUtils.copyProperties(modelDTO, model);
+         modelDTO.setId(model.getOid());
       } catch (IllegalAccessException e) {
          // TODO handle exception
          e.printStackTrace();
@@ -142,6 +145,7 @@ public class ModelServiceImpl extends BaseAbstractService<Model> implements Mode
       ModelDTO modelDTO = new ModelDTO();
       try {
          BeanUtils.copyProperties(modelDTO, loadById(modelId));
+         modelDTO.setId(modelId);
       } catch (IllegalAccessException e) {
          logger.error("", e);
       } catch (InvocationTargetException e) {

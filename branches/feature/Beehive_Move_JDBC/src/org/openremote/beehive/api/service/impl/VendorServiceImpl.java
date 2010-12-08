@@ -52,6 +52,7 @@ public class VendorServiceImpl extends BaseAbstractService<Vendor> implements Ve
          VendorDTO vendorDTO = new VendorDTO();
          try {
             BeanUtils.copyProperties(vendorDTO, vendor);
+            vendorDTO.setId(vendor.getOid());
          } catch (IllegalAccessException e) {
             logger.error("error occurs while BeanUtils.copyProperties(vendorDTO, vendor);");
          } catch (InvocationTargetException e) {
