@@ -29,6 +29,7 @@
 @interface GroupController (Private)
 
 - (NSMutableArray *)initScreenViewControllers:(NSArray *)screens;
+- (void)showErrorView;
 - (void)detectDeviceOrientation;
 - (void)printOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
 
@@ -146,6 +147,7 @@
 	
 	NSArray *screens = isLandscape ? [group getLandscapeScreens] : [group getPortraitScreens];
 	if (screens.count == 0) {
+		[self showErrorView];
 		return;
 	}
 	
@@ -196,6 +198,13 @@
 		NSLog(@"view did load show landscape");
 		[self showLandscape];
 	} 
+}
+
+// Show error view if some error occured.
+- (void)showErrorView {
+	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Screen Found" message:@"Please associate screens with this group of this orientation."];
+	[errorViewController.view setFrame:[self getFullFrame]];
+	[self setView:errorViewController.view];	
 }
 
 - (ScreenViewController *)currentScreenViewController {
