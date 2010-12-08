@@ -29,6 +29,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 
 /**
  * DeviceCommand is represent a command that the device have, which can be sent 
@@ -117,6 +119,7 @@ public class DeviceCommand extends BusinessEntity {
     */
    @Override
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return getName();
    }
@@ -140,6 +143,7 @@ public class DeviceCommand extends BusinessEntity {
       return sectionId;
    }
    @Transient
+   @JSON(include = false)
    public DeviceCommandRef getDeviceCommandRef() {
       DeviceCommandRef cmdRef = new DeviceCommandRef(this);
       return cmdRef;

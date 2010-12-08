@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,31 +19,52 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.CommandRefItem;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
+import org.openremote.modeler.utils.JsonGenerator;
+
+import flexjson.JSONDeserializer;
 
 /**
  * The implementation for DeviceCommandService interface.
  * 
- * @author Allen
+ * @author Allen, Tomsky
  */
 public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand> implements DeviceCommandService {
 
+   private static Logger log = Logger.getLogger(DeviceCommandServiceImpl.class);
  
    /** The device macro item service. */
    private DeviceMacroItemService deviceMacroItemService;
 
+   private Configuration configuration;
+   
    /**
     * Sets the device macro item service.
     * 
@@ -69,9 +90,25 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.DeviceCommandService#save(org.openremote.modeler.domain.DeviceCommand)
     */
    public DeviceCommand save(DeviceCommand deviceCommand) {
-      genericDAO.save(deviceCommand);
-      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
-      return deviceCommand;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceCommandUrl() + "save");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] excludes = {"*.class","device.deviceAttrs","device.deviceCommands", "device.switchs", "device.sliders", "device.sensors"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectExclude(deviceCommand,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         if (response.getStatusLine().getStatusCode() == 200) {
+             String deviceCommandJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<DeviceCommand>().use(null, DeviceCommand.class).deserialize(deviceCommandJson);
+         } else {
+            throw new BeehiveJDBCException("Failed to save device command to beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Failed to save device command from beehive.", e);
+         throw new BeehiveJDBCException("Failed to save device command to beehive.");
+      }
    }
 
    /**
@@ -79,16 +116,28 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.DeviceCommandService#deleteCommand(long)
     */
    public Boolean deleteCommand(long id) {
-      DeviceCommand deviceCommand = loadById(id);
-      DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
-      List<CommandRefItem> commandRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
-      if (commandRefItems.size() > 0) {
-         return false;
-      } else {
-         deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
-         genericDAO.delete(deviceCommand);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpDelete httpDelete = new HttpDelete(configuration.getBeehiveRESTDeviceCommandUrl() + "delete/" + id);
+      addAuthentication(httpDelete);
+      try {
+         HttpResponse response = httpClient.execute(httpDelete);
+         if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+               throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+            }
+            throw new BeehiveJDBCException("Failed delete device in beehive.");
+         } else {
+            String result = IOUtils.toString(response.getEntity().getContent());
+            if ("true".equals(result)) {
+               return true;
+            } else {
+               return false;
+            }
+         }
+      } catch (IOException e) {
+         log.error("Failed delete device in beehive.", e);
+         throw new BeehiveJDBCException("Failed delete device in beehive.");
       }
-      return true;
    }
 
    /**
@@ -96,11 +145,28 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.DeviceCommandService#update(org.openremote.modeler.domain.DeviceCommand)
     */
    public DeviceCommand update(DeviceCommand deviceCommand) {
-      DeviceCommand old = loadById(deviceCommand.getId());
-      genericDAO.delete(old.getProtocol());
-      old.setName(deviceCommand.getName());
-      old.setProtocol(deviceCommand.getProtocol());
-      return old;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceCommandUrl() + "update");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] excludes = { "*.class", "device.deviceAttrs", "device.deviceCommands", "device.switchs",
+               "device.sliders", "device.sensors" };
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectExclude(deviceCommand, excludes),
+               "UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         if (response.getStatusLine().getStatusCode() == 200) {
+            String deviceCommandJson = IOUtils.toString(response.getEntity().getContent());
+            System.out.println(deviceCommandJson);
+            return new JSONDeserializer<DeviceCommand>().use(null, DeviceCommand.class).deserialize(deviceCommandJson);
+         } else {
+            throw new BeehiveJDBCException("Failed to save device command to beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Can't update device to beehive.", e);
+         throw new BeehiveJDBCException("Failed update device to beehive.");
+      }
 
    }
 
@@ -109,9 +175,22 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.BaseAbstractService#loadById(long)
     */
    public DeviceCommand loadById(long id) {
-      DeviceCommand deviceCommand = super.loadById(id);
-      Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
-      return deviceCommand;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTDeviceCommandUrl() + "load/" + id);
+      httpGet.addHeader("Accept", "application/json");
+      addAuthentication(httpGet);
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         if (response.getStatusLine().getStatusCode() == 200) {
+             String deviceCommandJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<DeviceCommand>().use(null, DeviceCommand.class).deserialize(deviceCommandJson);
+         } else {
+            throw new BeehiveJDBCException("Failed get device command from beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Failed get device command from beehive.", e);
+         throw new BeehiveJDBCException("Failed get device command from beehive.");
+      }
    }
 
    /**
@@ -145,5 +224,9 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          }
       }
       return tmpResult;
+   }
+   
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
    }
 }
