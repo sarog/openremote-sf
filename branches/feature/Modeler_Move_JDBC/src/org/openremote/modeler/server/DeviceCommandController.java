@@ -29,7 +29,7 @@ import org.openremote.modeler.service.DeviceCommandService;
 /**
  * The server side implementation of the RPC service <code>DeviceCommandRPCService</code>.
  */
-public class DeviceCommandController extends BaseGWTSpringControllerWithHibernateSupport implements
+public class DeviceCommandController extends BaseGWTSpringController implements
         DeviceCommandRPCService {
 
    /** The Constant serialVersionUID. */

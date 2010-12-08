@@ -144,4 +144,8 @@ public class Configuration {
    public String getBeehiveRESTDeviceUrl() {
       return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "device/" : beehiveRESTRootUrl + "/device/";
    }
+   
+   public String getBeehiveRESTDeviceCommandUrl() {
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "devicecommand/" : beehiveRESTRootUrl + "/devicecommand/";
+   }
 }

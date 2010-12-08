@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.exception.BeehiveJDBCException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -48,7 +49,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the device command
     */
-   DeviceCommand save(DeviceCommand deviceCommand);
+   DeviceCommand save(DeviceCommand deviceCommand) throws BeehiveJDBCException;
    
    /**
     * Update.
@@ -64,7 +65,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the device command
     */
-   DeviceCommand loadById(long id);
+   DeviceCommand loadById(long id) throws BeehiveJDBCException;
    
    /**
     * Delete command.
