@@ -70,6 +70,7 @@ public class RemoteSectionServiceImpl extends BaseAbstractService<RemoteSection>
          RemoteSectionDTO remoteSectionDTO = new RemoteSectionDTO();
          try {
             BeanUtils.copyProperties(remoteSectionDTO, remoteSection);
+            remoteSectionDTO.setId(remoteSection.getOid());
          } catch (IllegalAccessException e) {
             // TODO handle exception
             e.printStackTrace();
@@ -88,6 +89,7 @@ public class RemoteSectionServiceImpl extends BaseAbstractService<RemoteSection>
       if (model.getRemoteSections().size() > 0) {
          try {
             BeanUtils.copyProperties(remoteSectionDTO, model.getRemoteSections().get(0));
+            remoteSectionDTO.setId(model.getRemoteSections().get(0).getOid());
          } catch (IllegalAccessException e) {
             // TODO handle exception
             e.printStackTrace();
@@ -104,6 +106,7 @@ public class RemoteSectionServiceImpl extends BaseAbstractService<RemoteSection>
       RemoteSectionDTO remoteSectionDTO = new RemoteSectionDTO();
       try {
          BeanUtils.copyProperties(remoteSectionDTO, loadById(sectionId));
+         remoteSectionDTO.setId(sectionId);
       } catch (IllegalAccessException e) {
          // TODO handle exception
          e.printStackTrace();
@@ -119,6 +122,7 @@ public class RemoteSectionServiceImpl extends BaseAbstractService<RemoteSection>
       ModelDTO modelDTO = new ModelDTO();
       try {
          BeanUtils.copyProperties(modelDTO, model);
+         modelDTO.setId(model.getOid());
       } catch (IllegalAccessException e) {
          // TODO handle exception
          e.printStackTrace();
