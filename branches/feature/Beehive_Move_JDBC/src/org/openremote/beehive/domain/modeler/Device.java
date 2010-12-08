@@ -19,6 +19,7 @@
 */
 package org.openremote.beehive.domain.modeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -29,6 +30,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.openremote.beehive.api.dto.AccountDTO;
+import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.BusinessEntity;
@@ -62,9 +64,12 @@ public class Device extends BusinessEntity {
    /** The device's model. */
    private String model;
    
+   /** The device commands. */
+   private List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
    
    /** The device attrs. */
    private List<DeviceAttr> deviceAttrs;
+   
    
    /** The account who created the device in this application. */
    private Account account; 
@@ -150,6 +155,25 @@ public class Device extends BusinessEntity {
    
 
    /**
+    * Gets the device commands.
+    * 
+    * @return the device commands
+    */
+   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+   public List<DeviceCommand> getDeviceCommands() {
+      return deviceCommands;
+   }
+
+   /**
+    * Sets the device commands.
+    * 
+    * @param deviceCommands the new device commands
+    */
+   public void setDeviceCommands(List<DeviceCommand> deviceCommands) {
+      this.deviceCommands = deviceCommands;
+   }
+   
+   /**
     * Gets the device attrs.
     * 
     * @return the device attrs
@@ -195,6 +219,14 @@ public class Device extends BusinessEntity {
       deviceDTO.setVendor(vendor);
       deviceDTO.setModel(model);
       deviceDTO.setAccount(new AccountDTO(account.getOid()));
+      
+      if (deviceCommands != null && deviceCommands.size() > 0) {
+         List<DeviceCommandDTO> deviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
+         for (DeviceCommand deviceCommand : deviceCommands) {
+            deviceCommandDTOs.add(deviceCommand.toSimpleDTO());
+         }
+         deviceDTO.setDeviceCommands(deviceCommandDTOs);
+      }
       
       return deviceDTO;
    }

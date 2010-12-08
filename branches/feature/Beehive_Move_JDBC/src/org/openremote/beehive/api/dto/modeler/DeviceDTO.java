@@ -19,6 +19,9 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.openremote.beehive.api.dto.AccountDTO;
@@ -36,6 +39,7 @@ public class DeviceDTO extends BusinessEntityDTO {
    private String model;
    
    private AccountDTO account;
+   private List<DeviceCommandDTO> deviceCommands;
    
    public String getName() {
       return name;
@@ -48,6 +52,10 @@ public class DeviceDTO extends BusinessEntityDTO {
    }
    public AccountDTO getAccount() {
       return account;
+   }
+   @XmlElement(name = "deviceCommands")
+   public List<DeviceCommandDTO> getDeviceCommands() {
+      return deviceCommands;
    }
    
    public void setName(String name) {
@@ -62,6 +70,10 @@ public class DeviceDTO extends BusinessEntityDTO {
    public void setAccount(AccountDTO account) {
       this.account = account;
    }
+   public void setDeviceCommands(List<DeviceCommandDTO> deviceCommands) {
+      this.deviceCommands = deviceCommands;
+   }
+   
    public Device toDevice() {
       Device device = new Device();
       device.setOid(getId());
