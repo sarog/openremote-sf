@@ -20,14 +20,18 @@
 package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -40,6 +44,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.CommandRefItem;
+import org.openremote.modeler.domain.ConfigCategory;
+import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.exception.BeehiveJDBCException;
@@ -48,6 +54,7 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.utils.JsonGenerator;
+import org.openremote.modeler.utils.XmlParser;
 
 import flexjson.JSONDeserializer;
 
@@ -79,10 +86,35 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * @see org.openremote.modeler.service.DeviceCommandService#saveAll(java.util.List)
     */
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
-      for (DeviceCommand command : deviceCommands) {
-         genericDAO.save(command);
+      
+      String[] excludes = {"*.class","*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors"};
+      String json = JsonGenerator.deepSerializerObjectExclude(deviceCommands, excludes);
+      
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceCommandUrl() + "saveall");
+      httpPost.setHeader("Content-Type", "application/json");
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         httpPost.setEntity(new StringEntity(json,"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == 200) {
+            String deviceCommandJson = "{deviceCommands:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            DeviceCommandList result = new JSONDeserializer<DeviceCommandList>().use(null, DeviceCommandList.class).use("deviceCommands",ArrayList.class).deserialize(deviceCommandJson);
+            return result.getDeviceCommands();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+           throw new BeehiveJDBCException("Failed to save device commands to beehive.");
+        }
+      } catch (UnsupportedEncodingException e) {
+         throw new BeehiveJDBCException("Failed to save device commands to beehive.");
+      } catch (ClientProtocolException e) {
+         throw new BeehiveJDBCException("Failed to save device commands to beehive.");
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to save device commands to beehive.");
       }
-      return deviceCommands;
    }
 
    /**
@@ -99,9 +131,12 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          String[] excludes = {"*.class","device.deviceAttrs","device.deviceCommands", "device.switchs", "device.sliders", "device.sensors"};
          httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectExclude(deviceCommand,excludes),"UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
-         if (response.getStatusLine().getStatusCode() == 200) {
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == 200) {
              String deviceCommandJson = IOUtils.toString(response.getEntity().getContent());
              return new JSONDeserializer<DeviceCommand>().use(null, DeviceCommand.class).deserialize(deviceCommandJson);
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
          } else {
             throw new BeehiveJDBCException("Failed to save device command to beehive.");
          }

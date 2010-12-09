@@ -210,7 +210,7 @@ public class IRCommandImportForm extends CommonForm {
     */
    private void addVendorsList() {
       ModelType vendorType = new ModelType();
-      vendorType.setRoot("vendors.vendor");
+      vendorType.setRoot("vendors");
       DataField idField = new DataField("id");
       idField.setType(Long.class);
       vendorType.addField(idField);
@@ -243,7 +243,7 @@ public class IRCommandImportForm extends CommonForm {
     */
    private void addModelList(final String vendor) {
       ModelType modelType = new ModelType();
-      modelType.setRoot("models.model");
+      modelType.setRoot("models");
       DataField idField = new DataField("id");
       idField.setType(Long.class);
       modelType.addField(idField);
@@ -288,7 +288,7 @@ public class IRCommandImportForm extends CommonForm {
    private void addSectionList(String venderName, String modelName) {
 
       ModelType sectionType = new ModelType();
-      sectionType.setRoot("sections.section");
+      sectionType.setRoot("sections");
       DataField idField = new DataField("id");
       idField.setType(Long.class);
       sectionType.addField(idField);
@@ -420,7 +420,7 @@ public class IRCommandImportForm extends CommonForm {
       }
       if (codeType == null) {
          codeType = new ModelType();
-         codeType.setRoot("codes.code");
+         codeType.setRoot("codes");
          DataField idField = new DataField("id");
          idField.setType(Long.class);
          codeType.addField(idField);
