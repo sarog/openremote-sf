@@ -12,8 +12,8 @@
 		<attr name="command" label="Lutron Command">
 			<validations>
 				<allowBlank>false</allowBlank>
-				<maxLength>10</maxLength>
-				<regex message="Command must be one of RAISE, LOWER, STOP, SCENE, PRESS, RELEASE, HOLD, DOUBLE_TAP.">RAISE|LOWER|STOP|SCENE|PRESS|RELEASE|HOLD|DOUBLE_TAP</regex>
+				<maxLength>16</maxLength>
+				<regex message="Command must be one of RAISE, LOWER, STOP, FADE, STATUS_DIMMER, SCENE, STATUS_SCENE, PRESS, RELEASE, HOLD, DOUBLE_TAP, SCENE_KEYPADLED.">RAISE|LOWER|STOP|FADE|STATUS_DIMMER|SCENE|STATUS_SCENE|PRESS|RELEASE|HOLD|DOUBLE_TAP|STATUS_KEYPADLED</regex>
 			</validations>
 		</attr>
 		<attr name="scene" label="Scene to select">
@@ -28,6 +28,13 @@
 				<allowBlank>true</allowBlank>
 				<maxLength>2</maxLength>
 				<regex message="Number only">\d+</regex>
+			</validations>
+		</attr>
+		<attr name="level" label="Level to dim to">
+			<validations>
+				<allowBlank>true</allowBlank>
+				<maxLength>3</maxLength>
+				<regex message="Number only, 0-100 range">\d+</regex>
 			</validations>
 		</attr>
 	</protocol>
