@@ -13,7 +13,7 @@ public class LutronHomeWorksConfig extends CustomConfiguration {
 	private int port;
 
 	public String getPassword() {
-		return preferAttrCustomValue(LUTRON_HOMEWORKS_USERNAME, password);
+		return preferAttrCustomValue(LUTRON_HOMEWORKS_PASSWORD, password);
 	}
 
 	public void setPassword(String password) {
@@ -21,7 +21,7 @@ public class LutronHomeWorksConfig extends CustomConfiguration {
 	}
 
 	public String getAddress() {
-		return preferAttrCustomValue(LUTRON_HOMEWORKS_USERNAME, address);
+		return preferAttrCustomValue(LUTRON_HOMEWORKS_ADDRESS, address);
 	}
 
 	public void setAddress(String address) {
@@ -29,7 +29,7 @@ public class LutronHomeWorksConfig extends CustomConfiguration {
 	}
 
 	public int getPort() {
-		return preferAttrCustomValue(LUTRON_HOMEWORKS_USERNAME, port);
+		return preferAttrCustomValue(LUTRON_HOMEWORKS_PORT, port);
 	}
 
 	public void setPort(int port) {
