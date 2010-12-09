@@ -10,8 +10,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
 
 public class LutronHomeWorksCommand implements Command {
 
-	// Class Members
-	// --------------------------------------------------------------------------------
+	// Class Members --------------------------------------------------------------------------------
 
 	/**
 	 * Lutron logger. Uses a common category for all Lutron related logging.
@@ -24,12 +23,15 @@ public class LutronHomeWorksCommand implements Command {
 		commandClasses.put("RAISE", DimmerCommand.class);
 		commandClasses.put("LOWER", DimmerCommand.class);
 		commandClasses.put("STOP", DimmerCommand.class);
+		commandClasses.put("FADE", DimmerCommand.class);
+		commandClasses.put("STATUS_DIMMER", DimmerCommand.class);
 		commandClasses.put("SCENE", GrafikEyeCommand.class);
+		commandClasses.put("STATUS_SCENE", GrafikEyeCommand.class);
 		commandClasses.put("PRESS", KeypadCommand.class);
 		commandClasses.put("RELEASE", KeypadCommand.class);
 		commandClasses.put("HOLD", KeypadCommand.class);
 		commandClasses.put("DOUBLE_TAP", KeypadCommand.class);
-
+		commandClasses.put("STATUS_KEYPADLED", null);
 	}
 
 	/**
@@ -40,7 +42,7 @@ public class LutronHomeWorksCommand implements Command {
 	 * 
 	 * @return new Lutron HomeWorks command instance
 	 */
-	static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key) {
+	static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key, Integer level) {
 		name = name.trim().toUpperCase();
 
 		System.out.println("in command builder");
@@ -55,10 +57,10 @@ public class LutronHomeWorksCommand implements Command {
 		LutronHomeWorksCommand cmd = null;
 		try {
 			System.out.println("Trying to get method");
-			Method method = commandClass.getMethod("createCommand", String.class, LutronHomeWorksGateway.class, LutronHomeWorksAddress.class, Integer.class, Integer.class);
+			Method method = commandClass.getMethod("createCommand", String.class, LutronHomeWorksGateway.class, LutronHomeWorksAddress.class, Integer.class, Integer.class, Integer.class);
 
 			System.out.println("Have creation method, will call it");
-			cmd = (LutronHomeWorksCommand) method.invoke(null, name, gateway, address, scene, key);
+			cmd = (LutronHomeWorksCommand) method.invoke(null, name, gateway, address, scene, key, level);
 			System.out.println("Creation method returned " + cmd);
 		} catch (SecurityException e) {
 			// TODO: should this be logged, check other source code
@@ -79,8 +81,7 @@ public class LutronHomeWorksCommand implements Command {
 		return cmd;
 	}
 
-	// Private Instance Fields
-	// ----------------------------------------------------------------------
+	// Instance Fields ------------------------------------------------------------------------------
 
 	/**
 	 * Gateway to be used to transmit this command.
@@ -89,8 +90,7 @@ public class LutronHomeWorksCommand implements Command {
 
 	protected String name;
 	
-	// Constructors
-	// ---------------------------------------------------------------------------------
+	// Constructors ---------------------------------------------------------------------------------
 
 	/**
 	 * Constructs a Lutron HomeWorks command with a given gateway.

@@ -1,11 +1,19 @@
 package org.openremote.controller.protocol.lutron;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableCommand {
 
-	public static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key) {
+	// Class Members --------------------------------------------------------------------------------
+
+	/**
+	 * Lutron logger. Uses a common category for all Lutron related logging.
+	 */
+	private final static Logger log = Logger.getLogger(LutronHomeWorksCommandBuilder.LUTRON_LOG_CATEGORY);
+	
+	public static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key, Integer level) {
 		// Check for mandatory attributes
 		if (address == null) {
 		    throw new NoSuchCommandException("Address is required for any Keypad command");
@@ -18,8 +26,7 @@ public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableC
 		return new KeypadCommand(name, gateway, address, key);
 	}
 
-	// Private Instance Fields
-	// ----------------------------------------------------------------------
+	// Private Instance Fields ----------------------------------------------------------------------
 
 	/**
 	 * Destination address for this command.
@@ -31,8 +38,7 @@ public class KeypadCommand extends LutronHomeWorksCommand implements ExecutableC
 	 */
 	private Integer key;
 	
-	// Constructors
-	// ---------------------------------------------------------------------------------
+	// Constructors ---------------------------------------------------------------------------------
 
 	public KeypadCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer key) {
 		super(name, gateway);

@@ -1,34 +1,45 @@
 package org.openremote.controller.protocol.lutron;
 
+import java.util.Map;
+
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.exception.NoSuchCommandException;
 
 
-public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableCommand {
+public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableCommand, StatusCommand {
+	
 
-	public static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key) {
+	  // Class Members --------------------------------------------------------------------------------
+
+	public static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key, Integer level) {
 		// Check for mandatory attributes
 		if (address == null) {
 		    throw new NoSuchCommandException("Address is required for any dimmer command");
 		}
 		
-		return new DimmerCommand(name, gateway, address);
+		return new DimmerCommand(name, gateway, address, level);
 	}
 
-	// Private Instance Fields
-	// ----------------------------------------------------------------------
+	// Private Instance Fields ----------------------------------------------------------------------
 
 	/**
 	 * Destination address for this command.
 	 */
 	private LutronHomeWorksAddress address;
 
-	// Constructors
-	// ---------------------------------------------------------------------------------
+	/**
+	 * Level to set when sending the command. Also used to compare with reported level for Switch type sensors.
+	 */
+	private Integer level;
+	
+	// Constructors ---------------------------------------------------------------------------------
 
-	public DimmerCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address) {
+	public DimmerCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer level) {
 		super(name, gateway);
 		this.address = address;
+		this.level = level;
 	}
 
 	  // Implements ExecutableCommand -----------------------------------------------------------------
@@ -45,7 +56,31 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
 			  dimmer.lower();
 		  } else if ("STOP".equals(name)) {
 			  dimmer.stop();
+		  } else if ("FADE".equals(name)) {
+			  dimmer.fade(level);
 		  }
 	  }
+
+	  // Implements StatusCommand -------------------------------------------------------------------
+
+	@Override
+	public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
+		Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
+		if (dimmer == null) {
+			// TODO anything better to do ? send query to Lutron ?
+			return "";
+		}
+		if (dimmer.getLevel() == null) {
+			return "";
+		}
+		if (sensorType == EnumSensorType.SWITCH) {
+			return (dimmer.getLevel().intValue() != 0)?"on":"off";
+		} else if (sensorType == EnumSensorType.RANGE) {
+			return Integer.toString(dimmer.getLevel());
+		} else {
+			// TODO log
+			return "";
+		}
+	}
 
 }
