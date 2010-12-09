@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.service;
 
+import java.util.List;
+
 import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 
@@ -30,6 +32,8 @@ public interface DeviceCommandService {
    DeviceCommandDTO loadDeviceCommandById(long id);
    
    DeviceCommandDTO save(DeviceCommandDTO deviceCommandDTO);
+   
+   List<DeviceCommand> saveAll(List<DeviceCommandDTO> deviceCommandDTOs);
    
    Boolean deleteCommandById(long id);
    

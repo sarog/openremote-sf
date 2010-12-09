@@ -19,6 +19,9 @@
 */
 package org.openremote.beehive.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -77,6 +80,20 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(deviceCommand.toDTO());
    }
    
+   @Path("saveall")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response saveAll(List<DeviceCommandDTO> deviceCommandDTOs,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<DeviceCommand> deviceCommands = getDeviceCommandService().saveAll(deviceCommandDTOs);
+      List<DeviceCommandDTO> newDeviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
+      for (DeviceCommand deviceCommand : deviceCommands) {
+         newDeviceCommandDTOs.add(deviceCommand.toDTO());
+      }
+      return buildResponse(newDeviceCommandDTOs);
+   }
    protected DeviceCommandService getDeviceCommandService() {
       return (DeviceCommandService) getSpringContextInstance().getBean("deviceCommandService");
    }
