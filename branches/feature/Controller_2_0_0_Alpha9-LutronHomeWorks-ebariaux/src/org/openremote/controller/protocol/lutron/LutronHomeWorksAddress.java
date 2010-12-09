@@ -1,5 +1,6 @@
 package org.openremote.controller.protocol.lutron;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,5 +77,27 @@ public class LutronHomeWorksAddress {
 		  temp.append("]");
 		  return temp.toString();
 	  }
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof LutronHomeWorksAddress)) {
+			return false;
+		}
+		return Arrays.equals(addressElements, ((LutronHomeWorksAddress)obj).addressElements);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = addressElements.length;
+		for (int i = 0; i < addressElements.length; i++) {
+			hash += addressElements[i];
+		}
+		return hash;
+	}
+	  
+	  
 
 }

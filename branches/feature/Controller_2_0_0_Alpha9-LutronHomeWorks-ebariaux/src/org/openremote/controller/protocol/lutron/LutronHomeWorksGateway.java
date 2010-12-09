@@ -25,13 +25,11 @@ public class LutronHomeWorksGateway implements ApplicationListener {
 	// have a logout command
 	// on login, configure lutron as we expect -> no need to do it in HWI :
 	// PROMPTOFF, DLMON, GSMON, KLMON
-	// process feedback commands received and update devices in the cache
 	// handle socket close
 
 	// Have a queue class with management of coalesce and TTL
 
-	// Class Members
-	// --------------------------------------------------------------------------------
+	// Class Members --------------------------------------------------------------------------------
 
 	/**
 	 * Lutron HomeWorks logger. Uses a common category for all Lutron related
@@ -58,7 +56,11 @@ public class LutronHomeWorksGateway implements ApplicationListener {
 		if (lutronConfig == null) {
 			lutronConfig = ConfigFactory.getCustomLutronHomeWorksConfigFromDefaultControllerXML();
 		}
-		System.out.println("Config is : " + lutronConfig.getAddress());
+		System.out.println("Got Lutron config");
+		System.out.println("Address >" + lutronConfig.getAddress() + "<");
+		System.out.println("Port >" + lutronConfig.getPort() + "<");
+		System.out.println("UserName >" + lutronConfig.getUserName() + "<");
+		System.out.println("Password >" + lutronConfig.getPassword() + "<");
 
 		if (tc == null) {
 			tc = new TelnetClient();
@@ -143,6 +145,7 @@ public class LutronHomeWorksGateway implements ApplicationListener {
 																						// typed
 																						// exception
 		}
+		deviceCache.put(address, device);
 		return device;
 	}
 
@@ -173,11 +176,14 @@ public class LutronHomeWorksGateway implements ApplicationListener {
 					System.out.println("Reader thread got line >" + line + "<");
 					if (line.startsWith("LOGIN:")) {
 						PrintWriter pr = new PrintWriter(new OutputStreamWriter(tc.getOutputStream()));
-						pr.println("iphone,iphone");
+						pr.println("iphone,iphone"); // TODO
 						pr.flush();
 						System.out.println("Has sent login");
 					} else if (line.startsWith("login successful")) {
 						loggedIn = true;
+					} else if (line.startsWith("login incorrect")) {
+						// TODO
+						loggedIn = false;
 					} else if (line.startsWith("closing connection")) {
 						loggedIn = false;
 
@@ -190,14 +196,21 @@ public class LutronHomeWorksGateway implements ApplicationListener {
 						LutronResponse response = parseResponse(line);
 						if (response != null) {
 							if ("GSS".equals(response.response)) {
+								System.out.println("Got GrafikEye feedback from system");
 								// GrafikEye scene feedback: GSS, [01:05:01], 1
 								GrafikEye ge = (GrafikEye) getHomeWorksDevice(response.address, GrafikEye.class);
+								System.out.println("GrafikEye unit is " + ge);
 								if (ge != null) {
 									ge.processUpdate(response.parameter);
 								}
 							} else if ("KLS".equals(response.response)) {
 								// Keypad LED feedback: KLS, [01:06:01], 110000001000010000000000
 								// Do not handle for now
+							} else if ("DL".equals(response.response)) {
+								Dimmer dim = (Dimmer)getHomeWorksDevice(response.address, Dimmer.class);
+								if (dim != null) {
+									dim.processUpdate(response.parameter);
+								}
 							}
 						} else {
 							// Unknown response
@@ -217,12 +230,14 @@ public class LutronHomeWorksGateway implements ApplicationListener {
 		
 		String[] parts = responseText.split(",");
 		// All the responses we currently understand have 3 components
-		if (parts.length != 3) {
+		if (parts.length == 3) {
 			try {
+				System.out.println("Building response from Lutron feedback");
 				response = new LutronResponse();
-				response.response  = parts[0];
-				response.address = new LutronHomeWorksAddress(parts[1]);
-				response.parameter = parts[2];
+				response.response  = parts[0].trim();
+				response.address = new LutronHomeWorksAddress(parts[1].trim());
+				response.parameter = parts[2].trim();
+				System.out.println("Response is (" + response.response + "," + response.address + "," + response.parameter + ")");
 			} catch (InvalidLutronHomeWorksAddressException e) {
 				// Invalid address, consider we got invalid response from Lutron
 				response = null;
