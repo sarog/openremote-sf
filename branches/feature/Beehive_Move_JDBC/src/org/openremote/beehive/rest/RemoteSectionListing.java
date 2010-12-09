@@ -33,21 +33,21 @@ import org.openremote.beehive.api.dto.RemoteSectionDTO;
 @XmlRootElement(name = "sections")
 public class RemoteSectionListing {
 
-   private List<RemoteSectionDTO> remoteSections = new ArrayList<RemoteSectionDTO>();
+   private List<RemoteSectionDTO> sections = new ArrayList<RemoteSectionDTO>();
 
    public RemoteSectionListing() {
    }
 
-   public RemoteSectionListing(List<RemoteSectionDTO> remoteSections) {
-      this.remoteSections = remoteSections;
+   public RemoteSectionListing(List<RemoteSectionDTO> sections) {
+      this.sections = sections;
    }
 
    @XmlElement(name = "section")
-   public List<RemoteSectionDTO> getRemoteSections() {
-      return remoteSections;
+   public List<RemoteSectionDTO> getSections() {
+      return sections;
    }
 
-   public void setRemoteSections(List<RemoteSectionDTO> remoteSections) {
-      this.remoteSections = remoteSections;
+   public void setSections(List<RemoteSectionDTO> sections) {
+      this.sections = sections;
    }
 }
