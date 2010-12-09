@@ -159,7 +159,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     * {@inheritDoc}
     */
    public void updateDevice(Device device) {
-//    genericDAO.saveOrUpdate(device);
       device.toSimple();
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceUrl() + "update");
