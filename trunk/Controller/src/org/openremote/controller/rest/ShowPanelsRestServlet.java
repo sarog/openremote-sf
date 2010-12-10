@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
@@ -53,6 +54,7 @@ public class ShowPanelsRestServlet extends HttpServlet {
 
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       response.setCharacterEncoding("utf8");
+      response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
       PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/panels";

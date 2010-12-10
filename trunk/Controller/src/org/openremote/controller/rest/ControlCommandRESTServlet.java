@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
 import org.openremote.controller.service.ControlCommandService;
@@ -61,6 +62,7 @@ public class ControlCommandRESTServlet extends HttpServlet {
    @Override
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        
+      response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
       String url = request.getRequestURL().toString();      
       String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";
       Pattern pattern = Pattern.compile(regexp);      

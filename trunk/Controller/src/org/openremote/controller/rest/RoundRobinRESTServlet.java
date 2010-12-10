@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.roundrobin.RoundRobinException;
 import org.openremote.controller.service.RoundRobinService;
 import org.openremote.controller.spring.SpringContext;
@@ -59,7 +60,8 @@ public class RoundRobinRESTServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	   logger.info("Start RoundRobin group member REST service. at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
+	   response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+	   
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/servers";
       Pattern pattern = Pattern.compile(regexp);
