@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2010, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.socket;
 
 import java.io.BufferedReader;
@@ -26,6 +27,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.*;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
@@ -33,9 +35,11 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
- * The Socket Event.
+ * TODO
  *
- * @author Marcus 2009-4-26
+ * @author Marcus Redeker 2009-4-26
+ * @author Phillip Lavender
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
 
@@ -169,18 +173,50 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
       return reply;
    }
 
-   @Override
-   public String read(EnumSensorType sensoryType, Map<String, String> stateMap) {
-      String rawResult = requestSocket();
-      if ("".equals(rawResult)) {
-         return UNKNOWN_STATUS;
+
+
+  @Override public String read(EnumSensorType sensorType, Map<String, String> stateMap)
+  {
+    String regexResult = null;
+    String strState = null;
+
+    // Write the command to socket...
+    //
+    // TODO : rather poorly named method
+
+    String rawResult = requestSocket();
+
+    // Strip response from control characters (non-ASCII)...
+    //
+    // Patch provided by Phillip Lavender
+
+    Pattern p = Pattern.compile("\\p{Cntrl}");
+    Matcher m = p.matcher(rawResult);
+    regexResult = m.replaceAll("");
+	   
+    if ("".equals(regexResult))
+    {
+       return UNKNOWN_STATUS;
+    }
+
+    // If custom sensor type has been configured, map the 'raw' return value to configured
+    // 'wanted' return value
+    //
+    // TODO :
+    //   no reason to put this implementation burden on protocol implementations, the
+    //   calling code could do it instead
+
+    for (String state : stateMap.keySet())
+    {
+      strState = stateMap.get(state);
+
+      if (regexResult.equals(strState))
+      {
+        return state;
       }
-      for (String state : stateMap.keySet()) {
-         if (rawResult.equals(stateMap.get(state))) {
-            return state;
-         }
-      }
-      return rawResult;
-   }
+    }
+
+    return regexResult;
+  }
 
 }

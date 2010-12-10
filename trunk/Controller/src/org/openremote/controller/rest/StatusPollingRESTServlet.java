@@ -74,7 +74,8 @@ public class StatusPollingRESTServlet extends HttpServlet {
     */
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
+      response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+      
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);

@@ -83,4 +83,5 @@ public class Constants {
 
    public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX = "Basic ";
 
+   public static final String HTTP_HEADER_ACCEPT_XML_TYPE = "application/xml";
 }
