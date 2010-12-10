@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<array>	
-	<dict> <!-- [0] Auto Discovery switch, tabel view section 0 -->
+<array>
+	<dict>
 		<key>header</key>
 		<string></string>
 		<key>item</key>
@@ -15,7 +15,7 @@
 		<key>footer</key>
 		<string>Turn off auto-discovery to input controller URL manually.</string>
 	</dict>
-	<dict> <!-- [1] Auto Discovery server URLs, tabel view section 1 (shared)-->
+	<dict>
 		<key>header</key>
 		<string>Choose Controller:</string>
 		<key>servers</key>
@@ -23,7 +23,7 @@
 		<key>footer</key>
 		<string></string>
 	</dict>
-	<dict> <!-- [2] Customized server URLs, tabel view section 1 (shared)-->
+	<dict>
 		<key>header</key>
 		<string>Choose Controller:</string>
 		<key>servers</key>
@@ -32,13 +32,13 @@
 				<key>choose</key>
 				<true/>
 				<key>url</key>
-				<string>http://0.0.0.0:8080/controller</string>
+				<string>http://controller.openremote.org/ipad/controller</string>
 			</dict>
 		</array>
 		<key>footer</key>
 		<string></string>
 	</dict>
-	<dict> <!-- [3] Panel Identity, tabel view section 2 -->
+	<dict>
 		<key>header</key>
 		<string>Choose Panel Identity:</string>
 		<key>item</key>
@@ -51,13 +51,13 @@
 		<key>footer</key>
 		<string></string>
 	</dict>
-	<dict> <!-- [4] Clear Image Cache, tabel view section 3 -->
+	<dict>
 		<key>header</key>
 		<string></string>
 		<key>footer</key>
 		<string></string>
 	</dict>
-	<dict> <!-- [5] Security, tabel view section 4 -->
+	<dict>
 		<key>header</key>
 		<string>Security:</string>
 		<key>item</key>
