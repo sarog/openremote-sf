@@ -26,7 +26,6 @@
 		338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
-		33959D7112797D1300A8F0FA /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33959D7012797D1300A8F0FA /* GetPanelsController.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
@@ -37,10 +36,10 @@
 		33B8ED5110FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
 		33C3A49510FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
+		33CCF02C128A36FB001686C5 /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33CCF02B128A36FB001686C5 /* GetPanelsController.m */; };
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
-		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -285,13 +284,13 @@
 		33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryControlView.m; sourceTree = "<group>"; };
 		33C3A49210FE32E3001C520E /* ColorUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorUtil.h; sourceTree = "<group>"; };
 		33C3A49310FE32E3001C520E /* ColorUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtil.m; sourceTree = "<group>"; };
+		33CCF02A128A36FB001686C5 /* GetPanelsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPanelsController.h; sourceTree = "<group>"; };
+		33CCF02B128A36FB001686C5 /* GetPanelsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPanelsController.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
-		8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zUIAccelerometer.h; sourceTree = "<group>"; };
-		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
@@ -797,8 +796,6 @@
 			children = (
 				8CEFDA8A11BF35EE00CEDC24 /* LoadingHUDView.h */,
 				8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */,
-				8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */,
-				8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */,
 				8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */,
 				8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */,
 				8CF6A27E0FBD3782006ED733 /* AsyncUdpSocket.h */,
@@ -902,6 +899,8 @@
 		8CFEE2870F558C5700DF8759 /* controller */ = {
 			isa = PBXGroup;
 			children = (
+				33CCF02A128A36FB001686C5 /* GetPanelsController.h */,
+				33CCF02B128A36FB001686C5 /* GetPanelsController.m */,
 				8C460EFE1095628C00C7A686 /* AddServerViewController.h */,
 				8C460EFF1095628C00C7A686 /* AddServerViewController.m */,
 				8C460F001095628C00C7A686 /* AppSettingController.h */,
@@ -1188,8 +1187,8 @@
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
-				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
 				8CEFDA8C11BF35EE00CEDC24 /* LoadingHUDView.m in Sources */,
+				33CCF02C128A36FB001686C5 /* GetPanelsController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
