@@ -151,7 +151,9 @@ public class DeviceCommand extends BusinessEntity {
       deviceCommandDTO.setId(getOid());
       deviceCommandDTO.setName(name);
       deviceCommandDTO.setSectionId(sectionId);
-      deviceCommandDTO.setProtocol(protocol.toSimpleDTO());
+      if (protocol != null) {
+         deviceCommandDTO.setProtocol(protocol.toSimpleDTO());
+      }
       return deviceCommandDTO;
    }
 }

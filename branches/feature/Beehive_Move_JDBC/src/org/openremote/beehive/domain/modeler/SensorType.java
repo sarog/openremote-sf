@@ -17,27 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.service;
-
-import java.util.List;
-
-import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
-import org.openremote.beehive.domain.modeler.DeviceCommand;
+package org.openremote.beehive.domain.modeler;
 
 /**
- * Business service for <code>DeviceCommandDTO</code>.
+ * For distinguishing from sensors.
  */
-public interface DeviceCommandService {
+public enum SensorType {
 
-   DeviceCommandDTO loadDeviceCommandById(long id);
+   SWITCH,
+   LEVEL,
+   RANGE,
+   COLOR,
+   CUSTOM;
+
+   @Override
+   public String toString() {
+      return super.toString().toLowerCase();
+   }
    
-   DeviceCommandDTO save(DeviceCommandDTO deviceCommandDTO);
-   
-   List<DeviceCommand> saveAll(List<DeviceCommandDTO> deviceCommandDTOs);
-   
-   Boolean deleteCommandById(long id);
-   
-   DeviceCommand update(DeviceCommandDTO deviceCommandDTO);
-   
-   List<DeviceCommand> loadCommandsByDeviceId(long id);
 }

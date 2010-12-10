@@ -17,27 +17,33 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.service;
+package org.openremote.beehive.api.dto.modeler;
 
-import java.util.List;
-
-import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
-import org.openremote.beehive.domain.modeler.DeviceCommand;
 
 /**
- * Business service for <code>DeviceCommandDTO</code>.
+ * Base class for SensorCommandRefDTO.
  */
-public interface DeviceCommandService {
+@SuppressWarnings("serial")
+public class CommandRefItemDTO extends UICommandDTO {
 
-   DeviceCommandDTO loadDeviceCommandById(long id);
+   private DeviceCommandDTO deviceCommand;
+
+   private String deviceName;
    
-   DeviceCommandDTO save(DeviceCommandDTO deviceCommandDTO);
+   public DeviceCommandDTO getDeviceCommand() {
+      return deviceCommand;
+   }
+
+   public void setDeviceCommand(DeviceCommandDTO deviceCommand) {
+      this.deviceCommand = deviceCommand;
+   }
+
+   public String getDeviceName() {
+      return deviceName;
+   }
+
+   public void setDeviceName(String deviceName) {
+      this.deviceName = deviceName;
+   }
    
-   List<DeviceCommand> saveAll(List<DeviceCommandDTO> deviceCommandDTOs);
-   
-   Boolean deleteCommandById(long id);
-   
-   DeviceCommand update(DeviceCommandDTO deviceCommandDTO);
-   
-   List<DeviceCommand> loadCommandsByDeviceId(long id);
 }
