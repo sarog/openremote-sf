@@ -48,6 +48,7 @@ public class Sensor extends BusinessEntity {
    private static final long serialVersionUID = 7762063535155846996L;
    private String name;
    private SensorCommandRef sensorCommandRef;
+   private String classType = "Sensor";
    
    /** The type of the sensor, include switch, level, range, color and custom. */
    private SensorType type;
@@ -93,12 +94,19 @@ public class Sensor extends BusinessEntity {
       this.type = type;
    }
 
+   public String getClassType() {
+      return classType;
+   }
+   public void setClassType(String classType) {
+      this.classType = classType;
+   }
+   
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return getName();
    }
    @ManyToOne
-   @JSON(include = false)
    public Device getDevice() {
       return device;
    }

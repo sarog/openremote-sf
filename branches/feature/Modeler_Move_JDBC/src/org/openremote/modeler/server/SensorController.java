@@ -29,7 +29,7 @@ import org.openremote.modeler.service.UserService;
 /**
  * The server side implementation of the RPC service <code>SensorRPCService</code>.
  */
-public class SensorController extends BaseGWTSpringControllerWithHibernateSupport implements SensorRPCService {
+public class SensorController extends BaseGWTSpringController implements SensorRPCService {
 
    private static final long serialVersionUID = 7122839354773238989L;
 

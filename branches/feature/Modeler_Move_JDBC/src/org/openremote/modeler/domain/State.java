@@ -26,6 +26,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 /**
  * The Class State.
  */
@@ -66,6 +68,7 @@ public class State extends BusinessEntity {
    }
    
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return getName();
    }

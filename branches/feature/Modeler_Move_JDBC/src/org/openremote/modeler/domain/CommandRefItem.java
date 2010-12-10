@@ -29,6 +29,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 /**
  * The Class CommandRefItem is for reference the device command by sensor, switch, slider and other components.
  */
@@ -56,6 +58,7 @@ public class CommandRefItem extends UICommand {
    }
    
    @Transient
+   @JSON(include = false)
    public String getDeviceName() {
       return deviceName;
    }
@@ -66,6 +69,7 @@ public class CommandRefItem extends UICommand {
    
    @Override
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
       return getDeviceCommand().getName() + " (" + this.deviceName + ")";
