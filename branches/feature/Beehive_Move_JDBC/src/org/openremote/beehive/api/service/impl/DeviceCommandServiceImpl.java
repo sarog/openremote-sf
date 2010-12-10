@@ -25,6 +25,7 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.service.DeviceCommandService;
+import org.openremote.beehive.domain.modeler.Device;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 import org.openremote.beehive.domain.modeler.Protocol;
 
@@ -77,6 +78,15 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          deviceCommands.add(deviceCommand);
       }
       return deviceCommands;
+   }
+
+   public List<DeviceCommand> loadCommandsByDeviceId(long id) {
+      Device device = genericDAO.loadById(Device.class, id);
+      List<DeviceCommand> deviceCommandList = device.getDeviceCommands();
+      for (DeviceCommand deviceCommand : deviceCommandList) {
+         Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
+      }
+      return deviceCommandList;
    }
 
 }

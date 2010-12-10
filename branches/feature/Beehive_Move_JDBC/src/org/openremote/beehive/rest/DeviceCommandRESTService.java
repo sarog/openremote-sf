@@ -73,6 +73,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    public Response update(DeviceCommandDTO deviceCommandDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -94,6 +95,21 @@ public class DeviceCommandRESTService extends RESTBaseService {
       }
       return buildResponse(newDeviceCommandDTOs);
    }
+   
+   @Path("loadbydevice/{device_id}")
+   @GET
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response loadDeviceCommandsByDeviceId(@PathParam("device_id") long deviceId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<DeviceCommand> deviceCommands = getDeviceCommandService().loadCommandsByDeviceId(deviceId);
+      List<DeviceCommandDTO> newDeviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
+      for (DeviceCommand deviceCommand : deviceCommands) {
+         newDeviceCommandDTOs.add(deviceCommand.toDTO());
+      }
+      return buildResponse(newDeviceCommandDTOs);
+   }
+   
    protected DeviceCommandService getDeviceCommandService() {
       return (DeviceCommandService) getSpringContextInstance().getBean("deviceCommandService");
    }

@@ -17,27 +17,14 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.service;
+package org.openremote.beehive.domain.modeler;
 
-import java.util.List;
-
-import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
-import org.openremote.beehive.domain.modeler.DeviceCommand;
+import org.openremote.beehive.domain.BusinessEntity;
 
 /**
- * Business service for <code>DeviceCommandDTO</code>.
+ * The Class UICommand is for inherit by DeviceMacroItem and CommandRefItem. It was used in UIDesigner.
  */
-public interface DeviceCommandService {
+public class UICommand extends BusinessEntity {
 
-   DeviceCommandDTO loadDeviceCommandById(long id);
-   
-   DeviceCommandDTO save(DeviceCommandDTO deviceCommandDTO);
-   
-   List<DeviceCommand> saveAll(List<DeviceCommandDTO> deviceCommandDTOs);
-   
-   Boolean deleteCommandById(long id);
-   
-   DeviceCommand update(DeviceCommandDTO deviceCommandDTO);
-   
-   List<DeviceCommand> loadCommandsByDeviceId(long id);
+   private static final long serialVersionUID = 1706362415119628601L;
 }

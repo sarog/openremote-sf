@@ -32,6 +32,7 @@ import javax.persistence.Table;
 import org.openremote.beehive.api.dto.AccountDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
+import org.openremote.beehive.api.dto.modeler.SensorDTO;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.BusinessEntity;
 
@@ -70,6 +71,7 @@ public class Device extends BusinessEntity {
    /** The device attrs. */
    private List<DeviceAttr> deviceAttrs;
    
+   private List<Sensor> sensors = new ArrayList<Sensor>();
    
    /** The account who created the device in this application. */
    private Account account; 
@@ -192,6 +194,15 @@ public class Device extends BusinessEntity {
       this.deviceAttrs = deviceAttrs;
    }
 
+   @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
+   public List<Sensor> getSensors() {
+      return sensors;
+   }
+
+   public void setSensors(List<Sensor> sensors) {
+      this.sensors = sensors;
+   }
+   
    /**
     * Gets the account.
     * 
@@ -226,6 +237,14 @@ public class Device extends BusinessEntity {
             deviceCommandDTOs.add(deviceCommand.toSimpleDTO());
          }
          deviceDTO.setDeviceCommands(deviceCommandDTOs);
+      }
+      
+      if (sensors != null && sensors.size() > 0) {
+         List<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+         for (Sensor sensor : sensors) {
+            sensorDTOs.add(sensor.toDTO());
+         }
+         deviceDTO.setSensors(sensorDTOs);
       }
       
       return deviceDTO;
