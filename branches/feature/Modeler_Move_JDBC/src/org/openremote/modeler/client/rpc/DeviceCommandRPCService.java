@@ -40,7 +40,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the list< device command>
     */
-   List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands);
+   List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) throws BeehiveJDBCException;
    
    /**
     * Save.
@@ -56,7 +56,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @param deviceCommand the device command
     */
-   DeviceCommand update(DeviceCommand deviceCommand);
+   DeviceCommand update(DeviceCommand deviceCommand) throws BeehiveJDBCException;
    
    /**
     * Load by id.
@@ -72,7 +72,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @param id the id
     */
-   Boolean deleteCommand(long id);
+   Boolean deleteCommand(long id) throws BeehiveJDBCException;
    
    /**
     * Load by device.
@@ -81,5 +81,5 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the list< device command>
     */
-   List<DeviceCommand> loadByDevice(long id);
+   List<DeviceCommand> loadByDevice(long id) throws BeehiveJDBCException;
 }

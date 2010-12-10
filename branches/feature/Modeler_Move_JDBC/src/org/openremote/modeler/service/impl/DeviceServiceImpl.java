@@ -22,7 +22,6 @@ package org.openremote.modeler.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,8 +38,11 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Account;
+import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.RangeSensor;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.exception.BeehiveJDBCException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
@@ -48,9 +50,8 @@ import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.utils.JsonGenerator;
 
-import flexjson.ClassLocator;
 import flexjson.JSONDeserializer;
-import flexjson.Path;
+import flexjson.locators.TypeLocator;
 
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
 
@@ -183,6 +184,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
+   @SuppressWarnings("unchecked")
    public Device loadById(long id) {
 //      Device device = super.loadById(id);
 //      if (device.getAccount() != null) {
@@ -209,8 +211,13 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
          if (response.getStatusLine().getStatusCode() == 200) {
 
             String deviceJson = IOUtils.toString(response.getEntity().getContent());
-            Device device = new JSONDeserializer<Device>().use(null, Device.class).use("sensors.values",
-                  new ModelerClassLocator()).deserialize(deviceJson);
+            Device device = new JSONDeserializer<Device>()
+               .use(null, Device.class)
+               .use("sensors.values", new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(deviceJson);
             for (DeviceCommand command : device.getDeviceCommands()) {
                command.setDevice(device);
             }
@@ -239,11 +246,4 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       this.configuration = configuration;
    }
    
-   private static class ModelerClassLocator implements ClassLocator {
-
-      @SuppressWarnings("unchecked")
-      public Class locate(Map map, Path currentPath) throws ClassNotFoundException {
-         return Class.forName("org.openremote.modeler.domain." + map.get("class").toString());
-      }
-   }
 }

@@ -19,34 +19,63 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SensorService;
+import org.openremote.modeler.utils.JsonGenerator;
+
+import flexjson.JSONDeserializer;
+import flexjson.locators.TypeLocator;
 
 public class SensorServiceImpl extends BaseAbstractService<Sensor> implements SensorService {
 
+   private Configuration configuration;
+   
    public Boolean deleteSensor(long id) {
-      Sensor sensor = super.loadById(id);
-      DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
-      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor",
-            sensor)));
-      if (sensorRefItems.size() > 0) {
-         return false;
-      } else {
-         genericDAO.delete(sensor);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpDelete httpDelete = new HttpDelete(configuration.getBeehiveRESTSensorUrl() + "delete/" + id);
+      addAuthentication(httpDelete);
+      try {
+         HttpResponse response = httpClient.execute(httpDelete);
+         if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+               throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+            }
+            throw new BeehiveJDBCException("Failed delete sensor in beehive.");
+         } else {
+            String result = IOUtils.toString(response.getEntity().getContent());
+            if ("true".equals(result)) {
+               return true;
+            } else {
+               return false;
+            }
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed delete sensor in beehive.");
       }
-      return true;
    }
 
    public List<Sensor> loadAll(Account account) {
@@ -59,31 +88,66 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensors;
    }
 
+   @SuppressWarnings("unchecked")
    public Sensor saveSensor(Sensor sensor) {
-      genericDAO.save(sensor);
-      return sensor;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSensorUrl() + "save/" + sensor.getAccount().getId());
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(sensor,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == 200) {
+             String returnedSensorJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<Sensor>()
+             .use(null, new TypeLocator<String>("classType")
+                   .add("Sensor", Sensor.class)
+                   .add("RangeSensor", RangeSensor.class)
+                   .add("CustomSensor", CustomSensor.class)
+                 ).deserialize(returnedSensorJson);
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Failed to save sensor to beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to save sensor to beehive.");
+      }
    }
 
+   @SuppressWarnings("unchecked")
    public Sensor updateSensor(Sensor sensor) {
-      Sensor old = null;
-      
-      if (SensorType.RANGE == sensor.getType()) {
-         old = genericDAO.loadById(RangeSensor.class, sensor.getId());
-         RangeSensor rangeSensor = (RangeSensor)sensor;
-         ((RangeSensor) old).setMax(rangeSensor.getMax());
-         ((RangeSensor) old).setMin(rangeSensor.getMin());
-      } else if (SensorType.CUSTOM == sensor.getType()) {
-         old = genericDAO.loadById(CustomSensor.class, sensor.getId());
-         genericDAO.deleteAll(((CustomSensor)old).getStates());
-         ((CustomSensor)old).setStates(((CustomSensor) sensor).getStates());
-      } else {
-         old = genericDAO.loadById(Sensor.class, sensor.getId());
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSensorUrl() + "update");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(sensor,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == 200) {
+             String returnedSensorJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<Sensor>()
+             .use(null, new TypeLocator<String>("classType")
+                   .add("Sensor", Sensor.class)
+                   .add("RangeSensor", RangeSensor.class)
+                   .add("CustomSensor", CustomSensor.class)
+                 ).deserialize(returnedSensorJson);
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Failed to update sensor to beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to update sensor to beehive.");
       }
-      
-      old.setName(sensor.getName());
-      genericDAO.delete(old.getSensorCommandRef());
-      old.setSensorCommandRef(sensor.getSensorCommandRef());
-      return old;
    }
 
    public Sensor loadById(long id) {
@@ -117,5 +181,9 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          }
       }
       return result;
+   }
+   
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
    }
 }

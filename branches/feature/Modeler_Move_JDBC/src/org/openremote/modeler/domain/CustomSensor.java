@@ -42,6 +42,7 @@ public class CustomSensor extends Sensor {
    
    public CustomSensor() {
       super(SensorType.CUSTOM);
+      setClassType("CustomSensor");
    }
    @OneToMany(mappedBy = "sensor", cascade = CascadeType.ALL)
    @OrderBy(value = "oid")

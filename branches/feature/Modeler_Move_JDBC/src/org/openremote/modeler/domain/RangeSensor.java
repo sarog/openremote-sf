@@ -40,6 +40,7 @@ public class RangeSensor extends Sensor {
 
    public RangeSensor() {
       super(SensorType.RANGE);
+      setClassType("RangeSensor");
    }
    
    @Column(table = "range_sensor", name = "min_value")
