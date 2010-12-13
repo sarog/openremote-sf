@@ -25,6 +25,7 @@
 		338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
+		3393C89812B5F59F00469EA9 /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33CCF02B128A36FB001686C5 /* GetPanelsController.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
@@ -1193,6 +1194,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3393C89812B5F59F00469EA9 /* GetPanelsController.m in Sources */,
 				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
