@@ -77,8 +77,12 @@ public class SensorDTO extends BusinessEntityDTO {
       Sensor sensor = new Sensor(type);
       sensor.setOid(getId());
       sensor.setName(name);
-      sensor.setSensorCommandRef(sensorCommandRef.toSensorCommandRef(sensor));
-      sensor.setDevice(device.toDevice());
+      if (sensorCommandRef != null) {
+         sensor.setSensorCommandRef(sensorCommandRef.toSensorCommandRef(sensor));
+      }
+      if (device != null) {
+         sensor.setDevice(device.toDevice());
+      }
       return sensor;
    }
 }

@@ -41,6 +41,7 @@ public class DeviceDTO extends BusinessEntityDTO {
    private AccountDTO account;
    private List<DeviceCommandDTO> deviceCommands;
    private List<SensorDTO> sensors;
+   private List<SwitchDTO> switchs;
    
    public String getName() {
       return name;
@@ -62,6 +63,10 @@ public class DeviceDTO extends BusinessEntityDTO {
    public List<SensorDTO> getSensors() {
       return sensors;
    }
+   @XmlElement(name = "switchs")
+   public List<SwitchDTO> getSwitchs() {
+      return switchs;
+   }
    
    public void setName(String name) {
       this.name = name;
@@ -80,6 +85,9 @@ public class DeviceDTO extends BusinessEntityDTO {
    }
    public void setSensors(List<SensorDTO> sensors) {
       this.sensors = sensors;
+   }
+   public void setSwitchs(List<SwitchDTO> switchs) {
+      this.switchs = switchs;
    }
    
    public Device toDevice() {
