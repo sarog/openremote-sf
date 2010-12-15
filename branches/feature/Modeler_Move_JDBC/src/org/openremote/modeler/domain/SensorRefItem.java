@@ -48,7 +48,6 @@ public class SensorRefItem extends BusinessEntity {
    
    @OneToOne
    @JoinColumn(name = "target_sensor_oid")
-   @JSON(include = false)
    public Sensor getSensor() {
       return sensor;
    }
@@ -58,6 +57,7 @@ public class SensorRefItem extends BusinessEntity {
    
    @Override
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return sensor.getDisplayName();
    }

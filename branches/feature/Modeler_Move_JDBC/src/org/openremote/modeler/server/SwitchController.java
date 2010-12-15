@@ -31,7 +31,7 @@ import org.openremote.modeler.service.impl.UserServiceImpl;
  * The server side implementation of the RPC service <code>SwitchRPCService</code>.
  */
 @SuppressWarnings("serial")
-public class SwitchController extends BaseGWTSpringControllerWithHibernateSupport implements SwitchRPCService {
+public class SwitchController extends BaseGWTSpringController implements SwitchRPCService {
 
    private SwitchService switchService;
    
