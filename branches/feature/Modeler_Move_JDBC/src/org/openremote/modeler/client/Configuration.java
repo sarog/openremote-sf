@@ -152,4 +152,7 @@ public class Configuration {
    public String getBeehiveRESTSensorUrl() {
       return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "sensor/" : beehiveRESTRootUrl + "/sensor/";
    }
+   public String getBeehiveRESTSwitchUrl() {
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "switch/" : beehiveRESTRootUrl + "/switch/";
+   }
 }

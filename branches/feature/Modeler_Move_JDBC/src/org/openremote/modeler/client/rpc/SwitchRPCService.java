@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.Switch;
+import org.openremote.modeler.exception.BeehiveJDBCException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -46,7 +47,7 @@ public interface SwitchRPCService extends RemoteService {
     * 
     * @return the switch
     */
-   Switch save(Switch switchToggle);
+   Switch save(Switch switchToggle) throws BeehiveJDBCException;
    
    /**
     * Update switch with database data.
@@ -55,12 +56,12 @@ public interface SwitchRPCService extends RemoteService {
     * 
     * @return the switch
     */
-   Switch update(Switch switchToggle);
+   Switch update(Switch switchToggle) throws BeehiveJDBCException;
    
    /**
     * Delete switch by id.
     * 
     * @param id the id
     */
-   void delete(long id);
+   void delete(long id) throws BeehiveJDBCException;
 }

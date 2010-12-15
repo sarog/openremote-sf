@@ -93,7 +93,6 @@ public class Switch extends BusinessEntity {
    }
    
    @ManyToOne
-   @JSON(include=false)
    public Device getDevice() {
       return device;
    }
@@ -105,6 +104,7 @@ public class Switch extends BusinessEntity {
 
 
    @Transient
+   @JSON(include=false)
    public String getDisplayName() {
       return getName();
    }
