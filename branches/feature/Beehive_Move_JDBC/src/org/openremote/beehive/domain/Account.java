@@ -29,6 +29,7 @@ import javax.persistence.Table;
 
 import org.openremote.beehive.domain.modeler.Device;
 import org.openremote.beehive.domain.modeler.Sensor;
+import org.openremote.beehive.domain.modeler.Switch;
 
 
 /**
@@ -47,12 +48,15 @@ public class Account extends BusinessEntity {
    
    private List<Sensor> sensors;
    
+   private List<Switch> switches;
+   
    private List<Template> templates;
 
    public Account() {
       devices = new ArrayList<Device>();
       sensors = new ArrayList<Sensor>();
       templates = new ArrayList<Template>();
+      switches = new ArrayList<Switch>();
    }
 
    @OneToMany(mappedBy = "account")
@@ -80,6 +84,15 @@ public class Account extends BusinessEntity {
 
    public void setSensors(List<Sensor> sensors) {
       this.sensors = sensors;
+   }
+   
+   @OneToMany(mappedBy = "account")
+   public List<Switch> getSwitches() {
+      return switches;
+   }
+
+   public void setSwitches(List<Switch> switches) {
+      this.switches = switches;
    }
    
    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)

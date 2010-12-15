@@ -47,6 +47,7 @@ public class BeehiveApplication extends Application {
       singletons.add(new DeviceRESTService());
       singletons.add(new DeviceCommandRESTService());
       singletons.add(new SensorRESTService());
+      singletons.add(new SwitchRESTService());
    }
 
    @Override
