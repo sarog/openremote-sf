@@ -24,21 +24,32 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+/**
+ * The subclass of <b>SensorRefItem</b>, which define a relation between a sensor and a slider.
+ * A slider can have a SliderSensorRef.
+ */
 @Entity
-@DiscriminatorValue("SWITCH_CMD_OFF_REF")
-public class SwitchCommandOffRef extends CommandRefItem {
+@DiscriminatorValue("SLIDER_SENSOR_REF")
+public class SliderSensorRef extends SensorRefItem {
 
-   private static final long serialVersionUID = 4753744091660751074L;
-   private Switch offSwitch;
+   private static final long serialVersionUID = 5379382455851868446L;
+   private Slider slider;
 
-   @OneToOne
-   @JoinColumn(name = "off_switch_oid")
-   public Switch getOffSwitch() {
-      return offSwitch;
+   public SliderSensorRef() {
    }
 
-   public void setOffSwitch(Switch offSwitch) {
-      this.offSwitch = offSwitch;
+   public SliderSensorRef(Slider slider) {
+      this.slider = slider;
+   }
+
+   @OneToOne
+   @JoinColumn(name = "slider_oid")
+   public Slider getSlider() {
+      return slider;
+   }
+
+   public void setSlider(Slider slider) {
+      this.slider = slider;
    }
 
 }

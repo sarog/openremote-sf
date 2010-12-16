@@ -33,6 +33,7 @@ import org.openremote.beehive.api.dto.AccountDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
 import org.openremote.beehive.api.dto.modeler.SensorDTO;
+import org.openremote.beehive.api.dto.modeler.SliderDTO;
 import org.openremote.beehive.api.dto.modeler.SwitchDTO;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.BusinessEntity;
@@ -75,6 +76,8 @@ public class Device extends BusinessEntity {
    private List<Sensor> sensors = new ArrayList<Sensor>();
    
    private List<Switch> switchs = new ArrayList<Switch>();
+   
+   private List<Slider> sliders = new ArrayList<Slider>();
    
    /** The account who created the device in this application. */
    private Account account; 
@@ -215,6 +218,15 @@ public class Device extends BusinessEntity {
       this.switchs = switchs;
    }
    
+   @OneToMany(mappedBy="device",cascade=CascadeType.ALL)
+   public List<Slider> getSliders() {
+      return sliders;
+   }
+
+   public void setSliders(List<Slider> sliders) {
+      this.sliders = sliders;
+   }
+   
    /**
     * Gets the account.
     * 
@@ -267,6 +279,13 @@ public class Device extends BusinessEntity {
          deviceDTO.setSwitchs(switchDTOs);
       }
       
+      if (sliders != null && sliders.size() > 0) {
+         List<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+         for (Slider slider: sliders) {
+            sliderDTOs.add(slider.toDTO());
+         }
+         deviceDTO.setSliders(sliderDTOs);
+      }
       return deviceDTO;
    }
    

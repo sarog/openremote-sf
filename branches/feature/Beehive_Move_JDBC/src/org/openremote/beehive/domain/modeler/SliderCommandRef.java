@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2009, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,20 +25,28 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
-@DiscriminatorValue("SWITCH_CMD_OFF_REF")
-public class SwitchCommandOffRef extends CommandRefItem {
+@DiscriminatorValue("SLIDER_CMD_REF")
+public class SliderCommandRef extends CommandRefItem {
 
-   private static final long serialVersionUID = 4753744091660751074L;
-   private Switch offSwitch;
+   private static final long serialVersionUID = 3523042607397517095L;
+   
+   private Slider slider;
 
-   @OneToOne
-   @JoinColumn(name = "off_switch_oid")
-   public Switch getOffSwitch() {
-      return offSwitch;
+   public SliderCommandRef() {
    }
 
-   public void setOffSwitch(Switch offSwitch) {
-      this.offSwitch = offSwitch;
+   public SliderCommandRef(Slider slider) {
+      this.slider = slider;
+   }
+
+   @OneToOne
+   @JoinColumn(name = "slider_oid")
+   public Slider getSlider() {
+      return slider;
+   }
+
+   public void setSlider(Slider slider) {
+      this.slider = slider;
    }
 
 }
