@@ -56,8 +56,12 @@ public class RangeSensorDTO extends SensorDTO {
       RangeSensor sensor = new RangeSensor();
       sensor.setOid(getId());
       sensor.setName(getName());
-      sensor.setSensorCommandRef(getSensorCommandRef().toSensorCommandRef(sensor));
-      sensor.setDevice(getDevice().toDevice());
+      if (getSensorCommandRef() != null) {
+         sensor.setSensorCommandRef(getSensorCommandRef().toSensorCommandRef(sensor));
+      }
+      if (getDevice() != null) {
+         sensor.setDevice(getDevice().toDevice());
+      }
       sensor.setMax(max);
       sensor.setMin(min);
       return sensor;

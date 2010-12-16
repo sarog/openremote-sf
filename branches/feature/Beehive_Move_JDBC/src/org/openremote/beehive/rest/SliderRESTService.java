@@ -30,35 +30,34 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.openremote.beehive.Constant;
-import org.openremote.beehive.api.dto.modeler.SwitchDTO;
-import org.openremote.beehive.api.service.SwitchService;
+import org.openremote.beehive.api.dto.modeler.SliderDTO;
+import org.openremote.beehive.api.service.SliderService;
 
 /**
- * Exports restful service of <code>Switch</code>
+ * Exports restful service of <code>Slider</code>
  */
-@Path("/switch")
-public class SwitchRESTService extends RESTBaseService {
+@Path("/slider")
+public class SliderRESTService extends RESTBaseService {
 
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public Response save(@PathParam("account_id") long accountId, SwitchDTO switchDTO,
+   public Response save(@PathParam("account_id") long accountId, SliderDTO sliderDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
-      SwitchDTO newDTO = getSwitchService().save(switchDTO, accountId);
-      newDTO.getSwitchCommandOnRef().getDeviceCommand().setDevice(switchDTO.getDevice());
-      newDTO.getSwitchCommandOffRef().getDeviceCommand().setDevice(switchDTO.getDevice());
-      newDTO.getSwitchSensorRef().getSensor().setDevice(switchDTO.getDevice());
+      SliderDTO newDTO = getSliderService().save(sliderDTO, accountId);
+      newDTO.getSetValueCmd().getDeviceCommand().setDevice(sliderDTO.getDevice());
+      newDTO.getSliderSensorRef().getSensor().setDevice(sliderDTO.getDevice());
       return buildResponse(newDTO);
    }
    
-   @Path("delete/{switch_id}")
+   @Path("delete/{slider_id}")
    @DELETE
-   public Response delete(@PathParam("switch_id") long switchId,
+   public Response delete(@PathParam("slider_id") long sliderId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
-      getSwitchService().deleteSwitchById(switchId);
+      getSliderService().deleteById(sliderId);
       return buildResponse(true);
    }
    
@@ -66,17 +65,16 @@ public class SwitchRESTService extends RESTBaseService {
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public Response update(SwitchDTO switchDTO,
+   public Response update(SliderDTO sliderDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
-      SwitchDTO newDTO = getSwitchService().updateSwitch(switchDTO).toDTO();
-      newDTO.getSwitchCommandOnRef().getDeviceCommand().setDevice(switchDTO.getDevice());
-      newDTO.getSwitchCommandOffRef().getDeviceCommand().setDevice(switchDTO.getDevice());
-      newDTO.getSwitchSensorRef().getSensor().setDevice(switchDTO.getDevice());
+      SliderDTO newDTO = getSliderService().update(sliderDTO).toDTO();
+      newDTO.getSetValueCmd().getDeviceCommand().setDevice(sliderDTO.getDevice());
+      newDTO.getSliderSensorRef().getSensor().setDevice(sliderDTO.getDevice());
       return buildResponse(newDTO);
    }
    
-   protected SwitchService getSwitchService() {
-      return (SwitchService) getSpringContextInstance().getBean("switchService");
+   protected SliderService getSliderService() {
+      return (SliderService) getSpringContextInstance().getBean("sliderService");
    }
 }

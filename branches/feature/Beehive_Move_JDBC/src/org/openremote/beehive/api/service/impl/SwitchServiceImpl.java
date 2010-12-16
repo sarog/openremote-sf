@@ -43,17 +43,17 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    public Switch updateSwitch(SwitchDTO switchDTO) {
       Switch old = genericDAO.loadById(Switch.class, switchDTO.getId());
       old.setName(switchDTO.getName());
-      if (switchDTO.getSwitchCommandOffRef() != null
+      if (switchDTO.getSwitchCommandOffRef() != null && old.getSwitchCommandOffRef() != null
             && old.getSwitchCommandOffRef().getOid() != switchDTO.getSwitchCommandOffRef().getId()) {
          genericDAO.delete(old.getSwitchCommandOffRef());
          old.setSwitchCommandOffRef(switchDTO.getSwitchCommandOffRef().toSwitchCommandOffRef(old));
       }
-      if (switchDTO.getSwitchCommandOnRef() != null
+      if (switchDTO.getSwitchCommandOnRef() != null && old.getSwitchCommandOnRef() != null
             && old.getSwitchCommandOnRef().getOid() != switchDTO.getSwitchCommandOnRef().getId()) {
          genericDAO.delete(old.getSwitchCommandOnRef());
          old.setSwitchCommandOnRef(switchDTO.getSwitchCommandOnRef().toSwitchCommandOnRef(old));
       }
-      if (old.getSwitchSensorRef() != null
+      if (switchDTO.getSwitchSensorRef() != null && old.getSwitchSensorRef() != null
             && old.getSwitchSensorRef().getOid() != switchDTO.getSwitchSensorRef().getId()) {
          genericDAO.delete(old.getSwitchSensorRef());
          old.setSwitchSensorRef(switchDTO.getSwitchSensorRef().toSwitchSensorRef(old));

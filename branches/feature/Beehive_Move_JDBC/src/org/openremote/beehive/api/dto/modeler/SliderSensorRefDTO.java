@@ -17,28 +17,33 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.domain.modeler;
+package org.openremote.beehive.api.dto.modeler;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import org.openremote.beehive.domain.modeler.Slider;
+import org.openremote.beehive.domain.modeler.SliderSensorRef;
 
-@Entity
-@DiscriminatorValue("SWITCH_CMD_OFF_REF")
-public class SwitchCommandOffRef extends CommandRefItem {
+@SuppressWarnings("serial")
+public class SliderSensorRefDTO extends SensorRefItemDTO {
 
-   private static final long serialVersionUID = 4753744091660751074L;
-   private Switch offSwitch;
+   private SliderDTO slider;
 
-   @OneToOne
-   @JoinColumn(name = "off_switch_oid")
-   public Switch getOffSwitch() {
-      return offSwitch;
+   public SliderSensorRefDTO() {
+   }
+   public SliderSensorRefDTO(SliderSensorRef sliderSensorRef) {
+      super(sliderSensorRef.getSensor());
+   }
+   
+   public SliderDTO getSlider() {
+      return slider;
    }
 
-   public void setOffSwitch(Switch offSwitch) {
-      this.offSwitch = offSwitch;
+   public void setSlider(SliderDTO slider) {
+      this.slider = slider;
    }
-
+   
+   public SliderSensorRef toSliderSensorRef(Slider slider) {
+      SliderSensorRef sliderSensorRef = new SliderSensorRef(slider);
+      sliderSensorRef.setSensor(getSensor().toSensor());
+      return sliderSensorRef;
+   }
 }

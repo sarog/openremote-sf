@@ -60,8 +60,12 @@ public class CustomSensorDTO extends SensorDTO {
       CustomSensor sensor = new CustomSensor();
       sensor.setOid(getId());
       sensor.setName(getName());
-      sensor.setSensorCommandRef(getSensorCommandRef().toSensorCommandRef(sensor));
-      sensor.setDevice(getDevice().toDevice());
+      if (getSensorCommandRef() != null) {
+         sensor.setSensorCommandRef(getSensorCommandRef().toSensorCommandRef(sensor));
+      }
+      if (getDevice() != null) {
+         sensor.setDevice(getDevice().toDevice());
+      }
       for (StateDTO stateDTO : states) {
          sensor.addState(stateDTO.toState(sensor));
       }
