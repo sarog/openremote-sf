@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,25 +19,53 @@
 */
 package org.openremote.modeler.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
+import org.openremote.modeler.utils.JsonGenerator;
+
+import flexjson.JSONDeserializer;
 
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
 
+   private Configuration configuration;
    private UserService userService = null;
    
-   @Override
    public void delete(long id) {
-      Slider slider = super.loadById(id);
-      genericDAO.delete(slider);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpDelete httpDelete = new HttpDelete(configuration.getBeehiveRESTSliderUrl() + "delete/" + id);
+      addAuthentication(httpDelete);
+      try {
+         HttpResponse response = httpClient.execute(httpDelete);
+         if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
+            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+               throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+            }
+            throw new BeehiveJDBCException("Failed delete slider in beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed delete slider in beehive.");
+      }
    }
 
    @Override
@@ -49,39 +77,56 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       return result;
    }
 
-   @Override
    public Slider save(Slider slider) {
-      genericDAO.save(slider);
-      return slider;
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSliderUrl() + "save/" + slider.getAccount().getId());
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(slider,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+             String returnedSensorJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<Slider>()
+             .use(null, Slider.class).deserialize(returnedSensorJson);
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Failed to save slider to beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to save slider to beehive.");
+      }
    }
 
-   @Override
    public Slider update(Slider slider) {
-      Slider oldSlider = genericDAO.loadById(Slider.class, slider.getId());
-      if (oldSlider.getSliderSensorRef() != null) {
-         genericDAO.delete(oldSlider.getSliderSensorRef());
-      }
-      if (slider.getSliderSensorRef() == null) {
-         oldSlider.setSliderSensorRef(null);
-      } else if (slider.getSliderSensorRef() != null) {
-         slider.getSliderSensorRef().setSlider(oldSlider);
-         oldSlider.setSliderSensorRef(slider.getSliderSensorRef());
-      }
-
-      oldSlider.setName(slider.getName());
-
-      if (slider.getSetValueCmd() == null) {
-         if (oldSlider.getSetValueCmd() != null) {
-            genericDAO.delete(oldSlider.getSetValueCmd());
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSliderUrl() + "update");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(slider,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+             String returnedSensorJson = IOUtils.toString(response.getEntity().getContent());
+             return new JSONDeserializer<Slider>()
+             .use(null, Slider.class).deserialize(returnedSensorJson);
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Failed to update slider to beehive.");
          }
-         oldSlider.setSetValueCmd(null);
-      } else if (slider.getSetValueCmd() != null && oldSlider.getSetValueCmd() != null
-            && slider.getSetValueCmd().getId() != oldSlider.getSetValueCmd().getId()) {
-         genericDAO.delete(oldSlider.getSetValueCmd());
-         slider.getSetValueCmd().setSlider(oldSlider);
-         oldSlider.setSetValueCmd(slider.getSetValueCmd());
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to update slider to beehive.");
       }
-      return oldSlider;
    }
    
    public List<Slider> loadSameSliders(Slider slider) {
@@ -99,6 +144,10 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          }
       }
       return result;
+   }
+
+   public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
    }
 
    public void setUserService(UserService userService) {

@@ -24,7 +24,6 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import flexjson.JSON;
 
@@ -80,7 +79,6 @@ public class Slider extends BusinessEntity {
    }
 
    @ManyToOne
-   @JSON(include = false)
    public Device getDevice() {
       return device;
    }
@@ -89,7 +87,7 @@ public class Slider extends BusinessEntity {
       this.device = device;
    }
 
-   @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return getName();
    }
