@@ -84,4 +84,11 @@ public class SwitchDTO extends BusinessEntityDTO {
       }
       return switchToggle;
    }
+   
+   public Switch toSimpleSwitch() {
+      Switch switchToggle = new Switch();
+      switchToggle.setOid(getId());
+      switchToggle.setName(name);
+      return switchToggle;
+   }
 }

@@ -24,15 +24,28 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.openremote.beehive.api.dto.AccountDTO;
 import org.openremote.beehive.api.dto.BusinessEntityDTO;
+import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.Device;
+import org.openremote.beehive.domain.modeler.DeviceCommand;
+import org.openremote.beehive.domain.modeler.Sensor;
+import org.openremote.beehive.domain.modeler.SensorCommandRef;
+import org.openremote.beehive.domain.modeler.Slider;
+import org.openremote.beehive.domain.modeler.SliderCommandRef;
+import org.openremote.beehive.domain.modeler.SliderSensorRef;
+import org.openremote.beehive.domain.modeler.Switch;
+import org.openremote.beehive.domain.modeler.SwitchCommandOffRef;
+import org.openremote.beehive.domain.modeler.SwitchCommandOnRef;
+import org.openremote.beehive.domain.modeler.SwitchSensorRef;
 
 /**
  * The Class is used for transmitting device info.
  */
 @SuppressWarnings("serial")
 @XmlRootElement(name = "device")
+@JsonIgnoreProperties("deviceAttrs")
 public class DeviceDTO extends BusinessEntityDTO {
    private String name;
    private String vendor;
@@ -104,6 +117,129 @@ public class DeviceDTO extends BusinessEntityDTO {
       device.setName(name);
       device.setVendor(vendor);
       device.setModel(model);
+      return device;
+   }
+   
+   public Device toDeviceWithContents(Account dbAccount) {
+      Device device = toDevice();
+      device.setAccount(dbAccount);
+      if (deviceCommands != null && deviceCommands.size() > 0) {
+         for (DeviceCommandDTO deviceCommandDTO : deviceCommands) {
+            DeviceCommand deviceCommand = deviceCommandDTO.toDeviceCommand();
+            deviceCommand.setDevice(device);
+            device.getDeviceCommands().add(deviceCommand);
+         }
+      }
+      List<DeviceCommand> deviceCommands = device.getDeviceCommands();
+      
+      if (sensors != null && sensors.size() > 0) {
+         for (SensorDTO sensorDTO : sensors) {
+            Sensor sensor = sensorDTO.toSimpleSensor();
+            sensor.setAccount(dbAccount);
+            sensor.setDevice(device);
+            
+            SensorCommandRefDTO sensorCommandRefDTO = sensorDTO.getSensorCommandRef();
+            if (sensorCommandRefDTO != null) {
+               String commandName = sensorCommandRefDTO.getDeviceCommand().getName();
+               for (DeviceCommand deviceCommand : deviceCommands) {
+                  if (deviceCommand.getName().equals(commandName)) {
+                     SensorCommandRef sensorCommandRef = new SensorCommandRef();
+                     sensorCommandRef.setSensor(sensor);
+                     sensorCommandRef.setDeviceCommand(deviceCommand);
+                     sensor.setSensorCommandRef(sensorCommandRef);
+                  }
+               }
+            }
+            device.getSensors().add(sensor);
+         }
+      }
+      List<Sensor> newSensors = device.getSensors();
+      
+      if (switchs != null && switchs.size() > 0) {
+         for (SwitchDTO switchDTO : switchs) {
+            Switch switchToggle = switchDTO.toSimpleSwitch();
+            switchToggle.setAccount(dbAccount);
+            switchToggle.setDevice(device);
+            
+            SwitchCommandOnRefDTO switchCommandOnRefDTO = switchDTO.getSwitchCommandOnRef();
+            if (switchCommandOnRefDTO != null) {
+               String commandName = switchCommandOnRefDTO.getDeviceCommand().getName();
+               for (DeviceCommand deviceCommand : deviceCommands) {
+                  if (deviceCommand.getName().equals(commandName)) {
+                     SwitchCommandOnRef switchCommandOnRef = new SwitchCommandOnRef();
+                     switchCommandOnRef.setOnSwitch(switchToggle);
+                     switchCommandOnRef.setDeviceCommand(deviceCommand);
+                     switchToggle.setSwitchCommandOnRef(switchCommandOnRef);
+                  }
+               }
+            }
+            
+            SwitchCommandOffRefDTO switchCommandOffRefDTO = switchDTO.getSwitchCommandOffRef();
+            if (switchCommandOffRefDTO != null) {
+               String commandName = switchCommandOffRefDTO.getDeviceCommand().getName();
+               for (DeviceCommand deviceCommand : deviceCommands) {
+                  if (deviceCommand.getName().equals(commandName)) {
+                     SwitchCommandOffRef switchCommandOffRef = new SwitchCommandOffRef();
+                     switchCommandOffRef.setOffSwitch(switchToggle);
+                     switchCommandOffRef.setDeviceCommand(deviceCommand);
+                     switchToggle.setSwitchCommandOffRef(switchCommandOffRef);
+                  }
+               }
+            }
+            
+            SwitchSensorRefDTO switchSensorRefDTO = switchDTO.getSwitchSensorRef();
+            if (switchSensorRefDTO != null) {
+               String sensorName = switchSensorRefDTO.getSensor().getName();
+               for (Sensor newSensor : newSensors) {
+                  if (newSensor.getName().equals(sensorName)) {
+                     SwitchSensorRef switchSensorRef = new SwitchSensorRef();
+                     switchSensorRef.setSensor(newSensor);
+                     switchSensorRef.setSwitchToggle(switchToggle);
+                     switchToggle.setSwitchSensorRef(switchSensorRef);
+                  }
+               }
+            }
+            
+            device.getSwitchs().add(switchToggle);
+         }
+      }
+      
+      if (sliders != null && sliders.size() > 0) {
+         for (SliderDTO sliderDTO : sliders) {
+            Slider slider = sliderDTO.toSimpleSlider();
+            slider.setAccount(dbAccount);
+            slider.setDevice(device);
+            
+            SliderCommandRefDTO sliderCommandRefDTO = sliderDTO.getSetValueCmd();
+            if (sliderCommandRefDTO != null) {
+               String commandName = sliderCommandRefDTO.getDeviceCommand().getName();
+               for (DeviceCommand deviceCommand : deviceCommands) {
+                  if (deviceCommand.getName().equals(commandName)) {
+                     SliderCommandRef sliderCommandRef = new SliderCommandRef();
+                     sliderCommandRef.setDeviceCommand(deviceCommand);
+                     sliderCommandRef.setSlider(slider);
+                     slider.setSetValueCmd(sliderCommandRef);
+                  }
+               }
+            }
+            
+            SliderSensorRefDTO sliderSensorRefDTO = sliderDTO.getSliderSensorRef();
+            if (sliderSensorRefDTO != null) {
+               String sensorName = sliderSensorRefDTO.getSensor().getName();
+               for (Sensor newSensor : newSensors) {
+                  if (newSensor.getName().equals(sensorName)) {
+                     SliderSensorRef sliderSensorRef = new SliderSensorRef();
+                     sliderSensorRef.setSensor(newSensor);
+                     sliderSensorRef.setSlider(slider);
+                     slider.setSliderSensorRef(sliderSensorRef);
+                  }
+               }
+            }
+            
+            device.getSliders().add(slider);
+         }
+      }
+      
       return device;
    }
 }

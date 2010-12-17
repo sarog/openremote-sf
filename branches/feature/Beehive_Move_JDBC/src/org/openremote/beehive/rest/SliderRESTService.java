@@ -19,8 +19,11 @@
 */
 package org.openremote.beehive.rest;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -72,6 +75,19 @@ public class SliderRESTService extends RESTBaseService {
       newDTO.getSetValueCmd().getDeviceCommand().setDevice(sliderDTO.getDevice());
       newDTO.getSliderSensorRef().getSensor().setDevice(sliderDTO.getDevice());
       return buildResponse(newDTO);
+   }
+   
+   @Path("loadall/{account_id}")
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadAccountSwitchs(@PathParam("account_id") long accountId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<SliderDTO> sliders = getSliderService().loadAccountSliders(accountId);
+      if (sliders.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(sliders);
    }
    
    protected SliderService getSliderService() {

@@ -71,4 +71,17 @@ public class CustomSensorDTO extends SensorDTO {
       }
       return sensor;
    }
+
+   @Override
+   public Sensor toSimpleSensor() {
+      CustomSensor sensor = new CustomSensor();
+      sensor.setOid(getId());
+      sensor.setName(getName());
+      for (StateDTO stateDTO : states) {
+         sensor.addState(stateDTO.toState(sensor));
+      }
+      return sensor;
+   }
+   
+   
 }

@@ -27,15 +27,28 @@ import org.openremote.beehive.api.dto.modeler.DeviceDTO;
 import org.openremote.beehive.api.service.DeviceService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.Device;
+import org.openremote.beehive.domain.modeler.DeviceCommand;
 
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
 
    public Device saveDevice(Device device) {
       genericDAO.save(device);
-      Hibernate.initialize(device.getDeviceAttrs());
       return device;
    }
 
+   public Device saveDeviceWithContent(Device device) {
+      genericDAO.save(device);
+      Hibernate.initialize(device.getSensors());
+      Hibernate.initialize(device.getSwitchs());
+      List<DeviceCommand> deviceCommands = device.getDeviceCommands();
+      for(DeviceCommand cmd : deviceCommands ) {
+         Hibernate.initialize(cmd.getProtocol().getAttributes());
+      }
+      Hibernate.initialize(device.getSliders());
+      Hibernate.initialize(device.getDeviceAttrs());
+      return device;
+   }
+   
    public List<DeviceDTO> loadAllAccountDevices(long accountId) {
       Account account = genericDAO.getById(Account.class, accountId);
       List<Device> devices = account.getDevices();
@@ -68,4 +81,5 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       Device device = loadById(deviceId);
       genericDAO.delete(device);
    }
+
 }

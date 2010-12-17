@@ -17,25 +17,31 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.beehive.api.service;
+package org.openremote.beehive.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.beehive.api.dto.modeler.SensorDTO;
-import org.openremote.beehive.domain.modeler.Sensor;
 
 /**
- * Business service for <code>SensorDTO</code>.
+ * In order to let rest service to serialize list of sensors
  */
-public interface SensorService {
+public class SensorList {
 
-   public SensorDTO save(SensorDTO sensorDTO, long accountId);
+   private List<SensorDTO> sensors = new ArrayList<SensorDTO>();
+
+   public SensorList() {
+   }
    
-   public boolean deleteSensorById(long id);
+   public SensorList(List<SensorDTO> sensors) {
+      this.sensors = sensors;
+   }
+   public List<SensorDTO> getSensors() {
+      return sensors;
+   }
+   public void setSensors(List<SensorDTO> sensors) {
+      this.sensors = sensors;
+   }
    
-   public Sensor updateSensor(SensorDTO sensorDTO);
-   
-   public List<SensorDTO> loadAllAccountSensors(long accountId);
-   
-   SensorDTO loadSensorById(long id);
 }

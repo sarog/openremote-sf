@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.service;
 
+import java.util.List;
+
 import org.openremote.beehive.api.dto.modeler.SliderDTO;
 import org.openremote.beehive.domain.modeler.Slider;
 
@@ -32,4 +34,6 @@ public interface SliderService {
    public Slider update(SliderDTO sliderDTO);
    
    public void deleteById(long sliderId);
+   
+   public List<SliderDTO> loadAccountSliders(long accountId);
 }

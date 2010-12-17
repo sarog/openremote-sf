@@ -19,8 +19,11 @@
 */
 package org.openremote.beehive.rest;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -69,6 +72,29 @@ public class SensorRESTService extends RESTBaseService {
       SensorDTO newDTO = getSensorService().updateSensor(sensorDTO).toDTO();
       newDTO.getSensorCommandRef().getDeviceCommand().setDevice(sensorDTO.getDevice());
       return buildResponse(newDTO);
+   }
+   
+   @Path("loadall/{account_id}")
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadAccountSensors(@PathParam("account_id") long accountId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<SensorDTO> sensors = getSensorService().loadAllAccountSensors(accountId);
+      if (sensors.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(new SensorList(sensors));
+   }
+   
+   @Path("load/{sensor_id}")
+   @GET
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response loadById(@PathParam("sensor_id") long sensorId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      SensorDTO sensorDTO = getSensorService().loadSensorById(sensorId);
+      return buildResponse(sensorDTO);
    }
    
    protected SensorService getSensorService() {

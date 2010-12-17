@@ -19,6 +19,9 @@
 */
 package org.openremote.beehive.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.beehive.api.dto.modeler.SliderDTO;
 import org.openremote.beehive.api.service.SliderService;
 import org.openremote.beehive.domain.Account;
@@ -63,6 +66,19 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       }
       
       return oldSlider;
+   }
+
+   public List<SliderDTO> loadAccountSliders(long accountId) {
+      Account account = genericDAO.loadById(Account.class, accountId);
+      List<Slider> result = account.getSliders();
+      List<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+      if (result == null || result.size() == 0) {
+         return sliderDTOs;
+      }
+      for (Slider slider : result) {
+         sliderDTOs.add(slider.toDTO());
+      }
+      return sliderDTOs;
    }
 
 }

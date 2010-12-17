@@ -19,6 +19,7 @@
 */
 package org.openremote.beehive.api.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -88,6 +89,29 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          old.setSensorCommandRef(sensorDTO.getSensorCommandRef().toSensorCommandRef(old));
       }
       return old;
+   }
+
+   public List<SensorDTO> loadAllAccountSensors(long accountId) {
+      Account account = genericDAO.loadById(Account.class, accountId);
+      List<Sensor> sensors = account.getSensors();
+      for (Sensor sensor : sensors) {
+         if (sensor.getType() == SensorType.CUSTOM) {
+            Hibernate.initialize(((CustomSensor) sensor).getStates());
+         }
+      }
+      List<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+      for (Sensor sensor : sensors) {
+         sensorDTOs.add(sensor.toDTO());
+      }
+      return sensorDTOs;
+   }
+
+   public SensorDTO loadSensorById(long id) {
+      Sensor sensor = genericDAO.getById(Sensor.class, id);
+      if (sensor instanceof CustomSensor) {
+         Hibernate.initialize(((CustomSensor) sensor).getStates());
+      }
+      return sensor.toDTO();
    }
 
 }

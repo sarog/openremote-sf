@@ -37,6 +37,8 @@ public interface DeviceService {
     */
    Device saveDevice(Device device);
    
+   Device saveDeviceWithContent(Device device);
+   
    List<DeviceDTO> loadAllAccountDevices(long accountId);
    
    DeviceDTO loadDeviceById(long deviceId);

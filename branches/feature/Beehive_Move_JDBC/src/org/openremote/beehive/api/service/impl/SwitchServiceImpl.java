@@ -19,6 +19,9 @@
 */
 package org.openremote.beehive.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.beehive.api.dto.modeler.SwitchDTO;
 import org.openremote.beehive.api.service.SwitchService;
 import org.openremote.beehive.domain.Account;
@@ -59,6 +62,20 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
          old.setSwitchSensorRef(switchDTO.getSwitchSensorRef().toSwitchSensorRef(old));
       }
       return old;
+   }
+
+   public List<SwitchDTO> loadAccountSwitchs(long accountId) {
+      Account account = genericDAO.loadById(Account.class, accountId);
+      List<Switch> result = account.getSwitches();
+      List<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
+      if (result == null || result.size() == 0) {
+         return switchDTOs;
+      }
+      
+      for (Switch switchToggle : result) {
+         switchDTOs.add(switchToggle.toDTO());
+      }
+      return switchDTOs;
    }
 
 }
