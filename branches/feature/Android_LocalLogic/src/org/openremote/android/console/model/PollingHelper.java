@@ -82,10 +82,8 @@ public class PollingHelper {
    private static final int NETWORK_ERROR = 0;
    
    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-   /** We keep track of the schedule local sensor poll, if we need to stop them */
+   /** We keep track of the schedule local sensor poll, so we need to stop them */
    private final Map<Integer, ScheduledFuture<?>> scheduledLocalSensors = new HashMap<Integer, ScheduledFuture<?>>();
-
-   // TODO: check lifecycle management, should we stop those scheduled poll ?
 
    /**
     * Instantiates a new polling helper.
@@ -282,6 +280,12 @@ public class PollingHelper {
          httpGet.abort();
          httpGet = null;
       }
+      
+      // Stop the scheduled local polls and forget about them
+      for (ScheduledFuture<?> scheduledPoll : scheduledLocalSensors.values()) {
+    	  scheduledPoll.cancel(true);
+      }
+      scheduledLocalSensors.clear();
    }
 
    /**
