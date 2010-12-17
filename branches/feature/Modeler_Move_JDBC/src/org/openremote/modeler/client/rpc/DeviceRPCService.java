@@ -75,5 +75,7 @@ public interface DeviceRPCService extends RemoteService {
     */
    List<Device> loadAll() throws BeehiveJDBCException, NotAuthenticatedException;
    
+   Device saveDeviceWithContent(Device device) throws BeehiveJDBCException, NotAuthenticatedException;
+   
    Account getAccount();
 }

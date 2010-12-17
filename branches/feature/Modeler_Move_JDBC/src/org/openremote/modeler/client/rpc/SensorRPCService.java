@@ -22,6 +22,8 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -39,7 +41,7 @@ public interface SensorRPCService extends RemoteService {
     * 
     * @return the sensor
     */
-   Sensor saveSensor(Sensor sensor);
+   Sensor saveSensor(Sensor sensor) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Update sensor with database.
@@ -48,7 +50,7 @@ public interface SensorRPCService extends RemoteService {
     * 
     * @return the sensor
     */
-   Sensor updateSensor(Sensor sensor);
+   Sensor updateSensor(Sensor sensor) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Delete sensor by id from database.
@@ -57,14 +59,14 @@ public interface SensorRPCService extends RemoteService {
     * 
     * @return the boolean
     */
-   Boolean deleteSensor(long id);
+   Boolean deleteSensor(long id) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Load all sensor from database.
     * 
     * @return the list< sensor>
     */
-   List<Sensor> loadAll();
+   List<Sensor> loadAll() throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Gets the sensor by id.
@@ -73,6 +75,6 @@ public interface SensorRPCService extends RemoteService {
     * 
     * @return the by id
     */
-   Sensor getById(long id);
+   Sensor getById(long id) throws BeehiveJDBCException, NotAuthenticatedException;
    
 }

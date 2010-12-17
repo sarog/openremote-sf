@@ -30,12 +30,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
+import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.RangeSensor;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.exception.BeehiveJDBCException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
@@ -45,6 +49,7 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.JsonGenerator;
 
 import flexjson.JSONDeserializer;
+import flexjson.locators.TypeLocator;
 
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
 
@@ -68,13 +73,36 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       }
    }
 
-   @Override
+   @SuppressWarnings("unchecked")
    public List<Slider> loadAll() {
-      List<Slider> result = userService.getAccount().getSliders();
-      if (result == null || result.size() == 0) {
-         return new ArrayList<Slider> ();
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTSliderUrl() + "loadall/" + userService.getAccount().getId());
+      httpGet.addHeader("Accept", "application/json");
+      addAuthentication(httpGet);
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String sliderJson = "{sliders:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            SliderList result = new JSONDeserializer<SliderList>()
+               .use(null, SliderList.class)
+               .use("sliders", ArrayList.class)
+               .use("sliders.values.sliderSensorRef.sensor", new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(sliderJson);
+            return result.getSliders();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Slider>();
+         } else {
+            throw new BeehiveJDBCException("Failed load account sliders from beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Can't load account sliders from beehive.");
       }
-      return result;
    }
 
    public Slider save(Slider slider) {

@@ -245,5 +245,42 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
+
+   @SuppressWarnings("unchecked")
+   public Device saveDeviceWithContent(Device device) {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceUrl() + "savewithcontent/" + device.getAccount().getId());
+      httpPost.setHeader("Content-Type", "application/json");
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String []excludes = {"*.class", "*.device"};
+         String deviceContent = JsonGenerator.deepSerializerObjectExclude(device, excludes);
+         httpPost.setEntity(new StringEntity(deviceContent, "UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         if (response.getStatusLine().getStatusCode() == 200) {
+            String deviceJson = IOUtils.toString(response.getEntity().getContent());
+            Device dbDevice = new JSONDeserializer<Device>()
+               .use(null, Device.class)
+               .use("sensors.values", new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(deviceJson);
+            for (DeviceCommand command : dbDevice.getDeviceCommands()) {
+               command.setDevice(dbDevice);
+            }
+            return dbDevice;
+         } else if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Failed save device to beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Can't save device to beehive.", e);
+         throw new BeehiveJDBCException("Failed save device to beehive.");
+      }
+         
+   }
    
 }

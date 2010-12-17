@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -40,7 +41,7 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the list< device command>
     */
-   List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) throws BeehiveJDBCException;
+   List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Save.
@@ -49,14 +50,14 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the device command
     */
-   DeviceCommand save(DeviceCommand deviceCommand) throws BeehiveJDBCException;
+   DeviceCommand save(DeviceCommand deviceCommand) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Update.
     * 
     * @param deviceCommand the device command
     */
-   DeviceCommand update(DeviceCommand deviceCommand) throws BeehiveJDBCException;
+   DeviceCommand update(DeviceCommand deviceCommand) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Load by id.
@@ -65,14 +66,14 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the device command
     */
-   DeviceCommand loadById(long id) throws BeehiveJDBCException;
+   DeviceCommand loadById(long id) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Delete command.
     * 
     * @param id the id
     */
-   Boolean deleteCommand(long id) throws BeehiveJDBCException;
+   Boolean deleteCommand(long id) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Load by device.
@@ -81,5 +82,5 @@ public interface DeviceCommandRPCService extends RemoteService {
     * 
     * @return the list< device command>
     */
-   List<DeviceCommand> loadByDevice(long id) throws BeehiveJDBCException;
+   List<DeviceCommand> loadByDevice(long id) throws BeehiveJDBCException, NotAuthenticatedException;
 }

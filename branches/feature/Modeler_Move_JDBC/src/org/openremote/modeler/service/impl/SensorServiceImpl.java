@@ -20,6 +20,7 @@
 package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,10 +30,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
@@ -40,7 +41,6 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
-import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.exception.BeehiveJDBCException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
@@ -60,7 +60,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       addAuthentication(httpDelete);
       try {
          HttpResponse response = httpClient.execute(httpDelete);
-         if (response.getStatusLine().getStatusCode() != 200) {
+         if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
                throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
             }
@@ -78,14 +78,34 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       }
    }
 
+   @SuppressWarnings("unchecked")
    public List<Sensor> loadAll(Account account) {
-      List<Sensor> sensors = account.getSensors();
-      for (Sensor sensor : sensors) {
-         if (sensor.getType() == SensorType.CUSTOM) {
-            Hibernate.initialize(((CustomSensor) sensor).getStates());
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTSensorUrl() + "loadall/" + account.getId());
+      httpGet.addHeader("Accept", "application/json");
+      addAuthentication(httpGet);
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String sensorsJson = IOUtils.toString(response.getEntity().getContent());
+            SensorList result = new JSONDeserializer<SensorList>()
+            .use(null, SensorList.class)
+            .use("sensors.values", new TypeLocator<String>("classType")
+               .add("Sensor", Sensor.class)
+               .add("RangeSensor", RangeSensor.class)
+               .add("CustomSensor", CustomSensor.class)).deserialize(sensorsJson);
+            return result.getSensors();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Sensor>();
+         } else {
+            throw new BeehiveJDBCException("Failed load account sensors from beehive.");
          }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Can't load account sensors from beehive.");
       }
-      return sensors;
    }
 
    @SuppressWarnings("unchecked")
@@ -101,7 +121,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(sensor,includes,excludes),"UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode == 200) {
+         if (statusCode == HttpServletResponse.SC_OK) {
              String returnedSensorJson = IOUtils.toString(response.getEntity().getContent());
              return new JSONDeserializer<Sensor>()
              .use(null, new TypeLocator<String>("classType")
@@ -132,7 +152,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(sensor,includes,excludes),"UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
-         if (statusCode == 200) {
+         if (statusCode == HttpServletResponse.SC_OK) {
              String returnedSensorJson = IOUtils.toString(response.getEntity().getContent());
              return new JSONDeserializer<Sensor>()
              .use(null, new TypeLocator<String>("classType")
@@ -150,12 +170,33 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       }
    }
 
+   @SuppressWarnings("unchecked")
    public Sensor loadById(long id) {
-      Sensor sensor = genericDAO.getById(Sensor.class, id);
-      if (sensor instanceof CustomSensor) {
-         Hibernate.initialize(((CustomSensor) sensor).getStates());
+      HttpClient httpClient = new DefaultHttpClient();
+      String url = configuration.getBeehiveRESTSensorUrl() + "load/" + id;
+      HttpGet httpGet = new HttpGet(url);
+      httpGet.addHeader("Accept", "application/json");
+      addAuthentication(httpGet);
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
+
+            String sensorJson = IOUtils.toString(response.getEntity().getContent());
+            Sensor sensor = new JSONDeserializer<Sensor>()
+               .use(null, new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(sensorJson);
+            return sensor;
+         } else if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Can't load sensor from beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Can't load sensor from beehive.");
       }
-      return sensor;
    }
 
   /* @Override

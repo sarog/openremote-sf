@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -38,7 +39,7 @@ public interface SwitchRPCService extends RemoteService {
     * 
     * @return the list< switch>
     */
-   List<Switch> loadAll();
+   List<Switch> loadAll() throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Save switch into database.
@@ -47,7 +48,7 @@ public interface SwitchRPCService extends RemoteService {
     * 
     * @return the switch
     */
-   Switch save(Switch switchToggle) throws BeehiveJDBCException;
+   Switch save(Switch switchToggle) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Update switch with database data.
@@ -56,12 +57,12 @@ public interface SwitchRPCService extends RemoteService {
     * 
     * @return the switch
     */
-   Switch update(Switch switchToggle) throws BeehiveJDBCException;
+   Switch update(Switch switchToggle) throws BeehiveJDBCException, NotAuthenticatedException;
    
    /**
     * Delete switch by id.
     * 
     * @param id the id
     */
-   void delete(long id) throws BeehiveJDBCException;
+   void delete(long id) throws BeehiveJDBCException, NotAuthenticatedException;
 }

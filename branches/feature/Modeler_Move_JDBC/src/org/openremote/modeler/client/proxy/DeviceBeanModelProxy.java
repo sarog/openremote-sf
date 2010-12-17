@@ -294,7 +294,7 @@ public class DeviceBeanModelProxy {
    }
    
    public static void saveDeviceWithContents(Device device, final AsyncSuccessCallback<BeanModel> callback) {
-      AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
+      AsyncServiceFactory.getDeviceServiceAsync().saveDeviceWithContent(device, new AsyncSuccessCallback<Device>() {
          public void onSuccess(Device result) {
             BeanModel deviceModel = result.getBeanModel();
             BeanModelDataBase.deviceTable.insert(deviceModel);
