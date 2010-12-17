@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.Slider;
+import org.openremote.modeler.exception.BeehiveJDBCException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -39,14 +40,14 @@ public interface SliderRPCService extends RemoteService {
     * 
     * @return the slider
     */
-   Slider save(Slider slider);
+   Slider save(Slider slider) throws BeehiveJDBCException;
 
    /**
     * Delete slider by id from database.
     * 
     * @param id the id
     */
-   void delete(long id);
+   void delete(long id) throws BeehiveJDBCException;
 
    /**
     * Update slider with database.
@@ -55,7 +56,7 @@ public interface SliderRPCService extends RemoteService {
     * 
     * @return the slider
     */
-   Slider update(Slider slider);
+   Slider update(Slider slider) throws BeehiveJDBCException;
 
    /**
     * Load all sliders from database.
