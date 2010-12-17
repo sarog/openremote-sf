@@ -179,7 +179,8 @@ public class PollingHelper {
       
       // TODO: change this to a valid throttling mechanism, with specific frequency possible for each local sensor
       try {
-		Thread.sleep(1000); // Sleep for 1 sec to throttle sensor updates
+  		Thread.sleep(200);
+//		Thread.sleep(1000); // Sleep for 1 sec to throttle sensor updates
 	} catch (InterruptedException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -243,8 +244,8 @@ public class PollingHelper {
 			LocalSensor sensor = iter.next();
 			try {
 				Class<?> clazz = Class.forName(sensor.getClassName());
-				Method m = clazz.getMethod(sensor.getMethodName(), (Class<?>)null);
-				String result = (String) m.invoke(null, (Object)null);
+				Method m = clazz.getMethod(sensor.getMethodName(), (Class<?>[])null);
+				String result = (String) m.invoke(null, (Object[])null);
 				PollingStatusParser.handleLocalResult(sensor.getId(), result);
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

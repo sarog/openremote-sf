@@ -97,8 +97,8 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    private void performLocalCall(LocalCommand command) {
 		try {
 			Class<?> clazz = Class.forName(command.getClassName());
-			Method m = clazz.getMethod(command.getMethodName(), (Class<?>)null);
-			m.invoke(null, (Object)null);
+			Method m = clazz.getMethod(command.getMethodName(), (Class<?>[])null);
+			m.invoke(null, (Object[])null);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
