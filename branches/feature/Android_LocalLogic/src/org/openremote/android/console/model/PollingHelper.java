@@ -21,6 +21,8 @@ package org.openremote.android.console.model;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -40,6 +42,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
+import org.openremote.android.console.bindings.LocalSensor;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
@@ -57,7 +60,7 @@ import android.util.Log;
  * and notify screen component status changes.
  * 
  * @author Tomsky Wang, Dan Cong
- * 
+ * @author Eric Bariaux (eric@openremote.org)
  */
 public class PollingHelper {
 
@@ -83,12 +86,24 @@ public class PollingHelper {
       this.serverUrl = AppSettingsModel.getSecuredServer(context);
       readDeviceId(context);
       
+      Log.i("POLLING", "PollingHelper being constructed with ids: " + ids);
+      // Iterate over the ids and only keep the ones that are remote for building the string will use to talk to ORB      
       Iterator<Integer> id = ids.iterator();
-      if (id.hasNext()) {
-         pollingStatusIds = id.next().toString();
-      }
+      HashSet<Integer> remoteIds = new HashSet<Integer>();
       while (id.hasNext()) {
-         pollingStatusIds = pollingStatusIds + "," + id.next();
+    	  Integer anId = id.next();
+    	  if (XMLEntityDataBase.getLocalSensor(anId) == null) {
+    		  Log.i("POLLING", "Id " + anId + " is remote");
+    		  remoteIds.add(anId);
+    	  }
+      }
+      
+      Iterator<Integer> remoteId = remoteIds.iterator();
+      if (remoteId.hasNext()) {
+         pollingStatusIds = remoteId.next().toString();
+      }
+      while (remoteId.hasNext()) {
+         pollingStatusIds = pollingStatusIds + "," + remoteId.next();
       }
       
       handler = new Handler() {
@@ -114,40 +129,61 @@ public class PollingHelper {
     * Request current status and start polling.
     */
    public void requestCurrentStatusAndStartPolling() {
-      HttpParams params = new BasicHttpParams();
-      HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
-      
-      //make polling socket timout bigger than Controller (50s)
-      HttpConnectionParams.setSoTimeout(params, 55 * 1000);
-      
-      client = new DefaultHttpClient(params);
-      if (isPolling) {
-         return;
-      }
-      
-      try {
-         URL uri = new URL(serverUrl);
-         if ("https".equals(uri.getProtocol())) {
-            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-            client.getConnectionManager().getSchemeRegistry().register(sch);
-         }
-      } catch (MalformedURLException e) {
-         Log.e("POLLING", "Create URL fail:" + serverUrl);
-      }
+	   // Only go to ORB if we have remote sensors
+	   if (pollingStatusIds != null) {
+	      HttpParams params = new BasicHttpParams();
+	      HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
+	      
+	      //make polling socket timout bigger than Controller (50s)
+	      HttpConnectionParams.setSoTimeout(params, 55 * 1000);
+	      
+	      client = new DefaultHttpClient(params);
+	      if (isPolling) {
+	         return;
+	      }
+	      
+	      try {
+	         URL uri = new URL(serverUrl);
+	         if ("https".equals(uri.getProtocol())) {
+	            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+	            client.getConnectionManager().getSchemeRegistry().register(sch);
+	         }
+	      } catch (MalformedURLException e) {
+	         Log.e("POLLING", "Create URL fail:" + serverUrl);
+	      }
+	      isPolling = true;
+	      handleRequest(serverUrl + "/rest/status/" + pollingStatusIds);
+	   }
+	   
+      // Handle local sensors
+      handleLocalSensors();
       isPolling = true;
-      handleRequest(serverUrl + "/rest/status/" + pollingStatusIds);
+      
       while (isPolling) {
          doPolling();
       }
    }
 
    private void doPolling() {
-      if (httpGet != null) {
-         httpGet.abort();
-         httpGet = null;
-      }
-      Log.i("POLLING", "polling start");
-      handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
+	   // Only go to ORB if we have remote sensors
+	   if (pollingStatusIds != null) {
+	      if (httpGet != null) {
+	         httpGet.abort();
+	         httpGet = null;
+	      }
+	      handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
+	   }
+	   
+      // Handle local sensors
+      handleLocalSensors();
+      
+      // TODO: change this to a valid throttling mechanism, with specific frequency possible for each local sensor
+      try {
+		Thread.sleep(1000); // Sleep for 1 sec to throttle sensor updates
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
    }
 
    /**
@@ -197,7 +233,41 @@ public class PollingHelper {
          
       }
    }
-   
+
+   /**
+    * Execute request for local sensors, calling the appropriate method and handling the returned value.
+    */
+	private void handleLocalSensors() {
+		Iterator<LocalSensor> iter = XMLEntityDataBase.localLogic.getLocalSensors().iterator();
+		while (iter.hasNext()) {
+			LocalSensor sensor = iter.next();
+			try {
+				Class<?> clazz = Class.forName(sensor.getClassName());
+				Method m = clazz.getMethod(sensor.getMethodName(), (Class<?>)null);
+				String result = (String) m.invoke(null, (Object)null);
+				PollingStatusParser.handleLocalResult(sensor.getId(), result);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
    /**
     * Cancel the polling, abort http request.
     */
