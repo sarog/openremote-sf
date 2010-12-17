@@ -72,4 +72,6 @@ public interface DeviceRPCServiceAsync {
    void loadAll(AsyncCallback<List<Device>> callback);
    
    void getAccount(AsyncCallback<Account> callback);
+
+   void saveDeviceWithContent(Device device, AsyncCallback<Device> callback);
 }

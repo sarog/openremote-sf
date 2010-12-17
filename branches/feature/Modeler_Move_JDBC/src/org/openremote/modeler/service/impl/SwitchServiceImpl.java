@@ -30,13 +30,16 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
+import org.openremote.modeler.domain.CustomSensor;
+import org.openremote.modeler.domain.RangeSensor;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.exception.BeehiveJDBCException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
@@ -46,6 +49,7 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.JsonGenerator;
 
 import flexjson.JSONDeserializer;
+import flexjson.locators.TypeLocator;
 
 public class SwitchServiceImpl extends BaseAbstractService<Switch> implements SwitchService {
    private Configuration configuration;
@@ -68,14 +72,36 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       }
    }
 
-   @Override
+   @SuppressWarnings("unchecked")
    public List<Switch> loadAll() {
-      List<Switch> result = userService.getAccount().getSwitches();
-      if (result == null || result.size() == 0) {
-         return new ArrayList<Switch> ();
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTSwitchUrl() + "loadall/" + userService.getAccount().getId());
+      httpGet.addHeader("Accept", "application/json");
+      addAuthentication(httpGet);
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String switchJson = "{switchs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            SwitchList result = new JSONDeserializer<SwitchList>()
+               .use(null, SwitchList.class)
+               .use("switchs", ArrayList.class)
+               .use("switchs.values.switchSensorRef.sensor", new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(switchJson);
+            return result.getSwitchs();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Switch>();
+         } else {
+            throw new BeehiveJDBCException("Failed load account switchs from beehive.");
+         }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Can't load account switchs from beehive.");
       }
-      Hibernate.initialize(result);
-      return result;
    }
 
 

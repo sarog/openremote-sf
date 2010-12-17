@@ -79,4 +79,6 @@ public interface DeviceService {
    List<Device> loadAll(Account account);
    
    List<Device> loadSameDevices(Device device);
+   
+   Device saveDeviceWithContent(Device device);
 }

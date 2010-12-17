@@ -109,5 +109,10 @@ public class DeviceController extends BaseGWTSpringController implements DeviceR
    public Account getAccount() {
       return userService.getAccount();
    }
+
+   public Device saveDeviceWithContent(Device device) {
+      device.setAccount(userService.getAccount());
+      return deviceService.saveDeviceWithContent(device);
+   }
    
 }

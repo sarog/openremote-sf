@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -40,14 +41,14 @@ public interface SliderRPCService extends RemoteService {
     * 
     * @return the slider
     */
-   Slider save(Slider slider) throws BeehiveJDBCException;
+   Slider save(Slider slider) throws BeehiveJDBCException, NotAuthenticatedException;
 
    /**
     * Delete slider by id from database.
     * 
     * @param id the id
     */
-   void delete(long id) throws BeehiveJDBCException;
+   void delete(long id) throws BeehiveJDBCException, NotAuthenticatedException;
 
    /**
     * Update slider with database.
@@ -56,12 +57,12 @@ public interface SliderRPCService extends RemoteService {
     * 
     * @return the slider
     */
-   Slider update(Slider slider) throws BeehiveJDBCException;
+   Slider update(Slider slider) throws BeehiveJDBCException, NotAuthenticatedException;
 
    /**
     * Load all sliders from database.
     * 
     * @return the list< slider>
     */
-   List<Slider> loadAll();
+   List<Slider> loadAll() throws BeehiveJDBCException, NotAuthenticatedException;
 }
