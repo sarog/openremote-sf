@@ -26,6 +26,9 @@ import java.util.Map;
 
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Label;
+import org.openremote.android.console.bindings.LocalCommand;
+import org.openremote.android.console.bindings.LocalLogic;
+import org.openremote.android.console.bindings.LocalSensor;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 
@@ -42,6 +45,9 @@ public class XMLEntityDataBase {
    
    /** The all panel's images. */
    public static final HashSet<String> imageSet = new HashSet<String>();
+   
+   /** The local logic running on the console */
+   public static LocalLogic localLogic = null;
    
    /**
     * Gets the first group of current panel, if not found return null.
@@ -81,5 +87,33 @@ public class XMLEntityDataBase {
          return screens.get(screenId);
       }
       return null;
+   }
+   
+   /**
+    * Gets a local sensor by id, if not found return null.
+    * 
+    * @param sensorId the sensor id
+    * 
+    * @return the sensor with given id
+    */
+   public static LocalSensor getLocalSensor(int sensorId) {
+	   if (localLogic != null) {
+		   return localLogic.getLocalSensor(sensorId);
+	   }
+	   return null;
+   }
+
+   /**
+    * Gets a local command by id, if not found return null.
+    * 
+    * @param commandId the command id
+    * 
+    * @return the command with given id
+    */
+   public static LocalCommand getLocalCommand(int commandId) {
+	   if (localLogic != null) {
+		   return localLogic.getLocalCommand(commandId);
+	   }
+	   return null;
    }
 }
