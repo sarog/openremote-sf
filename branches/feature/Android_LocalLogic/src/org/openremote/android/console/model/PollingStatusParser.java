@@ -40,7 +40,7 @@ import android.util.Log;
  * 
  * @author Tomsky Wang
  * @author Dan Cong
- *
+ * @author Eric Bariaux (eric@openremote.org)
  */
 public class PollingStatusParser {
    public static final HashMap<String, String> statusMap = new HashMap<String, String>();
@@ -73,5 +73,17 @@ public class PollingStatusParser {
       } catch (IOException e) {
          Log.e("POLLING", "failed", e);
       }
+   }
+   
+   /**
+    * Handles the result of a local sensor call.
+    * Much in the same way as remote polling, we store the value and notify the listeners.
+    * 
+    * @param id id of the single sensor for which there was an update
+    * @param newStatus new value of this sensor
+    */
+   public static void handleLocalResult(Integer id, String newStatus) {
+       statusMap.put(id.toString(), newStatus);
+       ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.ListenerPollingStatusIdFormat + id, null);       
    }
 }
