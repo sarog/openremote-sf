@@ -19,6 +19,7 @@ public class LocalLogic extends BusinessEntity {
 
 	   private Map<Integer, LocalSensor> sensors = new HashMap<Integer, LocalSensor>();
 	   private Map<Integer, LocalCommand> commands = new HashMap<Integer, LocalCommand>();
+	   private Map<Integer, LocalTask> tasks = new HashMap<Integer, LocalTask>();
 
 	   public LocalLogic(Node node) {
 		   if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -32,6 +33,12 @@ public class LocalLogic extends BusinessEntity {
 		         for (int i = 0; i < commandNodes.getLength(); i++) {
 		        	 LocalCommand command = new LocalCommand(commandNodes.item(i));
 		        	 commands.put(command.getId(), command);
+		         }
+		         
+		         NodeList taskNodes = ((Element)node).getElementsByTagName("task");
+		         for (int i = 0; i < taskNodes.getLength(); i++) {
+		        	 LocalTask task = new LocalTask(taskNodes.item(i));
+		        	 tasks.put(task.getId(), task);
 		         }
 		   }
 	   }
@@ -50,5 +57,13 @@ public class LocalLogic extends BusinessEntity {
 	   
 	   public Collection<LocalCommand> getLocalComamnds() {
 		   return commands.values();
+	   }
+	   
+	   public LocalTask getLocalTask(Integer id) {
+		   return tasks.get(id);
+	   }
+	   
+	   public Collection<LocalTask> getLocalTasks() {
+		   return tasks.values();
 	   }
 }
