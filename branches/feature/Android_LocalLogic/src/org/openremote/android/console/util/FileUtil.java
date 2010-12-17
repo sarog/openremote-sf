@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Group;
+import org.openremote.android.console.bindings.LocalLogic;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.model.XMLEntityDataBase;
@@ -106,6 +107,13 @@ public class FileUtil {
          for (int i = 0; i < groupNum; i++) {
             Group group = new Group(groupNodes.item(i));
             XMLEntityDataBase.groups.put(group.getGroupId(), group);
+         }
+
+         NodeList locallogicNodes = root.getElementsByTagName("locallogic");
+         if (locallogicNodes.getLength() > 0) {
+        	 Log.i("PARSE", "Parsing local logic section");
+        	 LocalLogic localLogic = new LocalLogic(locallogicNodes.item(0));
+        	 XMLEntityDataBase.localLogic = localLogic;
          }
       } catch (ParserConfigurationException e) {
          e.printStackTrace();
