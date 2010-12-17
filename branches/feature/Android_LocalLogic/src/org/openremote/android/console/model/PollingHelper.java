@@ -27,9 +27,15 @@ import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -75,6 +81,12 @@ public class PollingHelper {
    private Handler handler;
    private static final int NETWORK_ERROR = 0;
    
+   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+   /** We keep track of the schedule local sensor poll, if we need to stop them */
+   private final Map<Integer, ScheduledFuture<?>> scheduledLocalSensors = new HashMap<Integer, ScheduledFuture<?>>();
+
+   // TODO: check lifecycle management, should we stop those scheduled poll ?
+
    /**
     * Instantiates a new polling helper.
     * 
@@ -155,9 +167,14 @@ public class PollingHelper {
 	      handleRequest(serverUrl + "/rest/status/" + pollingStatusIds);
 	   }
 	   
-      // Handle local sensors
-      handleLocalSensors();
-      isPolling = true;
+	   // For local sensors, schedule the call of their static method for a new value
+	   for (final LocalSensor sensor : XMLEntityDataBase.localLogic.getLocalSensors()) {
+		   scheduledLocalSensors.put(sensor.getId(), scheduler.scheduleAtFixedRate(new Runnable() {
+               public void run() {
+            	   handleLocalSensor(sensor);
+               }
+		   }, 0, sensor.getRefreshRate(), TimeUnit.MILLISECONDS));
+	   }
       
       while (isPolling) {
          doPolling();
@@ -173,18 +190,6 @@ public class PollingHelper {
 	      }
 	      handleRequest(serverUrl + "/rest/polling/" + deviceId + "/" + pollingStatusIds);
 	   }
-	   
-      // Handle local sensors
-      handleLocalSensors();
-      
-      // TODO: change this to a valid throttling mechanism, with specific frequency possible for each local sensor
-      try {
-  		Thread.sleep(200);
-//		Thread.sleep(1000); // Sleep for 1 sec to throttle sensor updates
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
    }
 
    /**
@@ -236,36 +241,34 @@ public class PollingHelper {
    }
 
    /**
-    * Execute request for local sensors, calling the appropriate method and handling the returned value.
+    * Execute request for a local sensor, calling the appropriate method and handling the returned value.
+    * 
+    * @param sensor the local sensor to poll
     */
-	private void handleLocalSensors() {
-		Iterator<LocalSensor> iter = XMLEntityDataBase.localLogic.getLocalSensors().iterator();
-		while (iter.hasNext()) {
-			LocalSensor sensor = iter.next();
-			try {
-				Class<?> clazz = Class.forName(sensor.getClassName());
-				Method m = clazz.getMethod(sensor.getMethodName(), (Class<?>[])null);
-				String result = (String) m.invoke(null, (Object[])null);
-				PollingStatusParser.handleLocalResult(sensor.getId(), result);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	private void handleLocalSensor(LocalSensor sensor) {
+		try {
+			Class<?> clazz = Class.forName(sensor.getClassName());
+			Method m = clazz.getMethod(sensor.getMethodName(), (Class<?>[])null);
+			String result = (String) m.invoke(null, (Object[])null);
+			PollingStatusParser.handleLocalResult(sensor.getId(), result);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
