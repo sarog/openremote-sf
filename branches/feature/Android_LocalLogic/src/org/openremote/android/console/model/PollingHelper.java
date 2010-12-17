@@ -49,6 +49,7 @@ import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.bindings.LocalSensor;
+import org.openremote.android.console.bindings.LocalTask;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
@@ -82,8 +83,12 @@ public class PollingHelper {
    private static final int NETWORK_ERROR = 0;
    
    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-   /** We keep track of the schedule local sensor poll, so we need to stop them */
+   /** We keep track of the scheduled local sensor poll, so we need to stop them */
    private final Map<Integer, ScheduledFuture<?>> scheduledLocalSensors = new HashMap<Integer, ScheduledFuture<?>>();
+
+
+   /** We keep track of the scheduled tasks, so we need to stop them */
+   private final Map<Integer, ScheduledFuture<?>> scheduledTasks = new HashMap<Integer, ScheduledFuture<?>>();
 
    /**
     * Instantiates a new polling helper.
@@ -174,6 +179,21 @@ public class PollingHelper {
 		   }, 0, sensor.getRefreshRate(), TimeUnit.MILLISECONDS));
 	   }
       
+	   // Handle the tasks here too, not entirely related but it'll do for now
+	   for (final LocalTask task : XMLEntityDataBase.localLogic.getLocalTasks()) {
+		   if (task.getFrequency() == 0) {
+			   // 0 frequency = execute only once at start
+			   // TODO: ! this is executed at each poll start, not once for the whole application lifecycle
+			   handleLocalTask(task);
+		   } else {
+			   scheduledTasks.put(task.getId(), scheduler.scheduleAtFixedRate(new Runnable() {
+	               public void run() {
+	            	   handleLocalTask(task);
+	               }
+			   }, 0, task.getFrequency(), TimeUnit.MILLISECONDS));
+		   }
+	   }
+
       while (isPolling) {
          doPolling();
       }
@@ -270,6 +290,36 @@ public class PollingHelper {
 		}
 	}
 
+	   /**
+	    * Execute a local task, calling the appropriate method.
+	    * 
+	    * @param task the local task to execute
+	    */
+		private void handleLocalTask(LocalTask task) {
+			try {
+				Class<?> clazz = Class.forName(task.getClassName());
+				Method m = clazz.getMethod(task.getMethodName(), (Class<?>[])null);
+				m.invoke(null, (Object[])null);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
    /**
     * Cancel the polling, abort http request.
     */
@@ -286,7 +336,13 @@ public class PollingHelper {
     	  scheduledPoll.cancel(true);
       }
       scheduledLocalSensors.clear();
-   }
+
+      // Stop the scheduled local tasks and forget about them
+      for (ScheduledFuture<?> scheduledPoll : scheduledTasks.values()) {
+    	  scheduledPoll.cancel(true);
+      }
+      scheduledTasks.clear();
+}
 
    /**
     * Handle server error with status code.
