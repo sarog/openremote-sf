@@ -19,8 +19,11 @@
 */
 package org.openremote.beehive.rest;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -74,6 +77,19 @@ public class SwitchRESTService extends RESTBaseService {
       newDTO.getSwitchCommandOffRef().getDeviceCommand().setDevice(switchDTO.getDevice());
       newDTO.getSwitchSensorRef().getSensor().setDevice(switchDTO.getDevice());
       return buildResponse(newDTO);
+   }
+   
+   @Path("loadall/{account_id}")
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadAccountSwitchs(@PathParam("account_id") long accountId,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<SwitchDTO> switchs = getSwitchService().loadAccountSwitchs(accountId);
+      if (switchs.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(switchs);
    }
    
    protected SwitchService getSwitchService() {

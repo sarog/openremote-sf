@@ -66,4 +66,16 @@ public class RangeSensorDTO extends SensorDTO {
       sensor.setMin(min);
       return sensor;
    }
+
+   @Override
+   public Sensor toSimpleSensor() {
+      RangeSensor sensor = new RangeSensor();
+      sensor.setOid(getId());
+      sensor.setName(getName());
+      sensor.setMax(max);
+      sensor.setMin(min);
+      return sensor;
+   }
+   
+   
 }

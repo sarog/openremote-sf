@@ -61,6 +61,20 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(deviceDTO);
    }
    
+   @Path("savewithcontent/{account_id}")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response saveDeviceWithContent(@PathParam("account_id") long aid,
+         DeviceDTO deviceDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      Account account = getAccountService().getById(aid);
+      Device device = deviceDTO.toDeviceWithContents(account);
+      Device dbDevice = getDeviceService().saveDeviceWithContent(device);
+      return buildResponse(dbDevice.toDTO());
+   }
+   
    @Path("loadall/{account_id}")
    @GET
    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})

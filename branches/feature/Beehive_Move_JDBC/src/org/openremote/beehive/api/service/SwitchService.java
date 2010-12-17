@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.service;
 
+import java.util.List;
+
 import org.openremote.beehive.api.dto.modeler.SwitchDTO;
 import org.openremote.beehive.domain.modeler.Switch;
 
@@ -32,4 +34,6 @@ public interface SwitchService {
    public Switch updateSwitch(SwitchDTO switchDTO);
    
    public void deleteSwitchById(long id);
+   
+   public List<SwitchDTO> loadAccountSwitchs(long accountId);
 }

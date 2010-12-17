@@ -77,4 +77,11 @@ public class SliderDTO extends BusinessEntityDTO {
       }
       return slider;
    }
+   
+   public Slider toSimpleSlider() {
+      Slider slider = new Slider();
+      slider.setOid(getId());
+      slider.setName(name);
+      return slider;
+   }
 }

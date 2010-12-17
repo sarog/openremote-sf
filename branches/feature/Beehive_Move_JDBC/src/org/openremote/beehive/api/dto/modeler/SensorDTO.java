@@ -85,4 +85,11 @@ public class SensorDTO extends BusinessEntityDTO {
       }
       return sensor;
    }
+   
+   public Sensor toSimpleSensor() {
+      Sensor sensor = new Sensor(type);
+      sensor.setOid(getId());
+      sensor.setName(name);
+      return sensor;
+   }
 }
