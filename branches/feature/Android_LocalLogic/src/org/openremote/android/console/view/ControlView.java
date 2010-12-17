@@ -20,23 +20,28 @@
 package org.openremote.android.console.view;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Timer;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.LoginDialog;
 import org.openremote.android.console.bindings.ColorPicker;
 import org.openremote.android.console.bindings.Component;
+import org.openremote.android.console.bindings.LocalCommand;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORUnBlockConnection;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * The super class of all control view, include ButtonView, SwitchView and SliderView.
@@ -66,16 +71,53 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    /**
-    * Send command request to controller by command type.
+    * Send command request to controller by command type or performs the local call as appropriate.
     * 
     * @param commandType the command type
     * 
     * @return true, if successful
     */
    public boolean sendCommandRequest(String commandType) {
-      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
-            + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+	   Log.i("COMMAND", "Requesting command for component " + getComponent().getComponentId());
+	   
+	   LocalCommand localCommand = XMLEntityDataBase.getLocalCommand(getComponent().getComponentId());
+	   if (localCommand != null) {
+		   performLocalCall(localCommand);
+	   } else {
+		   new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
+		              + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+	   }	   
       return true;
+   }
+   
+   /**
+    * 
+    * @param command
+    */
+   private void performLocalCall(LocalCommand command) {
+		try {
+			Class<?> clazz = Class.forName(command.getClassName());
+			Method m = clazz.getMethod(command.getMethodName(), (Class<?>)null);
+			m.invoke(null, (Object)null);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
    }
 
    /**
