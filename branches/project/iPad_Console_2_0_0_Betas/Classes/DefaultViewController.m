@@ -39,7 +39,7 @@
 - (void)saveLastGroupIdAndScreenId;
 - (void)rerenderTabbarWithNewOrientation;
 - (void)transformToOppositeOrientation;
-
+- (void)shouldRotateToOppositeOrientation;
 @end
 
 
@@ -141,7 +141,6 @@
 }
 
 - (void)initGroups {
-	
 	[errorViewController.view removeFromSuperview];
 	[initViewController.view removeFromSuperview];
 	
@@ -181,26 +180,32 @@
 		if ([userDefaults objectForKey:@"lastScreenId"]) {
 			int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
 			Screen *screen = [currentGroupController.group findScreenByScreenId:lastScreenId];
-			if (screen && ([currentGroupController isOrientationLandscape] != screen.landscape)) {
+			if (screen == nil) {
+				[self shouldRotateToOppositeOrientation];
+			} else if ([currentGroupController isOrientationLandscape] != screen.landscape) {
 				[self transformToOppositeOrientation];
 				[self rerenderTabbarWithNewOrientation];
 				[currentGroupController switchToScreen:screen.screenId];
 			}
 		} else {			
-			if ([currentGroupController currentScreenId] == 0 && [[currentGroupController.group screens] count] > 0) {
-				NSLog(@"last screen id not exist,and the current orientation has no screen.");
-				Screen *screen = [[currentGroupController.group screens] objectAtIndex:0];
-				if ([currentGroupController isOrientationLandscape] != screen.landscape) {
-					[self transformToOppositeOrientation];
-					[self rerenderTabbarWithNewOrientation];
-					[currentGroupController switchToScreen:screen.screenId];
-				}
-			}
+			[self shouldRotateToOppositeOrientation];
 		}
 		
 		[self saveLastGroupIdAndScreenId];
 	} else {		
 		[self.view addSubview:errorViewController.view];		
+	}
+}
+
+- (void)shouldRotateToOppositeOrientation {
+	if ([currentGroupController currentScreenId] == 0 && [[currentGroupController.group screens] count] > 0) {
+		NSLog(@"last screen id not exist,and the current orientation has no screen.");
+		Screen *screen = [[currentGroupController.group screens] objectAtIndex:0];
+		if ([currentGroupController isOrientationLandscape] != screen.landscape) {
+			[self transformToOppositeOrientation];
+			[self rerenderTabbarWithNewOrientation];
+			[currentGroupController switchToScreen:screen.screenId];
+		}
 	}
 }
 
@@ -231,6 +236,9 @@
 }
 
 - (void)saveLastGroupIdAndScreenId {
+	if (currentGroupController.group.groupId == 0 || [currentGroupController currentScreenId] == 0) {
+		return;
+	}
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	[userDefaults setObject:[NSString stringWithFormat:@"%d",currentGroupController.group.groupId] forKey:@"lastGroupId"];
 	[userDefaults setObject:[NSString stringWithFormat:@"%d",[currentGroupController currentScreenId]] forKey:@"lastScreenId"];
@@ -296,8 +304,10 @@
 	[UIView setAnimationDuration:0.5f];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
 	self.view.transform = CGAffineTransformIdentity;
-	CGFloat h = self.view.frame.size.height;
-	CGFloat w = self.view.frame.size.width;
+	CGSize size = [UIScreen mainScreen].bounds.size;
+	CGFloat w = [currentGroupController isOrientationLandscape] ? size.height : size.width;
+	CGFloat h = [currentGroupController isOrientationLandscape] ? size.width : size.height;
+	
 	if (h > w) {
 		NSLog(@"view did transform to landscape");
 		[currentGroupController transformToOrientation:UIInterfaceOrientationLandscapeRight];
