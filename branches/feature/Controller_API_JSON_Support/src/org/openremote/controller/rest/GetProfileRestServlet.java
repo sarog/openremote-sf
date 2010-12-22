@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.exception.NoSuchPanelException;
+import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
@@ -48,7 +48,7 @@ public class GetProfileRestServlet extends HttpServlet {
             decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
             String panleXML = profileService.getProfileByPanelName(decodedPanelName);
             out.print(JSONTranslator.toDesiredData(request, response, panleXML));
-         } catch (NoSuchPanelException e) {
+         } catch (ControlCommandException e) {
             logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage());
             response.setStatus(e.getErrorCode());
             out.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));

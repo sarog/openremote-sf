@@ -87,6 +87,8 @@ public class Constants {
 
    public static final String HTTP_ACCEPT_HEADER_NAME = "accept";
 
+   public static final String HTTP_HEADER_ACCEPT_XML_TYPE = "application/xml";
+   
    public static final String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
 
    public static final int RESPONSE_SUCCESS = 200;
