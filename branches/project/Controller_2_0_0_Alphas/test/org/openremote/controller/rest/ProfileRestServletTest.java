@@ -21,8 +21,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
@@ -80,6 +87,49 @@ public class ProfileRestServletTest {
 
    }
 
+   @Test
+   public void requestFatherPanelProfile() throws Exception {
+
+      WebConversation wc = new WebConversation();
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
+            + "/controller/rest/panel/father");
+      try {
+         WebResponse wr = wc.getResponse(request);
+         String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
+               TestConstraint.FIXTURE_DIR + "fatherProfile.xml").getFile();
+         File expectedXMLFile = new File(expectedXMLFilePath);
+         String expectedXML = FileUtils.readFileToString(expectedXMLFile);
+         String actualXML = wr.getText();
+         Assert.assertEquals(expectedXML, actualXML);
+      } catch (HttpException e) {
+         if (e.getResponseCode() == 504) {
+            logger.info("Polling request was  timeout.");
+         }
+      }
+
+   }
+   
+   @Test
+   public void requestNoneExistPanelProfile() throws Exception {
+
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpUriRequest request = SecurityUtil.getSecuredHttpRequest("http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
+            + "/controller/rest/panel/noneProfile");
+
+      HttpResponse response = httpClient.execute(request);
+      int code = response.getStatusLine().getStatusCode();
+
+      if (code == 428) {
+         String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
+               TestConstraint.FIXTURE_DIR + "noProfileError.xml").getFile();
+         File expectedXMLFile = new File(expectedXMLFilePath);
+         String expectedXML = FileUtils.readFileToString(expectedXMLFile);
+         String actualXML = IOUtils.toString(response.getEntity().getContent());
+         Assert.assertEquals(expectedXML, actualXML);
+      }
+
+   }
+   
    private void copyFile(String src, String dest) {
       File inputFile = new File(src);
       File outputFile = new File(dest);
