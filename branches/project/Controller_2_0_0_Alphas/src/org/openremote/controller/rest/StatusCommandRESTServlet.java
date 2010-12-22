@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -83,19 +84,20 @@ public class StatusCommandRESTServlet extends HttpServlet {
         Matcher matcher = pattern.matcher(url);
         String unParsedSensorIDs = null;
 
+        PrintWriter printWriter = response.getWriter();
         if (matcher.find()) {
             unParsedSensorIDs = matcher.group(1);
             try {
                 if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
-                    PrintWriter printWriter = response.getWriter();
                     printWriter.write(statusCommandService.readFromCache(unParsedSensorIDs));
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);
-                response.sendError(e.getErrorCode(), e.getMessage());
+                printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
             }
         } else {
-            response.sendError(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
+           printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")); 
         }
+        printWriter.flush();
     }
 }

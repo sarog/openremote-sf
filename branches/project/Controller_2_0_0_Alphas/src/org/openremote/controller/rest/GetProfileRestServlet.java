@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
-import org.openremote.controller.exception.NoSuchPanelException;
+import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -50,12 +51,14 @@ public class GetProfileRestServlet extends HttpServlet {
             out.print(panleXML);
             out.flush();
             out.close();
-         } catch (NoSuchPanelException e) {
+         } catch (ControlCommandException e) {
             logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage());
-            response.sendError(e.getErrorCode(),e.getMessage());
+            response.setStatus(e.getErrorCode());
+            out.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
          }
       } else {
-         response.sendError(400,"Bad REST Request, should be /rest/panel/{panelName}");
+         response.setStatus(400);
+         out.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400,"Bad REST Request, should be /rest/panel/{panelName}"));
       }
 	}
 

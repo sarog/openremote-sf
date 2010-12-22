@@ -36,6 +36,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
 import org.openremote.controller.spring.SpringContext;
@@ -83,19 +84,19 @@ public class StatusPollingRESTServlet extends HttpServlet {
       String unParsedSensorIDs = null;
       String deviceID = null;
       
+      PrintWriter printWriter = response.getWriter();
       if (matcher.find()) {
          deviceID = matcher.group(1);
          if (deviceID == null || "".equals(deviceID)) {
             throw new NullPointerException("Device id was null");
          }
          unParsedSensorIDs = matcher.group(2);
-         PrintWriter printWriter = response.getWriter();
          try {
             checkSensorId(unParsedSensorIDs);
             String pollingResults = statusPollingService.queryChangedState(deviceID, unParsedSensorIDs);
             if (pollingResults != null && !"".equals(pollingResults)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(pollingResults)) {
-                  response.sendError(504, "Time out!");
+                  printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(504, "Time out"));
                } else {
                   logger.info("Return the polling status.");
                   printWriter.write(pollingResults);
@@ -103,11 +104,12 @@ public class StatusPollingRESTServlet extends HttpServlet {
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (ControllerException e) {
-            response.sendError(e.getErrorCode(), e.getMessage());
+            printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
          } 
       } else {
-         response.sendError(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
+         printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url));
       }
+      printWriter.flush();
    }
    
    /**
