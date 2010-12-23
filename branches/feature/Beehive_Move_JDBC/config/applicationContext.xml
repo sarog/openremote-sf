@@ -43,6 +43,9 @@
                 <value>org.openremote.beehive.domain.modeler.SwitchSensorRef</value> 
                 <value>org.openremote.beehive.domain.modeler.SwitchCommandOnRef</value> 
                 <value>org.openremote.beehive.domain.modeler.SwitchCommandOffRef</value> 
+                <value>org.openremote.beehive.domain.modeler.Slider</value> 
+                <value>org.openremote.beehive.domain.modeler.SliderCommandRef</value> 
+                <value>org.openremote.beehive.domain.modeler.SliderSensorRef</value> 
                 <value>org.openremote.beehive.domain.modeler.ControllerConfig</value>
             </list>
         </property>
