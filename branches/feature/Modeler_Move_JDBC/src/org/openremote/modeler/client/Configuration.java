@@ -158,4 +158,7 @@ public class Configuration {
    public String getBeehiveRESTSliderUrl() {
       return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "slider/" : beehiveRESTRootUrl + "/slider/";
    }
+   public String getBeehiveRESTDeviceMacroUrl() {
+      return beehiveRESTRootUrl.endsWith("/")?  beehiveRESTRootUrl + "devicemacro/" : beehiveRESTRootUrl + "/devicemacro/";
+   }
 }

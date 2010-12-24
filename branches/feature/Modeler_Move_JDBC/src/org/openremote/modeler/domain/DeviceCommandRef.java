@@ -49,6 +49,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
     * Instantiates a new device command ref.
     */
    public DeviceCommandRef() {
+      setClassType("DeviceCommandRef");
    }
    
    /**
@@ -58,6 +59,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
     */
    public DeviceCommandRef(DeviceCommand deviceCommand) {
       super();
+      setClassType("DeviceCommandRef");
       this.deviceCommand = deviceCommand;
    }
 
@@ -108,7 +110,9 @@ public class DeviceCommandRef extends DeviceMacroItem {
    @Transient
    @JSON(include=false)
    public String getDisplayName() {
-      this.deviceName = (this.deviceName == null || "".equals(this.deviceName)) ? getDeviceCommand().getDevice().getName() : this.deviceName;
+      if (getDeviceCommand().getDevice() != null && (this.deviceName == null || "".equals(this.deviceName))) {
+         this.deviceName = getDeviceCommand().getDevice().getName();
+      }
       return getDeviceCommand().getName() + " (" + this.deviceName + ")";
    }
 

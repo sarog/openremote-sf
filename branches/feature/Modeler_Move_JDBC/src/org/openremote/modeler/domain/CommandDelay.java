@@ -23,6 +23,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 /**
  * It define a delay second for sending a delay command.
  */
@@ -39,6 +41,7 @@ public class CommandDelay extends DeviceMacroItem {
     * Instantiates a new command delay, this constructor is for gwt rpc serial.
     */
    public CommandDelay() {
+      setClassType("CommandDelay");
    }
    
    /**
@@ -48,6 +51,7 @@ public class CommandDelay extends DeviceMacroItem {
     */
    public CommandDelay(String delaySecond) {
       super();
+      setClassType("CommandDelay");
       this.delaySecond = delaySecond;
    }
 
@@ -75,6 +79,7 @@ public class CommandDelay extends DeviceMacroItem {
     */
    @Override
    @Transient
+   @JSON(include=false)
    public String getDisplayName() {
       return "Delay (" + getDelaySecond() + "ms)";
    }

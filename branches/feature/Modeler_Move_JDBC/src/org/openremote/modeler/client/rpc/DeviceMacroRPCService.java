@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -40,7 +42,7 @@ public interface DeviceMacroRPCService extends RemoteService {
     * 
     * @return the list< device macro>
     */
-   List<DeviceMacro> loadAll();
+   List<DeviceMacro> loadAll() throws NotAuthenticatedException, BeehiveJDBCException;
 
 
    /**
@@ -50,7 +52,7 @@ public interface DeviceMacroRPCService extends RemoteService {
     * 
     * @return the device macro
     */
-   DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro);
+   DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) throws NotAuthenticatedException, BeehiveJDBCException;
 
 
    /**
@@ -60,7 +62,7 @@ public interface DeviceMacroRPCService extends RemoteService {
     * 
     * @return the device macro
     */
-   DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro);
+   DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) throws NotAuthenticatedException, BeehiveJDBCException;
 
 
    /**
@@ -68,7 +70,7 @@ public interface DeviceMacroRPCService extends RemoteService {
     * 
     * @param id the id
     */
-   void deleteDeviceMacro(long id);
+   void deleteDeviceMacro(long id) throws NotAuthenticatedException, BeehiveJDBCException;
 
 
    /**
@@ -78,7 +80,7 @@ public interface DeviceMacroRPCService extends RemoteService {
     * 
     * @return the list< device macro item>
     */
-   List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro);
+   List<DeviceMacroItem> loadDeviceMacroItems(DeviceMacro deviceMacro) throws NotAuthenticatedException, BeehiveJDBCException;
 
 
 }

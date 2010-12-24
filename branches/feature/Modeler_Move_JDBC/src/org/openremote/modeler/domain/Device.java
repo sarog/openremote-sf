@@ -274,7 +274,7 @@ public class Device extends BusinessEntity {
 
    @Transient
    @JSON(include = false)
-   public List<CommandRefItem> getCommandRefItems() {
+   public List<CommandRefItem> loadCommandRefItems() {
       List<CommandRefItem> commandRefItems = new ArrayList<CommandRefItem>();
       for (Sensor sensor : sensors) {
          commandRefItems.add(sensor.getSensorCommandRef());
