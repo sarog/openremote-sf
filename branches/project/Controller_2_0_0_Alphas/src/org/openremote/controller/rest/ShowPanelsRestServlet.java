@@ -54,7 +54,7 @@ public class ShowPanelsRestServlet extends HttpServlet {
    }
 
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      response.setCharacterEncoding("utf8");
+      response.setCharacterEncoding("utf-8");
       response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
       PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString();
