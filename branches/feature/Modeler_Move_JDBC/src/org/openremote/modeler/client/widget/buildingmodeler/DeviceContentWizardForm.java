@@ -319,7 +319,7 @@ public class DeviceContentWizardForm extends CommonForm {
          List<BeanModel> selectedModels = deviceContentTree.getSelectionModel().getSelectedItems();
          for (BeanModel beanModel : selectedModels) {
             if (beanModel.getBean() instanceof DeviceCommand) {
-               List<CommandRefItem> commandRefItems = device.getCommandRefItems();
+               List<CommandRefItem> commandRefItems = device.loadCommandRefItems();
                for (CommandRefItem commandRefItem : commandRefItems) {
                   if (commandRefItem.getDeviceCommand() == beanModel.getBean()) {
                      MessageBox.alert("Warn", "The command cann't be delete, because it was refrenced by other sensor, switch or slider.", null);

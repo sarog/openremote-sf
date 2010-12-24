@@ -25,6 +25,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import flexjson.JSON;
+
 
 /**
  * The Class DeviceMacroRef.
@@ -42,7 +44,7 @@ public class DeviceMacroRef extends DeviceMacroItem {
     * Instantiates a new device macro ref.
     */
    public DeviceMacroRef() {
-      
+      setClassType("DeviceMacroRef");
    }
    
    /**
@@ -52,6 +54,7 @@ public class DeviceMacroRef extends DeviceMacroItem {
     */
    public DeviceMacroRef(DeviceMacro targetDeviceMacro) {
       super();
+      setClassType("DeviceMacroRef");
       this.targetDeviceMacro = targetDeviceMacro;
    }
 
@@ -81,6 +84,7 @@ public class DeviceMacroRef extends DeviceMacroItem {
     */
    @Override
    @Transient
+   @JSON(include=false)
    public String getDisplayName() {
       return getTargetDeviceMacro().getName() + " (Macro)";
    }

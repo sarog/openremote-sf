@@ -118,6 +118,7 @@ public class DeviceMacro extends BusinessEntity {
 
    @Override
    @Transient
+   @JSON(include = false)
    public String getDisplayName() {
       return getName();
    }

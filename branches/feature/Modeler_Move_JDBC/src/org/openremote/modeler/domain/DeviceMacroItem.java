@@ -51,6 +51,8 @@ public class DeviceMacroItem extends UICommand {
    /** The parent device macro. */
    private DeviceMacro parentDeviceMacro;
 
+   private String classType = "DeviceMacroItem";
+   
    /**
     * Gets the parent device macro.
     * 
@@ -72,6 +74,14 @@ public class DeviceMacroItem extends UICommand {
       this.parentDeviceMacro = parentDeviceMacro;
    }
    
+   public String getClassType() {
+      return classType;
+   }
+
+   public void setClassType(String classType) {
+      this.classType = classType;
+   }
+
    /**
     * Gets the label.
     * 

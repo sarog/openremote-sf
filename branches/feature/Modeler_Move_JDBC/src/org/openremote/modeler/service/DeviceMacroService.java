@@ -89,7 +89,7 @@ public interface DeviceMacroService {
      * 
      * @return the list< device macro item>
      */
-    List<DeviceMacroItem> loadByDeviceMacro(long id);
+    List<DeviceMacroItem> loadDeviceMacroItems(long id);
     
     List<DeviceMacro> loadSameMacro(DeviceMacro macro);
 }
