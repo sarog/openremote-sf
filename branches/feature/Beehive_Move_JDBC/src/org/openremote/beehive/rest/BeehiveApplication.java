@@ -46,6 +46,7 @@ public class BeehiveApplication extends Application {
       singletons.add(new ControllerConfigRESTService());
       singletons.add(new DeviceRESTService());
       singletons.add(new DeviceCommandRESTService());
+      singletons.add(new DeviceMacroRESTService());
       singletons.add(new SensorRESTService());
       singletons.add(new SwitchRESTService());
       singletons.add(new SliderRESTService());

@@ -30,6 +30,11 @@
                 <value>org.openremote.beehive.domain.modeler.Device</value>
                 <value>org.openremote.beehive.domain.modeler.DeviceAttr</value>
                 <value>org.openremote.beehive.domain.modeler.DeviceCommand</value>
+                <value>org.openremote.beehive.domain.modeler.DeviceCommandRef</value> 
+                <value>org.openremote.beehive.domain.modeler.DeviceMacro</value>
+                <value>org.openremote.beehive.domain.modeler.DeviceMacroRef</value> 
+                <value>org.openremote.beehive.domain.modeler.CommandDelay</value> 
+                <value>org.openremote.beehive.domain.modeler.DeviceMacroItem</value> 
                 <value>org.openremote.beehive.domain.modeler.Protocol</value>
                 <value>org.openremote.beehive.domain.modeler.ProtocolAttr</value>
                 <value>org.openremote.beehive.domain.modeler.Sensor</value> 

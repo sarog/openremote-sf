@@ -90,4 +90,8 @@
 	   parent="abstractService"/>
 	<bean id="sliderService" class="org.openremote.beehive.api.service.impl.SliderServiceImpl"
 	   parent="abstractService"/>
+	<bean id="deviceMacroService" class="org.openremote.beehive.api.service.impl.DeviceMacroServiceImpl"
+	   parent="abstractService"/>
+	<bean id="deviceMacroItemService" class="org.openremote.beehive.api.service.impl.DeviceMacroItemServiceImpl"
+	   parent="abstractService"/>
 </beans>

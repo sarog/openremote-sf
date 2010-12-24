@@ -28,6 +28,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.openremote.beehive.domain.modeler.Device;
+import org.openremote.beehive.domain.modeler.DeviceMacro;
 import org.openremote.beehive.domain.modeler.Sensor;
 import org.openremote.beehive.domain.modeler.Slider;
 import org.openremote.beehive.domain.modeler.Switch;
@@ -47,6 +48,8 @@ public class Account extends BusinessEntity {
    
    private List<Device> devices;
    
+   private List<DeviceMacro> deviceMacros;
+   
    private List<Sensor> sensors;
    
    private List<Switch> switches;
@@ -57,6 +60,7 @@ public class Account extends BusinessEntity {
 
    public Account() {
       devices = new ArrayList<Device>();
+      deviceMacros = new ArrayList<DeviceMacro>();
       sensors = new ArrayList<Sensor>();
       templates = new ArrayList<Template>();
       switches = new ArrayList<Switch>();
@@ -78,6 +82,15 @@ public class Account extends BusinessEntity {
 
    public void setDevices(List<Device> devices) {
       this.devices = devices;
+   }
+   
+   @OneToMany(mappedBy = "account")
+   public List<DeviceMacro> getDeviceMacros() {
+      return deviceMacros;
+   }
+
+   public void setDeviceMacros(List<DeviceMacro> deviceMacros) {
+      this.deviceMacros = deviceMacros;
    }
    
    @OneToMany(mappedBy = "account")
