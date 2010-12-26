@@ -23,6 +23,7 @@ package org.openremote.android.test.console.net;
 
 import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
+import java.net.MalformedURLException;
 import java.io.IOException;
 
 import android.content.Context;
@@ -240,10 +241,16 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
     //if (!wifi.isWifiEnabled())
     //  fail(wifiRequired());
 
+    try
+    {
+      HttpResponse response = ORNetworkCheck.verifyControllerURL(ctx, "");
 
-    HttpResponse response = ORNetworkCheck.verifyControllerURL(ctx, "");
-
-    assertNull("Was expecting null, got " + response, response);
+      fail ("should not get here");
+    }
+    catch (MalformedURLException e)
+    {
+      // this is expected...
+    }
   }
 
 
