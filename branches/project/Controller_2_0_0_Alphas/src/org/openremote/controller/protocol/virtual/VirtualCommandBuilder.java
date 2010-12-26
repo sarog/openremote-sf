@@ -47,7 +47,7 @@ public class VirtualCommandBuilder implements CommandBuilder
    * A common log category name intended to be used across all classes related to
    * OpenRemote virtual protocol implementation.
    */
-  public final static String X10_LOG_CATEGORY = "virtual";
+  public final static String LOG_CATEGORY = "virtual";
 
   /**
    * String constant for parsing virtual protocol XML entries from controller.xml file.
@@ -83,9 +83,9 @@ public class VirtualCommandBuilder implements CommandBuilder
   // Class Members --------------------------------------------------------------------------------
 
   /**
-   * Logging. Use common X10 log category for all X10 related classes.
+   * Logging. Use common log category for all related classes.
    */
-  private static Logger log = Logger.getLogger(X10_LOG_CATEGORY);
+  private static Logger log = Logger.getLogger(LOG_CATEGORY);
 
 
 
