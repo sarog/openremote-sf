@@ -65,6 +65,8 @@ public class ControlCommandRESTServlet extends HttpServlet {
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        
       response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+      response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+
       String url = request.getRequestURL().toString();      
       String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";
       Pattern pattern = Pattern.compile(regexp);      

@@ -34,8 +34,10 @@ public class GetProfileRestServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   response.setCharacterEncoding("utf-8");
+
+	   response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
 	   response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+
 	   PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString().trim();
       String regexp = "rest\\/panel\\/(.*)";
