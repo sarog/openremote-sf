@@ -61,6 +61,8 @@ public class RoundRobinRESTServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	   logger.info("Start RoundRobin group member REST service. at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
 	   response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
 	   
       String url = request.getRequestURL().toString();
