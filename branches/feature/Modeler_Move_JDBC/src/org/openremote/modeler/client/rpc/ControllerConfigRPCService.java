@@ -21,8 +21,9 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.Set;
 
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -32,10 +33,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("controllerConfig.smvc")
 public interface ControllerConfigRPCService extends RemoteService{
-   public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs);
-   public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName);
-   public Set<ControllerConfig> getConfigsByCategory(String categoryName,Account account);
-   public ControllerConfig update(ControllerConfig config);
+   public Set<ControllerConfig> saveAll(Set<ControllerConfig> cfgs) throws NotAuthenticatedException, BeehiveJDBCException;
+   public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName) throws NotAuthenticatedException, BeehiveJDBCException;
    public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName);
-//   public Set<ConfigCategory> getCategories(); 
 }
