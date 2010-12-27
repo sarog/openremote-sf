@@ -265,11 +265,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
        Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
        Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
        XmlParser.initControllerConfig(categories, allDefaultConfigs);
-       String[] excludes = {"*.class","id"};
+       String[] excludes = {"*.class","*.hint","*.validation","*.options"};
        String json = JsonGenerator.serializerObjectExcludeWithRoot(allDefaultConfigs, excludes, "controllerConfigs");
        
        HttpClient httpClient = new DefaultHttpClient();
-       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTControllerCongigUrl() + "save/" + account.getId());
+       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTControllerCongigUrl() + "savedefault/" + account.getId());
        httpPost.setHeader("Content-Type", "application/json");
        
        try {

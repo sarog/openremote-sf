@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -17,24 +17,29 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.rpc;
+package org.openremote.modeler.service.impl;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openremote.modeler.domain.ControllerConfig;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
+ * The class to store a list of controllerConfigs.
  * 
- * @author javen
+ * @author tomsky
  *
  */
-public interface ControllerConfigRPCServiceAsync {
-   public void saveAll(Set<ControllerConfig> configs,AsyncCallback<Set<ControllerConfig>>callback);
-   
-   public void getConfigsByCategoryForCurrentAccount(String categoryName,AsyncCallback<Set<ControllerConfig>>callback);
-   
-   
-   public void listAllMissedConfigsByCategoryName(String categoryName,AsyncCallback<Set<ControllerConfig>> callback);
+public class ControllerConfigList {
+
+   private List<ControllerConfig> controllerConfigs = new ArrayList<ControllerConfig>();
+
+   public List<ControllerConfig> getControllerConfigs() {
+      return controllerConfigs;
+   }
+
+   public void setControllerConfigs(List<ControllerConfig> controllerConfigs) {
+      this.controllerConfigs = controllerConfigs;
+   }
    
 }

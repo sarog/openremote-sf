@@ -22,7 +22,6 @@ package org.openremote.modeler.server;
 import java.util.Set;
 
 import org.openremote.modeler.client.rpc.ControllerConfigRPCService;
-import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.ControllerConfigService;
 /**
@@ -31,12 +30,8 @@ import org.openremote.modeler.service.ControllerConfigService;
  *
  */
 @SuppressWarnings("serial")
-public class ControllerConfigController extends BaseGWTSpringControllerWithHibernateSupport implements ControllerConfigRPCService{
+public class ControllerConfigController extends BaseGWTSpringController implements ControllerConfigRPCService{
    private ControllerConfigService controllerConfigService = null;
-   @Override
-   public Set<ControllerConfig> getConfigsByCategory(String categoryName, Account account) {
-      return controllerConfigService.listAllConfigsByCategoryNameForAccount(categoryName, account);
-   }
 
    @Override
    public Set<ControllerConfig> getConfigsByCategoryForCurrentAccount(String categoryName) {
@@ -48,16 +43,6 @@ public class ControllerConfigController extends BaseGWTSpringControllerWithHiber
       return controllerConfigService.saveAll(cfgs);
    }
 
-   @Override
-   public ControllerConfig update(ControllerConfig config) {
-      return controllerConfigService.update(config);
-   }
-
-   /*@Override
-   public Set<ConfigCategory> getCategories() {
-      return controllerConfigService.listAllCategory();
-   }*/
-   
    @Override
    public Set<ControllerConfig> listAllMissedConfigsByCategoryName(String categoryName) {
       return controllerConfigService.listMissedConfigsByCategoryName(categoryName);
