@@ -52,7 +52,7 @@ public class GetProfileRestServlet extends HttpServlet {
             out.flush();
             out.close();
          } catch (ControlCommandException e) {
-            logger.error("failed to extract panel.xml for panel : " + e.getLocalizedMessage());
+            logger.error("failed to extract panel.xml for panel : " + e.getMessage(), e);
             response.setStatus(e.getErrorCode());
             out.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
          }
