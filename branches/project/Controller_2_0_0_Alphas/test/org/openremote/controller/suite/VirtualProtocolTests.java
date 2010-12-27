@@ -23,6 +23,8 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.protocol.virtual.SwitchStatusTest;
+import org.openremote.controller.protocol.virtual.LevelStatusTest;
+import org.openremote.controller.protocol.virtual.RangeStatusTest;
 
 /**
  * All OpenRemote Virtual protocol tests aggregated here.
@@ -32,7 +34,9 @@ import org.openremote.controller.protocol.virtual.SwitchStatusTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
    {
-       SwitchStatusTest.class
+       SwitchStatusTest.class,
+       LevelStatusTest.class,
+       RangeStatusTest.class
    }
 )
 public class VirtualProtocolTests
