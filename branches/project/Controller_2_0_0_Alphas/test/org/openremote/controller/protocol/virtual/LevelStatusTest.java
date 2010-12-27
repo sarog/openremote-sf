@@ -22,26 +22,25 @@ package org.openremote.controller.protocol.virtual;
 
 import java.util.HashMap;
 
-import org.openremote.controller.command.Command;
-import org.openremote.controller.command.CommandBuilder;
+import org.junit.Before;
+import org.junit.Assert;
+import org.junit.Test;
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.command.CommandBuilder;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.jdom.Element;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Assert;
 
 /**
- * Test 'switch' sensor state updates on OpenRemote virtual room/device protocol.
+ * Test 'level' sensor state reads and writes on OpenRemote virtual room/device protocol.
  *
  * @see org.openremote.controller.protocol.virtual.VirtualCommand
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class SwitchStatusTest
+public class LevelStatusTest
 {
-
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -64,75 +63,129 @@ public class SwitchStatusTest
   // Tests ----------------------------------------------------------------------------------------
 
   /**
-   * Tests protocol read command behavior for 'switch' sensor type when no explict command to
-   * set state has been sent yet. Expecting a switch to return 'off' in such a case.
+   * Tests protocol read command behavior for 'level' sensor type when no explict command to
+   * set state has been sent yet. Expecting a 'level' sensor to return '0' in such a case.
    */
   @Test public void testStatusDefaultValue()
   {
-    StatusCommand cmd = getReadCommand("test status default value");
+    StatusCommand cmd = getReadCommand("test level default value");
 
-    String value = cmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
+    String value = cmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals("off"));
+    Assert.assertTrue(value.equals("0"));
   }
+
 
 
   /**
-   * Tests 'switch' sensor read/write behavior.
+   * Tests 'level' sensor read/write behavior.
    */
-  @Test public void testOnOffState()
+  @Test public void testLevelState()
   {
-    final String ADDRESS = "test on off state";
+    final String ADDRESS = "level read/write tests";
 
-    // Read command in uninitialized state, should return 'off'...
+    // Read command in uninitialized state, should return '0'...
 
     StatusCommand readCmd = getReadCommand(ADDRESS);
 
-    String value = readCmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
+    String value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equalsIgnoreCase("off"));
-
-
-    // Send write command 'on' to the same address...
-
-    ExecutableCommand writeON = getWriteCommand(ADDRESS, "on");
-
-    writeON.send();
+    Assert.assertTrue(value.equalsIgnoreCase("0"));
 
 
-    // Read state, should return 'on'...
+    // Send write command '1' to the same address...
 
-    value = readCmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
+    ExecutableCommand writeLevel1 = getWriteCommand(ADDRESS, "any command", 1);
 
-    Assert.assertTrue(value.equals("on"));
-
-
-    // Send write command 'off' to the same address...
-
-    ExecutableCommand writeOFF = getWriteCommand(ADDRESS, "off");
-
-    writeOFF.send();
+    writeLevel1.send();
 
 
+    // Read state, should return '1'...
 
-    // Read state, should return 'off'...
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
 
-    value = readCmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
+    Assert.assertTrue(value.equals("1"));
 
-    Assert.assertTrue(value.equals("off"));
+
+    // Send write command '100' to the same address...
+
+    ExecutableCommand writeLevel100 = getWriteCommand(ADDRESS, "any command", 100);
+
+    writeLevel100.send();
+
+
+
+    // Read state, should return '100'...
+
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("100"));
   }
 
+
+
+
+  /**
+   * Tests 'level' sensor read/write behavior with out of bounds values.
+   */
+  @Test public void testLevelOutOfBoundsState()
+  {
+    final String ADDRESS = "level out of bounds tests";
+
+    // Read command in uninitialized state, should return '0'...
+
+    StatusCommand readCmd = getReadCommand(ADDRESS);
+
+    String value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equalsIgnoreCase("0"));
+
+
+    // Send write command '-1' to the same address...
+
+    ExecutableCommand writeLevelNeg1 = getWriteCommand(ADDRESS, "any command", -1);
+
+    writeLevelNeg1.send();
+
+
+    // Read state, should return '0'...
+
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("0"));
+
+
+    // Send write command '101' to the same address...
+
+    ExecutableCommand writeLevel101 = getWriteCommand(ADDRESS, "any command", 101);
+
+    writeLevel101.send();
+
+
+
+    // Read state, should return '100'...
+
+    value = readCmd.read(EnumSensorType.LEVEL, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("100"));
+  }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
+  /**
+   * Returns a read ('status') command.
+   *
+   * @param address   arbitrary string address
+   *
+   * @return  status command instance for the given address
+   */
   private StatusCommand getReadCommand(String address)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
 
     ele.setAttribute(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME, "virtual");
-    //ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, Integer.toString(value));
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "address");
@@ -146,7 +199,6 @@ public class SwitchStatusTest
     propAddr2.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_VALUE, "status");
 
     ele.addContent(propAddr2);
-
 
 
     Command cmd = builder.build(ele);
@@ -164,13 +216,22 @@ public class SwitchStatusTest
   }
 
 
-  private ExecutableCommand getWriteCommand(String address, String cmd)
+  /**
+   * Creates a write command with given command value hacked into an XML element attribute.
+   *
+   * @param address   arbitrary address string
+   * @param cmd       arbitrary command name
+   * @param value     command value
+   *
+   * @return  write command instance with given parameters
+   */
+  private ExecutableCommand getWriteCommand(String address, String cmd, int value)
   {
     Element ele = new Element("command");
     ele.setAttribute("id", "test");
 
     ele.setAttribute(CommandBuilder.PROTOCOL_ATTRIBUTE_NAME, "virtual");
-    //ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, Integer.toString(value));
+    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, Integer.toString(value));
 
     Element propAddr = new Element(CommandBuilder.XML_ELEMENT_PROPERTY);
     propAddr.setAttribute(CommandBuilder.XML_ATTRIBUTENAME_NAME, "address");
