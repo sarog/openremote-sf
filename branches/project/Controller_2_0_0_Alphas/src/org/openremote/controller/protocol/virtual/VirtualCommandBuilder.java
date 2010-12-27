@@ -162,15 +162,20 @@ public class VirtualCommandBuilder implements CommandBuilder
       );
     }
 
+    String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+    VirtualCommand cmd;
 
-    // TODO : integrate ${param} handling
-    //        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
-    String commandParam = null;
-
+    if (commandParam == null || commandParam.equals(""))
+    {
+      cmd = new VirtualCommand(address, command);
+    }
+    else
+    {
+      cmd = new VirtualCommand(address, command, commandParam);
+    }
 
     // Done!
 
-    VirtualCommand cmd = new VirtualCommand(address, command/*, commandParam*/);
 
     return cmd;
   }
