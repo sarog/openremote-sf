@@ -360,4 +360,17 @@ public class GenericDAO extends HibernateDaoSupport {
    public void update(Object arg0) {
       this.getHibernateTemplate().update(arg0);
    }
+   
+   /**
+    * Find a list of objects from database through hql.
+    *
+    * @param <T> the generic type
+    * @param queryString the query string
+    * @param values the values
+    * @return the list
+    */
+   @SuppressWarnings("unchecked")
+   public <T> List<T> find(String queryString, Object[] values) {
+      return (List<T>)getHibernateTemplate().find(queryString, values);
+   }
 }

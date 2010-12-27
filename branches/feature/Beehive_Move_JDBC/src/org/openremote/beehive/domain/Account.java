@@ -27,6 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.openremote.beehive.domain.modeler.ControllerConfig;
 import org.openremote.beehive.domain.modeler.Device;
 import org.openremote.beehive.domain.modeler.DeviceMacro;
 import org.openremote.beehive.domain.modeler.Sensor;
@@ -56,6 +57,8 @@ public class Account extends BusinessEntity {
    
    private List<Slider> sliders;
    
+   private List<ControllerConfig> configs;
+   
    private List<Template> templates;
 
    public Account() {
@@ -64,6 +67,7 @@ public class Account extends BusinessEntity {
       sensors = new ArrayList<Sensor>();
       templates = new ArrayList<Template>();
       switches = new ArrayList<Switch>();
+      configs = new ArrayList<ControllerConfig>();
    }
 
    @OneToMany(mappedBy = "account")
@@ -136,5 +140,13 @@ public class Account extends BusinessEntity {
       }
    }
 
-   
+   @OneToMany(mappedBy = "account")
+   public List<ControllerConfig> getConfigs() {
+      return configs;
+   }
+
+   public void setConfigs(List<ControllerConfig> configs) {
+      this.configs = configs;
+   }
+
 }

@@ -19,13 +19,20 @@
 */
 package org.openremote.beehive.rest;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.openremote.beehive.Constant;
+import org.openremote.beehive.api.dto.modeler.ControllerConfigDTO;
 import org.openremote.beehive.api.service.ControllerConfigService;
 
 
@@ -35,12 +42,45 @@ import org.openremote.beehive.api.service.ControllerConfigService;
 @Path("/controllerconfig")
 public class ControllerConfigRESTService extends RESTBaseService {
 
-   @Path("save/{account_id}")
+   @Path("savedefault/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    public Response saveConfigsForAccount(ControllerConfigListing controllerListing, @PathParam("account_id") long aid) {
-      getControllerConfigService().saveConfigurationsToAccount(controllerListing.getControllerConfigs(), aid);
+      getControllerConfigService().saveDefaultConfigurationsToAccount(controllerListing.getControllerConfigs(), aid);
       return buildResponse(true);
+   }
+   
+   @Path("load/{account_id}/{catagory_name}")
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadAccountConfigsByCategoryName(@PathParam("account_id") long accountId,
+                                                @PathParam("catagory_name") String categoryName,
+                                                @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<ControllerConfigDTO> configs = getControllerConfigService().loadAccountConfigsByCategoryName(accountId, categoryName);
+      return buildResponse(configs);
+   }
+   
+   @Path("saveall/{account_id}")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response saveOrUpdateConfigsForAccount(ControllerConfigListing controllerListing,
+                                                @PathParam("account_id") long aid,
+                                                @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<ControllerConfigDTO> configs = getControllerConfigService().saveOrUpdateConfigurationsToAccount(controllerListing.getControllerConfigs(), aid);
+      return buildResponse(configs);
+   }
+   
+   @Path("loadall/{account_id}")
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadAccountConfigs(@PathParam("account_id") long accountId,
+                                                @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<ControllerConfigDTO> configs = getControllerConfigService().loadAccountConfigs(accountId);
+      return buildResponse(configs);
    }
    
    protected ControllerConfigService getControllerConfigService() {
