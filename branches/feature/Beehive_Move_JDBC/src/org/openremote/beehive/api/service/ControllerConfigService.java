@@ -21,9 +21,15 @@ package org.openremote.beehive.api.service;
 
 import java.util.List;
 
-import org.openremote.beehive.domain.modeler.ControllerConfig;
+import org.openremote.beehive.api.dto.modeler.ControllerConfigDTO;
 
 public interface ControllerConfigService {
 
-   void saveConfigurationsToAccount(List<ControllerConfig> contollerConfigs, long accountId);
+   void saveDefaultConfigurationsToAccount(List<ControllerConfigDTO> contollerConfigs, long accountId);
+   
+   List<ControllerConfigDTO> loadAccountConfigsByCategoryName(long accountId, String categoryName);
+   
+   List<ControllerConfigDTO> saveOrUpdateConfigurationsToAccount(List<ControllerConfigDTO> contollerConfigs, long accountId);
+   
+   List<ControllerConfigDTO> loadAccountConfigs(long accountId);
 }

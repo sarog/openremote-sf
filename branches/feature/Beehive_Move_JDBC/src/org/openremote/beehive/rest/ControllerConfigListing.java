@@ -25,7 +25,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openremote.beehive.domain.modeler.ControllerConfig;
+import org.openremote.beehive.api.dto.modeler.ControllerConfigDTO;
 
 /**
  * In order to let rest service to serialize list of ControllerConfigs @author tomsky
@@ -34,21 +34,21 @@ import org.openremote.beehive.domain.modeler.ControllerConfig;
 @XmlRootElement(name = "controllerConfigs")
 public class ControllerConfigListing {
 
-   private List<ControllerConfig> controllerConfigs = new ArrayList<ControllerConfig>();
+   private List<ControllerConfigDTO> controllerConfigs = new ArrayList<ControllerConfigDTO>();
    
    public ControllerConfigListing() {
    }
    
-   public ControllerConfigListing(List<ControllerConfig> controllerConfigs) {
+   public ControllerConfigListing(List<ControllerConfigDTO> controllerConfigs) {
       this.controllerConfigs = controllerConfigs;
    }
 
    @XmlElement(name = "controllerConfig")
-   public List<ControllerConfig> getControllerConfigs() {
+   public List<ControllerConfigDTO> getControllerConfigs() {
       return controllerConfigs;
    }
 
-   public void setControllerConfigs(List<ControllerConfig> controllerConfigs) {
+   public void setControllerConfigs(List<ControllerConfigDTO> controllerConfigs) {
       this.controllerConfigs = controllerConfigs;
    }
    

@@ -19,20 +19,63 @@
 */
 package org.openremote.beehive.api.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openremote.beehive.api.dto.modeler.ControllerConfigDTO;
 import org.openremote.beehive.api.service.ControllerConfigService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.ControllerConfig;
 
 public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerConfig> implements ControllerConfigService {
    
-   public void saveConfigurationsToAccount(List<ControllerConfig> contollerConfigs, long accountId) {
+   public void saveDefaultConfigurationsToAccount(List<ControllerConfigDTO> contollerConfigDTOs, long accountId) {
       Account account = genericDAO.getById(Account.class, accountId);
-      for(ControllerConfig cfg : contollerConfigs){
+      List<ControllerConfig> controllerConfigs = new ArrayList<ControllerConfig>();
+      for(ControllerConfigDTO cfgDTO : contollerConfigDTOs){
+         ControllerConfig cfg = cfgDTO.toControllerConfig();
          cfg.setAccount(account);
+         controllerConfigs.add(cfg);
       }
-      genericDAO.saveOrUpdateAll(contollerConfigs);
+      genericDAO.saveOrUpdateAll(controllerConfigs);
+   }
+
+   public List<ControllerConfigDTO> loadAccountConfigsByCategoryName(long accountId, String categoryName) {
+      String hql = "select cfg from ControllerConfig cfg where cfg.category like ? and cfg.account.oid=?";
+      Object[] args = new Object[]{categoryName,accountId};
+      List<ControllerConfig> controllerConfigs = genericDAO.find(hql, args);
+      List<ControllerConfigDTO> cfgDTOs = new ArrayList<ControllerConfigDTO>();
+      for (ControllerConfig controllerConfig : controllerConfigs) {
+         cfgDTOs.add(controllerConfig.toDTO());
+      }
+      return cfgDTOs;
+   }
+
+   public List<ControllerConfigDTO> saveOrUpdateConfigurationsToAccount(List<ControllerConfigDTO> contollerConfigDTOs, long accountId) {
+      Account account = genericDAO.getById(Account.class, accountId);
+      List<ControllerConfig> controllerConfigs = new ArrayList<ControllerConfig>();
+      for(ControllerConfigDTO cfgDTO : contollerConfigDTOs){
+         ControllerConfig cfg = cfgDTO.toControllerConfig();
+         cfg.setAccount(account);
+         controllerConfigs.add(cfg);
+      }
+      genericDAO.saveOrUpdateAll(controllerConfigs);
+      List<ControllerConfigDTO> cfgDTOs = new ArrayList<ControllerConfigDTO>();
+      for (ControllerConfig controllerConfig : controllerConfigs) {
+         cfgDTOs.add(controllerConfig.toDTO());
+      }
+      return cfgDTOs;
+   }
+
+   public List<ControllerConfigDTO> loadAccountConfigs(long accountId) {
+      String hql = "select cfg from ControllerConfig cfg where cfg.account.oid=?";
+      Object[] args = new Object[]{accountId};
+      List<ControllerConfig> controllerConfigs = genericDAO.find(hql, args);
+      List<ControllerConfigDTO> cfgDTOs = new ArrayList<ControllerConfigDTO>();
+      for (ControllerConfig controllerConfig : controllerConfigs) {
+         cfgDTOs.add(controllerConfig.toDTO());
+      }
+      return cfgDTOs;
    }
 
 }
