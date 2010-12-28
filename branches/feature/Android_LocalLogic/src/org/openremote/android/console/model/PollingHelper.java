@@ -171,12 +171,14 @@ public class PollingHelper {
 	   }
 	   
 	   // For local sensors, schedule the call of their static method for a new value
-	   for (final LocalSensor sensor : XMLEntityDataBase.localLogic.getLocalSensors()) {
-		   scheduledLocalSensors.put(sensor.getId(), scheduler.scheduleAtFixedRate(new Runnable() {
-               public void run() {
-            	   handleLocalSensor(sensor);
-               }
-		   }, 0, sensor.getRefreshRate(), TimeUnit.MILLISECONDS));
+	   if (XMLEntityDataBase.localLogic != null) {
+		   for (final LocalSensor sensor : XMLEntityDataBase.localLogic.getLocalSensors()) {
+			   scheduledLocalSensors.put(sensor.getId(), scheduler.scheduleAtFixedRate(new Runnable() {
+	               public void run() {
+	            	   handleLocalSensor(sensor);
+	               }
+			   }, 0, sensor.getRefreshRate(), TimeUnit.MILLISECONDS));
+		   }
 	   }
       
 	   // Handle the tasks here too, not entirely related but it'll do for now
@@ -298,8 +300,8 @@ public class PollingHelper {
 		private void handleLocalTask(LocalTask task) {
 			try {
 				Class<?> clazz = Class.forName(task.getClassName());
-				Method m = clazz.getMethod(task.getMethodName(), (Class<?>[])null);
-				m.invoke(null, (Object[])null);
+				Method m = clazz.getMethod(task.getMethodName(), new Class<?>[]{Context.class});
+				m.invoke(null, new Object[]{context});
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
