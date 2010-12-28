@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.service;
 
+import java.util.List;
+
 import org.openremote.beehive.domain.User;
 
 public interface UserService {
@@ -32,4 +34,8 @@ public interface UserService {
    void updateUser(User user);
    
    void deleteUserById(long id);
+   
+   User saveInvitee(User invitee, long accountId);
+   
+   List<User> loadUsersByAccount(long accountId);
 }

@@ -22,6 +22,8 @@ package org.openremote.beehive.api.dto;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openremote.beehive.domain.User;
+
 /**
  * @author tomsky
  *
@@ -61,4 +63,12 @@ public class UserDTO extends BusinessEntityDTO {
       this.account = account;
    }
    
+   public User toUser() {
+      User user = new User();
+      user.setOid(getId());
+      user.setUsername(username);
+      user.setPendingRoleName(pendingRoleName);
+      user.setToken(token);
+      return user;
+   }
 }
