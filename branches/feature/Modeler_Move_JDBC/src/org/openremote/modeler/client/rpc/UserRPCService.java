@@ -22,6 +22,8 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.exception.UserInvitationException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -43,14 +45,14 @@ public interface UserRPCService extends RemoteService {
     * 
     * @throws UserInvitationException the user invitation exception
     */
-   User inviteUser(String email, String role) throws UserInvitationException;
+   User inviteUser(String email, String role) throws UserInvitationException, NotAuthenticatedException, BeehiveJDBCException;
    
    /**
     * Gets the pending invitees by current account.
     * 
     * @return the pending invitees by account
     */
-   List<User> getPendingInviteesByAccount();
+   List<User> getPendingInviteesByAccount() throws NotAuthenticatedException, BeehiveJDBCException;
    
    /**
     * Update the invited or pending user roles.
@@ -60,28 +62,28 @@ public interface UserRPCService extends RemoteService {
     * 
     * @return the user
     */
-   User updateUserRoles(long uid, String roles, boolean isPending);
+   User updateUserRoles(long uid, String roles, boolean isPending) throws UserInvitationException, BeehiveJDBCException;
    
    /**
     * Delete the invited user by user id.
     * 
     * @param uid the uid
     */
-   void deleteUser(long uid, boolean isPending);
+   void deleteUser(long uid, boolean isPending) throws NotAuthenticatedException, BeehiveJDBCException;
    
    /**
     * Gets the users who can access the current account.
     * 
     * @return the account access users
     */
-   List<User> getAccountAccessUsers();
+   List<User> getAccountAccessUsers() throws UserInvitationException, NotAuthenticatedException, BeehiveJDBCException;
    
    /**
     * Gets the current user's id.
     * 
     * @return the user id
     */
-   Long getUserId();
+   Long getUserId() throws BeehiveJDBCException;
    
    /**
     * Creates a guest user.

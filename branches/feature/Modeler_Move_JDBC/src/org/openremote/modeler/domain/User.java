@@ -23,7 +23,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import flexjson.JSON;
 
 
 /**
@@ -41,7 +42,7 @@ public class User extends BusinessEntity {
    private String username;
    
    /** Same as the principal email which registered in crowd, get it from crowd and temporary store */
-   private transient String email;
+   private String email;
    
    /** The account containing all business entities. */
    private Account account;
@@ -53,7 +54,7 @@ public class User extends BusinessEntity {
    private String pendingRoleName;
    
    /** Get the principal's groups from crowd, transform them into role display name, like "Building Modeler","UI Designer". */
-   private transient String role;
+   private String role;
    
    /**
     * Instantiates a new user.
@@ -103,7 +104,7 @@ public class User extends BusinessEntity {
       this.account = account;
    }
    
-   @Transient
+   @JSON(include=false)
    public String getEmail() {
       return email;
    }
@@ -126,7 +127,7 @@ public class User extends BusinessEntity {
       this.role = role;
    }
 
-   @Transient
+   @JSON(include=false)
    public String getRole() {
       return role;
    }

@@ -190,7 +190,7 @@ public class AccountManageWindow extends Dialog {
     */
    private void createInvitedUserGrid() {
       List<ColumnConfig> invitedUserConfigs = new ArrayList<ColumnConfig>();
-      invitedUserConfigs.add(new ColumnConfig("email", "Invited user", 180));
+      invitedUserConfigs.add(new ColumnConfig("username", "Invited user", 180));
 
       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
@@ -236,7 +236,7 @@ public class AccountManageWindow extends Dialog {
       GridCellRenderer<BeanModel> comboRenderer = new GridCellRenderer<BeanModel>() {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, ListStore<BeanModel> store, Grid<BeanModel> grid) {
-            if (cureentUserId != (Long) model.get("oid")) {
+            if (cureentUserId != (Long) model.get("id")) {
                return createRoleCombo(model, property, false);
             } else {
                return (String) model.get(property);
@@ -249,7 +249,7 @@ public class AccountManageWindow extends Dialog {
          public Object render(final BeanModel model, String property, ColumnData config, final int rowIndex,
                final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
             Button deleteButton = createDeleteButton(model, store, false);
-            if (cureentUserId == (Long) model.get("oid")) {
+            if (cureentUserId == (Long) model.get("id")) {
                deleteButton.disable();
                deleteButton.hide();
             }
@@ -262,7 +262,7 @@ public class AccountManageWindow extends Dialog {
                final int colIndex, final ListStore<BeanModel> store, Grid<BeanModel> grid) {
             String html = (String) model.get(property);
             String username = (String) model.get("username");
-            if (cureentUserId == (Long) model.get("oid")) {
+            if (cureentUserId == (Long) model.get("id")) {
                html += "<b> - me</b>";
             } else {
                html = html + " -<br/>" + "<b>" + username + "</b>";
