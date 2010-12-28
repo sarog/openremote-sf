@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -91,7 +92,9 @@ public class StatusCommandRESTServlet extends HttpServlet {
             unParsedSensorIDs = matcher.group(1);
             try {
                 if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
-                    printWriter.write(statusCommandService.readFromCache(unParsedSensorIDs));
+                    printWriter.write(JSONTranslator.toDesiredData(request, statusCommandService.readFromCache(unParsedSensorIDs)));
+                    printWriter.flush();
+                    printWriter.close();
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);
