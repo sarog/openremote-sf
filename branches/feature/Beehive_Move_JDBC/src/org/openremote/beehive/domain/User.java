@@ -23,7 +23,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.openremote.beehive.api.dto.AccountDTO;
 import org.openremote.beehive.api.dto.UserDTO;
@@ -38,7 +37,6 @@ import org.openremote.beehive.api.dto.UserDTO;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "user")
-@XmlRootElement(name = "user")
 public class User extends BusinessEntity {
 
    /** The username. */

@@ -19,9 +19,13 @@
 */
 package org.openremote.beehive.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -29,6 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.openremote.beehive.Constant;
 import org.openremote.beehive.api.dto.UserDTO;
 import org.openremote.beehive.api.service.UserService;
 import org.openremote.beehive.domain.User;
@@ -60,9 +65,10 @@ public class UserRESTService extends RESTBaseService {
    
    @Path("getbyname/{username}")
    @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response getUserByUsername(@PathParam("username")  String username) {
       User user = getUserService().getUserByUsername(username);
+      if (user == null) return resourceNotFoundResponse();
       return buildResponse(user.toDTO());
    }
    
@@ -83,6 +89,34 @@ public class UserRESTService extends RESTBaseService {
    public Response deleteUser(@PathParam("user_id") long userId) {
       getUserService().deleteUserById(userId);
       return buildResponse(true);
+   }
+   
+   @Path("createinvitee/{account_id}")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response createInvitee(UserDTO userDTO, @PathParam("account_id") long accountId,
+                           @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      User invitee = userDTO.toUser();
+      getUserService().saveInvitee(invitee, accountId);
+      return buildResponse(invitee.toDTO());
+   }
+   
+   @Path("loadall/{account_id}")
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadUsersByAccount(@PathParam("account_id") long accountId,
+                        @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<User> users = getUserService().loadUsersByAccount(accountId);
+      List<UserDTO> userDTOs = new ArrayList<UserDTO>();
+      for (User user : users) {
+         userDTOs.add(user.toDTO());
+      }
+      
+      if (userDTOs.size() == 0) return resourceNotFoundResponse();
+      return buildResponse(userDTOs);
    }
    
    protected UserService getUserService() {
