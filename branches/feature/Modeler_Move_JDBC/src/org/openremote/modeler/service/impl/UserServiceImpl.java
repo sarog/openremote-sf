@@ -33,12 +33,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -51,6 +53,8 @@ import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.ConfigCategory;
 import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.domain.User;
+import org.openremote.modeler.exception.BeehiveJDBCException;
+import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.exception.UserInvitationException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.UserService;
@@ -231,11 +235,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
              return new JSONDeserializer<User>().use(null, User.class).deserialize(userJson);
           }
        } catch (UnsupportedEncodingException e) {
-          log.error("Save user to beehive failed", e);
+          throw new UserInvitationException("Save user to beehive failed");
        } catch (ClientProtocolException e) {
-          log.error("Save user to beehive failed", e);
+          throw new UserInvitationException("Save user to beehive failed");
        } catch (IOException e) {
-          log.error("Save user to beehive failed", e);
+          throw new UserInvitationException("Save user to beehive failed");
        }
        return null;
     }
@@ -253,11 +257,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
           httpPost.setEntity(new StringEntity(json,"UTF-8"));
           httpClient.execute(httpPost);
        } catch (UnsupportedEncodingException e) {
-          log.error("Update user to beehive failed", e);
+          throw new BeehiveJDBCException("Update user to beehive failed");
        } catch (ClientProtocolException e) {
-          log.error("Update user to beehive failed", e);
+          throw new BeehiveJDBCException("Update user to beehive failed");
        } catch (IOException e) {
-          log.error("Update user to beehive failed", e);
+          throw new BeehiveJDBCException("Update user to beehive failed");
        }
     }
     
@@ -276,11 +280,11 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
           httpPost.setEntity(new StringEntity(json,"UTF-8"));
           httpClient.execute(httpPost);
        } catch (UnsupportedEncodingException e) {
-          log.error("Can't save default controllerConfigs to account.", e);
+          throw new BeehiveJDBCException("Can't save default controllerConfigs to account.");
        } catch (ClientProtocolException e) {
-          log.error("Can't save default controllerConfigs to account.", e);
+          throw new BeehiveJDBCException("Can't save default controllerConfigs to account.");
        } catch (IOException e) {
-          log.error("Can't save default controllerConfigs to account.", e);
+          throw new BeehiveJDBCException("Can't save default controllerConfigs to account.");
        }
     }
     
@@ -398,10 +402,10 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    public User inviteUser(String email, String role, User currentUser) {
       User invitee = getPendingUserbyName(email);
       if (invitee == null) {
-         invitee = new User(currentUser.getAccount());
+         invitee = new User();
          invitee.setUsername(email);
          invitee.setPendingRoleName(role);
-         genericDAO.save(invitee);
+         invitee = saveInvitee(invitee, currentUser.getAccount().getId());
          if (!sendInvitation(invitee, currentUser)) {
             throw new UserInvitationException("Failed to send invitation.");
          }
@@ -414,8 +418,34 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   private User saveInvitee(User invitee, long accountId) {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTManageUserUrl() + "createinvitee/" + accountId);
+      String[] includes = {"user","username","token","pendingRoleName"};
+      String[] excludes = {"account","email","role"};
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      String json = JsonGenerator.deepSerializerObjectInclude(invitee, includes, excludes);
+      addAuthentication(httpPost);
+      try {
+         httpPost.setEntity(new StringEntity(json,"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
+            String userJson = IOUtils.toString(response.getEntity().getContent());
+            return new JSONDeserializer<User>().use(null, User.class).deserialize(userJson);
+         } else if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else {
+            throw new BeehiveJDBCException("Failed save device to beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Save user to beehive failed", e);
+         throw new BeehiveJDBCException("Failed save device to beehive.");
+      }
+   }
+   
    private User getPendingUserbyName(String email) {
-      User user = genericDAO.getByNonIdField(User.class, "username", email);
+      User user = getUserByName(email);
       if (user != null && user.getPendingRoleName() != null) {
          return user;
       }
@@ -530,15 +560,14 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
 
    public List<User> getPendingInviteesByAccount(User currentUser) {
-      List<User> invitees = new ArrayList<User>();
-      List<User> sameAccountUsers = currentUser.getAccount().getUsers();
-      sameAccountUsers.remove(currentUser);
-      for (User invitee : sameAccountUsers) {
-         if(invitee.getPendingRoleName() != null) {
-            invitees.add(invitee);
+      List<User> sameAccountUsers = loadUsersByAccount(currentUser.getAccount().getId());
+      List<User> pendingUsers = new ArrayList<User>();
+      for (User user : sameAccountUsers) {
+         if (user.getPendingRoleName() != null) {
+            pendingUsers.add(user);
          }
       }
-      return invitees;
+      return pendingUsers;
    }
 
    public User updateUserRoles(long uid, String roles, boolean isPending) {
@@ -565,11 +594,38 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             user.setRole(roles);
          } catch (Exception e) {
             log.error("Can't update user roles.", e);
+            throw new UserInvitationException("Can't update user roles.");
          }
       }
       return user;
    }
 
+   private List<User> loadUsersByAccount(long accountId) {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpGet httpGet = new HttpGet(configuration.getBeehiveRESTManageUserUrl() + "loadall/" + accountId);
+      httpGet.addHeader("Accept", "application/json");
+      addAuthentication(httpGet);
+      try {
+         HttpResponse response = httpClient.execute(httpGet);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String usersJson = "{users:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            UserList result = new JSONDeserializer<UserList>().use(null, UserList.class).use("users",
+                  ArrayList.class).deserialize(usersJson);
+            return result.getUsers();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<User>();
+         } else {
+            throw new BeehiveJDBCException("Failed load account users from beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Can't load account users from beehive.", e);
+         throw new BeehiveJDBCException("Can't load account users from beehive.");
+      }
+   }
+   
    /**
     * Convert the display role name to role list.
     * e.g.: "Building Modeler & UI Designer" to (MODELER,DESIGNER). 
@@ -609,13 +665,26 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             return;
          }
       }
-      genericDAO.delete(user);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpDelete httpDelete = new HttpDelete(configuration.getBeehiveRESTManageUserUrl() + "delete/" + uid);
+      addAuthentication(httpDelete);
+      try {
+         HttpResponse response = httpClient.execute(httpDelete);
+         if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK) {
+            if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
+               throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+            }
+            throw new BeehiveJDBCException("Failed delete user in beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Failed delete user in beehive.", e);
+         throw new BeehiveJDBCException("Failed delete user in beehive.");
+      }
    }
 
    public List<User> getAccountAccessUsers(User currentUser) {
       List<User> accessUsers = new ArrayList<User>();
-      List<User> sameAccountUsers = currentUser.getAccount().getUsers();
-      sameAccountUsers.remove(currentUser);
+      List<User> sameAccountUsers = loadUsersByAccount(currentUser.getAccount().getId());
       SecurityServerClient crowdClient = SecurityServerClientFactory.getSecurityServerClient();
       SearchRestriction[] searchRestrictions = new SearchRestriction[0];
       try {
@@ -623,6 +692,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          initUserProperties(currentUser, crowdClient, groups);
          accessUsers.add(currentUser);
          for (User accessUser : sameAccountUsers) {
+            if (currentUser.getId() == accessUser.getId()) continue;
             if (accessUser.getPendingRoleName() == null) {
                initUserProperties(accessUser, crowdClient, groups);
                accessUsers.add(accessUser);
@@ -630,6 +700,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          }
       } catch (Exception e) {
          log.error("Can't find groups in crowd when initialize user properties.", e);
+         throw new UserInvitationException("Can't find groups in crowd when initialize user properties.");
       }
       return accessUsers;
    }
@@ -667,6 +738,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          
       } catch (Exception e) {
          log.error("Can't find user " + username + " in crowd when initialize user properties.", e);
+         throw new UserInvitationException("Can't find user " + username + " in crowd when initialize user properties.");
       }
    }
    
@@ -733,14 +805,17 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       httpGet.addHeader("Accept", "application/json");
       try {
          HttpResponse response = httpClient.execute(httpGet);
-         if (response.getStatusLine().getStatusCode() == 200) {
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
              String userJson = IOUtils.toString(response.getEntity().getContent());
              return new JSONDeserializer<User>().use(null, User.class).deserialize(userJson);
+          } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+             return null;
           }
       } catch (ClientProtocolException e) {
-         log.error("Can't get user by username from beehive.", e);
+         throw new BeehiveJDBCException("Can't get user by username from beehive.");
       } catch (IOException e) {
-         log.error("Can't get user by username from beehive.", e);
+         throw new BeehiveJDBCException("Can't get user by username from beehive.");
       }
       return null;
    }
@@ -849,8 +924,10 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
             log.error("Can't create user " + email + " with role 'GUEST'.", e);
             throw new UserInvitationException("Failed to create guest user.");
          }
-         saveUser(user);
-         return user;
+         User dbUser = saveInvitee(user, currentUser.getAccount().getId());
+         dbUser.setEmail(email);
+         dbUser.setRole(Constants.ROLE_GUEST_DISPLAYNAME);
+         return dbUser;
       } catch (MailException e) {
          log.error("Can't send 'OpenRemote Guest User' email", e);
          throw new UserInvitationException("Failed to create guest user.");
