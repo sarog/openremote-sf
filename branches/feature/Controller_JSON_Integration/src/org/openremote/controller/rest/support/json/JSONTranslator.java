@@ -35,9 +35,14 @@ import org.openremote.controller.Constants;
  */
 public class JSONTranslator {
 
-   // translate xml data to json object.
+   // translate xml data to json object with HTTPServletRequest.
    public static String toDesiredData(HttpServletRequest request, String xml) {
-      if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(request.getHeader(Constants.HTTP_ACCEPT_HEADER_NAME))) {
+      String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER_NAME);
+      return doTransalteXMLToJSONString(acceptTypeInHeader, xml);
+   }
+   
+   public static String doTransalteXMLToJSONString(String acceptTypeInHeader, String xml) {
+      if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader)) {
          XMLSerializer xmlSerializer = new XMLSerializer();   
          JSON json = xmlSerializer.read(xml);
          return json.toString(3);
@@ -45,6 +50,5 @@ public class JSONTranslator {
          return xml;
       }
    }
-
    
 }
