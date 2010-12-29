@@ -20,7 +20,7 @@
 package org.openremote.controller.rest.support.json;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,7 +29,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.Constants;
 
@@ -54,15 +53,12 @@ public class JSONCallbackFilter implements Filter {
          throws IOException, ServletException {
       String callbackName = servletRequest.getParameter(Constants.CALLBACK_PARAM_NAME);
       if (callbackName != null  && !"".equals(callbackName)) {
-         JSONAcceptTypeRequestWrapper requestWrapper = new JSONAcceptTypeRequestWrapper(
-               (HttpServletRequest) servletRequest, filterConfig);
-         OutputStream out = servletResponse.getOutputStream();
-         out.write((callbackName + " && " + callbackName + "(").getBytes());
-         JSONContentTypeResponseWrapper responseWrapper = new JSONContentTypeResponseWrapper((HttpServletResponse) servletResponse);
-         filterChain.doFilter(requestWrapper, responseWrapper);
-         out.write(responseWrapper.getData());
-         out.write(")".getBytes());
-         out.close();
+         servletResponse.setCharacterEncoding("UTF-8");
+         PrintWriter printWriter = servletResponse.getWriter();
+         printWriter.print(callbackName + " && " + callbackName + "(");
+         JSONAcceptTypeRequestWrapper requestWrapper = new JSONAcceptTypeRequestWrapper((HttpServletRequest) servletRequest, filterConfig);
+         filterChain.doFilter(requestWrapper, servletResponse);
+         printWriter.print(")");
       } else {
          filterChain.doFilter(servletRequest, servletResponse);
       }
