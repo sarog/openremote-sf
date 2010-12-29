@@ -367,8 +367,8 @@ public class ResourceServiceImpl implements ResourceService {
                addDeviceCommandEvent(protocolEventContainer, oneUIButtonEventList, deviceCommand, maxId);
             } else if (command instanceof DeviceMacroRef) {
                DeviceMacro deviceMacro = ((DeviceMacroRef) command).getTargetDeviceMacro();
-               deviceMacro = deviceMacroService.loadById(deviceMacro.getId());
-               for (DeviceMacroItem tempDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+               List<DeviceMacroItem> deviceMacroItems = deviceMacroService.loadDeviceMacroItems(deviceMacro.getId());
+               for (DeviceMacroItem tempDeviceMacroItem : deviceMacroItems) {
                   oneUIButtonEventList.addAll(getCommandOwnerByUICommand(tempDeviceMacroItem, protocolEventContainer,
                         maxId));
                }
@@ -469,7 +469,10 @@ public class ResourceServiceImpl implements ResourceService {
       if (command instanceof DeviceMacroItem) {
          sectionIds.addAll(getDeviceMacroItemSectionIds((DeviceMacroItem) command));
       } else if (command instanceof CommandRefItem) {
-         sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
+         String sectionId = ((CommandRefItem) command).getDeviceCommand().getSectionId();
+         if (sectionId != null) {
+            sectionIds.add(((CommandRefItem) command).getDeviceCommand().getSectionId());
+         }
       }
    }
 
@@ -485,12 +488,15 @@ public class ResourceServiceImpl implements ResourceService {
       Set<String> deviceMacroRefSectionIds = new HashSet<String>();
       try {
          if (deviceMacroItem instanceof DeviceCommandRef) {
-            deviceMacroRefSectionIds.add(((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId());
+            String sectionId = ((DeviceCommandRef) deviceMacroItem).getDeviceCommand().getSectionId();
+            if (sectionId != null) {
+               deviceMacroRefSectionIds.add(sectionId);
+            }
          } else if (deviceMacroItem instanceof DeviceMacroRef) {
             DeviceMacro deviceMacro = ((DeviceMacroRef) deviceMacroItem).getTargetDeviceMacro();
             if (deviceMacro != null) {
-               deviceMacro = deviceMacroService.loadById(deviceMacro.getId());
-               for (DeviceMacroItem nextDeviceMacroItem : deviceMacro.getDeviceMacroItems()) {
+               List<DeviceMacroItem> deviceMacroItems = deviceMacroService.loadDeviceMacroItems(deviceMacro.getId());
+               for (DeviceMacroItem nextDeviceMacroItem : deviceMacroItems) {
                   deviceMacroRefSectionIds.addAll(getDeviceMacroItemSectionIds(nextDeviceMacroItem));
                }
             }
@@ -952,10 +958,11 @@ public class ResourceServiceImpl implements ResourceService {
                   + response.getStatusLine().getStatusCode());
          }
       } catch (NullPointerException e) {
-         LOGGER.warn("There no resource to upload to beehive at this time. ");
+         LOGGER.warn("There no resource to upload to beehive at this time. ", e);
       } catch (ConnectException e) {
          throw new BeehiveNotAvailableException("Connection to " + beehiveRootRestURL + " refused.", e);
       } catch (IOException e) {
+         LOGGER.warn("Can not save resources to beehive. ", e);
          throw new BeehiveNotAvailableException(e.getMessage(), e);
       } catch (URISyntaxException e) {
          throw new IllegalRestUrlException("Invalid Rest URL: " + url + " to save modeler resource to beehive! ", e);

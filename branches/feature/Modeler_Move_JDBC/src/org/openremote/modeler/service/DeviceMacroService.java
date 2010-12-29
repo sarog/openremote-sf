@@ -72,16 +72,6 @@ public interface DeviceMacroService {
     */
    void deleteDeviceMacro(long id);
 
-
-    /**
-     * Load by id.
-     * 
-     * @param id the id
-     * 
-     * @return the device macro
-     */
-    DeviceMacro loadById(long id);
-    
     /**
      * Load by device macro.
      * 

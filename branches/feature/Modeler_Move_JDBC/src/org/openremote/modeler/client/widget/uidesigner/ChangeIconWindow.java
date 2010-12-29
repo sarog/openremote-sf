@@ -370,7 +370,7 @@ public class ChangeIconWindow extends Dialog {
     */
    private ListView<ModelData> createBeehiveIconsView() {
       ModelType iconType = new ModelType();
-      iconType.setRoot("icons.icon");
+      iconType.setRoot("icons");
       DataField idField = new DataField("id");
       idField.setType(Long.class);
       iconType.addField(idField);
