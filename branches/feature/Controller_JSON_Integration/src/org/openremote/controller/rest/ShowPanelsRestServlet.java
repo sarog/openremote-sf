@@ -71,15 +71,11 @@ public class ShowPanelsRestServlet extends HttpServlet {
          {
             String panelsXML = profileService.getAllPanels();
             out.print(JSONTranslator.toDesiredData(request, panelsXML));
-            out.flush();
-            out.close();
+
          }
 
          catch (ControlCommandException e)
          {
-            out.flush();
-            out.close();
-         } catch (ControlCommandException e) {
             logger.error("failed to get all the panels", e);
 
             response.setStatus(e.getErrorCode());
