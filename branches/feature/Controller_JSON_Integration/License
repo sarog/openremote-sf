@@ -704,6 +704,9 @@ OpenRemote Sub-components:
   below.
 * Quartz library is licensed under Apache License Version 2.0, see license
   below.
+* EZMorph library is licensed under Apache License Version 2.0, see license
+  below.
+* Json-lib is licensed under Apache License Version 2.0, see license below.
 * X10 Classes in package com.jpeterson are licensed under GNU Lesser General
   Public License (LGPL) Version 2.1, or any later version. For the purpose of
   this distribution, classes are relicensed under GNU Lesser General Public License
@@ -717,11 +720,12 @@ OpenRemote Sub-components:
   terms. These terms are included below.
 * Apache Commons Lang, Apache Commons Collections, Apache Commons FileUpload,
   Apache Commons Codec, Apache Commons IO, Apache Commons Logging, Apache
-  Commons Net are licensed under Apache License Version 2.0, see license below.
+  Commons Net, Apache Commons BeanUtils are licensed under Apache License
+  Version 2.0, see license below.
 * Additional notices for Apache Commons Lang, Apache Commons Collections,
   Apache Commons Codec, Apache Commons IO, Apache Commons Logging, Apache
-  Commons Net, Spring Core Framework, Spring Security Framework, Apache Log4j
-  are listed below.
+  Commons Net, Apache Commons BeanUtils, Spring Core Framework,
+  Spring Security Framework, Apache Log4j are listed below.
 
 
 
@@ -1707,6 +1711,16 @@ Apache Commons Logging NOTICE
 
 Apache Commons Logging
 Copyright 2003-2007 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Apache Commons BeanUtils NOTICE
+-------------------------------
+
+Apache Commons BeanUtils
+Copyright 2000-2010 The Apache Software Foundation
 
 This product includes software developed by
 The Apache Software Foundation (http://www.apache.org/).
