@@ -32,7 +32,7 @@ public class ShowPanelsRestServletTest
 
   @Test public void testRetrieveAllPanels()
   {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_PANEL_URI;
+   // final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_PANEL_URI;
 
     
   }
