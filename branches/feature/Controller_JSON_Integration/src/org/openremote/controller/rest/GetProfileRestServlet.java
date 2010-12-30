@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
+import org.openremote.controller.exception.NoSuchPanelException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -36,10 +38,10 @@ public class GetProfileRestServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-	   response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-	   response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+	    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+	    response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
 
-	   PrintWriter out = response.getWriter();
+	    PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString().trim();
       String regexp = "rest\\/panel\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
@@ -52,17 +54,17 @@ public class GetProfileRestServlet extends HttpServlet {
             decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
             String panleXML = profileService.getProfileByPanelName(decodedPanelName);
             out.print(JSONTranslator.toDesiredData(request, panleXML));
-            out.flush();
-            out.close();
          } catch (ControlCommandException e) {
             logger.error("failed to extract panel.xml for panel : " + e.getMessage(), e);
             response.setStatus(e.getErrorCode());
-            out.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
+            out.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
       } else {
          response.setStatus(400);
-         out.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400,"Bad REST Request, should be /rest/panel/{panelName}"));
+         out.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
       }
+      out.flush();
+      out.close();
 	}
 
 }

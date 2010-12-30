@@ -93,16 +93,17 @@ public class StatusCommandRESTServlet extends HttpServlet {
             try {
                 if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
                     printWriter.write(JSONTranslator.toDesiredData(request, statusCommandService.readFromCache(unParsedSensorIDs)));
-                    printWriter.flush();
-                    printWriter.close();
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);
-                printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
+                response.setStatus(e.getErrorCode());
+                printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
             }
         } else {
-           printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")); 
+            response.setStatus(400);
+            printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
         }
         printWriter.flush();
+        printWriter.close();
     }
 }

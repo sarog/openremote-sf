@@ -34,6 +34,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 /**
@@ -80,12 +81,13 @@ public class ShowPanelsRestServlet extends HttpServlet {
 
             response.setStatus(e.getErrorCode());
            
-            out.write(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
+            out.write(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
 
          finally
          {
             out.flush();
+            out.close();
          }
       }
    }
