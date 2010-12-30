@@ -37,6 +37,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.roundrobin.RoundRobinException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.RoundRobinService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -76,16 +77,17 @@ public class RoundRobinRESTServlet extends HttpServlet {
             Set<String> groupMemberControllerAppURLSet = roundRobinService.discoverGroupMembersAppURL();
             String serversXML = roundRobinService.constructServersXML(groupMemberControllerAppURLSet);
             printWriter.println(JSONTranslator.toDesiredData(request, serversXML));;
-            printWriter.flush();
-            printWriter.close();
             logger.info("Finished RoundRobin group member REST service.  at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (RoundRobinException e) {
-            printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
-         } 
+            response.setStatus(e.getErrorCode());
+            printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+         }
       } else {
-         printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url));
+         response.setStatus(RoundRobinException.INVALID_ROUND_ROBIN_URL);
+         printWriter.print(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url)));
       }
       printWriter.flush();
+      printWriter.close();
 	}
 
 }
