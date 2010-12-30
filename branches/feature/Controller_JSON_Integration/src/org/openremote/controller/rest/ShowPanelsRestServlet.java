@@ -71,8 +71,7 @@ public class ShowPanelsRestServlet extends HttpServlet {
          try
          {
             String panelsXML = profileService.getAllPanels();
-            out.print(JSONTranslator.toDesiredData(request, panelsXML));
-
+            out.print(JSONTranslator.toDesiredData(request, response, panelsXML));
          }
 
          catch (ControlCommandException e)
@@ -81,13 +80,12 @@ public class ShowPanelsRestServlet extends HttpServlet {
 
             response.setStatus(e.getErrorCode());
            
-            out.write(JSONTranslator.toDesiredData(request, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+            out.write(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
 
          finally
          {
             out.flush();
-            out.close();
          }
       }
    }

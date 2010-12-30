@@ -98,7 +98,7 @@ public class RESTfulServletJSONSupportTest extends TestCase {
                + expectedXMLDataURL);
          WebResponse xmlDataResponse = wc.getResponse(xmlDataRequest);
          String xml = xmlDataResponse.getText();
-         String expected = JSONTranslator.doTransalteXMLToJSONString("application/json", xml);
+         String expected = JSONTranslator.doTransalteXMLToJSONString("application/json", null, xml);
          expected = "fun" + " && " + "fun" + "(" + expected + ")";
          
          Assert.assertEquals(expected, actual);
