@@ -18,19 +18,19 @@ public class Dimmer extends HomeWorksDevice {
 	// Command methods ------------------------------------------------------------------------------
 	
 	public void raise() {
-		this.gateway.sendCommand("RAISEDIM, " + address); 
+		this.gateway.sendCommand("RAISEDIM", address, null); 
 	}
 	
 	public void lower() {
-		this.gateway.sendCommand("LOWERDIM, " + address); 
+		this.gateway.sendCommand("LOWERDIM", address, null); 
 	}
 
 	public void stop() {
-		this.gateway.sendCommand("STOPDIM, " + address); 
+		this.gateway.sendCommand("STOPDIM", address, null); 
 	}
 	
 	public void fade(Integer level) {
-		this.gateway.sendCommand("FADE, " + level + ", 1, 0, " + address);
+		this.gateway.sendCommand("FADEDIM, " + level + ", 1, 0", address, null);
 	}
 
 	// Feedback method from HomeWorksDevice ---------------------------------------------------------

@@ -26,7 +26,7 @@ public class GrafikEye extends HomeWorksDevice {
 	// Command methods ------------------------------------------------------------------------------
 
 	public void selectScene(Integer scene) {
-		this.gateway.sendCommand("GSS, " + address + ", " + scene); 
+		this.gateway.sendCommand("GSS", address, Integer.toString(scene)); 
 	}
 	
 	// Feedback method from HomeWorksDevice ---------------------------------------------------------
