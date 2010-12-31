@@ -190,7 +190,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 			String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
 			if (paramValue != null && !paramValue.equals("")) {
 				try {
-					level = Integer.parseInt(levelAsString);
+					level = Integer.parseInt(paramValue);
 				} catch (NumberFormatException e) {
 					throw new NoSuchCommandException(e.getMessage(), e);
 				}
