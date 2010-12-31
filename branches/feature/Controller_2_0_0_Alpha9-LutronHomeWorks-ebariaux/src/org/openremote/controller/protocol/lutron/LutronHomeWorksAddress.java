@@ -45,11 +45,6 @@ public class LutronHomeWorksAddress {
 		if (numElements < 3 || numElements > 5) {
 		      throw new InvalidLutronHomeWorksAddressException("Incorrect number of elements in Lutron address (" + addressRepresentation + ")", addressRepresentation);
 		}
-		
-		System.out.println("Matcher count / num elements " + matcher.groupCount() + " / " + numElements);
-		for (int i = 0; i <= matcher.groupCount(); i++) {
-			System.out.println("group " + i + " " + matcher.group(i));
-		}
 
 		addressElements = new byte[numElements];
 		for (int i = 1; i <= numElements; i++) {
