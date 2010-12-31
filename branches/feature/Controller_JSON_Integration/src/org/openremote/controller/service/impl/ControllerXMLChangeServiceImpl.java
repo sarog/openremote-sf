@@ -162,12 +162,14 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    }
    
    private void restartPollingMachineThreads() {
+      controllerXMLListenSharingData.getPollingMachineThreads().clear();
       Iterator<Sensor> sensorIterator = controllerXMLListenSharingData.getSensors().iterator();
       while (sensorIterator.hasNext()) {
          Sensor sensor = sensorIterator.next();
          PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
          pollingMachineThread.start();
          nap(3);
+         controllerXMLListenSharingData.getPollingMachineThreads().add(pollingMachineThread);
       }
    }
 
