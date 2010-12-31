@@ -85,8 +85,6 @@ public class Constants {
    
    public static final String CALLBACK_PARAM_NAME = "callback";
 
-   public static final String HTTP_HEADER_ACCEPT_XML_TYPE = "application/xml";
-
    public static final String CHARACTER_ENCODING_UTF8 = "utf-8";
 
    public static final String HTTP_ACCEPT_HEADER_NAME = "accept";
