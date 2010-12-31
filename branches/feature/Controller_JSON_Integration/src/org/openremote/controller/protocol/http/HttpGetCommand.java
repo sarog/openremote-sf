@@ -29,11 +29,13 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.Sensor;
 
 /**
  * The HTTP GET Command.
  *
  * @author Marcus 2009-4-26
+ * @author Dan Cong
  */
 public class HttpGetCommand implements ExecutableCommand, StatusCommand {
 
@@ -123,27 +125,37 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand {
    @Override
    public String read(EnumSensorType sensoryType, Map<String, String> stateMap) {
       String rawResult = requestURL();
+      if (sensoryType == null || stateMap == null) {
+         return rawResult;
+      }
       if ("".equals(rawResult)) {
          return UNKNOWN_STATUS;
       }
-      for (String state : stateMap.keySet()) {
-         if (rawResult.equals(stateMap.get(state))) {
-            return state;
+      switch (sensoryType) {
+      case RANGE:
+         break;
+      case LEVEL:
+         String min = stateMap.get(Sensor.RANGE_MIN_STATE);
+         String max = stateMap.get(Sensor.RANGE_MAX_STATE);
+         try {
+            int val = Integer.valueOf(rawResult);
+            if (min != null && max != null) {
+               int minVal = Integer.valueOf(min);
+               int maxVal = Integer.valueOf(max);
+               return String.valueOf(100 * (val - minVal)/ (maxVal - minVal));
+            } 
+         } catch (ArithmeticException e) {
+            break;
+         }
+         break;
+      default://NOTE: if sensor type is RANGE, this map only contains min/max states.
+         for (String state : stateMap.keySet()) {
+            if (rawResult.equals(stateMap.get(state))) {
+               return state;
+            }
          }
       }
       return rawResult;
    }
-
-//
-//   private String readReplay(java.net.Socket socket) throws IOException {
-//    	BufferedReader bufferedReader =
-//    	    new BufferedReader(
-//    		new InputStreamReader(
-//    	  	    socket.getInputStream()));
-//    	char[] buffer = new char[200];
-//    	int readChars = bufferedReader.read(buffer, 0, 200); // blocks until message received
-//    	String reply = new String(buffer, 0, readChars);
-//    	return reply;
-//       }
 
 }

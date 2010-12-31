@@ -28,10 +28,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
-import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.component.SensorBuilder;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -52,9 +51,9 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
 
    private ControllerXMLListenSharingData controllerXMLListenSharingData;
    private RemoteActionXMLParser remoteActionXMLParser;
-   private CommandFactory commandFactory;
    private StatusCacheService statusCacheService;
    private ChangedStatusTable changedStatusTable;
+   private SensorBuilder sensorBuilder;
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
@@ -157,17 +156,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       Iterator<Element> sensorElementIterator = sensorElements.iterator();
       while(sensorElementIterator.hasNext()) {
          Element sensorElement = sensorElementIterator.next();
-//         for (Element sensorElement : sensorElements) {
-         Sensor sensor = new Sensor();
-         sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
-         sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
-
-         Element includeElement = sensorElement.getChild(Constants.INCLUDE_ELEMENT_NAME, sensorElement.getNamespace());
-         String statusCommandID = includeElement.getAttributeValue(Constants.REF_ATTRIBUTE_NAME);
-         Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
-         StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-         sensor.setStatusCommand(statusCommand);
-
+         Sensor sensor = sensorBuilder.build(sensorElement);
          controllerXMLListenSharingData.addSensor(sensor);
       }
    }
@@ -190,10 +179,6 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       this.remoteActionXMLParser = remoteActionXMLParser;
    }
 
-   public void setCommandFactory(CommandFactory commandFactory) {
-      this.commandFactory = commandFactory;
-   }
-   
    public void setStatusCacheService(StatusCacheService statusCacheService) {
       this.statusCacheService = statusCacheService;
    }
@@ -201,12 +186,16 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
       this.changedStatusTable = changedStatusTable;
    }
+   
+   public void setSensorBuilder(SensorBuilder sensorBuilder) {
+      this.sensorBuilder = sensorBuilder;
+   }
 
    private void nap(long milliseconds) {
       try {
          Thread.sleep(milliseconds);
       } catch (InterruptedException e) {
-         e.printStackTrace();
+         logger.error("InterruptedException", e);
       }
    }
    
