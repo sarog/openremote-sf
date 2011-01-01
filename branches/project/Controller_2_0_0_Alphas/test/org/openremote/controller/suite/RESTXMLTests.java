@@ -52,7 +52,7 @@ import org.w3c.dom.Node;
 }
 )
 
-public class AllRESTfulAPIMockTests
+public class RESTXMLTests
 {
 
 
@@ -155,7 +155,7 @@ public class AllRESTfulAPIMockTests
 
   public static void assertErrorDocument(Document doc, int errorCode)
   {
-    AllRESTfulAPIMockTests.assertOpenRemoteRootElement(doc);
+    RESTXMLTests.assertOpenRemoteRootElement(doc);
 
     NodeList list = doc.getElementsByTagName("openremote");
 
