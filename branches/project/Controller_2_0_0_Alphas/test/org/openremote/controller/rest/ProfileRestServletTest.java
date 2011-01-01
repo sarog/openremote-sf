@@ -1,18 +1,21 @@
-/*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2010, OpenRemote Inc.
- * 
- * See the contributors.txt file in the distribution for a full listing of individual contributors.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
- * details.
- * 
- * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2010, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.rest;
 
@@ -20,6 +23,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -34,9 +50,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllRESTfulAPIMockTests;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.SecurityUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
@@ -115,26 +136,30 @@ public class ProfileRestServletTest {
 
    }
    
-   @Test public void requestNoneExistPanelProfile() throws Exception
-   {
 
-      HttpClient httpClient = new DefaultHttpClient();
-      HttpUriRequest request = SecurityUtil.getSecuredHttpRequest("http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
-            + "/controller/rest/panel/noneProfile");
+  @Test public void testGetNonExistentPanelProfile() throws Exception
+  {
+    URL doesNotExist = new URL("http://" + TestConstraint.WEBAPP_IP + ":" + TestConstraint.WEBAPP_PORT + "/controller/rest/panel/doesNotExist");
 
-      HttpResponse response = httpClient.execute(request);
-      int code = response.getStatusLine().getStatusCode();
+    HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
-      if (code == 428) {
-         String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
-               TestConstraint.FIXTURE_DIR + "noProfileError.xml").getFile();
-         File expectedXMLFile = new File(expectedXMLFilePath);
-         String expectedXML = FileUtils.readFileToString(expectedXMLFile);
-         String actualXML = IOUtils.toString(response.getEntity().getContent());
-         Assert.assertEquals(expectedXML, actualXML);
-      }
+    AllRESTfulAPIMockTests.assertHttpResponse(
+        connection, 428, AllRESTfulAPIMockTests.ASSERT_BODY_CONTENT,
+        AllRESTfulAPIMockTests.APPLICATIONXML_MIMETYPE, AllRESTfulAPIMockTests.CHARSET_UTF8
+    );
 
-   }
+    Document doc = AllRESTfulAPIMockTests.getDOMDocument(connection.getErrorStream());
+
+    AllRESTfulAPIMockTests.assertErrorDocument(doc, 428);
+  }
+
+
+
+
+
+
+
+
 
 
 
