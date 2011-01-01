@@ -22,6 +22,7 @@ package org.openremote.controller.listener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.log4j.Logger;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
@@ -41,6 +42,8 @@ import org.springframework.context.ApplicationEvent;
  * @author Dan 2009-5-18
  */
 public class ApplicationListener implements ServletContextListener {
+   
+   private static Logger logger = Logger.getLogger(ApplicationListener.class);
 
    /**
     * {@inheritDoc}
@@ -65,7 +68,7 @@ public class ApplicationListener implements ServletContextListener {
       try {
          Thread.sleep(time);
       } catch (InterruptedException e) {
-         e.printStackTrace();
+         logger.error("InterruptedException", e);
       }
    }
 

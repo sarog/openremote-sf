@@ -33,7 +33,9 @@ import org.junit.Test;
 import org.junit.Assert;
 
 /**
- * TODO
+ * Test 'switch' sensor state updates on OpenRemote virtual room/device protocol.
+ *
+ * @see org.openremote.controller.protocol.virtual.VirtualCommand
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -41,12 +43,18 @@ public class SwitchStatusTest
 {
 
 
-  // Test Setup -----------------------------------------------------------------------------------
+  // Instance Fields ------------------------------------------------------------------------------
 
+  /**
+   * Reference to the command builder we can use to build command instances.
+   */
   private VirtualCommandBuilder builder = null;
 
-  @Before
-  public void setUp()
+
+
+  // Test Setup -----------------------------------------------------------------------------------
+
+  @Before public void setUp()
   {
     builder = new VirtualCommandBuilder();
   }
@@ -55,6 +63,10 @@ public class SwitchStatusTest
 
   // Tests ----------------------------------------------------------------------------------------
 
+  /**
+   * Tests protocol read command behavior for 'switch' sensor type when no explict command to
+   * set state has been sent yet. Expecting a switch to return 'off' in such a case.
+   */
   @Test public void testStatusDefaultValue()
   {
     StatusCommand cmd = getReadCommand("test status default value");
@@ -65,29 +77,53 @@ public class SwitchStatusTest
   }
 
 
+  /**
+   * Tests 'switch' sensor read/write behavior.
+   */
   @Test public void testOnOffState()
   {
     final String ADDRESS = "test on off state";
+
+    // Read command in uninitialized state, should return 'off'...
 
     StatusCommand readCmd = getReadCommand(ADDRESS);
 
     String value = readCmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
 
-    Assert.assertTrue(value.equals("off"));
+    Assert.assertTrue(value.equalsIgnoreCase("off"));
 
 
+    // Send write command 'on' to the same address...
 
     ExecutableCommand writeON = getWriteCommand(ADDRESS, "on");
 
     writeON.send();
 
 
+    // Read state, should return 'on'...
+
     value = readCmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
 
     Assert.assertTrue(value.equals("on"));
+
+
+    // Send write command 'off' to the same address...
+
+    ExecutableCommand writeOFF = getWriteCommand(ADDRESS, "off");
+
+    writeOFF.send();
+
+
+
+    // Read state, should return 'off'...
+
+    value = readCmd.read(EnumSensorType.SWITCH, new HashMap<String, String>());
+
+    Assert.assertTrue(value.equals("off"));
   }
 
-  
+
+
   // Helpers --------------------------------------------------------------------------------------
 
   private StatusCommand getReadCommand(String address)

@@ -96,7 +96,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private Document getAllPanelsDocument(String xmlPath) {
       Document doc = buildXML(xmlPath);
-      Element root = (Element) doc.getRootElement();
+      Element root = doc.getRootElement();
       Element newRoot = new Element(root.getName());
 
       Document targetDocument = new Document(newRoot);
@@ -118,7 +118,7 @@ public class ProfileServiceImpl implements ProfileService {
    private Document getProfileDocumentByPanelID(String xmlPath, String panelID) {
       
       Document doc = buildXML(xmlPath);
-      Element root = (Element) doc.getRootElement();
+      Element root = doc.getRootElement();
       Element newRoot = new Element(root.getName());
       newRoot.setNamespace(root.getNamespace());
 
@@ -159,7 +159,7 @@ public class ProfileServiceImpl implements ProfileService {
   
       
       Document doc = buildXML(xmlPath);
-      Element root = (Element) doc.getRootElement();
+      Element root = doc.getRootElement();
       Element newRoot = new Element(root.getName());
       newRoot.setNamespace(root.getNamespace());
 
@@ -279,8 +279,8 @@ public class ProfileServiceImpl implements ProfileService {
          Document doc = sb.build(new File(xmlPath));
          return doc;
       } catch (JDOMException e) {
-         throw new InvalidPanelXMLException(e.getLocalizedMessage() +
-               "check the version of schema or structure of panel.xml with its dtd or schema : ");
+         throw new InvalidPanelXMLException(
+               "check the version of schema or structure of panel.xml with its dtd or schema : " + e.getMessage(), e);
       } catch (IOException e) {
          String msg = " An I/O error prevents a " + Constants.PANEL_XML + " from being fully parsed";
          throw new PanelXMLNotFoundException(msg, e);

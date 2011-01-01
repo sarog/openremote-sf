@@ -22,13 +22,13 @@ package org.openremote.controller.protocol.telnet;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.utils.CommandUtil;
 
 
 /**
- * The Class TelnetEventBuilder.
+ * The Class TelnetCommandBuilder.
  *
  * @author Marcus 2009-4-26
  */
@@ -38,7 +38,7 @@ public class TelnetCommandBuilder implements CommandBuilder {
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public ExecutableCommand build(Element element) {
+   public Command build(Element element) {
       TelnetCommand telnetEvent = new TelnetCommand();
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
       for(Element ele : propertyEles){

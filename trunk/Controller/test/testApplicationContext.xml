@@ -68,6 +68,8 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
+    
+	<bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
 	
 	<!-- controller.xml change service -->
     <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
