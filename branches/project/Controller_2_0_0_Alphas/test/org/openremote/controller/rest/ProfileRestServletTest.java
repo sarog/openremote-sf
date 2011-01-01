@@ -23,26 +23,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -50,14 +34,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.TestConstraint;
-import org.openremote.controller.suite.AllRESTfulAPIMockTests;
+import org.openremote.controller.suite.RESTXMLTests;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.SecurityUtil;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
@@ -143,14 +124,14 @@ public class ProfileRestServletTest {
 
     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
-    AllRESTfulAPIMockTests.assertHttpResponse(
-        connection, 428, AllRESTfulAPIMockTests.ASSERT_BODY_CONTENT,
-        AllRESTfulAPIMockTests.APPLICATIONXML_MIMETYPE, AllRESTfulAPIMockTests.CHARSET_UTF8
+    RESTXMLTests.assertHttpResponse(
+        connection, 428, RESTXMLTests.ASSERT_BODY_CONTENT,
+        RESTXMLTests.APPLICATIONXML_MIMETYPE, RESTXMLTests.CHARSET_UTF8
     );
 
-    Document doc = AllRESTfulAPIMockTests.getDOMDocument(connection.getErrorStream());
+    Document doc = RESTXMLTests.getDOMDocument(connection.getErrorStream());
 
-    AllRESTfulAPIMockTests.assertErrorDocument(doc, 428);
+    RESTXMLTests.assertErrorDocument(doc, 428);
   }
 
 
