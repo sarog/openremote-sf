@@ -22,8 +22,8 @@ package org.openremote.controller.protocol.socket;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.utils.CommandUtil;
 
 
@@ -38,7 +38,7 @@ public class TCPSocketCommandBuilder implements CommandBuilder {
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public ExecutableCommand build(Element element) {
+   public Command build(Element element) {
       TCPSocketCommand tcpEvent = new TCPSocketCommand();
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
       for(Element ele : propertyEles){
