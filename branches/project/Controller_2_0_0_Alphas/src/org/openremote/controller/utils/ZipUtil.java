@@ -29,6 +29,7 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.openremote.controller.exception.ExtractZipFileException;
 
 
 /**
@@ -50,6 +51,14 @@ public class ZipUtil {
     * @return true, if success
     */
    public static boolean unzip(InputStream inputStream, String targetDir){
+      if (targetDir == null || "".equals(targetDir)) {
+         throw new ExtractZipFileException("The resources path is null.");
+      }
+      File checkedTargetDir = new File(targetDir);
+      if (!checkedTargetDir.exists()) {
+         throw new ExtractZipFileException("The path " + targetDir + " doesn't exist.");
+      }
+      
       ZipInputStream zipInputStream = new ZipInputStream(inputStream);
       ZipEntry zipEntry;
       FileOutputStream fileOutputStream = null;

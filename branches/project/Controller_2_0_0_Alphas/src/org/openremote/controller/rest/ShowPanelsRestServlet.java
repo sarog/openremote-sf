@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 /**
@@ -54,22 +56,35 @@ public class ShowPanelsRestServlet extends HttpServlet {
    }
 
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
       response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
       response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+
       PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/panels";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
 
-      if (matcher.find()) {
-         try {
-            String panlesXML = profileService.getAllPanels();
-            out.print(panlesXML);
-         } catch (ControlCommandException e) {
+      if (matcher.find())
+      {
+         try
+         {
+            String panelsXML = profileService.getAllPanels();
+            out.print(JSONTranslator.toDesiredData(request, response, panelsXML));
+         }
+
+         catch (ControlCommandException e)
+         {
             logger.error("failed to get all the panels", e);
-            out.write(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
-         } finally {
+
+            response.setStatus(e.getErrorCode());
+           
+            out.write(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+         }
+
+         finally
+         {
             out.flush();
          }
       }

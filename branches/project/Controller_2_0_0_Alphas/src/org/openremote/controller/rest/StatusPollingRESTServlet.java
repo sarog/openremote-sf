@@ -37,6 +37,8 @@ import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
 import org.openremote.controller.spring.SpringContext;
@@ -98,18 +100,18 @@ public class StatusPollingRESTServlet extends HttpServlet {
             String pollingResults = statusPollingService.queryChangedState(deviceID, unParsedSensorIDs);
             if (pollingResults != null && !"".equals(pollingResults)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(pollingResults)) {
-                  printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(504, "Time out"));
+                  printWriter.print(JSONTranslator.toDesiredData(request, response, 504, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(504, "Time out")));
                } else {
                   logger.info("Return the polling status.");
-                  printWriter.write(pollingResults);
+                  printWriter.write(JSONTranslator.toDesiredData(request, response, pollingResults));
                }
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (ControllerException e) {
-            printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
-         } 
+            printWriter.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+         }
       } else {
-         printWriter.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url));
+         printWriter.print(JSONTranslator.toDesiredData(request, response, ControlCommandException.INVALID_POLLING_URL, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url)));
       }
       printWriter.flush();
    }

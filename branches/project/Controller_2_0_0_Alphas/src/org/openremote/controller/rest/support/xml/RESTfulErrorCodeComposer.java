@@ -32,15 +32,15 @@ public class RESTfulErrorCodeComposer {
    public static String composeXMLFormatStatusCode(int errorCode, String errorMessage) {
       StringBuffer sb = new StringBuffer();
       sb.append(Constants.STATUS_XML_HEADER);
-      sb.append("<error>");
-      sb.append("<code>");
+      sb.append("\n<error>\n");
+      sb.append("  <code>");
       sb.append(errorCode);
-      sb.append("</code>");
+      sb.append("</code>\n");
       
-      sb.append("<message>");
+      sb.append("  <message>");
       sb.append(errorMessage);
-      sb.append("</message>");
-      sb.append("</error>");
+      sb.append("</message>\n");
+      sb.append("</error>\n");
       sb.append(Constants.STATUS_XML_TAIL);
       return sb.toString();
    }

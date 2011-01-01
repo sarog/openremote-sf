@@ -34,6 +34,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -73,6 +74,7 @@ public class ControlCommandRESTServlet extends HttpServlet {
       Matcher matcher = pattern.matcher(url);      
       String controlID = null;
       String commandParam = null;
+      
       PrintWriter output = response.getWriter();
       
       if (matcher.find()) {
@@ -81,16 +83,16 @@ public class ControlCommandRESTServlet extends HttpServlet {
          try{
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
                   controlCommandService.trigger(controlID, commandParam);
+                  output.print(JSONTranslator.toDesiredData(request, response, 200, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(200, "SUCCESS")));
                } else {
                   throw new InvalidCommandTypeException(commandParam);
                }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            response.setStatus(e.getErrorCode());
-            output.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage()));
+            output.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
       } else {
-         output.print(RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}"));
+         output.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
       }
       output.flush();
    }

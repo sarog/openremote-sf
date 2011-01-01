@@ -31,7 +31,6 @@ import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentFactory;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.config.ControllerXMLChangedException;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
@@ -46,7 +45,6 @@ import org.openremote.controller.service.StatusCommandService;
  */
 public class StatusCommandServiceImpl implements StatusCommandService {
     
-    /** The remote action xml parser. */
     private RemoteActionXMLParser remoteActionXMLParser;
     
     private StatusCacheService statusCacheService;

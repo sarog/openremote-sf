@@ -96,7 +96,7 @@ public class ProfileServiceImpl implements ProfileService {
 
    private Document getAllPanelsDocument(String xmlPath) {
       Document doc = buildXML(xmlPath);
-      Element root = (Element) doc.getRootElement();
+      Element root = doc.getRootElement();
       Element newRoot = new Element(root.getName());
 
       Document targetDocument = new Document(newRoot);
@@ -118,7 +118,7 @@ public class ProfileServiceImpl implements ProfileService {
    private Document getProfileDocumentByPanelID(String xmlPath, String panelID) {
       
       Document doc = buildXML(xmlPath);
-      Element root = (Element) doc.getRootElement();
+      Element root = doc.getRootElement();
       Element newRoot = new Element(root.getName());
       newRoot.setNamespace(root.getNamespace());
 
@@ -159,7 +159,7 @@ public class ProfileServiceImpl implements ProfileService {
   
       
       Document doc = buildXML(xmlPath);
-      Element root = (Element) doc.getRootElement();
+      Element root = doc.getRootElement();
       Element newRoot = new Element(root.getName());
       newRoot.setNamespace(root.getNamespace());
 
