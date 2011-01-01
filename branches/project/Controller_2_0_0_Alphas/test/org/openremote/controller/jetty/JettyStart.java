@@ -30,6 +30,13 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.openremote.controller.TestConstraint;
 
+/**
+ * Starts Jetty embedded servlet test server, using 'web' folder of this project as war, so that we can test our REST
+ * API.
+ * 
+ * @author Dan Cong
+ * 
+ */
 public class JettyStart {
 
    private static Server server;

@@ -49,6 +49,9 @@ public class ProfileRestServletTest {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
+   /**
+    * backup xml files.
+    */
    @Before
    public void setup() {
       String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
@@ -61,6 +64,9 @@ public class ProfileRestServletTest {
 
    }
 
+   /**
+    * restore xml files.
+    */
    @After
    public void tearDown() {
       if (new File(panelXmlPath + ".bak").exists()) {
@@ -109,8 +115,8 @@ public class ProfileRestServletTest {
 
    }
    
-   @Test
-   public void requestNoneExistPanelProfile() throws Exception {
+   @Test public void requestNoneExistPanelProfile() throws Exception
+   {
 
       HttpClient httpClient = new DefaultHttpClient();
       HttpUriRequest request = SecurityUtil.getSecuredHttpRequest("http://127.0.0.1:" + TestConstraint.WEBAPP_PORT

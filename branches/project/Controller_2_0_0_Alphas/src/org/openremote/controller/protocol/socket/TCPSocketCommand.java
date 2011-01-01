@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.Sensor;
 
 /**
  * TODO
@@ -199,24 +200,57 @@ public class TCPSocketCommand implements ExecutableCommand, StatusCommand {
        return UNKNOWN_STATUS;
     }
 
-    // If custom sensor type has been configured, map the 'raw' return value to configured
-    // 'wanted' return value
-    //
-    // TODO :
-    //   no reason to put this implementation burden on protocol implementations, the
-    //   calling code could do it instead
-
-    for (String state : stateMap.keySet())
+    switch (sensorType)
     {
-      strState = stateMap.get(state);
+      case RANGE:
+         break;
 
-      if (regexResult.equals(strState))
-      {
-        return state;
+      case LEVEL:
+         String min = stateMap.get(Sensor.RANGE_MIN_STATE);
+         String max = stateMap.get(Sensor.RANGE_MAX_STATE);
+
+         try
+         {
+            int val = Integer.valueOf(regexResult);
+
+            if (min != null && max != null)
+            {
+               int minVal = Integer.valueOf(min);
+               int maxVal = Integer.valueOf(max);
+
+               return String.valueOf(100 * (val - minVal)/ (maxVal - minVal));
+            } 
+         }
+
+         catch (ArithmeticException e)
+         {
+            logger.warn("Level sensor values cannot be parsed: " + e.getMessage(), e);
+         }
+
+         break;
+
+      default://NOTE: if sensor type is RANGE, this map only contains min/max states.
+
+        // If custom sensor type has been configured, map the 'raw' return value to configured
+        // 'wanted' return value
+        //
+        // TODO :
+        //   no reason to put this implementation burden on protocol implementations, the
+        //   calling code could do it instead
+
+        for (String state : stateMap.keySet())
+        {
+          strState = stateMap.get(state);
+
+          if (regexResult.equals(strState))
+          {
+            return state;
+          }
+        }
       }
-    }
 
-    return regexResult;
+
+      return regexResult;
   }
 
 }

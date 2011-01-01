@@ -32,6 +32,7 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
+ * A mockup command via HTTP.
  * 
  * @author handy.wang 2010-03-18
  *
@@ -88,7 +89,7 @@ public class MockupCommand implements ExecutableCommand, StatusCommand {
 
    @SuppressWarnings("finally")
    @Override
-   public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
+   public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
       BufferedReader in = null;
       StringBuffer result = new StringBuffer();
       try {

@@ -123,4 +123,8 @@ public class ChangedStatusTable {
       this.recordList.clear();
    }
 
+   public List<ChangedStatusRecord> getRecordList() {
+      return recordList;
+   }
+   
 }
