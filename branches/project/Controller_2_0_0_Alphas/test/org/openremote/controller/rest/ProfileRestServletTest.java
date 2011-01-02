@@ -53,6 +53,30 @@ import com.meterware.httpunit.WebResponse;
 public class ProfileRestServletTest
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * Controller 2.0 REST/XML URI for listing all available panel ids in the controller
+   */
+  public final static String RESTAPI_PANELS_URI = "/rest/panels";
+
+  /**
+   * Controller 2.0 REST/XML URI for retrieving panel by id from the controller.
+   */
+  public final static String RESTAPI_PANEL_DEFINITION_URI = "/rest/panel/";
+
+  /**
+   * Controller 2.0 REST/XML URI for write commands to the controller.
+   */
+  public final static String RESTAPI_CONTROL_URI = "/rest/control/";
+
+  /**
+   * Controller 2.0 REST/XML URI for read commands.
+   */
+  public final static String RESTAPI_STATUS_URI = "/rest/status/";
+
+
+
    private String panelXmlPath;
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -108,18 +132,30 @@ public class ProfileRestServletTest
    }
    
 
-//  @Test public void requestAllPanels() throws Exception {}
+  @Test public void requestAllPanels() throws Exception
+  {
+    URL panelList = new URL("http://" + TestConstraint.WEBAPP_IP + ":" + TestConstraint.WEBAPP_PORT + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
+        RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
+    );
+    
+
+  }
 
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
-    URL doesNotExist = new URL("http://" + TestConstraint.WEBAPP_IP + ":" + TestConstraint.WEBAPP_PORT + "/controller/rest/panel/doesNotExist");
+    URL doesNotExist = new URL("http://" + TestConstraint.WEBAPP_IP + ":" + TestConstraint.WEBAPP_PORT + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
     RESTXMLTests.assertHttpResponse(
         connection, 428, RESTXMLTests.ASSERT_BODY_CONTENT,
-        RESTXMLTests.APPLICATIONXML_MIMETYPE, RESTXMLTests.CHARSET_UTF8
+        RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
     );
 
     Document doc = RESTXMLTests.getDOMDocument(connection.getErrorStream());
