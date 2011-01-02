@@ -61,8 +61,6 @@ public class RESTXMLTests
 
   public final static String APPLICATIONXML_MIMETYPE = "application/xml";
 
-  public final static String CHARSET_UTF8 = "UTF-8";
-
 
 
 
