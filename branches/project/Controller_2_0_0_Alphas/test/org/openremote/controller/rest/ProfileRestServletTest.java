@@ -1,4 +1,5 @@
-/* OpenRemote, the Home of the Digital Home.
+/*
+ * OpenRemote, the Home of the Digital Home.
  * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
@@ -45,7 +46,12 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
-public class ProfileRestServletTest {
+/**
+ * TODO
+ *
+ */
+public class ProfileRestServletTest
+{
 
    private String panelXmlPath;
 
@@ -78,22 +84,6 @@ public class ProfileRestServletTest {
       }
    }
 
-   @Test
-   public void requestAllPanels() throws Exception {
-
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
-            + "/controller/rest/panels");
-      try {
-         WebResponse wr = wc.getResponse(request);
-         System.out.println(wr.getText());
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was  timeout.");
-         }
-      }
-
-   }
 
    @Test
    public void requestFatherPanelProfile() throws Exception {
@@ -117,6 +107,9 @@ public class ProfileRestServletTest {
 
    }
    
+
+//  @Test public void requestAllPanels() throws Exception {}
+
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
