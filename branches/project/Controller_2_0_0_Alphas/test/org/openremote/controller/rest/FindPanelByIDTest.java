@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
@@ -42,16 +41,11 @@ import org.openremote.controller.TestConstraint;
 import org.openremote.controller.suite.RESTXMLTests;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
-import org.openremote.controller.utils.SecurityUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 
-import com.meterware.httpunit.HttpException;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 
 /**
  * TODO
@@ -59,7 +53,7 @@ import com.meterware.httpunit.WebResponse;
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  *
  */
-public class ProfileRestServletTest
+public class FindPanelByIDTest
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -90,8 +84,6 @@ public class ProfileRestServletTest
 
 
   public static URL containerURL = null;
-
-  private final static Logger logger = Logger.getLogger("REST/XML API Tests");
 
   
   static
