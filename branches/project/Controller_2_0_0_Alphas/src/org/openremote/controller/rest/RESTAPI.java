@@ -55,7 +55,7 @@ public abstract class RESTAPI extends HttpServlet
   //   an instance method
   //                                                                    [JPL]
   //
-  public static String composeXMLFormatStatusCode(int errorCode, String errorMessage)
+  public static String composeXMLErrorDocument(int errorCode, String errorMessage)
   {
      StringBuffer sb = new StringBuffer();
      sb.append(Constants.STATUS_XML_HEADER);
@@ -190,7 +190,7 @@ public abstract class RESTAPI extends HttpServlet
 
     }
 
-    sendResponse(response, composeXMLFormatStatusCode(errorCode, message));
+    sendResponse(response, composeXMLErrorDocument(errorCode, message));
   }
 
 
