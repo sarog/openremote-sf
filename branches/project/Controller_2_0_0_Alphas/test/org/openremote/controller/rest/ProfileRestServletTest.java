@@ -28,6 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -154,28 +156,102 @@ public class ProfileRestServletTest
 
   // Tests ----------------------------------------------------------------------------------------
 
-   @Test
-   public void requestFatherPanelProfile() throws Exception {
+  @Test public void requestFatherPanelProfile() throws Exception
+  {
 
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
-            + "/controller/rest/panel/father");
-      try {
-         WebResponse wr = wc.getResponse(request);
-         String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
-               TestConstraint.FIXTURE_DIR + "fatherProfile.xml").getFile();
-         File expectedXMLFile = new File(expectedXMLFilePath);
-         String expectedXML = FileUtils.readFileToString(expectedXMLFile);
-         String actualXML = wr.getText();
-         Assert.assertEquals(expectedXML, actualXML);
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was  timeout.");
-         }
+    URL panelList = new URL(containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
+        RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
+    );
+
+    Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
+
+    RESTXMLTests.assertOpenRemoteRootElement(doc);
+
+    NodeList list = doc.getElementsByTagName("screens");
+
+    Assert.assertTrue("Expected one <screens> element in panel definition.", list.getLength() == 1);
+
+    list = doc.getElementsByTagName("groups");
+
+    Assert.assertTrue("Expected one <groups> element in panel definition.", list.getLength() == 1);
+
+    list = doc.getElementsByTagName("group");
+
+    Assert.assertTrue("Expected at least two groups in the panel definition.", list.getLength() >= 2);
+
+    Set<String> screenReferences = new HashSet<String>(10);
+
+    for (int groupIndex = 0; groupIndex < list.getLength(); ++groupIndex)
+    {
+      Node group = list.item(groupIndex);
+
+      if (group.getNodeType() != Node.ELEMENT_NODE)
+        continue;
+
+      NodeList includes = group.getChildNodes();
+
+      for (int includeIndex = 0; includeIndex < includes.getLength(); ++includeIndex)
+      {
+        Node include = includes.item(includeIndex);
+
+        if (include.getNodeType() != Node.ELEMENT_NODE)
+          continue;
+
+        if (!include.getNodeName().equalsIgnoreCase("include"))
+          continue;
+        
+        NamedNodeMap attrs = include.getAttributes();
+
+        Assert.assertNotNull("Expected to find attributes in include", attrs);
+        Assert.assertNotNull("Expected to find 'ref' attribute in <include>, got null", attrs.getNamedItem("ref"));
+
+        Node ref = attrs.getNamedItem("ref");
+
+        String screenRef = ref.getNodeValue();
+
+        screenReferences.add(screenRef);
       }
+    }
 
-   }
-   
+    list = doc.getElementsByTagName("screen");
+
+    Set<String> screenIDs = new HashSet<String>(10);
+
+    Assert.assertTrue("Expected four <screen> elements in panel definition.", list.getLength() >= 4);
+
+    for (int screenIndex = 0; screenIndex < list.getLength(); ++screenIndex)
+    {
+      Node screen = list.item(screenIndex);
+
+      NamedNodeMap attrs = screen.getAttributes();
+
+      Assert.assertNotNull("Expected to find 'id' attribute in screen, not null.", attrs.getNamedItem("id"));
+
+      Node id = attrs.getNamedItem("id");
+
+      screenIDs.add(id.getNodeValue());
+    }
+
+    Assert.assertTrue(screenIDs.contains("5"));
+    Assert.assertTrue(screenIDs.contains("6"));
+    Assert.assertTrue(screenIDs.contains("7"));
+    Assert.assertTrue(screenIDs.contains("8"));
+    
+
+
+    for (String ref : screenReferences)
+    {
+      Assert.assertTrue("Expected to find screen with id: " + ref, screenIDs.contains(ref));
+    }
+
+  }
+
+
 
   @Test public void requestAllPanels() throws Exception
   {
