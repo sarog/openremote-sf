@@ -89,16 +89,18 @@ public class ControlCommandRESTServlet extends HttpServlet {
          try{
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
                   controlCommandService.trigger(controlID, commandParam);
-                  output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 200, RESTAPI.composeXMLFormatStatusCode(200, "SUCCESS")));
+
+                  // TODO : this just makes no sense -- why would you put HTTP 200 OK into an error document? chinese logic
+                  output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 200, RESTAPI.composeXMLErrorDocument(200, "SUCCESS")));
                } else {
                   throw new InvalidCommandTypeException(commandParam);
                }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+            output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
          }
       } else {
-         output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTAPI.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
+         output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTAPI.composeXMLErrorDocument(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
       }
       output.flush();
    }
