@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,6 +49,29 @@ public abstract class RESTAPI extends HttpServlet
    */
   private final static Logger logger = Logger.getLogger(Constants.REST_ALL_PANELS_LOG_CATEGORY);
 
+
+  // TODO :
+  //   once all REST API servlets have been migrated to RESTAPI subclasses, this can become
+  //   an instance method
+  //                                                                    [JPL]
+  //
+  public static String composeXMLFormatStatusCode(int errorCode, String errorMessage)
+  {
+     StringBuffer sb = new StringBuffer();
+     sb.append(Constants.STATUS_XML_HEADER);
+     sb.append("\n<error>\n");
+     sb.append("  <code>");
+     sb.append(errorCode);
+     sb.append("</code>\n");
+
+     sb.append("  <message>");
+     sb.append(errorMessage);
+     sb.append("</message>\n");
+     sb.append("</error>\n");
+     sb.append(Constants.STATUS_XML_TAIL);
+    
+     return sb.toString();
+  }
 
 
   private ResponseType responseType = ResponseType.APPLICATION_XML;
@@ -168,7 +190,7 @@ public abstract class RESTAPI extends HttpServlet
 
     }
 
-    sendResponse(response, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(errorCode, message));
+    sendResponse(response, composeXMLFormatStatusCode(errorCode, message));
   }
 
 

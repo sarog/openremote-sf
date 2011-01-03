@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.openremote.controller.rest.RESTAPI;
 import org.openremote.controller.Constants;
 
 /**
@@ -59,7 +59,7 @@ public class LogoutServlet extends HttpServlet {
 
 	   response.setHeader("WWW-Authenticate", "Basic realm=\"OPENREMOTE_Controller\"");
 	   PrintWriter printWriter = response.getWriter();
-	   printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, LOGOUT_ERROR_CODE, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(LOGOUT_ERROR_CODE, "Logout successfully   ")));
+	   printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, LOGOUT_ERROR_CODE, RESTAPI.composeXMLFormatStatusCode(LOGOUT_ERROR_CODE, "Logout successfully   ")));
 	   response.setStatus(LOGOUT_ERROR_CODE);
 	}
 

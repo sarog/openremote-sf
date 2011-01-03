@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerException;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
@@ -105,10 +104,10 @@ public class StatusCommandRESTServlet extends HttpServlet {
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);
-                printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+                printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
             }
         } else {
-            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
+            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTAPI.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
         }
         printWriter.flush();
     }
