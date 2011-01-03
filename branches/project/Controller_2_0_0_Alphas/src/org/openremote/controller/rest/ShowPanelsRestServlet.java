@@ -47,26 +47,39 @@ import org.openremote.controller.spring.SpringContext;
 public class ShowPanelsRestServlet extends HttpServlet
 {
 
-  private static final Logger logger = Logger.getLogger(ShowPanelsRestServlet.class);
+  // Class Members --------------------------------------------------------------------------------
 
-  private static final ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean(
+  /**
+   * Common log category for HTTP REST API.
+   */
+  private final static Logger logger = Logger.getLogger(Constants.REST_ALL_PANELS_LOG_CATEGORY);
+
+
+  private final static ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean(
        "profileService");
 
-  private static final long serialVersionUID = 1L;
+  private final static long serialVersionUID = 1L;
 
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+  // Servlet Implementation -----------------------------------------------------------------------
+
+  @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException
   {
     doPost(request, response);
   }
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response)
+  @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException
   {
 
+    // Set response MIME type and character encoding...
+
     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
     response.setContentType(Constants.MIME_APPLICATION_XML);
+
+
+    // Write response...
 
     PrintWriter out = response.getWriter();
 

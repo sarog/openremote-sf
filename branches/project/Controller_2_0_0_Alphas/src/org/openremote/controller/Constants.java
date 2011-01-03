@@ -29,6 +29,23 @@ package org.openremote.controller;
 public class Constants
 {
 
+  /**
+   * Top level category for all controller related logging.
+   */
+  public final static String CONTROLLER_ROOT_LOG_CATEGORY = "OpenRemote.Controller";
+
+  /**
+   * Logging subcategory for incoming requests on the Controller HTTP/REST API.
+   */
+  public final static String HTTP_REST_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".REST";
+
+  /**
+   * Specific logging subcategory for /rest/panels related incoming HTTP requests on REST API.
+   */
+  public final static String REST_ALL_PANELS_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".AllPanels";
+  
+
+
   public final static String LIRCD_CONF = "lircd.conf";
 
   public final static String CONTROLLER_XSD_PATH = "/controller-2.0-M7.xsd";
