@@ -39,7 +39,7 @@ public class JSONTranslator {
 
    // translate xml data to json object with HTTPServletRequest.
    public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, String xml) {
-      String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER_NAME);
+      String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
       return doTransalteXMLToJSONString(acceptTypeInHeader, response, xml);
    }
    
@@ -54,7 +54,7 @@ public class JSONTranslator {
    }
    
    public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, int errorCode, String xml) {
-      String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER_NAME);
+      String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
       return doTransalteXMLToJSONString(acceptTypeInHeader, response, errorCode, xml);
    }
    

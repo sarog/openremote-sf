@@ -163,7 +163,7 @@ public class FileServiceImpl implements FileService {
       HttpGet httpGet = new HttpGet(PathUtil.addSlashSuffix(configuration.getBeehiveRESTRootUrl()) + "user/" + username
             + "/openremote.zip");
       
-      httpGet.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+      httpGet.setHeader(Constants.HTTP_AUTHORIZATION_HEADER, Constants.HTTP_BASIC_AUTHORIZATION
             + encode(username, password));
       InputStream inputStream = null;
       try {

@@ -96,24 +96,42 @@ public class Constants
   /** The Constant XML_TAIL of composed xml-formatted status results. */
   public static final String STATUS_XML_TAIL = "</openremote>";
 
-  public static final String HTTP_BASIC_AUTH_HEADER_NAME = "Authorization";
 
-  public static final String HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX = "Basic ";
+  // HTTP Request Headers -------------------------------------------------------------------------
 
-  public static final String CALLBACK_PARAM_NAME = "callback";
+  public final static String HTTP_AUTHORIZATION_HEADER = "Authorization";
+
+  public final static String HTTP_BASIC_AUTHORIZATION = "Basic ";
+
+  /**
+   * HTTP 'Accept' header used to indicate what types of documents the sender of request is
+   * capable of accepting.
+   */
+  public final static String HTTP_ACCEPT_HEADER = "accept";
+
+
+  // Character Encodings --------------------------------------------------------------------------
 
   /**
    * IANA code for UTF-8 character encoding.
    */
-  public static final String CHARACTER_ENCODING_UTF8 = "UTF-8";
+  public final static String CHARACTER_ENCODING_UTF8 = "UTF-8";
 
-  public static final String HTTP_ACCEPT_HEADER_NAME = "accept";
+
+  // MIME Types -----------------------------------------------------------------------------------
 
   /**
    * MIME type string for 'application/xml' content.
    */
-  public static final String MIME_APPLICATION_XML = "application/xml";
+  public final static String MIME_APPLICATION_XML = "application/xml";
 
-  public static final String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
+  /**
+   * MIME type string for 'application/json' content.
+   */
+  public final static String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
+
+
+
+  public final static String CALLBACK_PARAM_NAME = "callback";
 
 }

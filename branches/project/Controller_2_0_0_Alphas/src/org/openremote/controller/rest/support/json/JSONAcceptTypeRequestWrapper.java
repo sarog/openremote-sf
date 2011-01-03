@@ -45,7 +45,7 @@ public class JSONAcceptTypeRequestWrapper extends HttpServletRequestWrapper {
 
    @Override
    public String getHeader(String name) {
-      if (Constants.HTTP_ACCEPT_HEADER_NAME.toLowerCase().equals(name.toLowerCase())) {
+      if (Constants.HTTP_ACCEPT_HEADER.toLowerCase().equals(name.toLowerCase())) {
          return Constants.HTTP_HEADER_ACCEPT_JSON_TYPE;
       } else {
          return super.getHeader(name);
@@ -55,7 +55,7 @@ public class JSONAcceptTypeRequestWrapper extends HttpServletRequestWrapper {
    @SuppressWarnings("unchecked")
    @Override
    public Enumeration getHeaders(String s) {
-      if (Constants.HTTP_ACCEPT_HEADER_NAME.toLowerCase().equals(s.toLowerCase())) {
+      if (Constants.HTTP_ACCEPT_HEADER.toLowerCase().equals(s.toLowerCase())) {
          Vector<String> headers = new Vector();
          headers.add(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE);
          return headers.elements();
