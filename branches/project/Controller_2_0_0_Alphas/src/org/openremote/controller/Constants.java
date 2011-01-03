@@ -97,10 +97,18 @@ public class Constants
   public static final String STATUS_XML_TAIL = "</openremote>";
 
 
+
   // HTTP Request Headers -------------------------------------------------------------------------
 
+  /**
+   * HTTP 'Authorization' header for requests that require HTTP server-side authentication.
+   */
   public final static String HTTP_AUTHORIZATION_HEADER = "Authorization";
 
+  /**
+   * Prefix for 'Authorization' header <b>value</b> to indicate a HTTP 'Basic' authentication.
+   * The prefix should be followed with encoded user name and password.
+   */
   public final static String HTTP_BASIC_AUTHORIZATION = "Basic ";
 
   /**
@@ -110,12 +118,14 @@ public class Constants
   public final static String HTTP_ACCEPT_HEADER = "accept";
 
 
+
   // Character Encodings --------------------------------------------------------------------------
 
   /**
    * IANA code for UTF-8 character encoding.
    */
   public final static String CHARACTER_ENCODING_UTF8 = "UTF-8";
+
 
 
   // MIME Types -----------------------------------------------------------------------------------
