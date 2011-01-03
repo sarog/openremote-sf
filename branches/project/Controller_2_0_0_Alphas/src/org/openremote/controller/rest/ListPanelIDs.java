@@ -52,7 +52,7 @@ import org.openremote.controller.spring.SpringContext;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ListPanelIDs extends HttpServlet
+public class ListPanelIDs extends RESTAPI
 {
 
   /*
@@ -83,51 +83,28 @@ public class ListPanelIDs extends HttpServlet
 
 
 
-  // Servlet Implementation -----------------------------------------------------------------------
+  // Implement REST API ---------------------------------------------------------------------------
 
-  @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException
+
+  @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {
-    doPost(request, response);
-  }
-
-  @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException
-  {
-
-    // Set response MIME type and character encoding...
-
-    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-    response.setContentType(Constants.MIME_APPLICATION_XML);
-
-    // Get the 'accept' header from client -- this will indicate whether we will send
-    // application/xml or application/json response...
-
-    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-
-    // Write response...
-
-    PrintWriter out = response.getWriter();
-
     try
     {
       String panelsXML = profileService.getAllPanels();
-      out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, panelsXML));
+      sendResponse(response, panelsXML);
     }
 
     catch (ControlCommandException e)
     {
       logger.error("failed to get all the panels", e);
 
-      response.setStatus(e.getErrorCode());
+      // TODO :
+      //   this might well break the JSON client code -- but can't know for sure cause chinese
+      //   are too effin dumb to write proper tests
+      //
+      // response.setStatus(e.getErrorCode());
 
-      out.write(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(),
-          RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
-    }
-
-    finally
-    {
-      out.flush();
+      sendResponse(response, e.getErrorCode(), e.getMessage());
     }
   }
 
