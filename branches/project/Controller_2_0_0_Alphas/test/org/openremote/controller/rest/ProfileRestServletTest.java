@@ -26,6 +26,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -40,6 +42,9 @@ import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.SecurityUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
 
 import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
@@ -77,37 +82,77 @@ public class ProfileRestServletTest
 
 
 
-   private String panelXmlPath;
+  // Class Members --------------------------------------------------------------------------------
 
-   private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   /**
-    * backup xml files.
-    */
-   @Before
-   public void setup() {
-      String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
-            TestConstraint.FIXTURE_DIR + Constants.PANEL_XML).getFile();
-      panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) + Constants.PANEL_XML;
-      if (new File(panelXmlPath).exists()) {
-         new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
-      }
-      copyFile(panelXmlFixturePath, panelXmlPath);
+  public static URL containerURL = null;
 
-   }
+  private final static Logger logger = Logger.getLogger("REST/XML API Tests");
 
-   /**
-    * restore xml files.
-    */
-   @After
-   public void tearDown() {
-      if (new File(panelXmlPath + ".bak").exists()) {
-         new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
-      } else {
-         deleteFile(panelXmlPath);
-      }
-   }
+  
+  static
+  {
+    try
+    {
+      containerURL = new URL(
+          "http://" + TestConstraint.WEBAPP_IP + ":" +
+          TestConstraint.WEBAPP_PORT + "/controller"
+      );
+    }
+    catch (Throwable t)
+    {
+      Assert.fail("Can't initialize tests: " + t.getMessage());
+    }
+  }
 
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+
+  private String panelXmlPath;
+
+
+
+
+  // Test Lifecycle -------------------------------------------------------------------------------
+
+  /**
+   * backup xml files.
+   */
+  @Before public void setup()
+  {
+    String panelXmlFixturePath = this.getClass().getClassLoader()
+        .getResource(TestConstraint.FIXTURE_DIR + Constants.PANEL_XML).getFile();
+
+    panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
+        .getResourcePath()) + Constants.PANEL_XML;
+
+    if (new File(panelXmlPath).exists())
+    {
+       new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
+    }
+
+    copyFile(panelXmlFixturePath, panelXmlPath);
+  }
+
+  /**
+   * restore xml files.
+   */
+  @After public void tearDown()
+  {
+    if (new File(panelXmlPath + ".bak").exists())
+    {
+       new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
+    }
+
+    else
+    {
+       deleteFile(panelXmlPath);
+    }
+  }
+
+
+  // Tests ----------------------------------------------------------------------------------------
 
    @Test
    public void requestFatherPanelProfile() throws Exception {
@@ -134,7 +179,7 @@ public class ProfileRestServletTest
 
   @Test public void requestAllPanels() throws Exception
   {
-    URL panelList = new URL("http://" + TestConstraint.WEBAPP_IP + ":" + TestConstraint.WEBAPP_PORT + RESTAPI_PANELS_URI);
+    URL panelList = new URL(containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
@@ -142,14 +187,69 @@ public class ProfileRestServletTest
         connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
         RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
     );
-    
+
+    Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
+
+    RESTXMLTests.assertOpenRemoteRootElement(doc);
+
+
+    NodeList list = doc.getElementsByTagName("panel");
+
+    Assert.assertTrue(list.getLength() >= 3);
+
+    Map<String, String> panels = new HashMap<String, String>(3);
+
+    for (int panelIndex = 0; panelIndex < list.getLength(); ++panelIndex)
+    {
+      Node panel = list.item(panelIndex);
+      NamedNodeMap attrs = panel.getAttributes();
+
+      Node id = attrs.getNamedItem("id");
+      String idVal = id.getNodeValue();
+
+      Node name = attrs.getNamedItem("name");
+      String nameVal = name.getNodeValue();
+
+      panels.put(idVal, nameVal);
+    }
+
+    Assert.assertNotNull(
+        "Expected panel id 'MyIphone' but that was not found.",
+        panels.get("MyIphone")
+    );
+
+    Assert.assertNotNull(
+        "Expected panel id 'MyAndroid' but that was not found.",
+        panels.get("MyAndroid")
+    );
+
+    Assert.assertNotNull(
+        "Expected panel id '2fd894042c668b90aadf0698d353e579' but that was not found.",
+        panels.get("2fd894042c668b90aadf0698d353e579")
+    );
+
+
+    Assert.assertTrue(
+        "Expected panel id=MyIphone with name 'father', got " + panels.get("MyIphone"),
+        panels.get("MyIphone").equalsIgnoreCase("father")
+    );
+
+    Assert.assertTrue(
+        "Expected panel id=MyAndroid with name 'mother', got " + panels.get("MyAndroid"),
+        panels.get("MyAndroid").equalsIgnoreCase("mother")
+    );
+
+    Assert.assertTrue(
+        "Expected panel id=2fd894042c668b90aadf0698d353e579 with name 'me', got " + panels.get("2fd894042c668b90aadf0698d353e579"),
+        panels.get("2fd894042c668b90aadf0698d353e579").equalsIgnoreCase("me")
+    );
 
   }
 
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
-    URL doesNotExist = new URL("http://" + TestConstraint.WEBAPP_IP + ":" + TestConstraint.WEBAPP_PORT + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
+    URL doesNotExist = new URL(containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
