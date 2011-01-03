@@ -39,13 +39,34 @@ import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
 /**
- * TODO : Show all available panels.
- * 
- * @author Javen, Dan Cong
+ * This servlet implements the REST API '/rest/panels' functionality which returns either an
+ * XML or JSON document with all the available panel definitions deployed to the controller. <p>
  *
+ * Access to each individual panel definition will depend on further REST API calls and access
+ * restrictions configured in the controller.
+ *
+ * See <a href = "http://www.openremote.org/display/docs/Controller+2.0+HTTP-REST-XML">
+ * Controller 2.0 REST XML API<a> and
+ * <a href = "http://openremote.org/display/docs/Controller+2.0+HTTP-REST-JSONP">Controller 2.0
+ * REST JSONP API</a> for more details.
+ *
+ * @see org.openremote.controller.rest.GetProfileRestServlet
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ShowPanelsRestServlet extends HttpServlet
+public class ListPanelIDs extends HttpServlet
 {
+
+  /*
+   *  IMPLEMENTATION NOTES:
+   *
+   *    - This adheres to the current 2.0 version of the HTTP/REST/XML and HTTP/REST/JSON APIs.
+   *      There's currently no packaging or REST URL distinction for supported API versions.
+   *      Later versions of the Controller may support multiple revisions of the API depending
+   *      on client request. Appropriate implementation changes should be made then.
+   *                                                                                      [JPL]
+   */
+
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -55,10 +76,13 @@ public class ShowPanelsRestServlet extends HttpServlet
   private final static Logger logger = Logger.getLogger(Constants.REST_ALL_PANELS_LOG_CATEGORY);
 
 
+  // TODO :
+  //  reduce API dependency and lookup service implementation through either an service container
+  //  or short term servlet application context
+
   private final static ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean(
        "profileService");
 
-  private final static long serialVersionUID = 1L;
 
 
   // Servlet Implementation -----------------------------------------------------------------------
