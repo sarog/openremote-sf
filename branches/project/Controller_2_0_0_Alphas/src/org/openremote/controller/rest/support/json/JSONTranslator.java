@@ -41,10 +41,10 @@ public class JSONTranslator
   public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, String xml)
   {
     String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-    return doTransalteXMLToJSONString(acceptTypeInHeader, response, xml);
+    return translateXMLToJSON(acceptTypeInHeader, response, xml);
   }
 
-  public static String doTransalteXMLToJSONString(String acceptTypeInHeader, HttpServletResponse response, String xml)
+  public static String translateXMLToJSON(String acceptTypeInHeader, HttpServletResponse response, String xml)
   {
     if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader))
     {
