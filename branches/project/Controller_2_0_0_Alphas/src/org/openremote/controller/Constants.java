@@ -21,8 +21,9 @@
 package org.openremote.controller;
 
 /**
- * TODO
+ * Application wide constants for OpenRemote Controller.
  * 
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Dan 2009-6-1
  */
 public class Constants

@@ -69,33 +69,26 @@ public class ShowPanelsRestServlet extends HttpServlet
     response.setContentType(Constants.MIME_APPLICATION_XML);
 
     PrintWriter out = response.getWriter();
-    String url = request.getRequestURL().toString();
-    String regexp = "rest\\/panels";
-    Pattern pattern = Pattern.compile(regexp);
-    Matcher matcher = pattern.matcher(url);
 
-    if (matcher.find())
+    try
     {
-      try
-      {
-        String panelsXML = profileService.getAllPanels();
-        out.print(JSONTranslator.toDesiredData(request, response, panelsXML));
-      }
+      String panelsXML = profileService.getAllPanels();
+      out.print(JSONTranslator.toDesiredData(request, response, panelsXML));
+    }
 
-      catch (ControlCommandException e)
-      {
-        logger.error("failed to get all the panels", e);
+    catch (ControlCommandException e)
+    {
+      logger.error("failed to get all the panels", e);
 
-        response.setStatus(e.getErrorCode());
+      response.setStatus(e.getErrorCode());
 
-        out.write(JSONTranslator.toDesiredData(request, response, e.getErrorCode(),
-            RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
-      }
+      out.write(JSONTranslator.toDesiredData(request, response, e.getErrorCode(),
+          RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+    }
 
-      finally
-      {
-        out.flush();
-      }
+    finally
+    {
+      out.flush();
     }
   }
 
