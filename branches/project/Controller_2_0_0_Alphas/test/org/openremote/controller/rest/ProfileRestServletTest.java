@@ -56,6 +56,8 @@ import com.meterware.httpunit.WebResponse;
 /**
  * TODO
  *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ *
  */
 public class ProfileRestServletTest
 {

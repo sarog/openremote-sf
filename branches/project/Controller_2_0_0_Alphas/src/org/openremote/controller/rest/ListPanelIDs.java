@@ -100,6 +100,10 @@ public class ListPanelIDs extends HttpServlet
     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
     response.setContentType(Constants.MIME_APPLICATION_XML);
 
+    // Get the 'accept' header from client -- this will indicate whether we will send
+    // application/xml or application/json response...
+
+    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
 
     // Write response...
 
@@ -108,7 +112,7 @@ public class ListPanelIDs extends HttpServlet
     try
     {
       String panelsXML = profileService.getAllPanels();
-      out.print(JSONTranslator.toDesiredData(request, response, panelsXML));
+      out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, panelsXML));
     }
 
     catch (ControlCommandException e)
@@ -117,7 +121,7 @@ public class ListPanelIDs extends HttpServlet
 
       response.setStatus(e.getErrorCode());
 
-      out.write(JSONTranslator.toDesiredData(request, response, e.getErrorCode(),
+      out.write(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(),
           RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
     }
 

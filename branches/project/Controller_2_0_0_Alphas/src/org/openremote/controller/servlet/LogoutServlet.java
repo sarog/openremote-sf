@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.openremote.controller.Constants;
 
 /**
  * This servlet is used to let the panels (such as iPhone, Android) logout the controller. 
@@ -49,9 +50,16 @@ public class LogoutServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    // Get the 'accept' header from client -- this will indicate whether we will send
+    // application/xml or application/json response...
+
+    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+
 	   response.setHeader("WWW-Authenticate", "Basic realm=\"OPENREMOTE_Controller\"");
 	   PrintWriter printWriter = response.getWriter();
-	   printWriter.print(JSONTranslator.toDesiredData(request, response, LOGOUT_ERROR_CODE, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(LOGOUT_ERROR_CODE, "Logout successfully   ")));
+	   printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, LOGOUT_ERROR_CODE, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(LOGOUT_ERROR_CODE, "Logout successfully   ")));
 	   response.setStatus(LOGOUT_ERROR_CODE);
 	}
 

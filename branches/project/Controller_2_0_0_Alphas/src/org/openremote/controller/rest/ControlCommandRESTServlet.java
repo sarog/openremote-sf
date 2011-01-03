@@ -65,8 +65,15 @@ public class ControlCommandRESTServlet extends HttpServlet {
    @Override
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        
-      response.setContentType(Constants.MIME_APPLICATION_XML);
-      response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+    // Set response MIME type and character encoding...
+
+    response.setContentType(Constants.MIME_APPLICATION_XML);
+    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+
+    // Get the 'accept' header from client -- this will indicate whether we will send
+    // application/xml or application/json response...
+
+    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
 
       String url = request.getRequestURL().toString();      
       String regexp = "rest\\/control\\/(\\d+)\\/(\\w+)";
@@ -83,16 +90,16 @@ public class ControlCommandRESTServlet extends HttpServlet {
          try{
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
                   controlCommandService.trigger(controlID, commandParam);
-                  output.print(JSONTranslator.toDesiredData(request, response, 200, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(200, "SUCCESS")));
+                  output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 200, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(200, "SUCCESS")));
                } else {
                   throw new InvalidCommandTypeException(commandParam);
                }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            output.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+            output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
          }
       } else {
-         output.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
+         output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
       }
       output.flush();
    }
