@@ -21,7 +21,6 @@
 package org.openremote.controller.rest.support.json;
 
 import java.net.HttpURLConnection;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSON;
@@ -39,11 +38,17 @@ public class JSONTranslator
 {
 
 
-  public static String translateXMLToJSON(String acceptTypeInHeader, HttpServletResponse response, String xml)
+  public static String translateXMLToJSON(HttpServletResponse response, String xml)
   {
-    if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptTypeInHeader))
+    return translateXMLToJSON(Constants.MIME_APPLICATION_JSON, response, xml);
+  }
+
+  public static String translateXMLToJSON(String acceptHeader, HttpServletResponse response, String xml)
+  {
+    if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
     {
       response.setContentType(Constants.MIME_APPLICATION_JSON);
+
       return translate(response, xml);
     }
 
@@ -55,11 +60,12 @@ public class JSONTranslator
   }
 
 
-  public static String translateXMLToJSON(String acceptTypeInHeader, HttpServletResponse response, int errorCode, String xml)
+  public static String translateXMLToJSON(String acceptHeader, HttpServletResponse response, int errorCode, String xml)
   {
-    if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptTypeInHeader))
+    if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
     {
       response.setContentType(Constants.MIME_APPLICATION_JSON);
+      
       return translate(response, xml);
     }
 
@@ -67,6 +73,7 @@ public class JSONTranslator
     {
       response.setContentType(Constants.MIME_APPLICATION_XML);
       response.setStatus(errorCode);
+
       return xml;
     }
   }
