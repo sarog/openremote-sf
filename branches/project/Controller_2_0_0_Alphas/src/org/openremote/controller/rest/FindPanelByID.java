@@ -20,23 +20,17 @@
  */
 package org.openremote.controller.rest;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
-import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -47,7 +41,7 @@ import org.openremote.controller.spring.SpringContext;
  * @author Javen, Dan Cong
  *
  */
-public class GetProfileRestServlet extends RESTAPI
+public class FindPanelByID extends RESTAPI
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -67,7 +61,7 @@ public class GetProfileRestServlet extends RESTAPI
 
 
 
-  // Servlet Implementation -----------------------------------------------------------------------
+  // Implement REST API ---------------------------------------------------------------------------
 
   @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {

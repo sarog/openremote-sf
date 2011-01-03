@@ -111,6 +111,9 @@
     <servlet-class>org.openremote.controller.servlet.ResourceServlet</servlet-class>
   </servlet>
 
+  <!--
+   | Servlet for 'rest/panels' implementation.
+   +-->
   <servlet>
     <description>
       Returns XML or JSON document describing all available panel definition IDs
@@ -122,11 +125,18 @@
     <servlet-class>org.openremote.controller.rest.ListPanelIDs</servlet-class>
   </servlet>
 
+  <!--
+   | Servlet for 'rest/panel/{id} implementation.
+   +-->
   <servlet>
-    <description>get the profile information by panel name</description>
-    <display-name>GetProfileRestServlet</display-name>
-    <servlet-name>GetProfileRestServlet</servlet-name>
-    <servlet-class>org.openremote.controller.rest.GetProfileRestServlet</servlet-class>
+    <description>
+      Returns the XML or JSON panel definition for a specific panel ID.
+      Note that access to panel definition may be secured by the controller
+      and require an authentication.
+    </description>
+    <display-name>Return Panel Definition -- /rest/panel/id</display-name>
+    <servlet-name>FindPanelByID</servlet-name>
+    <servlet-class>org.openremote.controller.rest.FindPanelByID</servlet-class>
   </servlet>
 
   <servlet>
@@ -165,11 +175,16 @@
   </servlet-mapping>
 
 
-
+  <!--
+   | Map Controller REST API servlet which returns a panel definition by ID to
+   | 'rest/panel/id URI.
+   +-->
   <servlet-mapping>
-    <servlet-name>GetProfileRestServlet</servlet-name>
+    <servlet-name>FindPanelByID</servlet-name>
     <url-pattern>/rest/panel/*</url-pattern>
   </servlet-mapping>
+
+
 
   <servlet-mapping>
     <servlet-name>LogoutServlet</servlet-name>

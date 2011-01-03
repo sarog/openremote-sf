@@ -20,19 +20,12 @@
  */
 package org.openremote.controller.rest;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
-import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -48,7 +41,7 @@ import org.openremote.controller.spring.SpringContext;
  * <a href = "http://openremote.org/display/docs/Controller+2.0+HTTP-REST-JSONP">Controller 2.0
  * REST JSONP API</a> for more details.
  *
- * @see org.openremote.controller.rest.GetProfileRestServlet
+ * @see FindPanelByID
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
