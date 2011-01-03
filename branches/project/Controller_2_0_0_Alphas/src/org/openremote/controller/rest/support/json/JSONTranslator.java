@@ -46,9 +46,9 @@ public class JSONTranslator
 
   public static String translateXMLToJSON(String acceptTypeInHeader, HttpServletResponse response, String xml)
   {
-    if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader))
+    if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptTypeInHeader))
     {
-      response.setContentType(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE);
+      response.setContentType(Constants.MIME_APPLICATION_JSON);
       return translate(response, xml);
     }
 
@@ -67,9 +67,9 @@ public class JSONTranslator
 
   private static String doTransalteXMLToJSONString(String acceptTypeInHeader, HttpServletResponse response, int errorCode, String xml)
   {
-    if (Constants.HTTP_HEADER_ACCEPT_JSON_TYPE.equalsIgnoreCase(acceptTypeInHeader))
+    if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptTypeInHeader))
     {
-      response.setContentType(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE);
+      response.setContentType(Constants.MIME_APPLICATION_JSON);
       return translate(response, xml);
     }
 
