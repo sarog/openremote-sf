@@ -112,9 +112,13 @@
   </servlet>
 
   <servlet>
-    <description>display all the panels.</description>
-    <display-name>ShowPanelsRestServlet</display-name>
-    <servlet-name>ShowPanelsRestServlet</servlet-name>
+    <description>
+      Returns XML or JSON document describing all available panel definition IDs
+      deployed to this controller.
+    </description>
+
+    <display-name>List Panel IDs -- /rest/panels</display-name>
+    <servlet-name>ListPanelIDs</servlet-name>
     <servlet-class>org.openremote.controller.rest.ListPanelIDs</servlet-class>
   </servlet>
 
@@ -146,15 +150,21 @@
     <url-pattern>/resources/*</url-pattern>
   </servlet-mapping>
 
+  <!--
+   | Map Controller REST API servlet which returns all panel definition IDs to
+   | 'rest/panels' and 'rest/panels/' URIs.
+   +-->
   <servlet-mapping>
-    <servlet-name>ShowPanelsRestServlet</servlet-name>
+    <servlet-name>ListPanelIDs</servlet-name>
     <url-pattern>/rest/panels</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>ShowPanelsRestServlet</servlet-name>
+    <servlet-name>ListPanelIDs</servlet-name>
     <url-pattern>/rest/panels/</url-pattern>
   </servlet-mapping>
+
+
 
   <servlet-mapping>
     <servlet-name>GetProfileRestServlet</servlet-name>
