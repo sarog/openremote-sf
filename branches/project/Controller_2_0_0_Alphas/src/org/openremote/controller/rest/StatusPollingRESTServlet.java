@@ -38,7 +38,6 @@ import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
 import org.openremote.controller.spring.SpringContext;
@@ -79,7 +78,7 @@ public class StatusPollingRESTServlet extends HttpServlet {
       logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
       response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-      response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+      response.setContentType(Constants.MIME_APPLICATION_XML);
       
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/polling\\/(.*?)\\/(.*)";

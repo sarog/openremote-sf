@@ -25,7 +25,8 @@ package org.openremote.controller;
  * 
  * @author Dan 2009-6-1
  */
-public class Constants {
+public class Constants
+{
 
    public final static String LIRCD_CONF = "lircd.conf";
    
@@ -89,7 +90,10 @@ public class Constants {
 
    public static final String HTTP_ACCEPT_HEADER_NAME = "accept";
 
-   public static final String HTTP_HEADER_ACCEPT_XML_TYPE = "application/xml";
+  /**
+   * MIME type string for 'application/xml' content.
+   */
+   public static final String MIME_APPLICATION_XML = "application/xml";
    
    public static final String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
 

@@ -65,7 +65,7 @@ public class ControlCommandRESTServlet extends HttpServlet {
    @Override
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        
-      response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+      response.setContentType(Constants.MIME_APPLICATION_XML);
       response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
 
       String url = request.getRequestURL().toString();      
