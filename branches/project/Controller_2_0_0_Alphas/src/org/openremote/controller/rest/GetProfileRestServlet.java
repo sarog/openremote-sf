@@ -41,14 +41,25 @@ import org.openremote.controller.spring.SpringContext;
 
 /**
  * TODO : Get panel.xml by profile (panel name).
- * 
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Javen, Dan Cong
  *
  */
 public class GetProfileRestServlet extends HttpServlet
 {
 
-  private static final Logger logger = Logger.getLogger(GetProfileRestServlet.class);
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common log category for HTTP REST API.
+   */
+  private final static Logger logger = Logger.getLogger(Constants.REST_GET_PANEL_DEF_LOG_CATEGORY);
+
+  // TODO :
+  //  reduce API dependency and lookup service implementation through either an service container
+  //  or short term servlet application context
+
   private static final ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean("profileService");
 
   private static final long serialVersionUID = 1L;
@@ -66,8 +77,17 @@ public class GetProfileRestServlet extends HttpServlet
       throws ServletException, IOException
   {
 
+    // Set response MIME type and character encoding...
+
     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
     response.setContentType(Constants.MIME_APPLICATION_XML);
+
+    // Get the 'accept' header from client -- this will indicate whether we will send
+    // application/xml or application/json response...
+    
+    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+    // Write response...
 
     PrintWriter out = response.getWriter();
 
@@ -84,23 +104,26 @@ public class GetProfileRestServlet extends HttpServlet
         String decodedPanelName = panelName;
         decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
 
-        String panleXML = profileService.getProfileByPanelName(decodedPanelName);
-        out.print(JSONTranslator.toDesiredData(request, response, panleXML));
+        String panelXML = profileService.getProfileByPanelName(decodedPanelName);
+        out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, panelXML));
       }
 
       catch (ControlCommandException e)
       {
         logger.error("failed to extract panel.xml for panel : " + e.getMessage(), e);
+
         response.setStatus(e.getErrorCode());
 
-        out.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+        out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(),
+            RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
       }
     }
 
     else
     {
       response.setStatus(400);
-      out.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
+      out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400,
+          RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
     }
 
     out.flush();

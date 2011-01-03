@@ -37,15 +37,19 @@ public class Constants
   /**
    * Logging subcategory for incoming requests on the Controller HTTP/REST API.
    */
-  public final static String HTTP_REST_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".REST";
+  public final static String HTTP_REST_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".rest";
 
   /**
    * Specific logging subcategory for /rest/panels related incoming HTTP requests on REST API.
    */
-  public final static String REST_ALL_PANELS_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".AllPanels";
+  public final static String REST_ALL_PANELS_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".panels";
+
+  /**
+   * Specific logging subcategory for /rest/panel/[id] related incoming HTTP requests on REST API.
+   */
+  public final static String REST_GET_PANEL_DEF_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".panel.id";
+
   
-
-
   public final static String LIRCD_CONF = "lircd.conf";
 
   public final static String CONTROLLER_XSD_PATH = "/controller-2.0-M7.xsd";

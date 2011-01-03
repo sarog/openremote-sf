@@ -78,9 +78,18 @@ public class StatusCommandRESTServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+      // Set response MIME type and character encoding...
+
         response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
         response.setContentType(Constants.MIME_APPLICATION_XML);
-        
+
+
+      // Get the 'accept' header from client -- this will indicate whether we will send
+      // application/xml or application/json response...
+
+      String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+
         String url = request.getRequestURL().toString();
         String regexp = "rest\\/status\\/(.*)";
         Pattern pattern = Pattern.compile(regexp);
@@ -92,14 +101,14 @@ public class StatusCommandRESTServlet extends HttpServlet {
             unParsedSensorIDs = matcher.group(1);
             try {
                 if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
-                    printWriter.write(JSONTranslator.toDesiredData(request, response, statusCommandService.readFromCache(unParsedSensorIDs)));
+                    printWriter.write(JSONTranslator.translateXMLToJSON(acceptHeader, response, statusCommandService.readFromCache(unParsedSensorIDs)));
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);
-                printWriter.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+                printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
             }
         } else {
-            printWriter.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
+            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
         }
         printWriter.flush();
     }

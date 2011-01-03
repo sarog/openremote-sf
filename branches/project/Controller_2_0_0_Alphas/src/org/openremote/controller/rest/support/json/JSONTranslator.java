@@ -32,17 +32,12 @@ import org.openremote.controller.Constants;
 /**
  * TODO : This is responsible for translating xml data to json data.
  *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author handy 2010-06-28
  */
 public class JSONTranslator
 {
 
-  // translate xml data to json object with HTTPServletRequest.
-  public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, String xml)
-  {
-    String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-    return translateXMLToJSON(acceptTypeInHeader, response, xml);
-  }
 
   public static String translateXMLToJSON(String acceptTypeInHeader, HttpServletResponse response, String xml)
   {
@@ -59,13 +54,8 @@ public class JSONTranslator
     }
   }
 
-  public static String toDesiredData(HttpServletRequest request, HttpServletResponse response, int errorCode, String xml)
-  {
-    String acceptTypeInHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-    return doTransalteXMLToJSONString(acceptTypeInHeader, response, errorCode, xml);
-  }
 
-  private static String doTransalteXMLToJSONString(String acceptTypeInHeader, HttpServletResponse response, int errorCode, String xml)
+  public static String translateXMLToJSON(String acceptTypeInHeader, HttpServletResponse response, int errorCode, String xml)
   {
     if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptTypeInHeader))
     {
