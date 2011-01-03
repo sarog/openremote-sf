@@ -34,11 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
-import org.openremote.controller.exception.NoSuchPanelException;
-import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -60,7 +57,7 @@ public class GetProfileRestServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 	    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-	    response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+	    response.setContentType(Constants.MIME_APPLICATION_XML);
 
 	    PrintWriter out = response.getWriter();
       String url = request.getRequestURL().toString().trim();

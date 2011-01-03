@@ -47,7 +47,7 @@ public class JSONTranslator {
          response.setContentType(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE);
          return translate(response, xml);
       } else {
-         response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+         response.setContentType(Constants.MIME_APPLICATION_XML);
          return xml;
       }
    }
@@ -62,7 +62,7 @@ public class JSONTranslator {
          response.setContentType(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE);
          return translate(response, xml);
       } else {
-         response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+         response.setContentType(Constants.MIME_APPLICATION_XML);
          response.setStatus(errorCode);
          return xml;
       }

@@ -79,7 +79,7 @@ public class StatusCommandRESTServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-        response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+        response.setContentType(Constants.MIME_APPLICATION_XML);
         
         String url = request.getRequestURL().toString();
         String regexp = "rest\\/status\\/(.*)";

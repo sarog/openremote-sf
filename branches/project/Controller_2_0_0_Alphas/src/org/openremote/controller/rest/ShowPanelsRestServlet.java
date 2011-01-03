@@ -35,7 +35,6 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
 import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -67,7 +66,7 @@ public class ShowPanelsRestServlet extends HttpServlet
   {
 
     response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-    response.setContentType(Constants.HTTP_HEADER_ACCEPT_XML_TYPE);
+    response.setContentType(Constants.MIME_APPLICATION_XML);
 
     PrintWriter out = response.getWriter();
     String url = request.getRequestURL().toString();
