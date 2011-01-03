@@ -33,7 +33,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.Assert;
 import org.openremote.controller.rest.ControlStatusPollingRESTServletTest;
-import org.openremote.controller.rest.ProfileRestServletTest;
+import org.openremote.controller.rest.FindPanelByIDTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
    SkipStateTrackTest.class,
    StatusCacheTest.class,
    StatusAndPollingTest.class,
-   ProfileRestServletTest.class
+   FindPanelByIDTest.class
 }
 )
 

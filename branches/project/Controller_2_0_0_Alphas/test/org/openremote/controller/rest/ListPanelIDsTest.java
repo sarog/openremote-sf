@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ShowPanelsRestServletTest
+public class ListPanelIDsTest
 {
 
   @Test public void testRetrieveAllPanels()
