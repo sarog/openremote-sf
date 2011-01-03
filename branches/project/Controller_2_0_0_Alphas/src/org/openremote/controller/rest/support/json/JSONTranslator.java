@@ -19,6 +19,7 @@
 */
 package org.openremote.controller.rest.support.json;
 
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -71,7 +72,7 @@ public class JSONTranslator {
 
    private static String translate(HttpServletResponse response, String xml) {
       if (response != null) {
-         response.setStatus(Constants.RESPONSE_SUCCESS);
+         response.setStatus(HttpURLConnection.HTTP_OK);
       }
       xml = xml.replaceAll("xsi:schemaLocation=\".*\"", " ");
       XMLSerializer xmlSerializer = new XMLSerializer(); 

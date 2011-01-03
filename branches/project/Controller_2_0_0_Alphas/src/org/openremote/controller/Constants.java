@@ -86,7 +86,10 @@ public class Constants
 
   public static final String CALLBACK_PARAM_NAME = "callback";
 
-  public static final String CHARACTER_ENCODING_UTF8 = "utf-8";
+  /**
+   * IANA code for UTF-8 character encoding.
+   */
+  public static final String CHARACTER_ENCODING_UTF8 = "UTF-8";
 
   public static final String HTTP_ACCEPT_HEADER_NAME = "accept";
 
@@ -96,7 +99,5 @@ public class Constants
   public static final String MIME_APPLICATION_XML = "application/xml";
 
   public static final String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
-
-  public static final int RESPONSE_SUCCESS = 200;
 
 }
