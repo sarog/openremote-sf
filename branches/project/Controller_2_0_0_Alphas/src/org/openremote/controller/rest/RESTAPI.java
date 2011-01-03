@@ -28,6 +28,8 @@ import javax.servlet.ServletException;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.support.xml.RESTfulErrorCodeComposer;
+import org.apache.log4j.Logger;
 
 /**
  * This superclass contains the common implementation elements for the OpenRemote Controller
@@ -41,7 +43,17 @@ public abstract class RESTAPI extends HttpServlet
   public static enum ResponseType { APPLICATION_XML, APPLICATION_JSON }
 
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common log category for HTTP REST API.
+   */
+  private final static Logger logger = Logger.getLogger(Constants.REST_ALL_PANELS_LOG_CATEGORY);
+
+
+
   private ResponseType responseType = ResponseType.APPLICATION_XML;
+
 
 
   // Servlet Implementation -----------------------------------------------------------------------
@@ -59,6 +71,10 @@ public abstract class RESTAPI extends HttpServlet
     // application/xml or application/json response...
 
     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+    // Set character encoding...
+
+    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
 
     // Set the response content type to either 'application/xml' or 'application/json'
     // according to client's 'accept' header...
@@ -78,33 +94,84 @@ public abstract class RESTAPI extends HttpServlet
       responseType = ResponseType.APPLICATION_XML;
     }
 
-    handleRequest(request, response);
+    try
+    {
+      handleRequest(request, response);
+    }
+    catch (Throwable t)
+    {
+      logger.error("Error in handling REST API response: " + t.getMessage(), t);
+    }
   }
 
 
 
   protected abstract void handleRequest(HttpServletRequest request, HttpServletResponse response);
 
-  protected void sendResponse(HttpServletResponse response, String xml) throws IOException
+
+
+  protected void sendResponse(HttpServletResponse response, String xml)
   {
-    switch (responseType)
+    try
     {
-      case APPLICATION_JSON:
+      switch (responseType)
+      {
+        case APPLICATION_JSON:
 
-        response.getWriter().print(JSONTranslator.translateXMLToJSON(response, xml));
+          response.getWriter().print(JSONTranslator.translateXMLToJSON(response, xml));
 
-        break;
+          break;
 
 
-      case APPLICATION_XML:
-      default:
+        case APPLICATION_XML:     // fall through to default...
+        default:
 
-        response.getWriter().print(xml);
+          response.getWriter().print(xml);
 
-        break;
+          break;
+      }
+    }
+    catch (IOException e)
+    {
+      logger.error("Unable to write response: " + e.getMessage(), e);
     }
   }
 
-  
+
+  protected void sendResponse(HttpServletResponse response, int errorCode, String message)
+  {
+    switch (responseType)
+    {
+      case APPLICATION_XML:
+
+        response.setStatus(errorCode);
+
+        break;
+
+      case APPLICATION_JSON:
+
+        // TODO :
+        //
+        //    The JSON implementation is inconsistent with regards to how to handle
+        //    error responses -- on one hand HTTP return code field should be used but
+        //    on other parts of the implementation HTTP OK is preferred as return
+        //    code for cases where the error is returned as an document response.
+        //
+        //    Whatever is the correct behavior needs to be tested. No proper tests
+        //    were added by the amateurs who wrote the original code (as usual).
+        //    Assuming HTTP OK here for JSON responses (XML responses set the HTTP
+        //    return code to match the error code as expected).
+        //                                                                        [JPL]
+      default:
+
+        break;
+
+    }
+
+    sendResponse(response, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(errorCode, message));
+  }
+
+
+
 }
 

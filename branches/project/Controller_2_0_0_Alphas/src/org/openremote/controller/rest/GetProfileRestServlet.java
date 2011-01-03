@@ -22,6 +22,7 @@ package org.openremote.controller.rest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +47,7 @@ import org.openremote.controller.spring.SpringContext;
  * @author Javen, Dan Cong
  *
  */
-public class GetProfileRestServlet extends HttpServlet
+public class GetProfileRestServlet extends RESTAPI
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -65,32 +66,11 @@ public class GetProfileRestServlet extends HttpServlet
   private static final long serialVersionUID = 1L;
 
 
+
   // Servlet Implementation -----------------------------------------------------------------------
 
-  @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException
+  @Override protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
   {
-    doPost(request,response);
-  }
-
-  @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException
-  {
-
-    // Set response MIME type and character encoding...
-
-    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-    response.setContentType(Constants.MIME_APPLICATION_XML);
-
-    // Get the 'accept' header from client -- this will indicate whether we will send
-    // application/xml or application/json response...
-    
-    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-
-    // Write response...
-
-    PrintWriter out = response.getWriter();
-
     String url = request.getRequestURL().toString().trim();
     String regexp = "rest\\/panel\\/(.*)";
     Pattern pattern = Pattern.compile(regexp);
@@ -105,28 +85,41 @@ public class GetProfileRestServlet extends HttpServlet
         decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
 
         String panelXML = profileService.getProfileByPanelName(decodedPanelName);
-        out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, panelXML));
+
+        sendResponse(response, panelXML);
       }
 
       catch (ControlCommandException e)
       {
         logger.error("failed to extract panel.xml for panel : " + e.getMessage(), e);
 
-        response.setStatus(e.getErrorCode());
+        // TODO :
+        //   this might well break the JSON client code -- but can't know for sure cause chinese
+        //   are too effin dumb to write proper tests
+        //
+        // response.setStatus(e.getErrorCode());
 
-        out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(),
-            RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+        sendResponse(response, e.getErrorCode(), e.getMessage());
+      }
+
+      catch (UnsupportedEncodingException e)
+      {
+        logger.error(e.getMessage(), e);
+
+        sendResponse(response, 400, e.getMessage());    // TODO : check API documentation   
       }
     }
 
     else
     {
-      response.setStatus(400);
-      out.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400,
-          RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
-    }
+      // TODO :
+      //   this might well break the JSON client code -- but can't know for sure cause chinese
+      //   are too effin dumb to write proper tests
+      //
+      //response.setStatus(400);
 
-    out.flush();
+      sendResponse(response, 400, "Bad REST Request, should be /rest/panel/{panelName}");
+    }
   }
 
 }
