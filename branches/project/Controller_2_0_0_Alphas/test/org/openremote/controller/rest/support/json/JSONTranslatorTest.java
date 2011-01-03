@@ -47,13 +47,13 @@ public class JSONTranslatorTest extends TestCase {
             TestConstraint.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + "expected.xml").getFile();
       File expectedXMLFile = new File(expectedXMLFilePath);
       String expectedXML = FileUtils.readFileToString(expectedXMLFile);
-      String expectedJSONStr = JSONTranslator.translateXMLToJSON(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE, null, expectedXML);
+      String expectedJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, expectedXML);
       
       String actualXMLFilePath = this.getClass().getClassLoader().getResource(
             TestConstraint.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + "actual.xml").getFile();
       File actualXMLFile = new File(actualXMLFilePath);
       String actualXML = FileUtils.readFileToString(actualXMLFile);
-      String actualJSONStr = JSONTranslator.translateXMLToJSON(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE, null, actualXML);
+      String actualJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, actualXML);
       
       Assert.assertEquals(expectedJSONStr, actualJSONStr);
    }

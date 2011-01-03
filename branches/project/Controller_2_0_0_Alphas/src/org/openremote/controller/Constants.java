@@ -138,7 +138,7 @@ public class Constants
   /**
    * MIME type string for 'application/json' content.
    */
-  public final static String HTTP_HEADER_ACCEPT_JSON_TYPE = "application/json";
+  public final static String MIME_APPLICATION_JSON = "application/json";
 
 
 
