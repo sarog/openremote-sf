@@ -64,8 +64,6 @@ public class Constants
 
   public final static String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
-  public final static String TRUE = "TRUE";
-
   public final static String OK = "OK";
 
   public static final String SERVER_RESPONSE_TIME_OUT = "TIMEOUT";
