@@ -40,48 +40,70 @@ import org.openremote.controller.service.ProfileService;
 import org.openremote.controller.spring.SpringContext;
 
 /**
- * Get panel.xml by profile (panel name).
+ * TODO : Get panel.xml by profile (panel name).
  * 
  * @author Javen, Dan Cong
  *
  */
-public class GetProfileRestServlet extends HttpServlet {
-   private static final Logger logger = Logger.getLogger(GetProfileRestServlet.class);
-   private static final ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean("profileService");
+public class GetProfileRestServlet extends HttpServlet
+{
 
-   private static final long serialVersionUID = 1L;
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request,response);
-	}
+  private static final Logger logger = Logger.getLogger(GetProfileRestServlet.class);
+  private static final ProfileService profileService = (ProfileService) SpringContext.getInstance().getBean("profileService");
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  private static final long serialVersionUID = 1L;
 
-	    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-	    response.setContentType(Constants.MIME_APPLICATION_XML);
 
-	    PrintWriter out = response.getWriter();
-      String url = request.getRequestURL().toString().trim();
-      String regexp = "rest\\/panel\\/(.*)";
-      Pattern pattern = Pattern.compile(regexp);
-      Matcher matcher = pattern.matcher(url);
-      
-      if(matcher.find()){
-         try{
-            String panelName = matcher.group(1);
-            String decodedPanelName = panelName;
-            decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
-            String panleXML = profileService.getProfileByPanelName(decodedPanelName);
-            out.print(JSONTranslator.toDesiredData(request, response, panleXML));
-         } catch (ControlCommandException e) {
-            logger.error("failed to extract panel.xml for panel : " + e.getMessage(), e);
-            response.setStatus(e.getErrorCode());
-            out.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
-         }
-      } else {
-         response.setStatus(400);
-         out.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
+  // Servlet Implementation -----------------------------------------------------------------------
+
+  @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException
+  {
+    doPost(request,response);
+  }
+
+  @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException
+  {
+
+    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+    response.setContentType(Constants.MIME_APPLICATION_XML);
+
+    PrintWriter out = response.getWriter();
+
+    String url = request.getRequestURL().toString().trim();
+    String regexp = "rest\\/panel\\/(.*)";
+    Pattern pattern = Pattern.compile(regexp);
+    Matcher matcher = pattern.matcher(url);
+
+    if (matcher.find())
+    {
+      try
+      {
+        String panelName = matcher.group(1);
+        String decodedPanelName = panelName;
+        decodedPanelName = URLDecoder.decode(panelName, "UTF-8");
+
+        String panleXML = profileService.getProfileByPanelName(decodedPanelName);
+        out.print(JSONTranslator.toDesiredData(request, response, panleXML));
       }
-      out.flush();
-	}
+
+      catch (ControlCommandException e)
+      {
+        logger.error("failed to extract panel.xml for panel : " + e.getMessage(), e);
+        response.setStatus(e.getErrorCode());
+
+        out.print(JSONTranslator.toDesiredData(request, response, e.getErrorCode(), RESTfulErrorCodeComposer.composeXMLFormatStatusCode(e.getErrorCode(), e.getMessage())));
+      }
+    }
+
+    else
+    {
+      response.setStatus(400);
+      out.print(JSONTranslator.toDesiredData(request, response, 400, RESTfulErrorCodeComposer.composeXMLFormatStatusCode(400, "Bad REST Request, should be /rest/panel/{panelName}")));
+    }
+
+    out.flush();
+  }
 
 }
