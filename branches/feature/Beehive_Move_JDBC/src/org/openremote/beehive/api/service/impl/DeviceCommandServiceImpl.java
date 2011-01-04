@@ -23,14 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.service.DeviceCommandService;
+import org.openremote.beehive.api.service.DeviceMacroItemService;
+import org.openremote.beehive.domain.modeler.CommandRefItem;
 import org.openremote.beehive.domain.modeler.Device;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 import org.openremote.beehive.domain.modeler.Protocol;
 
 public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand> implements DeviceCommandService {
 
+   private DeviceMacroItemService deviceMacroItemService;
+   
    public DeviceCommandDTO loadDeviceCommandById(long id) {
       DeviceCommand deviceCommand = super.loadById(id);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
@@ -47,14 +53,14 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
 
    public Boolean deleteCommandById(long id) {
       DeviceCommand deviceCommand = loadById(id);
-//      DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
-//      List<CommandRefItem> commandRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
-//      if (commandRefItems.size() > 0) {
-//         return false;
-//      } else {
-//         deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
+      DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
+      List<CommandRefItem> commandRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
+      if (commandRefItems.size() > 0) {
+         return false;
+      } else {
+         deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
          genericDAO.delete(deviceCommand);
-//      }
+      }
       return true;
    }
 
@@ -87,6 +93,10 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
       }
       return deviceCommandList;
+   }
+
+   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+      this.deviceMacroItemService = deviceMacroItemService;
    }
 
 }
