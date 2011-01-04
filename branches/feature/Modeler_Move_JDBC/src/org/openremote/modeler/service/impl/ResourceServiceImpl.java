@@ -67,6 +67,7 @@ import org.openremote.modeler.client.model.Command;
 import org.openremote.modeler.client.utils.PanelsAndMaxOid;
 import org.openremote.modeler.configuration.PathConfig;
 import org.openremote.modeler.domain.Absolute;
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Cell;
 import org.openremote.modeler.domain.CommandDelay;
 import org.openremote.modeler.domain.CommandRefItem;
@@ -112,7 +113,9 @@ import org.openremote.modeler.protocol.ProtocolContainer;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.service.ResourceService;
+import org.openremote.modeler.service.SensorService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.openremote.modeler.utils.FileUtilsExt;
@@ -123,6 +126,7 @@ import org.openremote.modeler.utils.StringUtils;
 import org.openremote.modeler.utils.UIComponentBox;
 import org.openremote.modeler.utils.XmlParser;
 import org.openremote.modeler.utils.ZipUtils;
+import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
@@ -143,9 +147,13 @@ public class ResourceServiceImpl implements ResourceService {
    /** The configuration. */
    private Configuration configuration;
 
+   private DeviceService deviceService;
+   
    /** The device command service. */
    private DeviceCommandService deviceCommandService;
 
+   private SensorService sensorService;
+   
    /** The event id. */
    // private long eventId;
    /** The device macro service. */
@@ -526,6 +534,10 @@ public class ResourceServiceImpl implements ResourceService {
       this.configuration = configuration;
    }
 
+   public void setDeviceService(DeviceService deviceService) {
+      this.deviceService = deviceService;
+   }
+
    /**
     * Gets the device command service.
     * 
@@ -543,6 +555,10 @@ public class ResourceServiceImpl implements ResourceService {
     */
    public void setDeviceCommandService(DeviceCommandService deviceCommandService) {
       this.deviceCommandService = deviceCommandService;
+   }
+
+   public void setSensorService(SensorService sensorService) {
+      this.sensorService = sensorService;
    }
 
    /**
@@ -632,8 +648,9 @@ public class ResourceServiceImpl implements ResourceService {
       /*
        * Get all sensors and commands from database.
        */
-      List<Sensor> dbSensors = userService.getAccount().getSensors();
-      List<Device> allDevices = userService.getAccount().getDevices();
+      Account account = userService.getAccount();
+      List<Sensor> dbSensors = sensorService.loadAll(account);
+      List<Device> allDevices = deviceService.loadAll(account);
       List<DeviceCommand> allDBDeviceCommands = new ArrayList<DeviceCommand>();
       for (Device device : allDevices) {
          allDBDeviceCommands.addAll(deviceCommandService.loadByDevice(device.getId()));
@@ -796,6 +813,7 @@ public class ResourceServiceImpl implements ResourceService {
       serializePanelsAndMaxOid(panels, maxOid);
       Set<Group> groups = new LinkedHashSet<Group>();
       Set<Screen> screens = new LinkedHashSet<Screen>();
+      Account account = userService.getAccount();
       /*
        * initialize groups and screens.
        */
@@ -810,7 +828,7 @@ public class ResourceServiceImpl implements ResourceService {
 
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       // File sessionFolder = new File(pathConfig.userFolder(sessionId));
-      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      File userFolder = new File(pathConfig.userFolder(account));
       if (!userFolder.exists()) {
          boolean success = userFolder.mkdirs();
 
@@ -825,9 +843,9 @@ public class ResourceServiceImpl implements ResourceService {
       File defaultImage = new File(pathConfig.getWebRootFolder() + UIImage.DEFAULT_IMAGE_URL);
       FileUtilsExt.copyFile(defaultImage, new File(userFolder, defaultImage.getName()));
 
-      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
-      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      File panelXMLFile = new File(pathConfig.panelXmlFilePath(account));
+      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(account));
+      File lircdFile = new File(pathConfig.lircFilePath(account));
       // File dotImport = new File(pathConfig.dotImportFilePath(sessionId));
 
       /*
@@ -1025,9 +1043,10 @@ public class ResourceServiceImpl implements ResourceService {
    public void downloadResourcesForTemplate(long templateOid, String password) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
+      Account account = userService.getAccount();
       addSelfCertificate(httpClient);
       HttpGet httpGet = new HttpGet(configuration.getBeehiveHttpsRESTRootUrl() + "account/"
-            + userService.getAccount().getId() + "/template/" + templateOid + "/resource");
+            + account.getId() + "/template/" + templateOid + "/resource");
       InputStream inputStream = null;
       FileOutputStream fos = null;
       this.addAuthentication(httpGet, password);
@@ -1037,7 +1056,7 @@ public class ResourceServiceImpl implements ResourceService {
 
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
-            File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+            File userFolder = new File(pathConfig.userFolder(account));
             if (!userFolder.exists()) {
                boolean success = userFolder.mkdirs();
                if (!success) {
@@ -1055,7 +1074,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
 
             fos.flush();
-            ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
+            ZipUtils.unzip(outPut, pathConfig.userFolder(account));
             FileUtilsExt.deleteQuietly(outPut);
          } else if (404 == response.getStatusLine().getStatusCode()) {
             LOGGER.warn("There are no resources for this template, ID:" + templateOid);
@@ -1095,8 +1114,9 @@ public class ResourceServiceImpl implements ResourceService {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
       HttpClient httpClient = new DefaultHttpClient();
       addSelfCertificate(httpClient);
+      String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
       HttpGet httpGet = new HttpGet(configuration.getBeehiveHttpsRESTRootUrl() + "user/"
-            + userService.getCurrentUser().getUsername() + "/openremote.zip");
+            + currentUsername + "/openremote.zip");
 
       LOGGER.debug("Attempting to fetch account configuration from: " + httpGet.getURI());
 
@@ -1108,14 +1128,15 @@ public class ResourceServiceImpl implements ResourceService {
          HttpResponse response = httpClient.execute(httpGet);
 
          if (HttpServletResponse.SC_NOT_FOUND == response.getStatusLine().getStatusCode()) {
-            LOGGER.warn("Failed to download openremote.zip for user " + userService.getCurrentUser().getUsername()
+            LOGGER.warn("Failed to download openremote.zip for user " + currentUsername
                   + " from Beehive. Status code is 404. Will try to restore panels from local resource! ");
             return;
          }
 
          if (200 == response.getStatusLine().getStatusCode()) {
             inputStream = response.getEntity().getContent();
-            File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+            Account account = userService.getAccount();
+            File userFolder = new File(pathConfig.userFolder(account));
 
             if (!userFolder.exists()) {
                boolean success = userFolder.mkdirs();
@@ -1135,7 +1156,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
 
             fos.flush();
-            ZipUtils.unzip(outPut, pathConfig.userFolder(userService.getAccount()));
+            ZipUtils.unzip(outPut, pathConfig.userFolder(account));
             FileUtilsExt.deleteQuietly(outPut);
          } else {
             throw new BeehiveNotAvailableException("Failed to download resources, status code: "
@@ -1170,7 +1191,8 @@ public class ResourceServiceImpl implements ResourceService {
 
    private File getResourceZipFile(List<String> ignoreExtentions, Collection<File> compresseFiles) {
       PathConfig pathConfig = PathConfig.getInstance(configuration);
-      File userFolder = new File(pathConfig.userFolder(userService.getAccount()));
+      Account account = userService.getAccount();
+      File userFolder = new File(pathConfig.userFolder(account));
       File[] filesInAccountFolder = userFolder.listFiles();
       if (filesInAccountFolder == null || filesInAccountFolder.length == 0) {
          return null;
@@ -1190,7 +1212,7 @@ public class ResourceServiceImpl implements ResourceService {
             throw new ResourceFileLostException("File '" + file.getName() + "' is lost! ");
          }
       }
-      return compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(userService.getAccount()),
+      return compressFilesToZip(filesInZip, pathConfig.openremoteZipFilePath(account),
             ignoreExtentions);
 
    }
@@ -1211,10 +1233,11 @@ public class ResourceServiceImpl implements ResourceService {
       List<String> ignoreExtentions = new ArrayList<String>();
       Collection<ImageSource> images = getAllImageSources(panels);
       Collection<File> imageFiles = getAllImageFiles(images);
-      File panelXMLFile = new File(pathConfig.panelXmlFilePath(userService.getAccount()));
-      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(userService.getAccount()));
-      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(userService.getAccount()));
-      File lircdFile = new File(pathConfig.lircFilePath(userService.getAccount()));
+      Account account = userService.getAccount();
+      File panelXMLFile = new File(pathConfig.panelXmlFilePath(account));
+      File controllerXMLFile = new File(pathConfig.controllerXmlFilePath(account));
+      File panelsObjFile = new File(pathConfig.getSerializedPanelsFile(account));
+      File lircdFile = new File(pathConfig.lircFilePath(account));
 
       Collection<File> exportFile = new HashSet<File>();
       exportFile.addAll(imageFiles);
@@ -1372,8 +1395,9 @@ public class ResourceServiceImpl implements ResourceService {
    }
    
    private void addAuthentication(AbstractHttpMessage httpMessage, String password) {
+      String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
       httpMessage.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + encode(userService.getCurrentUser().getUsername() + ":" + password));
+            + encode(currentUsername + ":" + password));
    }
 
    private void addSelfCertificate(HttpClient httpClient) {

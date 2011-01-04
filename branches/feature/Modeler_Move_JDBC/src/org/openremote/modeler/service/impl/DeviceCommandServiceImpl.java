@@ -37,17 +37,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
-import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.exception.BeehiveJDBCException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
-import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.utils.JsonGenerator;
 
 import flexjson.JSONDeserializer;
@@ -61,20 +58,9 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
 
    private static Logger log = Logger.getLogger(DeviceCommandServiceImpl.class);
  
-   /** The device macro item service. */
-   private DeviceMacroItemService deviceMacroItemService;
 
    private Configuration configuration;
    
-   /**
-    * Sets the device macro item service.
-    * 
-    * @param deviceMacroItemService the new device macro item service
-    */
-   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
-      this.deviceMacroItemService = deviceMacroItemService;
-   }
-
    /**
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#saveAll(java.util.List)
