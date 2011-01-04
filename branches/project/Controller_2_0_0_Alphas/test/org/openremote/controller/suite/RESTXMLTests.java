@@ -22,9 +22,14 @@ package org.openremote.controller.suite;
 
 import java.io.InputStream;
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
@@ -37,6 +42,10 @@ import org.openremote.controller.rest.FindPanelByIDTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
+import org.openremote.controller.TestConstraint;
+import org.openremote.controller.Constants;
+import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.utils.PathUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -59,12 +68,30 @@ public class RESTXMLTests
 
   public final static boolean ASSERT_BODY_CONTENT = true;
 
-  public final static String APPLICATIONXML_MIMETYPE = "application/xml";
+
+  // Class Members --------------------------------------------------------------------------------
 
 
+  public static URL containerURL = null;
 
 
+  static
+  {
+    try
+    {
+      containerURL = new URL(
+          "http://" + TestConstraint.WEBAPP_IP + ":" +
+          TestConstraint.WEBAPP_PORT + "/controller"
+      );
+    }
+    catch (Throwable t)
+    {
+      Assert.fail("Can't initialize tests: " + t.getMessage());
+    }
+  }
 
+
+  // HTTP Assertions ------------------------------------------------------------------------------
 
 
   public static void assertHttpResponse(HttpURLConnection connection, int returnCode,
@@ -124,6 +151,9 @@ public class RESTXMLTests
     );
   }
 
+
+  
+  // OpenRemote XML Assertions --------------------------------------------------------------------
 
 
   public static void assertOpenRemoteRootElement(Document doc)
@@ -238,6 +268,96 @@ public class RESTXMLTests
     DocumentBuilder parser = domFactory.newDocumentBuilder();
 
     return parser.parse(bin);
+  }
+
+
+
+  // Configuration File Utilities -----------------------------------------------------------------
+
+
+  public static void restoreControllerPanelXML()
+  {
+    String containerPanelXml = RESTXMLTests.getFixtureFile(Constants.PANEL_XML);
+
+    if (new File(containerPanelXml + ".bak").exists())
+    {
+       new File(containerPanelXml + ".bak").renameTo(new File(containerPanelXml));
+    }
+  }
+
+
+  public static void replaceControllerPanelXML(String fixtureFile)
+  {
+    String containerPanelXml = RESTXMLTests.getContainerPanelXML();
+
+    if (new File(containerPanelXml).exists())
+    {
+       new File(containerPanelXml).renameTo(new File(containerPanelXml + ".bak"));
+    }
+
+    copyFile(fixtureFile, containerPanelXml);
+  }
+
+  public static String getFixtureFile(String name)
+  {
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    String resource = TestConstraint.FIXTURE_DIR + name;
+
+    Assert.assertNotNull("Got null resource from '" + resource + "'.", cl.getResource(resource));
+
+    return cl.getResource(resource).getFile();
+  }
+
+  public static String getContainerPanelXML()
+  {
+    return PathUtil.addSlashSuffix(
+        ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) +
+        Constants.PANEL_XML;
+  }
+
+
+  
+
+  // Helpers --------------------------------------------------------------------------------------
+
+  private static void copyFile(String src, String dest)
+  {
+    File inputFile = new File(src);
+    File outputFile = new File(dest);
+
+    FileReader in;
+
+    try
+    {
+      in = new FileReader(inputFile);
+
+      if (!outputFile.getParentFile().exists())
+      {
+        outputFile.getParentFile().mkdirs();
+      }
+
+      if (!outputFile.exists())
+      {
+        outputFile.createNewFile();
+      }
+
+      FileWriter out = new FileWriter(outputFile);
+
+      int c;
+
+      while ((c = in.read()) != -1)
+      {
+        out.write(c);
+      }
+
+      in.close();
+      out.close();
+    }
+
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 
 }
