@@ -395,8 +395,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
    }
 
    public User getCurrentUser() {
-      String username = SecurityContextHolder.getContext().getAuthentication().getName();
-      return getUserByName(username);
+      return getUserByName(getCurrentUsername());
    }
 
    public User inviteUser(String email, String role, User currentUser) {

@@ -46,7 +46,6 @@ import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.exception.BeehiveJDBCException;
 import org.openremote.modeler.exception.NotAuthenticatedException;
 import org.openremote.modeler.service.BaseAbstractService;
-import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
 import org.openremote.modeler.utils.JsonGenerator;
 
@@ -57,33 +56,12 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    private static Logger log = Logger.getLogger(DeviceServiceImpl.class);
    
-   private DeviceMacroItemService deviceMacroItemService;
-   
    private Configuration configuration;
    
-   /**
-    * Sets the device macro item service.
-    * 
-    * @param deviceMacroItemService the new device macro item service
-    */
-   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
-      this.deviceMacroItemService = deviceMacroItemService;
-   }
-
    /**
     * {@inheritDoc}
     */
    public Device saveDevice(Device device) {
-      // genericDAO.save(device);
-      // Hibernate.initialize(device.getSensors());
-      // Hibernate.initialize(device.getSwitchs());
-      // List<DeviceCommand> deviceCommands = device.getDeviceCommands();
-      // for(DeviceCommand cmd : deviceCommands ) {
-      // Hibernate.initialize(cmd.getProtocol().getAttributes());
-      // }
-      // Hibernate.initialize(device.getSliders());
-      // Hibernate.initialize(device.getDeviceAttrs());
-
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceUrl() + "save/" + device.getAccount().getId());
       httpPost.setHeader("Content-Type", "application/json");
@@ -186,21 +164,6 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
     */
    @SuppressWarnings("unchecked")
    public Device loadById(long id) {
-//      Device device = super.loadById(id);
-//      if (device.getAccount() != null) {
-//         Hibernate.initialize(device.getAccount().getConfigs());
-//      }
-//      Hibernate.initialize(device.getDeviceCommands());
-//      Hibernate.initialize(device.getSensors());
-//      for (Sensor sensor : device.getSensors()) {
-//         if (SensorType.CUSTOM == sensor.getType()) {
-//            Hibernate.initialize(((CustomSensor)sensor).getStates());
-//         }
-//      }
-//      Hibernate.initialize(device.getSliders());
-//      Hibernate.initialize(device.getSwitchs());
-//      return device;
-      
       HttpClient httpClient = new DefaultHttpClient();
       String url = configuration.getBeehiveRESTDeviceUrl() + "load/" + id;
       HttpGet httpGet = new HttpGet(url);
