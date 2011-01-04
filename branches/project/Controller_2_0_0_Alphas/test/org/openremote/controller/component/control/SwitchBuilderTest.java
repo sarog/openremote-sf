@@ -26,7 +26,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.switchtoggle.Switch;
 import org.openremote.controller.component.control.switchtoggle.SwitchBuilder;
@@ -45,7 +45,7 @@ public class SwitchBuilderTest {
 
    @Before
    public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml")
+      controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "controller.xml")
             .getFile();
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
    }

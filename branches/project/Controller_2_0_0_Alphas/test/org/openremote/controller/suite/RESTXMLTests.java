@@ -42,7 +42,6 @@ import org.openremote.controller.rest.FindPanelByIDTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
-import org.openremote.controller.TestConstraint;
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
@@ -80,8 +79,8 @@ public class RESTXMLTests
     try
     {
       containerURL = new URL(
-          "http://" + TestConstraint.WEBAPP_IP + ":" +
-          TestConstraint.WEBAPP_PORT + "/controller"
+          "http://" + AllTests.WEBAPP_IP + ":" +
+          AllTests.WEBAPP_PORT + "/controller"
       );
     }
     catch (Throwable t)
@@ -301,7 +300,7 @@ public class RESTXMLTests
   public static String getFixtureFile(String name)
   {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    String resource = TestConstraint.FIXTURE_DIR + name;
+    String resource = AllTests.FIXTURE_DIR + name;
 
     Assert.assertNotNull("Got null resource from '" + resource + "'.", cl.getResource(resource));
 

@@ -31,7 +31,7 @@ import org.jdom.input.SAXBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.utils.SpringTestContext;
 
@@ -137,7 +137,7 @@ public class SensorBuilderTest {
    private Sensor getSensor(EnumSensorType type){
       
       String controllerXmlFixturePath = this.getClass().getClassLoader().getResource(
-            TestConstraint.FIXTURE_DIR + Constants.CONTROLLER_XML).getFile();
+            AllTests.FIXTURE_DIR + Constants.CONTROLLER_XML).getFile();
       Document doc = null;
       SAXBuilder builder = new SAXBuilder();
       try {

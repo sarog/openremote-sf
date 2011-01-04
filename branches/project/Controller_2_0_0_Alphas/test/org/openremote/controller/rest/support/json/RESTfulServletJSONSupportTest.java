@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.FileUtilOnlyForTest;
 import org.openremote.controller.utils.PathUtil;
@@ -55,7 +55,7 @@ public class RESTfulServletJSONSupportTest extends TestCase {
 	@Before
    public void setup() {
       String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
-            TestConstraint.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + Constants.PANEL_XML).getFile();
+            AllTests.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + Constants.PANEL_XML).getFile();
       panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
             .getResourcePath())
             + Constants.PANEL_XML;
@@ -89,12 +89,12 @@ public class RESTfulServletJSONSupportTest extends TestCase {
       try {
          WebConversation wc = new WebConversation();
          
-         WebRequest jsonDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
+         WebRequest jsonDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT
                + actualJSONDataURL);
          WebResponse jsonDataResponse = wc.getResponse(jsonDataRequest);
          String actual = jsonDataResponse.getText();
          
-         WebRequest xmlDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT
+         WebRequest xmlDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT
                + expectedXMLDataURL);
          WebResponse xmlDataResponse = wc.getResponse(xmlDataRequest);
          String xml = xmlDataResponse.getText();

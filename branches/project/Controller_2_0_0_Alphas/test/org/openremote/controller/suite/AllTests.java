@@ -48,5 +48,13 @@ import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 )
 public class AllTests
 {
+  public final static int WEBAPP_PORT = 8090;
 
+  public final static String WEBAPP_IP = "127.0.0.1";
+
+  public final static String FIXTURE_DIR = "./org/openremote/controller/fixture/";
+
+  public final static String FIXTURE_DIR_OF_POLLING_MACHINES = "./org/openremote/controller/fixture/polling/";
+
+  public static final String FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT = "./org/openremote/controller/fixture/rest/support/json/";
 }

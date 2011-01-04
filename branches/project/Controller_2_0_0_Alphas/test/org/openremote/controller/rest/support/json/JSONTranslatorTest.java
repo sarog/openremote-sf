@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 
 /**
  * 
@@ -44,13 +44,13 @@ public class JSONTranslatorTest extends TestCase {
    @Test
    public void testTranslate() throws IOException {
       String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
-            TestConstraint.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + "expected.xml").getFile();
+            AllTests.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + "expected.xml").getFile();
       File expectedXMLFile = new File(expectedXMLFilePath);
       String expectedXML = FileUtils.readFileToString(expectedXMLFile);
       String expectedJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, expectedXML);
       
       String actualXMLFilePath = this.getClass().getClassLoader().getResource(
-            TestConstraint.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + "actual.xml").getFile();
+            AllTests.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + "actual.xml").getFile();
       File actualXMLFile = new File(actualXMLFilePath);
       String actualXML = FileUtils.readFileToString(actualXMLFile);
       String actualJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, actualXML);
