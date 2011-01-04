@@ -24,6 +24,8 @@ import java.util.List;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.service.DeviceMacroItemService;
+import org.openremote.beehive.domain.modeler.DeviceCommand;
+import org.openremote.beehive.domain.modeler.DeviceCommandRef;
 import org.openremote.beehive.domain.modeler.DeviceMacro;
 import org.openremote.beehive.domain.modeler.DeviceMacroItem;
 import org.openremote.beehive.domain.modeler.DeviceMacroRef;
@@ -40,4 +42,13 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
       genericDAO.deleteAll(deviceMacroRefs);
    }
 
+   /**
+    * {@inheritDoc}
+    * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceCommand(org.openremote.modeler.domain.DeviceCommand)
+    */
+   public void deleteByDeviceCommand(DeviceCommand deviceCommand) {
+      DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
+      List<DeviceCommandRef> deviceCommandRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
+      genericDAO.deleteAll(deviceCommandRefs);
+   }
 }

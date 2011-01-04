@@ -19,6 +19,7 @@
 */
 package org.openremote.beehive.api.service;
 
+import org.openremote.beehive.domain.modeler.DeviceCommand;
 import org.openremote.beehive.domain.modeler.DeviceMacro;
 
 /**
@@ -34,4 +35,11 @@ public interface DeviceMacroItemService {
     * @param targetDeviceMacro
     */
    public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro);
+   
+   /**
+    * Delete by device command.
+    * 
+    * @param deviceCommand the device command
+    */
+   void deleteByDeviceCommand(DeviceCommand deviceCommand);
 }

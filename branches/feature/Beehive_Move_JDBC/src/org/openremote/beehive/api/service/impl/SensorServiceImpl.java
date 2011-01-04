@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.modeler.CustomSensorDTO;
 import org.openremote.beehive.api.dto.modeler.RangeSensorDTO;
 import org.openremote.beehive.api.dto.modeler.SensorDTO;
@@ -33,6 +35,7 @@ import org.openremote.beehive.domain.modeler.CustomSensor;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 import org.openremote.beehive.domain.modeler.RangeSensor;
 import org.openremote.beehive.domain.modeler.Sensor;
+import org.openremote.beehive.domain.modeler.SensorRefItem;
 import org.openremote.beehive.domain.modeler.SensorType;
 
 public class SensorServiceImpl extends BaseAbstractService<Sensor> implements SensorService {
@@ -51,14 +54,14 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
 
    public boolean deleteSensorById(long id) {
       Sensor sensor = super.loadById(id);
-//      DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
-//      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor",
-//            sensor)));
-//      if (sensorRefItems.size() > 0) {
-//         return false;
-//      } else {
+      DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
+      List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor",
+            sensor)));
+      if (sensorRefItems.size() > 0) {
+         return false;
+      } else {
          genericDAO.delete(sensor);
-//      }
+      }
       return true;
    }
 

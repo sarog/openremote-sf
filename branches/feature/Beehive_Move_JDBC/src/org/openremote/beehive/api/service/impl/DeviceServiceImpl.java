@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
+import org.openremote.beehive.api.service.DeviceMacroItemService;
 import org.openremote.beehive.api.service.DeviceService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.Device;
@@ -31,6 +32,8 @@ import org.openremote.beehive.domain.modeler.DeviceCommand;
 
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
 
+   private DeviceMacroItemService deviceMacroItemService;
+   
    public Device saveDevice(Device device) {
       genericDAO.save(device);
       return device;
@@ -79,7 +82,14 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    public void delete(long deviceId) {
       Device device = loadById(deviceId);
+      for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
+         deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
+      }
       genericDAO.delete(device);
+   }
+
+   public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
+      this.deviceMacroItemService = deviceMacroItemService;
    }
 
 }
