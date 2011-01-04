@@ -72,16 +72,19 @@ public class Constants
 
   public static final String SERVER_RESPONSE_TIME_OUT = "TIMEOUT";
 
+  /**
+   * File name of the panel UI definition file in the controller. The file is located in the
+   * 'resource path' directory that can be found from the controller configuration object.
+   *
+   * @see org.openremote.controller.Configuration#getResourcePath()
+   */
   public static final String PANEL_XML = "panel.xml";
 
-  /** #The following constants are about status and polling action# */
-  /** The Constant SENSOR_ID_SEPARATOR. */
+
   public static final String STATUS_POLLING_SENSOR_IDS_SEPARATOR = ",";
 
-  /** The Constant xmlHeader of composed xml-formatted status results. */
   public static final String STATUS_XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<openremote xmlns=\"http://www.openremote.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openremote.org http://www.openremote.org/schemas/controller.xsd\">\n";
 
-  /** The Constant XML_STATUS_RESULT_ELEMENT_NAME composed xml-formatted status results. */
   public static final String STATUS_XML_STATUS_RESULT_ELEMENT_NAME = "status";
 
   public static final String SENSORS_ELEMENT_NAME = "sensors";

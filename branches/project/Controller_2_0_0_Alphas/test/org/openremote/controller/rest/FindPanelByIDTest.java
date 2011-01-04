@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,11 +58,6 @@ public class FindPanelByIDTest
   // Constants ------------------------------------------------------------------------------------
 
   /**
-   * Controller 2.0 REST/XML URI for listing all available panel ids in the controller
-   */
-  public final static String RESTAPI_PANELS_URI = "/rest/panels";
-
-  /**
    * Controller 2.0 REST/XML URI for retrieving panel by id from the controller.
    */
   public final static String RESTAPI_PANEL_DEFINITION_URI = "/rest/panel/";
@@ -80,35 +74,6 @@ public class FindPanelByIDTest
 
 
 
-  // Class Members --------------------------------------------------------------------------------
-
-
-  public static URL containerURL = null;
-
-  
-  static
-  {
-    try
-    {
-      containerURL = new URL(
-          "http://" + TestConstraint.WEBAPP_IP + ":" +
-          TestConstraint.WEBAPP_PORT + "/controller"
-      );
-    }
-    catch (Throwable t)
-    {
-      Assert.fail("Can't initialize tests: " + t.getMessage());
-    }
-  }
-
-
-  // Instance Fields ------------------------------------------------------------------------------
-
-
-  private String panelXmlPath;
-
-
-
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
@@ -117,34 +82,18 @@ public class FindPanelByIDTest
    */
   @Before public void setup()
   {
-    String panelXmlFixturePath = this.getClass().getClassLoader()
-        .getResource(TestConstraint.FIXTURE_DIR + Constants.PANEL_XML).getFile();
+    String panelXmlFixture = RESTXMLTests.getFixtureFile(Constants.PANEL_XML);
 
-    panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
-        .getResourcePath()) + Constants.PANEL_XML;
-
-    if (new File(panelXmlPath).exists())
-    {
-       new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
-    }
-
-    copyFile(panelXmlFixturePath, panelXmlPath);
+    RESTXMLTests.replaceControllerPanelXML(panelXmlFixture);
   }
+
 
   /**
    * restore xml files.
    */
   @After public void tearDown()
   {
-    if (new File(panelXmlPath + ".bak").exists())
-    {
-       new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
-    }
-
-    else
-    {
-       deleteFile(panelXmlPath);
-    }
+    RESTXMLTests.restoreControllerPanelXML();
   }
 
 
@@ -153,13 +102,13 @@ public class FindPanelByIDTest
   @Test public void requestFatherPanelProfile() throws Exception
   {
 
-    URL panelList = new URL(containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
     RESTXMLTests.assertHttpResponse(
         connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
-        RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
+        Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
     Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
@@ -246,86 +195,15 @@ public class FindPanelByIDTest
   }
 
 
-
-  @Test public void requestAllPanels() throws Exception
-  {
-    URL panelList = new URL(containerURL + RESTAPI_PANELS_URI);
-
-    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
-
-    RESTXMLTests.assertHttpResponse(
-        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
-        RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
-    );
-
-    Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
-
-    RESTXMLTests.assertOpenRemoteRootElement(doc);
-
-
-    NodeList list = doc.getElementsByTagName("panel");
-
-    Assert.assertTrue(list.getLength() >= 3);
-
-    Map<String, String> panels = new HashMap<String, String>(3);
-
-    for (int panelIndex = 0; panelIndex < list.getLength(); ++panelIndex)
-    {
-      Node panel = list.item(panelIndex);
-      NamedNodeMap attrs = panel.getAttributes();
-
-      Node id = attrs.getNamedItem("id");
-      String idVal = id.getNodeValue();
-
-      Node name = attrs.getNamedItem("name");
-      String nameVal = name.getNodeValue();
-
-      panels.put(idVal, nameVal);
-    }
-
-    Assert.assertNotNull(
-        "Expected panel id 'MyIphone' but that was not found.",
-        panels.get("MyIphone")
-    );
-
-    Assert.assertNotNull(
-        "Expected panel id 'MyAndroid' but that was not found.",
-        panels.get("MyAndroid")
-    );
-
-    Assert.assertNotNull(
-        "Expected panel id '2fd894042c668b90aadf0698d353e579' but that was not found.",
-        panels.get("2fd894042c668b90aadf0698d353e579")
-    );
-
-
-    Assert.assertTrue(
-        "Expected panel id=MyIphone with name 'father', got " + panels.get("MyIphone"),
-        panels.get("MyIphone").equalsIgnoreCase("father")
-    );
-
-    Assert.assertTrue(
-        "Expected panel id=MyAndroid with name 'mother', got " + panels.get("MyAndroid"),
-        panels.get("MyAndroid").equalsIgnoreCase("mother")
-    );
-
-    Assert.assertTrue(
-        "Expected panel id=2fd894042c668b90aadf0698d353e579 with name 'me', got " + panels.get("2fd894042c668b90aadf0698d353e579"),
-        panels.get("2fd894042c668b90aadf0698d353e579").equalsIgnoreCase("me")
-    );
-
-  }
-
-
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
-    URL doesNotExist = new URL(containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
+    URL doesNotExist = new URL(RESTXMLTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
     RESTXMLTests.assertHttpResponse(
         connection, 428, RESTXMLTests.ASSERT_BODY_CONTENT,
-        RESTXMLTests.APPLICATIONXML_MIMETYPE, Constants.CHARACTER_ENCODING_UTF8
+        Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
     Document doc = RESTXMLTests.getDOMDocument(connection.getErrorStream());
@@ -340,12 +218,9 @@ public class FindPanelByIDTest
 
 
 
-
-
-
   // Helpers --------------------------------------------------------------------------------------
 
-  private void copyFile(String src, String dest)
+  private static void copyFile(String src, String dest)
   {
     File inputFile = new File(src);
     File outputFile = new File(dest);
