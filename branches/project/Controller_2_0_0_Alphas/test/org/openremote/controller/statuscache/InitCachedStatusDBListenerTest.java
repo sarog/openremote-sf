@@ -34,7 +34,7 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.PollingMachinesService;
@@ -59,7 +59,7 @@ public class InitCachedStatusDBListenerTest {
    
    @Before
    public void setUp() throws Exception {
-      String controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR_OF_POLLING_MACHINES + "controller.xml").getFile();
+      String controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR_OF_POLLING_MACHINES + "controller.xml").getFile();
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(controllerXMLPath);
       

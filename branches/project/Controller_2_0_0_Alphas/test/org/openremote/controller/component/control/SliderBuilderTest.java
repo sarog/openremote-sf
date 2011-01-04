@@ -33,7 +33,7 @@ import org.jdom.xpath.XPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.control.slider.Slider;
 import org.openremote.controller.component.control.slider.SliderBuilder;
@@ -56,7 +56,7 @@ public class SliderBuilderTest {
    
    @Before
    public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
+      controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "controller.xml").getFile();
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(controllerXMLPath);
    }
