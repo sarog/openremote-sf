@@ -25,6 +25,7 @@ import org.openremote.modeler.client.utils.ScreenFromTemplate;
 import org.openremote.modeler.domain.ScreenPair;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.exception.BeehiveNotAvailableException;
+import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.exception.ResourceFileLostException;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -58,7 +59,7 @@ public interface TemplateRPCService extends RemoteService {
     * @param template
     * @return
     */
-   ScreenFromTemplate buildScreeFromTemplate(Template template) throws BeehiveNotAvailableException, ResourceFileLostException;
+   ScreenFromTemplate buildScreeFromTemplate(Template template) throws BeehiveNotAvailableException, ResourceFileLostException, FileOperationException;
    
    Template updateTemplate(Template template) throws BeehiveNotAvailableException,ResourceFileLostException;
    

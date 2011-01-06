@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -125,7 +125,6 @@ public class TemplateServiceImpl implements TemplateService {
    private DeviceMacroService deviceMacroService ; 
 
    @Override
-
    public Template saveTemplate(Template screenTemplate, String password) {
 
       log.debug("save Template Name: " + screenTemplate.getName());
@@ -175,9 +174,9 @@ public class TemplateServiceImpl implements TemplateService {
          });
 
          if (result.indexOf("<id>") != -1 && result.indexOf("</id>") != -1) {
-            long templateOid = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
+            long templateId = Long.parseLong(result.substring(result.indexOf("<id>") + "<id>".length(), result
                   .indexOf("</id>")));
-            screenTemplate.setId(templateOid);
+            screenTemplate.setId(templateId);
             // save the resources (eg:images) to beehive.
             resourceService.saveTemplateResourcesToBeehive(screenTemplate, password);
          } else {
@@ -199,9 +198,9 @@ public class TemplateServiceImpl implements TemplateService {
          String[] includedPropertyNames = { 
                "*.gestures.uiCommand",
                "*.absolutes.uiComponent.sensorLink",
-               "*.absolutes.uiComponent.oid",
+               "*.absolutes.uiComponent.id",
                "*.grids.cells.uiComponent.sensorLink",
-               "*.grids.cells.uiComponent.oid",
+               "*.grids.cells.uiComponent.id",
                "*.absolutes.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
                "*.absolutes.uiComponent.commands",
                "*.absolutes.uiComponent.slider.sliderSensorRef.sensor",
@@ -213,7 +212,7 @@ public class TemplateServiceImpl implements TemplateService {
                "*.grids.cells.uiComponent.uiCommand.deviceCommand.protocol.protocalAttrs",
                "*.grids.cells.uiComponent.commands", "*.deviceCommand", "*.protocol", "*.attributes" };
          String[] excludePropertyNames = { "grid", /* "*.touchPanelDefinition", */"*.refCount", "*.displayName",
-               "*.oid", "*.proxyInformations", "*.proxyInformation", /* "gestures", */"*.panelXml", /* "*.navigate", */
+               "*.id", "*.proxyInformations", "*.proxyInformation", /* "gestures", */"*.panelXml", /* "*.navigate", */
                "*.deviceCommands", "*.sensors", "*.sliders", "*.configs", "*.switchs", "DeviceMacros" ,
                };
          return new JSONSerializer().include(includedPropertyNames).exclude(excludePropertyNames).deepSerialize(screen);
@@ -229,7 +228,6 @@ public class TemplateServiceImpl implements TemplateService {
    public ScreenFromTemplate buildFromTemplate(Template template, String password) {
       ScreenPair screen = buildScreen(template);
       resetImageSourceLocationForScreen(screen);
-      
       // ---------------download resources (eg:images) from beehive.
       resourceService.downloadResourcesForTemplate(template.getId(), password);
       return reBuildCommand(screen);
@@ -286,12 +284,12 @@ public class TemplateServiceImpl implements TemplateService {
    }
    
    @Override
-   public boolean deleteTemplate(long templateOid, String password) {
+   public boolean deleteTemplate(long templateId, String password) {
 
-      log.debug("Delete Template id: " + templateOid);
+      log.debug("Delete Template id: " + templateId);
 
       String deleteRestUrl = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId()
-            + "/template/" + templateOid;
+            + "/template/" + templateId;
 
       HttpDelete httpDelete = new HttpDelete();
       addAuthentication(httpDelete, password);
@@ -317,7 +315,6 @@ public class TemplateServiceImpl implements TemplateService {
 
    public List<Template> getTemplates(boolean fromPrivate, String password) {
       String shared = fromPrivate ? "private" : "public";
-      List<Template> templates = new ArrayList<Template>();
       String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId()
             + "/templates/" + shared;
 
@@ -349,11 +346,8 @@ public class TemplateServiceImpl implements TemplateService {
 
          String result = sb.toString();
          TemplateList templateList = buildTemplateListFromJson(result);
-         List<TemplateDTO> dtoes = templateList.getTemplates();
+         return templateList.getTemplates();
 
-         for (TemplateDTO dto : dtoes) {
-            templates.add(dto.toTemplate());
-         }
       } catch (ConnectException e) {
          throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
                + " refused.", e);
@@ -361,7 +355,6 @@ public class TemplateServiceImpl implements TemplateService {
          throw new BeehiveNotAvailableException("Failed to get template list, The beehive is not available right now ", e);
       }
 
-      return templates;
    }
    
    public List<Template> getTemplatesByKeywordsAndPage(boolean shared, String keywords,int page, String password) {
@@ -370,7 +363,6 @@ public class TemplateServiceImpl implements TemplateService {
       if (keywords == null || keywords.trim().length() == 0) {
          newKeywords = TemplateService.NO_KEYWORDS;
       }
-      List<Template> templates = new ArrayList<Template>();
       String restURL = configuration.getBeehiveHttpsRESTRootUrl() + "account/" + userService.getAccount().getId() + "/templates/" + share + "/keywords/"
       + newKeywords + "/page/"+page;
 
@@ -402,11 +394,8 @@ public class TemplateServiceImpl implements TemplateService {
 
          String result = sb.toString();
          TemplateList templateList = buildTemplateListFromJson(result);
-         List<TemplateDTO> dtoes = templateList.getTemplates();
+         return templateList.getTemplates();
 
-         for (TemplateDTO dto : dtoes) {
-            templates.add(dto.toTemplate());
-         }
       } catch (ConnectException e) {
          throw new BeehiveNotAvailableException("Connection to " + configuration.getBeehiveHttpsRESTRootUrl()
                + " refused.", e);
@@ -414,7 +403,6 @@ public class TemplateServiceImpl implements TemplateService {
          throw new BeehiveNotAvailableException("Failed to get template list, The beehive is not available right now ", e);
       }
 
-      return templates;
    }
    
    @SuppressWarnings("unchecked")
@@ -429,7 +417,6 @@ public class TemplateServiceImpl implements TemplateService {
          screens.add(screenPair.getPortraitScreen());
          screens.add(screenPair.getLandscapeScreen());
       }
-      
       UIComponentBox box = initUIComponentBox(screens);
       Set<Device> devices = getDevices(screens);
       Set<DeviceCommand> commands = getDeviceCommands(screens);
@@ -437,14 +424,11 @@ public class TemplateServiceImpl implements TemplateService {
       Set<Switch> switchs = getSwitches((Collection<UISwitch>) box.getUIComponentsByType(UISwitch.class));
       Set<UIButton> uiButtons = (Set<UIButton>) box.getUIComponentsByType(UIButton.class);
       Set<Sensor> sensors = getSensors(screens);
-      
       Collection<Gesture> gestures = getGestures(screens);
       Set<DeviceMacro> macros = getMacros(box,gestures);
       
       this.resetNavigateForButtons(uiButtons);
-      
       rebuild(devices, commands, sensors, switchs, sliders, macros,false);
-
       return new ScreenFromTemplate(devices, screenPair,macros);
    }
 
@@ -778,7 +762,7 @@ public class TemplateServiceImpl implements TemplateService {
          Collection<Switch> switches,Collection<Slider> sliders,Collection<DeviceMacro> macros,boolean createNew) {
       boolean isHasNewCmd = false;
       Account account = userService.getAccount();
-     
+  try {
       //1, build devices. 
       for (Device device : devices) {
          device.setAccount(account);
@@ -787,11 +771,11 @@ public class TemplateServiceImpl implements TemplateService {
             if (sameDevices != null && sameDevices.size() >0) {
                device.setId(sameDevices.get(0).getId());
             } else {
-               deviceService.saveDevice(device);
+               device = deviceService.saveDevice(device);
                isHasNewCmd = true;
             }
          } else {
-            deviceService.saveDevice(device);
+            device = deviceService.saveDevice(device);
             isHasNewCmd = true;
          }
       }
@@ -809,11 +793,11 @@ public class TemplateServiceImpl implements TemplateService {
             if (sameCmds != null && sameCmds.size() >0) {
                deviceCommand.setId(sameCmds.get(0).getId());
             } else {
-               deviceCommandService.save(deviceCommand);
+               deviceCommand = deviceCommandService.save(deviceCommand);
                isHasNewCmd = true;
             }
          } else {
-            deviceCommandService.save(deviceCommand);
+            deviceCommand = deviceCommandService.save(deviceCommand);
             isHasNewCmd = true;
          }
       }
@@ -828,11 +812,11 @@ public class TemplateServiceImpl implements TemplateService {
             if (sameSensors != null && sameSensors.size() >0) {
                sensor.setId(sameSensors.get(0).getId());
             } else {
-               sensorService.saveSensor(sensor);
+               sensor = sensorService.saveSensor(sensor);
                isHasNewCmd = true;
             }
          } else {
-            sensorService.saveSensor(sensor);
+            sensor = sensorService.saveSensor(sensor);
             isHasNewCmd = true;
          }
       }
@@ -849,10 +833,10 @@ public class TemplateServiceImpl implements TemplateService {
             if (swhs !=null && swhs.size() >0) {
                switchToggle.setId(swhs.get(0).getId());
             } else {
-               switchService.save(switchToggle);
+               switchToggle = switchService.save(switchToggle);
             }
          } else {
-            switchService.save(switchToggle);
+            switchToggle = switchService.save(switchToggle);
          }
       }
 
@@ -867,10 +851,10 @@ public class TemplateServiceImpl implements TemplateService {
             if (sameSliders != null && sameSliders.size() >0) {
                slider.setId(sameSliders.get(0).getId());
             } else {
-               sliderService.save(slider);
+               slider = sliderService.save(slider);
             }
          } else {
-            sliderService.save(slider);
+            slider = sliderService.save(slider);
          }
       }
 
@@ -879,7 +863,9 @@ public class TemplateServiceImpl implements TemplateService {
          macro.setAccount(account);
          saveMacro(macro,createNew);
       }
-
+  } catch (Exception e) {
+     e.printStackTrace();
+  }
       //7, prepare to send to client.
       prepareToSendToClient(devices, deviceCommands, macros, account);
       return isHasNewCmd;
@@ -981,23 +967,9 @@ public class TemplateServiceImpl implements TemplateService {
    
    private TemplateList buildTemplateListFromJson(String templatesJson) {
       TemplateList result = new TemplateList();
-
-     //The json string from beehive is not easy to be convert to java object by FlexJson, so we remove and replace the unnecessary characters.
       try {
-         String validTemplatesJson = "";
-
-         if (templatesJson.contains("{\"template\":")) {
-            if (templatesJson.contains("{\"template\":[")) {
-               String tempString = templatesJson.replaceFirst("\\{\"template\":", "");
-               validTemplatesJson = tempString.substring(0, tempString.lastIndexOf("}}")) + "}";
-            } else {
-               String tempString = templatesJson.replaceFirst("\\{\"template\":", "[");
-               validTemplatesJson = tempString.substring(0, tempString.lastIndexOf("}}")) + "]}";
-            }
-
             result = new JSONDeserializer<TemplateList>().use(null, TemplateList.class).use("templates",
-                  ArrayList.class).deserialize(validTemplatesJson);
-         }
+                  ArrayList.class).deserialize(templatesJson);
       } catch (RuntimeException e) {
          log.warn("Faild to get template list, there are no templats in beehive ");
       }
@@ -1061,83 +1033,18 @@ public class TemplateServiceImpl implements TemplateService {
     *
     */
    public static class TemplateList {
-      private List<TemplateDTO> templates = new ArrayList<TemplateDTO> ();
+      private List<Template> templates = new ArrayList<Template> ();
 
-      public List<TemplateDTO> getTemplates() {
+      public List<Template> getTemplates() {
          return templates;
       }
 
-      public void setTemplates(List<TemplateDTO> templates) {
+      public void setTemplates(List<Template> templates) {
          this.templates = templates;
       }
       
    }
 
-   /**
-    * A class used to help flexjson convert json string to template list. 
-    * The class Template need a property <b>oid</b>, but in json string it is mapped to <b>id</b>,therefore at first we need convert the string to TemplateDTO and then 
-    * convert it to Template later.  
-    * @author javen
-    *
-    */
-   public static class TemplateDTO {
-      private int id;
-      private String content;
-      private String name;
-      private String keywords;
-      private boolean shared = false;
-
-      public int getId() {
-         return id;
-      }
-
-      public void setId(int id) {
-         this.id = id;
-      }
-
-      public String getContent() {
-         return content;
-      }
-
-      public void setContent(String content) {
-         this.content = content;
-      }
-
-      public String getName() {
-         return name;
-      }
-
-      public void setName(String name) {
-         this.name = name;
-      }
-      
-      
-      public String getKeywords() {
-         return keywords;
-      }
-
-      public void setKeywords(String keywords) {
-         this.keywords = keywords;
-      }
-      
-      public boolean isShared() {
-         return shared;
-      }
-
-      public void setShared(boolean shared) {
-         this.shared = shared;
-      }
-
-      public Template toTemplate() {
-         Template template = new Template();
-         template.setName(name);
-         template.setContent(content);
-         template.setId(id);
-         template.setKeywords(keywords);
-         template.setShared(shared);
-         return template;
-      }
-   }
 
    @Override
    public Template updateTemplate(Template template, String password) {

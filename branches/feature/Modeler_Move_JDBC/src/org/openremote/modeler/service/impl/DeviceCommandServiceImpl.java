@@ -22,7 +22,6 @@ package org.openremote.modeler.service.impl;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +36,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.exception.BeehiveJDBCException;
@@ -108,7 +105,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       httpPost.addHeader("Accept", "application/json");
       addAuthentication(httpPost);
       try {
-         String[] excludes = {"*.class","device.deviceAttrs","device.deviceCommands", "device.switchs", "device.sliders", "device.sensors"};
+         String[] excludes = {"*.class","device.deviceAttrs","device.deviceCommands", "device.switchs", "device.sliders", "device.sensors", "*.deviceCommand"};
          httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectExclude(deviceCommand,excludes),"UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
@@ -237,23 +234,33 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    }
 
    public List<DeviceCommand> loadSameCommands(DeviceCommand deviceCommand) {
-      List<DeviceCommand> tmpResult = new ArrayList<DeviceCommand>();
-      DetachedCriteria critera = DetachedCriteria.forClass(DeviceCommand.class);
-      critera.add(Restrictions.eq("device.oid", deviceCommand.getDevice().getId()));
-      critera.add(Restrictions.eq("name", deviceCommand.getName()));
-      if (deviceCommand.getSectionId() != null) {
-         critera.add(Restrictions.eq("sectionId", deviceCommand.getSectionId()));
-      }
-      tmpResult = genericDAO.findByDetachedCriteria(critera);
-      if (tmpResult != null) {
-         for(Iterator<DeviceCommand> iterator= tmpResult.iterator();iterator.hasNext();) {
-            DeviceCommand cmd = iterator.next();
-            if (! cmd.equalsWithoutCompareOid(deviceCommand)) {
-               iterator.remove();
-            }
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceCommandUrl() + "loadsamecommands");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] excludes = { "*.class", "device.deviceAttrs", "device.deviceCommands", "device.switchs",
+               "device.sliders", "device.sensors", "protocol" };
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectExclude(deviceCommand, excludes),
+               "UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String deviceCommandsJson = "{deviceCommands:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            DeviceCommandList result = new JSONDeserializer<DeviceCommandList>().use(null, DeviceCommandList.class).use("deviceCommands",
+                  ArrayList.class).deserialize(deviceCommandsJson);
+            return result.getDeviceCommands();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<DeviceCommand>();
+         } else {
+            throw new BeehiveJDBCException("Failed load same commands from beehive.");
          }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Can't load same commands from beehive.");
       }
-      return tmpResult;
    }
    
    public void setConfiguration(Configuration configuration) {
