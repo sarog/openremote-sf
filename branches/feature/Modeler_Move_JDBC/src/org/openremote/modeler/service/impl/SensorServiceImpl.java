@@ -21,7 +21,6 @@ package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +33,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
@@ -205,23 +202,38 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return dvic.getSensors();
    }
 */
+   @SuppressWarnings("unchecked")
    public List<Sensor> loadSameSensors(Sensor sensor) {
-      List<Sensor> result = null;
-      DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
-      critera.add(Restrictions.eq("name", sensor.getName()));
-      critera.add(Restrictions.eq("type", sensor.getType()));
-      critera.add(Restrictions.eq("device.oid", sensor.getDevice().getId()));
-      result = genericDAO.findByDetachedCriteria(critera);
-      
-      if (result != null) {
-         for(Iterator<Sensor> iterator=result.iterator();iterator.hasNext();) {
-            Sensor s = iterator.next();
-            if(!s.equalsWithoutCompareOid(sensor)){
-               iterator.remove();
-            }
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSensorUrl() + "loadsamesensors");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(sensor,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String sensorsJson = IOUtils.toString(response.getEntity().getContent());
+            SensorList result = new JSONDeserializer<SensorList>()
+            .use(null, SensorList.class)
+            .use("sensors.values", new TypeLocator<String>("classType")
+               .add("Sensor", Sensor.class)
+               .add("RangeSensor", RangeSensor.class)
+               .add("CustomSensor", CustomSensor.class)).deserialize(sensorsJson);
+            return result.getSensors();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Sensor>();
+         } else {
+            throw new BeehiveJDBCException("Failed load same sensors from beehive.");
          }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to load same sensors from beehive.");
       }
-      return result;
    }
    
    public void setConfiguration(Configuration configuration) {

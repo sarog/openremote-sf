@@ -34,8 +34,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CustomSensor;
@@ -197,12 +195,33 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    }
 
    public List<Device> loadSameDevices(Device device) {
-      DetachedCriteria critera = DetachedCriteria.forClass(Device.class);
-      critera.add(Restrictions.eq("name", device.getName()));
-      critera.add(Restrictions.eq("model", device.getModel()));
-      critera.add(Restrictions.eq("vendor", device.getVendor()));
-      critera.add(Restrictions.eq("account.oid", device.getAccount().getId()));
-      return genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceUrl() + "loadsamedevices/" + device.getAccount().getId());
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         device.toSimple();
+         httpPost.setEntity(new StringEntity(JsonGenerator.serializerObject(device),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String devicesJson = "{devices:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            DeviceList result = new JSONDeserializer<DeviceList>().use(null, DeviceList.class).use("devices",
+                  ArrayList.class).deserialize(devicesJson);
+            return result.getDevices();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Device>();
+         } else {
+            throw new BeehiveJDBCException("Failed load same devices from beehive.");
+         }
+      } catch (IOException e) {
+         log.error("Can't load same devices from beehive.", e);
+         throw new BeehiveJDBCException("Can't load same devices from beehive.");
+      }
+      
    }
    
    public void setConfiguration(Configuration configuration) {

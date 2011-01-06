@@ -21,7 +21,6 @@ package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +33,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.RangeSensor;
@@ -165,21 +162,40 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       this.userService = userService;
    }
    
+   @SuppressWarnings("unchecked")
    public List<Switch> loadSameSwitchs(Switch swh) {
-      List<Switch> result = null;
-      DetachedCriteria critera = DetachedCriteria.forClass(Switch.class);
-      critera.add(Restrictions.eq("device.oid", swh.getDevice().getId()));
-      critera.add(Restrictions.eq("name", swh.getName()));
-      result = genericDAO.findByDetachedCriteria(critera);
-      if (result != null) {
-         for(Iterator<Switch> iterator = result.iterator();iterator.hasNext();) {
-            Switch tmp = iterator.next();
-            if (! tmp.equalsWithoutCompareOid(swh)) {
-               iterator.remove();
-            }
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSwitchUrl() + "loadsameswitchs");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device","switchSensorRef.sensor.device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(swh,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String switchJson = "{switchs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            SwitchList result = new JSONDeserializer<SwitchList>()
+               .use(null, SwitchList.class)
+               .use("switchs", ArrayList.class)
+               .use("switchs.values.switchSensorRef.sensor", new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(switchJson);
+            return result.getSwitchs();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Switch>();
+         } else {
+            throw new BeehiveJDBCException("Failed load same switchs from beehive.");
          }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to same switchs from beehive.");
       }
-      return result;
    }
    
    public void setConfiguration(Configuration configuration) {

@@ -397,6 +397,7 @@ public class ResourceServiceImpl implements ResourceService {
          }
       } catch (Exception e) {
          LOGGER.warn("Some components referenced a removed object:  " + e.getMessage());
+         e.printStackTrace();
          return new ArrayList<Command>();
       }
       return oneUIButtonEventList;

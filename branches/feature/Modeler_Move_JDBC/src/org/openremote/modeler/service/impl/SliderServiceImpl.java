@@ -21,7 +21,6 @@ package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +33,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.CustomSensor;
 import org.openremote.modeler.domain.RangeSensor;
@@ -157,21 +154,40 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       }
    }
    
+   @SuppressWarnings("unchecked")
    public List<Slider> loadSameSliders(Slider slider) {
-      List<Slider> result = null;
-      DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
-      critera.add(Restrictions.eq("device.oid", slider.getDevice().getId()));
-      critera.add(Restrictions.eq("name", slider.getName()));
-      result = genericDAO.findByDetachedCriteria(critera);
-      if (result != null) {
-         for(Iterator<Slider> iterator = result.iterator();iterator.hasNext();) {
-            Slider sld = iterator.next();
-            if (!sld.equalsWithoutCompareOid(slider)) {
-               iterator.remove();
-            }
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTSliderUrl() + "loadsamesliders");
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         String[] includes = {"device", "sliderSensorRef.sensor.device"};
+         String[] excludes = {"*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors","*.protocol","*.device"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectInclude(slider,includes,excludes),"UTF-8"));
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String sliderJson = "{sliders:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            SliderList result = new JSONDeserializer<SliderList>()
+               .use(null, SliderList.class)
+               .use("sliders", ArrayList.class)
+               .use("sliders.values.sliderSensorRef.sensor", new TypeLocator<String>("classType")
+                  .add("Sensor", Sensor.class)
+                  .add("RangeSensor", RangeSensor.class)
+                  .add("CustomSensor", CustomSensor.class)
+                ).deserialize(sliderJson);
+            return result.getSliders();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<Slider>();
+         } else {
+            throw new BeehiveJDBCException("Failed load same sliders from beehive.");
          }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Failed to same sliders from beehive.");
       }
-      return result;
    }
 
    public void setConfiguration(Configuration configuration) {

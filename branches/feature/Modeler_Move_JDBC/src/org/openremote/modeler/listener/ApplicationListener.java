@@ -20,30 +20,14 @@
 package org.openremote.modeler.listener;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.openremote.modeler.SpringContext;
 import org.openremote.modeler.configuration.PathConfig;
-import org.openremote.modeler.domain.ConfigCategory;
-import org.openremote.modeler.domain.ControllerConfig;
 import org.openremote.modeler.service.UserService;
-import org.openremote.modeler.utils.JsonGenerator;
-import org.openremote.modeler.utils.XmlParser;
 import org.springframework.context.ApplicationEvent;
-
-import flexjson.JSONSerializer;
 
 
 /**
@@ -69,44 +53,6 @@ public class ApplicationListener implements ServletContextListener {
          tempFolder.mkdirs();
       }
       userService.initRoles();
-//      saveControllerConfigs();
    }
 
-   private void saveControllerConfigs() {
-      HttpClient httpClient = new DefaultHttpClient();
-      String url = "http://localhost:8080/beehive/rest/controllerconfig/save/3";
-      HttpPost httpPost = new HttpPost(url);
-//      String[] includes = {"user","username","token","pendingRoleName"};
-      String[] excludes = {"*.class","id"};
-//      httpPost.setHeader("Content-Type", "application/json"); 
-//      httpPost.addHeader("Accept", "application/json");
-      
-      Set<ConfigCategory> categories = new HashSet<ConfigCategory>();
-      Set<ControllerConfig> allDefaultConfigs = new HashSet<ControllerConfig>();
-      XmlParser.initControllerConfig(categories, allDefaultConfigs);
-      
-      String json = JsonGenerator.serializerObjectExcludeWithRoot(allDefaultConfigs, excludes, "controllerConfigs");
-//      String json = new JSONSerializer().exclude(excludes).serialize("controllerConfigs", allDefaultConfigs);
-//      json = "{\"controllerConfigs\":" + json + "}";
-      System.out.println(json);
-      try {
-      StringEntity entity  = new StringEntity(json,"UTF-8");
-      entity.setContentType("application/json");
-         httpPost.setEntity(entity);
-      } catch (UnsupportedEncodingException e1) {
-         e1.printStackTrace();
-      }
-      try {
-         HttpResponse response = httpClient.execute(httpPost);
-         if (response.getStatusLine().getStatusCode() == 200) {
-            System.out.println("save success.");
-         } else {
-            System.out.println("save failed");
-         }
-      } catch (ClientProtocolException e) {
-         e.printStackTrace();
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
-   }
 }
