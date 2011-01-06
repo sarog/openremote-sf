@@ -36,4 +36,7 @@ public interface SwitchService {
    public void deleteSwitchById(long id);
    
    public List<SwitchDTO> loadAccountSwitchs(long accountId);
+   
+   public List<SwitchDTO> loadSameSwitchs(SwitchDTO switchDTO);
+   
 }

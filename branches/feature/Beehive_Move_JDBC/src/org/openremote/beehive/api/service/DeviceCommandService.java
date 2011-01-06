@@ -40,4 +40,7 @@ public interface DeviceCommandService {
    DeviceCommand update(DeviceCommandDTO deviceCommandDTO);
    
    List<DeviceCommand> loadCommandsByDeviceId(long id);
+   
+   List<DeviceCommand> loadSameDeviceCommands(DeviceCommandDTO deviceCommandDTO);
+   
 }

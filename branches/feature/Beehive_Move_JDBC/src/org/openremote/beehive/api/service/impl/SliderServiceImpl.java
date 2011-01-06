@@ -20,8 +20,11 @@
 package org.openremote.beehive.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.modeler.SliderDTO;
 import org.openremote.beehive.api.service.SliderService;
 import org.openremote.beehive.domain.Account;
@@ -77,6 +80,28 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
       }
       for (Slider slider : result) {
          sliderDTOs.add(slider.toDTO());
+      }
+      return sliderDTOs;
+   }
+
+   public List<SliderDTO> loadSameSliders(SliderDTO sliderDTO) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Slider.class);
+      critera.add(Restrictions.eq("device.oid", sliderDTO.getDevice().getId()));
+      critera.add(Restrictions.eq("name", sliderDTO.getName()));
+      List<Slider> result = genericDAO.findByDetachedCriteria(critera);
+      
+      Slider slider = sliderDTO.toSlider();
+      List<SliderDTO> sliderDTOs = new ArrayList<SliderDTO>();
+      if (result != null) {
+         for(Iterator<Slider> iterator = result.iterator();iterator.hasNext();) {
+            Slider sld = iterator.next();
+            if (!sld.equalsWithoutCompareOid(slider)) {
+               iterator.remove();
+            }
+         }
+         for (Slider dbSlider : result) {
+            sliderDTOs.add(dbSlider.toDTO());
+         }
       }
       return sliderDTOs;
    }

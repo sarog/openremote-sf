@@ -247,6 +247,24 @@ public class Device extends BusinessEntity {
       this.account = account;
    }
    
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      Device other = (Device) obj;
+      if (model == null) {
+         if (other.model != null) return false;
+      } else if (!model.equals(other.model)) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (vendor == null) {
+         if (other.vendor != null) return false;
+      } else if (!vendor.equals(other.vendor)) return false;
+      return other.getOid() == getOid();
+   }
+   
    public DeviceDTO toDTO() {
       DeviceDTO deviceDTO = new DeviceDTO();
       deviceDTO.setId(getOid());
@@ -258,7 +276,7 @@ public class Device extends BusinessEntity {
       if (deviceCommands != null && deviceCommands.size() > 0) {
          List<DeviceCommandDTO> deviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
          for (DeviceCommand deviceCommand : deviceCommands) {
-            deviceCommandDTOs.add(deviceCommand.toSimpleDTO());
+            deviceCommandDTOs.add(deviceCommand.toDTO());
          }
          deviceDTO.setDeviceCommands(deviceCommandDTOs);
       }

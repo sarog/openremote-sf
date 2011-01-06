@@ -117,4 +117,21 @@ public class ProtocolAttr extends BusinessEntity {
       protocolDTO.setValue(value);
       return protocolDTO;
    }
+   
+   @Override
+   public boolean equals(Object obj) {
+      //attention: oid is not needed to be compare. 
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (getClass() != obj.getClass()) return false;
+      ProtocolAttr other = (ProtocolAttr) obj;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (value == null) {
+         if (other.value != null) return false;
+      } else if (!value.equals(other.value)) return false;
+      return true;
+   }
+   
 }

@@ -126,4 +126,28 @@ public class Switch extends BusinessEntity {
       
       return switchDTO;
    }
+   
+   /**
+    * Equals without compare oid.
+    * Used for rebuilding from template.
+    * 
+    * @param swh the swh
+    * 
+    * @return true, if successful
+    */
+   public boolean equalsWithoutCompareOid(Switch swh) {
+      if (name == null) {
+         if (swh.name != null) return false;
+      } else if (!name.equals(swh.name)) return false;
+      if (switchCommandOffRef == null) {
+         if (swh.switchCommandOffRef != null) return false;
+      } else if (swh.switchCommandOffRef == null || !switchCommandOffRef.equalsWithoutCompareOid(swh.switchCommandOffRef)) return false;
+      if (switchCommandOnRef == null) {
+         if (swh.switchCommandOnRef != null) return false;
+      } else if (swh.switchCommandOnRef == null || !switchCommandOnRef.equalsWithoutCompareOid(swh.switchCommandOnRef)) return false;
+      if (switchSensorRef == null) {
+         if (swh.switchSensorRef != null) return false;
+      } else if (swh.switchSensorRef == null || !switchSensorRef.equalsWithoutCompareOid(swh.switchSensorRef)) return false;
+      return true;
+   }
 }

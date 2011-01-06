@@ -20,8 +20,11 @@
 package org.openremote.beehive.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.modeler.SwitchDTO;
 import org.openremote.beehive.api.service.SwitchService;
 import org.openremote.beehive.domain.Account;
@@ -74,6 +77,28 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
       
       for (Switch switchToggle : result) {
          switchDTOs.add(switchToggle.toDTO());
+      }
+      return switchDTOs;
+   }
+
+   public List<SwitchDTO> loadSameSwitchs(SwitchDTO switchDTO) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Switch.class);
+      critera.add(Restrictions.eq("device.oid", switchDTO.getDevice().getId()));
+      critera.add(Restrictions.eq("name", switchDTO.getName()));
+      List<Switch> result = genericDAO.findByDetachedCriteria(critera);
+      Switch swh = switchDTO.toSwitch();
+      
+      List<SwitchDTO> switchDTOs = new ArrayList<SwitchDTO>();
+      if (result != null) {
+         for(Iterator<Switch> iterator = result.iterator();iterator.hasNext();) {
+            Switch tmp = iterator.next();
+            if (! tmp.equalsWithoutCompareOid(swh)) {
+               iterator.remove();
+            }
+         }
+         for (Switch switchToggle : result) {
+            switchDTOs.add(switchToggle.toDTO());
+         }
       }
       return switchDTOs;
    }

@@ -86,7 +86,7 @@ public class DeviceMacroRef extends DeviceMacroItem {
          deviceMacroItemDTO.setParentDeviceMacro(parentDeviceMacro.toSimpleDTO());
       }
       if (targetDeviceMacro != null) {
-         deviceMacroItemDTO.setTargetDeviceMacro(targetDeviceMacro.toSimpleDTO());
+         deviceMacroItemDTO.setTargetDeviceMacro(targetDeviceMacro.toDTO());
       }
       return deviceMacroItemDTO;
    }

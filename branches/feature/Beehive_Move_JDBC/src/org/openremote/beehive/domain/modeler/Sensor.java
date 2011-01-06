@@ -117,4 +117,27 @@ public class Sensor extends BusinessEntity {
       }
       return sensorDTO;
    }
+   
+   /**
+    * Equals without compare oid is for rebuilding sensor from template.
+    * 
+    * @param other the other
+    * 
+    * @return true, if successful
+    */
+   public boolean equalsWithoutCompareOid(Sensor other) {
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (type == null) {
+         if (other.type != null) return false;
+      } else if (!type.equals(other.type)) return false;
+      if (device == null) {
+         if (other.device != null) return false;
+      } else if (!device.equals(other.device)) return false;
+      if (sensorCommandRef == null) {
+         if (other.sensorCommandRef != null) return false;
+      } else if (other.sensorCommandRef != null && !sensorCommandRef.equalsWithoutCompareOid(other.sensorCommandRef)) return false;
+      return true;
+   }
 }
