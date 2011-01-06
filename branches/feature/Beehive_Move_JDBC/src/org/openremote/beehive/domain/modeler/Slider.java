@@ -108,4 +108,29 @@ public class Slider extends BusinessEntity {
       }
       return sliderDTO;
    }
+   
+   /**
+    * Equals without compare oid.
+    * Used for rebuilding from template.
+    * 
+    * @param other the other
+    * 
+    * @return true, if successful
+    */
+   public boolean equalsWithoutCompareOid(Slider other) {
+      if (other == null) return false;
+      if (name == null) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      if (this.device != null) {
+         if (other.device == null || this.device.getOid() != other.device.getOid()) return false;
+      } else if (other.device != null) return false;
+      if (this.setValueCmd != null) {
+         if (other.setValueCmd == null || !this.setValueCmd.equalsWithoutCompareOid(other.getSetValueCmd())) return false;
+      } else if (other.setValueCmd != null)  return false;
+      if (this.sliderSensorRef != null) {
+         if (other.sliderSensorRef == null || !sliderSensorRef.equalsWithoutCompareOid(other.sliderSensorRef)) return false;
+      } else if(other.sliderSensorRef != null) return false;
+      return true;
+   }
 }

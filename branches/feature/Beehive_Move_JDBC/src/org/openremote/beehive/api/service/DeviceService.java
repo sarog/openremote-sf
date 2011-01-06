@@ -46,4 +46,7 @@ public interface DeviceService {
    void update(DeviceDTO deviceDTO);
    
    void delete(long deviceId);
+   
+   List<DeviceDTO> loadSameDevices(DeviceDTO deviceDTO, long accountId);
+   
 }

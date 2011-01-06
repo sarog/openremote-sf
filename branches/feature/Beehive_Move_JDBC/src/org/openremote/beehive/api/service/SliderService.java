@@ -36,4 +36,7 @@ public interface SliderService {
    public void deleteById(long sliderId);
    
    public List<SliderDTO> loadAccountSliders(long accountId);
+   
+   public List<SliderDTO> loadSameSliders(SliderDTO sliderDTO);
+   
 }

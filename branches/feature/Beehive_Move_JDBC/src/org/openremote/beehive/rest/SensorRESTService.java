@@ -97,6 +97,20 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(sensorDTO);
    }
    
+   @Path("loadsamesensors")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadSameSensors(SensorDTO sensorDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<SensorDTO> sensors = getSensorService().loadSameSensors(sensorDTO);
+      if (sensors.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(new SensorList(sensors));
+   }
+   
    protected SensorService getSensorService() {
       return (SensorService) getSpringContextInstance().getBean("sensorService");
    }

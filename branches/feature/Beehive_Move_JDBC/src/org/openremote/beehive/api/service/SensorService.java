@@ -38,4 +38,7 @@ public interface SensorService {
    public List<SensorDTO> loadAllAccountSensors(long accountId);
    
    SensorDTO loadSensorById(long id);
+   
+   public List<SensorDTO> loadSameSensors(SensorDTO sensorDTO);
+   
 }

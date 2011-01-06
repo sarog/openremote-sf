@@ -58,4 +58,11 @@ public class SensorCommandRef extends CommandRefItem {
       return this.getOid() == other.getOid();
    }
 
+   public boolean equalsWithoutCompareOid(SensorCommandRef other) {
+      DeviceCommand cmd = this.getDeviceCommand();
+      if (cmd != null) {
+         return cmd.equalsWithoutCompareOid(other.getDeviceCommand());
+      }
+      else return false;
+   }
 }

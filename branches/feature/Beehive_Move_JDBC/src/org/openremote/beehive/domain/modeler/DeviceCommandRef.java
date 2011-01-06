@@ -87,7 +87,7 @@ public class DeviceCommandRef extends DeviceMacroItem {
          deviceMacroItemDTO.setParentDeviceMacro(parentDeviceMacro.toSimpleDTO());
       }
       if (deviceCommand != null) {
-         deviceMacroItemDTO.setDeviceCommand(deviceCommand.toSimpleDTO());
+         deviceMacroItemDTO.setDeviceCommand(deviceCommand.toDTO());
          deviceMacroItemDTO.setDeviceName(deviceCommand.getDevice().getName());
       }
          

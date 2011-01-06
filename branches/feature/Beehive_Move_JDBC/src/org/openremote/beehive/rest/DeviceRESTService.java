@@ -117,6 +117,21 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   @Path("loadsamedevices/{account_id}")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadSameDevices(@PathParam("account_id") long accountId,
+         DeviceDTO deviceDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<DeviceDTO> devices = getDeviceService().loadSameDevices(deviceDTO, accountId);
+      if (devices.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(devices);
+   }
+   
    protected DeviceService getDeviceService() {
       return (DeviceService) getSpringContextInstance().getBean("deviceService");
    }

@@ -20,6 +20,7 @@
 package org.openremote.beehive.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -95,8 +96,30 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
       return deviceCommandList;
    }
 
+   public List<DeviceCommand> loadSameDeviceCommands(DeviceCommandDTO deviceCommandDTO) {
+      DeviceCommand deviceCommand = deviceCommandDTO.toDeviceCommand();
+      List<DeviceCommand> tmpResult = new ArrayList<DeviceCommand>();
+      DetachedCriteria critera = DetachedCriteria.forClass(DeviceCommand.class);
+      critera.add(Restrictions.eq("device.oid", deviceCommand.getDevice().getOid()));
+      critera.add(Restrictions.eq("name", deviceCommand.getName()));
+      if (deviceCommand.getSectionId() != null) {
+         critera.add(Restrictions.eq("sectionId", deviceCommand.getSectionId()));
+      }
+      tmpResult = genericDAO.findByDetachedCriteria(critera);
+      if (tmpResult != null) {
+         for(Iterator<DeviceCommand> iterator= tmpResult.iterator();iterator.hasNext();) {
+            DeviceCommand cmd = iterator.next();
+            if (! cmd.equalsWithoutCompareOid(deviceCommand)) {
+               iterator.remove();
+            }
+         }
+      }
+      return tmpResult;
+   }
+   
    public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
    }
+
 
 }

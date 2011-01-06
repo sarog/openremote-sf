@@ -33,7 +33,7 @@ public class SensorCommandRefDTO extends CommandRefItemDTO {
    
    public SensorCommandRefDTO(SensorCommandRef ref, String deviceName) {
       setId(ref.getOid());
-      setDeviceCommand(ref.getDeviceCommand().toSimpleDTO());
+      setDeviceCommand(ref.getDeviceCommand().toDTO());
       if (!StringUtils.isEmpty(deviceName)) {
          setDeviceName(deviceName);
       }

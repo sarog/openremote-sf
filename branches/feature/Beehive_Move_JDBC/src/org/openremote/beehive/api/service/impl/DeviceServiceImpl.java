@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
 import org.openremote.beehive.api.service.DeviceMacroItemService;
 import org.openremote.beehive.api.service.DeviceService;
@@ -65,7 +67,10 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    public DeviceDTO loadDeviceById(long id) {
       Device device = super.loadById(id);
-      
+      List<DeviceCommand> deviceCommands = device.getDeviceCommands();
+      for(DeviceCommand cmd : deviceCommands ) {
+         Hibernate.initialize(cmd.getProtocol().getAttributes());
+      }
       return device.toDTO();
    }
 
@@ -90,6 +95,22 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
 
    public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
+   }
+
+   public List<DeviceDTO> loadSameDevices(DeviceDTO deviceDTO, long accountId) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Device.class);
+      critera.add(Restrictions.eq("name", deviceDTO.getName()));
+      critera.add(Restrictions.eq("model", deviceDTO.getModel()));
+      critera.add(Restrictions.eq("vendor", deviceDTO.getVendor()));
+      critera.add(Restrictions.eq("account.oid", accountId));
+      List<Device> devices = genericDAO.findPagedDateByDetachedCriteria(critera, 1, 0);
+      
+      List<DeviceDTO> deviceDTOs = new ArrayList<DeviceDTO>();
+      for (Device device : devices) {
+         deviceDTOs.add(device.toSimpleDTO());
+      }
+      
+      return deviceDTOs;
    }
 
 }

@@ -90,6 +90,19 @@ public class SliderRESTService extends RESTBaseService {
       return buildResponse(sliders);
    }
    
+   @Path("loadsamesliders")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadSameSliders(SliderDTO sliderDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<SliderDTO> sliders = getSliderService().loadSameSliders(sliderDTO);
+      if (sliders.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(sliders);
+   }
    protected SliderService getSliderService() {
       return (SliderService) getSpringContextInstance().getBean("sliderService");
    }

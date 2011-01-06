@@ -92,6 +92,19 @@ public class SwitchRESTService extends RESTBaseService {
       return buildResponse(switchs);
    }
    
+   @Path("loadsameswitchs")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadSameSwitchs(SwitchDTO switchDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<SwitchDTO> switchs = getSwitchService().loadSameSwitchs(switchDTO);
+      if (switchs.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(switchs);
+   }
    protected SwitchService getSwitchService() {
       return (SwitchService) getSpringContextInstance().getBean("switchService");
    }

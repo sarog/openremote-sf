@@ -54,4 +54,15 @@ public class SensorRefItem extends BusinessEntity {
       this.sensor = sensor;
    }
    
+   /**
+    * Equals without compare oid.
+    * Used for rebuilding from template.
+    * 
+    * @param other the other
+    * 
+    * @return true, if successful
+    */
+   public boolean equalsWithoutCompareOid(SensorRefItem other) {
+      return sensor.equalsWithoutCompareOid(other.getSensor());
+   }
 }

@@ -20,6 +20,7 @@
 package org.openremote.beehive.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -91,6 +92,9 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          genericDAO.delete(old.getSensorCommandRef());
          old.setSensorCommandRef(sensorDTO.getSensorCommandRef().toSensorCommandRef(old));
       }
+      if (old.getSensorCommandRef() != null) {
+         Hibernate.initialize(old.getSensorCommandRef().getDeviceCommand().getProtocol().getAttributes());
+      }
       return old;
    }
 
@@ -115,6 +119,30 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          Hibernate.initialize(((CustomSensor) sensor).getStates());
       }
       return sensor.toDTO();
+   }
+
+   public List<SensorDTO> loadSameSensors(SensorDTO sensorDTO) {
+      DetachedCriteria critera = DetachedCriteria.forClass(Sensor.class);
+      critera.add(Restrictions.eq("name", sensorDTO.getName()));
+      critera.add(Restrictions.eq("type", sensorDTO.getType()));
+      critera.add(Restrictions.eq("device.oid", sensorDTO.getDevice().getId()));
+      List<Sensor> result = genericDAO.findByDetachedCriteria(critera);
+      Sensor sensor = sensorDTO.toSensor();
+      
+      List<SensorDTO> sensorDTOs = new ArrayList<SensorDTO>();
+      if (result != null) {
+         for(Iterator<Sensor> iterator=result.iterator();iterator.hasNext();) {
+            Sensor s = iterator.next();
+            if(!s.equalsWithoutCompareOid(sensor)){
+               iterator.remove();
+            }
+         }
+         
+         for (Sensor dbSensor : result) {
+            sensorDTOs.add(dbSensor.toDTO());
+         }
+      }
+      return sensorDTOs;
    }
 
 }

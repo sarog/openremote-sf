@@ -104,6 +104,23 @@ public class DeviceCommandRESTService extends RESTBaseService {
       if (!authorize(credentials)) return unAuthorizedResponse();
       List<DeviceCommand> deviceCommands = getDeviceCommandService().loadCommandsByDeviceId(deviceId);
       List<DeviceCommandDTO> newDeviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
+      if (deviceCommands != null) {
+         for (DeviceCommand deviceCommand : deviceCommands) {
+            newDeviceCommandDTOs.add(deviceCommand.toDTO());
+         }
+      }
+      return buildResponse(newDeviceCommandDTOs);
+   }
+   
+   @Path("loadsamecommands")
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response loadSameDeviceCommands(DeviceCommandDTO deviceCommandDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<DeviceCommand> deviceCommands = getDeviceCommandService().loadSameDeviceCommands(deviceCommandDTO);
+      List<DeviceCommandDTO> newDeviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
       for (DeviceCommand deviceCommand : deviceCommands) {
          newDeviceCommandDTOs.add(deviceCommand.toDTO());
       }

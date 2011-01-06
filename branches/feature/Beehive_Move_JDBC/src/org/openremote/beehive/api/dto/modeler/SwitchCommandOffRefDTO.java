@@ -32,7 +32,7 @@ public class SwitchCommandOffRefDTO extends CommandRefItemDTO {
    public SwitchCommandOffRefDTO(SwitchCommandOffRef commandOffRef, String deviceName) {
       if (commandOffRef != null) {
          setId(commandOffRef.getOid());
-         setDeviceCommand(commandOffRef.getDeviceCommand().toSimpleDTO());
+         setDeviceCommand(commandOffRef.getDeviceCommand().toDTO());
          setDeviceName(deviceName);
       }
    }

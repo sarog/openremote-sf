@@ -32,7 +32,7 @@ public class SliderCommandRefDTO extends CommandRefItemDTO {
    public SliderCommandRefDTO(SliderCommandRef commandRef, String deviceName) {
       if (commandRef != null) {
          setId(commandRef.getOid());
-         setDeviceCommand(commandRef.getDeviceCommand().toSimpleDTO());
+         setDeviceCommand(commandRef.getDeviceCommand().toDTO());
          setDeviceName(deviceName);
       }
    }
