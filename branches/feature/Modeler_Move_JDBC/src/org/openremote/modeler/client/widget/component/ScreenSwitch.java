@@ -94,6 +94,14 @@ public class ScreenSwitch extends ScreenComponent {
             isOn = true;
             image.setUrl(uiSwitch.getOnImage().getSrc());
          }
+      } else {
+         if (isOn) {
+            isOn = false;
+            center.setText("OFF");
+         } else {
+            isOn = true;
+            center.setText("ON");
+         }
       }
    }
    
