@@ -20,10 +20,6 @@
  */
 package org.openremote.controller.rest;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Set;
@@ -72,23 +68,10 @@ public class FindPanelByIDTest
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
-  /**
-   * backup xml files.
-   */
-  @Before public void setup()
-  {
-    String panelXmlFixture = RESTXMLTests.getFixtureFile(Constants.PANEL_XML);
 
-    RESTXMLTests.replaceControllerPanelXML(panelXmlFixture);
-  }
-
-
-  /**
-   * restore xml files.
-   */
   @After public void tearDown()
   {
-    RESTXMLTests.restoreControllerPanelXML();
+    RESTXMLTests.deleteControllerPanelXML();
   }
 
 
@@ -96,6 +79,9 @@ public class FindPanelByIDTest
 
   @Test public void requestFatherPanelProfile() throws Exception
   {
+
+    RESTXMLTests.replaceControllerPanelXML(Constants.PANEL_XML);
+
 
     URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
 
@@ -142,7 +128,7 @@ public class FindPanelByIDTest
 
         if (!include.getNodeName().equalsIgnoreCase("include"))
           continue;
-        
+
         NamedNodeMap attrs = include.getAttributes();
 
         Assert.assertNotNull("Expected to find attributes in include", attrs);
@@ -179,31 +165,32 @@ public class FindPanelByIDTest
     Assert.assertTrue(screenIDs.contains("6"));
     Assert.assertTrue(screenIDs.contains("7"));
     Assert.assertTrue(screenIDs.contains("8"));
-    
+
 
 
     for (String ref : screenReferences)
     {
       Assert.assertTrue("Expected to find screen with id: " + ref, screenIDs.contains(ref));
     }
-
   }
 
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
+    RESTXMLTests.replaceControllerPanelXML(Constants.PANEL_XML);
+
     URL doesNotExist = new URL(RESTXMLTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
     RESTXMLTests.assertHttpResponse(
-        connection, 428, RESTXMLTests.ASSERT_BODY_CONTENT,
+        connection, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND, RESTXMLTests.ASSERT_BODY_CONTENT,
         Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
     Document doc = RESTXMLTests.getDOMDocument(connection.getErrorStream());
 
-    RESTXMLTests.assertErrorDocument(doc, 428);
+    RESTXMLTests.assertErrorDocument(doc, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND);
   }
 
 
