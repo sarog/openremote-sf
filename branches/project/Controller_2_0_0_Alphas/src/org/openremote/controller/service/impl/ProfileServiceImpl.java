@@ -73,9 +73,9 @@ public class ProfileServiceImpl implements ProfileService
     return output(doc);
   }
 
-  @Override public String getAllPanels(String panleXMLPath)
+  @Override public String getAllPanels(String panelXMLPath)
   {
-    Document doc = getAllPanelsDocument(panleXMLPath);
+    Document doc = getAllPanelsDocument(panelXMLPath);
     return output(doc);
   }
 
