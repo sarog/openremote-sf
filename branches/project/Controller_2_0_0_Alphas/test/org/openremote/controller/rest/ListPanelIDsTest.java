@@ -22,20 +22,19 @@ package org.openremote.controller.rest;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.After;
 import org.openremote.controller.suite.RESTXMLTests;
 import org.openremote.controller.Constants;
+import org.openremote.controller.model.Panel;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.NamedNodeMap;
 
 /**
- * TODO
+ * Tests against {@link org.openremote.controller.rest.ListPanelIDs} servlet (by default
+ * corresponding to the '/rest/panels' URI).
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -50,19 +49,36 @@ public class ListPanelIDsTest
   public final static String RESTAPI_PANELS_URI = "/rest/panels";
 
 
-  // Test Setup -----------------------------------------------------------------------------------
+
+  // Test Setup and Teardown ----------------------------------------------------------------------
+
+  @After public void tearDown()
+  {
+
+    // Keep things clean between tests -- always delete the panel.xml used and expect each
+    // test to deploy its own...
+
+    RESTXMLTests.deleteControllerPanelXML();
+  }
 
 
 
-
-
-
-
-  
   // Tests ----------------------------------------------------------------------------------------
 
+  /**
+   * Basic test to retrieve panel elements from a deployed panel.xml configuration.
+   *
+   * @throws Exception    if an error occurs
+   */
   @Test public void testListPanelIds() throws Exception
   {
+    // Deploy our panel.xml...
+
+    RESTXMLTests.replaceControllerPanelXML("panelList1.xml");
+
+
+    // Retrieve the panels list through REST/XML API...
+
     URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
@@ -72,63 +88,173 @@ public class ListPanelIDsTest
         Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
+
+    // Parse XML response...
+
     Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
+
+
+    // Assertions...
 
     RESTXMLTests.assertOpenRemoteRootElement(doc);
 
+    List<String> panelNames = Panel.getPanelNames(doc);
+    List<String> panelIds = Panel.getPanelIds(doc);
 
-    NodeList list = doc.getElementsByTagName("panel");
-
-    Assert.assertTrue(list.getLength() >= 3);
-
-    Map<String, String> panels = new HashMap<String, String>(3);
-
-    for (int panelIndex = 0; panelIndex < list.getLength(); ++panelIndex)
-    {
-      Node panel = list.item(panelIndex);
-      NamedNodeMap attrs = panel.getAttributes();
-
-      Node id = attrs.getNamedItem("id");
-      String idVal = id.getNodeValue();
-
-      Node name = attrs.getNamedItem("name");
-      String nameVal = name.getNodeValue();
-
-      panels.put(idVal, nameVal);
-    }
+    Assert.assertTrue(panelNames.size() == panelIds.size());
+    Assert.assertTrue(panelNames.size() == 3);
 
     Assert.assertNotNull(
-        "Expected panel id 'MyIphone' but that was not found.",
-        panels.get("MyIphone")
+        "Expected panel id 'iPhone' but that was not found.",
+        panelIds.contains("iPhone")
     );
 
     Assert.assertNotNull(
-        "Expected panel id 'MyAndroid' but that was not found.",
-        panels.get("MyAndroid")
+        "Expected panel id 'Android' but that was not found.",
+        panelIds.contains("Android")
     );
 
     Assert.assertNotNull(
         "Expected panel id '2fd894042c668b90aadf0698d353e579' but that was not found.",
-        panels.get("2fd894042c668b90aadf0698d353e579")
+        panelIds.contains("2fd894042c668b90aadf0698d353e579")
     );
 
 
     Assert.assertTrue(
-        "Expected panel id=MyIphone with name 'father', got " + panels.get("MyIphone"),
-        panels.get("MyIphone").equalsIgnoreCase("father")
+        "Expected panel id=iPhone with name 'easy'.",
+        panelNames.contains("easy")
     );
 
     Assert.assertTrue(
-        "Expected panel id=MyAndroid with name 'mother', got " + panels.get("MyAndroid"),
-        panels.get("MyAndroid").equalsIgnoreCase("mother")
+        "Expected panel id=Android with name 'advanced'.",
+        panelNames.contains("advanced")
     );
 
     Assert.assertTrue(
-        "Expected panel id=2fd894042c668b90aadf0698d353e579 with name 'me', got " + panels.get("2fd894042c668b90aadf0698d353e579"),
-        panels.get("2fd894042c668b90aadf0698d353e579").equalsIgnoreCase("me")
+        "Expected panel id=2fd894042c668b90aadf0698d353e579 with name 'me'.",
+        panelNames.contains("me")
     );
-
   }
+
+
+
+  /**
+   * Tests the HTTP response code on request for panel list against controller that has no
+   * configuration deployed.
+   *
+   * @throws Exception  if any error occurs
+   */
+  @Test public void testNoPanelXMLDeployed() throws Exception
+  {
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED,
+        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted (incomplete element).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureNotWellFormatted() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted.xml");
+
+
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted (missing elements).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureNotWellFormatted2() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted2.xml");
+
+
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted
+   * (missing one <panels> tag).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureMissingPanelsTag() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-MissingPanelsTag.xml");
+
+
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
+
+  /**
+   * Validate XML parsing error handling when the XML is not well formatted
+   * (missing ending tag).
+   *
+   * @throws Exception  if any error other than the expected ones occur
+   */
+  @Test public void testBrokenPanelXMLStructureMissingEndTag() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-MissingEndTag.xml");
+
+
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    RESTXMLTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
+        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        Constants.CHARACTER_ENCODING_UTF8
+    );
+  }
+
 
 }
 
