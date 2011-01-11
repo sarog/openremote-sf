@@ -40,6 +40,7 @@ import org.junit.Assert;
 import org.openremote.controller.rest.ControlStatusPollingRESTServletTest;
 import org.openremote.controller.rest.FindPanelByIDTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
+import org.openremote.controller.rest.ListPanelIDsTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
 import org.openremote.controller.Constants;
@@ -57,7 +58,9 @@ import org.w3c.dom.Node;
    SkipStateTrackTest.class,
    StatusCacheTest.class,
    StatusAndPollingTest.class,
-   FindPanelByIDTest.class
+
+   FindPanelByIDTest.class,
+   ListPanelIDsTest.class
 }
 )
 
@@ -285,8 +288,10 @@ public class RESTXMLTests
   }
 
 
-  public static void replaceControllerPanelXML(String fixtureFile)
+  public static void replaceControllerPanelXML(String filename)
   {
+    String fixtureFile = getFixtureFile(filename);
+
     String containerPanelXml = RESTXMLTests.getContainerPanelXML();
 
     if (new File(containerPanelXml).exists())
@@ -297,7 +302,14 @@ public class RESTXMLTests
     copyFile(fixtureFile, containerPanelXml);
   }
 
-  public static String getFixtureFile(String name)
+  public static void deleteControllerPanelXML()
+  {
+    String containerPanelXml = getContainerPanelXML();
+
+    deleteFile(containerPanelXml);
+  }
+
+  private static String getFixtureFile(String name)
   {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     String resource = AllTests.FIXTURE_DIR + name;
@@ -307,7 +319,7 @@ public class RESTXMLTests
     return cl.getResource(resource).getFile();
   }
 
-  public static String getContainerPanelXML()
+  private static String getContainerPanelXML()
   {
     return PathUtil.addSlashSuffix(
         ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getResourcePath()) +
@@ -358,5 +370,25 @@ public class RESTXMLTests
       e.printStackTrace();
     }
   }
+
+
+
+  private static void deleteFile(String fileName)
+  {
+
+    File f = new File(fileName);
+
+    if (!f.exists())
+      return;
+    
+    boolean success = f.delete();
+
+    if (!success)
+    {
+       throw new IllegalArgumentException("Delete failed.");
+    }
+  }
+
+
 
 }
