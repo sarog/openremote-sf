@@ -38,18 +38,12 @@ public class ControlCommandException extends ControllerException {
    public final static int CONTROLLER_XML_NOT_FOUND = 422;
    
    public final static int NO_SUCH_COMMAND = 423;
-   
-   public final static int INVALID_CONTROLLER_XML = 424;
-   
-   public final static int INVALID_POLLING_URL = 425;
-   
-   public final static int PANEL_XML_NOT_FOUND = 426;
-   
-   public final static int INVALID_PANEL_XML = 427;
-   
-   public final static int NO_SUCH_PANEL = 428;
-   
-   public final static int INVALID_ELEMENT = 429;
+
+  public final static int INVALID_POLLING_URL = 425;
+
+  public final static int INVALID_PANEL_XML = 427;
+
+  public final static int INVALID_ELEMENT = 429;
    
    public final static int INVALID_REFERENCE = 430;
 

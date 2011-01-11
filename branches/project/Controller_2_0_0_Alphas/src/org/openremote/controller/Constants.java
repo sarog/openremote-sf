@@ -35,6 +35,11 @@ public class Constants
   public final static String CONTROLLER_ROOT_LOG_CATEGORY = "OpenRemote.Controller";
 
   /**
+   * Logging subcategory for XML parsing.
+   */
+  public final static String XML_PARSER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".xml.parser";
+
+  /**
    * Logging subcategory for incoming requests on the Controller HTTP/REST API.
    */
   public final static String HTTP_REST_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".rest";
@@ -123,6 +128,37 @@ public class Constants
    * capable of accepting.
    */
   public final static String HTTP_ACCEPT_HEADER = "accept";
+
+
+
+  // HTTP Response Codes --------------------------------------------------------------------------
+
+
+  /**
+   * HTTP respose code if panel.xml cannot be parsed for any reason: {@value}
+   *
+   * @see #HTTP_RESPONSE_INVALID_CONTROLLER_XML
+   */
+  public final static int HTTP_RESPONSE_INVALID_PANEL_XML = 424;
+
+  /**
+   * HTTP response code if controller.xml cannot be parsed for any reason: {@value}
+   *
+   * @see #HTTP_RESPONSE_INVALID_PANEL_XML
+   */
+  public final static int HTTP_RESPONSE_INVALID_CONTROLLER_XML = 424;
+
+
+  /**
+   * HTTP response code if panel.xml has not been correctly deployed: {@value}
+   */
+  public final static int HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED = 426;
+
+
+  /**
+   * HTTP response code to request asking for a specific panel ID that cannot be found: {@value}
+   */
+  public final static int HTTP_RESPONSE_PANEL_ID_NOT_FOUND = 428;
 
 
 

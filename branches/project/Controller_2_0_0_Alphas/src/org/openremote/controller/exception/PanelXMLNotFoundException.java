@@ -37,7 +37,7 @@ public class PanelXMLNotFoundException extends ControlCommandException
   public PanelXMLNotFoundException()
   {
     super("*" + Constants.PANEL_XML + "* not found.");
-    setErrorCode(ControlCommandException.PANEL_XML_NOT_FOUND);
+    setErrorCode(Constants.HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED);
   }
 
   /**
@@ -49,7 +49,7 @@ public class PanelXMLNotFoundException extends ControlCommandException
   public PanelXMLNotFoundException(String message, Throwable cause)
   {
     super("*" + Constants.PANEL_XML + "* not found." + message, cause);
-    setErrorCode(ControlCommandException.PANEL_XML_NOT_FOUND);
+    setErrorCode(Constants.HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED);
   }
 
   /**
@@ -60,7 +60,7 @@ public class PanelXMLNotFoundException extends ControlCommandException
   public PanelXMLNotFoundException(String message)
   {
     super("*" + Constants.PANEL_XML + "* not found." + message);
-    setErrorCode(ControlCommandException.PANEL_XML_NOT_FOUND);
+    setErrorCode(Constants.HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED);
   }
 
 
