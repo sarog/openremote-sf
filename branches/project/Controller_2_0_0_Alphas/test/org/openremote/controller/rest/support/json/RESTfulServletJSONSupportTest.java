@@ -20,10 +20,12 @@
 package org.openremote.controller.rest.support.json;
 
 import java.io.File;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,7 +57,7 @@ public class RESTfulServletJSONSupportTest extends TestCase {
 	@Before
    public void setup() {
       String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
-            AllTests.FIXTURE_DIR_OF_RESTFUL_SERVICE_JSON_SUPPORT + Constants.PANEL_XML).getFile();
+            AllTests.JSON_FIXTURES + Constants.PANEL_XML).getFile();
       panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
             .getResourcePath())
             + Constants.PANEL_XML;
@@ -75,6 +77,23 @@ public class RESTfulServletJSONSupportTest extends TestCase {
       }
    }
 
+  @Test
+  public void testTranslate() throws IOException {
+     String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
+           AllTests.JSON_FIXTURES + "expected.xml").getFile();
+     File expectedXMLFile = new File(expectedXMLFilePath);
+     String expectedXML = FileUtils.readFileToString(expectedXMLFile);
+     String expectedJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, expectedXML);
+
+     String actualXMLFilePath = this.getClass().getClassLoader().getResource(
+           AllTests.JSON_FIXTURES + "actual.xml").getFile();
+     File actualXMLFile = new File(actualXMLFilePath);
+     String actualXML = FileUtils.readFileToString(actualXMLFile);
+     String actualJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, actualXML);
+
+     Assert.assertEquals(expectedJSONStr, actualJSONStr);
+  }
+  
    @Test
    public void testGetPanelsJSONData() throws SAXException, Exception {
       doTest("/controller/rest/panels?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panels");
