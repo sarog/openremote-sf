@@ -49,7 +49,7 @@ import com.meterware.httpunit.WebResponse;
  * @author handy.wang 2010-06-29
  *
  */
-public class RESTfulServletJSONSupportTest extends TestCase {
+public class JSONTranslatorTest extends TestCase {
 	
    private String panelXmlPath;
    private Logger logger = Logger.getLogger(this.getClass().getName());
