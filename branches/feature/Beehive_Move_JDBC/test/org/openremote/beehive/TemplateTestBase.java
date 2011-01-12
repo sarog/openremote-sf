@@ -1,5 +1,7 @@
 package org.openremote.beehive;
 
+import java.util.List;
+
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.openremote.beehive.api.service.AccountService;
 import org.openremote.beehive.api.service.impl.GenericDAO;
@@ -25,13 +27,14 @@ public class TemplateTestBase extends TestBase {
    @Override
    protected void setUp() throws Exception {
       super.setUp();
-
-      User user = new User();
-      user.setUsername("dan");
-      genericDAO.save(user);
+      User u = genericDAO.getByNonIdField(User.class, "username", "dan");
+      Account a = null;
+      if (u != null) {
+         a = u.getAccount();
+      } else {
+         a = new Account();
+      }
       
-      Account a = new Account();
-      user.setAccount(a);
       Template t1 = new Template();
       t1.setAccount(a);
       t1.setName("t1");
@@ -50,10 +53,17 @@ public class TemplateTestBase extends TestBase {
       a.addTemplate(t3);
       accountService.save(a);
       
-      Icon i = new Icon();
-      i.setFileName("menu.png");
-      i.setName("menu");
-      genericDAO.save(i);
+      if (u == null) {
+         User user = new User();
+         user.setUsername("dan");
+         user.setAccount(a);
+         genericDAO.save(user);
+         
+         Icon i = new Icon();
+         i.setFileName("menu.png");
+         i.setName("menu");
+         genericDAO.save(i);
+      }
    }
 
    
@@ -61,13 +71,13 @@ public class TemplateTestBase extends TestBase {
    @Override
    protected void tearDown() throws Exception {
       super.tearDown();
-      User u = genericDAO.getByNonIdField(User.class, "username", "dan");
-      genericDAO.delete(u);
+      List<Template> templates = genericDAO.loadAll(Template.class);
+      genericDAO.deleteAll(templates);
    }
    
    protected void addCredential(MockHttpRequest mockHttpRequest) {
       mockHttpRequest.header(Constant.HTTP_AUTH_HEADER_NAME, Constant.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
-            + Base64.encode("dan:cong"));
+            + Base64.encode("dan:cong:test"));
    }
 
 }
