@@ -41,6 +41,7 @@ import org.openremote.controller.rest.ControlStatusPollingRESTServletTest;
 import org.openremote.controller.rest.FindPanelByIDTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
 import org.openremote.controller.rest.ListPanelIDsTest;
+import org.openremote.controller.rest.support.json.JSONTranslatorTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
 import org.openremote.controller.Constants;
@@ -58,6 +59,7 @@ import org.w3c.dom.Node;
    SkipStateTrackTest.class,
    StatusCacheTest.class,
    StatusAndPollingTest.class,
+   JSONTranslatorTest.class,
 
    FindPanelByIDTest.class,
    ListPanelIDsTest.class
@@ -82,7 +84,7 @@ public class RESTXMLTests
     try
     {
       containerURL = new URL(
-          "http://" + AllTests.WEBAPP_IP + ":" +
+          "http://" + AllTests.LOCALHOST + ":" +
           AllTests.WEBAPP_PORT + "/controller"
       );
     }
@@ -279,7 +281,7 @@ public class RESTXMLTests
 
   public static void restoreControllerPanelXML()
   {
-    String containerPanelXml = RESTXMLTests.getFixtureFile(Constants.PANEL_XML);
+    String containerPanelXml = AllTests.getFixtureFile(Constants.PANEL_XML);
 
     if (new File(containerPanelXml + ".bak").exists())
     {
@@ -290,7 +292,7 @@ public class RESTXMLTests
 
   public static void replaceControllerPanelXML(String filename)
   {
-    String fixtureFile = getFixtureFile(filename);
+    String fixtureFile = AllTests.getFixtureFile(filename);
 
     String containerPanelXml = RESTXMLTests.getContainerPanelXML();
 
@@ -307,16 +309,6 @@ public class RESTXMLTests
     String containerPanelXml = getContainerPanelXML();
 
     deleteFile(containerPanelXml);
-  }
-
-  private static String getFixtureFile(String name)
-  {
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    String resource = AllTests.FIXTURE_DIR + name;
-
-    Assert.assertNotNull("Got null resource from '" + resource + "'.", cl.getResource(resource));
-
-    return cl.getResource(resource).getFile();
   }
 
   private static String getContainerPanelXML()
