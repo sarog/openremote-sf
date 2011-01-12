@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.rest.support.json;
 
 import java.io.File;
@@ -49,44 +50,54 @@ import com.meterware.httpunit.WebResponse;
  * @author handy.wang 2010-06-29
  *
  */
-public class JSONTranslatorTest extends TestCase {
+public class JSONTranslatorTest extends TestCase
+{
 	
-   private String panelXmlPath;
-   private Logger logger = Logger.getLogger(this.getClass().getName());
+  private String panelXmlPath;
    
-	@Before
-   public void setup() {
-      String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
-            AllTests.JSON_FIXTURES + Constants.PANEL_XML).getFile();
-      panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
-            .getResourcePath())
-            + Constants.PANEL_XML;
-      if (new File(panelXmlPath).exists()) {
-         new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
-      }
-      FileUtilOnlyForTest.copyFile(panelXmlFixturePath, panelXmlPath);
+  @Before public void setup()
+  {
+    String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
+          AllTests.JSON_FIXTURES + Constants.PANEL_XML).getFile();
 
-   }
+    panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
+          .getResourcePath())
+          + Constants.PANEL_XML;
 
-   @After
-   public void tearDown() {
-      if (new File(panelXmlPath + ".bak").exists()) {
-         new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
-      } else {
-         FileUtilOnlyForTest.deleteFile(panelXmlPath);
-      }
-   }
+    if (new File(panelXmlPath).exists())
+    {
+       new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
+    }
 
-  @Test
-  public void testTranslate() throws IOException {
+    FileUtilOnlyForTest.copyFile(panelXmlFixturePath, panelXmlPath);
+
+  }
+
+  @After public void tearDown()
+  {
+    if (new File(panelXmlPath + ".bak").exists())
+    {
+       new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
+    }
+
+    else
+    {
+       FileUtilOnlyForTest.deleteFile(panelXmlPath);
+    }
+  }
+
+  @Test public void testTranslate() throws IOException
+  {
      String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
            AllTests.JSON_FIXTURES + "expected.xml").getFile();
+
      File expectedXMLFile = new File(expectedXMLFilePath);
      String expectedXML = FileUtils.readFileToString(expectedXMLFile);
      String expectedJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, expectedXML);
 
      String actualXMLFilePath = this.getClass().getClassLoader().getResource(
            AllTests.JSON_FIXTURES + "actual.xml").getFile();
+
      File actualXMLFile = new File(actualXMLFilePath);
      String actualXML = FileUtils.readFileToString(actualXMLFile);
      String actualJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, actualXML);
@@ -94,36 +105,35 @@ public class JSONTranslatorTest extends TestCase {
      Assert.assertEquals(expectedJSONStr, actualJSONStr);
   }
   
-   @Test
-   public void testGetPanelsJSONData() throws SAXException, Exception {
-      doTest("/controller/rest/panels?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panels");
-   }
-   
-   @Test
-   public void testGetProfileJSONData() throws SAXException, Exception {
-      doTest("/controller/rest/panel/father?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panel/father");
-   }
-   
-   private void doTest(String actualJSONDataURL, String expectedXMLDataURL) throws Exception, SAXException {
-      try {
-         WebConversation wc = new WebConversation();
-         
-         WebRequest jsonDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT
-               + actualJSONDataURL);
-         WebResponse jsonDataResponse = wc.getResponse(jsonDataRequest);
-         String actual = jsonDataResponse.getText();
-         
-         WebRequest xmlDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT
-               + expectedXMLDataURL);
-         WebResponse xmlDataResponse = wc.getResponse(xmlDataRequest);
-         String xml = xmlDataResponse.getText();
-         String expected = JSONTranslator.translateXMLToJSON("application/json", null, xml);
-         expected = "fun" + " && " + "fun" + "(" + expected + ")";
-         
-         Assert.assertEquals(expected, actual);
-      } catch (HttpException e) {
-         logger.info(e);
-      }
-   }
+  @Test public void testGetPanelsJSONData() throws Exception
+  {
+    doTest("/controller/rest/panels?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panels");
+  }
+
+
+  @Test public void testGetProfileJSONData() throws Exception
+  {
+    doTest("/controller/rest/panel/father?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panel/father");
+  }
+
+  private void doTest(String actualJSONDataURL, String expectedXMLDataURL) throws Exception
+  {
+    WebConversation wc = new WebConversation();
+
+    WebRequest jsonDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT
+         + actualJSONDataURL);
+    WebResponse jsonDataResponse = wc.getResponse(jsonDataRequest);
+    String actual = jsonDataResponse.getText();
+
+    WebRequest xmlDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT
+         + expectedXMLDataURL);
+    WebResponse xmlDataResponse = wc.getResponse(xmlDataRequest);
+
+    String xml = xmlDataResponse.getText();
+    String expected = JSONTranslator.translateXMLToJSON("application/json", null, xml);
+    expected = "fun" + " && " + "fun" + "(" + expected + ")";
+
+    Assert.assertEquals(expected, actual);
+  }
 
 }
