@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -33,13 +32,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.utils.ConfigFactory;
-import org.openremote.controller.utils.FileUtilOnlyForTest;
-import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.suite.RESTXMLTests;
 import org.openremote.controller.utils.SecurityUtil;
-import org.xml.sax.SAXException;
 
-import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
@@ -52,51 +47,42 @@ import com.meterware.httpunit.WebResponse;
  */
 public class JSONTranslatorTest extends TestCase
 {
-	
-  private String panelXmlPath;
-   
+
+  // Constants ------------------------------------------------------------------------------------
+  /**
+   * Path to JSON related fixture files.
+   */
+  private static final String JSON_FIXTURES = "rest/support/json/";
+
+
+  // Test Lifecycle -------------------------------------------------------------------------------
+  
   @Before public void setup()
   {
-    String panelXmlFixturePath = this.getClass().getClassLoader().getResource(
-          AllTests.JSON_FIXTURES + Constants.PANEL_XML).getFile();
+    String panelXmlFixture = getJSONFixtureFile(Constants.PANEL_XML);
 
-    panelXmlPath = PathUtil.addSlashSuffix(ConfigFactory.getCustomBasicConfigFromDefaultControllerXML()
-          .getResourcePath())
-          + Constants.PANEL_XML;
+    RESTXMLTests.replaceControllerPanelXML(panelXmlFixture);
+  }
 
-    if (new File(panelXmlPath).exists())
-    {
-       new File(panelXmlPath).renameTo(new File(panelXmlPath + ".bak"));
-    }
-
-    FileUtilOnlyForTest.copyFile(panelXmlFixturePath, panelXmlPath);
-
+  private static String getJSONFixtureFile(String name)
+  {
+    return AllTests.getFixtureFile(JSON_FIXTURES + name);
   }
 
   @After public void tearDown()
   {
-    if (new File(panelXmlPath + ".bak").exists())
-    {
-       new File(panelXmlPath + ".bak").renameTo(new File(panelXmlPath));
-    }
-
-    else
-    {
-       FileUtilOnlyForTest.deleteFile(panelXmlPath);
-    }
+    RESTXMLTests.deleteControllerPanelXML();
   }
 
   @Test public void testTranslate() throws IOException
   {
-     String expectedXMLFilePath = this.getClass().getClassLoader().getResource(
-           AllTests.JSON_FIXTURES + "expected.xml").getFile();
+     String expectedXMLFilePath = getJSONFixtureFile("expected.xml");
 
      File expectedXMLFile = new File(expectedXMLFilePath);
      String expectedXML = FileUtils.readFileToString(expectedXMLFile);
      String expectedJSONStr = JSONTranslator.translateXMLToJSON(Constants.MIME_APPLICATION_JSON, null, expectedXML);
 
-     String actualXMLFilePath = this.getClass().getClassLoader().getResource(
-           AllTests.JSON_FIXTURES + "actual.xml").getFile();
+     String actualXMLFilePath = getJSONFixtureFile("actual.xml");
 
      File actualXMLFile = new File(actualXMLFilePath);
      String actualXML = FileUtils.readFileToString(actualXMLFile);
@@ -116,8 +102,13 @@ public class JSONTranslatorTest extends TestCase
     doTest("/controller/rest/panel/father?" + Constants.CALLBACK_PARAM_NAME + "=fun", "/controller/rest/panel/father");
   }
 
+
+  // Helpers --------------------------------------------------------------------------------------
+
+
   private void doTest(String actualJSONDataURL, String expectedXMLDataURL) throws Exception
   {
+    
     WebConversation wc = new WebConversation();
 
     WebRequest jsonDataRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT

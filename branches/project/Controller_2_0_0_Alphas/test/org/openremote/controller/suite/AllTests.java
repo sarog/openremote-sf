@@ -76,11 +76,6 @@ public class AllTests
    */
   public final static String POLLING_FIXTURES = FIXTURE_DIR + "polling/";
 
-  /**
-   * Path to JSON related fixture files.
-   */
-  public static final String JSON_FIXTURES = FIXTURE_DIR + "rest/support/json/";
-
 
   // Class Members --------------------------------------------------------------------------------
 
