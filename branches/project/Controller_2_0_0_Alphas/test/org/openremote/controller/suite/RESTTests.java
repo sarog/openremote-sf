@@ -66,7 +66,7 @@ import org.w3c.dom.Node;
 }
 )
 
-public class RESTXMLTests
+public class RESTTests
 {
 
 
@@ -188,7 +188,7 @@ public class RESTXMLTests
 
   public static void assertErrorDocument(Document doc, int errorCode)
   {
-    RESTXMLTests.assertOpenRemoteRootElement(doc);
+    RESTTests.assertOpenRemoteRootElement(doc);
 
     NodeList list = doc.getElementsByTagName("openremote");
 
@@ -294,7 +294,7 @@ public class RESTXMLTests
   {
     String fixtureFile = AllTests.getFixtureFile(filename);
 
-    String containerPanelXml = RESTXMLTests.getContainerPanelXML();
+    String containerPanelXml = RESTTests.getContainerPanelXML();
 
     if (new File(containerPanelXml).exists())
     {

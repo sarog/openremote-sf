@@ -23,15 +23,13 @@ package org.openremote.controller.rest;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.util.List;
-import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.BufferedInputStream;
 
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.After;
-import org.openremote.controller.suite.RESTXMLTests;
+import org.openremote.controller.suite.RESTTests;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.Panel;
 import org.w3c.dom.Document;
@@ -65,7 +63,7 @@ public class ListPanelIDsTest
     // Keep things clean between tests -- always delete the panel.xml used and expect each
     // test to deploy its own...
 
-    RESTXMLTests.deleteControllerPanelXML();
+    RESTTests.deleteControllerPanelXML();
   }
 
 
@@ -81,29 +79,29 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTXMLTests.replaceControllerPanelXML("panelList1.xml");
+    RESTTests.replaceControllerPanelXML("panelList1.xml");
 
 
     // Retrieve the panels list through REST/XML API...
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
-        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
+    RESTTests.assertHttpResponse(
+        connection, HttpURLConnection.HTTP_OK, RESTTests.ASSERT_BODY_CONTENT,
         Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
 
     // Parse XML response...
 
-    Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
+    Document doc = RESTTests.getDOMDocument(connection.getInputStream());
 
 
     // Assertions...
 
-    RESTXMLTests.assertOpenRemoteRootElement(doc);
+    RESTTests.assertOpenRemoteRootElement(doc);
 
     List<String> panelNames = Panel.getPanelNames(doc);
     List<String> panelIds = Panel.getPanelIds(doc);
@@ -148,19 +146,19 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTXMLTests.replaceControllerPanelXML("panelList1.xml");
+    RESTTests.replaceControllerPanelXML("panelList1.xml");
 
 
     // Retrieve the panels list through REST/XML API...
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
     connection.setRequestProperty("accept", "application/json");
 
-    RESTXMLTests.assertHttpResponse(
-        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
+    RESTTests.assertHttpResponse(
+        connection, HttpURLConnection.HTTP_OK, RESTTests.ASSERT_BODY_CONTENT,
         Constants.MIME_APPLICATION_JSON, Constants.CHARACTER_ENCODING_UTF8
     );
 
@@ -217,13 +215,13 @@ public class ListPanelIDsTest
    */
   @Test public void testNoPanelXMLDeployed() throws Exception
   {
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
+    RESTTests.assertHttpResponse(
         connection, Constants.HTTP_RESPONSE_PANEL_XML_NOT_DEPLOYED,
-        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
         Constants.CHARACTER_ENCODING_UTF8
     );
   }
@@ -238,16 +236,16 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted.xml");
+    RESTTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted.xml");
 
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
+    RESTTests.assertHttpResponse(
         connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
-        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
         Constants.CHARACTER_ENCODING_UTF8
     );
   }
@@ -263,16 +261,16 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted2.xml");
+    RESTTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted2.xml");
 
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
+    RESTTests.assertHttpResponse(
         connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
-        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
         Constants.CHARACTER_ENCODING_UTF8
     );
   }
@@ -287,16 +285,16 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-MissingPanelsTag.xml");
+    RESTTests.replaceControllerPanelXML("brokenPanelStructure-MissingPanelsTag.xml");
 
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
+    RESTTests.assertHttpResponse(
         connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
-        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
         Constants.CHARACTER_ENCODING_UTF8
     );
   }
@@ -312,16 +310,16 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTXMLTests.replaceControllerPanelXML("brokenPanelStructure-MissingEndTag.xml");
+    RESTTests.replaceControllerPanelXML("brokenPanelStructure-MissingEndTag.xml");
 
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
+    RESTTests.assertHttpResponse(
         connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
-        RESTXMLTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
+        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
         Constants.CHARACTER_ENCODING_UTF8
     );
   }

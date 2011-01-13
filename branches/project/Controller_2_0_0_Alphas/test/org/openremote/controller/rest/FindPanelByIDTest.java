@@ -27,10 +27,9 @@ import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.suite.RESTXMLTests;
+import org.openremote.controller.suite.RESTTests;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -71,7 +70,7 @@ public class FindPanelByIDTest
 
   @After public void tearDown()
   {
-    RESTXMLTests.deleteControllerPanelXML();
+    RESTTests.deleteControllerPanelXML();
   }
 
 
@@ -80,21 +79,21 @@ public class FindPanelByIDTest
   @Test public void requestFatherPanelProfile() throws Exception
   {
 
-    RESTXMLTests.replaceControllerPanelXML(Constants.PANEL_XML);
+    RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
 
 
-    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+    URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
-        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
+    RESTTests.assertHttpResponse(
+        connection, HttpURLConnection.HTTP_OK, RESTTests.ASSERT_BODY_CONTENT,
         Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
-    Document doc = RESTXMLTests.getDOMDocument(connection.getInputStream());
+    Document doc = RESTTests.getDOMDocument(connection.getInputStream());
 
-    RESTXMLTests.assertOpenRemoteRootElement(doc);
+    RESTTests.assertOpenRemoteRootElement(doc);
 
     NodeList list = doc.getElementsByTagName("screens");
 
@@ -177,20 +176,20 @@ public class FindPanelByIDTest
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
-    RESTXMLTests.replaceControllerPanelXML(Constants.PANEL_XML);
+    RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
 
-    URL doesNotExist = new URL(RESTXMLTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
+    URL doesNotExist = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
 
-    RESTXMLTests.assertHttpResponse(
-        connection, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND, RESTXMLTests.ASSERT_BODY_CONTENT,
+    RESTTests.assertHttpResponse(
+        connection, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND, RESTTests.ASSERT_BODY_CONTENT,
         Constants.MIME_APPLICATION_XML, Constants.CHARACTER_ENCODING_UTF8
     );
 
-    Document doc = RESTXMLTests.getDOMDocument(connection.getErrorStream());
+    Document doc = RESTTests.getDOMDocument(connection.getErrorStream());
 
-    RESTXMLTests.assertErrorDocument(doc, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND);
+    RESTTests.assertErrorDocument(doc, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND);
   }
 
 
