@@ -20,6 +20,11 @@
  */
 package org.openremote.controller;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 
 /**
  * This class provides the Java bindings from config.properties file found in
@@ -38,6 +43,12 @@ package org.openremote.controller;
 public class Configuration extends CustomConfiguration {
 
   // Constants ------------------------------------------------------------------------------------
+
+
+  public final static String DEFAULT_LINE_SEPARATOR = "\n";
+
+  public final static String LINE_SEPARATOR = getLineSeparator();
+
 
   /* the following constants are the keys from config.properties */
 
@@ -60,40 +71,54 @@ public class Configuration extends CustomConfiguration {
      return null;
   }
 
+
+
+
+  private static String getLineSeparator()
+  {
+    return AccessController.doPrivileged(new PrivilegedAction<String>()
+    {
+      public String run()
+      {
+        try
+        {
+          return System.getProperty("line.separator", DEFAULT_LINE_SEPARATOR);
+        }
+
+        catch (SecurityException e)
+        {
+          String msg = "Falling back to default line separator. Cannot access system " +
+                       "line separator property due to security restrictions: " + e.getMessage();
+
+          Logger.getLogger(Constants.RUNTIME_CONFIGURATION_LOG_CATEGORY).log(Level.SEVERE, msg, e);
+
+          return DEFAULT_LINE_SEPARATOR;
+        }
+      }
+    });
+  }
+
+
   
   // Private Instance Variables -------------------------------------------------------------------
   
-   /** The irsend path. */
-   private String irsendPath;
-   
-   /** The lircd.conf path. */
-   private String lircdconfPath;
-   
-   /** Whether copy lircd.conf for user. */
-   private boolean copyLircdconf;
-   
-   /** The webapp port. */
-   private int webappPort;
-   
-   /** The multicast address. */
-   private String multicastAddress;
-   
-   /** The multicast port. */
-   private int multicastPort;
-   
-   /** The resource path. */
-   private String resourcePath;
-   
-   /** The resource upload switch. */
-   private boolean resourceUpload;
-   
-   private long macroIRExecutionDelay = 500;
-   
-   private String webappIp;
-   
-   private String beehiveRESTRootUrl;
 
-   private String webappName;
+  private int webappPort;
+  private String multicastAddress;
+  private int multicastPort;
+  private String resourcePath;
+  private long macroIRExecutionDelay = 500;
+  private String webappIp;
+  private String beehiveRESTRootUrl;
+  private String webappName;
+  private String irsendPath;
+  private String lircdconfPath;
+
+  /** Whether copy lircd.conf for user. */
+  private boolean copyLircdconf;
+
+  /** The resource upload switch. */
+  private boolean resourceUpload;
 
   /**
    * The COM (Serial) port the ORC should use (for example, to send X10 events)
@@ -427,5 +452,6 @@ public class Configuration extends CustomConfiguration {
    public void setWebappName(String webappName) {
       this.webappName = webappName;
    }
-   
+
+
 }
