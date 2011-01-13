@@ -43,7 +43,7 @@ import org.openremote.controller.model.PanelTest;
    RoundRobinTests.class,
    AllUtilTests.class,
     
-   RESTXMLTests.class,
+   RESTTests.class,
    KNXTests.class,
    VirtualProtocolTests.class,
    PanelTest.class

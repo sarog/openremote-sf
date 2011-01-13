@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.suite.RESTXMLTests;
+import org.openremote.controller.suite.RESTTests;
 import org.openremote.controller.utils.SecurityUtil;
 
 import com.meterware.httpunit.WebConversation;
@@ -61,7 +61,7 @@ public class JSONTranslatorTest extends TestCase
   {
     String panelXmlFixture = getJSONFixtureFile(Constants.PANEL_XML);
 
-    RESTXMLTests.replaceControllerPanelXML(panelXmlFixture);
+    RESTTests.replaceControllerPanelXML(panelXmlFixture);
   }
 
   private static String getJSONFixtureFile(String name)
@@ -71,7 +71,7 @@ public class JSONTranslatorTest extends TestCase
 
   @After public void tearDown()
   {
-    RESTXMLTests.deleteControllerPanelXML();
+    RESTTests.deleteControllerPanelXML();
   }
 
   @Test public void testTranslate() throws IOException
