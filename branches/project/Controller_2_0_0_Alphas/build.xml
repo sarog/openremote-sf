@@ -74,9 +74,25 @@
     <fileset dir = "${lib.dir}/calimero" includes = "*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
     <path location = "${classes.dir}"/>
+    <path location = "${test.dir}"/>
     <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
     <path location = "${config.dir}"/>
+    <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
   </path>
+
+  <path id = "container.libs">
+    <path location = "${test.dir}"/>
+    <fileset dir = "${lib.dir}/compile"/>
+    <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
+    <fileset dir = "${lib.dir}/calimero" includes = "*.jar"/>
+    <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
+    <path location = "${classes.dir}"/>
+    <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
+    <path location = "${config.dir}"/>
+    <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
+  </path>
+
 
   <path id = "cobertura.path.id">
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
@@ -284,6 +300,28 @@
  			</sequential>
  		</parallel>
  	</target>
+
+
+
+
+  <!--
+   |
+   |
+   | .
+   +-->
+  <target name = "run"  description = "--> .">
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = " Starting Container..." />
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = "" />
+    <property name = "test.targetclasspath" value = "${classes.dir}" />
+    <parallel>
+     <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "container.libs" fork = "true" />
+    </parallel>
+  </target>
+
+
+
 
   <!--
     | RUN-TEST:
