@@ -54,7 +54,13 @@ public class Constants
    */
   public final static String REST_GET_PANEL_DEF_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".panel.id";
 
+  /**
+   * Specific log category for reporting runtime system properties.
+   */
+  public final static String RUNTIME_CONFIGURATION_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".system.configuration";
+
   
+
   public final static String LIRCD_CONF = "lircd.conf";
 
   public final static String CONTROLLER_XSD_PATH = "/controller-2.0-M7.xsd";
