@@ -31,6 +31,12 @@ import org.w3c.dom.NamedNodeMap;
 public class XMLBinding
 {
 
+  // Constants ------------------------------------------------------------------------------------
+
+  public final static String XML_DECLARATION_UTF8 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+
+  public final static String XML_DOCUMENT_INDENT = "  ";
+  
 
   // Class Members --------------------------------------------------------------------------------
 
