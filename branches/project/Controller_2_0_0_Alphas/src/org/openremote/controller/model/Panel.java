@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.openremote.controller.Constants;
+import org.openremote.controller.Configuration;
 
 /**
  * This class is the data model for OpenRemote panel definitions. It provides bindings to an
@@ -89,6 +90,7 @@ public class Panel
    * XML 'name' attribute name in panel tag.
    */
   public final static String XML_PANEL_ATTRIBUTE_NAME = "name";
+
 
 
 
@@ -173,6 +175,35 @@ public class Panel
     return ids;
   }
 
+
+  public static String toPanelListXML(List<Panel> panels)
+  {
+    StringBuffer buffer = new StringBuffer(8000);
+
+    buffer
+        .append(XMLBinding.XML_DECLARATION_UTF8)
+        .append(Configuration.LINE_SEPARATOR)
+        .append("<openremote>");
+
+
+    for (Panel panel : panels)
+    {
+      buffer
+          .append(XMLBinding.XML_DOCUMENT_INDENT)
+          .append("<panel id = \"")
+          .append(panel.getId())
+          .append("\" name = \"")
+          .append(panel.getName())
+          .append("\"/>")
+          .append(Configuration.LINE_SEPARATOR);
+    }
+
+    buffer.append("</openremote>");
+
+    return buffer.toString();
+  }
+
+  
 
   // Instance Fields ------------------------------------------------------------------------------
 
