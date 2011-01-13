@@ -23,6 +23,10 @@ package org.openremote.controller.rest;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.BufferedInputStream;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -31,6 +35,9 @@ import org.openremote.controller.suite.RESTXMLTests;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.Panel;
 import org.w3c.dom.Document;
+import net.sf.json.util.JSONTokener;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
 
 /**
  * Tests against {@link org.openremote.controller.rest.ListPanelIDs} servlet (by default
@@ -136,6 +143,70 @@ public class ListPanelIDsTest
     );
   }
 
+
+  @Test public void testListPanelIdsJSON() throws Exception
+  {
+    // Deploy our panel.xml...
+
+    RESTXMLTests.replaceControllerPanelXML("panelList1.xml");
+
+
+    // Retrieve the panels list through REST/XML API...
+
+    URL panelList = new URL(RESTXMLTests.containerURL + RESTAPI_PANELS_URI);
+
+    HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+
+    connection.setRequestProperty("accept", "application/json");
+
+    RESTXMLTests.assertHttpResponse(
+        connection, HttpURLConnection.HTTP_OK, RESTXMLTests.ASSERT_BODY_CONTENT,
+        Constants.MIME_APPLICATION_JSON, Constants.CHARACTER_ENCODING_UTF8
+    );
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    StringBuffer buffer = new StringBuffer(1000);
+
+    while (true)
+    {
+      String nextLine = reader.readLine();
+
+      if (nextLine == null)
+        break;
+
+      buffer.append(nextLine);
+    }
+
+    JSONTokener parser = new JSONTokener(buffer.toString());
+
+    Object o = parser.nextValue();
+
+    Assert.assertTrue(o instanceof JSONObject);
+
+    JSONObject root = (JSONObject)o;
+
+    Assert.assertFalse(root.isNullObject());
+    Assert.assertTrue(root.has("panel"));
+    Assert.assertFalse(root.isEmpty());
+    
+    JSONArray array = root.getJSONArray("panel");
+
+    Assert.assertTrue(array.size() == 3);
+
+    for (int index = 0; index < array.size(); index++)
+    {
+      JSONObject panel = array.getJSONObject(index);
+
+      Assert.assertTrue(panel.has("@id"));
+      Assert.assertTrue(panel.has("@name"));
+
+      Assert.assertNotNull(panel.getString("@id"));
+      Assert.assertNotNull(panel.getString("@name"));
+
+      Assert.assertFalse(panel.getString("@id").equals(""));
+      Assert.assertFalse(panel.getString("@name").equals(""));
+    }
+  }
 
 
   /**
