@@ -64,6 +64,7 @@
     <fileset dir = "${lib.dir}/apache/commons-net"/>
     <fileset dir = "${lib.dir}/apache/commons-lang"/>
     <fileset dir = "${lib.dir}/clink"/>
+  	<fileset dir = "${lib.dir}/json"/>
     <path location = "${classes.dir}"/>
   </path>
   
@@ -73,6 +74,7 @@
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
     <fileset dir = "${lib.dir}/calimero" includes = "*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
+  	<fileset dir = "${lib.dir}/json" includes = "*.jar"/>
     <path location = "${classes.dir}"/>
     <path location = "${test.dir}"/>
     <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
@@ -139,6 +141,9 @@
       </fileset>
       <fileset dir = "${lib.dir}/rxtx">
         <include name = "**/*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/json">
+    	<include name = "*.jar"/>
       </fileset>
     </copy>
     <copy todir = "${build.dir}/lib/native" flatten = "true">

@@ -20,12 +20,12 @@
  */
 package org.openremote.controller.rest.support.json;
 
-import java.net.HttpURLConnection;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSON;
-import net.sf.json.xml.XMLSerializer;
-
+import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.XML;
 import org.openremote.controller.Constants;
 
 /**
@@ -81,20 +81,17 @@ public class JSONTranslator
 
   private static String translate(HttpServletResponse response, String xml)
   {
-    if (response != null)
-    {
-      response.setStatus(HttpURLConnection.HTTP_OK);
-    }
-
-    xml = xml.replaceAll("xsi:schemaLocation=\".*\"", " ");
-    XMLSerializer xmlSerializer = new XMLSerializer();
-    xmlSerializer.setTypeHintsEnabled(false);
-    xmlSerializer.setTypeHintsCompatibility(false);
-    xmlSerializer.setSkipNamespaces(true);
-
-    JSON json = xmlSerializer.read(xml);
-
-    return json.toString(3);
+     if (response != null) {
+        response.setStatus(Constants.RESPONSE_SUCCESS);
+     }
+     xml = xml.replaceAll("<openremote.*>", "").replace("</openremote>", "");
+     String json = "";
+     try {
+        json = XML.toJSONObject(xml).toString(3);
+     } catch (JSONException e) {
+        logger.error("Can't convert XML to json.", e);
+     }
+     return json;
   }
 
 }
