@@ -37,7 +37,8 @@ import org.openremote.controller.Constants;
 public class JSONTranslator
 {
 
-
+  private static final Logger logger = Logger.getLogger(JSONTranslator.class);
+  
   public static String translateXMLToJSON(HttpServletResponse response, String xml)
   {
     return translateXMLToJSON(Constants.MIME_APPLICATION_JSON, response, xml);
