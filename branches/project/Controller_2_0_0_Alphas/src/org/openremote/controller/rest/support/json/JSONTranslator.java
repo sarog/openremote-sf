@@ -88,7 +88,7 @@ public class JSONTranslator
      xml = xml.replaceAll("<openremote.*>", "").replace("</openremote>", "");
      String json = "";
      try {
-        json = XML.toJSONObject(xml).toString(3);
+        json = XML.toJSONObject(xml).toString();
      } catch (JSONException e) {
         logger.error("Can't convert XML to json.", e);
      }
