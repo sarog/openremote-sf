@@ -25,40 +25,39 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
-import net.sf.json.util.JSONTokener;
+import org.json.JSONTokener;
+import org.json.JSONException;
+
 
 /**
- * JSON utilities for model classes. This implementation uses the json-lib API.
+ * JSON utilities for model classes. This implementation uses org.json API which is included
+ * in the default Android SDK (but not in Java 6 SE).
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class JSONMapping
 {
 
-  /*
-   * IMPLEMENTATION NOTE:
-   *
-   *   Android has natively org.json API available which we should migrate to here too
-   *   for ease of portability and to keep binary size to a minimum. The APIs are very
-   *   similar although not exactly identical. Switch over to another API should be
-   *   fairly trivial work.
-   *                                                                                  [JPL]
-   */
-
-
-  public static Object getJSONRoot(InputStream in) throws IOException
+  public static Object getJSONRoot(InputStream in) throws JSONException
   {
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
     StringBuffer buffer = new StringBuffer(8192);
 
-    while (true)
+    try
     {
-      String nextLine = reader.readLine();
+      while (true)
+      {
+        String nextLine = reader.readLine();
 
-      if (nextLine == null)
-        break;
+        if (nextLine == null)
+          break;
 
-      buffer.append(nextLine);
+        buffer.append(nextLine);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new JSONException("Failed to read the complete input stream: " + e.getMessage());
     }
 
     JSONTokener t = new JSONTokener(buffer.toString());

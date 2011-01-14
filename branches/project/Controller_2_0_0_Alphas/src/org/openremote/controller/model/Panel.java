@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.io.InputStream;
 
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -124,8 +125,8 @@ public class Panel
 
       try
       {
-        String panelID = XMLBinding.getMandatoryAttributeValue(panel, XML_PANEL_ATTRIBUTE_ID);
-        String panelName = XMLBinding.getMandatoryAttributeValue(panel, XML_PANEL_ATTRIBUTE_NAME);
+        String panelID = XMLMapping.getMandatoryAttributeValue(panel, XML_PANEL_ATTRIBUTE_ID);
+        String panelName = XMLMapping.getMandatoryAttributeValue(panel, XML_PANEL_ATTRIBUTE_NAME);
             
         panels.add(new Panel(panelID, panelName));
       }
@@ -142,6 +143,7 @@ public class Panel
 
     return Collections.unmodifiableList(panels);
   }
+
 
 
   public static List<String> getPanelNames(Document doc)
@@ -181,7 +183,7 @@ public class Panel
     StringBuffer buffer = new StringBuffer(8000);
 
     buffer
-        .append(XMLBinding.XML_DECLARATION_UTF8)
+        .append(XMLMapping.XML_DECLARATION_UTF8)
         .append(Configuration.LINE_SEPARATOR)
         .append("<openremote>");
 
@@ -189,7 +191,7 @@ public class Panel
     for (Panel panel : panels)
     {
       buffer
-          .append(XMLBinding.XML_DOCUMENT_INDENT)
+          .append(XMLMapping.XML_DOCUMENT_INDENT)
           .append("<panel id = \"")
           .append(panel.getId())
           .append("\" name = \"")
