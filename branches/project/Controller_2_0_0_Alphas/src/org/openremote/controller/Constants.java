@@ -193,4 +193,5 @@ public class Constants
 
   public final static String CALLBACK_PARAM_NAME = "callback";
 
+  public static final int RESPONSE_SUCCESS = 200;
 }
