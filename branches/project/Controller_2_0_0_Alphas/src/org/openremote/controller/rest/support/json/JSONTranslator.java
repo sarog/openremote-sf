@@ -20,7 +20,7 @@
  */
 package org.openremote.controller.rest.support.json;
 
-import javax.servlet.http.HttpServletRequest;
+import java.net.HttpURLConnection;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -37,7 +37,7 @@ import org.openremote.controller.Constants;
 public class JSONTranslator
 {
 
-  private static final Logger logger = Logger.getLogger(JSONTranslator.class);
+  private static final Logger logger = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
   
   public static String translateXMLToJSON(HttpServletResponse response, String xml)
   {
@@ -83,7 +83,7 @@ public class JSONTranslator
   private static String translate(HttpServletResponse response, String xml)
   {
      if (response != null) {
-        response.setStatus(Constants.RESPONSE_SUCCESS);
+        response.setStatus(HttpURLConnection.HTTP_OK);
      }
      xml = xml.replaceAll("<openremote.*>", "").replace("</openremote>", "");
      String json = "";
