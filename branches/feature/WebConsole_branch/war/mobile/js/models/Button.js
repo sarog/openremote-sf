@@ -39,10 +39,10 @@ Button = (function() {
       self.name = properties[Constants.NAME];
       
       var hadControlCommandValue = properties[Constants.HAS_CONTROL_COMMAND];
-      self.hasControlCommand = (hadControlCommandValue == "true") ? true : false;
+      self.hasControlCommand = (hadControlCommandValue == true) ? true : false;
       
       var isCommandRepeatedValue = properties[Constants.IS_COMMAND_REPEATED];
-      self.isCommandRepeated = (isCommandRepeatedValue == "true") ? true : false;
+      self.isCommandRepeated = (isCommandRepeatedValue == true) ? true : false;
       
       jsonParser.setDelegate(self);
     }
