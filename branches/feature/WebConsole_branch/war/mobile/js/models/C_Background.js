@@ -43,7 +43,7 @@ Background = (function() {
       }
       // Is background-image filled screen.
       if (fillScreenTemp != undefined && fillScreenTemp != null && fillScreenTemp != "") {
-        self.fillScreen = (fillScreenTemp == "true") ? true : false;
+        self.fillScreen = (fillScreenTemp == true) ? true : false;
       } else {
         self.fillScreen = false;
       }

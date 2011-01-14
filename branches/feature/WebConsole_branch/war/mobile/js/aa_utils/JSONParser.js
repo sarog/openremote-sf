@@ -61,11 +61,11 @@ JSONParser = (function() {
      var isLeaf = true;
      for (var key in jsonData) {
        var value = jsonData[key];
-
-       if (key.toString().indexOf("@") === 0 || key.toString().indexOf("#") === 0) {
+       var valueObj = Object.prototype.toString.apply(value);
+       if (valueObj === "[object String]" || valueObj === "[object Number]" || valueObj === "[object Boolean]") {         
          properties[key] = value;
-       } else {
-         isLeaf = false;
+       } else {         
+         isLeaf = false;        
        }
      }
      if (nodeName != null) {
@@ -78,7 +78,8 @@ JSONParser = (function() {
 
      for (var key in jsonData) {
        var value = jsonData[key];
-       if (key.toString().indexOf("@") === 0) {
+       var valueObj = Object.prototype.toString.apply(value);
+       if (valueObj === "[object String]" || valueObj === "[object Number]" || valueObj === "[object Boolean]") {
          continue;
        }else if (Object.prototype.toString.apply(value) === "[object Array]") {
          for(var index in value) {

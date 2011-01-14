@@ -34,6 +34,7 @@ import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -125,18 +126,32 @@ public class PollingHelper {
       JSONArray statusArray = jsonObj.get("status").isArray();
       if (statusArray != null) {
          for (int i = 0; i < statusArray.size(); i++) {
-            String id = statusArray.get(i).isObject().get("@id").isString().stringValue();
-            String value = statusArray.get(i).isObject().get("#text").isString().stringValue();
-            ClientDataBase.statusMap.put(id, value);
+            String id = statusArray.get(i).isObject().get("id").isNumber().toString();
+            JSONValue jsonValue = statusArray.get(i).isObject().get("content");
+            ClientDataBase.statusMap.put(id, readStringValue(jsonValue));
             ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerPollingStatusIdFormat + id, null);
          }
       } else {
          JSONObject statusObj = jsonObj.get("status").isObject();
-         String id = statusObj.get("@id").isString().stringValue();
-         String value = statusObj.get("#text").isString().stringValue();
-         ClientDataBase.statusMap.put(id, value);
+         String id = statusObj.get("id").isNumber().toString();
+         JSONValue jsonValue = statusObj.isObject().get("content");
+         ClientDataBase.statusMap.put(id, readStringValue(jsonValue));
          ORListenerManager.getInstance().notifyOREventListener(Constants.ListenerPollingStatusIdFormat + id, null);
       }
+   }
+   
+   private String readStringValue(JSONValue jsonValue) {
+      String value = "";
+      if (jsonValue.isString() != null) {
+         value = jsonValue.isString().stringValue();
+      } else if (jsonValue.isNumber() != null) {
+         value = jsonValue.isNumber().toString();
+      } else if(jsonValue.isBoolean() != null) {
+         value = jsonValue.isBoolean().toString();
+      } else if (jsonValue.isNull() != null) {
+         value = jsonValue.isNull().toString();
+      }
+      return value;
    }
    
    private class StatusResultReader implements JsonResultReader {
@@ -149,7 +164,7 @@ public class PollingHelper {
             return;
          } else if (jsonObj.containsKey("error")) {
             JSONObject errorObj = jsonObj.get("error").isObject();
-            int errorCode = Integer.valueOf(errorObj.get("code").isString().stringValue());
+            int errorCode = Integer.valueOf(errorObj.get("code").isNumber().toString());
             if (errorCode == ControllerExceptionMessage.GATEWAY_TIMEOUT) {
                if (pollingTimer != null) {
                   pollingTimer.run();

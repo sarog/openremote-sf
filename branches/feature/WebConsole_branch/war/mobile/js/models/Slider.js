@@ -44,10 +44,10 @@ Slider = (function() {
       self.id = properties[Constants.ID];
       
       var isVerticalStr = properties[Constants.IS_VERTICAL];
-      self.isVertical = (isVerticalStr != null && isVerticalStr != undefined && isVerticalStr == "true") ? true : false;
+      self.isVertical = (isVerticalStr != null && isVerticalStr != undefined && isVerticalStr == true) ? true : false;
       
       var isPassiveStr = properties[Constants.IS_PASSIVE];
-      self.isPassive = (isPassiveStr != null && isPassiveStr != undefined && isPassiveStr == "true") ? true : false;
+      self.isPassive = (isPassiveStr != null && isPassiveStr != undefined && isPassiveStr == true) ? true : false;
       
      var thumbImage = properties[Constants.THUMB_IMAGE];
      self.thumbImageSRC = (thumbImage != null && thumbImage != undefined) ? thumbImage : "";

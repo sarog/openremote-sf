@@ -53,10 +53,6 @@
       <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
    </listener>
    
-   <listener>
-      <listener-class>org.openremote.web.console.listener.ApplicationListener</listener-class>
-   </listener>
-    
    <filter>
       <filter-name>encodingFilter</filter-name>
       <filter-class>
