@@ -704,15 +704,13 @@ OpenRemote Sub-components:
   below.
 * Quartz library is licensed under Apache License Version 2.0, see license
   below.
-* EZMorph library is licensed under Apache License Version 2.0, see license
-  below.
 * Jakarta Standard Tag Library is licensed under Apache License Version 2.0,
   see license below.
-* Json-lib is licensed under Apache License Version 2.0, see license below.
 * X10 Classes in package com.jpeterson are licensed under GNU Lesser General
   Public License (LGPL) Version 2.1, or any later version. For the purpose of
   this distribution, classes are relicensed under GNU Lesser General Public
   License (LGPL) Version 3.0
+* Classes in org.json package are licensed under the terms included below.
 * Clink library is licensed under the terms included below.
 * Spring Core framework and Spring Security framework are licensed under
   Apache License Version 2.0, see license below.
@@ -1574,6 +1572,35 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
+
+
+------------------------------------------------------------------------------------------
+
+  ORG.JSON LICENSE
+
+------------------------------------------------------------------------------------------
+
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE. 
+
 
 
 ------------------------------------------------------------------------------------------
