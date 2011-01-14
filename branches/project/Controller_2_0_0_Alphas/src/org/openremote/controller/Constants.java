@@ -191,7 +191,11 @@ public class Constants
 
 
 
+  // JSON API -------------------------------------------------------------------------------------
+
+  /**
+   * HTTP parameter name used for JSON-P function callback name.
+   */
   public final static String CALLBACK_PARAM_NAME = "callback";
 
-  public static final int RESPONSE_SUCCESS = 200;
 }
