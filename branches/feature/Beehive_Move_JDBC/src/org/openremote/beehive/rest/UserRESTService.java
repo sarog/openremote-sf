@@ -47,7 +47,7 @@ public class UserRESTService extends RESTBaseService {
    @Path("create")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response createUser(UserDTO userDTO) {
       User user = new User();
       user.setUsername(userDTO.getUsername());
@@ -57,7 +57,7 @@ public class UserRESTService extends RESTBaseService {
    
    @Path("get/{user_id}")
    @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response getUserById(@PathParam("user_id")  long userId) {
       User user = getUserService().getUserById(userId);
       return buildResponse(user.toDTO());

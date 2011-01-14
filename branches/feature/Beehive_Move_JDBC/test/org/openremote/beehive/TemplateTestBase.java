@@ -1,5 +1,6 @@
 package org.openremote.beehive;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.resteasy.mock.MockHttpRequest;
@@ -57,6 +58,9 @@ public class TemplateTestBase extends TestBase {
          User user = new User();
          user.setUsername("dan");
          user.setAccount(a);
+         List<User> users = new ArrayList<User>();
+         users.add(user);
+         a.setUsers(users);
          genericDAO.save(user);
          
          Icon i = new Icon();
