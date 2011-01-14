@@ -48,7 +48,7 @@ public class DeviceRESTService extends RESTBaseService {
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response saveDevice(@PathParam("account_id") long aid,
                               DeviceDTO deviceDTO,
                               @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
