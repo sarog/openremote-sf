@@ -19,7 +19,6 @@ package org.openremote.modeler.client.widget.uidesigner;
 import java.util.List;
 
 import org.openremote.modeler.client.Constants;
-import org.openremote.modeler.client.utils.WidgetSelectionUtil;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
 import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.Panel;
@@ -77,9 +76,9 @@ public class ScreenTabItem extends TabItem {
          @Override
          public void onComponentEvent(ComponentEvent ce) {
             super.onComponentEvent(ce);
-            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
-               WidgetSelectionUtil.setSelectWidget(this);
-            }
+//            if (ce.getEventTypeInt() == Event.ONMOUSEDOWN) {
+//               WidgetSelectionUtil.setSelectWidget(this);
+//            }
          }
       };
       screenContainer.addStyleName("screen-background");
@@ -92,7 +91,7 @@ public class ScreenTabItem extends TabItem {
       initTabbarForScreenCanvas();
       updateScreenIndicator();
       screenContainer.add(dropTarget);
-      screenContainer.setStyleAttribute("border", "1px dashed gray");
+//      screenContainer.setStyleAttribute("border", "1px dashed gray");
       add(screenContainer);
    }
 

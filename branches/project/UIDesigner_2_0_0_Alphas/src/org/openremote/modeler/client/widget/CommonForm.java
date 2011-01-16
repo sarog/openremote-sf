@@ -77,7 +77,7 @@ public class CommonForm extends FormPanel {
       Button submitBtn = new Button("Submit");
       submitBtn.ensureDebugId(DebugId.COMMON_SUBMIT_BTN);
       Button resetButton = new Button("Reset");
-      submitBtn.addSelectionListener(new FormSubmitListener(this));
+      submitBtn.addSelectionListener(new FormSubmitListener(this, submitBtn));
       resetButton.addSelectionListener(new FormResetListener(this));
       addButton(submitBtn);
       addButton(resetButton);

@@ -398,7 +398,7 @@ public class SensorWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
 
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
 
       form.addButton(submitBtn);
