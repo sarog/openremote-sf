@@ -427,31 +427,34 @@ public class DevicePanel extends ContentPanel {
    }
    
    private void editSensor(final BeanModel selectedModel) {
-      final SensorWindow deviceCommandWindow = new SensorWindow(selectedModel);
-      deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+      final SensorWindow sensorWindow = new SensorWindow(selectedModel);
+      sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             Sensor sensor = be.getData();
             tree.getStore().removeAll(selectedModel);
             tree.getStore().add(selectedModel, sensor.getSensorCommandRef().getBeanModel(), false);
             Info.display("Info", "Edit sensor " + sensor.getBeanModel().get("name") + " success.");
-            deviceCommandWindow.hide();
+            sensorWindow.hide();
          }
       });
    }
    
    private void editSlider(final BeanModel selectedModel) {
       Slider slider = selectedModel.getBean();
-      final SliderWindow deviceCommandWindow = new SliderWindow(slider);
-      deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+      final SliderWindow sliderWindow = new SliderWindow(slider);
+      sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             BeanModel sliderBeanModel = be.getData();
             Slider slider = sliderBeanModel.getBean();
             tree.getStore().removeAll(selectedModel);
-            tree.getStore().add(selectedModel, slider.getSetValueCmd().getBeanModel(), false);
-            Info.display("Info", "Edit device command " + sliderBeanModel.get("name") + " success.");
-            deviceCommandWindow.hide();
+            if (slider.getSetValueCmd() != null) {
+               tree.getStore().add(selectedModel, slider.getSetValueCmd().getBeanModel(), false);
+            }
+            tree.getStore().update(selectedModel);
+            Info.display("Info", "Edit slider " + sliderBeanModel.get("name") + " success.");
+            sliderWindow.hide();
          }
       });
    }
@@ -462,12 +465,12 @@ public class DevicePanel extends ContentPanel {
       switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
-            BeanModel sliderBeanModel = be.getData();
-            Switch swh = sliderBeanModel.getBean();
+            BeanModel switchBeanModel = be.getData();
+            Switch swh = switchBeanModel.getBean();
             tree.getStore().removeAll(selectedModel);
             tree.getStore().add(selectedModel, swh.getSwitchCommandOnRef().getBeanModel(), false);
             tree.getStore().add(selectedModel, swh.getSwitchCommandOffRef().getBeanModel(), false);
-            Info.display("Info", "Edit device command " + sliderBeanModel.get("name") + " success.");
+            Info.display("Info", "Edit switch " + switchBeanModel.get("name") + " success.");
             switchWindow.hide();
          }
       });

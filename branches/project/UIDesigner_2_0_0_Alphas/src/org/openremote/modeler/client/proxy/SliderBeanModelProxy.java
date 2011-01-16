@@ -70,7 +70,7 @@ public class SliderBeanModelProxy {
 
                   @Override
                   public void onSuccess(Slider result) {
-                     BeanModelDataBase.sliderTable.insert(beanModel);
+                     BeanModelDataBase.sliderTable.insert(result.getBeanModel());
                      callback.onSuccess(result);
                   }
 
@@ -84,7 +84,7 @@ public class SliderBeanModelProxy {
                new AsyncSuccessCallback<Slider>() {
                   @Override
                   public void onSuccess(Slider result) {
-                     BeanModelDataBase.sliderTable.update(beanModel);
+                     BeanModelDataBase.sliderTable.update(result.getBeanModel());
                      callback.onSuccess(result);
                   }
 
