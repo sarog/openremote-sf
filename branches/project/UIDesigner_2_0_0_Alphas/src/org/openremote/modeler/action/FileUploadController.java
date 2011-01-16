@@ -65,7 +65,7 @@ public class FileUploadController extends MultiActionController {
                MultipartFileUtil.getMultipartFileFromRequest(request, "file").getInputStream());
          response.getWriter().write(importJson);
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error("Import file error.", e);
          response.getWriter().write("");
       } finally {
          return null;

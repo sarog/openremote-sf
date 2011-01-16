@@ -47,7 +47,6 @@ public final class MultipartFileUtil {
          items = upload.parseRequest(request);
       } catch (FileUploadException e) {
          LOGGER.error("get InputStream from httpServletRequest error.", e);
-         e.printStackTrace();
       }
       if (items == null) {
          return null;

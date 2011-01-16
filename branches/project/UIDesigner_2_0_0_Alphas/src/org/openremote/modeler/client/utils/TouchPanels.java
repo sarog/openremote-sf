@@ -66,7 +66,6 @@ public class TouchPanels {
    public static void load() {
       panelService.getPanels(new AsyncCallback<Map<String, List<TouchPanelDefinition>>>() {
          public void onFailure(Throwable caught) {
-            caught.printStackTrace();
             MessageBox.info("Error", "Can't get panels from xml file!", null);
          }
          public void onSuccess(Map<String, List<TouchPanelDefinition>> panels) {

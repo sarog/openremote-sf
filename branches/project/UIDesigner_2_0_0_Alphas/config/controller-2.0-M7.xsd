@@ -49,7 +49,7 @@
 	<xsd:element name="sensors">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
-					a sensor collection, it contains the all sensors.
+					a sensor collection, it contains all sensors.
 				]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -63,7 +63,7 @@
 	<xsd:element name="commands">
         <xsd:annotation>
         	<xsd:documentation><![CDATA[
-				The parent element of command. include all the command's definition
+				The parent element of command. include all the command definitions
 			]]></xsd:documentation>
         </xsd:annotation>
         <xsd:complexType>
@@ -110,7 +110,14 @@
 	<xsd:element name="sensor">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
-			the definition of a command. the command must have a id , protocol.  
+			the definition of a sensor. sensor is used to listen the status change of a screen component.
+			it describes:
+			
+			1) how many states a screen component has
+			2) what kind of state a screen component can return.
+			3) the min/max value of the states when the state is a continuous range.
+			4) which command is used to get status. 
+			
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -158,6 +165,19 @@
 	</xsd:element>
 	
 	<xsd:simpleType name="sensorType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					Sensor Type is used to define the sensor data type comes back with 'rest/status' or 'rest/polling' API.
+					
+					1) switch: sensor data is either 'on' or 'off' as a string.
+					2) level: sensor data is a percent number, it expects an integer value as a string in the range of [0-100]
+					3) range: sensor data is a float number between min value and max value, it expects a float value as a string in the range of [min-max]
+					4) color: sensor data is color string.
+					5) custom: sensor data is custom enumeration string.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="switch" />
 			<xsd:enumeration value="level" />
@@ -181,7 +201,6 @@
 	        </xsd:sequence>
 				<xsd:attribute name="id" type="idType" use="required" />
 				<xsd:attribute name="protocol" type="xsd:string" use="required"/>
-				<!--  xsd:attribute name="value" type="xsd:string" use="required"/>-->
 		</xsd:complexType>
 	</xsd:element>
 
@@ -341,7 +360,7 @@
 		<xsd:annotation>
 			<xsd:documentation>
 				<![CDATA[
-					defines the time it will delay when a command is excuting.
+					defines the time (millisecond) it will delay when executing a series of commands in macro.
 				]]>
 			</xsd:documentation>
 		</xsd:annotation>
@@ -362,8 +381,17 @@
 			<xsd:element ref="include"  minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:choice>
 	</xsd:group>
-	<!-- ###############  cotrollerConfig  ################ -->
+	
+	<!-- ###############  cotroller configuraiton  ################ -->
 	<xsd:element name="config">
+		<xsd:annotation>
+			<xsd:documentation>
+				<![CDATA[
+					These configurations are used to override default system configurations of Controller for Building Modeler.
+					That means custom configurations won't be used by Controller by default, because Controller won't know there's such configuration.
+				]]>
+			</xsd:documentation>
+		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="property" minOccurs="0" maxOccurs="unbounded" />
