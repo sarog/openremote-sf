@@ -29,6 +29,7 @@ import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import com.extjs.gxt.ui.client.Style.Scroll;
 import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.google.gwt.user.client.Event;
@@ -44,6 +45,7 @@ public class ScreenTabItem extends TabItem {
    private ComponentContainer screenContainer;
    
    private ScreenCanvas screenCanvas;
+   private LayoutContainer dropTarget;
 
    /**
     * Instantiates a new screen panel.
@@ -82,12 +84,14 @@ public class ScreenTabItem extends TabItem {
       };
       screenContainer.addStyleName("screen-background");
       screenContainer.sinkEvents(Event.ONMOUSEDOWN);
+      dropTarget = new LayoutContainer();
+      dropTarget.setStyleAttribute("padding", "5px");
+      screenCanvas = new ScreenCanvas(screen, dropTarget);
+      dropTarget.add(screenCanvas);
       updateTouchPanel();
-      screenCanvas = new ScreenCanvas(screen);
       initTabbarForScreenCanvas();
       updateScreenIndicator();
-      screenContainer.add(screenCanvas);
-//      screenContainer.setBorders(false);
+      screenContainer.add(dropTarget);
       screenContainer.setStyleAttribute("border", "1px dashed gray");
       add(screenContainer);
    }
@@ -106,10 +110,15 @@ public class ScreenTabItem extends TabItem {
       if (touchPanelDefinition.getBgImage() != null) {
          screenContainer.setStyleAttribute("backgroundImage", "url(" + touchPanelDefinition.getBgImage() + ")");
       }
-      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft()));
-      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop()));
+      screenContainer.setStyleAttribute("paddingLeft", String.valueOf(touchPanelDefinition.getPaddingLeft() - 5));
+      screenContainer.setStyleAttribute("paddingTop", String.valueOf(touchPanelDefinition.getPaddingTop() -5));
+      int width = touchPanelDefinition.getCanvas().getWidth();
+      int height = touchPanelDefinition.getCanvas().getHeight();
+      if (dropTarget != null) {
+         dropTarget.setSize(width + 10, height + 10);
+      }
       if (screenCanvas != null) {
-         screenCanvas.setSize(touchPanelDefinition.getCanvas().getWidth(), touchPanelDefinition.getCanvas().getHeight());
+         screenCanvas.setSize(width, height);
       }
    }
 

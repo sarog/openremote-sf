@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.openremote.modeler.domain.RangeSensor;
 import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.UICommand;
 
@@ -160,29 +161,36 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
          xmlContent.append("passive=\"true\" ");
       }
       xmlContent.append(">\n");
-      if(getSensor()!=null){
-         xmlContent.append("<link type=\"sensor\" ref=\""+getSensor().getOid()+"\" />\n");
-         if (getSensor() instanceof RangeSensor) {
-            RangeSensor rangeSensor = (RangeSensor) getSensor();
-            xmlContent.append("<min value=\"" + rangeSensor.getMin() + "\"");
-            if (isMinImageUploaded()) {
-               xmlContent.append(" image=\"" + minImage.getImageFileName() + "\"");
+      int min = 0;
+      int max = 100;
+      if (getSensor() != null) {
+         Sensor sensor = getSensor();
+         if (sensor.getType() == SensorType.RANGE || sensor.getType() == SensorType.LEVEL) {
+            xmlContent.append("<link type=\"sensor\" ref=\"" + sensor.getOid() + "\" />\n");
+            if (sensor.getType() == SensorType.RANGE) {
+               RangeSensor rangeSensor = (RangeSensor) getSensor();
+               min = rangeSensor.getMin();
+               max = rangeSensor.getMax();
             }
-            if (isMinTrackImageUploaded()) {
-               xmlContent.append(" trackImage=\"" + minTrackImage.getImageFileName() + "\"");
-            }
-            xmlContent.append("/>\n");
-            
-            xmlContent.append("<max value=\"" + rangeSensor.getMax() + "\" ");
-            if (isMaxImageUploaded()) {
-               xmlContent.append("image=\"" + maxImage.getImageFileName() + "\" ");
-            }
-            if (isMaxTrackImageUploaded()) {
-               xmlContent.append("trackImage=\"" + maxTrackImage.getImageFileName() + "\" ");
-            }
-            xmlContent.append("/>\n");
          }
       }
+      xmlContent.append("<min value=\"" + min + "\"");
+      if (isMinImageUploaded()) {
+         xmlContent.append(" image=\"" + minImage.getImageFileName() + "\"");
+      }
+      if (isMinTrackImageUploaded()) {
+         xmlContent.append(" trackImage=\"" + minTrackImage.getImageFileName() + "\"");
+      }
+      xmlContent.append("/>\n");
+
+      xmlContent.append("<max value=\"" + max + "\" ");
+      if (isMaxImageUploaded()) {
+         xmlContent.append("image=\"" + maxImage.getImageFileName() + "\" ");
+      }
+      if (isMaxTrackImageUploaded()) {
+         xmlContent.append("trackImage=\"" + maxTrackImage.getImageFileName() + "\" ");
+      }
+      xmlContent.append("/>\n");
       xmlContent.append("        </slider>\n");
       return xmlContent.toString();
    }
