@@ -50,6 +50,7 @@ import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -209,6 +210,7 @@ public class ControllerConfigTabItem extends TabItem {
          configContainer.add(configValueField);
       } else {
          final ComboBox<ModelData> optionComboBox = new ComboBox<ModelData>();
+         optionComboBox.setTriggerAction(TriggerAction.ALL);
          ListStore<ModelData> store = new ListStore<ModelData>();
          String[] options = config.optionsArray();
          for (int i = 0; i < options.length; i++) {
