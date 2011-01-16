@@ -77,7 +77,7 @@ public class DelayWindow extends FormWindow {
 
       Button addBtn = new Button("OK");
       
-      addBtn.addSelectionListener(new FormSubmitListener(form));
+      addBtn.addSelectionListener(new FormSubmitListener(form, addBtn));
       
       form.addButton(addBtn);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {

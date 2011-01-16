@@ -175,7 +175,7 @@ public class MacroWindow extends FormWindow {
       createSelectCommandContainer();
 
       Button submitBtn = new Button("OK");
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
 
       form.addButton(submitBtn);
    }

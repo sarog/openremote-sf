@@ -23,7 +23,6 @@ import org.openremote.modeler.client.event.WidgetSelectChangeEvent;
 import org.openremote.modeler.client.listener.WidgetSelectChangeListener;
 import org.openremote.modeler.client.utils.PropertyEditable;
 import org.openremote.modeler.client.utils.WidgetSelectionUtil;
-import org.openremote.modeler.client.widget.propertyform.ScreenPairPropertyForm;
 
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
@@ -68,21 +67,12 @@ public class PropertyPanel extends ContentPanel {
          if (component instanceof GridLayoutContainerHandle) {
             addPropertiesForm(component);
             currentLayoutContainer = null;
-         } else if (component.getParent() instanceof ScreenTabItem) {
+         /*} else if (component.getParent() instanceof ScreenTabItem) {
             addScreenPairPropertyForm(component);
+          */
          }else {
             addPropertiesForm(component);
          } 
-         /*if (component instanceof AbsoluteLayoutContainer) {
-            addPropertiesForm(((AbsoluteLayoutContainer) component).getScreenComponent());
-         } else if (component instanceof GridCellContainer) {
-            addPropertiesForm(((GridCellContainer) component).getScreenComponent());
-         } else if (component instanceof GridLayoutContainerHandle) {
-            addPropertiesForm(component);
-            currentLayoutContainer = null;
-         } else if (component instanceof ScreenCanvas) {
-            addPropertiesForm(component);
-         }*/
          layout();
       }
 
@@ -116,11 +106,11 @@ public class PropertyPanel extends ContentPanel {
       }
    }
    
-   private void addScreenPairPropertyForm(ComponentContainer component) {
+   /*private void addScreenPairPropertyForm(ComponentContainer component) {
       if (currentPropertyForm != null) {
          currentPropertyForm.removeFromParent();
       }
       currentPropertyForm = new ScreenPairPropertyForm(component);
       add(currentPropertyForm);
-   }
+   }*/
 }
