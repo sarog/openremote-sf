@@ -31,6 +31,7 @@ import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -51,9 +52,7 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.TextField;
@@ -194,10 +193,7 @@ public class DeviceCommandWindow extends FormWindow {
       nameField.setAllowBlank(false);
       nameField.ensureDebugId(DebugId.DEVICE_COMMAND_NAME_FIELD);
 
-      ComboBox<ModelData> protocol = new ComboBox<ModelData>();
-      protocol.setEditable(false);
-      ListStore<ModelData> store = new ListStore<ModelData>();
-      protocol.setStore(store);
+      ComboBoxExt protocol = new ComboBoxExt();
       protocol.setFieldLabel("Protocol");
       protocol.setName(DEVICE_COMMAND_PROTOCOL);
       protocol.setAllowBlank(false);
@@ -206,7 +202,7 @@ public class DeviceCommandWindow extends FormWindow {
       for (String key : protocols.keySet()) {
          if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
             ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
-            store.add(data);
+            protocol.getStore().add(data);
          }
       }
 

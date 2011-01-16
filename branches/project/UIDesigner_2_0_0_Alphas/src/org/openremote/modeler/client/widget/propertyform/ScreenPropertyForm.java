@@ -59,6 +59,7 @@ import com.extjs.gxt.ui.client.widget.form.FieldSet;
 import com.extjs.gxt.ui.client.widget.form.Radio;
 import com.extjs.gxt.ui.client.widget.form.RadioGroup;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.layout.ColumnLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 /**
@@ -194,6 +195,7 @@ public class ScreenPropertyForm extends PropertyForm {
       relative.setName(SCREEN_RELATIVE);
       relative.setAllowBlank(false);
       relative.setEditable(false);
+      relative.setTriggerAction(TriggerAction.ALL);
       relative.addSelectionChangedListener(new SelectionChangedListener<ModelData>() {
          @SuppressWarnings("unchecked")
          @Override

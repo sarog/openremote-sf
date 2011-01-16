@@ -7,7 +7,7 @@
   <inherits name="com.google.gwt.http.HTTP" />
   
   <inherits name='com.extjs.gxt.ui.GXT'/>
-  <inherits name='net.sf.gilead.Adapter4Gwt15'/>
+  <inherits name='net.sf.gilead.Gilead4Gwt'/>
   
   <!-- Ensure that UIElement has an ID property for Selenium test -->
   <!-- will have no effect unless you inherit this DebugID module -->
