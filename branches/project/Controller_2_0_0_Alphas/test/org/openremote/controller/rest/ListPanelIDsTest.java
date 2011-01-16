@@ -32,10 +32,11 @@ import org.junit.After;
 import org.openremote.controller.suite.RESTTests;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.Panel;
+import org.openremote.controller.model.JSONMapping;
 import org.w3c.dom.Document;
-import net.sf.json.util.JSONTokener;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 /**
  * Tests against {@link org.openremote.controller.rest.ListPanelIDs} servlet (by default
@@ -155,43 +156,26 @@ public class ListPanelIDsTest
 
     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
 
-    connection.setRequestProperty("accept", "application/json");
+    connection.setRequestProperty(Constants.HTTP_ACCEPT_HEADER, Constants.MIME_APPLICATION_JSON);
 
     RESTTests.assertHttpResponse(
         connection, HttpURLConnection.HTTP_OK, RESTTests.ASSERT_BODY_CONTENT,
         Constants.MIME_APPLICATION_JSON, Constants.CHARACTER_ENCODING_UTF8
     );
 
-    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    StringBuffer buffer = new StringBuffer(1000);
-
-    while (true)
-    {
-      String nextLine = reader.readLine();
-
-      if (nextLine == null)
-        break;
-
-      buffer.append(nextLine);
-    }
-
-    JSONTokener parser = new JSONTokener(buffer.toString());
-
-    Object o = parser.nextValue();
+    Object o = JSONMapping.getJSONRoot(connection.getInputStream());
 
     Assert.assertTrue(o instanceof JSONObject);
 
     JSONObject root = (JSONObject)o;
 
-    Assert.assertFalse(root.isNullObject());
     Assert.assertTrue(root.has("panel"));
-    Assert.assertFalse(root.isEmpty());
-    
+
     JSONArray array = root.getJSONArray("panel");
 
-    Assert.assertTrue(array.size() == 3);
+    Assert.assertTrue(array.length() == 3);
 
-    for (int index = 0; index < array.size(); index++)
+    for (int index = 0; index < array.length(); index++)
     {
       JSONObject panel = array.getJSONObject(index);
 
