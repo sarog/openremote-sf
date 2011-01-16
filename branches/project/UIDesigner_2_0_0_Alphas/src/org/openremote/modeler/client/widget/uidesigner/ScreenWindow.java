@@ -189,17 +189,11 @@ public class ScreenWindow extends FormWindow {
       groupTreeContainer.setEnabled(operation==Operation.NEW);
       groupTreeContainer.setStyleAttribute("backgroundColor", "white");
 
-      if (null != this.selectItem) {
-         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW)) {
-            groupSelectTree.getSelectionModel().select(selectItem, false);
-         } 
-//         else if (selectItem.getBean() instanceof ScreenRef && operation == Operation.EDIT) {
-//            ScreenRef screenRef = (ScreenRef) selectItem.getBean();
-//            nameField.setValue(screenRef.getScreen().getName());
-//            BeanModel selectedGroup = TreePanelBuilder.buildPanelTree(screenTab).getStore().getParent(selectItem);
-//            groupSelectTree.getSelectionModel().select(selectedGroup, false);
-//         }
-      }
+//      if (null != this.selectItem) {
+//         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW)) {
+//            groupSelectTree.getSelectionModel().select(selectItem, false);
+//         } 
+//      }
       return groupTreeContainer;
    }
 
@@ -225,4 +219,15 @@ public class ScreenWindow extends FormWindow {
    public static enum Operation{
       NEW,EDIT;
    }
+
+   protected void afterRender() {
+      super.afterRender();
+      if (null != this.selectItem) {
+         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW)) {
+            groupSelectTree.getSelectionModel().select(selectItem, false);
+         } 
+      }
+   }
+   
+   
 }
