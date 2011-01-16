@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -76,25 +76,99 @@ public interface UserService {
    
    User getCurrentUser();
    
+   /**
+    * Invite a user to share an account, and the account has a specified role.
+    * 
+    * @param email the email
+    * @param role the role
+    * @param currentUser the current user
+    * 
+    * @return the user
+    */
    User inviteUser(String email, String role, User currentUser);
 
    boolean sendInvitation(User invitee, User currentUser);
    
+   /**
+    * Check invitation info.
+    * 
+    * @param userOid the user oid
+    * @param hostOid the host oid
+    * @param aid the aid
+    * 
+    * @return true, if successful
+    */
    boolean checkInvitation(String userOid, String hostOid, String aid);
    
+   /**
+    * Accept the invition and set the user password.
+    * 
+    * @param userOid the user oid
+    * @param username the username
+    * @param password the password
+    * @param email the email
+    * 
+    * @return true, if successful
+    */
    boolean createInviteeAccount(String userOid, String username, String password, String email);
    
+   /**
+    * Gets the pending invitees by current account.
+    * 
+    * @param currentUser the current user
+    * 
+    * @return the pending invitees by account
+    */
    List<User> getPendingInviteesByAccount(User currentUser);
    
+   /**
+    * Update user roles by the user id.
+    * 
+    * @param uid the uid
+    * @param roles the roles
+    * 
+    * @return the user
+    */
    User updateUserRoles(long uid, String roles);
    
    void deleteUser(long uid);
    
+   /**
+    * Gets the users who can access the current account.
+    * 
+    * @param currentUser the current user
+    * 
+    * @return the account access users
+    */
    List<User> getAccountAccessUsers(User currentUser);
    
+   /**
+    * The user forget password, send to the email that the user have registered.
+    * 
+    * @param username the username
+    * 
+    * @return the user
+    */
    User forgetPassword(String username);
    
+   /**
+    * Check password token from the url which forward from the user email.
+    * 
+    * @param uid the uid
+    * @param passwordToken the password token
+    * 
+    * @return the user
+    */
    User checkPasswordToken(long uid, String passwordToken);
    
+   /**
+    * Change the user password if the passwordToken is equals to the database and set it into database.
+    * 
+    * @param uid the uid
+    * @param password the password
+    * @param passwordToken the password token
+    * 
+    * @return true, if successful
+    */
    boolean resetPassword(long uid, String password, String passwordToken);
 }

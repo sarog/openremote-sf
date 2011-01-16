@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,12 +23,20 @@ import org.openremote.modeler.domain.BusinessEntity;
 
 import flexjson.JSON;
 
+/**
+ * This domain class represents a action to navigate to.
+ * It can navigate to screen, group or some logical targets.
+ */
 public class Navigate extends BusinessEntity {
 
    private static final long serialVersionUID = 4180916727141357903L;
    
    private long toScreen = -1L;
    private long toGroup = -1L;
+   
+   /** Navigate to logical type, which includes to setting, next screen, previous screen, 
+    *  back, login and logout. 
+    */
    private ToLogicalType toLogical = null;
 
    public long getToScreen() {
@@ -80,6 +88,10 @@ public class Navigate extends BusinessEntity {
       }
       return false;
    }
+   
+   /**
+    * Set navigate to nothing.
+    */
    public void clear() {
       this.toLogical = null;
       this.toGroup = -1;

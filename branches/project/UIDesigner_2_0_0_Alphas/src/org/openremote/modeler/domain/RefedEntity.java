@@ -20,7 +20,9 @@
 package org.openremote.modeler.domain;
 
 /**
- * The Class RefedEntity defined refCount.
+ * The Class RefedEntity defined refCount, which can be increase or decrease.
+ * The sub classes include Group and ScreenPair.
+ * 
  */
 public class RefedEntity extends BusinessEntity {
 

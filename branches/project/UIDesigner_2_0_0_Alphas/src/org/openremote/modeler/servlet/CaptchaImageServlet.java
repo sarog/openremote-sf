@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,6 +32,9 @@ import nl.captcha.Captcha;
 import nl.captcha.servlet.CaptchaServletUtil;
 import nl.captcha.servlet.SimpleCaptchaServlet;
 
+/**
+ * Generate the captcha image and write into response.
+ */
 public class CaptchaImageServlet extends SimpleCaptchaServlet {
 
    private static final long serialVersionUID = -8036055236431739173L;

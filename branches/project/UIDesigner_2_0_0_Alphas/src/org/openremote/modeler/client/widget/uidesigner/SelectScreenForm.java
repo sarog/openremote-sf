@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -46,6 +46,11 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
+/**
+ * Selects screens when create a new group in groupWizardWindow.
+ * It has a checkBoxListView to show the screens and a "show other panel type" 
+ * checkBox.
+ */
 public class SelectScreenForm extends CommonForm {
 
    private CheckBoxListView<BeanModel> screenListView = null;

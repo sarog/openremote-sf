@@ -28,7 +28,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 
 
 /**
- * The Class DeviceWindow.
+ * The window to creates or updates a device.
  */
 public class DeviceWindow extends CommonWindow {
    

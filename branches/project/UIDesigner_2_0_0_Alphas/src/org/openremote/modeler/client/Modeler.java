@@ -38,7 +38,8 @@ public class Modeler implements EntryPoint {
    }
 
    /**
-    * Inits the application.
+    * Inits the application, hide the loading image and message.
+    * Display the application view.
     */
    private void init() {
       DOM.setStyleAttribute(RootPanel.get("loading-cont").getElement(), "display", "none");

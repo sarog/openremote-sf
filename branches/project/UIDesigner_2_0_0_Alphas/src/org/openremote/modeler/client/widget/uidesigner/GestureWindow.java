@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -61,6 +61,12 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
+/**
+ * The window for managing screen gestures.
+ * It includes four types of gesture, which list in the left of the window,
+ * a command and macro tree in the right-top part, a navigation field set in 
+ * the right-bottom part.
+ */
 public class GestureWindow extends Dialog {
 
    private List<Gesture> gestures;

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -27,6 +27,9 @@ import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
+/**
+ * The server side implementation of the RPC service <code>SliderRPCService</code>.
+ */
 @SuppressWarnings("serial")
 public class SliderController extends BaseGWTSpringControllerWithHibernateSupport implements SliderRPCService {
 

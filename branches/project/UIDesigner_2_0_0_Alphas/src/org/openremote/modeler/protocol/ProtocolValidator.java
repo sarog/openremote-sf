@@ -22,7 +22,9 @@ package org.openremote.modeler.protocol;
 import java.io.Serializable;
 
 /**
- * The Class ProtocolValidator.
+ * The class is used for validating protocol attribute. A protocol attribute can have a series of validators.
+ * 
+ * There are four types of validators: allow blank, max length, min length and regex.
  */
 public class ProtocolValidator implements Serializable {
 

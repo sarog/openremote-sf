@@ -32,7 +32,7 @@ import javax.persistence.Table;
 
 
 /**
- * The Class Protocol.
+ * The Class is represent a device command's specific instruction.
  * 
  * @author Dan 2009-7-6
  */
@@ -44,13 +44,13 @@ public class Protocol extends BusinessEntity {
    
    public static final String INFRARED_TYPE = "Infrared";
 
-   /** The type. */
+   /** The protocol type, include http, x10, knx, infrared, etc. */
    private String type;
    
    /** The attributes. */
    private List<ProtocolAttr> attributes = new ArrayList<ProtocolAttr>();
    
-   /** The device event. */
+   /** The protocol represented device command. */
    private DeviceCommand deviceCommand;
 
    /**

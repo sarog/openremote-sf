@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ImageBundle;
 
 /**
- * The Interface Icons.
+ * The Interface defines the application's image bundle.
  */
 public interface Icons extends ImageBundle {
 

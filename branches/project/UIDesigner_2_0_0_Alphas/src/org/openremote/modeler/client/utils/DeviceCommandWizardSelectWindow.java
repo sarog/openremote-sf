@@ -30,6 +30,9 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
+/**
+ * The Class is for select device command round under a device.
+ */
 public class DeviceCommandWizardSelectWindow extends DeviceCommandSelectWindow {
    public DeviceCommandWizardSelectWindow(Device device) {
       super(device);

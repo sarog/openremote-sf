@@ -57,6 +57,8 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
  * A panel for display screen button properties.
+ * It includes name, command, default image, pressed image, repeatable and navigation.
+ * 
  */
 public class ButtonPropertyForm extends PropertyForm {
    private CheckBox repeat = new CheckBox();

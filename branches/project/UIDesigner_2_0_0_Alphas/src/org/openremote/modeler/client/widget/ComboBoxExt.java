@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,6 +25,10 @@ import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 
+/**
+ * This class extends combobox, and initialize a empty <b>ListStore</b>, set the display field be 
+ * ComboBoxDataModel's display property, value field be ComboBoxDataModel's data property.
+ */
 public class ComboBoxExt extends ComboBox<ModelData> {
    public ComboBoxExt() {
       setStore(new ListStore<ModelData>());

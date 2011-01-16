@@ -38,6 +38,8 @@ import org.apache.log4j.Logger;
 import org.openremote.modeler.exception.FileOperationException;
 
 /**
+ * Util class for compressing or unzipping files.
+ *  
  * @author Allen, Handy
  */
 public class ZipUtils {
@@ -52,7 +54,7 @@ public class ZipUtils {
    }
 
    /**
-    * Compress.
+    * Compress a list of files into the output file.
     * 
     * @param outputFilePath the output file path
     * @param files the files

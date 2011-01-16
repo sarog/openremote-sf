@@ -35,7 +35,7 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 /**
- * 
+ * The window is for selecting device command under a device.
  * @author Javen
  *
  */

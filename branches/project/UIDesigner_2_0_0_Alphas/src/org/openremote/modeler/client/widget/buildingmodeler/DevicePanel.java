@@ -77,7 +77,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * The Class DevicePanel.
+ * The panel contains a toolbar and a treePanel to manage the device, deviceCommand, sensor, switch and slider.
+ * It display in the west part of the page.
  */
 public class DevicePanel extends ContentPanel {
 
@@ -136,7 +137,7 @@ public class DevicePanel extends ContentPanel {
    }
    
    /**
-    * Creates the menu.
+    * Creates the toolbar which contains some menus.
     */
    private void createMenu() {      
       Button newButton = new Button("New");
@@ -158,6 +159,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSliderMenuItem);
       newMenu.add(newSwitchMenuItem);
       
+      // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
          @Override
          public void handleEvent(MenuEvent be) {

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -34,6 +34,7 @@ import flexjson.JSON;
 
 /**
  * The Panel define the different device touch panel, such as iPhone panel, wall panel etc.
+ * It includes name, groupRefs, global tabbarItems and touchPanelDefinition.
  */
 public class Panel extends BusinessEntity {
 
@@ -116,6 +117,11 @@ public class Panel extends BusinessEntity {
       this.tabbar = tabbar;
    }
    
+   /**
+    * Gets the groups from groupRefs, a groupRef contain a group.
+    * 
+    * @return the groups
+    */
    @Transient
    @JSON(include = false)
    public List<Group> getGroups() {

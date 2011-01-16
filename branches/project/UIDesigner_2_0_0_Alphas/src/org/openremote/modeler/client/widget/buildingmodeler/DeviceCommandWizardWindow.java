@@ -35,6 +35,9 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.form.Field;
 
+/**
+ * The window creates a deviceCommand, but not save into server.
+ */
 public class DeviceCommandWizardWindow extends DeviceCommandWindow {
 
    public DeviceCommandWizardWindow(Device device) {

@@ -22,7 +22,7 @@ package org.openremote.modeler.client.model;
 import org.openremote.modeler.domain.BusinessEntity;
 
 /**
- * The Class TreeFolderBean.
+ * Indicates a node on tree, and not the leaf node.
  */
 public class TreeFolderBean extends BusinessEntity {
 
