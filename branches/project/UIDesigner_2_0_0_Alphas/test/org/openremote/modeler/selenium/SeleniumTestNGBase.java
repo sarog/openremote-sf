@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler.selenium;
 
+import org.apache.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -33,6 +34,8 @@ import com.thoughtworks.selenium.DefaultSelenium;
  * @author Dan 2009-7-31
  */
 public class SeleniumTestNGBase {
+   
+   private static final Logger log = Logger.getLogger(SeleniumTestNGBase.class);
    
    /** The default implementation of the Selenium interface. */
    protected DefaultSelenium selenium;
@@ -94,7 +97,7 @@ public class SeleniumTestNGBase {
        try {
            Thread.sleep(millisecs);
        } catch (InterruptedException e) {
-          e.printStackTrace();
+          log.error("Can not sleep", e);
        }
    }
    
