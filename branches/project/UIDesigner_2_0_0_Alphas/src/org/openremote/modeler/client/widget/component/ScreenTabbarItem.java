@@ -33,6 +33,8 @@ import com.extjs.gxt.ui.client.widget.Text;
 import com.google.gwt.user.client.Event;
 
 /**
+ * The tabbarItem can drag and drop in the tabbar.
+ * It includes a text and a image.
  * 
  * @author Javen
  *

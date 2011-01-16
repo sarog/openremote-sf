@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -45,16 +45,39 @@ import com.extjs.gxt.ui.client.widget.layout.ColumnLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 /**
- * The NavigateFieldSet is for edit navigate.
+ * The NavigateFieldSet is for editing navigation.
  */
 public class NavigateFieldSet extends FieldSet {
+   
+   /** The navigate be edit. */
    private Navigate navigate;
+   
+   /** The panel's groups, for editing "toGroup" navigation. */
    private List<Group> groups;
+   
+   /** The radio is to make the "to logical" action part be enable or not. */
    private Radio toLogical = new Radio();
+   
+   /** The radio is to make the "to group" part be enable or not. */
    private Radio toGroup = new Radio();
+   
+   /** The type list combobox is for selecting "to logical" action type. */
    private ComboBoxExt typeList = new ComboBoxExt();
+   
+   /** The group list combobox is for selecting a group. */
    private ComboBoxExt groupList = new ComboBoxExt();
+   
+   /** The screen list combobox is for selecting a screen in a group. */
    private ComboBoxExt screenList = new ComboBoxExt();
+   
+   /**
+    * Instantiates a new navigate field set.
+    * It has two parts: the left part has the radios to select, the right part 
+    * has comboboxes to select.
+    * 
+    * @param navigate the navigate
+    * @param groups the groups
+    */
    public NavigateFieldSet(Navigate navigate, List<Group> groups) {
       this.navigate = navigate;
       this.groups = groups;
@@ -70,6 +93,9 @@ public class NavigateFieldSet extends FieldSet {
       screenList.setEditable(false);
    }
    
+   /**
+    * The left container includes: action radio and screen radio.
+    */
    private void createLeftContainer() {
       LayoutContainer leftContainer = new LayoutContainer();
       
@@ -112,6 +138,9 @@ public class NavigateFieldSet extends FieldSet {
       add(leftContainer);
    }
    
+   /**
+    * The right combo boxes includes: logical types, groups and screens.
+    */
    private void createRightComboBoxes() {
       LayoutContainer rightComboBoxes = new LayoutContainer();
       FormLayout layout = new FormLayout();
@@ -166,6 +195,11 @@ public class NavigateFieldSet extends FieldSet {
       add(rightComboBoxes);
    }
    
+   /**
+    * Update screen list in screen combobox after change the selected group.
+    * 
+    * @param se the se
+    */
    @SuppressWarnings("unchecked")
    private void updateScreenList(SelectionChangedEvent<ModelData> se) {
       Group selectedGroup = ((ComboBoxDataModel<Group>) se.getSelectedItem()).getData();
@@ -204,6 +238,11 @@ public class NavigateFieldSet extends FieldSet {
       }
    }
 
+   /**
+    * Update the field set by navigate.
+    * 
+    * @param navigate the navigate
+    */
    public void update(Navigate navigate) {
       this.navigate = navigate;
       if (navigate.isToLogic()) {

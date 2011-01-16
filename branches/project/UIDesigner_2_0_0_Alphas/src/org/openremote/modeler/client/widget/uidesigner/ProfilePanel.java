@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -81,7 +81,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
 
 /**
- * The ProfilePanel .
+ * The content panel includes a toolbar and a treePanel for managing panels, groups and screens.
  */
 public class ProfilePanel extends ContentPanel {
 

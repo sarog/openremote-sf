@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,7 +29,7 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 /**
- * A panel for configuring the Controller. 
+ * Contains a tree panel for configuring the Controller info. 
  * @author javen
  *
  */
@@ -47,6 +47,9 @@ public class ConfigPanel extends ContentPanel {
    }
    
    
+   /**
+    * Creates the config category tree.
+    */
    private void createCategory(){
       configCategory = TreePanelBuilder.buildControllerConfigCategoryPanelTree(buildingModelerView.getConfigTabPanel());
       add(configCategory);

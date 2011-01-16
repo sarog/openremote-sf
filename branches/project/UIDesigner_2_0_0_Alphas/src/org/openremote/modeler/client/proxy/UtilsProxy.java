@@ -37,7 +37,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * The Class DeviceBeanModelProxy.
+ * The proxy supports utility methods to export file(openremote.zip), save uiDesignerLayout, restore uiDesignerLayout, 
+ * get some url path, download image and rotate image.
  * 
  * @author handy.wang
  */

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,6 +26,9 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
+/**
+ * The Class is for lazy loading sensor from server.
+ */
 public class SensorBeanModelTable extends BeanModelTable {
 
    public SensorBeanModelTable() {

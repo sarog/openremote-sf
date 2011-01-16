@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.modeler.domain.component;
 
 import java.util.ArrayList;
@@ -11,14 +30,19 @@ import org.openremote.modeler.domain.UICommand;
 
 import flexjson.JSON;
 
+/**
+ * There are two types of UISlider(vertical and horizontal). 
+ * It contains a slider entity, five predefined images, and the images can be changed.
+ */
 public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner {
-   
+   // Default horizontal images.
    public static final String DEFAULT_HORIZONTAL_MIN_IMAGE = "./resources/images/custom/slider/min.png";
    public static final String DEFAULT_HORIZONTAL_MINTRACK_IMAGE = "./resources/images/custom/slider/minTrack.png";
    public static final String DEFAULT_HORIZONTAL_THUMB_IMAGE = "./resources/images/custom/slider/thumb.png";
    public static final String DEFAULT_HORIZONTAL_MAXTRACK_IMAGE = "./resources/images/custom/slider/maxTrack.png";
    public static final String DEFAULT_HORIZONTAL_MAX_IMAGE = "./resources/images/custom/slider/max.png";
    
+   // Default vertical images.
    public static final String DEFAULT_VERTICAL_MIN_IMAGE = "./resources/images/custom/slider/vmin.png";
    public static final String DEFAULT_VERTICAL_MINTRACK_IMAGE = "./resources/images/custom/slider/vminTrack.png";
    public static final String DEFAULT_VERTICAL_THUMB_IMAGE = "./resources/images/custom/slider/vthumb.png";
@@ -27,6 +51,7 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
    
    private static final long serialVersionUID = 4821886776184406692L;
    
+   /** Indicate the slider is vertical or horizontal, default is horizontal. */
    private boolean vertical = false;
    private ImageSource thumbImage = new ImageSource("");;
    private ImageSource minImage = new ImageSource("");
@@ -42,6 +67,11 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       super(id);
    }
    
+   /**
+    * Instantiates a new ui slider by copying a ui slider's properties.
+    * 
+    * @param uiSlider the ui slider
+    */
    public UISlider(UISlider uiSlider) {
       this.setOid(uiSlider.getOid());
       this.vertical = uiSlider.isVertical();
@@ -163,11 +193,21 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return "Slider";
    }
 
+   /**
+    * The vertical predefined width is 44, and the horizontal is 198.
+    * 
+    * @see org.openremote.modeler.domain.component.UIComponent#getPreferredWidth()
+    */
    @Override
    public int getPreferredWidth() {
       return vertical ? 44 : 198;
    }
 
+   /**
+    * The vertical predefined height is 198, and the horizontal is 44.
+    * 
+    * @see org.openremote.modeler.domain.component.UIComponent#getPreferredHeight()
+    */
    @Override
    public int getPreferredHeight() {
       return vertical ? 198 : 44;
@@ -214,6 +254,11 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return imageSources;
    }
    
+   /**
+    * Not upload the default min image.
+    * 
+    * @return true, if is min image uploaded
+    */
    public boolean isMinImageUploaded() {
       if (minImage != null && !minImage.isEmpty()) {
          String imageURL = minImage.getSrc();
@@ -222,6 +267,11 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return false;
    }
    
+   /**
+    * Not upload the default min track image.
+    * 
+    * @return true, if is min track image uploaded
+    */
    public boolean isMinTrackImageUploaded() {
          if (minTrackImage != null && !minTrackImage.isEmpty()) {
          String imageURL = minTrackImage.getSrc();
@@ -230,6 +280,11 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return false;
    }
    
+   /**
+    * Not upload the default thumb image.
+    * 
+    * @return true, if is thumb uploaded
+    */
    public boolean isThumbUploaded() {
       if (thumbImage !=null && !thumbImage.isEmpty()) {
          String imageURL = thumbImage.getSrc();
@@ -238,6 +293,11 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return false;
    }
    
+   /**
+    * Not upload the default max track image.
+    * 
+    * @return true, if is max track image uploaded
+    */
    public boolean isMaxTrackImageUploaded() {
       if (maxTrackImage != null && !maxTrackImage.isEmpty()) {
          String imageURL = maxTrackImage.getSrc();
@@ -246,6 +306,11 @@ public class UISlider extends UIControl implements SensorOwner, ImageSourceOwner
       return false;
    }
    
+   /**
+    * Not upload the default max image.
+    * 
+    * @return true, if is max image uploaded
+    */
    public boolean isMaxImageUploaded() {
       if (maxImage != null && !maxImage.isEmpty()) {
          String imageURL = maxImage.getSrc();

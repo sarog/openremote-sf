@@ -29,7 +29,8 @@ import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.domain.Account;
 
 /**
- * The Class PathConfig.
+ * The utility class support methods to get some local folder or file path.
+ * e.g.: folder "modeler_tmp", file "panel.xml".
  * 
  * @author allen.wei, handy.wang
  */

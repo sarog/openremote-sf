@@ -30,13 +30,24 @@ import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 import flexjson.JSON;
 
+/**
+ * The ScreenPair includes two screens, portrait screen and landscape screen.
+ * It can have one or two of them.
+ */
 public class ScreenPair extends RefedEntity {
 
    private static final long serialVersionUID = 2501415029050801917L;
 
+   /** 
+    * The orientation type indicate the screenpair have which screen,
+    * portrait represent portrait screen, landscape represent landscape screen,
+    * both represent portrait and landscape screen.
+    *  */
    private OrientationType orientation = OrientationType.PORTRAIT;
    private Screen portraitScreen;
    private Screen landscapeScreen;
+   
+   /** The touch panel definition is defined as portrait or landscape screen's canvas. */
    private TouchPanelDefinition touchPanelDefinition;   
    private Group parentGroup = null;
    public ScreenPair() {
@@ -105,6 +116,9 @@ public class ScreenPair extends RefedEntity {
       PORTRAIT, LANDSCAPE, BOTH;
    }
    
+   /**
+    * If the orientation type is BOTH, set portrait and landscape screen's inverse screen id.
+    */
    public void setInverseScreenIds() {
       if (orientation.equals(OrientationType.BOTH)) {
          portraitScreen.setInverseScreenId(landscapeScreen.getOid());
@@ -112,6 +126,9 @@ public class ScreenPair extends RefedEntity {
       }
    }
    
+   /**
+    * Make portrait and landscape screen's inverse id be zero.
+    */
    public void clearInverseScreenIds() {
       if (portraitScreen != null) {
          portraitScreen.setInverseScreenId(0);
@@ -152,6 +169,11 @@ public class ScreenPair extends RefedEntity {
       this.parentGroup = belongTo;
    }
    
+   /**
+    * Gets the all image sources from the portrait and landscape screens.
+    * 
+    * @return the all image sources
+    */
    public Collection<ImageSource> getAllImageSources() {
       if (orientation.equals(OrientationType.PORTRAIT)) {
          return this.portraitScreen.getAllImageSources();

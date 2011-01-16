@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -41,6 +41,10 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
+/**
+ * Select panel in groupWizardWindow.
+ * The form has a name field and a panel listView.
+ */
 public class SelectPanelForm extends CommonForm {
 
    private TextField<String> nameField = null;

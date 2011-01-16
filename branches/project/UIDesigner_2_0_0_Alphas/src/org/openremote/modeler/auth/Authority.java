@@ -25,7 +25,9 @@ import java.util.List;
 
 
 /**
- * The Class Authority.
+ * The Class defines a user's authority, which generate from security context's authentication.
+ * It includes a username and a list of roles.
+ * 
  */
 @SuppressWarnings("serial")
 public class Authority implements Serializable {

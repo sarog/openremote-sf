@@ -28,6 +28,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.ScreenPair;
 
 /**
+ * Defines a screen which generate from a template, which has devices, macros and a screenPair.
  * 
  * @author javen
  *

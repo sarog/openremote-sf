@@ -26,7 +26,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel.Method;
 import com.google.gwt.core.client.GWT;
 
 /**
- * 
+ * This class extends <b>FileUpLoadField</b>, it support upload image file by sending a post request.
  * @author Tomsky, Javen
  *
  */

@@ -62,7 +62,7 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 
 /**
- * The Class DeviceCommandWindow.
+ * The window creates or updates a deviceCommand into server.
  */
 public class DeviceCommandWindow extends FormWindow {
    

@@ -28,7 +28,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * The Interface PanelRPCService.
+ * The Interface is for get all predefined touch panel definitions from xml files.
  */
 @RemoteServiceRelativePath("touchpanel.smvc")
 public interface TouchPanelRPCService extends RemoteService {

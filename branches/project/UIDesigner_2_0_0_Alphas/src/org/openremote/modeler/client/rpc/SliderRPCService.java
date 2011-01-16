@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,14 +26,41 @@ import org.openremote.modeler.domain.Slider;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * The Interface is for managing slider entity.
+ */
 @RemoteServiceRelativePath("slider.smvc")
 public interface SliderRPCService extends RemoteService {
    
+   /**
+    * Save slider into database.
+    * 
+    * @param slider the slider
+    * 
+    * @return the slider
+    */
    Slider save(Slider slider);
 
+   /**
+    * Delete slider by id from database.
+    * 
+    * @param id the id
+    */
    void delete(long id);
 
+   /**
+    * Update slider with database.
+    * 
+    * @param slider the slider
+    * 
+    * @return the slider
+    */
    Slider update(Slider slider);
 
+   /**
+    * Load all sliders from database.
+    * 
+    * @return the list< slider>
+    */
    List<Slider> loadAll();
 }

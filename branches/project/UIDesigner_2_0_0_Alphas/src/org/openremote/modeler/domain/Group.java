@@ -30,7 +30,8 @@ import org.openremote.modeler.domain.component.UITabbarItem;
 import flexjson.JSON;
 
 /**
- * The Class Group.
+ * A Group includes name, screenRefs and local tabbarItems.
+ * The parentPanel property is for passing on to screenRefs.
  */
 public class Group extends RefedEntity {
 

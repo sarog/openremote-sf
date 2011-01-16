@@ -66,7 +66,7 @@ import com.extjs.gxt.ui.client.widget.layout.VBoxLayout.VBoxLayoutAlign;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * The Class ChangeIconWindow.
+ * The window is for user to change the component's icon(button, switch, slider, image, etc).
  */
 public class ChangeIconWindow extends Dialog {
 

@@ -25,7 +25,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class ProtocolDefinition.
+ * The Class defines a protocol with its properties. A protocol has display name, tag name and some attributes.
+ * 
+ * The protocol xml segment structure is similar following:</br>
+ * 
+ * &lt;protocol displayName="Infrared" tagName="ir"&gt;</br>
+      &lt;attr name="name" label="Name"&gt;</br>
+         &lt;validations&gt;</br>
+            &lt;allowBlank&gt;false&lt;/allowBlank&gt;</br>
+         &lt;/validations&gt;</br>
+      &lt;/attr>
+      &lt;attr name="command" label="IR Command"&gt;</br>
+         &lt;validations&gt;</br>
+            &lt;allowBlank&gt;false&lt;/allowBlank&gt;</br>
+            &lt;maxLength&gt;10&lt;/maxLength&gt;</br>
+            &lt;regex message="Command is necessary"&gt;\w+&lt;/regex&gt;</br>
+         &lt;/validations&gt;</br>
+      &lt;/attr&gt;</br>
+   &lt;/protocol&gt;</br>
  * 
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */

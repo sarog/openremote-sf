@@ -25,7 +25,7 @@ import org.openremote.modeler.client.rpc.ConfigurationRPCService;
 import org.openremote.modeler.service.UserService;
 
 /**
- * Gets the system configuration.
+ * Gets the system configuration from config.properties.
  */
 @SuppressWarnings("serial")
 public class ConfigurationController extends BaseGWTSpringController implements ConfigurationRPCService {

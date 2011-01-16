@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -58,6 +58,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 /**
+ * The window to creates or update a slider and save it into server.
  * 
  * @author Javen
  *
@@ -75,6 +76,11 @@ public class SliderWindow extends FormWindow {
    
    private boolean edit = false;
    
+   /**
+    * Instantiates a window to edit a slider.
+    * 
+    * @param slider the slider
+    */
    public SliderWindow(Slider slider) {
       super();
       if (null != slider) {
@@ -91,6 +97,12 @@ public class SliderWindow extends FormWindow {
       show();
    }
    
+   /**
+    * Instantiates a window to create a new slider.
+    * 
+    * @param slider the slider
+    * @param device the device
+    */
    public SliderWindow(Slider slider,Device device){
       super();
       if (null != slider) {
@@ -111,6 +123,9 @@ public class SliderWindow extends FormWindow {
       show();
    }
    
+   /**
+    * Creates the slider property fields, includes name, sensor and setValue command.
+    */
    private void createField() {
       setWidth(380);
       setAutoHeight(true);
@@ -175,6 +190,9 @@ public class SliderWindow extends FormWindow {
    }
    
    
+   /**
+    * The listener to add the slider into current device and server.
+    */
    class SliderSubmitListener implements Listener<FormEvent> {
 
       @Override
@@ -207,6 +225,9 @@ public class SliderWindow extends FormWindow {
    }
    
    
+   /**
+    * The listener to select a setValue command for the slider.
+    */
    class CommandSelectListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -236,6 +257,9 @@ public class SliderWindow extends FormWindow {
       }
    }
    
+   /**
+    * The listener to set the sensor for the slider when the sensor selection changed. 
+    */
    class SensorSelectChangeListener extends SelectionChangedListener<ModelData> {
 
       @SuppressWarnings("unchecked")

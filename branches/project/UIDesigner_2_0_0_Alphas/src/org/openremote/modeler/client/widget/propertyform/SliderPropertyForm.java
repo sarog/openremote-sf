@@ -45,6 +45,9 @@ import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * A panel for display screen slider properties. 
+ */
 public class SliderPropertyForm extends PropertyForm {
    private ScreenSlider screenSlider = null;
    public SliderPropertyForm(ScreenSlider screenSlider) {

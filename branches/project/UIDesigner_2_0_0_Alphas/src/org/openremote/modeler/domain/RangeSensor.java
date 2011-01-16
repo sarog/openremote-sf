@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,6 +25,9 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 
+/**
+ * The RangeSensor define a integer range that the sensor should to be.
+ */
 @Entity
 @DiscriminatorValue("RANGE_SENSOR")
 @SecondaryTable(name = "range_sensor", pkJoinColumns = @PrimaryKeyJoinColumn(name = "oid"))

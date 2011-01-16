@@ -35,7 +35,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.NumberField;
 
 /**
- * The Class DelayWindow.
+ * Creates a delay command for the macro.
  */
 public class DelayWindow extends FormWindow {
 

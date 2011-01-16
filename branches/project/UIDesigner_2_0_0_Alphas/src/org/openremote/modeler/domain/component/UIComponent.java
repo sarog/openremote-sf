@@ -53,7 +53,7 @@ public abstract class UIComponent extends BusinessEntity {
       this.removed = removed;
    }
 
-   /*
+   /**
     * Generate the xml content which used in panel.xml
     */
    @Transient

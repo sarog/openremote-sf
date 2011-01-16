@@ -21,14 +21,14 @@ package org.openremote.modeler.client.view;
 
 
 /**
- * The Interface View.
+ * The Interface defines a initialize method which would be implements by <b>ApplicationView</b>.
  * 
  * @author Tomsky
  */
 public interface View {
    
    /**
-    * Initialize the view but not show it.
+    * Initialize the view.
     */
    void initialize();
 }

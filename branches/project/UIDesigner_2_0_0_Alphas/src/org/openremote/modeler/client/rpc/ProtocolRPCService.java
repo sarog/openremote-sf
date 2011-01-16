@@ -28,13 +28,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 
 /**
- * The Interface ProtocolService.
+ * The Interface is for loading all predefined protocols from local xml files.
  */
 @RemoteServiceRelativePath("protocol.smvc")
 public interface ProtocolRPCService extends RemoteService {
 
    /**
-    * Gets the protocols.
+    * Gets all the protocols.
     * 
     * @return the protocols
     */

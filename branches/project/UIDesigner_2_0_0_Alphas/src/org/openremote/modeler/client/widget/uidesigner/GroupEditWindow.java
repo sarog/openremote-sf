@@ -48,6 +48,9 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
+/**
+ * The window to edit group properties.
+ */
 public class GroupEditWindow extends FormWindow {
 
    private TextField<String> nameField = null;

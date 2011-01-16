@@ -28,7 +28,7 @@ import org.openremote.modeler.utils.StringUtils;
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
- * The Class ScreenButton. It display as a style box, can be adjust size.
+ * The Class ScreenButton. It display as a style box, can be adjust size, change icon and text.
  */
 public class ScreenButton extends ScreenComponent {
 

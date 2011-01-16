@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,7 +29,8 @@ import javax.persistence.Transient;
 import flexjson.JSON;
 
 /**
- * The Class Slider.
+ * The domain class represent a slider entity.
+ * It contains a command and a sensor.
  */
 @SuppressWarnings("serial")
 @Entity
@@ -120,6 +121,14 @@ public class Slider extends BusinessEntity {
       return true;
    }
    
+   /**
+    * Equals without compare oid.
+    * Used for rebuilding from template.
+    * 
+    * @param other the other
+    * 
+    * @return true, if successful
+    */
    public boolean equalsWithoutCompareOid(Slider other) {
       if (other == null) return false;
       if (name == null) {

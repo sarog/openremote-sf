@@ -24,7 +24,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 
 /**
- * The Class ImageSelectAdapterField is for select a image and delete a image.
+ * The Class ImageSelectAdapterField is to select a image and delete a image.
  */
 public class ImageSelectAdapterField extends AdapterField {
 

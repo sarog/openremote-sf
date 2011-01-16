@@ -23,7 +23,8 @@ import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.EventType;
 
 /**
- * The Event is fire to delete the screen's widget.
+ * The Event is fire to edit selected tree node when double click the tree node, 
+ * e.g.: device, deviceCommand, macro, etc.
  */
 public class DoubleClickEvent extends BaseEvent {
    

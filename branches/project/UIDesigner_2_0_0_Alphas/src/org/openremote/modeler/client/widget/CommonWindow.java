@@ -23,7 +23,8 @@ import com.extjs.gxt.ui.client.widget.Window;
 import com.extjs.gxt.ui.client.widget.layout.FillLayout;
 
 /**
- * The Class CommonWindow.
+ * Common window with common styles.
+ * It is <b>FillLayout</b>, modal, and no body border. 
  */
 public class CommonWindow extends Window {
 

@@ -49,7 +49,7 @@ import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.xml.sax.SAXException;
 
 /**
- * The Class PanelParser.
+ * This class is for parsing the predefined touchPanel xml files from local path.
  */
 @SuppressWarnings("unchecked")
 public class TouchPanelParser {

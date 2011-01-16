@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -52,7 +52,7 @@ import org.openremote.modeler.service.ControllerConfigService;
 import org.xml.sax.InputSource;
 
 /**
- * The iphone.xml parser .
+ * Util class for parsering xml file.
  * 
  * @author Tomsky, Handy
  */
@@ -71,7 +71,7 @@ public class XmlParser {
    public static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
    
    /**
-    * Instantiates a new iphone xml parser.
+    * Instantiates a new xml parser.
     */
    private XmlParser() {      
    }
@@ -83,7 +83,7 @@ public class XmlParser {
     * @param folder the folder
     * @param xsdfile the xsdfile
     * 
-    * @return modified iphoneXML
+    * @return modified panelXML
     */
    public static String validateAndOutputXML(File xsdfile, String xmlString, File folder) {
       SAXBuilder sb = new SAXBuilder(true);
@@ -196,6 +196,14 @@ public class XmlParser {
       return true;
    }
    
+   /**
+    * Gets the document from xml file.
+    * 
+    * @param xmlPath the xml path
+    * @param xsdPath the xsd path
+    * 
+    * @return the document
+    */
    public static Document getDocument(String xmlPath,String xsdPath) {
       SAXBuilder builder = new SAXBuilder();
       builder.setValidation(true);
@@ -213,6 +221,15 @@ public class XmlParser {
 
       return doc;
    }
+   
+   /**
+    * Gets the elements by element name from the xml document.
+    * 
+    * @param doc the doc
+    * @param eleName the ele name
+    * 
+    * @return the elements by element name
+    */
    @SuppressWarnings("unchecked")
    public static List<Element> getElementsByElementName(Document doc,String eleName){
       String xpath = "//or" + eleName;
@@ -226,6 +243,14 @@ public class XmlParser {
       }
    }
    
+   /**
+    * Builds the controllerConfig from xml.
+    * 
+    * @param ele the element
+    * @param categoryName the category name
+    * 
+    * @return the controller config
+    */
    @SuppressWarnings("unchecked")
    public static ControllerConfig buildFromXml(Element ele,String categoryName){
       ControllerConfig cfg = new ControllerConfig();
@@ -248,6 +273,12 @@ public class XmlParser {
       return cfg;
    }
    
+   /**
+    * Inits the default controller config from predefined controller-config-2.0-M7.xml.
+    * 
+    * @param categories the categories
+    * @param defaultConfigs the default configs
+    */
    @SuppressWarnings("unchecked")
    public static void initControllerConfig(Set<ConfigCategory> categories,Collection<ControllerConfig> defaultConfigs){
       Configuration configuration = (Configuration) SpringContext.getInstance().getBean("configuration");

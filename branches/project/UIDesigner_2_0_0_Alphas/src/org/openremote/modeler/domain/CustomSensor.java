@@ -29,7 +29,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 /**
- * The Class CustomSensor.
+ * Make user to define custom sensor states.
+ * It include a list of states.
  */
 @Entity
 @DiscriminatorValue("CUSTOM_SENSOR")
