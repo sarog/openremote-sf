@@ -5,7 +5,7 @@
 		<attr name="url" label="URL">
 			<validations>
 				<allowBlank>false</allowBlank>
-				<maxLength>254</maxLength>
+				<maxLength>1000</maxLength>
 				<regex message="URL should start with http(https,ftp):// just like 'http://www.google.com' ">(http|https|ftp)\://[a-zA-Z0-9\-\.]+(\.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*</regex>
 			</validations>
 		</attr>
