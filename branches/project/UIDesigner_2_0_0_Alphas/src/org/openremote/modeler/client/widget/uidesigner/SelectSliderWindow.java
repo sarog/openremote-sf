@@ -92,6 +92,7 @@ public class SelectSliderWindow extends Dialog {
                if (slider.getSliderSensorRef() != null) {
                   sliderInfo = sliderInfo + "<p>Sensor: " + slider.getSliderSensorRef().getDisplayName() + "</p>";
                }
+               sliderInfo = sliderInfo + "<p>Device: " + slider.getDevice().getDisplayName() + "</p>";
                sliderInfoHtml.setHtml(sliderInfo);
             }
          }
