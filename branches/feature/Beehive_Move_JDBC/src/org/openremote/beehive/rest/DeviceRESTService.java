@@ -55,6 +55,7 @@ public class DeviceRESTService extends RESTBaseService {
       if (!authorize(credentials)) return unAuthorizedResponse();
       Account account = getAccountService().getById(aid);
       Device device = deviceDTO.toDevice();
+      account.getDevices().add(device);
       device.setAccount(account);
       Device dbDevice = getDeviceService().saveDevice(device);
       deviceDTO.setId(dbDevice.getOid());
@@ -64,20 +65,21 @@ public class DeviceRESTService extends RESTBaseService {
    @Path("savewithcontent/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response saveDeviceWithContent(@PathParam("account_id") long aid,
          DeviceDTO deviceDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
       Account account = getAccountService().getById(aid);
       Device device = deviceDTO.toDeviceWithContents(account);
+      account.getDevices().add(device);
       Device dbDevice = getDeviceService().saveDeviceWithContent(device);
       return buildResponse(dbDevice.toDTO());
    }
    
    @Path("loadall/{account_id}")
    @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response loadAccountDevices(@PathParam("account_id") long accountId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
