@@ -64,8 +64,84 @@ public class DeviceRESTServiceTest extends TemplateTestBase {
       String updateDeviceJson = mapper.writeValueAsString(dbDevice);
       updateDevice(dispatcher, updateDeviceJson);
       
+      MockHttpRequest mockLoadHttpRequest = MockHttpRequest.get("/device/loadall/1");
+      mockLoadHttpRequest.accept(MediaType.APPLICATION_JSON);
+      addCredential(mockLoadHttpRequest);
+      MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
+      String devicesJson = "{\"devices\":" + mockLoadHttpResponse.getContentAsString() + "}";
+      DeviceListing dbDevices = mapper.readValue(devicesJson, DeviceListing.class);
+      assertEquals(1, dbDevices.getDevices().size());
+      
       // delete device
       deleteDevice(dispatcher, dbDevice.getId());
+   }
+   
+   public void testSaveDeviceWithContent() throws URISyntaxException, JsonParseException, JsonMappingException, IOException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(DeviceRESTTestService.class);
+      // save device with content
+      MockHttpRequest mockHttpRequest = MockHttpRequest.post("/device/savewithcontent/1");
+      mockHttpRequest.accept(MediaType.APPLICATION_JSON);
+      mockHttpRequest.contentType(MediaType.APPLICATION_JSON);
+      addCredential(mockHttpRequest);
+      String postData = FixtureUtil.getFileContent("dtos/device/device_with_content.json");
+      mockHttpRequest.content(postData.getBytes());
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+
+      String dbDeviceJson = mockHttpResponse.getContentAsString();
+      ObjectMapper mapper = new ObjectMapper();
+      DeviceDTO dbDevice = mapper.readValue(dbDeviceJson, DeviceDTO.class);
+      assertEquals("DeviceWithContent", dbDevice.getName());
+      
+      // load device by device_id
+      MockHttpRequest mockLoadHttpRequest = MockHttpRequest.get("/device/load/" + dbDevice.getId());
+      mockLoadHttpRequest.accept(MediaType.APPLICATION_JSON);
+      addCredential(mockLoadHttpRequest);
+      MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
+      String dbDeviceJson2 = mockLoadHttpResponse.getContentAsString();
+      assertEquals(dbDeviceJson, dbDeviceJson2);
+      
+      // delete device
+      deleteDevice(dispatcher, dbDevice.getId());
+   }
+   
+   public void testLoadEmptyDevices() throws URISyntaxException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(DeviceRESTTestService.class);
+      MockHttpRequest mockHttpRequest = MockHttpRequest.get("/device/loadall/1");
+      mockHttpRequest.accept(MediaType.APPLICATION_JSON);
+      addCredential(mockHttpRequest);
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+      assertEquals(404, mockHttpResponse.getStatus());
+   }
+   
+   public void testLoadSameDevices() throws URISyntaxException, JsonParseException, JsonMappingException, IOException {
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(DeviceRESTTestService.class);
+      // create device
+      MockHttpRequest mockHttpRequest = MockHttpRequest.post("/device/save/1");
+      mockHttpRequest.accept(MediaType.APPLICATION_JSON);
+      mockHttpRequest.contentType(MediaType.APPLICATION_JSON);
+      addCredential(mockHttpRequest);
+      String postData = FixtureUtil.getFileContent("dtos/device/device_simple.json");
+      mockHttpRequest.content(postData.getBytes());
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+      String deviceJson = mockHttpResponse.getContentAsString();
+      
+      // load device by device_id
+      MockHttpRequest mockLoadHttpRequest = MockHttpRequest.post("/device/loadsamedevices/1");
+      mockLoadHttpRequest.accept(MediaType.APPLICATION_JSON);
+      mockLoadHttpRequest.contentType(MediaType.APPLICATION_JSON);
+      addCredential(mockLoadHttpRequest);
+      mockLoadHttpRequest.content(deviceJson.getBytes());
+      MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
+      String devicesJson = "{\"devices\":" + mockLoadHttpResponse.getContentAsString() + "}";
+      ObjectMapper mapper = new ObjectMapper();
+      DeviceListing dbDevices = mapper.readValue(devicesJson, DeviceListing.class);
+      assertEquals(1, dbDevices.getDevices().size());
    }
    
    private void updateDevice(Dispatcher dispatcher, String deviceJson) throws URISyntaxException {

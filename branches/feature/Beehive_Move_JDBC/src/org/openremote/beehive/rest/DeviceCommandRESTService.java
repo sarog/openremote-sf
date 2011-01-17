@@ -43,7 +43,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
 
    @Path("load/{command_id}")
    @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response loadById(@PathParam("command_id") long commandId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -54,7 +54,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
    @Path("save")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response save(DeviceCommandDTO deviceCommandDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -84,7 +84,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
    @Path("saveall")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response saveAll(List<DeviceCommandDTO> deviceCommandDTOs,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -98,7 +98,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
    
    @Path("loadbydevice/{device_id}")
    @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces(MediaType.APPLICATION_JSON)
    public Response loadDeviceCommandsByDeviceId(@PathParam("device_id") long deviceId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
