@@ -75,10 +75,14 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          ((RangeSensor) old).setMax(rangeSensorDTO.getMax());
          ((RangeSensor) old).setMin(rangeSensorDTO.getMin());
       } else if (SensorType.CUSTOM == sensorDTO.getType()) {
+         DetachedCriteria criteria = DetachedCriteria.forClass(CustomSensor.class);
+         criteria.add(Restrictions.eq("oid", sensorDTO.getId()));
+         old = genericDAO.findOneByDetachedCriteria(criteria);
          old = genericDAO.loadById(CustomSensor.class, sensorDTO.getId());
          genericDAO.deleteAll(((CustomSensor)old).getStates());
          List<StateDTO> stateDTOs = ((CustomSensorDTO) sensorDTO).getStates();
          CustomSensor oldCustomSensor = (CustomSensor)old;
+         oldCustomSensor.getStates().clear();
          for (StateDTO stateDTO : stateDTOs) {
             oldCustomSensor.addState(stateDTO.toState(oldCustomSensor));
          }
@@ -92,7 +96,7 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
          genericDAO.delete(old.getSensorCommandRef());
          old.setSensorCommandRef(sensorDTO.getSensorCommandRef().toSensorCommandRef(old));
       }
-      if (old.getSensorCommandRef() != null) {
+      if (old.getSensorCommandRef() != null && old.getSensorCommandRef().getDeviceCommand().getProtocol() != null) {
          Hibernate.initialize(old.getSensorCommandRef().getDeviceCommand().getProtocol().getAttributes());
       }
       return old;
