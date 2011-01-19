@@ -41,7 +41,7 @@ import org.openremote.beehive.utils.RESTTestUtils;
  */
 public class DeviceRESTServiceTest extends TemplateTestBase {
 
-   public void testSaveUpdateAndDeleteSimpleDevice() throws URISyntaxException, JsonParseException, JsonMappingException, IOException {
+   public void testSaveUpdateAndDeleteSimpleDevice() throws Exception {
       Dispatcher dispatcher = RESTTestUtils.createDispatcher(DeviceRESTTestService.class);
       // create device
       MockHttpRequest mockHttpRequest = MockHttpRequest.post("/device/save/1");
@@ -63,6 +63,9 @@ public class DeviceRESTServiceTest extends TemplateTestBase {
       dbDevice.setModel("update");
       String updateDeviceJson = mapper.writeValueAsString(dbDevice);
       updateDevice(dispatcher, updateDeviceJson);
+      
+      super.tearDown();
+      super.setUp();
       
       MockHttpRequest mockLoadHttpRequest = MockHttpRequest.get("/device/loadall/1");
       mockLoadHttpRequest.accept(MediaType.APPLICATION_JSON);

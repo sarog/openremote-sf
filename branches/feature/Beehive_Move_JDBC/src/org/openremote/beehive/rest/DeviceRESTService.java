@@ -55,7 +55,6 @@ public class DeviceRESTService extends RESTBaseService {
       if (!authorize(credentials)) return unAuthorizedResponse();
       Account account = getAccountService().getById(aid);
       Device device = deviceDTO.toDevice();
-      account.getDevices().add(device);
       device.setAccount(account);
       Device dbDevice = getDeviceService().saveDevice(device);
       deviceDTO.setId(dbDevice.getOid());
@@ -72,7 +71,6 @@ public class DeviceRESTService extends RESTBaseService {
       if (!authorize(credentials)) return unAuthorizedResponse();
       Account account = getAccountService().getById(aid);
       Device device = deviceDTO.toDeviceWithContents(account);
-      account.getDevices().add(device);
       Device dbDevice = getDeviceService().saveDeviceWithContent(device);
       return buildResponse(dbDevice.toDTO());
    }
