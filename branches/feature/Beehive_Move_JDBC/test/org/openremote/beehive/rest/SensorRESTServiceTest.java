@@ -139,7 +139,7 @@ public class SensorRESTServiceTest extends TemplateTestBase {
       RangeSensorDTO rangeSensor2 = mapper.readValue(dbSensorJson2, RangeSensorDTO.class);
       assertEquals(rangeSensor.getName(), rangeSensor2.getName());
       
-      // load same device commands
+      // load same sensors
       String dtoJson = mapper.writeValueAsString(rangeSensor2);
       MockHttpRequest mockLoadSameHttpRequest = MockHttpRequest.post("/sensor/loadsamesensors");
       mockLoadSameHttpRequest.accept(MediaType.APPLICATION_JSON);
