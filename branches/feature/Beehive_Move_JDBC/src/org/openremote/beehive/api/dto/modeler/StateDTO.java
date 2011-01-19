@@ -47,7 +47,6 @@ public class StateDTO extends BusinessEntityDTO {
    
    public State toState(CustomSensor sensor) {
       State state = new State();
-      state.setOid(getId());
       state.setName(name);
       state.setValue(value);
       state.setSensor(sensor);
