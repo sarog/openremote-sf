@@ -4,6 +4,11 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+/**
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ *
+ */
 public class LutronHomeWorksAddressTest {
 
 	@Test public void testValidAddressCreations() throws InvalidLutronHomeWorksAddressException {
