@@ -25,6 +25,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
@@ -47,6 +55,12 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand {
 
    /** The url to perform the http get request on */
    private String url;
+   
+   /** The username which is used for basic authentication */
+   private String username;
+   
+   /** The password which is used for basic authentication */
+   private String password;
 
    /**
     * Gets the name.
@@ -83,7 +97,21 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand {
       this.url = url;
    }
 
+   public String getUsername() {
+      return username;
+   }
 
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
 
    /**
     * {@inheritDoc}
@@ -93,31 +121,29 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand {
       requestURL();
    }
 
+  
    private String requestURL() {
-      BufferedReader in = null;
-      try {
-         URL url = new URL(getUrl());
-         in = new BufferedReader(new InputStreamReader(url.openStream()));
-         StringBuffer result = new StringBuffer();
-         String str;
-         while ((str = in.readLine()) != null) {
-            result.append(str);
-         }
-         logger.info("received message: " + result);
-         return result.toString();
-      } catch (Exception e) {
-         logger.error("HttpGetCommand could not execute", e);
-      } finally {
-         if (in != null) {
-            try {
-               in.close();
-            } catch (IOException e) {
-               logger.error("BufferedReader could not be closed", e);
-            }
-         }
+      
+      DefaultHttpClient client = new DefaultHttpClient();
+      if (getUsername() != null) {
+          CredentialsProvider cred = new BasicCredentialsProvider();
+          cred.setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials(getUsername(), getPassword()));
+          client.setCredentialsProvider(cred);
       }
-      return "";
-   }
+      
+      String url = getUrl(); 
+      HttpGet httpget = new HttpGet(url);
+
+      String resp = "";
+      try {
+          ResponseHandler<String> responseHandler = new BasicResponseHandler();
+          resp = client.execute(httpget, responseHandler);
+          logger.info("received message: " + resp);
+      } catch (Exception e) {
+          logger.error("HttpGetCommand could not execute", e);
+      }
+     return resp;
+  }
 
    /**
     * {@inheritDoc}

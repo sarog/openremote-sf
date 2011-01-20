@@ -54,6 +54,10 @@ public class HttpGetCommandBuilder implements CommandBuilder {
             getCmd.setUrl(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          } else if("name".equals(ele.getAttributeValue("name"))){
             getCmd.setName(ele.getAttributeValue("value"));
+         } else if ("username".equals(ele.getAttributeValue("name"))) {
+            getCmd.setUsername(ele.getAttributeValue("value"));
+         } else if ("password".equals(ele.getAttributeValue("name"))) {
+             getCmd.setPassword(ele.getAttributeValue("value"));
          }
       }
       return getCmd;
