@@ -1,5 +1,12 @@
 package org.openremote.controller.protocol.lutron;
 
+/**
+ * Represents one of the Lutron "device" connected to the bus that can be used in OpenRemote.
+ * Each device subclass implements methods used to "actuate" the device, specific to the functionality of the device.
+ * Feedback received from the processor is passed to the device. It is up to the device to interpret the information in the appropriate way.
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public abstract class HomeWorksDevice {
 
 	// Instance Fields
