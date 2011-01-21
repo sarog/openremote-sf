@@ -29,18 +29,60 @@ import org.openremote.beehive.domain.modeler.DeviceCommand;
  */
 public interface DeviceCommandService {
 
+   /**
+    * Load <code>DeviceCommandDTo</code> by deviceCommand id.
+    * 
+    * @param id the deviceCommand id.
+    * @return the deviceCommandDTO, its includes protocol and protocolAttrs.
+    */
    DeviceCommandDTO loadDeviceCommandById(long id);
    
+   /**
+    * Save <code>DeviceCommandDTO</code> into database.
+    * 
+    * @param deviceCommandDTO
+    * @return the deviceCommandDTO with specified id.
+    */
    DeviceCommandDTO save(DeviceCommandDTO deviceCommandDTO);
    
+   /**
+    * Save a list of deviceCommandDTOs into database.
+    * 
+    * @param deviceCommandDTOs
+    * @return the saved deviceCommandDTOs with specified ids.
+    */
    List<DeviceCommand> saveAll(List<DeviceCommandDTO> deviceCommandDTOs);
    
+   /**
+    * Delete a deviceCommand by its id.
+    * 
+    * @param id the deviceCommand id
+    * @return true or false.
+    */
    Boolean deleteCommandById(long id);
    
+   /**
+    * Update <code>DeviceCommand</code> name and protocol.
+    * 
+    * @param deviceCommandDTO
+    * @return the updated DeviceCommand
+    */
    DeviceCommand update(DeviceCommandDTO deviceCommandDTO);
    
+   /**
+    * Load a list of deviceCommands under a device by deviceId.
+    * 
+    * @param id the deviceId.
+    * @return a list of DeviceCommands.
+    */
    List<DeviceCommand> loadCommandsByDeviceId(long id);
    
+   /**
+    * Load a list of deviceCommands, each of them has same properties with the specified deviceCommandDTO except id.
+    * 
+    * @param deviceCommandDTO
+    * @return a list of DeviceCommands.
+    */
    List<DeviceCommand> loadSameDeviceCommands(DeviceCommandDTO deviceCommandDTO);
    
 }

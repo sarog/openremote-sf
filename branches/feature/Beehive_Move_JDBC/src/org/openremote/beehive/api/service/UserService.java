@@ -23,19 +23,67 @@ import java.util.List;
 
 import org.openremote.beehive.domain.User;
 
+/**
+ * Business service for <code>User</code>.
+ * 
+ * @author tomsky
+ *
+ */
 public interface UserService {
 
+   /**
+    * Save user with default <code>Account</code>.
+    * Used for creating a new user.
+    * 
+    * @param user
+    * @return the new user
+    */
    User saveUser(User user);
    
+   /**
+    * Get <code>User</code> according to <code>User</code> id.
+    * 
+    * @param id
+    * @return the user which have account information.
+    */
    User getUserById(long id);
    
+   /**
+    * Get <code>User</code> according to <code>User</code> username.
+    * 
+    * @param username
+    * @return the user which have account information.
+    */
    User getUserByUsername(String username);
    
+   /**
+    * Update <code>User</code> token or pendingRoleName.
+    * 
+    * @param user
+    */
    void updateUser(User user);
    
+   /**
+    * Delete <code>User</code> according to <code>User</code> id.
+    * 
+    * @param id   the user id.
+    */
    void deleteUserById(long id);
    
+   /**
+    * Save an invitee into an exist <code>Account</code>.
+    * 
+    * @param invitee
+    * @param accountId
+    * @return the saved invitee.
+    */
    User saveInvitee(User invitee, long accountId);
    
+   /**
+    * Load All users under the same account according to <code>Account</code> id.
+    * 
+    * @param accountId
+    * @return a list of Users.
+    */
    List<User> loadUsersByAccount(long accountId);
 }

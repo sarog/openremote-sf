@@ -40,11 +40,20 @@ import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.Device;
 
 /**
- * The Class is for manage devices.
+ * Export restful service to manage device.
  */
 @Path("/device")
 public class DeviceRESTService extends RESTBaseService {
 
+   /**
+    * Create an new simple device under an account, it just includes name,vendor and model.
+    * Visits @ url "/device/save/{account_id}"
+    * 
+    * @param aid the account id.
+    * @param deviceDTO the JSON formated device need to be save into database.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the created device with specified id, its JSON formated.
+    */
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -61,6 +70,15 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(deviceDTO);
    }
    
+   /**
+    * Create an new device with contents, the contents includes commands, sensors, switchs and sliders.
+    * Visits @ url "/device/savewithcontent/{account_id}"
+    * 
+    * @param aid the account id.
+    * @param deviceDTO
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the created device with specified id ant contents, its JSON formated.
+    */
    @Path("savewithcontent/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -75,6 +93,14 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(dbDevice.toDTO());
    }
    
+   /**
+    * Show a list of devices with simple properties under an account, each device includes id, name, vendor and model.
+    * Visits @ url "/device/loadall/{account_id}"
+    * 
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated devices.
+    */
    @Path("loadall/{account_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -88,6 +114,14 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(devices);
    }
    
+   /**
+    * Show a device by {device_id}.
+    * Visits @ url "/device/load/{device_id}"
+    * 
+    * @param deviceId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return DeviceDTO includes commands,sensors,switchs and sliders, and its JSON formated.
+    */
    @Path("load/{device_id}")
    @GET
    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -98,6 +132,14 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(device);
    }
    
+   /**
+    * Update <code>Device</code> name,vendor and model.
+    * Visits @ url "/device/update"
+    * 
+    * @param deviceDTO JSON formated, include id,name,vendor and model.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return status code 200 or 500.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -108,6 +150,14 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   /**
+    * Delete a device by {device_id}.
+    * Visits @ url "/device/delete/{device_id}"
+    * 
+    * @param deviceId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return status code 200 or 500.
+    */
    @Path("delete/{device_id}")
    @DELETE
    public Response delete(@PathParam("device_id") long deviceId,
@@ -117,6 +167,15 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   /**
+    * Show a list of devices with same contents except id under an <code>Account</code>.
+    * Visits @ url "/device/loadsamedevices/{account_id}"
+    * 
+    * @param accountId
+    * @param deviceDTO the device to be compared, its not specified id.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of devices.
+    */
    @Path("loadsamedevices/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -132,10 +191,20 @@ public class DeviceRESTService extends RESTBaseService {
       return buildResponse(devices);
    }
    
+   /**
+    * Retrieves instance of DeviceService from spring IOC
+    * 
+    * @return DeviceService instance
+    */
    protected DeviceService getDeviceService() {
       return (DeviceService) getSpringContextInstance().getBean("deviceService");
    }
    
+   /**
+    * Retrieves instance of AccountService from spring IOC
+    * 
+    * @return AccountService instance
+    */
    protected AccountService getAccountService() {
       return (AccountService) getSpringContextInstance().getBean("accountService");
    }

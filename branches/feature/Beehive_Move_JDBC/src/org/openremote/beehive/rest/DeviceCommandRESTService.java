@@ -38,9 +38,23 @@ import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.service.DeviceCommandService;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 
+/**
+ * Export restful service to manage deviceCommand.
+ * 
+ * @author tomsky
+ *
+ */
 @Path("/devicecommand")
 public class DeviceCommandRESTService extends RESTBaseService {
 
+   /**
+    * Show <code>DeviceCommandDTO</code> by {command_id}.
+    * Visits @ url "/devicecommand/load/{command_id}"
+    * 
+    * @param commandId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return JSON formated deviceCommandDTO.
+    */
    @Path("load/{command_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -51,6 +65,13 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(deviceCommandDTO);
    }
    
+   /**
+    * Save a new <code>DeviceCommandDTO</code> into database. 
+    * 
+    * @param deviceCommandDTO received from client, and its JSON formated.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the deviceCommandDTO with specified id, which is JSON formated.
+    */
    @Path("save")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -62,6 +83,13 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(newDeviceCommandDTO);
    }
    
+   /**
+    * Delete a deviceCommand by {command_id}.
+    * 
+    * @param commandId the deviceCommand id.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return true or false
+    */
    @Path("delete/{command_id}")
    @DELETE
    public Response delete(@PathParam("command_id") long commandId,
@@ -70,6 +98,13 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(getDeviceCommandService().deleteCommandById(commandId));
    }
    
+   /**
+    * Update <code>DeviceCommand</code> name and protocol.
+    * 
+    * @param deviceCommandDTO JSON formated, its includes id,name and protocol.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the deviceCommandDTO with specified id, which is JSON formated.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -81,6 +116,13 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(deviceCommand.toDTO());
    }
    
+   /**
+    * Save a list of DeviceCommands into database.
+    * 
+    * @param deviceCommandDTOs a list of deviceCommandDTOs, which is JSON formated.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of deviceCommandDTOs with specified ids, and its JSON formated.
+    */
    @Path("saveall")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -96,6 +138,13 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(newDeviceCommandDTOs);
    }
    
+   /**
+    * Show a list of DeviceCommands under a device by by {device_id}.
+    * 
+    * @param deviceId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated DeviceCommands.
+    */
    @Path("loadbydevice/{device_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -112,6 +161,13 @@ public class DeviceCommandRESTService extends RESTBaseService {
       return buildResponse(newDeviceCommandDTOs);
    }
    
+   /**
+    * Show a list of deviceCommandDTOs, each of them has the same properties with the specified deviceCommandDTO
+    * 
+    * @param deviceCommandDTO JSON formated
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated deviceCommandDTOs.
+    */
    @Path("loadsamecommands")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
