@@ -30,23 +30,58 @@ import org.openremote.beehive.domain.modeler.Device;
 public interface DeviceService {
 
    /**
-    * Save device into database.
+    * Save a simple device into database.
     *
-    * @param device the device
-    * @return the device
+    * @param device the device not includes command/sensor/switch/slider.
+    * @return the device with id.
     */
    Device saveDevice(Device device);
    
+   /**
+    * Save device with content, the content includes command/sensor/switch/slider.
+    * 
+    * @param device
+    * @return the device and its content with id.
+    */
    Device saveDeviceWithContent(Device device);
    
+   /**
+    * Load all simple devices under an <code>Account</code>.
+    * 
+    * @param accountId
+    * @return a list of DeviceDTOs, the DeviceDTO includes id,name,vendor and model.
+    */
    List<DeviceDTO> loadAllAccountDevices(long accountId);
    
+   /**
+    * Load <code>DeviceDTO</code> by deviceId.
+    * 
+    * @param deviceId
+    * @return DeviceDTO includes commands,sensors,switchs and sliders.
+    */
    DeviceDTO loadDeviceById(long deviceId);
    
+   /**
+    * Update <code>Device</code> name,vendor and model.
+    * 
+    * @param deviceDTO received from client.
+    */
    void update(DeviceDTO deviceDTO);
    
+   /**
+    * Delete device by deviceId.
+    * 
+    * @param deviceId
+    */
    void delete(long deviceId);
    
+   /**
+    * Load same Devices from database, each of them has the same properties with <code>DeviceDTO</code>. 
+    * 
+    * @param deviceDTO received from client, it has not specified id.
+    * @param accountId
+    * @return a list of DeviceDTOs.
+    */
    List<DeviceDTO> loadSameDevices(DeviceDTO deviceDTO, long accountId);
    
 }

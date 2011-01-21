@@ -39,11 +39,21 @@ import org.openremote.beehive.api.service.UserService;
 import org.openremote.beehive.domain.User;
 
 /**
- * The class is for managing user account.
+ * Export restful service to manage user.
+ * 
+ * @author tomsky
+ *
  */
 @Path("/manageuser")
 public class UserRESTService extends RESTBaseService {
    
+   /**
+    * Create new <code>User</code> by posted <code>UserDTO</code>.
+    * Visits @ url "/manageuser/create"
+    * 
+    * @param userDTO the received <code>UserDTO</code>, and it is JSON format.
+    * @return the <code>UserDTO</code> with id and <code>Account</code>, and it is JSON format.
+    */
    @Path("create")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -55,6 +65,13 @@ public class UserRESTService extends RESTBaseService {
       return buildResponse(user.toDTO());
    }
    
+   /**
+    * Show user by {user_id}.
+    * Visits @ url "/manageuser/get/{user_id}"
+    * 
+    * @param userId
+    * @return the JSON formated <code>UserDTO</code>.
+    */
    @Path("get/{user_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -63,6 +80,13 @@ public class UserRESTService extends RESTBaseService {
       return buildResponse(user.toDTO());
    }
    
+   /**
+    * Show user by {username}.
+    * Visits @ url "/manageuser/getbyname/{username}"
+    * 
+    * @param username
+    * @return the JSON formated <code>UserDTO</code>.
+    */
    @Path("getbyname/{username}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -72,18 +96,31 @@ public class UserRESTService extends RESTBaseService {
       return buildResponse(user.toDTO());
    }
    
+   /**
+    * Update <code>User</code> token and pendingRoleName by posted <code>UserDTO</code>.
+    * Visits @ url "/manageuser/update"
+    * 
+    * @param userDto the received JSON formated <code>UserDTO</code>.
+    * @return status code 200 or 500.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    public Response updateUser(UserDTO userDto) {
       User user = getUserService().getUserById(userDto.getId());
-      user.setUsername(userDto.getUsername());
       user.setToken(userDto.getToken());
       user.setPendingRoleName(userDto.getPendingRoleName());
       getUserService().updateUser(user);
       return buildResponse(true);
    }
    
+   /**
+    * Delete <code>User</code> by {user_id}.
+    * Visits @ url "/manageuser/delete/{user_id}"
+    * 
+    * @param userId
+    * @return status code 200 or 500.
+    */
    @Path("delete/{user_id}")
    @DELETE
    public Response deleteUser(@PathParam("user_id") long userId) {
@@ -91,6 +128,15 @@ public class UserRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   /**
+    * Create an invitee by posted <code>UserDTO</code> under the specified <code>Account</code>.
+    * Visits @ url "/manageuser/createinvitee/{account_id}"
+    * 
+    * @param userDTO  the invitee, it is a JSON formated <code>UserDTO</code>.
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the invitee with id and <code>Account</code> information.
+    */
    @Path("createinvitee/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -103,6 +149,14 @@ public class UserRESTService extends RESTBaseService {
       return buildResponse(invitee.toDTO());
    }
    
+   /**
+    * Gets all users under an Account.
+    * Visits @ url "/manageuser/loadall/{account_id}"
+    * 
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of users or 404 status code.
+    */
    @Path("loadall/{account_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -119,6 +173,11 @@ public class UserRESTService extends RESTBaseService {
       return buildResponse(userDTOs);
    }
    
+   /**
+    * Retrieves instance of UserService from spring IOC
+    * 
+    * @return UserService instance
+    */
    protected UserService getUserService() {
       return (UserService) getSpringContextInstance().getBean("userService");
    }
