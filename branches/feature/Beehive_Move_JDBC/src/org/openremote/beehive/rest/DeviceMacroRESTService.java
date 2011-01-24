@@ -46,6 +46,15 @@ import org.openremote.beehive.api.service.DeviceMacroService;
 @Path("/devicemacro")
 public class DeviceMacroRESTService extends RESTBaseService {
 
+   /**
+    * Create a new deviceMacro under an account by {account_id}.
+    * Visits @ url "/devicemacro/save/{account_id}"
+    * 
+    * @param accountId
+    * @param deviceMacroDTO
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the saved deviceMacroDTO with specified id, and its JSON formated.
+    */
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -57,6 +66,14 @@ public class DeviceMacroRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Show deviceMacroItems under a deviceMacro by {macro_id}.
+    * Visits @ url "/devicemacro/loaditemsbyid/{macro_id}"
+    * 
+    * @param macroId the deviceMacro id.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated deviceMacroItemDTOs.
+    */
    @Path("loaditemsbyid/{macro_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -70,6 +87,14 @@ public class DeviceMacroRESTService extends RESTBaseService {
       return buildResponse(new DeviceMacroItemList(deviceMacroItemDTOs));
    }
    
+   /**
+    * Show all deviceMacros under an account.
+    * Visits @ url "/devicemacro/loadall/{account_id}"
+    * 
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated deviceMacroDTOs.
+    */
    @Path("loadall/{account_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -83,6 +108,14 @@ public class DeviceMacroRESTService extends RESTBaseService {
       return buildResponse(deviceMacros);
    }
    
+   /**
+    * Delete a deviceMacro by {macro_id}.
+    * Visits @ url "/devicemacro/delete/{macro_id}"
+    * 
+    * @param macroId the deviceMacro id.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return true or false.
+    */
    @Path("delete/{macro_id}")
    @DELETE
    public Response delete(@PathParam("macro_id") long macroId,
@@ -92,6 +125,14 @@ public class DeviceMacroRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   /**
+    * Update deviceMacro properties to database by posted deviceMacroDTO.
+    * Visits @ url "/devicemacro/update"
+    * 
+    * @param deviceMacroDTO the posted JSON formated deviceMacro data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the updated JSON formated deviceMacroDTO.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -103,6 +144,11 @@ public class DeviceMacroRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Retrieves instance of DeviceMacroService from spring IOC
+    * 
+    * @return DeviceMacroService instance
+    */
    protected DeviceMacroService getDeviceMacroService() {
       return (DeviceMacroService) getSpringContextInstance().getBean("deviceMacroService");
    }

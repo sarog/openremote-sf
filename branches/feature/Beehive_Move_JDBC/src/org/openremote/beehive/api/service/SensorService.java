@@ -29,16 +29,54 @@ import org.openremote.beehive.domain.modeler.Sensor;
  */
 public interface SensorService {
 
+   /**
+    * Save a sensorDTO into database.
+    * 
+    * @param sensorDTO can be all kinds of sensorDTO, includes RangeSensorDTO and CustomSensorDTO now.
+    * @param accountId
+    * @return the saved sensorDTO with specified id.
+    */
    public SensorDTO save(SensorDTO sensorDTO, long accountId);
    
+   /**
+    * Delete a sensor by sensorId.
+    * 
+    * @param id the sensorId.
+    * @return true or false.
+    */
    public boolean deleteSensorById(long id);
    
+   /**
+    * Update sensor properties with database.
+    * As the different sensor has different properties, so we handle them distinctively.
+    * 
+    * @param sensorDTO
+    * @return the updated sensor.
+    */
    public Sensor updateSensor(SensorDTO sensorDTO);
    
+   /**
+    * Load a list of sensors under an account.
+    * 
+    * @param accountId
+    * @return a list of sensors.
+    */
    public List<SensorDTO> loadAllAccountSensors(long accountId);
    
+   /**
+    * Load a sensorDTO by sensorId.
+    * 
+    * @param id the sensorId.
+    * @return the sensorDTO
+    */
    SensorDTO loadSensorById(long id);
    
+   /**
+    * Load a list of sensorDTOs, each of them has same properties with the specified sensorDTO except id.
+    * 
+    * @param sensorDTO the specified sensorDTO.
+    * @return a list of sensorDTOs.
+    */
    public List<SensorDTO> loadSameSensors(SensorDTO sensorDTO);
    
 }

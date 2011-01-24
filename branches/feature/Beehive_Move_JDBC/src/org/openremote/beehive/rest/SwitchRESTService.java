@@ -42,6 +42,15 @@ import org.openremote.beehive.api.service.SwitchService;
 @Path("/switch")
 public class SwitchRESTService extends RESTBaseService {
 
+   /**
+    * Create a new switch under an account by {account_id}.
+    * Visits @ url "/switch/save/{account_id}"
+    * 
+    * @param accountId
+    * @param switchDTO the posted JSON formated switch data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the saved switch with specified id, and with device information, its JSON formated.
+    */
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -56,6 +65,14 @@ public class SwitchRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Delete a switch by {switch_id}.
+    * Visits @ url "/switch/delete/{switch_id}"
+    * 
+    * @param switchId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return true or false.
+    */
    @Path("delete/{switch_id}")
    @DELETE
    public Response delete(@PathParam("switch_id") long switchId,
@@ -65,6 +82,14 @@ public class SwitchRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   /**
+    * Update switch properties to database by posted switchDTO.
+    * Visits @ url "/switch/update"
+    * 
+    * @param switchDTO the posted JSON formated switch data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the updated switchDTO with device information, and its JSON formated.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -79,6 +104,14 @@ public class SwitchRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Show a list of switchDTOs under an account.
+    * Visits @ url "/switch/loadall/{account_id}"
+    * 
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated switchDTOs.
+    */
    @Path("loadall/{account_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -92,6 +125,14 @@ public class SwitchRESTService extends RESTBaseService {
       return buildResponse(switchs);
    }
    
+   /**
+    * Show a list of switchDTOs under an account, each of them has same properties with the specified switchDTO except id.
+    * Visits @ url "/switch/loadsameswitchs"
+    * 
+    * @param switchDTO the specified switchDTO, its JSON formated.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated switchDTOs.
+    */
    @Path("loadsameswitchs")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -105,6 +146,12 @@ public class SwitchRESTService extends RESTBaseService {
       }
       return buildResponse(switchs);
    }
+   
+   /**
+    * Retrieves instance of SwitchService from spring IOC
+    * 
+    * @return SwitchService instance
+    */
    protected SwitchService getSwitchService() {
       return (SwitchService) getSpringContextInstance().getBean("switchService");
    }

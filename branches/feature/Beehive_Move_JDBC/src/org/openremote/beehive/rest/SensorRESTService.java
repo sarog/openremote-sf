@@ -42,6 +42,14 @@ import org.openremote.beehive.api.service.SensorService;
 @Path("/sensor")
 public class SensorRESTService extends RESTBaseService {
 
+   /**
+    * Create a new sensor under an account by {account_id}.
+    * 
+    * @param accountId
+    * @param sensorDTO the posted JSON formated sensor data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the saved sensor with specified id, its JSON formated.
+    */
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -54,6 +62,13 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Delete a sensor by {sensor_id}.
+    * 
+    * @param sensorId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return true or false.
+    */
    @Path("delete/{sensor_id}")
    @DELETE
    public Response delete(@PathParam("sensor_id") long sensorId,
@@ -62,6 +77,13 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(getSensorService().deleteSensorById(sensorId));
    }
    
+   /**
+    * Update sensor properties with database by posted sensorDTO.
+    * 
+    * @param sensorDTO the posted JOSN formated sensor data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the updated JSON formated sensorDTO.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -74,6 +96,13 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Show a list of sensorDTOs under an account.
+    * 
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated sensorDTOs.
+    */
    @Path("loadall/{account_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -87,9 +116,16 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(new SensorList(sensors));
    }
    
+   /**
+    * Show sensorDTO by {sensor_id}.
+    * 
+    * @param sensorId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the JSON formated sensorDTO.
+    */
    @Path("load/{sensor_id}")
    @GET
-   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces( MediaType.APPLICATION_JSON)
    public Response loadById(@PathParam("sensor_id") long sensorId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -97,6 +133,13 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(sensorDTO);
    }
    
+   /**
+    * Show a list of sensorDTOs, each of them has same properties with the specified sensorDTO.
+    * 
+    * @param sensorDTO the JSON formated specified sensorDTO.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated sensorDTOs.
+    */
    @Path("loadsamesensors")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -111,6 +154,11 @@ public class SensorRESTService extends RESTBaseService {
       return buildResponse(new SensorList(sensors));
    }
    
+   /**
+    * Retrieves instance of SensorService from spring IOC
+    * 
+    * @return SensorService instance
+    */
    protected SensorService getSensorService() {
       return (SensorService) getSpringContextInstance().getBean("sensorService");
    }

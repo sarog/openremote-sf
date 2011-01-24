@@ -33,14 +33,46 @@ import org.openremote.beehive.api.dto.modeler.DeviceMacroItemDTO;
  */
 public interface DeviceMacroService {
 
+   /**
+    * Save a deviceMacroDTO into database.
+    * 
+    * @param deviceMacroDTO
+    * @param accountId
+    * @return the saved deviceMacroDTO with specified id.
+    */
    public DeviceMacroDTO save(DeviceMacroDTO deviceMacroDTO, long accountId);
    
+   /**
+    * Load all deviceMacroItems under a deviceMacro.
+    * The deviceMacroItem include <code>DeviceCommandRef</code>,<code>DeviceMacroRef</code> and <code>CommandDelay</code>.
+    *  
+    * @param macroId
+    * @return a list of deviceMacroItems.
+    */
    public List<DeviceMacroItemDTO> loadDeviceMacroItems(long macroId);
    
+   /**
+    * Load all deviceMacros under an account.
+    * 
+    * @param accountId
+    * @return a list of deviceMacros.
+    */
    public List<DeviceMacroDTO> loadAccountDeviceMacros(long accountId);
    
+   /**
+    * Delete a deviceMacro by its id.
+    * 
+    * @param macroId
+    */
    public void deleteDeviceMacro(long macroId);
    
+   /**
+    * Update the deviceMacro properties to database, 
+    * it will delete all old deviceMacroItems from database and add news.
+    * 
+    * @param deviceMacroDTO
+    * @return the updated deviceMacroDTO.
+    */
    public DeviceMacroDTO updateDeviceMacro(DeviceMacroDTO deviceMacroDTO);
    
 }
