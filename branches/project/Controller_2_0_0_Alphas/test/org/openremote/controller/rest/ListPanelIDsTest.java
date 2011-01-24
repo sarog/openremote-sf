@@ -20,22 +20,20 @@
  */
 package org.openremote.controller.rest;
 
-import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.After;
-import org.openremote.controller.suite.RESTTests;
-import org.openremote.controller.Constants;
-import org.openremote.controller.model.Panel;
-import org.openremote.controller.model.JSONMapping;
-import org.w3c.dom.Document;
-import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openremote.controller.Constants;
+import org.openremote.controller.model.JSONMapping;
+import org.openremote.controller.model.Panel;
+import org.openremote.controller.suite.RESTTests;
+import org.w3c.dom.Document;
 
 
 /**
@@ -179,14 +177,14 @@ public class ListPanelIDsTest
     {
       JSONObject panel = array.getJSONObject(index);
 
-      Assert.assertTrue(panel.has("@id"));
-      Assert.assertTrue(panel.has("@name"));
+      Assert.assertTrue(panel.has("id"));
+      Assert.assertTrue(panel.has("name"));
 
-      Assert.assertNotNull(panel.getString("@id"));
-      Assert.assertNotNull(panel.getString("@name"));
+      Assert.assertNotNull(panel.getString("id"));
+      Assert.assertNotNull(panel.getString("name"));
 
-      Assert.assertFalse(panel.getString("@id").equals(""));
-      Assert.assertFalse(panel.getString("@name").equals(""));
+      Assert.assertFalse(panel.getString("id").equals(""));
+      Assert.assertFalse(panel.getString("name").equals(""));
     }
   }
 
