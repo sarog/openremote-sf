@@ -48,14 +48,18 @@ public class JSONTranslator
   {
     if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
     {
-      response.setContentType(Constants.MIME_APPLICATION_JSON);
+      if (response != null) {
+         response.setContentType(Constants.MIME_APPLICATION_JSON);
+      }
 
       return translate(response, xml);
     }
 
     else
     {
-      response.setContentType(Constants.MIME_APPLICATION_XML);
+      if (response != null) {
+         response.setContentType(Constants.MIME_APPLICATION_XML);
+      }
       return xml;
     }
   }
@@ -65,15 +69,19 @@ public class JSONTranslator
   {
     if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
     {
-      response.setContentType(Constants.MIME_APPLICATION_JSON);
+      if (response != null) {
+         response.setContentType(Constants.MIME_APPLICATION_JSON);
+      }
       
       return translate(response, xml);
     }
 
     else
     {
-      response.setContentType(Constants.MIME_APPLICATION_XML);
-      response.setStatus(errorCode);
+      if (response != null) {
+         response.setContentType(Constants.MIME_APPLICATION_XML);
+         response.setStatus(errorCode);
+      }
 
       return xml;
     }
