@@ -29,14 +29,44 @@ import org.openremote.beehive.domain.modeler.Slider;
  */
 public interface SliderService {
 
+   /**
+    * Save a sliderDTO into the database, which is under an account.
+    * 
+    * @param sliderDTO
+    * @param accountId
+    * @return the saved switchDTO with specified id.
+    */
    public SliderDTO save(SliderDTO sliderDTO, long accountId);
    
+   /**
+    * Update slider properties into database.
+    * 
+    * @param sliderDTO
+    * @return the updated slider.
+    */
    public Slider update(SliderDTO sliderDTO);
    
+   /**
+    * Delete a slider by sliderId.
+    * 
+    * @param sliderId
+    */
    public void deleteById(long sliderId);
    
+   /**
+    * Load all sliderDTOs under an account.
+    * 
+    * @param accountId
+    * @return a list of sliderDTOs.
+    */
    public List<SliderDTO> loadAccountSliders(long accountId);
    
+   /**
+    * Load a list of sliderDTOs, each of them has same properties with the specified sliderDTO except id.
+    * 
+    * @param sliderDTO the specified sliderDTO.
+    * @return a list of sliderDTO.
+    */
    public List<SliderDTO> loadSameSliders(SliderDTO sliderDTO);
    
 }

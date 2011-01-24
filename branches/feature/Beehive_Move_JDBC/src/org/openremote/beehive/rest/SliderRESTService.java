@@ -42,6 +42,15 @@ import org.openremote.beehive.api.service.SliderService;
 @Path("/slider")
 public class SliderRESTService extends RESTBaseService {
 
+   /**
+    * Create a new slider under an account by {account_id}.
+    * Visits @ url "/slider/save/{account_id}"
+    * 
+    * @param accountId
+    * @param sliderDTO the posted JSON formated slider data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the saved slider with specified id, and with device information, its JSON formated.
+    */
    @Path("save/{account_id}")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -55,6 +64,14 @@ public class SliderRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Delete a slider by {slider_id}.
+    * Visits @ url "/slider/delete/{slider_id}"
+    * 
+    * @param sliderId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return true or false.
+    */
    @Path("delete/{slider_id}")
    @DELETE
    public Response delete(@PathParam("slider_id") long sliderId,
@@ -64,6 +81,14 @@ public class SliderRESTService extends RESTBaseService {
       return buildResponse(true);
    }
    
+   /**
+    * Update slider properties to database by posted sliderDTO.
+    * Visits @ url "/slider/update"
+    * 
+    * @param sliderDTO the posted JSON formated slider data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return the updated sliderDTO with device information, and its JSON formated.
+    */
    @Path("update")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -77,6 +102,14 @@ public class SliderRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Show all sliders under an account by {account_id}.
+    * Visits @ url "/slider/loadall/{account_id}"
+    * 
+    * @param accountId
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated sliderDTOs.
+    */
    @Path("loadall/{account_id}")
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -90,6 +123,14 @@ public class SliderRESTService extends RESTBaseService {
       return buildResponse(sliders);
    }
    
+   /**
+    * Show a list of sliderDTOs under an account, each of them has the same properties with the specified sliderDTO except id.
+    * Visits @ url "/slider/loadsamesliders"
+    * 
+    * @param sliderDTO the specified JSON formated slider data.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of JSON formated sldierDTOs.
+    */
    @Path("loadsamesliders")
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
@@ -103,6 +144,12 @@ public class SliderRESTService extends RESTBaseService {
       }
       return buildResponse(sliders);
    }
+   
+   /**
+    * Retrieves instance of SliderService from spring IOC
+    * 
+    * @return SliderService instance
+    */
    protected SliderService getSliderService() {
       return (SliderService) getSpringContextInstance().getBean("sliderService");
    }

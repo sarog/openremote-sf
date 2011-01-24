@@ -29,14 +29,44 @@ import org.openremote.beehive.domain.modeler.Switch;
  */
 public interface SwitchService {
 
+   /**
+    * Save a switchDTO into database.
+    * 
+    * @param switchDTO
+    * @param accountId
+    * @return the saved switchDTO with specified id.
+    */
    public SwitchDTO save(SwitchDTO switchDTO, long accountId);
    
+   /**
+    * Update switch properties into database.
+    * 
+    * @param switchDTO
+    * @return the updated switch
+    */
    public Switch updateSwitch(SwitchDTO switchDTO);
    
+   /**
+    * Delete a switch by switchId.
+    * 
+    * @param id the switchId.
+    */
    public void deleteSwitchById(long id);
    
+   /**
+    * Load a list of switchDTOs under an account.
+    * 
+    * @param accountId
+    * @return a list of switchDTOs.
+    */
    public List<SwitchDTO> loadAccountSwitchs(long accountId);
    
+   /**
+    * Load a list of switchDTOs, each of them has same properties with the specified switchDTO except id.
+    * 
+    * @param switchDTO the specified switchDTO.
+    * @return a list of switchDTO.
+    */
    public List<SwitchDTO> loadSameSwitchs(SwitchDTO switchDTO);
    
 }

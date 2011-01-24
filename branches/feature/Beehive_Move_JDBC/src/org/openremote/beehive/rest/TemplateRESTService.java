@@ -185,7 +185,7 @@ public class TemplateRESTService extends RESTBaseService {
     * @param content
     *           template content (XML or JSON string)
     * @param credentials
-    *           HTTP basic header credentials : "Basic base64(username:md5(password,username))"
+    *           HTTP basic header credentials : "Basic base64(username:password)"
     * @return new template
     */
    @Path("template")
@@ -218,6 +218,18 @@ public class TemplateRESTService extends RESTBaseService {
 
    }
    
+   /**
+    * Update template properties to database.
+    * 
+    * @param accountId
+    * @param templateID
+    * @param name
+    * @param content
+    * @param keywords
+    * @param shared
+    * @param credentials HTTP basic header credentials : "Basic base64(username:password)".
+    * @return the updated template.
+    */
    @Path("template/{template_id}")
    @PUT
    @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -360,11 +372,20 @@ public class TemplateRESTService extends RESTBaseService {
    }
    
    
-   
+   /**
+    * Retrieves instance of ResourceService from spring IOC
+    * 
+    * @return ResourceService instance
+    */
    protected ResourceService getResourceService() {
       return (ResourceService) getSpringContextInstance().getBean("resourceService");
    }
    
+   /**
+    * Retrieves instance of TemplateService from spring IOC
+    * 
+    * @return TemplateService instance
+    */
    protected TemplateService getTemplateService() {
       return (TemplateService) getSpringContextInstance().getBean("templateService");
    }
