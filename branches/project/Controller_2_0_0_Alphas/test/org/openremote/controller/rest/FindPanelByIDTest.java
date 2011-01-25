@@ -22,25 +22,28 @@ package org.openremote.controller.rest;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openremote.controller.Constants;
+import org.openremote.controller.model.JSONMapping;
 import org.openremote.controller.suite.RESTTests;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
  * TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
- *
+ * @author Tomsky
  */
 public class FindPanelByIDTest
 {
@@ -173,6 +176,85 @@ public class FindPanelByIDTest
     }
   }
 
+  @Test public void requestFatherPanelProfileJSON() throws Exception
+  {
+     RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
+
+
+     URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
+
+     HttpURLConnection connection = (HttpURLConnection)panelList.openConnection();
+     
+     connection.setRequestProperty(Constants.HTTP_ACCEPT_HEADER, Constants.MIME_APPLICATION_JSON);
+     
+     RESTTests.assertHttpResponse(
+         connection, HttpURLConnection.HTTP_OK, RESTTests.ASSERT_BODY_CONTENT,
+         Constants.MIME_APPLICATION_JSON, Constants.CHARACTER_ENCODING_UTF8
+     );
+     
+     Object o = JSONMapping.getJSONRoot(connection.getInputStream());
+
+     Assert.assertTrue(o instanceof JSONObject);
+
+     JSONObject root = (JSONObject)o;
+     
+     // parse screens
+     Assert.assertTrue(root.has("screens"));
+     JSONObject screensObj = root.getJSONObject("screens");
+     
+     Assert.assertTrue(screensObj.has("screen"));
+     JSONArray screenArray = screensObj.getJSONArray("screen");
+     Assert.assertTrue(screenArray.length() == 4);
+     
+     Set<String> screenIDs = new HashSet<String>(5);
+     for (int index = 0; index < screenArray.length(); index++)
+     {
+        JSONObject screenObj = screenArray.getJSONObject(index);
+        Assert.assertTrue(screenObj.has("id"));
+        Assert.assertTrue(screenObj.has("name"));
+        
+        screenIDs.add(screenObj.get("id").toString());
+     }
+     
+     // parse groups
+     Assert.assertTrue(root.has("groups"));
+     JSONObject groupsObj = root.getJSONObject("groups");
+     
+     Assert.assertTrue(groupsObj.has("group"));
+     JSONArray groupArray = groupsObj.getJSONArray("group");
+     Assert.assertTrue(groupArray.length() == 2);
+     
+     Set<String> screenReferences = new HashSet<String>(5);
+     
+     for (int index = 0; index < groupArray.length(); index++)
+     {
+        JSONObject groupObj = groupArray.getJSONObject(index);
+        Assert.assertTrue(groupObj.has("id"));
+        Assert.assertTrue(groupObj.has("name"));
+        
+        if (groupObj.has("include")) 
+        {
+           JSONArray screenRefArray = groupObj.getJSONArray("include");
+           for (int includeIndex = 0; includeIndex < screenRefArray.length(); includeIndex++)
+           {
+              JSONObject screenRefObj = screenRefArray.getJSONObject(includeIndex);
+              Assert.assertTrue(screenRefObj.has("ref"));
+              Assert.assertTrue(screenRefObj.has("type"));
+              screenReferences.add(screenRefObj.get("ref").toString());
+           }
+        }
+     }
+     
+     Assert.assertTrue(screenIDs.contains("5"));
+     Assert.assertTrue(screenIDs.contains("6"));
+     Assert.assertTrue(screenIDs.contains("7"));
+     Assert.assertTrue(screenIDs.contains("8"));
+     
+     for (String ref : screenReferences)
+     {
+        Assert.assertTrue("Expected to find screen with id: " + ref, screenIDs.contains(ref));
+     }
+  }
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
@@ -192,6 +274,33 @@ public class FindPanelByIDTest
     RESTTests.assertErrorDocument(doc, Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND);
   }
 
+  @Test public void testGetNonExistentPanelProfileJSON() throws Exception
+  {
+     RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
 
+     URL doesNotExist = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
+
+     HttpURLConnection connection = (HttpURLConnection)doesNotExist.openConnection();
+
+     connection.setRequestProperty(Constants.HTTP_ACCEPT_HEADER, Constants.MIME_APPLICATION_JSON);
+     
+     RESTTests.assertHttpResponse(
+         connection, HttpURLConnection.HTTP_OK, RESTTests.ASSERT_BODY_CONTENT,
+         Constants.MIME_APPLICATION_JSON, Constants.CHARACTER_ENCODING_UTF8
+     );
+     
+     Object o = JSONMapping.getJSONRoot(connection.getInputStream());
+
+     Assert.assertTrue(o instanceof JSONObject);
+
+     JSONObject root = (JSONObject)o;
+     
+     Assert.assertTrue(root.has("error"));
+     
+     JSONObject error = root.getJSONObject("error");
+     
+     Assert.assertEquals(Constants.HTTP_RESPONSE_PANEL_ID_NOT_FOUND, error.getInt("code"));
+     Assert.assertEquals("No such Panel :NAME = doesNotExist", error.getString("message"));
+  }
 
 }

@@ -43,7 +43,7 @@ import com.meterware.httpunit.WebResponse;
  * This is responsible for testing if the requested data is valid JSONP-format data.
  * 
  * @author handy.wang 2010-06-29
- *
+ * @author Tomsky
  */
 public class JSONTranslatorTest extends TestCase
 {
@@ -57,14 +57,12 @@ public class JSONTranslatorTest extends TestCase
 
   // Test Lifecycle -------------------------------------------------------------------------------
   
-  @Before public void setup()
+  @Before public void setUp()
   {
-    String panelXmlFixture = getJSONFixtureFile(Constants.PANEL_XML);
-
-    RESTTests.replaceControllerPanelXML(panelXmlFixture);
+    RESTTests.replaceControllerPanelXML(JSON_FIXTURES + Constants.PANEL_XML);
   }
 
-  private static String getJSONFixtureFile(String name)
+  private String getJSONFixtureFile(String name)
   {
     return AllTests.getFixtureFile(JSON_FIXTURES + name);
   }
