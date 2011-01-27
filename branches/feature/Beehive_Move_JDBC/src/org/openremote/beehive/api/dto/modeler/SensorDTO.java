@@ -19,6 +19,9 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeName;
@@ -35,6 +38,8 @@ import org.openremote.beehive.domain.modeler.SensorType;
 @JsonTypeInfo(use = Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="classType")
 @JsonTypeName(value = "Sensor")
 @JsonSubTypes(value={@Type(value=RangeSensorDTO.class), @Type(value=CustomSensorDTO.class)})
+@XmlRootElement(name="sensor")
+@XmlSeeAlso(value = { RangeSensorDTO.class, CustomSensorDTO.class})
 public class SensorDTO extends BusinessEntityDTO {
 
    private String name;

@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.openremote.beehive.api.dto.BusinessEntityDTO;
 import org.openremote.beehive.domain.modeler.Protocol;
 import org.openremote.beehive.domain.modeler.ProtocolAttr;
@@ -27,6 +29,7 @@ import org.openremote.beehive.domain.modeler.ProtocolAttr;
  * The Class is used for transmitting protocol attribute info.
  */
 @SuppressWarnings("serial")
+@XmlRootElement(name = "attribute")
 public class ProtocolAttrDTO extends BusinessEntityDTO {
 
    private String name;

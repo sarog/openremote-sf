@@ -22,6 +22,7 @@ package org.openremote.beehive.api.dto.modeler;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.openremote.beehive.api.dto.BusinessEntityDTO;
@@ -31,7 +32,7 @@ import org.openremote.beehive.domain.modeler.Protocol;
  * The Class is used for transmitting protocol info.
  */
 @SuppressWarnings("serial")
-@XmlRootElement(name = "deviceCommand")
+@XmlRootElement(name = "protocol")
 public class ProtocolDTO extends BusinessEntityDTO {
 
    private String type;
@@ -40,7 +41,8 @@ public class ProtocolDTO extends BusinessEntityDTO {
    public String getType() {
       return type;
    }
-   @XmlElement(name = "attributes")
+   @XmlElementWrapper(name = "attributes")
+   @XmlElement(name="attribute")
    public List<ProtocolAttrDTO> getAttributes() {
       return attributes;
    }

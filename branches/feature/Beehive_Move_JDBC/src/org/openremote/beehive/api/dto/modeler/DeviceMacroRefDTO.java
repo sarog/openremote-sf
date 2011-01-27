@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.codehaus.jackson.annotate.JsonTypeName;
 import org.openremote.beehive.domain.modeler.DeviceMacro;
 import org.openremote.beehive.domain.modeler.DeviceMacroItem;
@@ -31,6 +33,7 @@ import org.openremote.beehive.domain.modeler.DeviceMacroRef;
  */
 @SuppressWarnings("serial")
 @JsonTypeName(value = "DeviceMacroRef")
+@XmlRootElement(name="deviceMacroRef")
 public class DeviceMacroRefDTO extends DeviceMacroItemDTO {
 
    private DeviceMacroDTO targetDeviceMacro;

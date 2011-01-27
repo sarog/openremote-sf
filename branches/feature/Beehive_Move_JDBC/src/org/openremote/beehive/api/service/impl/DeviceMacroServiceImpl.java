@@ -20,9 +20,12 @@
 package org.openremote.beehive.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.openremote.beehive.api.dto.modeler.DeviceMacroDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceMacroItemDTO;
 import org.openremote.beehive.api.service.DeviceMacroItemService;
@@ -113,6 +116,28 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    
    public void setDeviceMacroItemService(DeviceMacroItemService deviceMacroItemService) {
       this.deviceMacroItemService = deviceMacroItemService;
+   }
+
+   public List<DeviceMacroDTO> loadSameDeviceMacros(DeviceMacroDTO deviceMacroDTO, long accountId) {
+      DetachedCriteria critera = DetachedCriteria.forClass(DeviceMacro.class);
+      critera.add(Restrictions.eq("account.oid", accountId));
+      critera.add(Restrictions.eq("name", deviceMacroDTO.getName()));
+      DeviceMacro macro = deviceMacroDTO.toDeviceMacroWithContent(null);
+      List<DeviceMacro> results = genericDAO.findByDetachedCriteria(critera);
+      if (results != null && results.size() >0) {
+         for (Iterator<DeviceMacro> iterator = results.iterator();iterator.hasNext(); ) {
+            DeviceMacro m = iterator.next();
+            if (! m.equalsWitoutCompareOid(macro)) {
+               iterator.remove();
+            }
+         }
+      }
+      List<DeviceMacroDTO> deviceMacroDTOs = new ArrayList<DeviceMacroDTO>();
+      for (DeviceMacro deviceMacro : results) {
+         deviceMacroDTOs.add(deviceMacro.toSimpleDTO());
+      }
+      
+      return deviceMacroDTOs;
    }
 
 }

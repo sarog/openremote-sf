@@ -22,31 +22,32 @@ package org.openremote.beehive.rest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.beehive.api.dto.modeler.DeviceMacroItemDTO;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.openremote.beehive.api.dto.modeler.SliderDTO;
 
 /**
- * The Class DeviceMacroItemList is for storing deviceMacroItems in a deviceMacro.
- *
- * @author tomsky
+ * In order to let rest service to serialize list of sliders
  */
-public class DeviceMacroItemList {
+@XmlRootElement(name = "sliders")
+public class SliderListing {
 
-   private List<DeviceMacroItemDTO> deviceMacroItems = new ArrayList<DeviceMacroItemDTO>();
-
-   public DeviceMacroItemList() {
+   private List<SliderDTO> sliders = new ArrayList<SliderDTO>();
+   
+   public SliderListing() {
    }
    
-   public DeviceMacroItemList(List<DeviceMacroItemDTO> deviceMacroItems) {
-      this.deviceMacroItems = deviceMacroItems;
+   public SliderListing(List<SliderDTO> sliders) {
+      this.sliders = sliders;
    }
    
-   public List<DeviceMacroItemDTO> getDeviceMacroItems() {
-      return deviceMacroItems;
+   @XmlElement(name="slider")
+   public List<SliderDTO> getSliders() {
+      return sliders;
    }
-
-   public void setDeviceMacroItems(List<DeviceMacroItemDTO> deviceMacroItems) {
-      this.deviceMacroItems = deviceMacroItems;
+   public void setSliders(List<SliderDTO> sliders) {
+      this.sliders = sliders;
    }
-   
    
 }

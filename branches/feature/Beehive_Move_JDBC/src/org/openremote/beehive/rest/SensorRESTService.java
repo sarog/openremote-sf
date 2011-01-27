@@ -46,14 +46,14 @@ public class SensorRESTService extends RESTBaseService {
     * Create a new sensor under an account by {account_id}.
     * 
     * @param accountId
-    * @param sensorDTO the posted JSON formated sensor data.
+    * @param sensorDTO the posted sensor data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the saved sensor with specified id, its JSON formated.
+    * @return the saved sensor with specified id.
     */
    @Path("save/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response save(@PathParam("account_id") long accountId, SensorDTO sensorDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -80,14 +80,14 @@ public class SensorRESTService extends RESTBaseService {
    /**
     * Update sensor properties with database by posted sensorDTO.
     * 
-    * @param sensorDTO the posted JOSN formated sensor data.
+    * @param sensorDTO the posted sensor data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the updated JSON formated sensorDTO.
+    * @return the updated sensorDTO.
     */
    @Path("update")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response update(SensorDTO sensorDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -101,11 +101,11 @@ public class SensorRESTService extends RESTBaseService {
     * 
     * @param accountId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated sensorDTOs.
+    * @return a list of sensorDTOs.
     */
    @Path("loadall/{account_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadAccountSensors(@PathParam("account_id") long accountId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -113,7 +113,7 @@ public class SensorRESTService extends RESTBaseService {
       if (sensors.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(new SensorList(sensors));
+      return buildResponse(new SensorListing(sensors));
    }
    
    /**
@@ -121,11 +121,11 @@ public class SensorRESTService extends RESTBaseService {
     * 
     * @param sensorId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the JSON formated sensorDTO.
+    * @return the sensorDTO.
     */
    @Path("load/{sensor_id}")
    @GET
-   @Produces( MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadById(@PathParam("sensor_id") long sensorId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -136,14 +136,14 @@ public class SensorRESTService extends RESTBaseService {
    /**
     * Show a list of sensorDTOs, each of them has same properties with the specified sensorDTO.
     * 
-    * @param sensorDTO the JSON formated specified sensorDTO.
+    * @param sensorDTO the specified sensorDTO.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated sensorDTOs.
+    * @return a list of sensorDTOs.
     */
    @Path("loadsamesensors")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadSameSensors(SensorDTO sensorDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -151,7 +151,7 @@ public class SensorRESTService extends RESTBaseService {
       if (sensors.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(new SensorList(sensors));
+      return buildResponse(new SensorListing(sensors));
    }
    
    /**

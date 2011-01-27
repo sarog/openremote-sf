@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.codehaus.jackson.annotate.JsonTypeName;
 import org.openremote.beehive.domain.modeler.CommandDelay;
 import org.openremote.beehive.domain.modeler.DeviceMacro;
@@ -31,6 +33,7 @@ import org.openremote.beehive.domain.modeler.DeviceMacroItem;
  */
 @SuppressWarnings("serial")
 @JsonTypeName(value = "CommandDelay")
+@XmlRootElement(name="commandDelay")
 public class CommandDelayDTO extends DeviceMacroItemDTO {
 
    private String delaySecond;

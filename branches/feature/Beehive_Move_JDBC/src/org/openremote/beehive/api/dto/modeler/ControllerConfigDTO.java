@@ -20,6 +20,7 @@
 package org.openremote.beehive.api.dto.modeler;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.openremote.beehive.api.dto.AccountDTO;
@@ -65,6 +66,7 @@ public class ControllerConfigDTO extends BusinessEntityDTO {
    }
 
    @JsonIgnore
+   @XmlTransient
    public AccountDTO getAccount() {
       return account;
    }
