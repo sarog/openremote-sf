@@ -50,14 +50,14 @@ public class DeviceRESTService extends RESTBaseService {
     * Visits @ url "/device/save/{account_id}"
     * 
     * @param aid the account id.
-    * @param deviceDTO the JSON formated device need to be save into database.
+    * @param deviceDTO the device need to be save into database.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the created device with specified id, its JSON formated.
+    * @return the created device with specified id.
     */
    @Path("save/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response saveDevice(@PathParam("account_id") long aid,
                               DeviceDTO deviceDTO,
                               @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
@@ -77,12 +77,12 @@ public class DeviceRESTService extends RESTBaseService {
     * @param aid the account id.
     * @param deviceDTO
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the created device with specified id ant contents, its JSON formated.
+    * @return the created device with specified id ant contents.
     */
    @Path("savewithcontent/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response saveDeviceWithContent(@PathParam("account_id") long aid,
          DeviceDTO deviceDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
@@ -99,11 +99,11 @@ public class DeviceRESTService extends RESTBaseService {
     * 
     * @param accountId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated devices.
+    * @return a list of devices.
     */
    @Path("loadall/{account_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadAccountDevices(@PathParam("account_id") long accountId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -111,7 +111,7 @@ public class DeviceRESTService extends RESTBaseService {
       if (devices.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(devices);
+      return buildResponse(new DeviceListing(devices));
    }
    
    /**
@@ -120,7 +120,7 @@ public class DeviceRESTService extends RESTBaseService {
     * 
     * @param deviceId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return DeviceDTO includes commands,sensors,switchs and sliders, and its JSON formated.
+    * @return DeviceDTO includes commands,sensors,switchs and sliders.
     */
    @Path("load/{device_id}")
    @GET
@@ -178,8 +178,8 @@ public class DeviceRESTService extends RESTBaseService {
     */
    @Path("loadsamedevices/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadSameDevices(@PathParam("account_id") long accountId,
          DeviceDTO deviceDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
@@ -188,7 +188,7 @@ public class DeviceRESTService extends RESTBaseService {
       if (devices.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(devices);
+      return buildResponse(new DeviceListing(devices));
    }
    
    /**

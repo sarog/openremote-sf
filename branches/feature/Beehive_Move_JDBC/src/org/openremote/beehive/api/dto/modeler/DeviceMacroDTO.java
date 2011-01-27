@@ -22,6 +22,8 @@ package org.openremote.beehive.api.dto.modeler;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.openremote.beehive.api.dto.AccountDTO;
@@ -42,6 +44,8 @@ public class DeviceMacroDTO extends BusinessEntityDTO {
    private String name;
    private AccountDTO account;
    
+   @XmlElementWrapper(name="deviceMacroItems")
+   @XmlElementRef(type=DeviceMacroItemDTO.class)
    public List<DeviceMacroItemDTO> getDeviceMacroItems() {
       return deviceMacroItems;
    }

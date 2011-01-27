@@ -19,6 +19,7 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.openremote.beehive.api.dto.BusinessEntityDTO;
@@ -36,6 +37,7 @@ public class DeviceCommandDTO extends BusinessEntityDTO {
    private String sectionId;
    private ProtocolDTO protocol;
    
+   @XmlElement(name="device")
    public DeviceDTO getDevice() {
       return device;
    }
@@ -54,6 +56,7 @@ public class DeviceCommandDTO extends BusinessEntityDTO {
    public void setSectionId(String sectionId) {
       this.sectionId = sectionId;
    }
+   @XmlElement(name="protocol")
    public ProtocolDTO getProtocol() {
       return protocol;
    }

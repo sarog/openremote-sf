@@ -19,6 +19,9 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeName;
@@ -36,6 +39,8 @@ import org.openremote.beehive.domain.modeler.DeviceMacroItem;
 @JsonTypeInfo(use = Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="classType")
 @JsonTypeName(value = "DeviceMacroItem")
 @JsonSubTypes(value={@Type(value=DeviceCommandRefDTO.class), @Type(value=DeviceMacroRefDTO.class), @Type(CommandDelayDTO.class)})
+@XmlRootElement(name="deviceMacroItem")
+@XmlSeeAlso(value = { DeviceCommandRefDTO.class, DeviceMacroRefDTO.class, CommandDelayDTO.class})
 public class DeviceMacroItemDTO extends UICommandDTO {
 
    private DeviceMacroDTO parentDeviceMacro;

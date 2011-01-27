@@ -57,7 +57,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
     */
    @Path("load/{command_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadById(@PathParam("command_id") long commandId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -68,14 +68,14 @@ public class DeviceCommandRESTService extends RESTBaseService {
    /**
     * Save a new <code>DeviceCommandDTO</code> into database. 
     * 
-    * @param deviceCommandDTO received from client, and its JSON formated.
+    * @param deviceCommandDTO received from client.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the deviceCommandDTO with specified id, which is JSON formated.
+    * @return the deviceCommandDTO with specified id.
     */
    @Path("save")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response save(DeviceCommandDTO deviceCommandDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -103,12 +103,12 @@ public class DeviceCommandRESTService extends RESTBaseService {
     * 
     * @param deviceCommandDTO JSON formated, its includes id,name and protocol.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the deviceCommandDTO with specified id, which is JSON formated.
+    * @return the deviceCommandDTO with specified id.
     */
    @Path("update")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response update(DeviceCommandDTO deviceCommandDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -119,23 +119,23 @@ public class DeviceCommandRESTService extends RESTBaseService {
    /**
     * Save a list of DeviceCommands into database.
     * 
-    * @param deviceCommandDTOs a list of deviceCommandDTOs, which is JSON formated.
+    * @param deviceCommandListing  include a list of deviceCommandDTOs.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of deviceCommandDTOs with specified ids, and its JSON formated.
+    * @return a list of deviceCommandDTOs with specified ids.
     */
    @Path("saveall")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   public Response saveAll(List<DeviceCommandDTO> deviceCommandDTOs,
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response saveAll(DeviceCommandListing deviceCommandListing,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
-      List<DeviceCommand> deviceCommands = getDeviceCommandService().saveAll(deviceCommandDTOs);
+      List<DeviceCommand> deviceCommands = getDeviceCommandService().saveAll(deviceCommandListing.getDeviceCommands());
       List<DeviceCommandDTO> newDeviceCommandDTOs = new ArrayList<DeviceCommandDTO>();
       for (DeviceCommand deviceCommand : deviceCommands) {
          newDeviceCommandDTOs.add(deviceCommand.toDTO());
       }
-      return buildResponse(newDeviceCommandDTOs);
+      return buildResponse(new DeviceCommandListing(newDeviceCommandDTOs));
    }
    
    /**
@@ -143,11 +143,11 @@ public class DeviceCommandRESTService extends RESTBaseService {
     * 
     * @param deviceId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated DeviceCommands.
+    * @return a list of DeviceCommands.
     */
    @Path("loadbydevice/{device_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadDeviceCommandsByDeviceId(@PathParam("device_id") long deviceId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -158,20 +158,20 @@ public class DeviceCommandRESTService extends RESTBaseService {
             newDeviceCommandDTOs.add(deviceCommand.toDTO());
          }
       }
-      return buildResponse(newDeviceCommandDTOs);
+      return buildResponse(new DeviceCommandListing(newDeviceCommandDTOs));
    }
    
    /**
     * Show a list of deviceCommandDTOs, each of them has the same properties with the specified deviceCommandDTO
     * 
-    * @param deviceCommandDTO JSON formated
+    * @param deviceCommandDTO
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated deviceCommandDTOs.
+    * @return a list of deviceCommandDTOs.
     */
    @Path("loadsamecommands")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadSameDeviceCommands(DeviceCommandDTO deviceCommandDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -180,7 +180,7 @@ public class DeviceCommandRESTService extends RESTBaseService {
       for (DeviceCommand deviceCommand : deviceCommands) {
          newDeviceCommandDTOs.add(deviceCommand.toDTO());
       }
-      return buildResponse(newDeviceCommandDTOs);
+      return buildResponse(new DeviceCommandListing(newDeviceCommandDTOs));
    }
    
    protected DeviceCommandService getDeviceCommandService() {

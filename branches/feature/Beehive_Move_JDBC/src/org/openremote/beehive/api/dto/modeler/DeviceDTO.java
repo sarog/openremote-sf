@@ -22,6 +22,8 @@ package org.openremote.beehive.api.dto.modeler;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -66,22 +68,27 @@ public class DeviceDTO extends BusinessEntityDTO {
    public String getModel() {
       return model;
    }
+   @XmlElement(name="account")
    public AccountDTO getAccount() {
       return account;
    }
-   @XmlElement(name = "deviceCommands")
+   @XmlElementWrapper(name = "deviceCommands")
+   @XmlElement(name="deviceCommand")
    public List<DeviceCommandDTO> getDeviceCommands() {
       return deviceCommands;
    }
-   @XmlElement(name = "sensors")
+   @XmlElementWrapper(name = "sensors")
+   @XmlElementRef(type=SensorDTO.class)
    public List<SensorDTO> getSensors() {
       return sensors;
    }
-   @XmlElement(name = "switchs")
+   @XmlElementWrapper(name = "switchs")
+   @XmlElement(name="switch")
    public List<SwitchDTO> getSwitchs() {
       return switchs;
    }
-   @XmlElement(name = "sliders")
+   @XmlElementWrapper(name = "sliders")
+   @XmlElement(name="slider")
    public List<SliderDTO> getSliders() {
       return sliders;
    }

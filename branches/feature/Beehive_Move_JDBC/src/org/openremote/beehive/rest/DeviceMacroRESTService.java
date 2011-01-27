@@ -53,12 +53,12 @@ public class DeviceMacroRESTService extends RESTBaseService {
     * @param accountId
     * @param deviceMacroDTO
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the saved deviceMacroDTO with specified id, and its JSON formated.
+    * @return the saved deviceMacroDTO with specified id.
     */
    @Path("save/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response save(@PathParam("account_id") long accountId, DeviceMacroDTO deviceMacroDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -72,11 +72,11 @@ public class DeviceMacroRESTService extends RESTBaseService {
     * 
     * @param macroId the deviceMacro id.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated deviceMacroItemDTOs.
+    * @return a list of deviceMacroItemDTOs.
     */
    @Path("loaditemsbyid/{macro_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadDeviceMacroItems(@PathParam("macro_id") long macroId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -84,7 +84,7 @@ public class DeviceMacroRESTService extends RESTBaseService {
       if (deviceMacroItemDTOs.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(new DeviceMacroItemList(deviceMacroItemDTOs));
+      return buildResponse(new DeviceMacroItemListing(deviceMacroItemDTOs));
    }
    
    /**
@@ -97,7 +97,7 @@ public class DeviceMacroRESTService extends RESTBaseService {
     */
    @Path("loadall/{account_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadAccountMacros(@PathParam("account_id") long accountId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -105,7 +105,7 @@ public class DeviceMacroRESTService extends RESTBaseService {
       if (deviceMacros.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(deviceMacros);
+      return buildResponse(new DeviceMacroListing(deviceMacros));
    }
    
    /**
@@ -135,8 +135,8 @@ public class DeviceMacroRESTService extends RESTBaseService {
     */
    @Path("update")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response update(DeviceMacroDTO deviceMacroDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -144,6 +144,29 @@ public class DeviceMacroRESTService extends RESTBaseService {
       return buildResponse(newDTO);
    }
    
+   /**
+    * Show a list of deviceMacros with same contents except id under an <code>Account</code>.
+    * Visits @ url "/devicemacro/loadsamemacros/{account_id}"
+    * 
+    * @param accountId
+    * @param deviceMacroDTO the deviceMacro to be compared, its not specified id.
+    * @param credentials the Base64 encoded username and password, format is "username:password".
+    * @return a list of deviceMacros.
+    */
+   @Path("loadsamemacros/{account_id}")
+   @POST
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   public Response loadSameDeviceMacros(@PathParam("account_id") long accountId,
+         DeviceMacroDTO deviceMacroDTO,
+         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
+      if (!authorize(credentials)) return unAuthorizedResponse();
+      List<DeviceMacroDTO> deviceMacroDTOs = getDeviceMacroService().loadSameDeviceMacros(deviceMacroDTO, accountId);
+      if (deviceMacroDTOs.size() == 0) {
+         return resourceNotFoundResponse();
+      }
+      return buildResponse(new DeviceMacroListing(deviceMacroDTOs));
+   }
    /**
     * Retrieves instance of DeviceMacroService from spring IOC
     * 

@@ -47,14 +47,14 @@ public class SwitchRESTService extends RESTBaseService {
     * Visits @ url "/switch/save/{account_id}"
     * 
     * @param accountId
-    * @param switchDTO the posted JSON formated switch data.
+    * @param switchDTO the posted switch data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the saved switch with specified id, and with device information, its JSON formated.
+    * @return the saved switch with specified id, and with device information.
     */
    @Path("save/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response save(@PathParam("account_id") long accountId, SwitchDTO switchDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -71,7 +71,7 @@ public class SwitchRESTService extends RESTBaseService {
     * 
     * @param switchId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return true or false.
+    * @return 200 or 500.
     */
    @Path("delete/{switch_id}")
    @DELETE
@@ -86,14 +86,14 @@ public class SwitchRESTService extends RESTBaseService {
     * Update switch properties to database by posted switchDTO.
     * Visits @ url "/switch/update"
     * 
-    * @param switchDTO the posted JSON formated switch data.
+    * @param switchDTO the posted switch data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the updated switchDTO with device information, and its JSON formated.
+    * @return the updated switchDTO with device information.
     */
    @Path("update")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response update(SwitchDTO switchDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -110,11 +110,11 @@ public class SwitchRESTService extends RESTBaseService {
     * 
     * @param accountId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated switchDTOs.
+    * @return a list of switchDTOs.
     */
    @Path("loadall/{account_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadAccountSwitchs(@PathParam("account_id") long accountId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -122,21 +122,21 @@ public class SwitchRESTService extends RESTBaseService {
       if (switchs.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(switchs);
+      return buildResponse(new SwitchListing(switchs));
    }
    
    /**
     * Show a list of switchDTOs under an account, each of them has same properties with the specified switchDTO except id.
     * Visits @ url "/switch/loadsameswitchs"
     * 
-    * @param switchDTO the specified switchDTO, its JSON formated.
+    * @param switchDTO the specified switchDTO.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated switchDTOs.
+    * @return a list of switchDTOs.
     */
    @Path("loadsameswitchs")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadSameSwitchs(SwitchDTO switchDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -144,7 +144,7 @@ public class SwitchRESTService extends RESTBaseService {
       if (switchs.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(switchs);
+      return buildResponse(new SwitchListing(switchs));
    }
    
    /**

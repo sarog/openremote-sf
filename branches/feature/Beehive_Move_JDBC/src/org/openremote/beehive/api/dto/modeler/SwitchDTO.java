@@ -19,9 +19,12 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.openremote.beehive.api.dto.BusinessEntityDTO;
 import org.openremote.beehive.domain.modeler.Switch;
 
+@XmlRootElement(name = "switch")
 public class SwitchDTO extends BusinessEntityDTO {
 
    private static final long serialVersionUID = -513113405416151501L;

@@ -19,6 +19,8 @@
 */
 package org.openremote.beehive.api.dto.modeler;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.codehaus.jackson.annotate.JsonTypeName;
 import org.openremote.beehive.domain.modeler.RangeSensor;
 import org.openremote.beehive.domain.modeler.Sensor;
@@ -29,6 +31,7 @@ import org.openremote.beehive.domain.modeler.SensorType;
  */
 @SuppressWarnings("serial")
 @JsonTypeName(value = "RangeSensor")
+@XmlRootElement(name="rangeSensor")
 public class RangeSensorDTO extends SensorDTO {
 
    private int min;

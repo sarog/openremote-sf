@@ -51,13 +51,13 @@ public class UserRESTService extends RESTBaseService {
     * Create new <code>User</code> by posted <code>UserDTO</code>.
     * Visits @ url "/manageuser/create"
     * 
-    * @param userDTO the received <code>UserDTO</code>, and it is JSON format.
-    * @return the <code>UserDTO</code> with id and <code>Account</code>, and it is JSON format.
+    * @param userDTO the received <code>UserDTO</code>.
+    * @return the <code>UserDTO</code> with id and <code>Account</code>.
     */
    @Path("create")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response createUser(UserDTO userDTO) {
       User user = new User();
       user.setUsername(userDTO.getUsername());
@@ -70,11 +70,11 @@ public class UserRESTService extends RESTBaseService {
     * Visits @ url "/manageuser/get/{user_id}"
     * 
     * @param userId
-    * @return the JSON formated <code>UserDTO</code>.
+    * @return the <code>UserDTO</code>.
     */
    @Path("get/{user_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response getUserById(@PathParam("user_id")  long userId) {
       User user = getUserService().getUserById(userId);
       return buildResponse(user.toDTO());
@@ -85,11 +85,11 @@ public class UserRESTService extends RESTBaseService {
     * Visits @ url "/manageuser/getbyname/{username}"
     * 
     * @param username
-    * @return the JSON formated <code>UserDTO</code>.
+    * @return the <code>UserDTO</code>.
     */
    @Path("getbyname/{username}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response getUserByUsername(@PathParam("username")  String username) {
       User user = getUserService().getUserByUsername(username);
       if (user == null) return resourceNotFoundResponse();
@@ -100,12 +100,12 @@ public class UserRESTService extends RESTBaseService {
     * Update <code>User</code> token and pendingRoleName by posted <code>UserDTO</code>.
     * Visits @ url "/manageuser/update"
     * 
-    * @param userDto the received JSON formated <code>UserDTO</code>.
+    * @param userDto the received <code>UserDTO</code>.
     * @return status code 200 or 500.
     */
    @Path("update")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response updateUser(UserDTO userDto) {
       User user = getUserService().getUserById(userDto.getId());
       user.setToken(userDto.getToken());
@@ -132,15 +132,15 @@ public class UserRESTService extends RESTBaseService {
     * Create an invitee by posted <code>UserDTO</code> under the specified <code>Account</code>.
     * Visits @ url "/manageuser/createinvitee/{account_id}"
     * 
-    * @param userDTO  the invitee, it is a JSON formated <code>UserDTO</code>.
+    * @param userDTO  the invitee, it is a <code>UserDTO</code>.
     * @param accountId
     * @param credentials the Base64 encoded username and password, format is "username:password".
     * @return the invitee with id and <code>Account</code> information.
     */
    @Path("createinvitee/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response createInvitee(UserDTO userDTO, @PathParam("account_id") long accountId,
                            @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -159,7 +159,7 @@ public class UserRESTService extends RESTBaseService {
     */
    @Path("loadall/{account_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadUsersByAccount(@PathParam("account_id") long accountId,
                         @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -170,7 +170,7 @@ public class UserRESTService extends RESTBaseService {
       }
       
       if (userDTOs.size() == 0) return resourceNotFoundResponse();
-      return buildResponse(userDTOs);
+      return buildResponse(new UserListing(userDTOs));
    }
    
    /**

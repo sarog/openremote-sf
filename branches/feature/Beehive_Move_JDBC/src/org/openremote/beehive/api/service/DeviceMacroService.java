@@ -75,4 +75,13 @@ public interface DeviceMacroService {
     */
    public DeviceMacroDTO updateDeviceMacro(DeviceMacroDTO deviceMacroDTO);
    
+   /**
+    * Load same DeviceMacros from database, each of them has the same properties with <code>DeviceMacroDTO</code> except id. 
+    * 
+    * @param deviceMacroDTO
+    * @param accountId
+    * @return a list of deviceMacroDTOs.
+    */
+   public List<DeviceMacroDTO> loadSameDeviceMacros(DeviceMacroDTO deviceMacroDTO, long accountId);
+   
 }

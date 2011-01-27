@@ -47,14 +47,14 @@ public class SliderRESTService extends RESTBaseService {
     * Visits @ url "/slider/save/{account_id}"
     * 
     * @param accountId
-    * @param sliderDTO the posted JSON formated slider data.
+    * @param sliderDTO the posted slider data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the saved slider with specified id, and with device information, its JSON formated.
+    * @return the saved slider with specified id, and with device information.
     */
    @Path("save/{account_id}")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response save(@PathParam("account_id") long accountId, SliderDTO sliderDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -70,7 +70,7 @@ public class SliderRESTService extends RESTBaseService {
     * 
     * @param sliderId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return true or false.
+    * @return 200 or 500.
     */
    @Path("delete/{slider_id}")
    @DELETE
@@ -85,14 +85,14 @@ public class SliderRESTService extends RESTBaseService {
     * Update slider properties to database by posted sliderDTO.
     * Visits @ url "/slider/update"
     * 
-    * @param sliderDTO the posted JSON formated slider data.
+    * @param sliderDTO the posted slider data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return the updated sliderDTO with device information, and its JSON formated.
+    * @return the updated sliderDTO with device information.
     */
    @Path("update")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response update(SliderDTO sliderDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -108,11 +108,11 @@ public class SliderRESTService extends RESTBaseService {
     * 
     * @param accountId
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated sliderDTOs.
+    * @return a list of sliderDTOs.
     */
    @Path("loadall/{account_id}")
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadAccountSwitchs(@PathParam("account_id") long accountId,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -120,21 +120,21 @@ public class SliderRESTService extends RESTBaseService {
       if (sliders.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(sliders);
+      return buildResponse(new SliderListing(sliders));
    }
    
    /**
     * Show a list of sliderDTOs under an account, each of them has the same properties with the specified sliderDTO except id.
     * Visits @ url "/slider/loadsamesliders"
     * 
-    * @param sliderDTO the specified JSON formated slider data.
+    * @param sliderDTO the specified slider data.
     * @param credentials the Base64 encoded username and password, format is "username:password".
-    * @return a list of JSON formated sldierDTOs.
+    * @return a list of sldierDTOs.
     */
    @Path("loadsamesliders")
    @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+   @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response loadSameSliders(SliderDTO sliderDTO,
          @HeaderParam(Constant.HTTP_AUTH_HEADER_NAME) String credentials) {
       if (!authorize(credentials)) return unAuthorizedResponse();
@@ -142,7 +142,7 @@ public class SliderRESTService extends RESTBaseService {
       if (sliders.size() == 0) {
          return resourceNotFoundResponse();
       }
-      return buildResponse(sliders);
+      return buildResponse(new SliderListing(sliders));
    }
    
    /**

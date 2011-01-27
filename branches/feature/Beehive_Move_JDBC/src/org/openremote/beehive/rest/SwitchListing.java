@@ -22,26 +22,32 @@ package org.openremote.beehive.rest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.beehive.api.dto.modeler.SensorDTO;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.openremote.beehive.api.dto.modeler.SwitchDTO;
 
 /**
- * In order to let rest service to serialize list of sensors
+ * In order to let rest service to serialize list of switchs.
  */
-public class SensorList {
+@XmlRootElement(name = "switchs")
+public class SwitchListing {
 
-   private List<SensorDTO> sensors = new ArrayList<SensorDTO>();
-
-   public SensorList() {
+   private List<SwitchDTO> switchs = new ArrayList<SwitchDTO>();
+   
+   public SwitchListing() {
    }
    
-   public SensorList(List<SensorDTO> sensors) {
-      this.sensors = sensors;
-   }
-   public List<SensorDTO> getSensors() {
-      return sensors;
-   }
-   public void setSensors(List<SensorDTO> sensors) {
-      this.sensors = sensors;
+   public SwitchListing(List<SwitchDTO> switchs) {
+      this.switchs = switchs;
    }
    
+   @XmlElement(name="switch")
+   public List<SwitchDTO> getSwitchs() {
+      return switchs;
+   }
+   
+   public void setSwitchs(List<SwitchDTO> switchs) {
+      this.switchs = switchs;
+   }
 }

@@ -137,4 +137,29 @@ public class DeviceMacro extends BusinessEntity {
       deviceMacroDTO.setName(name);
       return deviceMacroDTO;
    }
+   
+   public boolean equalsWitoutCompareOid(DeviceMacro other) {
+      if (other == null) return false;
+      if (name == null ) {
+         if (other.name != null) return false;
+      } else if (!name.equals(other.name)) return false;
+      
+      if (deviceMacroItems == null) {
+         if (other.deviceMacroItems != null) return false;
+      }  else if (! hasSameMacroItems(other.deviceMacroItems)) {
+         return false;
+      } 
+      return true;
+   }
+   
+   private boolean hasSameMacroItems(List<DeviceMacroItem> macroItems) {
+      if (macroItems != null && deviceMacroItems != null ) {
+         if (macroItems.size() != deviceMacroItems.size()) return false;
+         for (int i =0 ;i < macroItems.size();i++) {
+            if ( ! deviceMacroItems.get(i).equalsWithoutCompareOid(macroItems.get(i))) return false;
+         }
+         return true;
+      }
+      return macroItems == null && deviceMacroItems == null;
+   }
 }

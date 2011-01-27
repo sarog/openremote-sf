@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonTypeName;
 import org.openremote.beehive.domain.modeler.CustomSensor;
@@ -34,6 +36,7 @@ import org.openremote.beehive.domain.modeler.SensorType;
  */
 @SuppressWarnings("serial")
 @JsonTypeName(value = "CustomSensor")
+@XmlRootElement(name="customSensor")
 public class CustomSensorDTO extends SensorDTO {
 
    private List<StateDTO> states = new ArrayList<StateDTO>();
@@ -42,7 +45,8 @@ public class CustomSensorDTO extends SensorDTO {
       super(SensorType.CUSTOM);
    }
    
-   @XmlElement(name = "states")
+   @XmlElementWrapper(name="states")
+   @XmlElement(name = "state")
    public List<StateDTO> getStates() {
       return states;
    }
