@@ -112,34 +112,34 @@ public class XMLUtil
   }
 
 
-  /**
-   * Build a document for a xml file referenced by user.
-   *
-   * @param xmlPath the file path for a xml file.
-   * @return a builded document for the xml file.
-   */
-  public static Document getDocument(String xmlPath)
-  {
-    SAXBuilder builder = new SAXBuilder();
-    Document doc = null;
-
-    try
-    {
-      doc = builder.build(xmlPath);
-    }
-
-    catch (JDOMException e)
-    {
-       e.printStackTrace();
-    }
-
-    catch (IOException e)
-    {
-       e.printStackTrace();
-    }
-
-    return doc;
-  }
+//  /**
+//   * Build a document for a xml file referenced by user.
+//   *
+//   * @param xmlPath the file path for a xml file.
+//   * @return a builded document for the xml file.
+//   */
+//  public static Document getDocument(String xmlPath)
+//  {
+//    SAXBuilder builder = new SAXBuilder();
+//    Document doc = null;
+//
+//    try
+//    {
+//      doc = builder.build(xmlPath);
+//    }
+//
+//    catch (JDOMException e)
+//    {
+//       e.printStackTrace();
+//    }
+//
+//    catch (IOException e)
+//    {
+//       e.printStackTrace();
+//    }
+//
+//    return doc;
+//  }
 
 
   /**
@@ -181,126 +181,127 @@ public class XMLUtil
     }
   }
 
-  /**
-   * Validate the controller.xml
-   *
-   * @param xmlPath the file path for controller.xml
-   * @return true if valid. false if not.
-   */
-  public static boolean validateControlleXML(String xmlPath)
-  {
-    SAXBuilder builder = new SAXBuilder();
-    builder.setValidation(true);
-    File xsdfile = new File(XMLUtil.class.getResource(Constants.CONTROLLER_XSD_PATH).getPath());
-
-    builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-    builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
-
-    try
-    {
-      builder.build(xmlPath);
-      return true;
-    }
-
-    catch (Exception e)
-    {
-      e.printStackTrace();
-      return false;
-    }
-  }
-
-
-  /**
-   * validate the panel.xml
-   * @param xmlPath the file path for panel.xml.
-   * @return true if valid, false if not.
-   */
-  public static boolean validatePanelXML(String xmlPath)
-  {
-    SAXBuilder builder = new SAXBuilder();
-    builder.setValidation(true);
-    File xsdfile = new File(XMLUtil.class.getResource(Constants.PANEL_XSD_PATH).getPath());
-
-    builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-    builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
-
-    try
-    {
-      builder.build(xmlPath);
-      return true;
-    }
-
-    catch (Exception e)
-    {
-      e.printStackTrace();
-      return false;
-    }
-  }
+//  /**
+//   * Validate the controller.xml
+//   *
+//   * @param xmlPath the file path for controller.xml
+//   * @return true if valid. false if not.
+//   */
+//  public static boolean validateControlleXML(String xmlPath)
+//  {
+//    SAXBuilder builder = new SAXBuilder();
+//    builder.setValidation(true);
+//    File xsdfile = new File(XMLUtil.class.getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+//
+//    builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+//    builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+//
+//    try
+//    {
+//      builder.build(xmlPath);
+//      return true;
+//    }
+//
+//    catch (Exception e)
+//    {
+//      e.printStackTrace();
+//      return false;
+//    }
+//  }
 
 
-  /**
-   * Get all the referenced element.
-   *
-   * @param doc the document for your xml file.
-   * @return a list stored all the referenced element.
-   */
-  @SuppressWarnings("unchecked")
-  public static List<Element> getRefElements(Document doc)
-  {
-    String xpath = "//" + Constants.OPENREMOTE_NAMESPACE + ":include";
+//  /**
+//   * Validate the panel.xml
+//   *
+//   * @param xmlPath the file path for panel.xml.
+//   * @return true if valid, false if not.
+//   */
+//  public static boolean validatePanelXML(String xmlPath)
+//  {
+//    SAXBuilder builder = new SAXBuilder();
+//    builder.setValidation(true);
+//    File xsdfile = new File(XMLUtil.class.getResource(Constants.PANEL_XSD_PATH).getPath());
+//
+//    builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+//    builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+//
+//    try
+//    {
+//      builder.build(xmlPath);
+//      return true;
+//    }
+//
+//    catch (Exception e)
+//    {
+//      e.printStackTrace();
+//      return false;
+//    }
+//  }
 
-    try
-    {
-      XPath xPath = XPath.newInstance(xpath);
-      xPath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-      List<Element> elements = xPath.selectNodes(doc);
-      return elements;
-    }
 
-    catch (JDOMException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
+//  /**
+//   * Get all the referenced element.
+//   *
+//   * @param doc the document for your xml file.
+//   * @return a list stored all the referenced element.
+//   */
+//  @SuppressWarnings("unchecked")
+//  public static List<Element> getRefElements(Document doc)
+//  {
+//    String xpath = "//" + Constants.OPENREMOTE_NAMESPACE + ":include";
+//
+//    try
+//    {
+//      XPath xPath = XPath.newInstance(xpath);
+//      xPath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+//      List<Element> elements = xPath.selectNodes(doc);
+//      return elements;
+//    }
+//
+//    catch (JDOMException e)
+//    {
+//      throw new RuntimeException(e);
+//    }
+//  }
 
 
-  /**
-   * Validate the xml file by validating the referencing element. <p>
-   *
-   * If you referenced a not exist element by id, or the element have the id exist but the type
-   * is not the same as the reference element's attribute <b>type</b> a InvalidReferenceExcepiton
-   * will be thrown.
-   *
-   * @param doc the document for your xml file.
-   * @throws InvalidReferenceException if the element you referenced not exist.
-   */
-  public static void validateRef(Document doc)
-  {
-    List<Element> refEles = getRefElements(doc);
-
-    if (refEles.size() > 0)
-    {
-      try
-      {
-        for (Element ele : refEles)
-        {
-          String refId = ele.getAttributeValue("ref");
-          Element refEle = getElementByID(doc, refId);
-          String includeType = ele.getAttributeValue("type");
-
-          if (!includeType.equals(refEle.getName()))
-          {
-            throw new InvalidReferenceException("No such a(an) " + includeType + " referenced by element\""
-                  + ele.getName() + "\" have an id :" + refId);
-          }
-        }
-      }
-
-      catch (NoSuchComponentException e)
-      {
-        throw new InvalidReferenceException("referenced element not exist", e);
-      }
-    }
-  }
+//  /**
+//   * Validate the xml file by validating the referencing element. <p>
+//   *
+//   * If you referenced a not exist element by id, or the element have the id exist but the type
+//   * is not the same as the reference element's attribute <b>type</b> a InvalidReferenceExcepiton
+//   * will be thrown.
+//   *
+//   * @param doc the document for your xml file.
+//   * @throws InvalidReferenceException if the element you referenced not exist.
+//   */
+//  public static void validateRef(Document doc)
+//  {
+//    List<Element> refEles = getRefElements(doc);
+//
+//    if (refEles.size() > 0)
+//    {
+//      try
+//      {
+//        for (Element ele : refEles)
+//        {
+//          String refId = ele.getAttributeValue("ref");
+//          Element refEle = getElementByID(doc, refId);
+//          String includeType = ele.getAttributeValue("type");
+//
+//          if (!includeType.equals(refEle.getName()))
+//          {
+//            throw new InvalidReferenceException("No such a(an) " + includeType + " referenced by element\""
+//                  + ele.getName() + "\" have an id :" + refId);
+//          }
+//        }
+//      }
+//
+//      catch (NoSuchComponentException e)
+//      {
+//        throw new InvalidReferenceException("referenced element not exist", e);
+//      }
+//    }
+//  }
 
 }
