@@ -21,6 +21,7 @@ package org.openremote.controller;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 
 /**
@@ -37,7 +38,20 @@ public class RoundRobinConfig extends CustomConfiguration {
    public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
    public static final String CONTROLLER_ROUNDROBIN_TCPSERVER_PORT = "controller.roundrobin.tcpserver.port";
    public static final String CONTROLLER_GROUPMEMBER_CANDIDATE_URLS = "controller.groupmember.candidate.urls";
-   
+
+
+
+  public static RoundRobinConfig readRoundRobinConfiguration()
+  {
+    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
+
+    RoundRobinConfig config = getRoundRobinConfig();
+    config.setCustomAttrMap(attrMap);
+
+    return config;
+  }
+  
+  
    /** whether groupmember auto-dectect is on */
    private boolean isGroupMemberAutoDetectOn;
    

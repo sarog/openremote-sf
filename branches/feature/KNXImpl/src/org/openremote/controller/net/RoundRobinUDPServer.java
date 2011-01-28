@@ -48,7 +48,7 @@ public class RoundRobinUDPServer implements Runnable {
    
    private Configuration configuration = ConfigFactory.readControllerConfiguration();
    
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.readRoundRobinConfiguration();
+   private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    
    private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    
