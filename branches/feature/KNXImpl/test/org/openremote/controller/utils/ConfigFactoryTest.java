@@ -48,10 +48,8 @@ public class ConfigFactoryTest
 
   @Before public void setup()
   {
-    String controllerXMLPath = this.getClass().getClassLoader().getResource(
-          AllTests.FIXTURE_DIR + "controller.xml").getFile();
-    String controllerXML2Path = this.getClass().getClassLoader().getResource(
-          AllTests.FIXTURE_DIR + "controller2.xml").getFile();
+    String controllerXMLPath = AllTests.getFixtureFile("controller.xml");
+    String controllerXML2Path = AllTests.getFixtureFile("controller2.xml");
 
     doc = XMLUtil.getControllerDocument(controllerXMLPath);
     doc2 = XMLUtil.getControllerDocument(controllerXML2Path);
