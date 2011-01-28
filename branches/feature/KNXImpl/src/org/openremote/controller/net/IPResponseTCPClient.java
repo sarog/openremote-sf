@@ -45,7 +45,7 @@ public class IPResponseTCPClient implements Runnable {
    public final static int TCP_PORT = 2346;
    
    /** The configuration. */
-   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
    
 

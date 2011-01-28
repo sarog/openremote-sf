@@ -103,7 +103,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    }
    
    private void storeXMLContent(String xmlFileName) {
-      String xmlFilePath = PathUtil.addSlashSuffix(ControllerConfiguration.readControllerConfiguration().getResourcePath()) + xmlFileName;
+      String xmlFilePath = PathUtil.addSlashSuffix(ControllerConfiguration.readXML().getResourcePath()) + xmlFileName;
       File xmlFile = new File(xmlFilePath);
       try {
          StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(xmlFile, "utf-8"));

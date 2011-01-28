@@ -36,7 +36,7 @@ import org.openremote.controller.ControllerConfiguration;
  */
 public class NetworkUtil {
    public static final Logger logger = Logger.getLogger(NetworkUtil.class);
-   private static ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
+   private static ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
    private NetworkUtil(){}
    

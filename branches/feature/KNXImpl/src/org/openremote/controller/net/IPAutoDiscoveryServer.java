@@ -41,7 +41,7 @@ public class IPAutoDiscoveryServer implements Runnable {
    private static Logger logger = Logger.getLogger(IPAutoDiscoveryServer.class.getName());
    
    /** The configuration. */
-   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
 
    /**
