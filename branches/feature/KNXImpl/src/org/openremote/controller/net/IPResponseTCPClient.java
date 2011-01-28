@@ -46,7 +46,7 @@ public class IPResponseTCPClient implements Runnable {
    public final static int TCP_PORT = 2346;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+   private Configuration configuration = ConfigFactory.readControllerConfiguration();
    
    
 

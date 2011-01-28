@@ -87,7 +87,10 @@ public class X10ControllerManager {
     */
    public X10Controller getDevice() throws ConnectionException
    {
-      Configuration config = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+     // TODO :
+     //   fix this -- it's part of the X10 send() loop so reading the XML config every time
+     //   doesn't make sense
+     Configuration config = ConfigFactory.readControllerConfiguration();
 
       String transmitterHint = StringUtils.defaultIfEmpty(config.getX10transmitter(), DEFAULT_TRANSMITTER_HINT);
 

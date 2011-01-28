@@ -50,7 +50,10 @@ public class MacrosIrDelayUtil {
       if (irCmdIndex == null) {
          return;
       }
-      long minDelaySeconds = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML().getMacroIRExecutionDelay();
+
+     // TODO - Fix this: this is completely stupid use of the configuration, the XML is parsed every time [JPL]
+     
+      long minDelaySeconds = ConfigFactory.readControllerConfiguration().getMacroIRExecutionDelay();
       Map<Integer, DelayCommand> delays = getDelayForIrCommand(commands, irCmdIndex, minDelaySeconds);
 
       int addTimes = 0;
