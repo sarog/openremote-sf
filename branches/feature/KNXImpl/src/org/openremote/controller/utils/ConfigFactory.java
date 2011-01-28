@@ -38,16 +38,14 @@ import org.openremote.controller.spring.SpringContext;
  */
 public class ConfigFactory
 {
-   
-
-
-
 
   public static Configuration readControllerConfiguration()
   {
     Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
+
     Configuration config = CustomConfiguration.getConfig();
     config.setCustomAttrMap(attrMap);
+
     return config;
   }
 
@@ -61,31 +59,6 @@ public class ConfigFactory
 
     return config;
   }
-
-
-
-
-
-  public static Map<String, String> pullAllCustomConfigs(Element element)
-  {
-    Map<String, String> attrMap = new HashMap<String, String>();
-
-    for (Object o : element.getChildren())
-    {
-      Element e = (Element) o;
-      String name = e.getAttributeValue("name");
-      String value = e.getAttributeValue("value");
-      attrMap.put(name, value);
-    }
-
-    return attrMap;
-  }
-
-
-  // Private Class Members ------------------------------------------------------------------------
-
-
-
 
 
 }
