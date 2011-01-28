@@ -97,7 +97,7 @@ public class SensorRESTServiceTest extends TemplateTestBase {
       dispatcher.invoke(mockLoadAllHttpRequest, mockLoadAllHttpResponse);
       
       String sensorsJson = mockLoadAllHttpResponse.getContentAsString();
-      SensorList sensorList = mapper.readValue(sensorsJson, SensorList.class);
+      SensorListing sensorList = mapper.readValue(sensorsJson, SensorListing.class);
       assertEquals(1, sensorList.getSensors().size());
    }
    
@@ -150,7 +150,7 @@ public class SensorRESTServiceTest extends TemplateTestBase {
       dispatcher.invoke(mockLoadSameHttpRequest, mockLoadSameHttpResponse);
 
       String sensorsJson = mockLoadSameHttpResponse.getContentAsString();
-      SensorList sensorList = mapper.readValue(sensorsJson, SensorList.class);
+      SensorListing sensorList = mapper.readValue(sensorsJson, SensorListing.class);
       assertEquals(1, sensorList.getSensors().size());
    }
    
