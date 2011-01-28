@@ -65,7 +65,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       
       String[] excludes = {"*.class","*.deviceAttrs","*.deviceCommands", "*.switchs", "*.sliders", "*.sensors"};
-      String json = JsonGenerator.deepSerializerObjectExclude(deviceCommands, excludes);
+      String json = "{\"deviceCommands\":" + JsonGenerator.deepSerializerObjectExclude(deviceCommands, excludes) + "}";
       
       HttpClient httpClient = new DefaultHttpClient();
       HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceCommandUrl() + "saveall");
@@ -77,7 +77,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == 200) {
-            String deviceCommandJson = "{deviceCommands:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String deviceCommandJson = IOUtils.toString(response.getEntity().getContent());
             DeviceCommandList result = new JSONDeserializer<DeviceCommandList>().use(null, DeviceCommandList.class).use("deviceCommands",ArrayList.class).deserialize(deviceCommandJson);
             return result.getDeviceCommands();
          } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
@@ -217,7 +217,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String deviceCommandsJson = "{deviceCommands:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String deviceCommandsJson = IOUtils.toString(response.getEntity().getContent());
             DeviceCommandList result = new JSONDeserializer<DeviceCommandList>().use(null, DeviceCommandList.class).use("deviceCommands",
                   ArrayList.class).deserialize(deviceCommandsJson);
             return result.getDeviceCommands();
@@ -247,7 +247,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String deviceCommandsJson = "{deviceCommands:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String deviceCommandsJson = IOUtils.toString(response.getEntity().getContent());
             DeviceCommandList result = new JSONDeserializer<DeviceCommandList>().use(null, DeviceCommandList.class).use("deviceCommands",
                   ArrayList.class).deserialize(deviceCommandsJson);
             return result.getDeviceCommands();

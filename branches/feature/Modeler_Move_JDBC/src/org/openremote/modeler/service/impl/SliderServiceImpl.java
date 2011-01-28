@@ -80,7 +80,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String sliderJson = "{sliders:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String sliderJson = IOUtils.toString(response.getEntity().getContent());
             SliderList result = new JSONDeserializer<SliderList>()
                .use(null, SliderList.class)
                .use("sliders", ArrayList.class)
@@ -168,7 +168,7 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String sliderJson = "{sliders:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String sliderJson = IOUtils.toString(response.getEntity().getContent());
             SliderList result = new JSONDeserializer<SliderList>()
                .use(null, SliderList.class)
                .use("sliders", ArrayList.class)

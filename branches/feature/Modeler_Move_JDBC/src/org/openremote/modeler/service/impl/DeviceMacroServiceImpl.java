@@ -21,7 +21,6 @@ package org.openremote.modeler.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -34,8 +33,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.CommandDelay;
@@ -125,7 +122,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String deviceMacrosJson = "{deviceMacros:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String deviceMacrosJson = IOUtils.toString(response.getEntity().getContent());
             DeviceMacroList result = new JSONDeserializer<DeviceMacroList>()
             .use(null, DeviceMacroList.class)
             .use("deviceMacros.values.deviceMacroItems.values", new TypeLocator<String>("classType")
@@ -245,21 +242,32 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
    }
 
 
-   public List<DeviceMacro> loadSameMacro(DeviceMacro macro) {
-      List<DeviceMacro> results = null;
-      DetachedCriteria critera = DetachedCriteria.forClass(DeviceMacro.class);
-      critera.add(Restrictions.eq("account.oid", macro.getAccount().getId()));
-      critera.add(Restrictions.eq("name", macro.getName()));
-      results = genericDAO.findByDetachedCriteria(critera);
-      if (results != null && results.size() >0) {
-         for (Iterator<DeviceMacro> iterator = results.iterator();iterator.hasNext(); ) {
-            DeviceMacro m = iterator.next();
-            if (! m.equalsWitoutCompareOid(macro)) {
-               iterator.remove();
-            }
+   public List<DeviceMacro> loadSameMacro(DeviceMacro macro, Account account) {
+      HttpClient httpClient = new DefaultHttpClient();
+      HttpPost httpPost = new HttpPost(configuration.getBeehiveRESTDeviceMacroUrl() + "loadsamemacros/" + account.getId());
+      httpPost.setHeader("Content-Type", "application/json"); 
+      httpPost.addHeader("Accept", "application/json");
+      addAuthentication(httpPost);
+      try {
+         HttpResponse response = httpClient.execute(httpPost);
+         int statusCode = response.getStatusLine().getStatusCode();
+         if (statusCode == HttpServletResponse.SC_OK) {
+            String deviceMacrosJson = IOUtils.toString(response.getEntity().getContent());
+            DeviceMacroList result = new JSONDeserializer<DeviceMacroList>()
+            .use(null, DeviceMacroList.class)
+             .deserialize(deviceMacrosJson);
+            return result.getDeviceMacros();
+         } else if (statusCode == HttpServletResponse.SC_UNAUTHORIZED) {
+            throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
+         } else if (statusCode == HttpServletResponse.SC_NOT_FOUND) {
+            return new ArrayList<DeviceMacro>();
+         } else {
+            throw new BeehiveJDBCException("Failed load same device macros from beehive.");
          }
+      } catch (IOException e) {
+         throw new BeehiveJDBCException("Can't load same device macros from beehive.");
       }
-      return results;
+      
    }
    
    public void setConfiguration(Configuration configuration) {

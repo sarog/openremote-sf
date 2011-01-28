@@ -115,7 +115,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String devicesJson = "{devices:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String devicesJson = IOUtils.toString(response.getEntity().getContent());
             DeviceList result = new JSONDeserializer<DeviceList>().use(null, DeviceList.class).use("devices",
                   ArrayList.class).deserialize(devicesJson);
             return result.getDevices();
@@ -206,7 +206,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String devicesJson = "{devices:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String devicesJson = IOUtils.toString(response.getEntity().getContent());
             DeviceList result = new JSONDeserializer<DeviceList>().use(null, DeviceList.class).use("devices",
                   ArrayList.class).deserialize(devicesJson);
             return result.getDevices();

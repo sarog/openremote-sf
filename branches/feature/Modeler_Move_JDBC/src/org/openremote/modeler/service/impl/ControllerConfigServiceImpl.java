@@ -67,7 +67,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String itemsJson = "{controllerConfigs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String itemsJson = IOUtils.toString(response.getEntity().getContent());
             ControllerConfigList result = new JSONDeserializer<ControllerConfigList>()
                      .use(null, ControllerConfigList.class).deserialize(itemsJson);
             List<ControllerConfig> configs = result.getControllerConfigs();
@@ -99,7 +99,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String itemsJson = "{controllerConfigs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String itemsJson = IOUtils.toString(response.getEntity().getContent());
             ControllerConfigList result = new JSONDeserializer<ControllerConfigList>()
                      .use(null, ControllerConfigList.class).deserialize(itemsJson);
             List<ControllerConfig> dbConfigs = result.getControllerConfigs();
@@ -134,7 +134,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String itemsJson = "{controllerConfigs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String itemsJson = IOUtils.toString(response.getEntity().getContent());
             ControllerConfigList result = new JSONDeserializer<ControllerConfigList>()
                      .use(null, ControllerConfigList.class).deserialize(itemsJson);
             List<ControllerConfig> configs = result.getControllerConfigs();

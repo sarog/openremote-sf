@@ -79,7 +79,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String switchJson = "{switchs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String switchJson = IOUtils.toString(response.getEntity().getContent());
             SwitchList result = new JSONDeserializer<SwitchList>()
                .use(null, SwitchList.class)
                .use("switchs", ArrayList.class)
@@ -176,7 +176,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String switchJson = "{switchs:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String switchJson = IOUtils.toString(response.getEntity().getContent());
             SwitchList result = new JSONDeserializer<SwitchList>()
                .use(null, SwitchList.class)
                .use("switchs", ArrayList.class)
