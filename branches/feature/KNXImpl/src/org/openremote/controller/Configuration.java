@@ -28,21 +28,33 @@ import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
 /**
- * TODO: Custom Configuration accepts a map to prefer custom attribute values by name.
+ * Configuration class acts as a common superclass for various configuration segments. <p>
+ *
+ * Controller configuration can be set either by modifying local property files or by setting
+ * configuration properties in the controller.xml file. If a configuration vaue is present in both
+ * the controller.xml file and in a local configuration (text) file, then the controller.xml
+ * configuration takes precedence. <p>
+ *
+ * If the controller.xml is created with OpenRemote Designer tool then the configuration values
+ * are stored in the user's online account and distributed to the Controller when it is
+ * synchronized with the online account. The online mode allows support/service personnel to modify
+ * Controller configuration remotely.  <p>
+ *
+ * Note that the functionality described above requires that the subclasses use the configuration
+ * value methods of this superclass.
  * 
- * @author Dan Cong
+ * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
+ *
+ * @see ControllerConfiguration
+ * @see RoundRobinConfiguration
  */
-public class Configuration
+public abstract class Configuration
 {
 
-
-   
-  /** custom attributes map, will use these values first, other than default values from config.properties */
-  private Map<String, String> customAttrMap = new HashMap<String, String>();
+  // Class Members --------------------------------------------------------------------------------
 
 
-
-  public static Map<String, String> parseCustomConfigAttrMap()
+  public static Map<String, String> parseControllerXMLConfiguration()
   {
     Element element = null;
 
@@ -51,16 +63,19 @@ public class Configuration
       element = getControllerXMLParser().queryElementFromXMLByName("config");
     }
 
-    catch (Exception e)
+    catch (Exception e)       // TODO : fix this exception handling
     {
       return null;
     }
 
-    return pullAllCustomConfigs(element);
+    return populateConfigurationProperties(element);
   }
 
 
-  public static Map<String, String> pullAllCustomConfigs(Element element)
+  // TODO :
+  //   this method only exists due to test case dependency -- the dependency
+  //   should be removed and the code here inlined to the calling method [JPL]
+  public static Map<String, String> populateConfigurationProperties(Element element)
   {
     Map<String, String> attrMap = new HashMap<String, String>();
 
@@ -76,45 +91,66 @@ public class Configuration
   }
 
 
-
-  public Map<String, String> getCustomAttrMap()
+  protected static Configuration updateWithControllerXMLConfiguration(Configuration config)
   {
-    return customAttrMap;
+    Map<String, String> properties = parseControllerXMLConfiguration();
+
+    config.setConfigurationProperties(properties);
+
+    return config;
   }
 
-  public void setCustomAttrMap(Map<String, String> customAttrMap)
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+
+  private Map<String, String> configurationProperties = new HashMap<String, String>();
+
+
+
+
+  // Protected Methods ----------------------------------------------------------------------------
+
+
+  public /* TODO */  void setConfigurationProperties(Map<String, String> configurationProperties)
   {
-    if (customAttrMap == null)
+    if (configurationProperties == null)
     {
        return;
     }
 
-    this.customAttrMap = customAttrMap;
+    this.configurationProperties = new HashMap<String, String>(configurationProperties);
   }
+
 
   protected String preferAttrCustomValue(String attrName, String defaultValue)
   {
-    return customAttrMap.containsKey(attrName) ? customAttrMap.get(attrName) : defaultValue;
+    return configurationProperties.containsKey(attrName) ?
+        configurationProperties.get(attrName) : defaultValue;
   }
 
   protected boolean preferAttrCustomValue(String attrName, boolean defaultValue)
   {
-    return customAttrMap.containsKey(attrName) ? Boolean.valueOf(customAttrMap.get(attrName)) : defaultValue;
+    return configurationProperties.containsKey(attrName) ?
+        Boolean.valueOf(configurationProperties.get(attrName)) : defaultValue;
   }
 
   protected int preferAttrCustomValue(String attrName, int defaultValue)
   {
-    return customAttrMap.containsKey(attrName) ? Integer.valueOf(customAttrMap.get(attrName)) : defaultValue;
+    return configurationProperties.containsKey(attrName) ?
+        Integer.valueOf(configurationProperties.get(attrName)) : defaultValue;
   }
 
   protected long preferAttrCustomValue(String attrName, long defaultValue)
   {
-    return customAttrMap.containsKey(attrName) ? Long.valueOf(customAttrMap.get(attrName)) : defaultValue;
+    return configurationProperties.containsKey(attrName) ?
+        Long.valueOf(configurationProperties.get(attrName)) : defaultValue;
   }
 
   protected String[] preferAttrCustomValue(String attrName, String[] defaultValue)
   {
-    return customAttrMap.containsKey(attrName) ? customAttrMap.get(attrName).split(",") : defaultValue;
+    return configurationProperties.containsKey(attrName) ?
+        configurationProperties.get(attrName).split(",") : defaultValue;
   }
 
 
@@ -126,16 +162,6 @@ public class Configuration
   // with a service interface that is more portable to smaller (Android) runtimes
   //
   // ----------------------------------------------------------------------------------------------
-
-  public static ControllerConfiguration getConfig()
-  {
-    return (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
-  }
-
-  public static RoundRobinConfiguration getRoundRobinConfig()
-  {
-    return (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
-  }
 
   private static RemoteActionXMLParser getControllerXMLParser()
   {

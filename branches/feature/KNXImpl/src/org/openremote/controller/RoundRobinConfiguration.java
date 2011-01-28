@@ -23,9 +23,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 
+import org.openremote.controller.spring.SpringContext;
+
 
 /**
- * Configuration of RoundRobin.
+ * TODO : Configuration of RoundRobin.
  * 
  * @author Handy.Wang, Dan Cong
  */
@@ -43,12 +45,9 @@ public class RoundRobinConfiguration extends Configuration {
 
   public static RoundRobinConfiguration readXML()
   {
-    Map<String, String> attrMap = Configuration.parseCustomConfigAttrMap();
+    RoundRobinConfiguration config = (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
 
-    RoundRobinConfiguration config = getRoundRobinConfig();
-    config.setCustomAttrMap(attrMap);
-
-    return config;
+    return (RoundRobinConfiguration)Configuration.updateWithControllerXMLConfiguration(config);
   }
   
   
@@ -136,6 +135,8 @@ public class RoundRobinConfiguration extends Configuration {
    public void setGroupMemberCandidateURLs(String[] groupMemberCandidateURLs) {
       this.groupMemberCandidateURLs = groupMemberCandidateURLs;
    }
+
+
 
 }
 
