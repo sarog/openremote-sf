@@ -38,90 +38,91 @@ import org.openremote.controller.suite.AllTests;
  * @author Dan Cong
  *
  */
-public class ConfigFactoryTest {
+public class ConfigFactoryTest
+{
    
-   private Document doc;
-   
-   // modified some attributes to simulate uploading new controller.xml
-   private Document doc2; 
-   
-   @Before
-   public void setup() {
-      String controllerXMLPath = this.getClass().getClassLoader().getResource(
-            AllTests.FIXTURE_DIR + "controller.xml").getFile();
-      String controllerXML2Path = this.getClass().getClassLoader().getResource(
-            AllTests.FIXTURE_DIR + "controller2.xml").getFile();
-      
-      doc = XMLUtil.getControllerDocument(controllerXMLPath);
-      doc2 = XMLUtil.getControllerDocument(controllerXML2Path);
-   }
-   
-   @Test
-   public void getBasicConfig() {
-      
-      Configuration config = ConfigFactory.getCustomBasicConfigFromControllerXML(doc);
-      
-      assertEquals("controller1", config.getWebappName());
-      assertEquals(false, config.isCopyLircdconf());
-//      assertEquals("/home/openremote/controller", config.getResourcePath());
-      assertEquals("/etc/lircd.conf", config.getLircdconfPath());
-      assertEquals("http://openremote.org/beehvie/rest/", config.getBeehiveRESTRootUrl());
-      assertEquals("192.168.4.63", config.getWebappIp());
-      assertEquals(8888, config.getWebappPort());
-      assertEquals("/usr/local/bin/irsend", config.getIrsendPath());
-      assertEquals(500, config.getMacroIRExecutionDelay());
-      assertEquals(3333, config.getMulticastPort());
-      assertEquals("224.0.1.100", config.getMulticastAddress());
-      
-   }
-   
-   @Test
-   public void getBasicConfig2() {
-      
-      Configuration config = ConfigFactory.getCustomBasicConfigFromControllerXML(doc2);
-      
-      assertEquals("controller2", config.getWebappName());
-      assertEquals(true, config.isCopyLircdconf());
-//      assertEquals("/home/openremote/controller", config.getResourcePath());
-      assertEquals("/etc/lircd.conf", config.getLircdconfPath());
-      assertEquals("http://openremote.org/beehvie/rest/", config.getBeehiveRESTRootUrl());
-      assertEquals("192.168.4.63", config.getWebappIp());
-      assertEquals(8888, config.getWebappPort());
-      assertEquals("/usr/local/bin/irsend", config.getIrsendPath());
-      assertEquals(500, config.getMacroIRExecutionDelay());
-      assertEquals(3333, config.getMulticastPort());
-      assertEquals("224.0.1.100", config.getMulticastAddress());
-      
-   }
-   
-   @Test
-   public void getRoundRobinConfig() {
-      
-      RoundRobinConfig config = ConfigFactory.getCustomRoundRobinConfigFromControllerXML(doc);
-      assertEquals("controller1", config.getControllerApplicationName());
-      assertEquals(true, config.getIsGroupMemberAutoDetectOn());
-      assertEquals("openremote-office", config.getControllerGroupName());
-      assertEquals("224.0.1.200", config.getRoundRobinMulticastAddress());
-      assertEquals(20000, config.getRoundRobinMulticastPort());
-      assertEquals(10000, config.getRoundRobinTCPServerSocketPort());
-      
-      String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
-      assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
-   }
-   
-   @Test
-   public void getRoundRobinConfig2() {
-      
-      RoundRobinConfig config = ConfigFactory.getCustomRoundRobinConfigFromControllerXML(doc2);
-      assertEquals("controller2", config.getControllerApplicationName());
-      assertEquals(false, config.getIsGroupMemberAutoDetectOn());
-      assertEquals("openremote-home", config.getControllerGroupName());
-      assertEquals("224.0.1.200", config.getRoundRobinMulticastAddress());
-      assertEquals(20000, config.getRoundRobinMulticastPort());
-      assertEquals(10000, config.getRoundRobinTCPServerSocketPort());
-      
-      String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
-      assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
-   }
+  private Document doc;
+
+  // modified some attributes to simulate uploading new controller.xml
+  private Document doc2;
+
+  @Before public void setup()
+  {
+    String controllerXMLPath = this.getClass().getClassLoader().getResource(
+          AllTests.FIXTURE_DIR + "controller.xml").getFile();
+    String controllerXML2Path = this.getClass().getClassLoader().getResource(
+          AllTests.FIXTURE_DIR + "controller2.xml").getFile();
+
+    doc = XMLUtil.getControllerDocument(controllerXMLPath);
+    doc2 = XMLUtil.getControllerDocument(controllerXML2Path);
+  }
+
+  @Test public void getBasicConfig()
+  {
+
+    Configuration config = ConfigFactory.getCustomBasicConfigFromControllerXML(doc);
+
+    assertEquals("controller1", config.getWebappName());
+    assertEquals(false, config.isCopyLircdconf());
+  //      assertEquals("/home/openremote/controller", config.getResourcePath());
+    assertEquals("/etc/lircd.conf", config.getLircdconfPath());
+    assertEquals("http://openremote.org/beehvie/rest/", config.getBeehiveRESTRootUrl());
+    assertEquals("192.168.4.63", config.getWebappIp());
+    assertEquals(8888, config.getWebappPort());
+    assertEquals("/usr/local/bin/irsend", config.getIrsendPath());
+    assertEquals(500, config.getMacroIRExecutionDelay());
+    assertEquals(3333, config.getMulticastPort());
+    assertEquals("224.0.1.100", config.getMulticastAddress());
+
+  }
+
+  @Test public void getBasicConfig2()
+  {
+
+    Configuration config = ConfigFactory.getCustomBasicConfigFromControllerXML(doc2);
+
+    assertEquals("controller2", config.getWebappName());
+    assertEquals(true, config.isCopyLircdconf());
+  //      assertEquals("/home/openremote/controller", config.getResourcePath());
+    assertEquals("/etc/lircd.conf", config.getLircdconfPath());
+    assertEquals("http://openremote.org/beehvie/rest/", config.getBeehiveRESTRootUrl());
+    assertEquals("192.168.4.63", config.getWebappIp());
+    assertEquals(8888, config.getWebappPort());
+    assertEquals("/usr/local/bin/irsend", config.getIrsendPath());
+    assertEquals(500, config.getMacroIRExecutionDelay());
+    assertEquals(3333, config.getMulticastPort());
+    assertEquals("224.0.1.100", config.getMulticastAddress());
+
+  }
+
+  @Test public void getRoundRobinConfig()
+  {
+
+    RoundRobinConfig config = ConfigFactory.getCustomRoundRobinConfigFromControllerXML(doc);
+    assertEquals("controller1", config.getControllerApplicationName());
+    assertEquals(true, config.getIsGroupMemberAutoDetectOn());
+    assertEquals("openremote-office", config.getControllerGroupName());
+    assertEquals("224.0.1.200", config.getRoundRobinMulticastAddress());
+    assertEquals(20000, config.getRoundRobinMulticastPort());
+    assertEquals(10000, config.getRoundRobinTCPServerSocketPort());
+
+    String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
+    assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
+  }
+
+  @Test public void getRoundRobinConfig2()
+  {
+
+    RoundRobinConfig config = ConfigFactory.getCustomRoundRobinConfigFromControllerXML(doc2);
+    assertEquals("controller2", config.getControllerApplicationName());
+    assertEquals(false, config.getIsGroupMemberAutoDetectOn());
+    assertEquals("openremote-home", config.getControllerGroupName());
+    assertEquals("224.0.1.200", config.getRoundRobinMulticastAddress());
+    assertEquals(20000, config.getRoundRobinMulticastPort());
+    assertEquals(10000, config.getRoundRobinTCPServerSocketPort());
+
+    String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
+    assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
+  }
 
 }
