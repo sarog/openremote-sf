@@ -53,11 +53,13 @@ public class ConfigFactory
   }
 
    
-  public static RoundRobinConfig getCustomRoundRobinConfigFromDefaultControllerXML()
+  public static RoundRobinConfig readRoundRobinConfiguration()
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap();
+
     RoundRobinConfig config = getRoundRobinConfig();
     config.setCustomAttrMap(attrMap);
+
     return config;
   }
 
