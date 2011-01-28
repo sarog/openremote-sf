@@ -29,7 +29,7 @@ import java.util.Map;
  * 
  * @author Handy.Wang, Dan Cong
  */
-public class RoundRobinConfiguration extends CustomConfiguration {
+public class RoundRobinConfiguration extends Configuration {
    
    public static final String CONTROLLER_GROUPMEMBER_AUTODETECT_ON = "controller.groupmember.autodetect.on";
    public static final String CONTROLLER_ROUNDROBIN_MULTICAST_ADDRESS = "controller.roundrobin.multicast.address";
@@ -43,7 +43,7 @@ public class RoundRobinConfiguration extends CustomConfiguration {
 
   public static RoundRobinConfiguration readRoundRobinConfiguration()
   {
-    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
+    Map<String, String> attrMap = Configuration.parseCustomConfigAttrMap();
 
     RoundRobinConfiguration config = getRoundRobinConfig();
     config.setCustomAttrMap(attrMap);

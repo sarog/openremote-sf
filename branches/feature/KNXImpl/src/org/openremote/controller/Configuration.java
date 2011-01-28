@@ -32,7 +32,7 @@ import org.openremote.controller.command.RemoteActionXMLParser;
  * 
  * @author Dan Cong
  */
-public class CustomConfiguration
+public class Configuration
 {
 
 
