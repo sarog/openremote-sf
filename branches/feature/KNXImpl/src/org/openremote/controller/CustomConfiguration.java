@@ -127,9 +127,9 @@ public class CustomConfiguration
   //
   // ----------------------------------------------------------------------------------------------
 
-  public static Configuration getConfig()
+  public static ControllerConfiguration getConfig()
   {
-    return (Configuration) SpringContext.getInstance().getBean("configuration");
+    return (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
   }
 
   public static RoundRobinConfig getRoundRobinConfig()

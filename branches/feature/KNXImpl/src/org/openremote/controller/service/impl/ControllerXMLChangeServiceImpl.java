@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.SensorBuilder;
@@ -88,7 +88,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    
    private boolean isObservedXMLContentChanged(String observedXMLFileName) {
       //if changed, save the latest controller.xml.
-      String observedXMLFilePath = PathUtil.addSlashSuffix(Configuration.readControllerConfiguration().getResourcePath()) + observedXMLFileName;
+      String observedXMLFilePath = PathUtil.addSlashSuffix(ControllerConfiguration.readControllerConfiguration().getResourcePath()) + observedXMLFileName;
       File observedXMLFile = new File(observedXMLFilePath);
       StringBuffer fileContent = new StringBuffer();
       String oldXMLFileContent = new String();

@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.DelayCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 
 /**
  * This class provide some method for operating macros. 
@@ -54,7 +54,7 @@ public class MacrosIrDelayUtil {
 
      // TODO - Fix this: this is completely stupid use of the configuration, the XML is parsed every time [JPL]
      
-      long minDelaySeconds = Configuration.readControllerConfiguration().getMacroIRExecutionDelay();
+      long minDelaySeconds = ControllerConfiguration.readControllerConfiguration().getMacroIRExecutionDelay();
       Map<Integer, DelayCommand> delays = getDelayForIrCommand(commands, irCmdIndex, minDelaySeconds);
 
       int addTimes = 0;

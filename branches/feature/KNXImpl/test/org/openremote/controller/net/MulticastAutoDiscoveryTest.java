@@ -28,7 +28,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.junit.Test;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 
 /**
  * 
@@ -37,7 +37,7 @@ import org.openremote.controller.Configuration;
  */
 public class MulticastAutoDiscoveryTest {
 
-   private Configuration configuration = Configuration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
 
    @Test
    public void getMulticastSocketIP() {

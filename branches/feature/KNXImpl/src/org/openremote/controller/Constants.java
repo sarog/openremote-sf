@@ -87,7 +87,7 @@ public class Constants
    * File name of the panel UI definition file in the controller. The file is located in the
    * 'resource path' directory that can be found from the controller configuration object.
    *
-   * @see org.openremote.controller.Configuration#getResourcePath()
+   * @see ControllerConfiguration#getResourcePath()
    */
   public static final String PANEL_XML = "panel.xml";
 

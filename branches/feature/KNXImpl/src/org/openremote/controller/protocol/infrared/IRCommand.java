@@ -22,7 +22,7 @@ package org.openremote.controller.protocol.infrared;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.ExecutableCommand;
 
 /**
@@ -42,7 +42,7 @@ public class IRCommand implements ExecutableCommand {
    private String command;
    
    /** The configuration. */
-   private Configuration configuration = Configuration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
    
    /**
     * {@inheritDoc}
@@ -94,7 +94,7 @@ public class IRCommand implements ExecutableCommand {
     * 
     * @param configuration the new configuration
     */
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
    

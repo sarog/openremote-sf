@@ -25,13 +25,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.io.InputStream;
 
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.openremote.controller.Constants;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 
 /**
  * This class is the data model for OpenRemote panel definitions. It provides bindings to an
@@ -184,7 +183,7 @@ public class Panel
 
     buffer
         .append(XMLMapping.XML_DECLARATION_UTF8)
-        .append(Configuration.LINE_SEPARATOR)
+        .append(ControllerConfiguration.LINE_SEPARATOR)
         .append("<openremote>");
 
 
@@ -197,7 +196,7 @@ public class Panel
           .append("\" name = \"")
           .append(panel.getName())
           .append("\"/>")
-          .append(Configuration.LINE_SEPARATOR);
+          .append(ControllerConfiguration.LINE_SEPARATOR);
     }
 
     buffer.append("</openremote>");
