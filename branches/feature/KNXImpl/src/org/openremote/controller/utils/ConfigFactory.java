@@ -42,12 +42,12 @@ public class ConfigFactory
      (RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser");
 
 
-  private static Configuration getConfig()
+  public static Configuration getConfig()
   {
     return (Configuration) SpringContext.getInstance().getBean("configuration");
   }
    
-  private static RoundRobinConfig getRoundRobinConfig()
+  public static RoundRobinConfig getRoundRobinConfig()
   {
     return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
   }
@@ -59,14 +59,7 @@ public class ConfigFactory
     config.setCustomAttrMap(attrMap);
     return config;
   }
-   
-  public static Configuration getCustomBasicConfigFromControllerXML(Document doc)
-  {
-    Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    Configuration config = getConfig();
-    config.setCustomAttrMap(attrMap);
-    return config;
-  }
+
    
   public static RoundRobinConfig getCustomRoundRobinConfigFromDefaultControllerXML()
   {
@@ -84,7 +77,7 @@ public class ConfigFactory
     return config;
   }
 
-  private static Map<String, String> parseCustomConfigAttrMap()
+  public static Map<String, String> parseCustomConfigAttrMap()
   {
     Element element = null;
 
@@ -101,6 +94,13 @@ public class ConfigFactory
     return pullAllCustomConfigs(element);
   }
 
+  public static Map<String, String> parseCustomConfigAttrMap(Document doc)
+  {
+    Element element = remoteActionXMLParser.queryElementFromXMLByName(doc, "config");
+    return pullAllCustomConfigs(element);
+  }
+
+
   private static Map<String, String> pullAllCustomConfigs(Element element)
   {
     Map<String, String> attrMap = new HashMap<String, String>();
@@ -116,10 +116,5 @@ public class ConfigFactory
     return attrMap;
   }
 
-  private static Map<String, String> parseCustomConfigAttrMap(Document doc)
-  {
-    Element element = remoteActionXMLParser.queryElementFromXMLByName(doc, "config");
-    return pullAllCustomConfigs(element);
-  }
 
 }

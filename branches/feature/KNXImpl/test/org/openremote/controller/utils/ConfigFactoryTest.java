@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.junit.Before;
@@ -58,7 +59,7 @@ public class ConfigFactoryTest
   @Test public void getBasicConfig()
   {
 
-    Configuration config = ConfigFactory.getCustomBasicConfigFromControllerXML(doc);
+    Configuration config = getCustomBasicConfigFromControllerXML(doc);
 
     assertEquals("controller1", config.getWebappName());
     assertEquals(false, config.isCopyLircdconf());
@@ -77,7 +78,7 @@ public class ConfigFactoryTest
   @Test public void getBasicConfig2()
   {
 
-    Configuration config = ConfigFactory.getCustomBasicConfigFromControllerXML(doc2);
+    Configuration config = getCustomBasicConfigFromControllerXML(doc2);
 
     assertEquals("controller2", config.getWebappName());
     assertEquals(true, config.isCopyLircdconf());
@@ -122,5 +123,16 @@ public class ConfigFactoryTest
     String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
     assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
   }
+
+
+
+  public static Configuration getCustomBasicConfigFromControllerXML(Document doc)
+  {
+    Map<String, String> attrMap = ConfigFactory.parseCustomConfigAttrMap(doc);
+    Configuration config = ConfigFactory.getConfig();
+    config.setCustomAttrMap(attrMap);
+    return config;
+  }
+  
 
 }
