@@ -28,7 +28,7 @@ import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
 /**
- * Custom Configuration accepts a map to prefer custom attribute values by name.
+ * TODO: Custom Configuration accepts a map to prefer custom attribute values by name.
  * 
  * @author Dan Cong
  */
