@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
-import org.openremote.controller.CustomConfiguration;
+import org.openremote.controller.Configuration;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.suite.AllTests;
@@ -152,7 +152,7 @@ public class ConfigFactoryTest
   public static Map<String, String> parseCustomConfigAttrMap(Document doc)
   {
     Element element = ((RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser")).queryElementFromXMLByName(doc, "config");
-    return CustomConfiguration.pullAllCustomConfigs(element);
+    return Configuration.pullAllCustomConfigs(element);
   }
   
 }
