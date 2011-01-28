@@ -22,17 +22,45 @@ package org.openremote.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jdom.Element;
+import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.command.RemoteActionXMLParser;
+
 /**
  * Custom Configuration accepts a map to prefer custom attribute values by name.
  * 
  * @author Dan Cong
  */
 public class CustomConfiguration {
+
+
    
    /** custom attributes map, will use these values first, other than default values from config.properties */
    private Map<String, String> customAttrMap = new HashMap<String, String>();
 
-   
+
+
+  public static Map<String, String> parseCustomConfigAttrMap()
+  {
+    Element element = null;
+
+    try
+    {
+      element = getControllerXMLParser().queryElementFromXMLByName("config");
+    }
+
+    catch (Exception e)
+    {
+      return null;
+    }
+
+    return ConfigFactory.pullAllCustomConfigs(element);
+  }
+
+
+
+
    public Map<String, String> getCustomAttrMap() {
       return customAttrMap;
    }
@@ -63,4 +91,30 @@ public class CustomConfiguration {
    protected String[] preferAttrCustomValue(String attrName, String[] defaultValue) {
       return customAttrMap.containsKey(attrName) ? customAttrMap.get(attrName).split(",") : defaultValue;
    }
+
+
+
+
+  // ----------------------------------------------------------------------------------------------
+  //
+  // Isolating Spring library references here -- eventually this should be abstracted away
+  // with a service interface that is more portable to smaller (Android) runtimes
+  //
+  // ----------------------------------------------------------------------------------------------
+
+  public static Configuration getConfig()
+  {
+    return (Configuration) SpringContext.getInstance().getBean("configuration");
+  }
+
+  public static RoundRobinConfig getRoundRobinConfig()
+  {
+    return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
+  }
+
+  private static RemoteActionXMLParser getControllerXMLParser()
+  {
+    return (RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser");
+  }
+
 }
