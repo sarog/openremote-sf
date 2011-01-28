@@ -43,7 +43,7 @@ public class IRCommand implements ExecutableCommand {
    private String command;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+   private Configuration configuration = ConfigFactory.readControllerConfiguration();
    
    /**
     * {@inheritDoc}

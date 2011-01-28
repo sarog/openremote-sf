@@ -44,7 +44,7 @@ public class ConfigFactory
 
 
 
-  public static Configuration getCustomBasicConfigFromDefaultControllerXML()
+  public static Configuration readControllerConfiguration()
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap();
     Configuration config = getConfig();
