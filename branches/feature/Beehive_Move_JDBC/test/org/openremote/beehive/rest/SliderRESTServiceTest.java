@@ -109,8 +109,8 @@ public class SliderRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockLoadSameHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadSameHttpRequest, mockLoadSameHttpResponse);
 
-      String slidersJson = "{\"sliders\":" + mockLoadSameHttpResponse.getContentAsString() + "}";
-      SliderList sliderList = mapper.readValue(slidersJson, SliderList.class);
+      String slidersJson = mockLoadSameHttpResponse.getContentAsString();
+      SliderListing sliderList = mapper.readValue(slidersJson, SliderListing.class);
       assertEquals(1, sliderList.getSliders().size());
       
       // delete slider
@@ -144,9 +144,9 @@ public class SliderRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockLoadAllHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadAllHttpRequest, mockLoadAllHttpResponse);
       
-      String slidersJson = "{\"sliders\":" + mockLoadAllHttpResponse.getContentAsString() + "}";
+      String slidersJson = mockLoadAllHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
-      SliderList sliderList = mapper.readValue(slidersJson, SliderList.class);
+      SliderListing sliderList = mapper.readValue(slidersJson, SliderListing.class);
       assertEquals(1, sliderList.getSliders().size());
    }
    

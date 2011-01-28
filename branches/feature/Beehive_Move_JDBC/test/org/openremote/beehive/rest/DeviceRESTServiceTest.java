@@ -72,7 +72,7 @@ public class DeviceRESTServiceTest extends TemplateTestBase {
       addCredential(mockLoadHttpRequest);
       MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
-      String devicesJson = "{\"devices\":" + mockLoadHttpResponse.getContentAsString() + "}";
+      String devicesJson = mockLoadHttpResponse.getContentAsString();
       DeviceListing dbDevices = mapper.readValue(devicesJson, DeviceListing.class);
       assertEquals(1, dbDevices.getDevices().size());
       
@@ -141,7 +141,7 @@ public class DeviceRESTServiceTest extends TemplateTestBase {
       mockLoadHttpRequest.content(deviceJson.getBytes());
       MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
-      String devicesJson = "{\"devices\":" + mockLoadHttpResponse.getContentAsString() + "}";
+      String devicesJson = mockLoadHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
       DeviceListing dbDevices = mapper.readValue(devicesJson, DeviceListing.class);
       assertEquals(1, dbDevices.getDevices().size());

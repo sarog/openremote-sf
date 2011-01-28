@@ -63,7 +63,7 @@ public class ControllerConfigRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockLoadAllHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadAllHttpRequest, mockLoadAllHttpResponse);
 
-      String dbControllerConfigsJson = "{\"controllerConfigs\":" + mockLoadAllHttpResponse.getContentAsString() + "}";
+      String dbControllerConfigsJson = mockLoadAllHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
       ControllerConfigListing controllerConfigs = mapper.readValue(dbControllerConfigsJson,
             ControllerConfigListing.class);
@@ -89,7 +89,7 @@ public class ControllerConfigRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockHttpRequest, mockHttpResponse);
 
-      String dbControllerConfigsJson = "{\"controllerConfigs\":" + mockHttpResponse.getContentAsString() + "}";
+      String dbControllerConfigsJson = mockHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
       ControllerConfigListing controllerConfigs = mapper.readValue(dbControllerConfigsJson,
             ControllerConfigListing.class);
@@ -114,7 +114,7 @@ public class ControllerConfigRESTServiceTest extends TemplateTestBase {
       super.tearDown();
       super.setUp();
       
-      String dbControllerConfigsJson = "{\"controllerConfigs\":" + mockHttpResponse.getContentAsString() + "}";
+      String dbControllerConfigsJson = mockHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
       ControllerConfigListing controllerConfigs = mapper.readValue(dbControllerConfigsJson,
             ControllerConfigListing.class);

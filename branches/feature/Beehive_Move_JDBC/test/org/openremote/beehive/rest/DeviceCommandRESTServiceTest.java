@@ -139,9 +139,9 @@ public class DeviceCommandRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
       
-      String allCommandsJson = "{\"deviceCommands\":" + mockLoadHttpResponse.getContentAsString() + "}";
+      String allCommandsJson = mockLoadHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
-      DeviceCommandList deviceCommandList = mapper.readValue(allCommandsJson, DeviceCommandList.class);
+      DeviceCommandListing deviceCommandList = mapper.readValue(allCommandsJson, DeviceCommandListing.class);
       assertEquals(20, deviceCommandList.getDeviceCommands().size());
       
       // load same device commands
@@ -154,8 +154,8 @@ public class DeviceCommandRESTServiceTest extends TemplateTestBase {
       mockLoadSameHttpRequest.content(dtoJson.getBytes());
       MockHttpResponse mockLoadSameHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadSameHttpRequest, mockLoadSameHttpResponse);
-      String sameCommandsJson = "{\"deviceCommands\":" + mockLoadSameHttpResponse.getContentAsString() + "}";
-      DeviceCommandList sameDeviceCommandList = mapper.readValue(sameCommandsJson, DeviceCommandList.class);
+      String sameCommandsJson = mockLoadSameHttpResponse.getContentAsString();
+      DeviceCommandListing sameDeviceCommandList = mapper.readValue(sameCommandsJson, DeviceCommandListing.class);
       DeviceCommandDTO deviceCommandDTO2 = sameDeviceCommandList.getDeviceCommands().get(0);
       assertTrue(deviceCommandDTO.getName().equals(deviceCommandDTO2.getName()));
       

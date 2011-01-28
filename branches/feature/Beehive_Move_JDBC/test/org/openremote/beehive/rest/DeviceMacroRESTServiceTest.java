@@ -97,7 +97,7 @@ public class DeviceMacroRESTServiceTest extends TemplateTestBase {
       dispatcher.invoke(mockLoadItemsHttpRequest, mockLoadItemsHttpResponse);
       
       String itemsJson = mockLoadItemsHttpResponse.getContentAsString();
-      DeviceMacroItemList itemsList = mapper.readValue(itemsJson, DeviceMacroItemList.class);
+      DeviceMacroItemListing itemsList = mapper.readValue(itemsJson, DeviceMacroItemListing.class);
       assertEquals(5, itemsList.getDeviceMacroItems().size());
    }
    
@@ -132,9 +132,9 @@ public class DeviceMacroRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockLoadAllHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadAllHttpRequest, mockLoadAllHttpResponse);
       
-      String macrosJson = "{\"deviceMacros\":" + mockLoadAllHttpResponse.getContentAsString() + "}";
+      String macrosJson = mockLoadAllHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
-      DeviceMacroList macrosList = mapper.readValue(macrosJson, DeviceMacroList.class);
+      DeviceMacroListing macrosList = mapper.readValue(macrosJson, DeviceMacroListing.class);
       assertEquals(1, macrosList.getDeviceMacros().size());
       
       // delete macro1
@@ -144,6 +144,46 @@ public class DeviceMacroRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockDeleteHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockDeleteHttpRequest, mockDeleteHttpResponse);
       assertEquals(200, mockDeleteHttpResponse.getStatus());
+   }
+   
+   public void testLoadSameDeviceMacros() throws Exception {
+      DeviceDTO deviceDTO = saveDeviceWithCommands();
+      List<DeviceCommandDTO> commandDTOs = deviceDTO.getDeviceCommands();
+      long cmdId1 = commandDTOs.get(0).getId();
+      long cmdId2 = commandDTOs.get(1).getId();
+      long cmdId3 = commandDTOs.get(2).getId();
+      
+      String deviceMacroJson = FixtureUtil.getFileContent("dtos/device_macro/device_macro.json");
+      String postData = deviceMacroJson.replace("\"id\":114", "\"id\":" + cmdId1).replace("\"id\":115",
+            "\"id\":" + cmdId2).replace("\"id\":116", "\"id\":" + cmdId3);
+      
+      Dispatcher dispatcher = RESTTestUtils.createDispatcher(DeviceMacroRESTTestService.class);
+      // save deviceMacro
+      MockHttpRequest mockHttpRequest = MockHttpRequest.post("/devicemacro/save/1");
+      mockHttpRequest.accept(MediaType.APPLICATION_JSON);
+      mockHttpRequest.contentType(MediaType.APPLICATION_JSON);
+      addCredential(mockHttpRequest);
+      mockHttpRequest.content(postData.getBytes());
+      MockHttpResponse mockHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockHttpRequest, mockHttpResponse);
+      
+      String macroJson = mockHttpResponse.getContentAsString();
+      
+      super.tearDown();
+      super.setUp();
+      
+      MockHttpRequest mockLoadSameHttpRequest = MockHttpRequest.post("/devicemacro/loadsamemacros/1");
+      mockLoadSameHttpRequest.accept(MediaType.APPLICATION_JSON);
+      mockLoadSameHttpRequest.contentType(MediaType.APPLICATION_JSON);
+      addCredential(mockLoadSameHttpRequest);
+      mockLoadSameHttpRequest.content(macroJson.getBytes());
+      MockHttpResponse mockLoadSameHttpResponse = new MockHttpResponse();
+      dispatcher.invoke(mockLoadSameHttpRequest, mockLoadSameHttpResponse);
+      
+      String macrosJson = mockLoadSameHttpResponse.getContentAsString();
+      ObjectMapper mapper = new ObjectMapper();
+      DeviceMacroListing macrosList = mapper.readValue(macrosJson, DeviceMacroListing.class);
+      assertEquals(1, macrosList.getDeviceMacros().size());
    }
    
    private DeviceDTO saveDeviceWithCommands() throws URISyntaxException, JsonParseException, JsonMappingException, IOException {

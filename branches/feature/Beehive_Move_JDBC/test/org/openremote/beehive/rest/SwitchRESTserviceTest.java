@@ -111,8 +111,8 @@ public class SwitchRESTserviceTest extends TemplateTestBase {
       MockHttpResponse mockLoadSameHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadSameHttpRequest, mockLoadSameHttpResponse);
 
-      String switchsJson = "{\"switchs\":" + mockLoadSameHttpResponse.getContentAsString() + "}";
-      SwitchList switchList = mapper.readValue(switchsJson, SwitchList.class);
+      String switchsJson = mockLoadSameHttpResponse.getContentAsString();
+      SwitchListing switchList = mapper.readValue(switchsJson, SwitchListing.class);
       assertEquals(1, switchList.getSwitchs().size());
       
       // delete switch
@@ -146,9 +146,9 @@ public class SwitchRESTserviceTest extends TemplateTestBase {
       MockHttpResponse mockLoadAllHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadAllHttpRequest, mockLoadAllHttpResponse);
       
-      String switchsJson = "{\"switchs\":" + mockLoadAllHttpResponse.getContentAsString() + "}";
+      String switchsJson = mockLoadAllHttpResponse.getContentAsString();
       ObjectMapper mapper = new ObjectMapper();
-      SwitchList switchList = mapper.readValue(switchsJson, SwitchList.class);
+      SwitchListing switchList = mapper.readValue(switchsJson, SwitchListing.class);
       assertEquals(1, switchList.getSwitchs().size());
    }
    
