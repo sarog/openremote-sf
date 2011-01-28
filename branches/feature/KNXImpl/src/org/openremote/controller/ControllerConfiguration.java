@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Map;
 
+import org.openremote.controller.spring.SpringContext;
+
 
 /**
  * This class provides the Java bindings from config.properties file found in
@@ -68,13 +70,6 @@ public class ControllerConfiguration extends Configuration
 
   // Class Methods --------------------------------------------------------------------------------
 
-  public static ControllerConfiguration parseFromControllerXML()
-  {
-
-     return null;
-  }
-
-
 
 
   private static String getLineSeparator()
@@ -103,12 +98,9 @@ public class ControllerConfiguration extends Configuration
 
   public static ControllerConfiguration readXML()
   {
-    Map<String, String> attrMap = Configuration.parseCustomConfigAttrMap();
+    ControllerConfiguration config = (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
 
-    ControllerConfiguration config = Configuration.getConfig();
-    config.setCustomAttrMap(attrMap);
-
-    return config;
+    return (ControllerConfiguration)Configuration.updateWithControllerXMLConfiguration(config);
   }
   
 
@@ -466,6 +458,7 @@ public class ControllerConfiguration extends Configuration
    public void setWebappName(String webappName) {
       this.webappName = webappName;
    }
+
 
 
 }

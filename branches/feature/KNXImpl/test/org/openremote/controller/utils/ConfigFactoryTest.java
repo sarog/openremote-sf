@@ -136,7 +136,7 @@ public class ConfigFactoryTest
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
     ControllerConfiguration config = (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
-    config.setCustomAttrMap(attrMap);
+    config.setConfigurationProperties(attrMap);
 
     return config;
   }
@@ -145,14 +145,14 @@ public class ConfigFactoryTest
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
     RoundRobinConfiguration config = (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
-    config.setCustomAttrMap(attrMap);
+    config.setConfigurationProperties(attrMap);
     return config;
   }
 
   public static Map<String, String> parseCustomConfigAttrMap(Document doc)
   {
     Element element = ((RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser")).queryElementFromXMLByName(doc, "config");
-    return Configuration.pullAllCustomConfigs(element);
+    return Configuration.populateConfigurationProperties(element);
   }
   
 }
