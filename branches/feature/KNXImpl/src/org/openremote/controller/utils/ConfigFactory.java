@@ -27,6 +27,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.CustomConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.spring.SpringContext;
 
@@ -38,16 +39,14 @@ import org.openremote.controller.spring.SpringContext;
 public class ConfigFactory
 {
    
-  private static RemoteActionXMLParser remoteActionXMLParser =
-     (RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser");
 
 
 
 
   public static Configuration readControllerConfiguration()
   {
-    Map<String, String> attrMap = parseCustomConfigAttrMap();
-    Configuration config = getConfig();
+    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
+    Configuration config = CustomConfiguration.getConfig();
     config.setCustomAttrMap(attrMap);
     return config;
   }
@@ -55,31 +54,15 @@ public class ConfigFactory
    
   public static RoundRobinConfig readRoundRobinConfiguration()
   {
-    Map<String, String> attrMap = parseCustomConfigAttrMap();
+    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
 
-    RoundRobinConfig config = getRoundRobinConfig();
+    RoundRobinConfig config = CustomConfiguration.getRoundRobinConfig();
     config.setCustomAttrMap(attrMap);
 
     return config;
   }
 
 
-  public static Map<String, String> parseCustomConfigAttrMap()
-  {
-    Element element = null;
-
-    try
-    {
-      element = remoteActionXMLParser.queryElementFromXMLByName("config");
-    }
-
-    catch (Exception e)
-    {
-      return null;
-    }
-
-    return pullAllCustomConfigs(element);
-  }
 
 
 
@@ -101,18 +84,8 @@ public class ConfigFactory
 
   // Private Class Members ------------------------------------------------------------------------
 
-  // Isolating Spring library references here -- eventually this should be abstracted away
-  // with a service interface that is more portable to smaller (Android) runtimes
 
-  private static Configuration getConfig()
-  {
-    return (Configuration) SpringContext.getInstance().getBean("configuration");
-  }
 
-  private static RoundRobinConfig getRoundRobinConfig()
-  {
-    return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
-  }
 
 
 }
