@@ -39,6 +39,11 @@ import org.openremote.controller.component.EnumSensorType;
 public class X10Command implements ExecutableCommand, StatusCommand
 {
 
+  // Class Members --------------------------------------------------------------------------------
+
+  private final static Logger log = Logger.getLogger(X10CommandBuilder.X10_LOG_CATEGORY);
+
+
   // Private Instance Fields ----------------------------------------------------------------------
 
   private String address;
@@ -47,7 +52,6 @@ public class X10Command implements ExecutableCommand, StatusCommand
 
   private X10ControllerManager controllerManager;
 
-  private final static Logger log = Logger.getLogger(X10CommandBuilder.X10_LOG_CATEGORY);
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -62,7 +66,7 @@ public class X10Command implements ExecutableCommand, StatusCommand
 
   // Implements ExecutableCommand -----------------------------------------------------------------
 
-  public void send()
+  @Override public void send()
   {
     X10Controller device;
 
@@ -81,7 +85,7 @@ public class X10Command implements ExecutableCommand, StatusCommand
 
   // Implements StatusCommand ---------------------------------------------------------------------
 
-  public String read(EnumSensorType sensoryType, Map<String, String> statusMap)
+  @Override public String read(EnumSensorType sensoryType, Map<String, String> statusMap)
   {
     // TODO Auto-generated method stub
     return null;

@@ -26,7 +26,6 @@ import java.text.MessageFormat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
 
 import com.jpeterson.x10.Gateway;
 import com.jpeterson.x10.GatewayException;
@@ -90,7 +89,7 @@ public class X10ControllerManager {
      // TODO :
      //   fix this -- it's part of the X10 send() loop so reading the XML config every time
      //   doesn't make sense
-     Configuration config = ConfigFactory.readControllerConfiguration();
+     Configuration config = Configuration.readControllerConfiguration();
 
       String transmitterHint = StringUtils.defaultIfEmpty(config.getX10transmitter(), DEFAULT_TRANSMITTER_HINT);
 

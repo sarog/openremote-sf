@@ -24,6 +24,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.Map;
 
 
 /**
@@ -98,6 +99,17 @@ public class Configuration extends CustomConfiguration
       }
     });
   }
+
+  public static Configuration readControllerConfiguration()
+  {
+    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
+
+    Configuration config = CustomConfiguration.getConfig();
+    config.setCustomAttrMap(attrMap);
+
+    return config;
+  }
+  
 
 
   

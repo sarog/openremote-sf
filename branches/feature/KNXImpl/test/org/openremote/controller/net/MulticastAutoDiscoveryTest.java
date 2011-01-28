@@ -29,7 +29,7 @@ import java.net.Socket;
 
 import org.junit.Test;
 import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
+
 /**
  * 
  * @author Dan
@@ -37,7 +37,7 @@ import org.openremote.controller.utils.ConfigFactory;
  */
 public class MulticastAutoDiscoveryTest {
 
-   private Configuration configuration = ConfigFactory.readControllerConfiguration();
+   private Configuration configuration = Configuration.readControllerConfiguration();
 
    @Test
    public void getMulticastSocketIP() {

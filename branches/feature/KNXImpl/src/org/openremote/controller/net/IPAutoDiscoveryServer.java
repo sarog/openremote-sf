@@ -26,7 +26,6 @@ import java.net.MulticastSocket;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * The Class IP Auto Discovery Server.
@@ -42,7 +41,7 @@ public class IPAutoDiscoveryServer implements Runnable {
    private static Logger logger = Logger.getLogger(IPAutoDiscoveryServer.class.getName());
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.readControllerConfiguration();
+   private Configuration configuration = Configuration.readControllerConfiguration();
    
 
    /**
