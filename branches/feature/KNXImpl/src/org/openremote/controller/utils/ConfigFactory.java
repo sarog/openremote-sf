@@ -42,11 +42,7 @@ public class ConfigFactory
      (RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser");
 
 
-  public static Configuration getConfig()
-  {
-    return (Configuration) SpringContext.getInstance().getBean("configuration");
-  }
-   
+
   public static RoundRobinConfig getRoundRobinConfig()
   {
     return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
@@ -69,13 +65,6 @@ public class ConfigFactory
     return config;
   }
 
-  public static RoundRobinConfig getCustomRoundRobinConfigFromControllerXML(Document doc)
-  {
-    Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    RoundRobinConfig config = getRoundRobinConfig();
-    config.setCustomAttrMap(attrMap);
-    return config;
-  }
 
   public static Map<String, String> parseCustomConfigAttrMap()
   {
@@ -94,14 +83,9 @@ public class ConfigFactory
     return pullAllCustomConfigs(element);
   }
 
-  public static Map<String, String> parseCustomConfigAttrMap(Document doc)
-  {
-    Element element = remoteActionXMLParser.queryElementFromXMLByName(doc, "config");
-    return pullAllCustomConfigs(element);
-  }
 
 
-  private static Map<String, String> pullAllCustomConfigs(Element element)
+  public static Map<String, String> pullAllCustomConfigs(Element element)
   {
     Map<String, String> attrMap = new HashMap<String, String>();
 
@@ -116,5 +100,10 @@ public class ConfigFactory
     return attrMap;
   }
 
+
+  private static Configuration getConfig()
+  {
+    return (Configuration) SpringContext.getInstance().getBean("configuration");
+  }
 
 }
