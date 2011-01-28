@@ -31,7 +31,6 @@ import org.openremote.controller.Configuration;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
-import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.NetworkUtil;
 
 /**
@@ -46,7 +45,7 @@ public class RoundRobinUDPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private Configuration configuration = ConfigFactory.readControllerConfiguration();
+   private Configuration configuration = Configuration.readControllerConfiguration();
    
    private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    

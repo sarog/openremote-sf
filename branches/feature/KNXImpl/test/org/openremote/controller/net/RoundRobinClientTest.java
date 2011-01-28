@@ -39,7 +39,6 @@ import org.openremote.controller.Configuration;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
-import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * All usecase test for RoundRobin Client. <br /><br />
@@ -51,7 +50,7 @@ import org.openremote.controller.utils.ConfigFactory;
  */
 public class RoundRobinClientTest {
 
-   private Configuration configuration = ConfigFactory.readControllerConfiguration();
+   private Configuration configuration = Configuration.readControllerConfiguration();
    private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    private Logger logger = Logger.getLogger(this.getClass().getName());
    private List<MulticastSocket> udpMulticastServerSockets = new ArrayList<MulticastSocket>();

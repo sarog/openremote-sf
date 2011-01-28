@@ -26,7 +26,6 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.NetworkUtil;
 
 /**
@@ -46,7 +45,7 @@ public class IPResponseTCPClient implements Runnable {
    public final static int TCP_PORT = 2346;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.readControllerConfiguration();
+   private Configuration configuration = Configuration.readControllerConfiguration();
    
    
 

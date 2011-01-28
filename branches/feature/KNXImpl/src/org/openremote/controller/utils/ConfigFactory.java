@@ -39,15 +39,5 @@ import org.openremote.controller.spring.SpringContext;
 public class ConfigFactory
 {
 
-  public static Configuration readControllerConfiguration()
-  {
-    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
-
-    Configuration config = CustomConfiguration.getConfig();
-    config.setCustomAttrMap(attrMap);
-
-    return config;
-  }
-
 
 }

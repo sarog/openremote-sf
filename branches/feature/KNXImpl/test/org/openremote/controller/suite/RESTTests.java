@@ -45,7 +45,7 @@ import org.openremote.controller.rest.support.json.JSONTranslatorTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
 import org.openremote.controller.Constants;
-import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.Configuration;
 import org.openremote.controller.utils.PathUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -314,7 +314,7 @@ public class RESTTests
   private static String getContainerPanelXML()
   {
     return PathUtil.addSlashSuffix(
-        ConfigFactory.readControllerConfiguration().getResourcePath()) +
+        Configuration.readControllerConfiguration().getResourcePath()) +
         Constants.PANEL_XML;
   }
 

@@ -24,7 +24,6 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * The Infrared Event.
@@ -43,7 +42,7 @@ public class IRCommand implements ExecutableCommand {
    private String command;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.readControllerConfiguration();
+   private Configuration configuration = Configuration.readControllerConfiguration();
    
    /**
     * {@inheritDoc}
