@@ -31,7 +31,7 @@ import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.CustomConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.spring.SpringContext;
@@ -101,7 +101,7 @@ public class ConfigFactoryTest
   @Test public void getRoundRobinConfig()
   {
 
-    RoundRobinConfig config = getCustomRoundRobinConfigFromControllerXML(doc);
+    RoundRobinConfiguration config = getCustomRoundRobinConfigFromControllerXML(doc);
     assertEquals("controller1", config.getControllerApplicationName());
     assertEquals(true, config.getIsGroupMemberAutoDetectOn());
     assertEquals("openremote-office", config.getControllerGroupName());
@@ -116,7 +116,7 @@ public class ConfigFactoryTest
   @Test public void getRoundRobinConfig2()
   {
 
-    RoundRobinConfig config = getCustomRoundRobinConfigFromControllerXML(doc2);
+    RoundRobinConfiguration config = getCustomRoundRobinConfigFromControllerXML(doc2);
     assertEquals("controller2", config.getControllerApplicationName());
     assertEquals(false, config.getIsGroupMemberAutoDetectOn());
     assertEquals("openremote-home", config.getControllerGroupName());
@@ -141,10 +141,10 @@ public class ConfigFactoryTest
     return config;
   }
   
-  public static RoundRobinConfig getCustomRoundRobinConfigFromControllerXML(Document doc)
+  public static RoundRobinConfiguration getCustomRoundRobinConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    RoundRobinConfig config = (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
+    RoundRobinConfiguration config = (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
     config.setCustomAttrMap(attrMap);
     return config;
   }
