@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPServerStartFailException;
 import org.openremote.controller.spring.SpringContext;
-import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * This class provide discover groupMember function.<br /><br />
@@ -52,7 +51,7 @@ public class RoundRobinClient {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.readRoundRobinConfiguration();
+   private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    
    private String msgKey = UUID.randomUUID().toString();
    

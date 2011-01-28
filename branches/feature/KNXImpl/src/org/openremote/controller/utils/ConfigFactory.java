@@ -49,16 +49,5 @@ public class ConfigFactory
     return config;
   }
 
-   
-  public static RoundRobinConfig readRoundRobinConfiguration()
-  {
-    Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
-
-    RoundRobinConfig config = CustomConfiguration.getRoundRobinConfig();
-    config.setCustomAttrMap(attrMap);
-
-    return config;
-  }
-
 
 }
