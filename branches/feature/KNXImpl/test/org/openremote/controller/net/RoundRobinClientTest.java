@@ -52,7 +52,7 @@ import org.openremote.controller.utils.ConfigFactory;
 public class RoundRobinClientTest {
 
    private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.getCustomRoundRobinConfigFromDefaultControllerXML();
+   private RoundRobinConfig roundRobinConfig = ConfigFactory.readRoundRobinConfiguration();
    private Logger logger = Logger.getLogger(this.getClass().getName());
    private List<MulticastSocket> udpMulticastServerSockets = new ArrayList<MulticastSocket>();
    
