@@ -28,7 +28,7 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
 import org.openremote.controller.utils.NetworkUtil;
@@ -47,7 +47,7 @@ public class RoundRobinUDPServer implements Runnable {
    
    private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
-   private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
+   private RoundRobinConfiguration roundRobinConfig = RoundRobinConfiguration.readRoundRobinConfiguration();
    
    private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    

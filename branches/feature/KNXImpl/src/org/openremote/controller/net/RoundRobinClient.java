@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.exception.roundrobin.TCPServerStartFailException;
 import org.openremote.controller.spring.SpringContext;
 
@@ -51,7 +51,7 @@ public class RoundRobinClient {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
+   private RoundRobinConfiguration roundRobinConfig = RoundRobinConfiguration.readRoundRobinConfiguration();
    
    private String msgKey = UUID.randomUUID().toString();
    

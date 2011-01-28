@@ -70,7 +70,7 @@
   </bean>
 
   <!-- round-robin variables -->
-  <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
+  <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfiguration">
     <property name="isGroupMemberAutoDetectOn" value="${controller.groupmember.autodetect.on}" />
       <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
       <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />

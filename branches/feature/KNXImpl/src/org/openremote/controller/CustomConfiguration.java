@@ -132,9 +132,9 @@ public class CustomConfiguration
     return (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
   }
 
-  public static RoundRobinConfig getRoundRobinConfig()
+  public static RoundRobinConfiguration getRoundRobinConfig()
   {
-    return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
+    return (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
   }
 
   private static RemoteActionXMLParser getControllerXMLParser()
