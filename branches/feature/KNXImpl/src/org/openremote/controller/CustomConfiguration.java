@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jdom.Element;
-import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
@@ -57,9 +56,24 @@ public class CustomConfiguration
       return null;
     }
 
-    return ConfigFactory.pullAllCustomConfigs(element);
+    return pullAllCustomConfigs(element);
   }
 
+
+  public static Map<String, String> pullAllCustomConfigs(Element element)
+  {
+    Map<String, String> attrMap = new HashMap<String, String>();
+
+    for (Object o : element.getChildren())
+    {
+      Element e = (Element) o;
+      String name = e.getAttributeValue("name");
+      String value = e.getAttributeValue("value");
+      attrMap.put(name, value);
+    }
+
+    return attrMap;
+  }
 
 
 
