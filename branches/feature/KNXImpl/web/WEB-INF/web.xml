@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ **
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **
+-->
+
+
+<web-app version = "2.4" xmlns = "http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation = "http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>controller_profile_service</display-name>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+  <context-param>
+    <param-name>log4jExposeWebAppRoot</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      /WEB-INF/classes/spring-context.xml, /WEB-INF/classes/spring-quartz.xml
+    </param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/classes/log4j.properties</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>log4jRefreshInterval</param-name>
+    <param-value>60000</param-value>
+  </context-param>
+
+  <servlet>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <servlet-class>
+      org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>
+        /WEB-INF/classes/spring-servlet.xml
+      </param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <url-pattern>*.htm</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>controlRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.ControlCommandRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>controlRESTServlet</servlet-name>
+    <url-pattern>/rest/control/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>statusRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.StatusCommandRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>statusRESTServlet</servlet-name>
+    <url-pattern>/rest/status/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>StatusPollingRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.StatusPollingRESTServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>StatusPollingRESTServlet</servlet-name>
+    <url-pattern>/rest/polling/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>resourceServlet</servlet-name>
+    <servlet-class>org.openremote.controller.servlet.ResourceServlet</servlet-class>
+  </servlet>
+
+  <!--
+   | Servlet for 'rest/panels' implementation.
+   +-->
+  <servlet>
+    <description>
+      Returns XML or JSON document describing all available panel definition IDs
+      deployed to this controller.
+    </description>
+
+    <display-name>List Panel IDs -- /rest/panels</display-name>
+    <servlet-name>ListPanelIDs</servlet-name>
+    <servlet-class>org.openremote.controller.rest.ListPanelIDs</servlet-class>
+  </servlet>
+
+  <!--
+   | Servlet for 'rest/panel/{id} implementation.
+   +-->
+  <servlet>
+    <description>
+      Returns the XML or JSON panel definition for a specific panel ID.
+      Note that access to panel definition may be secured by the controller
+      and require an authentication.
+    </description>
+    <display-name>Return Panel Definition -- /rest/panel/id</display-name>
+    <servlet-name>FindPanelByID</servlet-name>
+    <servlet-class>org.openremote.controller.rest.FindPanelByID</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description>used to send 401 http error code.</description>
+    <display-name>LogoutServlet</display-name>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>org.openremote.controller.servlet.LogoutServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <description></description>
+    <display-name>RoundRobinRESTServlet</display-name>
+    <servlet-name>RoundRobinRESTServlet</servlet-name>
+    <servlet-class>org.openremote.controller.rest.RoundRobinRESTServlet</servlet-class>
+  </servlet>
+
+
+
+  <servlet-mapping>
+    <servlet-name>resourceServlet</servlet-name>
+    <url-pattern>/resources/*</url-pattern>
+  </servlet-mapping>
+
+  <!--
+   | Map Controller REST API servlet which returns all panel definition IDs to
+   | 'rest/panels' and 'rest/panels/' URIs.
+   +-->
+  <servlet-mapping>
+    <servlet-name>ListPanelIDs</servlet-name>
+    <url-pattern>/rest/panels</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ListPanelIDs</servlet-name>
+    <url-pattern>/rest/panels/</url-pattern>
+  </servlet-mapping>
+
+
+  <!--
+   | Map Controller REST API servlet which returns a panel definition by ID to
+   | 'rest/panel/id URI.
+   +-->
+  <servlet-mapping>
+    <servlet-name>FindPanelByID</servlet-name>
+    <url-pattern>/rest/panel/*</url-pattern>
+  </servlet-mapping>
+
+
+
+  <servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/logout</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/logout/</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>RoundRobinRESTServlet</servlet-name>
+    <url-pattern>/rest/servers</url-pattern>
+  </servlet-mapping>
+
+
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>
+      org.springframework.web.filter.CharacterEncodingFilter
+    </filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>JSONCallbackFilter</filter-name>
+    <filter-class>org.openremote.controller.rest.support.json.JSONCallbackFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>JSONCallbackFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <listener>
+    <listener-class>
+      org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>
+      org.springframework.web.util.Log4jConfigListener
+    </listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>
+      org.openremote.controller.listener.ApplicationListener
+    </listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener
+    </listener-class>
+  </listener>
+
+  <!-- Constraint resource: /rest/control/* -->
+  <!--
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>Control command RESTful service of Openremote Controller</web-resource-name>
+        <description>Control command RESTful service of Openremote Controller</description>
+        <url-pattern>/rest/control/*</url-pattern>
+        <http-method>GET</http-method>
+        <http-method>POST</http-method>
+      </web-resource-collection>
+      <auth-constraint>
+        <role-name>openremote</role-name>
+      </auth-constraint>
+    </security-constraint>
+  -->
+
+  <!-- Constraint resource: /rest/panel/* -->
+  <!--
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>Panel identity RESTful service of Openremote Controller</web-resource-name>
+        <description>Panel identity RESTful service of Openremote Controller</description>
+        <url-pattern>/rest/panel/*</url-pattern>
+        <http-method>GET</http-method>
+        <http-method>POST</http-method>
+      </web-resource-collection>
+      <auth-constraint>
+        <role-name>openremote</role-name>
+      </auth-constraint>
+    </security-constraint>
+  -->
+
+  <!--
+   <security-constraint>
+     <web-resource-collection>
+       <web-resource-name>Status command RESTful service of Openremote Controller</web-resource-name>
+       <description>Status command RESTful service of Openremote Controller</description>
+       <url-pattern>/rest/status/*</url-pattern>
+       <http-method>GET</http-method>
+       <http-method>POST</http-method>
+     </web-resource-collection>
+     <auth-constraint>
+       <role-name>openremote</role-name>
+     </auth-constraint>
+   </security-constraint>
+   <security-constraint>
+     <web-resource-collection>
+       <web-resource-name>Polling command RESTful service of Openremote Controller</web-resource-name>
+       <description>Polling command RESTful service of Openremote Controller</description>
+       <url-pattern>/rest/polling/*</url-pattern>
+       <http-method>GET</http-method>
+       <http-method>POST</http-method>
+     </web-resource-collection>
+     <auth-constraint>
+       <role-name>openremote</role-name>
+     </auth-constraint>
+   </security-constraint>
+   -->
+
+  <!--
+    <login-config>
+      <auth-method>BASIC</auth-method>
+      <realm-name>OPENREMOTE_Controller</realm-name>
+    </login-config>
+    <security-role>
+      <role-name>openremote</role-name>
+    </security-role>
+  -->
+</web-app>
