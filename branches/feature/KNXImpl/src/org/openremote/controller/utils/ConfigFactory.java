@@ -43,11 +43,7 @@ public class ConfigFactory
 
 
 
-  public static RoundRobinConfig getRoundRobinConfig()
-  {
-    return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
-  }
-   
+
   public static Configuration getCustomBasicConfigFromDefaultControllerXML()
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap();
@@ -101,9 +97,20 @@ public class ConfigFactory
   }
 
 
+  // Private Class Members ------------------------------------------------------------------------
+
+  // Isolating Spring library references here -- eventually this should be abstracted away
+  // with a service interface that is more portable to smaller (Android) runtimes
+
   private static Configuration getConfig()
   {
     return (Configuration) SpringContext.getInstance().getBean("configuration");
   }
+
+  private static RoundRobinConfig getRoundRobinConfig()
+  {
+    return (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
+  }
+
 
 }
