@@ -41,7 +41,7 @@ public class RoundRobinConfiguration extends Configuration {
 
 
 
-  public static RoundRobinConfiguration readRoundRobinConfiguration()
+  public static RoundRobinConfiguration readXML()
   {
     Map<String, String> attrMap = Configuration.parseCustomConfigAttrMap();
 

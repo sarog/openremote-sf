@@ -51,7 +51,7 @@ public class RoundRobinClient {
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   private RoundRobinConfiguration roundRobinConfig = RoundRobinConfiguration.readRoundRobinConfiguration();
+   private RoundRobinConfiguration roundRobinConfig = RoundRobinConfiguration.readXML();
    
    private String msgKey = UUID.randomUUID().toString();
    
