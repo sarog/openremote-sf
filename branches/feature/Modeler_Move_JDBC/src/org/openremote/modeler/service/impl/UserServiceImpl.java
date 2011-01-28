@@ -608,7 +608,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
          HttpResponse response = httpClient.execute(httpGet);
          int statusCode = response.getStatusLine().getStatusCode();
          if (statusCode == HttpServletResponse.SC_OK) {
-            String usersJson = "{users:" + IOUtils.toString(response.getEntity().getContent()) + "}";
+            String usersJson = IOUtils.toString(response.getEntity().getContent());
             UserList result = new JSONDeserializer<UserList>().use(null, UserList.class).use("users",
                   ArrayList.class).deserialize(usersJson);
             return result.getUsers();

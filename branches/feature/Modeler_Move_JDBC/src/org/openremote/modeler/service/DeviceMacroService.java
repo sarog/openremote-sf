@@ -81,5 +81,5 @@ public interface DeviceMacroService {
      */
     List<DeviceMacroItem> loadDeviceMacroItems(long id);
     
-    List<DeviceMacro> loadSameMacro(DeviceMacro macro);
+    List<DeviceMacro> loadSameMacro(DeviceMacro macro, Account account);
 }
