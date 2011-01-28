@@ -143,7 +143,7 @@ public class ConfigFactoryTest
   public static RoundRobinConfig getCustomRoundRobinConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    RoundRobinConfig config = ConfigFactory.getRoundRobinConfig();
+    RoundRobinConfig config = (RoundRobinConfig) SpringContext.getInstance().getBean("roundRobinConfig");
     config.setCustomAttrMap(attrMap);
     return config;
   }
