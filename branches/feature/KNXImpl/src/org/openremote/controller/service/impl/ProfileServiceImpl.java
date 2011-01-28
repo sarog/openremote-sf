@@ -33,7 +33,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.InvalidPanelXMLException;
 import org.openremote.controller.exception.NoSuchPanelException;
@@ -52,7 +52,7 @@ public class ProfileServiceImpl implements ProfileService
 
   private static final String TABBAR_ELEMENT_NAME = "tabbar";
 
-  private Configuration configuration;
+  private ControllerConfiguration configuration;
 
   @Override public String getProfileByPanelID(String panelID)
   {
@@ -368,7 +368,7 @@ public class ProfileServiceImpl implements ProfileService
     return results.size() > 0 ? results.get(0) : null;
   }
 
-  public void setConfiguration(Configuration configuration)
+  public void setConfiguration(ControllerConfiguration configuration)
   {
     this.configuration = configuration;
   }

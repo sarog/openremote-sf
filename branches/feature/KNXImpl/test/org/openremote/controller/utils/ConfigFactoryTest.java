@@ -30,7 +30,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.CustomConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
@@ -63,7 +63,7 @@ public class ConfigFactoryTest
   @Test public void getBasicConfig()
   {
 
-    Configuration config = getCustomBasicConfigFromControllerXML(doc);
+    ControllerConfiguration config = getCustomBasicConfigFromControllerXML(doc);
 
     assertEquals("controller1", config.getWebappName());
     assertEquals(false, config.isCopyLircdconf());
@@ -82,7 +82,7 @@ public class ConfigFactoryTest
   @Test public void getBasicConfig2()
   {
 
-    Configuration config = getCustomBasicConfigFromControllerXML(doc2);
+    ControllerConfiguration config = getCustomBasicConfigFromControllerXML(doc2);
 
     assertEquals("controller2", config.getWebappName());
     assertEquals(true, config.isCopyLircdconf());
@@ -132,10 +132,10 @@ public class ConfigFactoryTest
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private static Configuration getCustomBasicConfigFromControllerXML(Document doc)
+  private static ControllerConfiguration getCustomBasicConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    Configuration config = (Configuration) SpringContext.getInstance().getBean("configuration");
+    ControllerConfiguration config = (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
     config.setCustomAttrMap(attrMap);
 
     return config;

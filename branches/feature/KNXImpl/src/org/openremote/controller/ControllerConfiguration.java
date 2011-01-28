@@ -41,7 +41,7 @@ import java.util.Map;
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  * @author Jerome Velociter
  */
-public class Configuration extends CustomConfiguration
+public class ControllerConfiguration extends CustomConfiguration
 {
 
   // Constants ------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ public class Configuration extends CustomConfiguration
 
   // Class Methods --------------------------------------------------------------------------------
 
-  public static Configuration parseFromControllerXML() {
+  public static ControllerConfiguration parseFromControllerXML() {
 
      return null;
   }
@@ -100,11 +100,11 @@ public class Configuration extends CustomConfiguration
     });
   }
 
-  public static Configuration readControllerConfiguration()
+  public static ControllerConfiguration readControllerConfiguration()
   {
     Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
 
-    Configuration config = CustomConfiguration.getConfig();
+    ControllerConfiguration config = CustomConfiguration.getConfig();
     config.setCustomAttrMap(attrMap);
 
     return config;

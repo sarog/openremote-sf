@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 
 /**
  * This class is used to provide utility method about network. 
@@ -36,7 +36,7 @@ import org.openremote.controller.Configuration;
  */
 public class NetworkUtil {
    public static final Logger logger = Logger.getLogger(NetworkUtil.class);
-   private static Configuration configuration = Configuration.readControllerConfiguration();
+   private static ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
    
    private NetworkUtil(){}
    

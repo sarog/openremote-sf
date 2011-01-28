@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.SensorBuilder;
@@ -103,7 +103,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    }
    
    private void storeXMLContent(String xmlFileName) {
-      String xmlFilePath = PathUtil.addSlashSuffix(Configuration.readControllerConfiguration().getResourcePath()) + xmlFileName;
+      String xmlFilePath = PathUtil.addSlashSuffix(ControllerConfiguration.readControllerConfiguration().getResourcePath()) + xmlFileName;
       File xmlFile = new File(xmlFilePath);
       try {
          StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(xmlFile, "utf-8"));

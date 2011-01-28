@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
@@ -50,7 +50,7 @@ import org.openremote.controller.exception.roundrobin.UDPServerStartFailExceptio
  */
 public class RoundRobinClientTest {
 
-   private Configuration configuration = Configuration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
    private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    private Logger logger = Logger.getLogger(this.getClass().getName());
    private List<MulticastSocket> udpMulticastServerSockets = new ArrayList<MulticastSocket>();

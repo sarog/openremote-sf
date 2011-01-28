@@ -25,7 +25,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 
 /**
  * The Class IP Auto Discovery Server.
@@ -41,7 +41,7 @@ public class IPAutoDiscoveryServer implements Runnable {
    private static Logger logger = Logger.getLogger(IPAutoDiscoveryServer.class.getName());
    
    /** The configuration. */
-   private Configuration configuration = Configuration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
    
 
    /**
@@ -98,7 +98,7 @@ public class IPAutoDiscoveryServer implements Runnable {
     * 
     * @param configuration the new configuration
     */
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
    

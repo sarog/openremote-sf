@@ -27,7 +27,7 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfig;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
@@ -45,7 +45,7 @@ public class RoundRobinUDPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private Configuration configuration = Configuration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
    
    private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    
