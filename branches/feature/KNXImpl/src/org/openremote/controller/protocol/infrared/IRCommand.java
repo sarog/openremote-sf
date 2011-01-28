@@ -42,7 +42,7 @@ public class IRCommand implements ExecutableCommand {
    private String command;
    
    /** The configuration. */
-   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
    /**
     * {@inheritDoc}

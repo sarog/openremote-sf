@@ -314,7 +314,7 @@ public class RESTTests
   private static String getContainerPanelXML()
   {
     return PathUtil.addSlashSuffix(
-        ControllerConfiguration.readControllerConfiguration().getResourcePath()) +
+        ControllerConfiguration.readXML().getResourcePath()) +
         Constants.PANEL_XML;
   }
 

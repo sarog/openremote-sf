@@ -45,7 +45,7 @@ public class RoundRobinUDPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
    private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    

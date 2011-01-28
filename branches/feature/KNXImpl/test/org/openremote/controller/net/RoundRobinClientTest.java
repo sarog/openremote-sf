@@ -50,7 +50,7 @@ import org.openremote.controller.exception.roundrobin.UDPServerStartFailExceptio
  */
 public class RoundRobinClientTest {
 
-   private ControllerConfiguration configuration = ControllerConfiguration.readControllerConfiguration();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    private RoundRobinConfig roundRobinConfig = RoundRobinConfig.readRoundRobinConfiguration();
    private Logger logger = Logger.getLogger(this.getClass().getName());
    private List<MulticastSocket> udpMulticastServerSockets = new ArrayList<MulticastSocket>();

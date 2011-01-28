@@ -89,7 +89,7 @@ public class X10ControllerManager {
      // TODO :
      //   fix this -- it's part of the X10 send() loop so reading the XML config every time
      //   doesn't make sense
-     ControllerConfiguration config = ControllerConfiguration.readControllerConfiguration();
+     ControllerConfiguration config = ControllerConfiguration.readXML();
 
       String transmitterHint = StringUtils.defaultIfEmpty(config.getX10transmitter(), DEFAULT_TRANSMITTER_HINT);
 

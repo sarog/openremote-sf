@@ -68,7 +68,8 @@ public class ControllerConfiguration extends CustomConfiguration
 
   // Class Methods --------------------------------------------------------------------------------
 
-  public static ControllerConfiguration parseFromControllerXML() {
+  public static ControllerConfiguration parseFromControllerXML()
+  {
 
      return null;
   }
@@ -100,7 +101,7 @@ public class ControllerConfiguration extends CustomConfiguration
     });
   }
 
-  public static ControllerConfiguration readControllerConfiguration()
+  public static ControllerConfiguration readXML()
   {
     Map<String, String> attrMap = CustomConfiguration.parseCustomConfigAttrMap();
 
