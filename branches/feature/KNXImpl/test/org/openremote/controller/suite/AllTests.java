@@ -29,7 +29,8 @@ import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.model.PanelTest;
 
 /**
- * Collects *all* unit tests.
+ * Collects *all* unit tests. Also, the implementation contains utility methods in common across
+ * various test suites.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
