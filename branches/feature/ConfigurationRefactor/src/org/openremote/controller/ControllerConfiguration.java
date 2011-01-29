@@ -24,9 +24,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.Map;
 
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.service.ServiceContext;
 
 
 /**
@@ -98,7 +97,7 @@ public class ControllerConfiguration extends Configuration
 
   public static ControllerConfiguration readXML()
   {
-    ControllerConfiguration config = (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
+    ControllerConfiguration config = ServiceContext.getInstance().getControllerConfiguration();
 
     return (ControllerConfiguration)Configuration.updateWithControllerXMLConfiguration(config);
   }
