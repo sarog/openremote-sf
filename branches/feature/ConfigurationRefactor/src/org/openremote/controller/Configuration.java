@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jdom.Element;
-import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.service.ServiceContext;
 
 /**
  * Configuration class acts as a common superclass for various configuration segments. <p>
@@ -60,7 +60,7 @@ public abstract class Configuration
 
     try
     {
-      element = getControllerXMLParser().queryElementFromXMLByName("config");
+      element = ServiceContext.getInstance().getControllerXMLParser().queryElementFromXMLByName("config");
     }
 
     catch (Exception e)       // TODO : fix this exception handling
@@ -154,18 +154,5 @@ public abstract class Configuration
   }
 
 
-
-
-  // ----------------------------------------------------------------------------------------------
-  //
-  // Isolating Spring library references here -- eventually this should be abstracted away
-  // with a service interface that is more portable to smaller (Android) runtimes
-  //
-  // ----------------------------------------------------------------------------------------------
-
-  private static RemoteActionXMLParser getControllerXMLParser()
-  {
-    return (RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser");
-  }
 
 }
