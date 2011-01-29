@@ -31,10 +31,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
-import org.openremote.controller.Configuration;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
 
@@ -136,7 +134,7 @@ public class ConfigFactoryTest
   private static ControllerConfiguration getCustomBasicConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    ControllerConfiguration config = ServiceContext.getInstance().getControllerConfiguration();
+    ControllerConfiguration config = ServiceContext.getControllerConfiguration();
     config.setConfigurationProperties(attrMap);
 
     return config;
@@ -145,14 +143,14 @@ public class ConfigFactoryTest
   public static RoundRobinConfiguration getCustomRoundRobinConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    RoundRobinConfiguration config = ServiceContext.getInstance().getRoundRobinConfiguration();
+    RoundRobinConfiguration config = ServiceContext.getRoundRobinConfiguration();
     config.setConfigurationProperties(attrMap);
     return config;
   }
 
   public static Map<String, String> parseCustomConfigAttrMap(Document doc)
   {
-    Element element = ServiceContext.getInstance().getControllerXMLParser().queryElementFromXMLByName(doc, "config");
+    Element element = ServiceContext.getControllerXMLParser().queryElementFromXMLByName(doc, "config");
 
     Map<String, String> attrMap = new HashMap<String, String>();
 
