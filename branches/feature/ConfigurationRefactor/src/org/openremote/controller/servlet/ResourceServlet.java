@@ -40,24 +40,24 @@ import org.springframework.util.FileCopyUtils;
 @SuppressWarnings("serial")
 public class ResourceServlet extends HttpServlet
 {
-   
-   private static FileService fileService = ServiceContext.getFileResourceService();
 
-   @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
-                                                              throws ServletException, IOException
-   {
-      String relativePath = request.getPathInfo();
-      InputStream is = fileService.findResource(relativePath);
+  private static FileService fileService = ServiceContext.getFileResourceService();
 
-      if (is != null)
-      {
-         FileCopyUtils.copy(is, response.getOutputStream());
-      }
+  @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
+                                                            throws ServletException, IOException
+  {
+    String relativePath = request.getPathInfo();
+    InputStream is = fileService.findResource(relativePath);
 
-      else
-      {
-         response.sendError(HttpServletResponse.SC_NOT_FOUND, relativePath);
-      }
-   }
+    if (is != null)
+    {
+      FileCopyUtils.copy(is, response.getOutputStream());
+    }
+
+    else
+    {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, relativePath);
+    }
+  }
 
 }
