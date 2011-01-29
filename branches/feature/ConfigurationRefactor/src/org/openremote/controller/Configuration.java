@@ -24,14 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jdom.Element;
-import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.service.ServiceContext;
 
 /**
  * Configuration class acts as a common superclass for various configuration segments. <p>
  *
  * Controller configuration can be set either by modifying local property files or by setting
- * configuration properties in the controller.xml file. If a configuration vaue is present in both
+ * configuration properties in the controller.xml file. If a configuration value is present in both
  * the controller.xml file and in a local configuration (text) file, then the controller.xml
  * configuration takes precedence. <p>
  *
@@ -68,15 +67,6 @@ public abstract class Configuration
       return null;
     }
 
-    return populateConfigurationProperties(element);
-  }
-
-
-  // TODO :
-  //   this method only exists due to test case dependency -- the dependency
-  //   should be removed and the code here inlined to the calling method [JPL]
-  public static Map<String, String> populateConfigurationProperties(Element element)
-  {
     Map<String, String> attrMap = new HashMap<String, String>();
 
     for (Object o : element.getChildren())
@@ -89,6 +79,7 @@ public abstract class Configuration
 
     return attrMap;
   }
+
 
 
   protected static Configuration updateWithControllerXMLConfiguration(Configuration config)
