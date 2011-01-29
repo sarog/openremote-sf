@@ -29,11 +29,27 @@
          xsi:schemaLocation = "http://java.sun.com/xml/ns/j2ee
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-  <display-name>controller_profile_service</display-name>
+  <display-name>OpenRemote Controller</display-name>
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
+
+
+  <!--
+
+   ================================================================================================
+
+    Parameter values available to servlets through the servlet context interface.
+
+   ================================================================================================
+
+  -->
+
+  <context-param>
+    <param-name>ServiceContextImplementation</param-name>
+    <param-value>org.openremote.controller.spring.SpringContext</param-value>
+  </context-param>
 
   <context-param>
     <param-name>log4jExposeWebAppRoot</param-name>
@@ -56,6 +72,18 @@
     <param-name>log4jRefreshInterval</param-name>
     <param-value>60000</param-value>
   </context-param>
+
+
+  <!--
+
+  =================================================================================================
+
+    Map servlet Java class implementations to URLs
+
+  =================================================================================================
+
+  -->
+
 
   <servlet>
     <servlet-name>dispatcherServlet</servlet-name>
@@ -139,6 +167,8 @@
     <servlet-class>org.openremote.controller.rest.FindPanelByID</servlet-class>
   </servlet>
 
+
+
   <servlet>
     <description>used to send 401 http error code.</description>
     <display-name>LogoutServlet</display-name>
@@ -159,6 +189,8 @@
     <servlet-name>resourceServlet</servlet-name>
     <url-pattern>/resources/*</url-pattern>
   </servlet-mapping>
+
+
 
   <!--
    | Map Controller REST API servlet which returns all panel definition IDs to
@@ -202,6 +234,16 @@
   </servlet-mapping>
 
 
+  <!--
+
+  =================================================================================================
+
+    HTTP request/response filters
+
+  =================================================================================================
+
+  -->
+
   <filter>
     <filter-name>encodingFilter</filter-name>
     <filter-class>
@@ -232,6 +274,19 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+
+
+  <!--
+
+  =================================================================================================
+
+    Servlet Context Listeners
+
+  =================================================================================================
+
+  -->
+
+  
   <listener>
     <listener-class>
       org.springframework.web.context.ContextLoaderListener
@@ -249,11 +304,19 @@
       org.openremote.controller.listener.ApplicationListener
     </listener-class>
   </listener>
+  
 
-  <listener>
-    <listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener
-    </listener-class>
-  </listener>
+
+  <!--
+
+  =================================================================================================
+
+    Security Configuration
+
+  =================================================================================================
+
+  -->
+
 
   <!-- Constraint resource: /rest/control/* -->
   <!--
