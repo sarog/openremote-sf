@@ -59,7 +59,7 @@ public abstract class Configuration
 
     try
     {
-      element = ServiceContext.getInstance().getControllerXMLParser().queryElementFromXMLByName("config");
+      element = ServiceContext.getControllerXMLParser().queryElementFromXMLByName("config");
     }
 
     catch (Exception e)       // TODO : fix this exception handling
