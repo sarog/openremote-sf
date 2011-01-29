@@ -63,7 +63,7 @@ public class RoundRobinConfiguration extends Configuration
 
   public static RoundRobinConfiguration readXML()
   {
-    RoundRobinConfiguration config = ServiceContext.getInstance().getRoundRobinConfiguration();
+    RoundRobinConfiguration config = ServiceContext.getRoundRobinConfiguration();
 
     return (RoundRobinConfiguration)Configuration.updateWithControllerXMLConfiguration(config);
   }
