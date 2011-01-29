@@ -25,11 +25,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.Configuration;
@@ -151,7 +153,18 @@ public class ConfigFactoryTest
   public static Map<String, String> parseCustomConfigAttrMap(Document doc)
   {
     Element element = ServiceContext.getInstance().getControllerXMLParser().queryElementFromXMLByName(doc, "config");
-    return Configuration.populateConfigurationProperties(element);
+
+    Map<String, String> attrMap = new HashMap<String, String>();
+
+    for (Object o : element.getChildren())
+    {
+      Element e = (Element) o;
+      String name = e.getAttributeValue("name");
+      String value = e.getAttributeValue("value");
+      attrMap.put(name, value);
+    }
+
+    return attrMap;
   }
   
 }
