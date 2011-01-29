@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openremote.controller.service.FileService;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.service.ServiceContext;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -40,8 +40,7 @@ import org.springframework.util.FileCopyUtils;
 public class ResourceServlet extends HttpServlet {
    
    /** The file service. */
-   private static FileService fileService = 
-      (FileService) SpringContext.getInstance().getBean("fileService");;
+   private static FileService fileService = ServiceContext.getFileResourceService();
 
    /* (non-Javadoc)
     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
