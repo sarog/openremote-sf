@@ -166,8 +166,7 @@ public class ApplicationListener implements ServletContextListener
 
   private void initializeStateCache() throws ControllerException
   {
-    PollingMachinesService devicePollingService = (PollingMachinesService)
-        ServiceContext.getInstance().getService(ServiceContext.ServiceName.DEVICE_POLLING);
+    PollingMachinesService devicePollingService = ServiceContext.getDevicePollingService();
 
     devicePollingService.initStatusCacheWithControllerXML(null);
     devicePollingService.startPollingMachineMultiThread();
