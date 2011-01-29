@@ -46,6 +46,13 @@
 
   -->
 
+  <!--
+   | This property defines which service container implementation is being used by the controller
+   | at runtime. The default implementation for JavaSE 6 environments is a Spring-based
+   | service (bean) context. Other runtimes (such as Android) could have different service context
+   | implementations provided (but this web.xml based configuration still assumed a dependency
+   | to a Java EE servlet container.
+   +-->
   <context-param>
     <param-name>ServiceContextImplementation</param-name>
     <param-value>org.openremote.controller.spring.SpringContext</param-value>
