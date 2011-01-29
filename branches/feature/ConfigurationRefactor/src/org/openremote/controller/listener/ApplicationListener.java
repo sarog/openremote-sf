@@ -30,6 +30,7 @@ import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.service.PollingMachinesService;
+import org.openremote.controller.exception.ControllerException;
 
 
 /**
@@ -163,7 +164,7 @@ public class ApplicationListener implements ServletContextListener
   }
 
 
-  private void initializeStateCache()
+  private void initializeStateCache() throws ControllerException
   {
     PollingMachinesService devicePollingService = (PollingMachinesService)
         ServiceContext.getInstance().getService(ServiceContext.ServiceName.DEVICE_POLLING);
