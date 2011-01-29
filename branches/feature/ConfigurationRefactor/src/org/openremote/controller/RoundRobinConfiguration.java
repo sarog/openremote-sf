@@ -23,7 +23,7 @@ package org.openremote.controller;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.service.ServiceContext;
 
 
 /**
@@ -63,7 +63,7 @@ public class RoundRobinConfiguration extends Configuration
 
   public static RoundRobinConfiguration readXML()
   {
-    RoundRobinConfiguration config = (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
+    RoundRobinConfiguration config = ServiceContext.getInstance().getRoundRobinConfiguration();
 
     return (RoundRobinConfiguration)Configuration.updateWithControllerXMLConfiguration(config);
   }
