@@ -50,6 +50,12 @@ public class TelnetCommandBuilder implements CommandBuilder {
             telnetEvent.setIp(ele.getAttributeValue("value"));
          } else if("command".equals(ele.getAttributeValue("name"))){
             telnetEvent.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("statusFilter".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setFilter(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("statusFilterGroup".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setFilterGroup(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("statusDefault".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setStatusDefault(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          }
       }
       return telnetEvent;
