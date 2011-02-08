@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.service.ServiceContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -38,7 +39,8 @@ public class MonitorController extends AbstractController {
    
    private ControllerXMLListenSharingData controllerXMLListenSharingData = (ControllerXMLListenSharingData) SpringContext
          .getInstance().getBean("controllerXMLListenSharingData");
-   private StatusCache cache = (StatusCache) SpringContext.getInstance().getBean("statusCache");
+  
+   private StatusCache cache = ServiceContext.getDeviceStateCache();
    
    
    @Override
