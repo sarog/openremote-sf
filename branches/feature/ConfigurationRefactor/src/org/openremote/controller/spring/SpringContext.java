@@ -23,54 +23,67 @@ package org.openremote.controller.spring;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
+import org.openremote.controller.service.ServiceContext;
 
 /**
  * TODO : ApplicationContext for Spring container
  * 
  * @author Dan 2009-2-16
  */
-public class SpringContext
+public class SpringContext extends ServiceContext
 {
 
-  private static SpringContext instance;
+
+  // Class Members --------------------------------------------------------------------------------
 
   private static String[] contextFiles = new String[] { "spring-context.xml" };
+
+
+  /**
+   * Gets a instance of <code>SpringContext</code>
+   *
+   * @return the instance of <code>SpringContext</code>
+   */
+  public synchronized static SpringContext getInstance()
+  {
+    return (SpringContext)ServiceContext.getInstance(); // TODO : should remove this method altogether
+  }
+
+
+
+  // Instance Fields ------------------------------------------------------------------------------
 
   private ApplicationContext ctx;
 
 
-  public SpringContext()
+  // Constructors ---------------------------------------------------------------------------------
+
+  public SpringContext() throws InstantiationException
   {
-    ctx = new ClassPathXmlApplicationContext(contextFiles);
+    this(contextFiles);
   }
 
-  public SpringContext(String[] setting)
+  public SpringContext(String[] setting) throws InstantiationException
   {
     ctx = new ClassPathXmlApplicationContext(setting);
+
+    ServiceContext.registerServiceContext(this);
   }
 
-  /**
-  * Gets a instance of <code>SpringContext</code>
-  *
-  * @return the instance of <code>SpringContext</code>
-  */
-  public synchronized static SpringContext getInstance()
+
+  @Override public Object getService(ServiceName name)
   {
-    if (instance == null)
-    {
-       instance = new SpringContext(contextFiles);
-    }
-
-    return instance;
+    return getBean(name.getSpringBeanName());
   }
 
+  
   /**
-  * Gets a bean instance with the given bean identifier
-  *
-  * @param beanId
-  *           the given bean identifier
-  * @return a bean instance
-  */
+   * Gets a bean instance with the given bean identifier
+   *
+   * @param beanId
+   *           the given bean identifier
+   * @return a bean instance
+   */
   public Object getBean(String beanId)
   {
     Object o = ctx.getBean(beanId);
