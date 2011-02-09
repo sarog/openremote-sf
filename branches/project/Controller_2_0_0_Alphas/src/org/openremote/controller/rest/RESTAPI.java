@@ -123,6 +123,13 @@ public abstract class RESTAPI extends HttpServlet
     catch (Throwable t)
     {
       logger.error("Error in handling REST API response: " + t.getMessage(), t);
+
+      response.setStatus(500);
+    }
+    finally
+    {
+      response.getWriter().flush();
+      response.getWriter().close();
     }
   }
 
