@@ -34,6 +34,7 @@ import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.After;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
@@ -57,33 +58,25 @@ public class HttpGetCommandBuilderTest
    
   private HttpGetCommandBuilder builder = new HttpGetCommandBuilder();
 
+  private Server httpServer;
+
+
+  // Test Setup and Tear Down ---------------------------------------------------------------------
+
   @Before public void setUp()
   {
-
+    httpServer = new Server(9999);
   }
 
-  
-  private Command getHttpCommand(String name,String url)
+  @After public void tearDown() throws Exception
   {
-    Element ele = new Element("command");
-    ele.setAttribute("id", "test");
-    ele.setAttribute("protocol","httpGet");
-    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
-
-    Element propName = new Element("property");
-    propName.setAttribute("name","name");
-    propName.setAttribute("value",name);
-
-    Element propUrl = new Element("property");
-    propUrl.setAttribute("name","url");
-    propUrl.setAttribute("value",url);
-
-    ele.addContent(propName);
-    ele.addContent(propUrl);
-
-    return builder.build(ele);
+    httpServer.stop();
   }
 
+
+
+
+  // Tests ----------------------------------------------------------------------------------------
 
 
   @Test public void testHasNameAndUrl()
@@ -109,23 +102,19 @@ public class HttpGetCommandBuilderTest
 
   @Test public void testReadRawStatus() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("on"));
-    server.start();
+    httpServer.setHandler(new Handler("on"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
     Assert.assertEquals("on", cmd.read(null, null));
-
-    server.stop();
   }
 
 
 
   @Test public void testSendCommand() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("on"));
-    server.start();
+    httpServer.setHandler(new Handler("on"));
+    httpServer.start();
 
     ExecutableCommand cmd = (ExecutableCommand) getHttpCommand("","http://127.0.0.1:9999");
     try {
@@ -133,61 +122,51 @@ public class HttpGetCommandBuilderTest
     } catch (Exception e) {
        fail();//won't go here if succeed
     }
-
-    server.stop();
   }
 
 
 
   @Test public void testReadSwitchStatus() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("on"));
-    server.start();
+    httpServer.setHandler(new Handler("on"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
 
-    Assert.assertEquals("on", cmd.read(EnumSensorType.SWITCH, null));
+    String response = cmd.read(EnumSensorType.SWITCH, null);
 
-    server.stop();
+    Assert.assertTrue("Expected response 'on', got '" + response + "'.", "on".equals(response));
   }
 
 
 
   @Test public void testReadRangeRawStatus() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("1"));
-    server.start();
+    httpServer.setHandler(new Handler("1"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
 
     Assert.assertEquals("1", cmd.read(EnumSensorType.RANGE, null));
-
-    server.stop();
   }
 
 
 
   @Test public void testReadLevelRawStatus() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("1"));
-    server.start();
+    httpServer.setHandler(new Handler("1"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
     Assert.assertEquals("1", cmd.read(EnumSensorType.LEVEL, null));
-
-    server.stop();
   }
 
 
 
   @Test public void testReadLevelStatusWithMinMaxValue() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("1"));
-    server.start();
+    httpServer.setHandler(new Handler("1"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
     HashMap<String, String> map = new HashMap<String, String>();
@@ -196,32 +175,27 @@ public class HttpGetCommandBuilderTest
 
     // (1 - (-10)) / (35 - (-10)) = 24.44444% ≈ 24%
     Assert.assertEquals("24", cmd.read(EnumSensorType.LEVEL, map));
-
-    server.stop();
   }
 
 
   @Test public void testReadColorStatus() throws Exception
   {
-    Server server = new Server(9999);
     //TODO not clear what color really is.
-    server.setHandler(new Handler("#000000"));
-    server.start();
+    httpServer.setHandler(new Handler("#000000"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
 
     Assert.assertEquals("#000000", cmd.read(EnumSensorType.COLOR, null));
   //      Assert.assertEquals("black", cmd.read(EnumSensorType.COLOR, null));
 
-    server.stop();
   }
 
 
   @Test public void testReadCustomStatus() throws Exception
   {
-    Server server = new Server(9999);
-    server.setHandler(new Handler("light1_on"));
-    server.start();
+    httpServer.setHandler(new Handler("light1_on"));
+    httpServer.start();
 
     StatusCommand cmd = (StatusCommand) getHttpCommand("","http://127.0.0.1:9999");
     HashMap<String, String> map = new HashMap<String, String>();
@@ -233,14 +207,39 @@ public class HttpGetCommandBuilderTest
     map.put("on", "light1_on");
     map.put("off", "light1_off");
     Assert.assertEquals("on", cmd.read(EnumSensorType.CUSTOM, map));
-
-    server.stop();
   }
+
+
+
+  // Helpers --------------------------------------------------------------------------------------
+
+
+  private Command getHttpCommand(String name, String url)
+  {
+    Element ele = new Element("command");
+    ele.setAttribute("id", "test");
+    ele.setAttribute("protocol","httpGet");
+    ele.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, "255");
+
+    Element propName = new Element("property");
+    propName.setAttribute("name","name");
+    propName.setAttribute("value",name);
+
+    Element propUrl = new Element("property");
+    propUrl.setAttribute("name","url");
+    propUrl.setAttribute("value",url);
+
+    ele.addContent(propName);
+    ele.addContent(propUrl);
+
+    return builder.build(ele);
+  }
+
 }
 
 
 /**
- * Inner Class for Jetty HTTP server handler, returns a string when calling http://127.0.0.1:{port}. 
+ * Jetty HTTP server handler, returns a string when calling http://127.0.0.1:{port}. 
  * Only used in this test.
  * 
  * @author Dan Cong
@@ -261,9 +260,10 @@ class Handler extends AbstractHandler
   {
     response.setContentType("text/html");
     response.setStatus(HttpServletResponse.SC_OK);
-    response.getWriter().println(responseAsString);
+    response.getWriter().print(responseAsString);
+    response.getWriter().flush();
     ((Request) request).setHandled(true);
   }
 
-  
+
 }
