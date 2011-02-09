@@ -51,13 +51,15 @@ import org.openremote.controller.utils.PathUtil;
 public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeService
 {
 
+  private static Logger logger = Logger.getLogger(Constants.DEPLOYER_LOG_CATEGORY);
+
+  
   private ControllerXMLListenSharingData controllerXMLListenSharingData;
   private RemoteActionXMLParser remoteActionXMLParser;
   private StatusCacheService statusCacheService;
   private ChangedStatusTable changedStatusTable;
   private SensorBuilder sensorBuilder;
 
-  private Logger logger = Logger.getLogger(this.getClass().getName());
    
   @SuppressWarnings("finally")
   @Override public synchronized boolean refreshController()
@@ -73,11 +75,11 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
 
     try
     {
-       killAndClearPollingMachineThreads();
+       killAndClearDevicePollingThreads();
        clearChangedStatusTable();
        clearStatusCache();
        clearAndReloadSensors();
-       restartPollingMachineThreads();
+       restartDevicePollingThreads();
        success = true;
     }
 
@@ -116,7 +118,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
 
     try
     {
-      fileContent.append(FileUtils.readFileToString(observedXMLFile, "utf-8"));
+      fileContent.append(FileUtils.readFileToString(observedXMLFile, Constants.CHARACTER_ENCODING_UTF8));
     }
 
     catch (IOException ioe)
@@ -148,18 +150,18 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
     controllerXMLListenSharingData.setIsControllerXMLChanged(isChanged);
   }
    
-  private void killAndClearPollingMachineThreads()
+  private void killAndClearDevicePollingThreads()
   {
-    List<PollingMachineThread> pollingMachineThreads = controllerXMLListenSharingData.getPollingMachineThreads();
+    List<PollingMachineThread> pollingThreads = controllerXMLListenSharingData.getPollingMachineThreads();
 
-    for (PollingMachineThread pollingMachineThread : pollingMachineThreads)
+    for (PollingMachineThread pollingThread : pollingThreads)
     {
-       pollingMachineThread.kill();
+       pollingThread.kill();
     }
 
     nap(10); // Just give the theads some times to get the timeslice and really stop.
 
-    pollingMachineThreads.clear();
+    pollingThreads.clear();
   }
    
   private void clearChangedStatusTable()
@@ -210,7 +212,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
     }
   }
    
-  private void restartPollingMachineThreads()
+  private void restartDevicePollingThreads()
   {
     controllerXMLListenSharingData.getPollingMachineThreads().clear();
     Iterator<Sensor> sensorIterator = controllerXMLListenSharingData.getSensors().iterator();
@@ -218,10 +220,10 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
     while (sensorIterator.hasNext())
     {
       Sensor sensor = sensorIterator.next();
-      PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
-      pollingMachineThread.start();
+      PollingMachineThread pollingThread = new PollingMachineThread(sensor, statusCacheService);
+      pollingThread.start();
       nap(3);
-      controllerXMLListenSharingData.getPollingMachineThreads().add(pollingMachineThread);
+      controllerXMLListenSharingData.getPollingMachineThreads().add(pollingThread);
     }
   }
 
@@ -262,6 +264,6 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
        logger.error("InterruptedException", e);
     }
   }
-   
+
 }
 
