@@ -27,6 +27,8 @@ import org.junit.Assert;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.model.PanelTest;
+import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.spring.SpringContext;
 
 /**
  * Collects *all* unit tests. Also, the implementation contains utility methods in common across
@@ -81,6 +83,27 @@ public class AllTests
   // Class Members --------------------------------------------------------------------------------
 
 
+  static
+  {
+    try
+    {
+      new SpringContext();
+    }
+    catch (Throwable t)
+    {
+      System.err.println(
+          "=================================================================================\n\n" +
+
+          " Cannot initialize tests: " + t.getMessage() + "\n\n" +
+
+          " Stack Trace: \n\n"
+      );
+
+      t.printStackTrace(System.err);
+    }
+  }
+
+
   /**
    * Returns a path to a fixture (resource) file used by tests. Test fixtures are stored in their
    * own (fixed) location in the test directories. This method resolves the path to a given file
@@ -102,5 +125,6 @@ public class AllTests
 
     return cl.getResource(resource).getFile();
   }
+
 
 }
