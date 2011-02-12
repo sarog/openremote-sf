@@ -98,10 +98,14 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Start the HTTP server for each test.
+   *
+   * @throws Exception  if HTTP server start failed.
    */
-  @Before public void setUp()
+  @Before public void setUp() throws Exception
   {
     httpServer = new Server(HTTP_SERVER_PORT);
+    httpServer.setHandler(new HttpServerResponse());
+    httpServer.start();
   }
 
   /**
@@ -215,14 +219,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test implementation behavior when null args are given to HTTP read command.
-   *
-   * @throws Exception if test fails to execute as planned
    */
-  @Test public void testReadValueWithNullSensorType() throws Exception
+  @Test public void testReadValueWithNullSensorType()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     String URL = HTTP_SERVER_URL + "/response/abc";
 
     StatusCommand command = (StatusCommand) getHttpCommand(URL);
@@ -233,14 +232,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test send() implementation against an arbitrary URL.
-   *
-   * @throws Exception if test fails to execute as planned
    */
-  @Test public void testSendCommand() throws Exception
+  @Test public void testSendCommand()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     ExecutableCommand command = (ExecutableCommand) getHttpCommand(HTTP_SERVER_URL);
 
     command.send();
@@ -248,14 +242,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test send() implementation when an empty URL has been set.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testSendCommandEmptyURL() throws Exception
+  @Test public void testSendCommandEmptyURL()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     ExecutableCommand command = (ExecutableCommand) getHttpCommand("");
 
     command.send();
@@ -264,14 +253,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test send() implementation behavior when a malfored URL has been configured.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testSendCommandMalformedURL() throws Exception
+  @Test public void testSendCommandMalformedURL()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     ExecutableCommand command = (ExecutableCommand) getHttpCommand("foo://bar");
 
     command.send();
@@ -280,14 +264,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test send() implementation when URL not found (404) is returned.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testSendCommandNonExistentURL() throws Exception
+  @Test public void testSendCommandNonExistentURL()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     ExecutableCommand command = (ExecutableCommand) getHttpCommand(HTTP_SERVER_URL + "/doesnotexist");
 
     command.send();
@@ -296,14 +275,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test send() implementation behavior when HTTP server responds with an error code.
-   *
-   * @throws Exception if test fails to execute as planned
    */
-  @Test public void testSendCommandToErrorURL() throws Exception
+  @Test public void testSendCommandToErrorURL()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     ExecutableCommand command = (ExecutableCommand) getHttpCommand(HTTP_SERVER_URL + "/error/500");
 
     command.send();
@@ -316,14 +290,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Test read() implementation against 'SWITCH' sensor type.
-   *
-   * @throws Exception if test fails to execute as planned
    */
-  @Test public void testReadSwitchStatus() throws Exception
+  @Test public void testReadSwitchStatus()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on");
 
     String response = cmd.read(EnumSensorType.SWITCH, null);
@@ -342,14 +311,9 @@ public class HttpGetCommandBuilderTest
    * If it is convenient to support distinct state mapping for all types of sensors, this test
    * can be modified / removed. The mapping behavior should then be documented and implemented
    * uniformly against all protocol implementations.
-   *
-   * @throws Exception    if test fails to execute as planned
    */
-  @Test public void testReadSwitchStatusIgnoreMapping() throws Exception
+  @Test public void testReadSwitchStatusIgnoreMapping()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/on");
 
     HashMap<String, String> map = new HashMap<String, String>(3);
@@ -371,14 +335,9 @@ public class HttpGetCommandBuilderTest
    * If it is convenient to support distinct state mapping for all types of sensors, this test
    * can be modified / removed. The mapping behavior should then be documented and implemented
    * uniformly against all protocol implementations.
-   *
-   * @throws Exception    if test fails to execute as planned
    */
-  @Test public void testReadSwitchStatusDontMap() throws Exception
+  @Test public void testReadSwitchStatusDontMap()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/gaga");
 
     HashMap<String, String> map = new HashMap<String, String>(3);
@@ -396,14 +355,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Basic read() test on 'RANGE' type of sensor.
-   *
-   * @throws Exception if test fails to execute as planned
    */
-  @Test public void testReadRangeStatus() throws Exception
+  @Test public void testReadRangeStatus()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand cmd = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
 
     String response = cmd.read(EnumSensorType.RANGE, null);
@@ -416,14 +370,9 @@ public class HttpGetCommandBuilderTest
    * If no explicit range boundaries have been set (see {@link Sensor#RANGE_MAX_STATE} and
    * {@link Sensor#RANGE_MIN_STATE}), assume and enforce range boundaries at Java Integer min
    * and max values.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testReadRangeStatusMaxLimit() throws Exception
+  @Test public void testReadRangeStatusMaxLimit()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/" + Integer.MAX_VALUE);
 
     String response = command.read(EnumSensorType.RANGE, null);
@@ -437,14 +386,9 @@ public class HttpGetCommandBuilderTest
    * If no explicit range boundaries have been set (see {@link Sensor#RANGE_MAX_STATE} and
    * {@link Sensor#RANGE_MIN_STATE}), assume and enforce range boundaries at Java Integer min
    * and max values.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testReadRangeStatusMinLimit() throws Exception
+  @Test public void testReadRangeStatusMinLimit()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/" + Integer.MIN_VALUE);
 
     String response = command.read(EnumSensorType.RANGE, null);
@@ -459,14 +403,9 @@ public class HttpGetCommandBuilderTest
    * and max values. <p>
    *
    * Values crossing the upper bounds should be reduced to fit within the Java integer value bounds.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testReadRangeStatusOutOfUpperBounds() throws Exception
+  @Test public void testReadRangeStatusOutOfUpperBounds()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/2147483648");
 
     String response = command.read(EnumSensorType.RANGE, null);
@@ -484,14 +423,9 @@ public class HttpGetCommandBuilderTest
    * and max values. <p>
    *
    * Values crossing the lower bounds should be reduced to fit within the Java integer value bounds.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testReadRangeStatusOutOfLowerBounds() throws Exception
+  @Test public void testReadRangeStatusOutOfLowerBounds()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-2147483649");
 
     String response = command.read(EnumSensorType.RANGE, null);
@@ -515,14 +449,9 @@ public class HttpGetCommandBuilderTest
    * values in the range should have distinct mappings, this test can be modified / removed.
    * The mapping behavior should then be documented and implemented uniformly against all protocol
    * implementations.
-   *
-   * @throws Exception    if test fails to execute as planned
    */
-  @Test public void testReadRangeStatusIgnoreMapping() throws Exception
+  @Test public void testReadRangeStatusIgnoreMapping()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
 
     HashMap<String, String> map = new HashMap<String, String>(3);
@@ -546,14 +475,9 @@ public class HttpGetCommandBuilderTest
    * values in the range should have distinct mappings, this test can be modified / removed.
    * The mapping behavior should then be documented and implemented uniformly against all protocol
    * implementations.
-   *
-   * @throws Exception    if test fails to execute as planned
    */
-  @Test public void testReadRangeStatusDoNotMap() throws Exception
+  @Test public void testReadRangeStatusDoNotMap()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/bar");
 
     HashMap<String, String> map = new HashMap<String, String>(3);
@@ -568,14 +492,9 @@ public class HttpGetCommandBuilderTest
   /**
    * When an upper bound limit is set for a 'RANGE' sensor, the return values should be limited
    * to those boundaries.
-   *
-   * @throws Exception if test fails to execute as planned.
    */
-  @Test public void testRangeSensorExplicitUpperBound() throws Exception
+  @Test public void testRangeSensorExplicitUpperBound()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/10");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -596,14 +515,9 @@ public class HttpGetCommandBuilderTest
   /**
    * When a lower bound limit is set for a 'RANGE' sensor, the return values should be limited
    * to those boundaries.
-   *
-   * @throws Exception if test fails to execute as planned.
    */
-  @Test public void testRangeSensorExplicitLowerBound() throws Exception
+  @Test public void testRangeSensorExplicitLowerBound()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-10");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -625,14 +539,9 @@ public class HttpGetCommandBuilderTest
    *
    * The behavior enforced here for such a misconfiguration is that the minimum boundary value
    * should be returned.
-   *
-   * @throws Exception    if test fails to execute as planned
    */
-  @Test public void testRangeSensorCrossBoundaries() throws Exception
+  @Test public void testRangeSensorCrossBoundaries()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -652,14 +561,9 @@ public class HttpGetCommandBuilderTest
   /**
    * Test RANGE sensor behavior when boundaries are configured as equal, making only one value
    * a valid return value.
-   *
-   * @throws Exception  if test fails to execute as planned.
    */
-  @Test public void testRangeSensorEqualBoundaries() throws Exception
+  @Test public void testRangeSensorEqualBoundaries()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -688,14 +592,9 @@ public class HttpGetCommandBuilderTest
   /**
    * Test a range sensor misconfiguration behavior when ranges have been set above the Java integer
    * max value. Enforcing here for the implementation to defensively default to Integer MAX value.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testRangeSensorOverflowMaxBoundary() throws Exception
+  @Test public void testRangeSensorOverflowMaxBoundary()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/2147483648");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -714,14 +613,9 @@ public class HttpGetCommandBuilderTest
   /**
    * Test a range sensor misconfiguration behavior when range has been set below the Java integer
    * minimum value. Enforcing the implementation to defensively default to Integer MIN value.
-   *
-   * @throws Exception  if test fails to execute as planned
    */
-  @Test public void testRangeSensorOverflowMinBoundary() throws Exception
+  @Test public void testRangeSensorOverflowMinBoundary()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-2147483649");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -744,14 +638,9 @@ public class HttpGetCommandBuilderTest
 
   /**
    * Basic read() test on 'LEVEL' sensor type.
-   *
-   * @throws Exception  if test fails to execute as planned.
    */
-  @Test public void testReadLevelStatus() throws Exception
+  @Test public void testReadLevelStatus()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
 
     String response = command.read(EnumSensorType.LEVEL, null);
@@ -765,11 +654,8 @@ public class HttpGetCommandBuilderTest
    *
    * Value is expected to be truncated within the LEVEL range.
    */
-  @Test public void testLevelOverMaxBoundary() throws Exception
+  @Test public void testLevelOverMaxBoundary()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/101");
 
     String response = command.read(EnumSensorType.LEVEL, null);
@@ -786,11 +672,8 @@ public class HttpGetCommandBuilderTest
    *
    * Value is expected to be truncated within the LEVEL range.
    */
-  @Test public void testLevelBelowMinBoundary() throws Exception
+  @Test public void testLevelBelowMinBoundary()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-1");
 
     String response = command.read(EnumSensorType.LEVEL, null);
@@ -806,11 +689,8 @@ public class HttpGetCommandBuilderTest
    * Test LEVEL sensor behavior when explicit ranges have been configured. These ought to be
    * ignored since LEVEL sensor has always a range of [0-100].
    */
-  @Test public void testReadLevelStatusIgnoreRange() throws Exception
+  @Test public void testReadLevelStatusIgnoreRange()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/100");
 
     HashMap<String, String> map = new HashMap<String, String>();
@@ -869,11 +749,8 @@ public class HttpGetCommandBuilderTest
    * The mapping behavior should then be documented and implemented uniformly against all protocol
    * implementations.
    */
-  @Test public void testReadLevelStatusIgnoreMapping() throws Exception
+  @Test public void testReadLevelStatusIgnoreMapping()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/1");
 
     HashMap<String, String> map = new HashMap<String, String>(3);
@@ -898,11 +775,8 @@ public class HttpGetCommandBuilderTest
    * The mapping behavior should then be documented and implemented uniformly against all protocol
    * implementations.
    */
-  @Test public void testReadLevelStatusDoNotMap() throws Exception
+  @Test public void testReadLevelStatusDoNotMap()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/bar");
 
     HashMap<String, String> map = new HashMap<String, String>(3);
@@ -938,11 +812,8 @@ public class HttpGetCommandBuilderTest
    * Test basic 'CUSTOM' sensor type where return values are mapped to specific distinct state
    * values.
    */
-  @Test public void testDistinctStateMapping() throws Exception
+  @Test public void testDistinctStateMapping()
   {
-    httpServer.setHandler(new HttpServerResponse());
-    httpServer.start();
-
     StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/return_value_on");
 
     HashMap<String, String> map = new HashMap<String, String>();
