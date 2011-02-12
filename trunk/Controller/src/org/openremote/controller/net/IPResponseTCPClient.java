@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,8 +25,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.utils.NetworkUtil;
 
 /**
@@ -46,7 +45,7 @@ public class IPResponseTCPClient implements Runnable {
    public final static int TCP_PORT = 2346;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
    
 

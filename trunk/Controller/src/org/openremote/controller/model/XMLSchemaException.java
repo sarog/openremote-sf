@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -18,23 +18,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.rest;
-
-import org.junit.Test;
+package org.openremote.controller.model;
 
 /**
- * TODO
+ * Exception class to indicate XML parsing error.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ShowPanelsRestServletTest
+public class XMLSchemaException extends Exception
 {
 
-  @Test public void testRetrieveAllPanels()
-  {
-   // final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_PANEL_URI;
+  // Constructors ---------------------------------------------------------------------------------
 
-    
+  public XMLSchemaException(String message)
+  {
+    super(message);
   }
+
+ 
 }
 
