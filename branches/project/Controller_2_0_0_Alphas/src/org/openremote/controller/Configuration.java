@@ -40,7 +40,8 @@ import java.util.logging.Level;
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  * @author Jerome Velociter
  */
-public class Configuration extends CustomConfiguration {
+public class Configuration extends CustomConfiguration
+{
 
   // Constants ------------------------------------------------------------------------------------
 
