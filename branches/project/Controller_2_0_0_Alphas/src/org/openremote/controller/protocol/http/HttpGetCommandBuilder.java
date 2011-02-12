@@ -30,6 +30,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.Constants;
+import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
@@ -134,7 +135,7 @@ public class HttpGetCommandBuilder implements CommandBuilder
 
        //log.warn("Configuration error in HTTP protocol URL: " + e.getMessage(), e);
 
-       return null;
+       throw new NoSuchCommandException("Invalid URL: " + e.getMessage(), e);
      }
    }
 
