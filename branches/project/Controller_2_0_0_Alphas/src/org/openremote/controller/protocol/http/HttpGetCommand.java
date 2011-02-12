@@ -20,10 +20,6 @@
  */
 package org.openremote.controller.protocol.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Map;
 
 import org.apache.http.auth.AuthScope;
@@ -44,12 +40,22 @@ import org.openremote.controller.component.Sensor;
  * TODO
  *
  * @author Marcus 2009-4-26
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Dan Cong
  */
 public class HttpGetCommand implements ExecutableCommand, StatusCommand
 {
 
-  private static Logger logger = Logger.getLogger(HttpGetCommand.class.getName());
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common logging category.
+   */
+  private static Logger logger = Logger.getLogger(HttpGetCommandBuilder.HTTP_PROTOCOL_LOG_CATEGORY);
+
+
+  
+  // Instance Fields ------------------------------------------------------------------------------
 
   /** A name to identify command in controller.xml. */
   private String name;

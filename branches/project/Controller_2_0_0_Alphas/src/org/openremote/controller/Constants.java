@@ -35,6 +35,12 @@ public class Constants
   public final static String CONTROLLER_ROOT_LOG_CATEGORY = "OpenRemote.Controller";
 
   /**
+   * Logging subcategory for protocol implementations. Each protocol implementation should
+   * add its unique subcategory to this parent log category.
+   */
+  public final static String CONTROLLER_PROTOCOL_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".protocol.";
+
+  /**
    * Logging subcategory for XML parsing.
    */
   public final static String XML_PARSER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".xml.parser";
