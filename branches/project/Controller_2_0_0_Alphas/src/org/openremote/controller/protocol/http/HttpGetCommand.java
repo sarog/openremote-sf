@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.http;
 
 import java.util.Map;
 import java.net.URL;
+import java.math.BigInteger;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -36,6 +37,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.exception.ConversionException;
 
 /**
  * TODO
@@ -88,6 +90,8 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand
   }
 
 
+  // Public Instance Methods ----------------------------------------------------------------------
+  
   public URL getUrl()
   {
     return url;
@@ -111,11 +115,11 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand
 
   // Implements StatusCommand ---------------------------------------------------------------------
 
-  @Override public String read(EnumSensorType sensoryType, Map<String, String> stateMap)
+  @Override public String read(EnumSensorType sensorType, Map<String, String> stateMap)
   {
     String rawResult = requestURL();
 
-    if (sensoryType == null || stateMap == null)
+    if (sensorType == null)
     {
        return rawResult;
     }
@@ -125,34 +129,60 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand
        return UNKNOWN_STATUS;
     }
 
-    switch (sensoryType)
+    switch (sensorType)
     {
+      case SWITCH:
+
+        rawResult = rawResult.trim();
+
+        if (rawResult.equalsIgnoreCase("on"))
+          return "on";
+
+        else if (rawResult.equalsIgnoreCase("off"))
+          return "off";
+
+        else
+          return UNKNOWN_STATUS;
+
+        
       case RANGE:
-         break;
+
+        try
+        {
+          int rangeMin = Integer.MIN_VALUE;
+          int rangeMax = Integer.MAX_VALUE;
+
+          int result = resolveResultAsInteger(rawResult);
+
+
+          if (stateMap != null)
+          {
+            rangeMin = resolveRangeMinimum(stateMap.get(Sensor.RANGE_MIN_STATE));
+            rangeMax = resolveRangeMaximum(stateMap.get(Sensor.RANGE_MAX_STATE));
+          }
+
+          return resolveToRangeSensorValue(result, rangeMin, rangeMax);
+        }
+
+        catch (ConversionException e)
+        {
+          return UNKNOWN_STATUS;
+        }
+
 
       case LEVEL:
-         String min = stateMap.get(Sensor.RANGE_MIN_STATE);
-         String max = stateMap.get(Sensor.RANGE_MAX_STATE);
 
-         try
-         {
-            int val = Integer.valueOf(rawResult);
+        try
+        {
+          return resolveToLevelSensorValue(resolveResultAsInteger(rawResult));
+        }
 
-            if (min != null && max != null)
-            {
-               int minVal = Integer.valueOf(min);
-               int maxVal = Integer.valueOf(max);
-               return String.valueOf(100 * (val - minVal)/ (maxVal - minVal));
-            }
-         }
+        catch (ConversionException e)
+        {
+          return UNKNOWN_STATUS;
+        }
 
-         catch (ArithmeticException e)
-         {
-           // TODO : log
-         }
-
-         break;
-
+        
       default://NOTE: if sensor type is RANGE, this map only contains min/max states.
 
         for (String state : stateMap.keySet())
@@ -208,4 +238,142 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand
     return resp;
   }
 
+
+  private int resolveRangeMinimum(String min)
+  {
+    if (min == null || min.equals(""))
+    {
+      return Integer.MIN_VALUE;
+    }
+
+    try
+    {
+      BigInteger minimum = new BigInteger(min);
+      BigInteger integerMin = new BigInteger(Integer.toString(Integer.MIN_VALUE));
+
+      if (minimum.compareTo(integerMin) < 0)
+      {
+        return Integer.MIN_VALUE;
+      }
+
+      else
+      {
+        return minimum.intValue();
+      }
+    }
+
+    catch (NumberFormatException e)
+    {
+      // TODO : log
+
+      return Integer.MIN_VALUE;
+    }
+  }
+
+
+
+  private int resolveRangeMaximum(String max)
+  {
+    if (max == null || max.equals(""))
+    {
+      return Integer.MAX_VALUE;
+    }
+
+    try
+    {
+      BigInteger maximum = new BigInteger(max);
+      BigInteger integerMax = new BigInteger(Integer.toString(Integer.MAX_VALUE));
+
+      if (maximum.compareTo(integerMax) > 0)
+      {
+        return Integer.MAX_VALUE;
+      }
+
+      else
+      {
+        return maximum.intValue();
+      }
+    }
+
+    catch (NumberFormatException e)
+    {
+      // TODO : log
+
+      return Integer.MAX_VALUE;
+    }
+  }
+
+
+  private String resolveToLevelSensorValue(int result)
+  {
+    if (result > 100)
+    {
+      return "100";
+    }
+
+    else if (result < 0)
+    {
+      return "0";
+    }
+
+    else
+    {
+      return Integer.toString(result);
+    }
+  }
+
+
+
+  private int resolveResultAsInteger(String rawResult) throws ConversionException
+  {
+    try
+    {
+      BigInteger min = new BigInteger(Integer.toString(Integer.MIN_VALUE));
+      BigInteger max = new BigInteger(Integer.toString(Integer.MAX_VALUE));
+
+      BigInteger result = new BigInteger(rawResult);
+
+      if (result.compareTo(min) < 0)
+      {
+        return Integer.MIN_VALUE;
+      }
+
+      else if (result.compareTo(max) > 0)
+      {
+        return Integer.MAX_VALUE;
+      }
+
+      else
+      {
+        return result.intValue();
+      }
+    }
+
+    catch (NumberFormatException e)
+    {
+      throw new ConversionException(
+          "Cannot parse device return value to Java integer: " + e.getMessage(), e
+      );
+    }
+  }
+
+
+  private String resolveToRangeSensorValue(int result, int rangeMinimum, int rangeMaximum)
+  {
+    if (result < rangeMinimum)
+    {
+      return Integer.toString(rangeMinimum);
+    }
+
+    else if (result > rangeMaximum)
+    {
+      return Integer.toString(rangeMaximum);
+    }
+
+    else
+    {
+      return Integer.toString(result);
+    }
+
+  }
 }

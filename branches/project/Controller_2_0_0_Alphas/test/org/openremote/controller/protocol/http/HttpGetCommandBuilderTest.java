@@ -42,6 +42,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.Sensor;
+import org.openremote.controller.exception.NoSuchCommandException;
 
 
 /**
@@ -245,9 +246,18 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testSendCommandEmptyURL()
   {
-    ExecutableCommand command = (ExecutableCommand) getHttpCommand("");
+    try
+    {
+      ExecutableCommand command = (ExecutableCommand) getHttpCommand("");
 
-    command.send();
+      command.send();
+
+      Assert.fail("should not get here, was expecting a NoSuchCommandException");
+    }
+    catch (NoSuchCommandException e)
+    {
+      // expected, do nothing...
+    }
   }
 
 
@@ -256,9 +266,19 @@ public class HttpGetCommandBuilderTest
    */
   @Test public void testSendCommandMalformedURL()
   {
-    ExecutableCommand command = (ExecutableCommand) getHttpCommand("foo://bar");
+    try
+    {
+      ExecutableCommand command = (ExecutableCommand) getHttpCommand("foo://bar");
 
-    command.send();
+      command.send();
+
+      Assert.fail("should not get here, was expecting a NoSuchCommandException...");
+    }
+
+    catch (NoSuchCommandException e)
+    {
+      // expected, do nothing...
+    }
   }
 
 
@@ -345,7 +365,10 @@ public class HttpGetCommandBuilderTest
 
     String response = cmd.read(EnumSensorType.SWITCH, map);
 
-    Assert.assertTrue("Expected response 'gaga', got '" + response + "'.", "gaga".equals(response));
+    Assert.assertTrue(
+        "Expected response " + HttpGetCommand.UNKNOWN_STATUS + ", got '" + response + "'.",
+        HttpGetCommand.UNKNOWN_STATUS.equals(response)
+    );
   }
 
 
@@ -827,7 +850,10 @@ public class HttpGetCommandBuilderTest
 
     String response = command.read(EnumSensorType.RANGE, map);
 
-    Assert.assertTrue("bar".equals(response));
+    Assert.assertTrue(
+        "Expected " + HttpGetCommand.UNKNOWN_STATUS + ", got '" + response + "' instead.",
+        HttpGetCommand.UNKNOWN_STATUS.equals(response)
+    );
   }
 
 
