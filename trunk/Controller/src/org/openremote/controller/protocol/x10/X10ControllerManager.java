@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -25,8 +25,7 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
-import org.openremote.controller.utils.ConfigFactory;
+import org.openremote.controller.ControllerConfiguration;
 
 import com.jpeterson.x10.Gateway;
 import com.jpeterson.x10.GatewayException;
@@ -87,7 +86,10 @@ public class X10ControllerManager {
     */
    public X10Controller getDevice() throws ConnectionException
    {
-      Configuration config = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+     // TODO :
+     //   fix this -- it's part of the X10 send() loop so reading the XML config every time
+     //   doesn't make sense
+     ControllerConfiguration config = ControllerConfiguration.readXML();
 
       String transmitterHint = StringUtils.defaultIfEmpty(config.getX10transmitter(), DEFAULT_TRANSMITTER_HINT);
 

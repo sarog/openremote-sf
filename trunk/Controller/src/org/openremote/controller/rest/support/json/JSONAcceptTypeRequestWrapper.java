@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -45,8 +45,8 @@ public class JSONAcceptTypeRequestWrapper extends HttpServletRequestWrapper {
 
    @Override
    public String getHeader(String name) {
-      if (Constants.HTTP_ACCEPT_HEADER_NAME.toLowerCase().equals(name.toLowerCase())) {
-         return Constants.HTTP_HEADER_ACCEPT_JSON_TYPE;
+      if (Constants.HTTP_ACCEPT_HEADER.toLowerCase().equals(name.toLowerCase())) {
+         return Constants.MIME_APPLICATION_JSON;
       } else {
          return super.getHeader(name);
       }
@@ -55,9 +55,9 @@ public class JSONAcceptTypeRequestWrapper extends HttpServletRequestWrapper {
    @SuppressWarnings("unchecked")
    @Override
    public Enumeration getHeaders(String s) {
-      if (Constants.HTTP_ACCEPT_HEADER_NAME.toLowerCase().equals(s.toLowerCase())) {
+      if (Constants.HTTP_ACCEPT_HEADER.toLowerCase().equals(s.toLowerCase())) {
          Vector<String> headers = new Vector();
-         headers.add(Constants.HTTP_HEADER_ACCEPT_JSON_TYPE);
+         headers.add(Constants.MIME_APPLICATION_JSON);
          return headers.elements();
       } else {
          return super.getHeaders(s);

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -47,12 +48,12 @@
 
   <!--
   | Configuration variable mapping from controller config.properties file
-  | to org.openremote.controller.Configuration class.
+  | to org.openremote.controller.ControllerConfiguration class.
   |
   | Property names must match to valid accessor methods in the Configuration class.
   | Property values contain the expected property name in config.properties file.
   +-->
-  <bean id = "configuration" class = "org.openremote.controller.Configuration">
+  <bean id = "configuration" class = "org.openremote.controller.ControllerConfiguration">
     <property name = "irsendPath" value = "${irsend.path}"/>
     <property name = "lircdconfPath" value = "${lircd.conf.path}"/>
     <property name = "copyLircdconf" value = "${copy.lircd.conf.on}"/>
@@ -69,7 +70,7 @@
   </bean>
 
   <!-- round-robin variables -->
-  <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfig">
+  <bean id="roundRobinConfig" class="org.openremote.controller.RoundRobinConfiguration">
     <property name="isGroupMemberAutoDetectOn" value="${controller.groupmember.autodetect.on}" />
       <property name="roundRobinMulticastAddress" value="${controller.roundrobin.multicast.address}" />
       <property name="roundRobinMulticastPort" value="${controller.roundrobin.multicast.port}" />
