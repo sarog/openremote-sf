@@ -19,7 +19,7 @@
     </bean>
     
     <!-- configuration variables -->
-    <bean id="configuration" class="org.openremote.controller.Configuration">
+    <bean id="configuration" class="org.openremote.controller.ControllerConfiguration">
         <property name="irsendPath" value="${irsend.path}" />
         <property name="lircdconfPath" value="${lircd.conf.path}" />
         <property name="copyLircdconf" value="${copy.lircd.conf.on}" />

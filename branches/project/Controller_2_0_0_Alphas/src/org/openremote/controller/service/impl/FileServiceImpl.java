@@ -33,7 +33,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.BeehiveNotAvailableException;
 import org.openremote.controller.exception.ForbiddenException;
@@ -55,7 +55,7 @@ public class FileServiceImpl implements FileService {
    private static final Logger logger = Logger.getLogger(FileServiceImpl.class);
    
    /** The configuration. */
-   private Configuration configuration;
+   private ControllerConfiguration configuration;
    
    /**
     * {@inheritDoc}
@@ -204,7 +204,7 @@ public class FileServiceImpl implements FileService {
       return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
    }
 
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
 

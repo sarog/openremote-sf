@@ -24,7 +24,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.BeehiveNotAvailableException;
 import org.openremote.controller.exception.ControlCommandException;
@@ -48,7 +48,7 @@ public class ConfigManageController extends MultiActionController {
    /** The file service. */
    private FileService fileService;
    
-   private Configuration configuration;
+   private ControllerConfiguration configuration;
    
    /** MUST use <code>SpringContext</code> to keep the same context as <code>InitCachedStatusDBListener</code> */
    private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService) SpringContext
@@ -131,7 +131,7 @@ public class ConfigManageController extends MultiActionController {
     * 
     * @param configuration the new configuration
     */
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
 
