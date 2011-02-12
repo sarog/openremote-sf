@@ -133,8 +133,7 @@ public class HttpGetCommandBuilderTest
 
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
-    Assert.assertTrue("commandname".equals(httpCommand.getName()));
-    Assert.assertTrue(URL.equals(httpCommand.getUrl()));
+    Assert.assertTrue(URL.equals(httpCommand.getUrl().toExternalForm()));
   }
 
 
@@ -157,8 +156,7 @@ public class HttpGetCommandBuilderTest
 
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
-    Assert.assertTrue("commandname".equals(httpCommand.getName()));
-    Assert.assertTrue((parameterizedURL + "100").equals(httpCommand.getUrl()));
+    Assert.assertTrue((parameterizedURL + "100").equals(httpCommand.getUrl().toExternalForm()));
   }
 
   /**
@@ -178,11 +176,9 @@ public class HttpGetCommandBuilderTest
 
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
-    Assert.assertTrue("commandname".equals(httpCommand.getName()));
-
     Assert.assertTrue(
         "Expected '" + finalURL + "', got '" + httpCommand.getUrl() + "'.",
-        "http://www.openremote.org/command?param=10000&another=10000".equals(httpCommand.getUrl())
+        "http://www.openremote.org/command?param=10000&another=10000".equals(httpCommand.getUrl().toExternalForm())
     );
   }
 
@@ -205,11 +201,10 @@ public class HttpGetCommandBuilderTest
 
     HttpGetCommand httpCommand = (HttpGetCommand)cmd;
 
-    Assert.assertTrue("commandname".equals(httpCommand.getName()));
 
     Assert.assertTrue(
         "Expected '" + finalURL + "', got '" + httpCommand.getUrl() + "'.",
-        "http://www.openremote.org/command?param=XXX&another=foo".equals(httpCommand.getUrl())
+        "http://www.openremote.org/command?param=XXX&another=foo".equals(httpCommand.getUrl().toExternalForm())
     );
   }
 
