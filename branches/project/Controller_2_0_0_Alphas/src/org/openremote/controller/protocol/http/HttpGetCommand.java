@@ -21,6 +21,7 @@
 package org.openremote.controller.protocol.http;
 
 import java.util.Map;
+import java.net.URL;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -61,56 +62,43 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand
   private String name;
 
   /** The url to perform the http get request on */
-  private String url;
+  private URL url;
 
   /** The username which is used for basic authentication */
   private String username;
 
   /** The password which is used for basic authentication */
-  private String password;
+  private byte[] password;
 
 
 
-  public String getName()
+  // Constructors ---------------------------------------------------------------------------------
+
+  public HttpGetCommand(URL url)
   {
-    return name;
+    this.url = url;
   }
 
-  public void setName(String name)
+  public HttpGetCommand(URL url, String username, byte[] pwd)
   {
-    this.name = name;
+    this(url);
+
+    this.username = username;
+    this.password = pwd;
   }
 
 
-  public String getUrl()
+  public URL getUrl()
   {
     return url;
   }
 
-  public void setUrl(String url)
-  {
-    this.url = url;
-  }
 
   public String getUsername()
   {
     return username;
   }
 
-  public void setUsername(String username)
-  {
-    this.username = username;
-  }
-
-  public String getPassword()
-  {
-    return password;
-  }
-
-  public void setPassword(String password)
-  {
-    this.password = password;
-  }
 
 
   // Implements ExecutableCommand -----------------------------------------------------------------
@@ -195,14 +183,13 @@ public class HttpGetCommand implements ExecutableCommand, StatusCommand
 
        cred.setCredentials(
            new AuthScope(AuthScope.ANY),
-           new UsernamePasswordCredentials(getUsername(), getPassword())
+           new UsernamePasswordCredentials(getUsername(), new String(password))
        );
 
        client.setCredentialsProvider(cred);
     }
 
-    String url = getUrl();
-    HttpGet httpget = new HttpGet(url);
+    HttpGet httpget = new HttpGet(url.toExternalForm());
 
     String resp = "";
 
