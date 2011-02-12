@@ -46,7 +46,6 @@ public class MacrosIrDelayUtilTest {
          add(new IRCommand());
          add(new DelayCommand());
          add(new IRCommand());
-         add(new HttpGetCommand());
       }
    };
 

@@ -37,13 +37,5 @@ public class MockupCommandBuilderTest {
       
       return builder.build(ele);
    }
-   @Test
-   public void testHasNameAndUrl(){
-      Command cmd = getMockupCommand("finalist","http://www.finalist.cn");
-      Assert.assertTrue(cmd instanceof HttpGetCommand);
-      HttpGetCommand httpCmd = (HttpGetCommand)cmd;
-      Assert.assertEquals("finalist", httpCmd.getName());
-      Assert.assertEquals("http://www.finalist.cn", httpCmd.getUrl());
-   }
 
 }
