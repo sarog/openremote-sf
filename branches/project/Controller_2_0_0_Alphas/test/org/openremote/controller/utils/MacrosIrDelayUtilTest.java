@@ -30,6 +30,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
 import org.openremote.controller.protocol.x10.X10Command;
 import org.openremote.controller.protocol.http.HttpGetCommand;
+import org.openremote.controller.protocol.virtual.VirtualCommand;
 
 
 /**
@@ -46,6 +47,7 @@ public class MacrosIrDelayUtilTest {
          add(new IRCommand());
          add(new DelayCommand());
          add(new IRCommand());
+         add(new VirtualCommand("address", "command"));
       }
    };
 
