@@ -485,7 +485,10 @@ public class HttpGetCommandBuilderTest
 
     String response = command.read(EnumSensorType.RANGE, map);
 
-    Assert.assertTrue("bar".equals(response));
+    Assert.assertTrue(
+        "Expecting " + HttpGetCommand.UNKNOWN_STATUS + " response, got '" + response + " instead.",
+        HttpGetCommand.UNKNOWN_STATUS.equals(response)
+    );
   }
 
 
@@ -631,6 +634,46 @@ public class HttpGetCommandBuilderTest
   }
 
 
+  /**
+   * Test behavior against incorrect API use (internal implementation), if range minimum value
+   * has been set to unparseable number.
+   */
+  @Test public void testRangeSensorInvalidMinBoundary()
+  {
+    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/-2147483649");
+
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put(Sensor.RANGE_MIN_STATE, "foo");
+    map.put(Sensor.RANGE_MAX_STATE, "1");
+
+    String response =  command.read(EnumSensorType.RANGE, map);
+
+    Assert.assertTrue(
+        "Expected range bound to return min value of -2147483648, got '" + response + "' instead.",
+        "-2147483648".equals(response)
+    );
+  }
+
+
+  /**
+   * Test behavior against incorrect API use (internal implementation), if range max value is
+   * set to unpaseable number.
+   */
+  @Test public void testRangeSensorInvalidMaxBoundary()
+  {
+    StatusCommand command = (StatusCommand) getHttpCommand(HTTP_SERVER_URL + "/response/2147483648");
+
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put(Sensor.RANGE_MIN_STATE, "0");
+    map.put(Sensor.RANGE_MAX_STATE, "bar");
+
+    String response =  command.read(EnumSensorType.RANGE, map);
+
+    Assert.assertTrue(
+        "Expected range bound to return max value of 2147483647, got '" + response + "' instead.",
+        "2147483647".equals(response)
+    );
+  }
 
 
   // Read LEVEL Sensor Tests ----------------------------------------------------------------------
