@@ -1,75 +1,100 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.spring;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
+import org.openremote.controller.service.ServiceContext;
 
 /**
- * ApplicationContext for Spring container
+ * TODO : ApplicationContext for Spring container
  * 
  * @author Dan 2009-2-16
  */
-public class SpringContext {
+public class SpringContext extends ServiceContext
+{
 
-   private static SpringContext m_instance;
 
-   private static String[] contextFiles = new String[] { "spring-context.xml" };
+  // Class Members --------------------------------------------------------------------------------
 
-   private ApplicationContext ctx;
+  private static String[] contextFiles = new String[] { "spring-context.xml" };
 
-   public SpringContext() {
-      ctx = new ClassPathXmlApplicationContext(contextFiles);
-   }
 
-   public SpringContext(String[] setting) {
-      ctx = new ClassPathXmlApplicationContext(setting);
-   }
+  /**
+   * Gets a instance of <code>SpringContext</code>
+   *
+   * @return the instance of <code>SpringContext</code>
+   */
+  public synchronized static SpringContext getInstance()
+  {
+    return (SpringContext)ServiceContext.getInstance(); // TODO : should remove this method altogether
+  }
 
-   /**
-    * Gets a instance of <code>SpringContext</code>
-    * 
-    * @return the instance of <code>SpringContext</code>
-    */
-   public synchronized static SpringContext getInstance() {
-      if (m_instance == null) {
-         m_instance = new SpringContext(contextFiles);
-      }
-      return m_instance;
-   }
 
-   /**
-    * Gets a bean instance with the given bean identifier
-    * 
-    * @param beanId
-    *           the given bean identifier
-    * @return a bean instance
-    */
-   public Object getBean(String beanId) {
-      Object o = ctx.getBean(beanId);
-      if (o instanceof TransactionProxyFactoryBean) {
-         TransactionProxyFactoryBean factoryBean = (TransactionProxyFactoryBean) o;
-         o = factoryBean.getObject();
-      }
-      return o;
-   }
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private ApplicationContext ctx;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public SpringContext() throws InstantiationException
+  {
+    this(contextFiles);
+  }
+
+  public SpringContext(String[] setting) throws InstantiationException
+  {
+    ctx = new ClassPathXmlApplicationContext(setting);
+
+    ServiceContext.registerServiceContext(this);
+  }
+
+
+  @Override public Object getService(ServiceName name)
+  {
+    return getBean(name.getSpringBeanName());
+  }
+
+  
+  /**
+   * Gets a bean instance with the given bean identifier
+   *
+   * @param beanId
+   *           the given bean identifier
+   * @return a bean instance
+   */
+  public Object getBean(String beanId)
+  {
+    Object o = ctx.getBean(beanId);
+
+    if (o instanceof TransactionProxyFactoryBean)
+    {
+       TransactionProxyFactoryBean factoryBean = (TransactionProxyFactoryBean) o;
+       o = factoryBean.getObject();
+    }
+
+    return o;
+  }
 
 }
