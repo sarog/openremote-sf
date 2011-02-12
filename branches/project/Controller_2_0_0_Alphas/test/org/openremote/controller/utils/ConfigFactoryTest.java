@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -32,9 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
-import org.openremote.controller.Configuration;
-import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
 
 /**
@@ -135,7 +134,7 @@ public class ConfigFactoryTest
   private static ControllerConfiguration getCustomBasicConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    ControllerConfiguration config = (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
+    ControllerConfiguration config = ServiceContext.getControllerConfiguration();
     config.setConfigurationProperties(attrMap);
 
     return config;
@@ -144,15 +143,26 @@ public class ConfigFactoryTest
   public static RoundRobinConfiguration getCustomRoundRobinConfigFromControllerXML(Document doc)
   {
     Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    RoundRobinConfiguration config = (RoundRobinConfiguration) SpringContext.getInstance().getBean("roundRobinConfig");
+    RoundRobinConfiguration config = ServiceContext.getRoundRobinConfiguration();
     config.setConfigurationProperties(attrMap);
     return config;
   }
 
   public static Map<String, String> parseCustomConfigAttrMap(Document doc)
   {
-    Element element = ((RemoteActionXMLParser) SpringContext.getInstance().getBean("remoteActionXMLParser")).queryElementFromXMLByName(doc, "config");
-    return Configuration.populateConfigurationProperties(element);
+    Element element = ServiceContext.getControllerXMLParser().queryElementFromXMLByName(doc, "config");
+
+    Map<String, String> attrMap = new HashMap<String, String>();
+
+    for (Object o : element.getChildren())
+    {
+      Element e = (Element) o;
+      String name = e.getAttributeValue("name");
+      String value = e.getAttributeValue("value");
+      attrMap.put(name, value);
+    }
+
+    return attrMap;
   }
   
 }

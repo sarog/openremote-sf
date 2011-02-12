@@ -65,6 +65,11 @@ public class Constants
    */
   public final static String RUNTIME_CONFIGURATION_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".system.configuration";
 
+  /**
+   * Specific log category for deployers.
+   */
+  public final static String DEPLOYER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".deployer";
+
   
 
   public final static String LIRCD_CONF = "lircd.conf";

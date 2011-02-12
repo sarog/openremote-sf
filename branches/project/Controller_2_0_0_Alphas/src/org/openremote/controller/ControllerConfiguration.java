@@ -24,16 +24,17 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.Map;
 
-import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.service.ServiceContext;
 
 
 /**
+ *
+ * TODO:
+ *
  * This class provides the Java bindings from config.properties file found in
  * <tt>WEB-INF/classes</tt> directory of the web archive.
  *
- * <p>
  * The actual value injection is currently configured via Spring frameworks'
  * <tt>applicationContext.xml</tt> configuration file also found in the web archive.
  * Each additional configuration property must be added to the XML definition
@@ -98,7 +99,7 @@ public class ControllerConfiguration extends Configuration
 
   public static ControllerConfiguration readXML()
   {
-    ControllerConfiguration config = (ControllerConfiguration) SpringContext.getInstance().getBean("configuration");
+    ControllerConfiguration config = ServiceContext.getControllerConfiguration();
 
     return (ControllerConfiguration)Configuration.updateWithControllerXMLConfiguration(config);
   }
