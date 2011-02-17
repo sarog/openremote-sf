@@ -20,9 +20,9 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.apache.log4j.Logger;
-import org.openremote.controller.utils.Strings;
+
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.utils.Logger;
 import tuwien.auto.calimero.cemi.CEMILData;
 import tuwien.auto.calimero.exception.KNXException;
 import tuwien.auto.calimero.exception.KNXFormatException;
