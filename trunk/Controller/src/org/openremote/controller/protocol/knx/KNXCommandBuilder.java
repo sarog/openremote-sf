@@ -22,7 +22,6 @@ package org.openremote.controller.protocol.knx;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
@@ -30,6 +29,8 @@ import org.openremote.controller.command.CommandParameter;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
 
 
 /**
@@ -118,7 +119,8 @@ public class KNXCommandBuilder implements CommandBuilder
    * A common log category name intended to be used across all classes related to
    * KNX implementation.
    */
-  public final static String KNX_LOG_CATEGORY  = "KNX";
+  public final static String KNX_LOG_CATEGORY  = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx";
+
 
   /**
    * String constant for parsing KNX protocol XML entries from controller.xml file.

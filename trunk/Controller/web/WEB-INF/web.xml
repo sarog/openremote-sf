@@ -24,6 +24,13 @@
 -->
 
 
+<!--
+
+  Bootstrapping of the OpenRemote Controller for servlet container runtimes.
+
+  Author: Juha Lindfors
+
+-->
 <web-app version = "2.4" xmlns = "http://java.sun.com/xml/ns/j2ee"
          xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation = "http://java.sun.com/xml/ns/j2ee
@@ -31,6 +38,13 @@
 
   <display-name>OpenRemote Controller</display-name>
 
+
+  <!--
+
+    The default file that is returned as a response to HTTP request if the user does not
+    specify particular file after the server URL.
+
+  -->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
@@ -40,22 +54,70 @@
 
    ================================================================================================
 
-    Parameter values available to servlets through the servlet context interface.
+    CONTROLLER SERVLET BOOTSTRAP PARAMETERS
+
+    These parameters are typically not something users would change (user parameters are exposed
+    in the 'config.properties' file instead and through the OpenRemote Online Designer). The
+    context parameters are available to controller implementation immediately as soon as first
+    bootstrap listeners (see below) are invoked, and before config.properties are loaded. They
+    can therefore be used to parameterize the Controller bootstrap process and implementing
+    classes.
 
    ================================================================================================
 
   -->
 
+
+
   <!--
    | This property defines which service container implementation is being used by the controller
    | at runtime. The default implementation for JavaSE 6 environments is a Spring-based
    | service (bean) context. Other runtimes (such as Android) could have different service context
-   | implementations provided (but this web.xml based configuration still assumed a dependency
-   | to a Java EE servlet container.
+   | implementations provided (but this web.xml based configuration still assumes a dependency
+   | to a Java EE servlet container).
    +-->
   <context-param>
     <param-name>ServiceContextImplementation</param-name>
     <param-value>org.openremote.controller.spring.SpringContext</param-value>
+  </context-param>
+
+
+
+
+
+  <!-- ==== Log4j Configuration ==============================================================
+
+         These parameters are read by the Log4jConfigListener implementation (see below)
+         and are only relevant while that particular listener implementation is being used.
+
+       ======================================================================================
+   -->
+
+  <!--
+
+    Location of the log4j configuration file.
+
+    Note that files under /WEB-INF directory are not exposed to resource requests over HTTP
+    protocol, therefore hiding the file contents from outsiders.
+
+  -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/classes/log4j.properties</param-value>
+  </context-param>
+
+  <!--
+
+    Logging properties can be modified on a live controller instance and reloaded automatically
+    while the controller is running. The refresh interval determines how often the logging
+    properties file is checked for modifications.
+
+    Default value is 5000 milliseconds, or 5 seconds.
+
+  -->
+  <context-param>
+    <param-name>log4jRefreshInterval</param-name>
+    <param-value>5000</param-value>
   </context-param>
 
   <context-param>
@@ -63,6 +125,20 @@
     <param-value>false</param-value>
   </context-param>
 
+
+
+
+  <!-- ==== Spring Framework Configuration =================================================== -->
+
+  <!--
+
+     Location for additional Java bean definition XML files that are read in addition to the
+     main 'applicationContext.xml' file to bind various components together at controller
+     startup.
+
+     This parameter is read by the ContextLoaderListener implementation (see below).
+
+  -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
@@ -70,15 +146,115 @@
     </param-value>
   </context-param>
 
-  <context-param>
-    <param-name>log4jConfigLocation</param-name>
-    <param-value>/WEB-INF/classes/log4j.properties</param-value>
-  </context-param>
 
-  <context-param>
-    <param-name>log4jRefreshInterval</param-name>
-    <param-value>60000</param-value>
-  </context-param>
+
+
+
+
+
+  <!--
+
+  =================================================================================================
+
+    SERVLET CONTEXT LISTENERS
+
+    These are executed before the controller can start receiving HTTP requests. The declared
+    order is significant and the implementations are executed in the order declared here.
+
+  =================================================================================================
+
+  -->
+
+
+  <!--
+
+    This is a servlet listener wrapper to Spring frameworks log4j configurer implementation.
+    It implements some utility functions to handle log4j configuration in this application.
+
+    Only required as far as log4j is used by the application.
+
+    Configuration is done through 'log4jExposeWebAppRoot', 'log4jRefreshInterval' and
+    'log4jConfigLocation' servlet context parameters (see above).
+
+    This listener should be in place before others to ensure logging is configured
+    and in place when other modules are bound to the application and begin their logging.
+
+    Note also that as per the Spring documentation, use of these log4j utilities requires that
+    the web application is deployed as an exploded web directory, rather than as a single
+    archive file.
+
+    See http://goo.gl/f47hL (Log4jWebConfigurer) and http://goo.gl/Of73y (Log4jConfigListener) for
+    more details.
+
+  -->
+  <listener>
+    <listener-class>
+      org.springframework.web.util.Log4jConfigListener
+    </listener-class>
+  </listener>
+
+
+  <!--
+
+    This is an additional bootstrap class for servlet environment which installs a log4j
+    redirector for those components in the application that use java.util.logging (JUL) API
+    for logging instead of log4j.
+
+    Ultimately, it may be desirable for all component implementations to default to JUL logging
+    API instead of log4j. Until that migration is done, this bootstrap component should stay in
+    place (and it can still be used if after the API migration it is desirable to use log4j as
+    the main logging framework).
+
+    This part of bootstrap is separated out from the main controller web context listener
+    (which is invoked later in this listener sequence) so that the logging configuration is
+    already well in place during the application initialization phase.
+
+   -->
+  <listener>
+    <listener-class>
+      org.openremote.controller.bootstrap.servlet.LogInitialization
+    </listener-class>
+  </listener>
+
+
+  <!--
+
+    Loads the component definitions (Java Beans) from the applicationContext.xml and binds
+    the controller runtime together.
+
+    This bootstrap listener reads the 'contextConfigLocation' application parameter for a list
+    of additional XML files that can be used to define additional components loaded into
+    the controller application.
+
+    See http://goo.gl/BhUSY (ContextLoader) and http://goo.gl/GHfHZ (ContextLoaderListener) for
+    more information.
+    
+   -->
+  <listener>
+    <listener-class>
+      org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
+
+  <!--
+
+    OpenRemote Controller specific bootstrap listener that initializes/starts specific service
+    implementations.
+
+    This bootstrap implementation reads the 'ServiceContextImplementation' application parameter
+    that is used to instantiate a service context which decouples the controller implementation
+    from direct compile-time dependencies to third-party libraries.
+
+    -->
+  <listener>
+    <listener-class>
+      org.openremote.controller.bootstrap.servlet.ServletStartup
+    </listener-class>
+  </listener>
+
+
+
+
 
 
   <!--
@@ -282,36 +458,6 @@
   </filter-mapping>
 
 
-
-  <!--
-
-  =================================================================================================
-
-    Servlet Context Listeners
-
-  =================================================================================================
-
-  -->
-
-  
-  <listener>
-    <listener-class>
-      org.springframework.web.context.ContextLoaderListener
-    </listener-class>
-  </listener>
-
-  <listener>
-    <listener-class>
-      org.springframework.web.util.Log4jConfigListener
-    </listener-class>
-  </listener>
-
-  <listener>
-    <listener-class>
-      org.openremote.controller.listener.ApplicationListener
-    </listener-class>
-  </listener>
-  
 
 
   <!--
