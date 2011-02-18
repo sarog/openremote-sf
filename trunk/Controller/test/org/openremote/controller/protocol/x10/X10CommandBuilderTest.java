@@ -36,6 +36,7 @@ import org.openremote.controller.protocol.x10.X10CommandBuilder;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Dan Cong
+ * @author Fekete Kamosh
  *
  */
 public class X10CommandBuilderTest
@@ -123,6 +124,16 @@ public class X10CommandBuilderTest
 
     assertTrue(cmd instanceof X10Command);
   }
+
+  /**
+   * Test X10 command creation with 'A' as address and 'ALL_OFF' as command.
+   */
+  @Test public void testX10BuilderWithAllOffCmdWithoutDeviceCode()
+  {
+    Command cmd = getCommand("ALL_OFF", "A");
+
+    assertTrue(cmd instanceof X10Command);
+  }  
 
   /**
    * Test X10 command creation with 'A1' as address and 'all_off', 'All_Off' and 'All_OFF'
@@ -231,6 +242,151 @@ public class X10CommandBuilderTest
     assertTrue(cmd3 instanceof X10Command);
   }
 
+  /**
+   * Test X10 command creation with 'A1' as address and 'DIM' as command.
+   */
+  @Test public void testX10BuilderWithDimCmd()
+  {
+    Command cmd = getCommand("DIM", "A1");
+
+    assertTrue(cmd instanceof X10Command);
+  }
+
+
+  /**
+   * Test X10 command creation with 'A1' as address and 'dim', 'Dim' and 'dIm' as command.
+   */
+  @Test public void testX10BuilderWithDimCmdMixedCase()
+  {
+    Command cmd1 = getCommand("dim", "A1");
+
+    assertTrue(cmd1 instanceof X10Command);
+
+    Command cmd2 = getCommand("Dim", "A1");
+
+    assertTrue(cmd2 instanceof X10Command);
+
+    Command cmd3 = getCommand("dIm", "A1");
+
+    assertTrue(cmd3 instanceof X10Command);
+  }
+
+  /**
+   * Test X10 command creation with 'A1' as address and 'BRIGHT' as command.
+   */
+  @Test public void testX10BuilderWithBrightCmd()
+  {
+    Command cmd = getCommand("BRIGHT", "A1");
+
+    assertTrue(cmd instanceof X10Command);
+  }
+
+  /**
+   * Test X10 DIM command creation with 'A1' as address and 'bright', 'Bright' and 'brIGht' as command.
+   */
+  @Test public void testX10BuilderWithBrightCmdMixedCase()
+  {
+    Command cmd1 = getCommand("bright", "A1");
+
+    assertTrue(cmd1 instanceof X10Command);
+
+    Command cmd2 = getCommand("Bright", "A1");
+
+    assertTrue(cmd2 instanceof X10Command);
+
+    Command cmd3 = getCommand("brIGht", "A1");
+
+    assertTrue(cmd3 instanceof X10Command);
+  }
+
+
+  /**
+   * Test X10 command creation with 'A1' as address and 'ALL_LIGHTS_ON' as command
+   */
+  @Test public void testX10BuilderWithAllLightsOnCmd()
+  {
+    Command cmd = getCommand("ALL_LIGHTS_ON", "A1");
+
+    assertTrue(cmd instanceof X10Command);
+  }
+
+  /**
+   * Test X10 command creation with 'A' as address and 'ALL_LIGHTS_ON' as command
+   */
+  @Test public void testX10BuilderWithAllLightsOnCmdWithoutDeviceCode()
+  {
+    Command cmd = getCommand("ALL_LIGHTS_ON", "A");
+
+    assertTrue(cmd instanceof X10Command);
+  }
+
+
+  /**
+   * Test X10 command creation with 'A1' as address and 'ALL LIGHTS ON', 'LIGHTS ON'
+   */
+  @Test public void testX10BuilderWithAllLightsOnHumanFormCmd()
+  {
+    Command cmd1 = getCommand("ALL LIGHTS ON", "A1");
+
+    assertTrue(cmd1 instanceof X10Command);
+
+    Command cmd2 = getCommand("LIGHTS ON", "A1");
+
+    assertTrue(cmd2 instanceof X10Command);
+  }
+
+  /**
+   * Test X10 command creation with 'A1' as address and 'ALL_liGHtS_ON', 'All lights ON', 'LIGHTS on'
+   */
+  @Test public void testX10BuilderWithAllLightsOnCmdMixedCase()
+  {
+    Command cmd1 = getCommand("ALL_liGHtS_ON", "A1");
+
+    assertTrue(cmd1 instanceof X10Command);
+
+    Command cmd2 = getCommand("All lights ON", "A1");
+
+    assertTrue(cmd2 instanceof X10Command);
+
+    Command cmd3 = getCommand("LIGHTS on", "A1");
+
+    assertTrue(cmd3 instanceof X10Command);
+  }
+
+  /**
+   * Test X10 command creation with 'A' as address and 'ALL LIGHTS ON', 'LIGHTS ON'
+   */
+  @Test public void testX10BuilderWithAllLightsOnHumanFormCmdWithoutDeviceCode()
+  {
+    Command cmd = getCommand("ALL LIGHTS ON", "A");
+
+    assertTrue(cmd instanceof X10Command);
+
+    Command cmd2 = getCommand("LIGHTS ON", "A");
+
+    assertTrue(cmd2 instanceof X10Command);
+  }
+
+
+  /**
+   * Test X10 command creation with 'A' as address and 'ALL_liGHtS_ON', 'All lights ON', 'LIGHTS on'
+   */
+  @Test public void testX10BuilderWithAllLightsOnHumanFormCmdWithoutDeviceCodeMixedCase()
+  {
+    Command cmd1 = getCommand("ALL_liGHtS_ON", "A");
+
+    assertTrue(cmd1 instanceof X10Command);
+
+    Command cmd2 = getCommand("All lights ON", "A");
+
+    assertTrue(cmd2 instanceof X10Command);
+
+    Command cmd3 = getCommand("LIGHTS on", "A");
+
+    assertTrue(cmd3 instanceof X10Command);
+  }
+
+  
   /**
    * Tests X10 command creation with an unknown command 'foobar'.
    */

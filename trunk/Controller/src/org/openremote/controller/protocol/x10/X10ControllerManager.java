@@ -33,7 +33,11 @@ import com.jpeterson.x10.GatewayStateError;
 import com.jpeterson.x10.SerialGateway;
 import com.jpeterson.x10.Transmitter;
 import com.jpeterson.x10.event.AddressEvent;
+import com.jpeterson.x10.event.AllLightsOffEvent;
+import com.jpeterson.x10.event.AllLightsOnEvent;
 import com.jpeterson.x10.event.AllUnitsOffEvent;
+import com.jpeterson.x10.event.BrightEvent;
+import com.jpeterson.x10.event.DimEvent;
 import com.jpeterson.x10.event.OffEvent;
 import com.jpeterson.x10.event.OnEvent;
 import com.jpeterson.x10.module.CM11A;
@@ -47,6 +51,7 @@ import com.jpeterson.x10.module.CM17A;
  *
  * @author Jerome Velociter
  * @author <a href = "mailto:juha@openremote.org">Juha Lindfors</a>
+ * @author Fekete Kamosh
  */
 public class X10ControllerManager {
 
@@ -126,13 +131,10 @@ public class X10ControllerManager {
       public void send(String address, X10CommandType commandType) {
 
          final char houseCodeChar = address.charAt(0);
-         final int deviceCodeInt = Integer.valueOf(address.substring(1));
 
          com.jpeterson.x10.event.X10Event[] events;
          com.jpeterson.x10.event.X10Event commandEvent;
-
-         boolean needsAddressEvent = true;
-
+         
          switch (commandType) {
          case SWITCH_ON:
             commandEvent = new OnEvent(this, houseCodeChar);
@@ -142,13 +144,23 @@ public class X10ControllerManager {
             break;
          case ALL_UNITS_OFF:
             commandEvent = new AllUnitsOffEvent(this, houseCodeChar);
-            needsAddressEvent = false;
             break;
+         case ALL_LIGHTS_ON:        	 
+        	 commandEvent = new AllLightsOnEvent(this, houseCodeChar);        	 
+        	 break;
+         case DIM:
+        	 commandEvent = new DimEvent(this, houseCodeChar, 5, 22);
+        	 break;
+         case BRIGHT:
+        	 commandEvent = new BrightEvent(this, houseCodeChar, 5, 22);
+        	 break;        	 
          default:
             throw new IllegalArgumentException(MessageFormat.format("The command code [{0}] is not supported", commandType));
          }
 
-         if (needsAddressEvent) {
+         if (commandType.requiresDeviceCode()) {
+         	// Only some commands require device code
+         	int deviceCodeInt = Integer.valueOf(address.substring(1));
             events = new com.jpeterson.x10.event.X10Event[2];
             events[0] = new AddressEvent(this, houseCodeChar, deviceCodeInt);
          } else {

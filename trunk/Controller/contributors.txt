@@ -8,6 +8,7 @@ Phillip Lavender
 Andy Oliver
 Eric Bariaux
 Paul Gardiner
+Fekete Kamosh
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each
