@@ -122,7 +122,7 @@ public class Logger extends java.util.logging.Logger
   /**
    * Synonymous to using {@link java.util.logging.Logger#severe}.
    *
-   * Further, {@link org.openremote.controller.listener.ApplicationListener.Log4jRedirect} maps
+   * Further, {@link org.openremote.controller.bootstrap.Startup#redirectJULtoLog4j()} maps
    * JUL {@link java.util.logging.Level#SEVERE} to log4j <tt>ERROR</tt> priority.
    *
    * @param msg   log message
@@ -169,7 +169,7 @@ public class Logger extends java.util.logging.Logger
   /**
    * Synonymous to using {@link java.util.logging.Logger#fine}.
    *
-   * Further, {@link org.openremote.controller.listener.ApplicationListener.Log4jRedirect} maps
+   * Further, {@link org.openremote.controller.bootstrap.Startup#redirectJULtoLog4j()} maps
    * JUL {@link java.util.logging.Level#FINE} to log4j <tt>DEBUG</tt> priority.
    *
    * @param msg   log message
