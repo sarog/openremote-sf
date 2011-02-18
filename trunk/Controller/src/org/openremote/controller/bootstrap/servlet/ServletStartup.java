@@ -18,12 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.listener;
+package org.openremote.controller.bootstrap.servlet;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.net.RoundRobinTCPServer;
@@ -31,22 +30,29 @@ import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.bootstrap.Startup;
 
 
 /**
+ * Controller application initialization point when it is hosted within a Java servlet container. <p>
+ *
  * This'll serve us as our application initialization point as long as the controller is a
  * pure servlet web app. If earlier initialization points are required then they need to be
  * hooked into Tomcat's container specific service implementations or Tomcat needs to be
  * wrapped with a service interface and initialized and started programmatically
- * ("embedded tomcat"). For Android runtimes, some alternative lifecycle mechanisms needs to
- * be looked at. <p>
+ * ("embedded tomcat"). <p>
+ *
+ * As this is part of the standard Java servlet functionality, it will also work with other
+ * servlet-based containers (such as Jetty). For Android runtimes without fully-compliant servlet
+ * engines, some alternative lifecycle mechanism needs to be used. <p>
  *
  * This implementation is hooked to servlet lifecycle in the web.xml configuration file under
  * webapp's WEB-INF directory.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ApplicationListener implements ServletContextListener
+public class ServletStartup implements ServletContextListener
 {
 
   /**
@@ -76,12 +82,34 @@ public class ApplicationListener implements ServletContextListener
 
   // Implement ServletContextListener -------------------------------------------------------------
 
+
+  /**
+   * This is invoked by the servlet container after the application (web archive) is loaded but
+   * before it starts servicing incoming HTTP requests.  <p>
+   *
+   * It is the earliest point where we can accomplish application initialization short of hooking
+   * directly in the implementation details of particular servlet container implementations.
+   *
+   * @param event     servlet context event provided by the container with access to the web
+   *                  application's environment
+   */
   @Override public void contextInitialized(ServletContextEvent event)
   {
     try
     {
+      // Initializes the service context for this runtime environment.
+      //
+      // Purpose of service context is to isolate the core of the implementation from compile-time
+      // third-party library dependencies. These service implementations can be switched depending
+      // on deployment environment and system resources available. By avoiding direct compile time
+      // linking, it is easier to port the controller implementation to other environments. Service
+      // dependencies are built at runtime through a service context implementation.
+      //
+      // The default service context in a servlet runtime is based on Spring library.
+
       initializeServiceContext(event.getServletContext());
 
+ 
       initializeStateCache();
 
       new Thread(new IPAutoDiscoveryServer()).start();
@@ -96,44 +124,71 @@ public class ApplicationListener implements ServletContextListener
 
       Thread.sleep(10);
     }
+
     catch (Throwable t)
     {
-      System.err.println(
+
+      // In case any initialization fails, wrap a clear message to user who is deploying the
+      // controller about the error. Propagating the exception up in the call stack, it is
+      // ultimately up to the servlet container to handle and report the error to the user
+      // in the most appropriate way.
+
+      String msg =
           "\n\n=============================================================================\n\n" +
 
           " Application initialization failed: \n" +
           " " + t.getMessage()  +
 
-          "\n\n=============================================================================\n\n" +
+          "\n\n=============================================================================\n\n";
 
-          "STACK TRACE:\n\n"
-      );
 
-      t.printStackTrace(System.err);
+      throw new Error(msg, t);
     }
   }
 
 
+  /**
+   * Empty implementation.
+   *
+   * @param event     servlet context event provided by the container with access to the web
+   *                  application's environment
+   */
   @Override public void contextDestroyed(ServletContextEvent event)
   {
     // empty
   }
 
 
+
   // Private Methods ------------------------------------------------------------------------------
 
 
-  private void initializeServiceContext(ServletContext ctx)
-      throws ServletException, ClassNotFoundException, InstantiationException,
-             IllegalAccessException, ExceptionInInitializerError, SecurityException
+  /**
+   * Initializes a runtime service context for servlet container based deployments.  <p>
+   *
+   * The implementation can be configured in web application's web.xml file using the
+   * context-param element. See {@link #SERVICE_CONTEXT_IMPL_INIT_PARAM_NAME} for the name
+   * of the parameter. <p>
+   *
+   * This implementation delegates to the generic implementation in
+   * {@link Startup#loadServiceContext(String)} but provides servlet container specific
+   * functionality.
+   *
+   * @param ctx   web application context provided by the servlet container
+   *
+   * @throws InitializationException  if the initialization fails
+   */
+  private void initializeServiceContext(ServletContext ctx) throws InitializationException
   {
-    String serviceContextImplementationClass = ctx.getInitParameter(SERVICE_CONTEXT_IMPL_INIT_PARAM_NAME);
+
+    String serviceContextImplementationClass =
+        ctx.getInitParameter(SERVICE_CONTEXT_IMPL_INIT_PARAM_NAME);
 
     // Check that configuration is present...
 
     if (serviceContextImplementationClass == null || serviceContextImplementationClass.equals(""))
     {
-      throw new ServletException(
+      throw new InitializationException(
           SERVICE_CONTEXT_IMPL_INIT_PARAM_NAME +
           " initialization parameter in web.xml is missing or empty.\n" +
           " Cannot instantiate controller's service context.\n\n" +
@@ -150,20 +205,16 @@ public class ApplicationListener implements ServletContextListener
       );
     }
 
-    // Execute ServiceContext constructor... It is assumed to automatically register itself as
-    // the implementation in the ServiceContext.
-    //
-    // Not executing this in the privileged code segment... the class to load is parameterized
-    // and could therefore be used to load any hostile class. Therefore if security manager is
-    // present, it must be configured to grant privileges to particular service context class
-    // implementation.
+    Startup.loadServiceContext(serviceContextImplementationClass.trim());
 
-    serviceContextImplementationClass = serviceContextImplementationClass.trim();
-    Class clazz = Thread.currentThread().getContextClassLoader().loadClass(serviceContextImplementationClass);
-    clazz.newInstance();
   }
 
 
+  /**
+   * TODO
+   *
+   * @throws ControllerException
+   */
   private void initializeStateCache() throws ControllerException
   {
     PollingMachinesService devicePollingService = ServiceContext.getDevicePollingService();
@@ -171,5 +222,6 @@ public class ApplicationListener implements ServletContextListener
     devicePollingService.initStatusCacheWithControllerXML(null);
     devicePollingService.startPollingMachineMultiThread();
   }
+
 
 }
