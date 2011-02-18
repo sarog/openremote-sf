@@ -1,5 +1,5 @@
 OpenRemote, the Home of the Digital Home.
-Copyright 2008-2009, OpenRemote Inc.
+Copyright 2008-2011, OpenRemote Inc.
 
 OpenRemote is trademark of OpenRemote, Inc.
 
@@ -689,31 +689,73 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 
 ===========================================================================
 
-OpenRemote Boss Sub-components:
+OpenRemote Sub-components:
 
-* Calimero library is licensed under GNU General Public License Version 2,
-or any later version. For this distribution, Calimero is re-licensed with 
-GNU General Public License Version 3, or any later version. 
-* RXTX library is licensed under GNU Lesser General Public License
-Version 2.1
+* Calimero library is licensed under GNU General Public License (GPL) Version 2,
+  or any later version. For this distribution, Calimero is re-licensed with
+  GNU General Public License (GPL) Version 3, or any later version.
+* RXTX library is licensed under GNU Lesser General Public License (LGPL)
+  Version 2.1 or any later version. For the purpose of this distribution, RXTX
+  library is re-licensed under GNU Lesser General Public License (LGPL) Version
+  3.0.
 * JDOM library is licensed under the terms included below.
+* Jaxen library is licensed under the terms included below.
 * Log4j library is licensed under Apache License Version 2.0, see license
-below.
-* Spring library is license under Apache License Version 2.0, see license
-below.
+  below.
+* Quartz library is licensed under Apache License Version 2.0, see license
+  below.
+* Jakarta Standard Tag Library is licensed under Apache License Version 2.0,
+  see license below.
+* X10 Classes in package com.jpeterson are licensed under GNU Lesser General
+  Public License (LGPL) Version 2.1, or any later version. For the purpose of
+  this distribution, classes are relicensed under GNU Lesser General Public
+  License (LGPL) Version 3.0
+* Classes in org.json package are licensed under the terms included below.
+* Clink library is licensed under the terms included below.
+* Spring Core framework and Spring Security framework are licensed under
+  Apache License Version 2.0, see license below.
 * Apache Tomcat is licensed under Apache License Version 2.0, see license 
-below.
+  below.
 * Apache Tomcat includes sub-components that are licensed under separate
-terms. These terms are included below.
-* Apache Tomcat NOTICE file is included below.
-* Apache Commons Lang is licensed under Apache License Version 2.0, see
-license below.
-* Apache Commons Lang NOTICE file is included below.
-* Apache Commons Net is licensed under Apache License Version 2.0, see 
-license below.
-* Apache commons Net NOTICE file is included below.
+  terms. These terms are included below.
+* Apache Commons Lang, Apache Commons Collections, Apache Commons FileUpload,
+  Apache Commons Codec, Apache Commons IO, Apache Commons Logging, Apache
+  Commons Net, Apache Commons BeanUtils are licensed under Apache License
+  Version 2.0, see license below.
+* Additional notices for Apache Commons Lang, Apache Commons Collections,
+  Apache Commons Codec, Apache Commons IO, Apache Commons Logging, Apache
+  Commons Net, Apache Commons BeanUtils, Apache Jakarta Standard Taglib,
+  Spring Core Framework, Spring Security Framework, Apache Log4j are listed
+  below.
 
 
+
+
+##########################################################################################
+#                                                                                        #
+#                 T H I R D    P A R T Y    L I C E N S E S                              #
+#                                                                                        #
+##########################################################################################
+
+
+------------------------------------------------------------------------------------------
+
+  GNU GENERAL PUBLIC LICENSES
+
+------------------------------------------------------------------------------------------
+
+For GNU General Public License (GPL) v2.0, GNU General Public License (GPL) v3.0,
+GNU Lesser General Public License (LGPL) v2.1 and GNU Lesser General Public License
+(LGPL) v3.0, please see http://www.fsf.org website.
+
+
+
+
+------------------------------------------------------------------------------------------
+
+  APACHE V2.0 LICENSE
+
+------------------------------------------------------------------------------------------
 
 
                                  Apache License
@@ -919,6 +961,11 @@ license below.
    limitations under the License.
 
 
+------------------------------------------------------------------------------------------
+
+  APACHE TOMCAT SUBCOMPONENT LICENSES
+
+------------------------------------------------------------------------------------------
 
 APACHE TOMCAT SUBCOMPONENTS: 
 
@@ -1424,7 +1471,180 @@ for NSIS, however, are subject to the terms of the Common Public License version
 1.0. 
 
 
-Apache Tomcat NOTICE:
+
+------------------------------------------------------------------------------------------
+
+  JDOM LICENSE
+
+------------------------------------------------------------------------------------------
+
+/*--
+
+ Copyright (C) 2000 Brett McLaughlin & Jason Hunter.
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions, and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions, and the disclaimer that follows
+    these conditions in the documentation and/or other materials
+    provided with the distribution.
+
+ 3. The name "JDOM" must not be used to endorse or promote products
+    derived from this software without prior written permission.  For
+    written permission, please contact license@jdom.org.
+
+ 4. Products derived from this software may not be called "JDOM", nor
+    may "JDOM" appear in their name, without prior written permission
+    from the JDOM Project Management (pm@jdom.org).
+
+ In addition, we request (but do not require) that you include in the
+ end-user documentation provided with the redistribution and/or in the
+ software itself an acknowledgement equivalent to the following:
+     "This product includes software developed by the
+      JDOM Project (http://www.jdom.org/)."
+ Alternatively, the acknowledgment may be graphical using the logos
+ available at http://www.jdom.org/images/logos.
+
+ THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+ This software consists of voluntary contributions made by many
+ individuals on behalf of the JDOM Project and was originally
+ created by Brett McLaughlin <brett@jdom.org> and
+ Jason Hunter <jhunter@jdom.org>.  For more information on the
+ JDOM Project, please see <http://www.jdom.org/>.
+
+ */
+
+
+------------------------------------------------------------------------------------------
+
+  JAXEN LICENSE
+
+------------------------------------------------------------------------------------------
+
+/*
+ $Id: LICENSE.txt,v 1.5 2006/02/05 21:49:04 elharo Exp $
+
+ Copyright 2003-2006 The Werken Company. All Rights Reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are
+ met:
+
+  * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+  * Neither the name of the Jaxen Project nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ */
+
+
+------------------------------------------------------------------------------------------
+
+  ORG.JSON LICENSE
+
+------------------------------------------------------------------------------------------
+
+Copyright (c) 2002 JSON.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+The Software shall be used for Good, not Evil.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE. 
+
+
+
+------------------------------------------------------------------------------------------
+
+  CLINK LICENSE
+
+------------------------------------------------------------------------------------------
+
+Copyright (C) 2002-2005 Satoshi Konno
+All rights reserved.
+Redistribution and use in source and binary forms, with
+or without modification, are permitted provided that the
+following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products derived
+   from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+###########################################################################################
+#                                                                                         #
+#                                 N O T I C E S                                           #
+#                                                                                         #
+###########################################################################################
+
+
+Apache Tomcat NOTICE
+--------------------
 
 Apache Tomcat
 Copyright 1999-2007 The Apache Software Foundation
@@ -1447,7 +1667,8 @@ The Catalina scripts were modified to fit OpenRemote Boss runtime
 requirements. These changes are Copyright 2009, OpenRemote Inc.
 
 
-Apache Commons Lang NOTICE:
+Apache Commons Lang NOTICE
+--------------------------
 
 Apache Commons Lang
 Copyright 2001-2008 The Apache Software Foundation
@@ -1456,7 +1677,8 @@ This product includes software developed by
 The Apache Software Foundation (http://www.apache.org/).
 
 
-Apache Commons Net NOTICE:
+Apache Commons Net NOTICE
+-------------------------
 
 Apache Commons Net
 Copyright 2001-2008 The Apache Software Foundation
@@ -1465,59 +1687,155 @@ This product includes software developed by
 The Apache Software Foundation (http://www.apache.org/).
 
 
-JDOM License:
+Apache Commons Collections NOTICE
+---------------------------------
 
-/*-- 
+Apache Commons Collections
+Copyright 2001-2008 The Apache Software Foundation
 
- Copyright (C) 2000 Brett McLaughlin & Jason Hunter.
- All rights reserved.
- 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
- 
- 1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions, and the following disclaimer.
- 
- 2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions, and the disclaimer that follows 
-    these conditions in the documentation and/or other materials 
-    provided with the distribution.
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
 
- 3. The name "JDOM" must not be used to endorse or promote products
-    derived from this software without prior written permission.  For
-    written permission, please contact license@jdom.org.
- 
- 4. Products derived from this software may not be called "JDOM", nor
-    may "JDOM" appear in their name, without prior written permission
-    from the JDOM Project Management (pm@jdom.org).
- 
- In addition, we request (but do not require) that you include in the 
- end-user documentation provided with the redistribution and/or in the 
- software itself an acknowledgement equivalent to the following:
-     "This product includes software developed by the
-      JDOM Project (http://www.jdom.org/)."
- Alternatively, the acknowledgment may be graphical using the logos 
- available at http://www.jdom.org/images/logos.
 
- THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- SUCH DAMAGE.
+Apache Commons IO NOTICE
+------------------------
 
- This software consists of voluntary contributions made by many 
- individuals on behalf of the JDOM Project and was originally 
- created by Brett McLaughlin <brett@jdom.org> and 
- Jason Hunter <jhunter@jdom.org>.  For more information on the 
- JDOM Project, please see <http://www.jdom.org/>.
- 
- */
+Apache Commons IO
+Copyright 2002-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Apache Commons Codec NOTICE
+---------------------------
+
+Apache Commons Codec
+Copyright 2002-2009 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+--------------------------------------------------------------------------------
+src/test/org/apache/commons/codec/language/DoubleMetaphoneTest.java contains
+test data from http://aspell.sourceforge.net/test/batch0.tab.
+
+Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org). Verbatim copying
+and distribution of this entire article is permitted in any medium,
+provided this notice is preserved.
+--------------------------------------------------------------------------------
+
+
+Apache Commons FileUpload NOTICE
+--------------------------------
+
+Apache Commons FileUpload
+Copyright 2002-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Apache Commons Logging NOTICE
+-----------------------------
+
+Apache Commons Logging
+Copyright 2003-2007 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Apache Commons BeanUtils NOTICE
+-------------------------------
+
+Apache Commons BeanUtils
+Copyright 2000-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Apache HttpCommons Client NOTICE
+--------------------------------
+
+Apache HttpComponents Client
+Copyright 1999-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+This project contains annotations derived from JCIP-ANNOTATIONS
+Copyright (c) 2005 Brian Goetz and Tim Peierls. See http://www.jcip.net
+
+
+Apache Log4j NOTICE
+-------------------
+
+Apache log4j
+Copyright 2007 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Apache Jakarta Standard Taglibs NOTICE
+--------------------------------------
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+
+Spring Core Framework NOTICE
+----------------------------
+
+======================================================================
+== NOTICE file corresponding to section 4 d of the Apache License,  ==
+== Version 2.0, for the Spring Framework distribution.              ==
+======================================================================
+
+This product includes software developed by
+the Apache Software Foundation (http://www.apache.org).
+
+The end-user documentation included with a redistribution, if any,
+must include the following acknowledgement:
+
+ "This product includes software developed by the Spring Framework
+  Project (http://www.springframework.org)."
+
+Alternately, this acknowledgement may appear in the software itself,
+if and wherever such third-party acknowledgements normally appear.
+
+The names "Spring", "Spring Framework", and "Spring Web Flow" must
+not be used to endorse or promote products derived from this
+software without prior written permission. For written permission,
+please contact enquiries@springsource.com.
+
+
+Spring Security NOTICE
+----------------------
+
+======================================================================
+== NOTICE file corresponding to section 4(d) of the Apache License, ==
+== Version 2.0, in this case for the Spring Security distribution.  ==
+======================================================================
+
+The end-user documentation included with a redistribution, if any,
+must include the following acknowledgement:
+
+ "This product includes software developed by Spring Security
+  Project (http://www.springframework.org/security)."
+
+Alternately, this acknowledgement may appear in the software itself,
+if and wherever such third-party acknowledgements normally appear.
+
+The names "Spring", "Spring Security", "Spring Security System",
+"SpringSource", "Acegi", "Acegi Security", "Acegi Security System",
+"Acegi" or any derivatives thereof may not be used to endorse or
+promote products derived from this software without prior written
+permission. For written permission, please contact
+ben.alex@springsource.com.
+
+
+
 
