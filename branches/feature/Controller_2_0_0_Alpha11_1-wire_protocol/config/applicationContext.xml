@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -119,7 +120,7 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
-	
+
 	<!-- controller.xml change service -->
     <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
 	
@@ -128,15 +129,16 @@
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
-		        <prop key = "ir">irCommandBuilder</prop>
-		        <prop key = "knx">knxCommandBuilder</prop>
-		        <prop key = "x10">x10CommandBuilder</prop>
-           	<prop key = "socket">tcpSocketCommandBuilder</prop>
-           	<prop key = "telnet">telnetCommandBuilder</prop>
-           	<prop key = "http">httpGetCommandBuilder</prop>
-            <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
-            <prop key = "virtual">virtualCommandBuilder</prop>
-            <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "ir">irCommandBuilder</prop>
+                <prop key = "knx">knxCommandBuilder</prop>
+                <prop key = "x10">x10CommandBuilder</prop>
+                <prop key = "socket">tcpSocketCommandBuilder</prop>
+                <prop key = "telnet">telnetCommandBuilder</prop>
+                <prop key = "http">httpGetCommandBuilder</prop>
+                <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
+                <prop key = "virtual">virtualCommandBuilder</prop>
+                <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "onewire">oneWireCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -182,7 +184,11 @@
    -->
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
-	      
+
+    <!-- 1-wire protocol Command Builder -->
+    <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"
+          scope = "prototype" />
+
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>
