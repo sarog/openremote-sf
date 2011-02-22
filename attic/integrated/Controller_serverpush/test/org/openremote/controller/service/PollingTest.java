@@ -1,0 +1,125 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2009, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+package org.openremote.controller.service;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import junit.framework.TestCase;
+
+import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.protocol.knx.KNXCommandBuilder;
+import org.openremote.controller.spring.SpringContext;
+
+/**
+ * The Class ButtonCommandServiceTest.
+ * 
+ * @author Handy.Wang 2009-10-26
+ */
+public class PollingTest extends TestCase {
+
+   /** The status command service. */
+   private KNXCommandBuilder knxCommandBuilder = (KNXCommandBuilder) SpringContext.getInstance().getBean("knxCommandBuilder");;
+   private StatusCommandService statusCommandService = (StatusCommandService) SpringContext.getInstance().getBean("statusCommandService");
+   /**
+    * Test trigger.
+    */
+   public void testExec(){
+//       statusCommandService.trigger("1,2,3");
+       String xml = ((StatusCommand)knxCommandBuilder.build(null)).read();
+       System.out.println(xml);
+       xml = ((StatusCommand)knxCommandBuilder.build(null)).read();
+       System.out.println(xml);
+       try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+   }
+   
+   public void testRegex() {
+//     String urlButton = "http://localhost:8080/controller/rest/button/3/click";
+//     String urlControl = "http://localhost:8080/controller/rest/control/1/next";
+//     String urlStatus = "http://localhost:8080/controller/rest/status/1,2,3";
+     String urlPolling = "http://localhost:8080/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1,2,3";
+     
+//     String regexpButton = "rest\\/button\\/(\\d+)\\/(\\w+)";
+//     String regexpControl = "rest\\/control\\/(\\d+)\\/(\\w+)";
+//     String regexpStatus = "rest\\/status\\/(.*)";
+     String regexpPolling = "rest\\/polling\\/(.*?)\\/(.*)";
+     
+//     Pattern patternButton = Pattern.compile(regexpButton);
+//     Pattern patternControl = Pattern.compile(regexpControl);
+//     Pattern patternnStatus = Pattern.compile(regexpStatus);
+     Pattern patternnPolling = Pattern.compile(regexpPolling);
+     
+     String controlID = null;
+     String commandTypeStr = null;
+     
+//     Matcher matcherButton = patternButton.matcher(urlButton);
+//     Matcher matcherControl = patternControl.matcher(urlControl);
+//     Matcher matcherStatus = patternnStatus.matcher(urlStatus);
+     Matcher matcherPolling = patternnPolling.matcher(urlPolling);
+     
+//     if (matcherButton.find()) {
+//         buttonID = matcherButton.group(1);
+//         commandTypeStr = matcherButton.group(2);
+//         System.out.println(buttonID + ", " + commandTypeStr);
+//      }
+     
+//     if (matcherControl.find()) {
+//        controlID = matcherControl.group(1);
+//        commandTypeStr = matcherControl.group(2);
+//        System.out.println(controlID + ", " + commandTypeStr);
+//     }
+//     
+//     String buttonIDs = null;
+//     if (matcherStatus.find()) {
+//         buttonIDs = matcherStatus.group(1);
+//         System.out.println(buttonIDs);
+//     }
+     
+     String deviceID = "";
+     String pollingControlIDs = "";
+     if (matcherPolling.find()) {
+        deviceID = matcherPolling.group(1);
+        pollingControlIDs = matcherPolling.group(2);
+        System.out.println(deviceID);
+        System.out.println(pollingControlIDs);
+  }
+     
+     
+   }
+   
+   public void testIsNumberCommand() {
+     String number = "121";     
+     String regexpNumber = "^\\d+$";     
+     Pattern patternNumber = Pattern.compile(regexpNumber);     
+     Matcher matcherNumber = patternNumber.matcher(number);
+     
+     if (matcherNumber.find()) {
+        String rst = matcherNumber.group(0);
+        System.out.println(rst);
+     } else {
+         System.out.println("It's not......");
+     }
+   }
+   
+}
