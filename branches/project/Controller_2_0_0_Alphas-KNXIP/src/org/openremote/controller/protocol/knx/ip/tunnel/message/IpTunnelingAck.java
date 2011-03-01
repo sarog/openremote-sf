@@ -37,7 +37,7 @@ public class IpTunnelingAck extends IpMessage {
 
   @Override
   public Primitive getPrimitive() {
-    return Primitive.ACK;
+    return Primitive.RESP;
   }
 
   public int getChannelId() {

@@ -1,11 +1,15 @@
 package org.openremote.controller.protocol.knx.ip.tunnel;
 
+import java.net.InetSocketAddress;
+
 public interface DiscoveryListener {
    /**
-    * A new IP KNX interface was found
+    * A new KNX IP interface was found
     * 
-    * @param client
-    *           the <code>IpClient</code> object to use to interact with the IP KNX interface.
+    * @param discoverer
+    *           The <code>Discoverer</code> object that found the KNX IP interface.
+    * @param destControlEndpointAddr
+    *           KNX IP interface control endpoint socket address.
     */
-   void notifyDiscovery(IpDiscoverer discoverer, IpClient client);
+   void notifyDiscovery(IpDiscoverer discoverer, InetSocketAddress destControlEndpointAddr);
 }
