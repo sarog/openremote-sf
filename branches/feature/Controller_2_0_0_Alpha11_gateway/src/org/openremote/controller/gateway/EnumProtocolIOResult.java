@@ -17,29 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.service;
+package org.openremote.controller.gateway;
 
 /**
  * 
- * @author handy.wang 2010-03-19
+ * @author Rich Turner 2011-02-11
  *
  */
-public interface ControllerXMLChangeService {
+public enum EnumProtocolIOResult {
+   SUCCESS,
+   FAIL,
+   UNKNOWN;
    
-   /** 
-    * do series of operations when controller.xml file changed.<br />
-    * 
-    * These operations include :<br />
-    * <ol>
-    * <li>Set the BOOL tag named controllerXMLChanged to TRUE</li>
-    * <li>killAndClearPollingMachineThreads</li>
-    * <li>Clear StatusCache and ChangedStatusTable</li>
-    * <li>clearAndReloadSensors</li>
-    * <li>Restart pollingMachinesThreads</li>
-    * <li>Reset the BOOL tag named controllerXMLChanged to FALSE</li>
-    * </ol>
-    */
-   public boolean refreshController();
-
-   public boolean isControllerXMLChanged();
+   @Override
+   public String toString() {
+      return super.toString().toLowerCase();
+   }
+   
+   public static EnumProtocolIOResult enumValueOf(String ioResultValueOfProtocol) {
+      return Enum.valueOf(EnumProtocolIOResult.class, ioResultValueOfProtocol.toUpperCase());
+   }
 }

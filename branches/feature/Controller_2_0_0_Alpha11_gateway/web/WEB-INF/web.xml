@@ -190,11 +190,18 @@
             org.openremote.controller.listener.ApplicationListener
         </listener-class>
     </listener>
-    
+ 
+<!--       
     <listener>
-		<listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener</listener-class>
+      <listener-class>org.openremote.controller.statuscache.InitCachedStatusDBListener</listener-class>
 	</listener>
-	
+-->
+
+	<listener>
+		<listener-class>org.openremote.controller.gateway.InitConnectionManager</listener-class>
+	</listener>
+    
+			
 	<!-- Constraint resource: /rest/control/* -->
 <!--	
 	<security-constraint>

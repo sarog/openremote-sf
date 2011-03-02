@@ -87,10 +87,10 @@
           class = "org.openremote.controller.command.RemoteActionXMLParser">
     </bean>
     
-  <!-- service for file system operation : upload, unzip etc. -->
-  <bean id = "fileService"
-        class = "org.openremote.controller.service.impl.FileServiceImpl">
-  </bean>
+	<!-- service for file system operation : upload, unzip etc. -->
+	<bean id = "fileService"
+	      class = "org.openremote.controller.service.impl.FileServiceImpl">
+	</bean>
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -100,8 +100,8 @@
     <!-- round-robin service -->
     <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
     
-    <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
-    
+    <bean id ="servers" class="java.util.concurrent.ConcurrentHashMap" />
+   
     <!-- polling machine service -->
     <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl" />
     
@@ -119,6 +119,8 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
+    
+    <bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
 	
 	<!-- controller.xml change service -->
     <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
@@ -182,7 +184,8 @@
    -->
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
-	      
+
+
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>
@@ -216,15 +219,33 @@
 	<bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
 	
 	<!-- Label Builder -->
-	<bean id= "labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
+	<bean id="labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
 	
 	<!-- Slider Builder -->
-	<bean id= "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
+	<bean id="sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
 	
 	<!-- Gesture Builder -->
-	<bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
+	<bean id="gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
 	
 	<!-- imageBuilder -->
 	<bean id="imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
 
+	<!-- Rich Turner Additions -->
+   <!-- gateway manager service -->
+   <bean id="gatewayManagerService" class="org.openremote.controller.service.impl.GatewayManagerServiceImpl" />
+   
+   <bean id="scriptManager" class="org.openremote.controller.gateway.command.ScriptManager" />
+   
+    <bean id="protocolFactory" class="org.openremote.controller.gateway.ProtocolFactory">
+		<property name="protocolBuilders">
+		    <props>
+           	<prop key="telnet">telnetProtocolBuilder</prop>
+		    </props>
+		</property>
+	</bean>
+	   
+	<!-- Telnet Protocol Builder -->
+	<bean id="telnetProtocolBuilder" class="org.openremote.controller.gateway.protocol.telnet.TelnetProtocolBuilder" scope="prototype" />	
+   <!-- Rich Turner Additions -->
+   
 </beans>
