@@ -30,6 +30,7 @@ import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.buildingmodeler.DeviceInfoForm;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceAttr;
 import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
@@ -209,6 +210,20 @@ public class DeviceBeanModelProxy {
       device.setName(map.get(DeviceInfoForm.DEVICE_NAME));
       device.setVendor(map.get(DeviceInfoForm.DEVICE_VENDOR));
       device.setModel(map.get(DeviceInfoForm.DEVICE_MODEL));
+      
+      List<DeviceAttr> deviceAttrs = device.getDeviceAttrs();
+      if (deviceAttrs != null && deviceAttrs.size() > 0) deviceAttrs.clear();
+      if (deviceAttrs == null) deviceAttrs = new ArrayList<DeviceAttr>();
+      for (String key : map.keySet()) {
+          if (DeviceInfoForm.DEVICE_NAME.equals(key) || DeviceInfoForm.DEVICE_VENDOR.equals(key) || DeviceInfoForm.DEVICE_MODEL.equals(key)) {
+             continue;
+          }
+          DeviceAttr deviceAttr = new DeviceAttr();
+          deviceAttr.setName(key);
+          deviceAttr.setValue(map.get(key));
+          deviceAttrs.add(deviceAttr);
+      }
+      device.setDeviceAttrs(deviceAttrs);
    }
    
    /**

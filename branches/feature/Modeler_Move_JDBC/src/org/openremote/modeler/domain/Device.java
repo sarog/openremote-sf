@@ -53,6 +53,8 @@ public class Device extends BusinessEntity {
    
    private static final long serialVersionUID = 2591003357551228807L;
 
+   public static final String PROTOCOL_TYPE = "protocol_type";
+   
    /** The device name. */
    private String name;
    
@@ -66,7 +68,7 @@ public class Device extends BusinessEntity {
    private List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
    
    /** The device attrs. */
-   private List<DeviceAttr> deviceAttrs;
+   private List<DeviceAttr> deviceAttrs = new ArrayList<DeviceAttr>();
    
    /** The account who created the device in this application. */
    private Account account; 
@@ -303,10 +305,25 @@ public class Device extends BusinessEntity {
    }
    
    public void toSimple() {
-      deviceAttrs = null;
       account = null;
       sensors = null;
       switchs = null;
       sliders = null;
+   }
+   
+   public Protocol attrs2Protocol() {
+	   if (deviceAttrs == null || deviceAttrs.size() == 0) return null;
+	   Protocol protocol = new Protocol();
+	   for (DeviceAttr deviceAttr: deviceAttrs) {
+		   if (PROTOCOL_TYPE.equals(deviceAttr.getName())) {
+			   protocol.setType(deviceAttr.getValue());
+		   } else {
+			   ProtocolAttr protocolAttr = new ProtocolAttr();
+			   protocolAttr.setName(deviceAttr.getName());
+			   protocolAttr.setValue(deviceAttr.getValue());
+			   protocol.getAttributes().add(protocolAttr);
+		   }
+	   }
+	   return protocol;
    }
 }
