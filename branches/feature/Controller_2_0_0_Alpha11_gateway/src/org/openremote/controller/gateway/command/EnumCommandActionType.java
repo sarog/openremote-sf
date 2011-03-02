@@ -17,29 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.service;
+package org.openremote.controller.gateway.command;
 
 /**
  * 
- * @author handy.wang 2010-03-19
+ * @author Rich Turner 2011-02-26
  *
  */
-public interface ControllerXMLChangeService {
+public enum EnumCommandActionType {
+   READ,
+   SEND,
+   SCRIPT;
    
-   /** 
-    * do series of operations when controller.xml file changed.<br />
-    * 
-    * These operations include :<br />
-    * <ol>
-    * <li>Set the BOOL tag named controllerXMLChanged to TRUE</li>
-    * <li>killAndClearPollingMachineThreads</li>
-    * <li>Clear StatusCache and ChangedStatusTable</li>
-    * <li>clearAndReloadSensors</li>
-    * <li>Restart pollingMachinesThreads</li>
-    * <li>Reset the BOOL tag named controllerXMLChanged to FALSE</li>
-    * </ol>
-    */
-   public boolean refreshController();
-
-   public boolean isControllerXMLChanged();
+   @Override
+   public String toString() {
+      return super.toString().toLowerCase();
+   }
+   
+   public static EnumCommandActionType enumValueOf(String commandActionTypeValue) {
+      return Enum.valueOf(EnumCommandActionType.class, commandActionTypeValue.toUpperCase());
+   }
 }

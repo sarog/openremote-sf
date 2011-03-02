@@ -28,17 +28,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
+import org.openremote.controller.service.GatewayManagerService;
 import org.openremote.controller.command.CommandFactory;
-import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.Sensor;
-import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerException;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControllerXMLChangeService;
-import org.openremote.controller.service.StatusCacheService;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 
@@ -50,41 +43,31 @@ import org.openremote.controller.utils.PathUtil;
  */
 public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeService {
 
-   private ControllerXMLListenSharingData controllerXMLListenSharingData;
-   private RemoteActionXMLParser remoteActionXMLParser;
-   private CommandFactory commandFactory;
-   private StatusCacheService statusCacheService;
-   private ChangedStatusTable changedStatusTable;
+   private GatewayManagerService gatewayManagerService;
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
+   
+   boolean controllerXMLChanged = false;
    
    @SuppressWarnings("finally")
    @Override
    public synchronized boolean refreshController() {
+      boolean success = true;
       if (!isObservedXMLContentChanged(Constants.CONTROLLER_XML) && !isObservedXMLContentChanged(Constants.PANEL_XML)) {
-         return true;
+         return success;
       }
-      
       logger.info("Controller.xml of Controller changed, refreshing controller.xml");
-      boolean success = false;
-      tagControllerXMLChanged(true);
+      this.controllerXMLChanged = true;
       try {
-         killAndClearPollingMachineThreads();
-         clearChangedStatusTable();
-         clearStatusCache();
-         clearAndReloadSensors();
-         restartPollingMachineThreads();
-         success = true;
+         gatewayManagerService.restart();
       } catch (ControllerException e) {
          logger.error("Error occured while refreshing controller.", e);
          success = false;
-      } finally {
-         tagControllerXMLChanged(false);
-         String isSuccessInfo = success ? " success " : " failed ";
-         logger.info("Finished refreshing controller.xml" + isSuccessInfo);
-         return success;
       }
-      
+      this.controllerXMLChanged = false;
+      String isSuccessInfo = success ? " success " : " failed ";
+      logger.info("Finished refreshing controller.xml" + isSuccessInfo);
+      return success;
    }
    
    private boolean isObservedXMLContentChanged(String observedXMLFileName) {
@@ -94,9 +77,9 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       StringBuffer fileContent = new StringBuffer();
       String oldXMLFileContent = new String();
       if (Constants.CONTROLLER_XML.equals(observedXMLFileName)) {
-         oldXMLFileContent = controllerXMLListenSharingData.getControllerXMLFileContent();
+         oldXMLFileContent = gatewayManagerService.getControllerXMLFileContent();
       } else if (Constants.PANEL_XML.equals(observedXMLFileName)) {
-         oldXMLFileContent = controllerXMLListenSharingData.getPanelXMLFileContent();
+         oldXMLFileContent = gatewayManagerService.getPanelXMLFileContent();
       }
       try {
          fileContent.append(FileUtils.readFileToString(observedXMLFile, "utf-8"));
@@ -104,110 +87,17 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          logger.warn("Skipped " + observedXMLFileName + " change check, Failed to read " + observedXMLFile.getAbsolutePath());
          return false;
       }
-      if (oldXMLFileContent.equals(fileContent.toString())) {
+      if (oldXMLFileContent.equals(fileContent.toString()) || oldXMLFileContent.length() == 0) {
          return false;
-      }
-      if (Constants.CONTROLLER_XML.equals(observedXMLFileName)) {
-         controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
-      } else if (Constants.PANEL_XML.equals(observedXMLFileName)) {
-         controllerXMLListenSharingData.setPanelXMLFileContent(fileContent);
       }
       return true;
    }
    
-   private void tagControllerXMLChanged(boolean isChanged) {
-      controllerXMLListenSharingData.setIsControllerXMLChanged(isChanged);
+   public boolean isControllerXMLChanged() {
+      return this.controllerXMLChanged;
    }
    
-   private void killAndClearPollingMachineThreads() {
-      List<PollingMachineThread> pollingMachineThreads = controllerXMLListenSharingData.getPollingMachineThreads();
-      for (PollingMachineThread pollingMachineThread : pollingMachineThreads) {
-         pollingMachineThread.kill();
-      }
-      nap(10); // Just give the theads some times to get the timeslice and really stop.
-      pollingMachineThreads.clear();
+   public void setGatewayManagerService(GatewayManagerService gatewayManagerService) {
+      this.gatewayManagerService = gatewayManagerService;
    }
-   
-   private void clearChangedStatusTable() {
-      List<Sensor> sensors= controllerXMLListenSharingData.getSensors();
-      for (Sensor sensor : sensors) {
-         // Just wake up all the records, acturelly, the status didn't change.
-         changedStatusTable.updateStatusChangedIDs(sensor.getSensorID());
-      }
-      changedStatusTable.clearAllRecords();
-   }
-   
-   private void clearStatusCache() {
-      statusCacheService.clearAllStatusCache();
-   }
-   
-   @SuppressWarnings("unchecked")
-   private void clearAndReloadSensors() {
-      controllerXMLListenSharingData.getSensors().clear();
-
-      // followings are re-parse sensors and their included statuscommand.
-      Element sensorsElement = remoteActionXMLParser.queryElementFromXMLByName(Constants.SENSORS_ELEMENT_NAME);
-      if (sensorsElement == null) {
-         throw new NoSuchComponentException("DOM element " + Constants.SENSORS_ELEMENT_NAME + " doesn't exist in " + Constants.CONTROLLER_XML);
-      }
-      List<Element> sensorElements = sensorsElement.getChildren();
-      if (sensorElements == null) {
-         throw new ControllerException("There is no sub DOM elements in " + Constants.SENSORS_ELEMENT_NAME + " in " + Constants.CONTROLLER_XML);
-      }
-      Iterator<Element> sensorElementIterator = sensorElements.iterator();
-      while(sensorElementIterator.hasNext()) {
-         Element sensorElement = sensorElementIterator.next();
-//         for (Element sensorElement : sensorElements) {
-         Sensor sensor = new Sensor();
-         sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
-         sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
-
-         Element includeElement = sensorElement.getChild(Constants.INCLUDE_ELEMENT_NAME, sensorElement.getNamespace());
-         String statusCommandID = includeElement.getAttributeValue(Constants.REF_ATTRIBUTE_NAME);
-         Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
-         StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-         sensor.setStatusCommand(statusCommand);
-
-         controllerXMLListenSharingData.addSensor(sensor);
-      }
-   }
-   
-   private void restartPollingMachineThreads() {
-      Iterator<Sensor> sensorIterator = controllerXMLListenSharingData.getSensors().iterator();
-      while (sensorIterator.hasNext()) {
-         Sensor sensor = sensorIterator.next();
-         PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
-         pollingMachineThread.start();
-         nap(3);
-      }
-   }
-
-   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
-      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
-   }
-   
-   public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
-      this.remoteActionXMLParser = remoteActionXMLParser;
-   }
-
-   public void setCommandFactory(CommandFactory commandFactory) {
-      this.commandFactory = commandFactory;
-   }
-   
-   public void setStatusCacheService(StatusCacheService statusCacheService) {
-      this.statusCacheService = statusCacheService;
-   }
-   
-   public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
-      this.changedStatusTable = changedStatusTable;
-   }
-
-   private void nap(long milliseconds) {
-      try {
-         Thread.sleep(milliseconds);
-      } catch (InterruptedException e) {
-         e.printStackTrace();
-      }
-   }
-   
 }

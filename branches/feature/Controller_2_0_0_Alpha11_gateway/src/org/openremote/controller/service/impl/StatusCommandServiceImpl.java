@@ -34,7 +34,7 @@ import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.config.ControllerXMLChangedException;
-import org.openremote.controller.config.ControllerXMLListenSharingData;
+import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
@@ -53,32 +53,38 @@ public class StatusCommandServiceImpl implements StatusCommandService {
     
     private ComponentFactory componentFactory;
     
-    private ControllerXMLListenSharingData controllerXMLListenSharingData;
+    private ControllerXMLChangeService controllerXMLChangeService;
 
     /**
      * {@inheritDoc}
      */
     public String trigger(String unParsedSensorIDs){
        
-       String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
-       Map<String, StatusCommand> sensorIdAndStatusCommandsMap = new HashMap<String, StatusCommand>();
-       for (String sensorID : parsedSensorIDs) {
-          sensorIdAndStatusCommandsMap.put(sensorID, getStatusCommand(sensorID));
-       }
-       StringBuffer sb = new StringBuffer();
-       sb.append(Constants.STATUS_XML_HEADER);
-       
-       Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
-       for (String sensorID : sensorIDs) {
-           sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
-           Sensor sensor = controllerXMLListenSharingData.findSensorById(sensorID);
-           sb.append(sensor == null ? StatusCommand.UNKNOWN_STATUS : sensor.readStatus());
-           sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
-           sb.append("\n");
-       }
-       
-       sb.append(Constants.STATUS_XML_TAIL);       
-       return sb.toString();
+      String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
+      Map<String, StatusCommand> sensorIdAndStatusCommandsMap = new HashMap<String, StatusCommand>();
+      for (String sensorID : parsedSensorIDs) {
+       sensorIdAndStatusCommandsMap.put(sensorID, getStatusCommand(sensorID));
+      }
+      StringBuffer sb = new StringBuffer();
+      sb.append(Constants.STATUS_XML_HEADER);
+      
+      Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
+      String sensorStatus;
+      
+      for (String sensorID : sensorIDs) {
+         sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
+         try {
+            sensorStatus = statusCacheService.getStatusBySensorId(Integer.parseInt(sensorID));
+         } catch (NumberFormatException e) {
+            throw new NoSuchComponentException("The sensor id '" + sensorID + "' should be digit", e);
+         }           
+         sb.append(sensorStatus == null ? StatusCommand.UNKNOWN_STATUS : sensorStatus);
+         sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+         sb.append("\n");
+      }
+      
+      sb.append(Constants.STATUS_XML_TAIL);       
+      return sb.toString();
    }
     
    private StatusCommand getStatusCommand(String sensorID) {
@@ -92,7 +98,7 @@ public class StatusCommandServiceImpl implements StatusCommandService {
 
    @Override
    public String readFromCache(String unParsedSensorIDs) {
-      if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+      if (controllerXMLChangeService.isControllerXMLChanged()) {
          throw new ControllerXMLChangedException("The content of controller.xml had changed.");
       }
       Set<Integer> statusSensorIDs = parseStatusSensorIDsStrToSet(unParsedSensorIDs);
@@ -139,8 +145,8 @@ public class StatusCommandServiceImpl implements StatusCommandService {
       this.componentFactory = componentFactory;
    }
 
-   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
-      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
+   public void setControllerXMLChangeService(ControllerXMLChangeService controllerXMLChangeService) {
+      this.controllerXMLChangeService = controllerXMLChangeService;
    }
    
 }

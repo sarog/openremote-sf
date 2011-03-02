@@ -27,7 +27,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.config.ControllerXMLChangedException;
-import org.openremote.controller.config.ControllerXMLListenSharingData;
+import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
@@ -46,11 +46,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
    
    private StatusCacheService statusCacheService;
    
-   private ControllerXMLListenSharingData controllerXMLListenSharingData;
-   
-   public void setStatusCacheService(StatusCacheService statusCacheService) {
-      this.statusCacheService = statusCacheService;
-   }
+   private ControllerXMLChangeService controllerXMLChangeService;
 
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
@@ -67,7 +63,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
     */
    @Override
    public String queryChangedState(String deviceID, String unParsedSensorIDs) {
-      if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+      if (controllerXMLChangeService.isControllerXMLChanged()) {
          throw new ControllerXMLChangedException("The content of controller.xml had changed.");
       }
       
@@ -107,7 +103,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
                logger.info(changedStateRecord + "Waiting...");
                changedStateRecord.wait(50000);
                
-               if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+               if (controllerXMLChangeService.isControllerXMLChanged()) {
                   throw new ControllerXMLChangedException("The content of controller.xml had changed.");
                }
                
@@ -164,9 +160,12 @@ public class StatusPollingServiceImpl implements StatusPollingService {
    public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
       this.changedStatusTable = changedStatusTable;
    }
-
-   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
-      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
+   
+   public void setStatusCacheService(StatusCacheService statusCacheService) {
+      this.statusCacheService = statusCacheService;
    }
-
+      
+   public void setControllerXMLChangeService(ControllerXMLChangeService controllerXMLChangeService) {
+      this.controllerXMLChangeService = controllerXMLChangeService;
+   }
 }
