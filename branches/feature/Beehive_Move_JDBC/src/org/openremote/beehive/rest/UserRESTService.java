@@ -77,6 +77,7 @@ public class UserRESTService extends RESTBaseService {
    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
    public Response getUserById(@PathParam("user_id")  long userId) {
       User user = getUserService().getUserById(userId);
+      if (user == null) return resourceNotFoundResponse();
       return buildResponse(user.toDTO());
    }
    
