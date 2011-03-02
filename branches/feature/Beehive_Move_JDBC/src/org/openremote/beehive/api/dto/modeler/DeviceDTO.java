@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.openremote.beehive.api.dto.AccountDTO;
 import org.openremote.beehive.api.dto.BusinessEntityDTO;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.Device;
+import org.openremote.beehive.domain.modeler.DeviceAttr;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 import org.openremote.beehive.domain.modeler.Sensor;
 import org.openremote.beehive.domain.modeler.SensorCommandRef;
@@ -47,13 +47,13 @@ import org.openremote.beehive.domain.modeler.SwitchSensorRef;
  */
 @SuppressWarnings("serial")
 @XmlRootElement(name = "device")
-@JsonIgnoreProperties("deviceAttrs")
 public class DeviceDTO extends BusinessEntityDTO {
    private String name;
    private String vendor;
    private String model;
    
    private AccountDTO account;
+   private List<DeviceAttrDTO> deviceAttrs;
    private List<DeviceCommandDTO> deviceCommands;
    private List<SensorDTO> sensors;
    private List<SwitchDTO> switchs;
@@ -92,6 +92,11 @@ public class DeviceDTO extends BusinessEntityDTO {
    public List<SliderDTO> getSliders() {
       return sliders;
    }
+   @XmlElementWrapper(name = "deviceAttrs")
+   @XmlElement(name="deviceAttr")
+   public List<DeviceAttrDTO> getDeviceAttrs() {
+	   return deviceAttrs;
+   }
 
    public void setName(String name) {
       this.name = name;
@@ -104,6 +109,9 @@ public class DeviceDTO extends BusinessEntityDTO {
    }
    public void setAccount(AccountDTO account) {
       this.account = account;
+   }
+   public void setDeviceAttrs(List<DeviceAttrDTO> deviceAttrs) {
+	  this.deviceAttrs = deviceAttrs;
    }
    public void setDeviceCommands(List<DeviceCommandDTO> deviceCommands) {
       this.deviceCommands = deviceCommands;
@@ -124,6 +132,14 @@ public class DeviceDTO extends BusinessEntityDTO {
       device.setName(name);
       device.setVendor(vendor);
       device.setModel(model);
+      
+      if (deviceAttrs != null && deviceAttrs.size() > 0) {
+    	  for (DeviceAttrDTO deviceAttrDTO : deviceAttrs) {
+    		  DeviceAttr deviceAttr = deviceAttrDTO.toDeviceAttr();
+    		  deviceAttr.setDevice(device);
+    		  device.getDeviceAttrs().add(deviceAttr);
+		}
+      }
       return device;
    }
    

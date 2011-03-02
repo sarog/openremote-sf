@@ -30,6 +30,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.openremote.beehive.api.dto.AccountDTO;
+import org.openremote.beehive.api.dto.modeler.DeviceAttrDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceCommandDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
 import org.openremote.beehive.api.dto.modeler.SensorDTO;
@@ -71,7 +72,7 @@ public class Device extends BusinessEntity {
    private List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
    
    /** The device attrs. */
-   private List<DeviceAttr> deviceAttrs;
+   private List<DeviceAttr> deviceAttrs = new ArrayList<DeviceAttr>();
    
    private List<Sensor> sensors = new ArrayList<Sensor>();
    
@@ -186,7 +187,7 @@ public class Device extends BusinessEntity {
     * 
     * @return the device attrs
     */
-   @OneToMany(mappedBy = "device", cascade = CascadeType.REMOVE)
+   @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
    public List<DeviceAttr> getDeviceAttrs() {
       return deviceAttrs;
    }
@@ -266,11 +267,7 @@ public class Device extends BusinessEntity {
    }
    
    public DeviceDTO toDTO() {
-      DeviceDTO deviceDTO = new DeviceDTO();
-      deviceDTO.setId(getOid());
-      deviceDTO.setName(name);
-      deviceDTO.setVendor(vendor);
-      deviceDTO.setModel(model);
+      DeviceDTO deviceDTO = toSimpleDTO();
       deviceDTO.setAccount(new AccountDTO(account.getOid()));
       
       if (deviceCommands != null && deviceCommands.size() > 0) {
@@ -304,6 +301,7 @@ public class Device extends BusinessEntity {
          }
          deviceDTO.setSliders(sliderDTOs);
       }
+      
       return deviceDTO;
    }
    
@@ -313,6 +311,13 @@ public class Device extends BusinessEntity {
       deviceDTO.setName(name);
       deviceDTO.setVendor(vendor);
       deviceDTO.setModel(model);
+      if (deviceAttrs != null && deviceAttrs.size() > 0) {
+    	  List<DeviceAttrDTO> deviceAttrDTOs = new ArrayList<DeviceAttrDTO>();
+    	  for (DeviceAttr deviceAttr: deviceAttrs) {
+    		  deviceAttrDTOs.add(deviceAttr.toDTO());
+          }
+    	  deviceDTO.setDeviceAttrs(deviceAttrDTOs);
+      }
       return deviceDTO;
    }
 }

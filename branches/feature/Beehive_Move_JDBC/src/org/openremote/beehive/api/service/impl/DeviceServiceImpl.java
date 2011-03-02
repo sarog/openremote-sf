@@ -25,11 +25,13 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.openremote.beehive.api.dto.modeler.DeviceAttrDTO;
 import org.openremote.beehive.api.dto.modeler.DeviceDTO;
 import org.openremote.beehive.api.service.DeviceMacroItemService;
 import org.openremote.beehive.api.service.DeviceService;
 import org.openremote.beehive.domain.Account;
 import org.openremote.beehive.domain.modeler.Device;
+import org.openremote.beehive.domain.modeler.DeviceAttr;
 import org.openremote.beehive.domain.modeler.DeviceCommand;
 
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
@@ -80,6 +82,16 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
          device.setName(deviceDTO.getName());
          device.setVendor(deviceDTO.getVendor());
          device.setModel(deviceDTO.getModel());
+         genericDAO.delete(device.getDeviceAttrs());
+         
+         List<DeviceAttrDTO> deviceAttrDTOs = deviceDTO.getDeviceAttrs();
+         if (deviceAttrDTOs != null && deviceAttrDTOs.size() > 0) {
+        	 List<DeviceAttr> deviceAttrs = new ArrayList<DeviceAttr>();
+        	 for (DeviceAttrDTO deviceAttrDTO : deviceAttrDTOs) {
+        		 deviceAttrs.add(deviceAttrDTO.toDeviceAttr());
+			 }
+        	 device.setDeviceAttrs(deviceAttrs);
+         }
          genericDAO.update(device);
       }
       
