@@ -135,7 +135,7 @@ public class SensorRESTServiceTest extends TemplateTestBase {
       MockHttpResponse mockLoadHttpResponse = new MockHttpResponse();
       dispatcher.invoke(mockLoadHttpRequest, mockLoadHttpResponse);
       
-      String dbSensorJson2 = mockHttpResponse.getContentAsString();
+      String dbSensorJson2 = mockLoadHttpResponse.getContentAsString();
       RangeSensorDTO rangeSensor2 = mapper.readValue(dbSensorJson2, RangeSensorDTO.class);
       assertEquals(rangeSensor.getName(), rangeSensor2.getName());
       

@@ -30,6 +30,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.openremote.beehive.api.dto.modeler.ProtocolAttrDTO;
 import org.openremote.beehive.api.dto.modeler.ProtocolDTO;
 import org.openremote.beehive.domain.BusinessEntity;
@@ -63,6 +65,7 @@ public class Protocol extends BusinessEntity {
     * @return the attributes
     */
    @OneToMany(mappedBy = "protocol", cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+   @Fetch(FetchMode.SELECT)
    public List<ProtocolAttr> getAttributes() {
       return attributes;
    }
