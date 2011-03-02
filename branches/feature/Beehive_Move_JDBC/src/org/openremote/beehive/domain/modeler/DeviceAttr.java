@@ -25,6 +25,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.openremote.beehive.api.dto.modeler.DeviceAttrDTO;
 import org.openremote.beehive.domain.BusinessEntity;
 
 /**
@@ -104,4 +105,10 @@ public class DeviceAttr extends BusinessEntity {
       this.device = device;
    }
 
+   public DeviceAttrDTO toDTO() {
+	   DeviceAttrDTO dto = new DeviceAttrDTO();
+	   dto.setName(name);
+	   dto.setValue(value);
+	   return dto;
+   }
 }
