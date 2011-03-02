@@ -26,7 +26,7 @@ import java.util.Map;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
-import org.openremote.modeler.client.model.ComboBoxDataModel;
+import org.openremote.modeler.client.model.StringComboBoxData;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -80,6 +80,8 @@ public class DeviceCommandWindow extends FormWindow {
    /** The device. */
    private Device device = null;
    
+   private Protocol deviceProtocol = null;
+   
    protected boolean hideWindow = true;
    
    protected LabelField info;
@@ -92,6 +94,7 @@ public class DeviceCommandWindow extends FormWindow {
    public DeviceCommandWindow(Device device) {
       super();
       this.device = device;
+      this.deviceProtocol = device.attrs2Protocol();
       setHeading("New command");
       initial();
       show();
@@ -246,14 +249,22 @@ public class DeviceCommandWindow extends FormWindow {
          }
       });
 
+      
+      String protocolName = null;
+      
       if (deviceCommand != null) {
-         String protocolName = deviceCommand.getProtocol().getType();
+         protocolName = deviceCommand.getProtocol().getType();
          nameField.setValue(deviceCommand.getName());
-         if (protocolNames.contains(protocolName)) {
-            StringComboBoxData data = new StringComboBoxData(protocolName, protocolName);
-            protocol.setValue(data);
-         }
 //         protocol.disable();
+      } else if (deviceProtocol != null) {
+    	  protocolName = deviceProtocol.getType();
+      }
+      
+      if (protocolName != null) {
+    	  if (protocolNames.contains(protocolName)) {
+    		  StringComboBoxData data = new StringComboBoxData(protocolName, protocolName);
+    		  protocol.setValue(data);
+    	  }
       }
       form.layout();
    }
@@ -285,6 +296,12 @@ public class DeviceCommandWindow extends FormWindow {
                      value = attr.getValue();
                   }
                }
+            } else if (deviceProtocol != null) {
+            	for (ProtocolAttr attr : deviceProtocol.getAttributes()) {
+                    if (attrDefinition.getName().equals(attr.getName())) {
+                       value = attr.getValue();
+                    }
+                 }
             }
 
             if (attrDefinition.isCheckBox()) {
@@ -333,8 +350,13 @@ public class DeviceCommandWindow extends FormWindow {
       } else {
          AbstractProtocolFieldSet protocolSet = ProtocolManager.getInstance().getUIProtocol(protocolName);
          if (protocolSet != null) {
-            List<ProtocolAttr> protocolAttrs = deviceCommand == null ? null : deviceCommand.getProtocol()
-                  .getAttributes();
+            List<ProtocolAttr> protocolAttrs = null;
+            if (deviceCommand != null) {
+            	protocolAttrs = deviceCommand.getProtocol()
+                .getAttributes();
+            } else if (deviceProtocol != null) {
+            	protocolAttrs = deviceProtocol.getAttributes();
+            }
             protocolSet.initFiledValuesByProtocol(protocolAttrs);
             form.add(protocolSet);
          }
@@ -398,16 +420,4 @@ public class DeviceCommandWindow extends FormWindow {
       }
    }
    
-   /**
-    * The data model to store String value in ComboBoxExt.
-    */
-   private class StringComboBoxData extends ComboBoxDataModel<String> {
-      private static final long serialVersionUID = 1L;
-      public StringComboBoxData(String label, String t) {
-         super(label, t);
-      }
-      public String toString() {
-         return super.getData();
-      }
-   }
 }

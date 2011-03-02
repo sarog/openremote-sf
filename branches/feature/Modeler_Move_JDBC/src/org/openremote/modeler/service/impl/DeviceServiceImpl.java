@@ -66,10 +66,15 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       httpPost.addHeader("Accept", "application/json");
       addAuthentication(httpPost);
       try {
-         httpPost.setEntity(new StringEntity(JsonGenerator.serializerObject(device), "UTF-8"));
+    	 String []excludes = {"*.class", "*.device", "sensors", "switchs", "sliders", "deviceCommands"};
+    	 String json = JsonGenerator.deepSerializerObjectExclude(device, excludes);
+    	 System.out.println(json);
+         httpPost.setEntity(new StringEntity(json, "UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
          if (response.getStatusLine().getStatusCode() == 200) {
             String deviceJson = IOUtils.toString(response.getEntity().getContent());
+            System.out.println("-----------");
+            System.out.println(deviceJson);
             return new JSONDeserializer<Device>().use(null, Device.class).deserialize(deviceJson);
          } else if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
             throw new NotAuthenticatedException("User " + getCurrentUsername() + " not authenticated! ");
@@ -143,7 +148,8 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       httpPost.addHeader("Accept", "application/json");
       addAuthentication(httpPost);
       try {
-         httpPost.setEntity(new StringEntity(JsonGenerator.serializerObject(device),"UTF-8"));
+    	  String []excludes = {"*.class", "account", "*.device", "sensors", "switchs", "sliders", "deviceCommands"};
+         httpPost.setEntity(new StringEntity(JsonGenerator.deepSerializerObjectExclude(device, excludes),"UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
          if (response.getStatusLine().getStatusCode() != 200) {
             if (response.getStatusLine().getStatusCode() == HttpServletResponse.SC_UNAUTHORIZED) {
@@ -202,6 +208,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
       addAuthentication(httpPost);
       try {
          device.toSimple();
+         device.setDeviceAttrs(null);// not compare it
          httpPost.setEntity(new StringEntity(JsonGenerator.serializerObject(device),"UTF-8"));
          HttpResponse response = httpClient.execute(httpPost);
          int statusCode = response.getStatusLine().getStatusCode();

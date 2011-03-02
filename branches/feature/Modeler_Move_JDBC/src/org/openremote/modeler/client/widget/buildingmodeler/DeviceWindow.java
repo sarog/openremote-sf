@@ -25,6 +25,7 @@ import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
+import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 
 
 /**
@@ -59,6 +60,8 @@ public class DeviceWindow extends CommonWindow {
     */
    protected void initial(BeanModel deviceBeanModel) {
       setSize(360, 200);
+      setAutoHeight(true);
+      setLayout(new FlowLayout());
       setHeading(((Device) deviceBeanModel.getBean()).getName() == null ? "New Device" : "Edit Device");
       deviceForm = new DeviceInfoForm(this, deviceBeanModel);
       ensureDebugId(DebugId.NEW_DEVICE_WINDOW);
