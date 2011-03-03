@@ -59,7 +59,6 @@
   <path id = "compile.path.id">
     <fileset dir = "${lib.dir}/compile"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/calimero"/>
     <fileset dir = "${lib.dir}/rxtx"/>
     <fileset dir = "${lib.dir}/apache/commons-net"/>
     <fileset dir = "${lib.dir}/apache/commons-lang"/>
@@ -72,7 +71,6 @@
     <fileset dir = "${lib.dir}/compile"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
-    <fileset dir = "${lib.dir}/calimero" includes = "*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
   	<fileset dir = "${lib.dir}/json" includes = "*.jar"/>
     <path location = "${classes.dir}"/>
@@ -87,7 +85,6 @@
     <fileset dir = "${lib.dir}/compile"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
-    <fileset dir = "${lib.dir}/calimero" includes = "*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
     <path location = "${classes.dir}"/>
     <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
@@ -131,9 +128,6 @@
     <mkdir dir = "${output.dir}"/>
     <copy todir = "${build.dir}/lib" flatten = "true">
       <fileset dir = "${lib.dir}/core">
-        <include name = "**/*.jar"/>
-      </fileset>
-      <fileset dir = "${lib.dir}/calimero">
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/apache">
