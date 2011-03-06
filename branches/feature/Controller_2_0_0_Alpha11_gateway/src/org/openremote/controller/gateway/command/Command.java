@@ -46,6 +46,23 @@ public class Command
    /* String constant for the property value attribute */
    private static final String XML_ATTRIBUTENAME_VALUE = "value";   
    
+   /** 
+    * Attribute name of dynamic command value for slider, colorpicker.<br />
+    * This attribute is temporary for holding dynamic control command value from REST API. <br />
+    * Take slider for example: <br />
+    * REST API: http://localhost:8080/controller/rest/control/{slider_id}/10 <br />
+    * <b>10</b> means control command value of slider, which will be stored into the attribute named <b>DYNAMIC_VALUE_ATTR_NAME</b> of Command DOM element.
+    */
+   public static final String DYNAMIC_VALUE_ARG_NAME = "dynamicValue";
+
+   /**
+    * Dynamic parameter place holder regular expression.
+    * When a command contains a dynamic value taken from a slider or color picker etc., 
+    * this could be as simple as allowing '${param}' literal somewhere in the command value, 
+    * any command builder should replace '${param}' with the command param value got from REST call.  
+    */
+   public static final String DYNAMIC_PARAM_PLACEHOLDER_REGEXP = "\\$\\{param\\}";
+
    /**
     * Validation property, if command is invalid it will be ignored
     * by the gateway if an attempt is made to execute it
@@ -56,12 +73,13 @@ public class Command
    private List<Action> commandActions = new ArrayList<Action> ();
    
    /* The ID of this command */
-   private int id;
+   private Integer id;
    
    /* Constructor */   
-   public Command(Element commandElement) {
+   public Command(Integer commandId, Element commandElement) {
       //Extract actions from the command XML Elment
       if (commandElement != null) {
+         this.id = commandId;
          List<Element> propertyEles = commandElement.getChildren("property", commandElement.getNamespace());
          
          for(Element element : propertyEles){
@@ -155,5 +173,10 @@ public class Command
    /* Get number of actions in command */
    public int getActionCount() {
       return this.commandActions.size();  
+   }
+   
+   /* Get command id */
+   public Integer getId() {
+      return this.id;  
    }
 }

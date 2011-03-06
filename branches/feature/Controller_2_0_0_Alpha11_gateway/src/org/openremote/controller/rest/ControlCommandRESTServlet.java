@@ -31,9 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
-import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.spring.SpringContext;
-
+import org.openremote.controller.service.GatewayManagerService;
 /**
  * The Class Control Command REST Servlet.
  * 
@@ -44,8 +43,8 @@ public class ControlCommandRESTServlet extends HttpServlet {
    
    private Logger logger = Logger.getLogger(ControlCommandRESTServlet.class.getName());
    
-   private static ControlCommandService controlCommandService = 
-      (ControlCommandService) SpringContext.getInstance().getBean("controlCommandService");
+   // private static ControlCommandService controlCommandService = (ControlCommandService) SpringContext.getInstance().getBean("controlCommandService");
+   private static GatewayManagerService gatewayManagerService = (GatewayManagerService)SpringContext.getInstance().getBean("gatewayManagerService");
    
    /* (non-Javadoc)
     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -73,7 +72,7 @@ public class ControlCommandRESTServlet extends HttpServlet {
          commandParam = matcher.group(2);
          try{
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
-                  controlCommandService.trigger(controlID, commandParam);
+                  gatewayManagerService.trigger(controlID, commandParam);
                } else {
                   throw new InvalidCommandTypeException(commandParam);
                }

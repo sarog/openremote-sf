@@ -24,11 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Map;
-import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.regex.PatternSyntaxException;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.gateway.Protocol;
@@ -36,6 +32,7 @@ import org.openremote.controller.gateway.ProtocolInterface;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.gateway.EnumGatewayConnectionState;
 import org.openremote.controller.gateway.EnumProtocolIOResult;
+import org.openremote.controller.exception.GatewayProtocolException;
 /**
  * The Telnet Protocol.
  * 
@@ -52,27 +49,12 @@ public class TelnetProtocol extends Protocol {
    /** A name to identify event in controller.xml. */
    private String name;
 
-   /**
-    * A pipe separated list of command strings that are sent over the connection It must have the format
-    * <waitFor>|<send>|<waitFor>|<send>
-    */
-   private String command;
-
    /** The IP to which the socket is opened */
    private String ip;
 
    /** The port that is opened */
    private String port;
 
-   /** The response from read command */
-   private String response;
-
-   /** The response filter */
-   private String responseFilter;
-   
-   /** The response fliter group */
-   private Integer responseFilterGroup = 0;
-   
    /** The status default response */
    private String statusDefault;
    
@@ -82,45 +64,7 @@ public class TelnetProtocol extends Protocol {
    private TelnetClient telnetClient;
 
    private String promptString;
-   
-   /**
-    * Gets the command.
-    * 
-    * @return the command
-    */
-   public String getCommand() {
-      return this.command;
-   }
 
-   /**
-    * Sets the command.
-    * 
-    * @param command
-    *           the new command
-    */
-   public void setCommand(String command) {
-      this.command = command;
-   }
-
-   /**
-    * Gets the prompt string.
-    * 
-    * @return the prompt string
-    */
-   public String getPromptString() {
-      return this.promptString;
-   }
-
-   /**
-    * Sets the prompt string
-    * 
-    * @param promptString
-    *           the new promptString
-    */
-   public void setPromptString(String prompt) {
-      this.promptString = prompt;
-   }
-      
    /**
     * Gets the name.
     * 
@@ -152,7 +96,7 @@ public class TelnetProtocol extends Protocol {
     * @return the ip
     */
    public String getIp() {
-      return ip;
+      return this.ip;
    }
 
    /**
@@ -169,7 +113,7 @@ public class TelnetProtocol extends Protocol {
     * @return the port
     */
    public String getPort() {
-      return port;
+      return this.port;
    }
 
    /**
@@ -180,22 +124,23 @@ public class TelnetProtocol extends Protocol {
       this.port = port;
    }
 
-   /**
-    * Sets the response string 
-    * @param response the new response
+  /**
+    * Gets the prompt string
+    * 
+    * @return the prompt string
     */
-   public void setResponse(String response) {
-      this.response = response;
+   public String getPromptString() {
+      return this.promptString;
    }
 
    /**
-    * Gets the response 
-    * @return the response
+    * Sets the prompt string
+    * @param promptString the new prompt string
     */
-   public String getResponse() {
-      return response;
+   public void setPromptString(String promptString) {
+      this.promptString = promptString;
    }
-
+   
    /**
     * Sets the timeOut
     * @param timeOut the new timeOut
@@ -216,27 +161,8 @@ public class TelnetProtocol extends Protocol {
     * Gets the timeOut
     * @return the timeOut
     */
-   public Integer getTimeOut() {
-      return this.timeOut;  
-   }
-      
-   /**
-    * Determine if we're still connected by sending
-    * enter command and making sure it sent successfully
-    */ 
-   public EnumGatewayConnectionState getConnectionState() {
-      EnumGatewayConnectionState response = EnumGatewayConnectionState.DISCONNECTED;
-      EnumProtocolIOResult sendResult;
-      
-      // Just send enter and confirm send was successful
-      sendResult = send("", null);
-      
-      // Clear input stream of prompt responses
-      clearInputStream();
-      if (sendResult == EnumProtocolIOResult.SUCCESS) {
-         response = EnumGatewayConnectionState.CONNECTED;
-      }
-      return response;
+   public String getTimeOut() {
+      return this.timeOut.toString();  
    }
 
    public EnumGatewayConnectionState connect() {
@@ -251,8 +177,7 @@ public class TelnetProtocol extends Protocol {
          }         
       }
       catch (Exception e) {
-         responseState = EnumGatewayConnectionState.ERROR;
-         logger.info("Telnet protocol connection error: Failed to connect.");
+         logger.error("Telnet protocol connection failed to connect. " + e.getMessage(), e);
       }
       return responseState;
    }
@@ -263,35 +188,28 @@ public class TelnetProtocol extends Protocol {
       try {
          this.telnetClient.disconnect();
       } catch (Exception e) {
-         logger.error("Telnet protocol connection error: Failed to disconnect.", e);
+         // Indicates that connection is already dead so ignore
       }
    }   
 
-   public EnumProtocolIOResult send(String value, Map<String, String> args) {
-      EnumProtocolIOResult sendResult = EnumProtocolIOResult.SUCCESS;
+   public void send(String value, Map<String, String> args) {
       try {
          this.outputStream.write((value + "\n").getBytes());
          this.outputStream.flush();
       } catch (Exception e) {
-         sendResult = EnumProtocolIOResult.FAIL;
-         logger.error("Telnet protocol connection error: send failed.", e);
+         throw new GatewayProtocolException("Telnet protocol send failure: " + e.getMessage(), e);
       }
-      return sendResult;
    }
-   
-   public String read(String value, Map<String, String> args) {
-      Integer timeOut = getTimeOut();
+      
+   public String read(String value, Map<String, String> args) throws Exception {
+      Integer timeOut = Integer.parseInt(getTimeOut());
       Calendar endTime = Calendar.getInstance();
       endTime.add(Calendar.MILLISECOND, timeOut);
       String readString = "";
       while (Calendar.getInstance().before(endTime)) {
-         try {
-            while (super.inputStream.available() != 0) {
-               readString += (char) super.inputStream.read();
-            }
-         } catch (Exception e) {
-            logger.error("Telnet protocol read error.", e);
-         }         
+         while (super.inputStream.available() != 0) {
+            readString += (char) super.inputStream.read();
+         }
          if (this.promptString != null && !"".equals(this.promptString)) {
             // Look for prompt string in response somewhere past first character
             // just in case response starts with prompt from previous command
@@ -301,22 +219,23 @@ public class TelnetProtocol extends Protocol {
          } else if (readString.length() > 0) {
             break;
          }
-   		try
-         {
-   			Thread.sleep(50);
-   		} catch (Exception e) {
-            logger.error("Telnet protocol read command interrupted", e);
-   		}
+         Thread.sleep(50);
       }
       if (readString.length() == 0) {
-           logger.error("Telnet protocol timed out waiting for server response.");
+           throw new GatewayProtocolException("Telnet protocol read timeout waiting for response");
       }
       return readString;
    }
    
    public void clearInputStream() {
       // Just read inputStream content but don't store it
-      read(null, null);   
+      try {
+         while (super.inputStream.available() != 0) {
+            super.inputStream.read();
+         }
+      } catch (Exception e) {
+         //Don't do anything about this
+      }
    }
    
    public Boolean validateSendAction(String value, Map<String, String> args) {

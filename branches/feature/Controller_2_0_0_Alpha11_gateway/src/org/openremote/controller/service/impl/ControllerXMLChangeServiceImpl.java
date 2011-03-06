@@ -59,7 +59,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       logger.info("Controller.xml of Controller changed, refreshing controller.xml");
       this.controllerXMLChanged = true;
       try {
-         gatewayManagerService.restart();
+         gatewayManagerService.restartGateways();
       } catch (ControllerException e) {
          logger.error("Error occured while refreshing controller.", e);
          success = false;

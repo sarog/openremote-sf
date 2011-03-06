@@ -23,8 +23,7 @@ package org.openremote.controller.gateway;
 import java.util.Properties;
 
 import org.jdom.Element;
-import org.openremote.controller.exception.ProtocolBuildException;
-import org.openremote.controller.exception.NoSuchProtocolBuilderException;
+import org.openremote.controller.exception.GatewayProtocolException;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 
@@ -40,7 +39,7 @@ public class ProtocolFactory extends ApplicationObjectSupport
    private Properties protocolBuilders;
    
    /**
-    * Gets the command.
+    * Gets the protocol.
     * 
     * @param element the element
     * 
@@ -48,28 +47,30 @@ public class ProtocolFactory extends ApplicationObjectSupport
     */
    public Protocol getProtocol(Element element)
    {
-      if (element == null)
-      {
-         throw new ProtocolBuildException("Protocol Builder: Invalid Gateway DOM element.");
+      Protocol protocol = null;
+      if (element != null) {
+         String protocolType = element.getAttributeValue(ProtocolBuilder.PROTOCOL_ATTRIBUTE_NAME);
+
+         if (protocolType == null || "".equals(protocolType))
+         {
+            throw new GatewayProtocolException("Gateway Protocol type is null.");
+         }
+
+         String builder = protocolBuilders.getProperty(protocolType);
+
+         if (builder == null)
+         {
+            throw new GatewayProtocolException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' gateway protocol.");
+         }
+
+         ProtocolBuilder protocolBuilder = (ProtocolBuilder) getApplicationContext().getBean(builder);
+
+         protocol = protocolBuilder.build(element);
       }
-
-      String protocolType = element.getAttributeValue(ProtocolBuilder.PROTOCOL_ATTRIBUTE_NAME);
-
-      if (protocolType == null || "".equals(protocolType))
-      {
-         throw new ProtocolBuildException("Protocol type is null.");
+      if (protocol == null) {
+         throw new GatewayProtocolException("Failed to get protocol object for gateway.");
       }
-
-      String builder = protocolBuilders.getProperty(protocolType);
-
-      if (builder == null)
-      {
-         throw new NoSuchProtocolBuilderException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' protocol.");
-      }
-
-      ProtocolBuilder protocolBuilder = (ProtocolBuilder) getApplicationContext().getBean(builder);
-
-      return protocolBuilder.build(element);
+      return protocol;
    }
 
    /**

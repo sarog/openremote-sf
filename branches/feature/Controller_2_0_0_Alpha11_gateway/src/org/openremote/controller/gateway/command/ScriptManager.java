@@ -28,10 +28,11 @@ import javax.script.Invocable;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
-import org.openremote.controller.exception.CommandScriptNotFoundException;
+import org.openremote.controller.exception.GatewayScriptException;
 import org.openremote.controller.utils.PathUtil;
 import java.io.File;
 import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
@@ -67,39 +68,35 @@ public class ScriptManager
     * extension is supported and validating the script code, returns true
     * if successfully added, otherwise returns false
     */
-   public Boolean addScript(String scriptName) {
-      Boolean result = false;
-      
+   public void addScript(String scriptName) {
+
       // Check to see if script already added
       if (invocableEngines.containsKey(scriptName)) {
-         return true;  
+         return;
       }
       
       int pos = scriptName.lastIndexOf('.');
       if (pos <= 0) {
-           logger.error("Invalid script file name '" + scriptName + "'");
+           throw new GatewayScriptException("Invalid script file name '" + scriptName + "'");
       } else {
          String ext = scriptName.substring(pos+1);
          try {
-             String scriptFilePath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + "scripts/" + scriptName;
-             if (!new File(scriptFilePath).exists()) {
-                throw new CommandScriptNotFoundException(" Make sure command scripts are in " + PathUtil.addSlashSuffix(configuration.getResourcePath()) + "scripts");
-             }        	 
+            String scriptFilePath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + "scripts/" + scriptName;
             InputStream is = new FileInputStream(new File(scriptFilePath));
             Reader reader = new InputStreamReader(is);
             ScriptEngine engine = engineManager.getEngineByExtension(ext);
             engine.eval(reader);
             invocableEngines.put(scriptName, engine);
-            result = true;
+         } catch (IOException e) {
+            throw new GatewayScriptException("Cannot open script file '" + scriptName + "' " + e.getMessage(), e);
          } catch (NullPointerException e) {
-            logger.error("Script extension '" + ext + "' is not supported.");
+            throw new GatewayScriptException("Extension not supported '" + ext + "' " + e.getMessage(), e);
          } catch (ScriptException e) {
-            logger.error("Script syntax error in '" + scriptName + "'");
+            throw new GatewayScriptException("Syntax error in '" + scriptName + "' " + e.getMessage(), e);
          } catch (Exception e) {
-            logger.error("Cannot open script file for reading '" + scriptName + "'");  
+            throw new GatewayScriptException(e);
          }
       }
-      return result;
    } 
    
    public String executeScript(String scriptName, Map<String, String> args, String currentCommandValue) {
@@ -116,11 +113,12 @@ public class ScriptManager
             Invocable invokeEngine = (Invocable) engine;
             result = (String) invokeEngine.invokeFunction("run", currentCommandValue);
          }
-      } catch (ScriptException ex) {
-         logger.error("Error in script '" + scriptName + "'");
-      } catch (NoSuchMethodException ex) {
-         logger.error("Script doesn't contain 'run' function '" + scriptName + "'");
-      } catch (NullPointerException npe) {
+      } catch (ScriptException e) {
+         throw new GatewayScriptException("Syntax error in '" + scriptName + "' " + e.getMessage(), e);
+      } catch (NoSuchMethodException e) {
+         throw new GatewayScriptException("Script doesn't contain 'run' function '" + scriptName + "'", e);
+      } catch (NullPointerException e) {
+         throw new GatewayScriptException(e.getMessage(),e);
       }
       return result;   
    }
@@ -132,5 +130,10 @@ public class ScriptManager
    
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
-   }   
+   }
+   
+   /* Remove registered scripts */
+   public void reset() {
+      this.invocableEngines.clear();
+   }
 }

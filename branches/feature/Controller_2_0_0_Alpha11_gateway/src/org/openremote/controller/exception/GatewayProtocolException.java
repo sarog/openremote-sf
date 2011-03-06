@@ -20,34 +20,26 @@
 package org.openremote.controller.exception;
 
 /**
- * The exception class when gateway command script not found.
+ * The exception class when Gateway Protocol problem
  * 
- * @author Rich Turner 2011-02-27
+ * @author Rich Turner 2011-03-05
  */
 @SuppressWarnings("serial")
-public class CommandScriptNotFoundException extends ControlCommandException {
+public class GatewayProtocolException extends GatewayException {
 
-   public CommandScriptNotFoundException() {
-      super("gateway command script not found.");
-      setErrorCode(ControlCommandException.NO_SUCH_COMMAND_SCRIPT);
+   public GatewayProtocolException() {
+      super();
    }
 
-   /**
-    * 
-    * @param message the message
-    * @param cause the cause
-    */
-   public CommandScriptNotFoundException(String message, Throwable cause) {
-      super("gateway command script not found." + message, cause);
-      setErrorCode(ControlCommandException.NO_SUCH_COMMAND_SCRIPT);
+   public GatewayProtocolException(String message, Throwable cause) {
+      super(message, cause);
    }
 
-   /**
-    * 
-    * @param message the message
-    */
-   public CommandScriptNotFoundException(String message) {
-      super("gateway command script not found." + message);
-      setErrorCode(ControlCommandException.NO_SUCH_COMMAND_SCRIPT);
+   public GatewayProtocolException(String message) {
+      super(message);
+   }
+
+   public GatewayProtocolException(Throwable cause) {
+      super(cause);
    }
 }

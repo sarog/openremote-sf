@@ -52,7 +52,7 @@ public abstract class Protocol implements ProtocolInterface
     * should validate that connection is established and aim to return CONNECTED
     */
    public EnumGatewayConnectionState connect() {
-      return EnumGatewayConnectionState.CONNECTED;
+      return EnumGatewayConnectionState.CONNECTED;   
    }
    
    /**
@@ -65,7 +65,4 @@ public abstract class Protocol implements ProtocolInterface
     * the way in which the current connection state is determined will vary from one protocol
     * to the next
     */
-   public EnumGatewayConnectionState getConnectionState() {
-      return EnumGatewayConnectionState.CONNECTED;
-   }
 }
