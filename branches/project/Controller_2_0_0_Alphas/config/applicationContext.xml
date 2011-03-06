@@ -117,29 +117,30 @@
 	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
 	
 	<!-- status cache service -->
-    <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    	<property name="cache" ref="statusCache"></property>
-    </bean>
-    
-    <bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
+  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
+    <property name="cache" ref="statusCache"></property>
+  </bean>
+
+  <bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
 	
 	<!-- controller.xml change service -->
-    <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
+  <bean id = "controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />
 	
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
-		        <prop key = "ir">irCommandBuilder</prop>
-		        <prop key = "knx">knxCommandBuilder</prop>
-		        <prop key = "x10">x10CommandBuilder</prop>
-           	<prop key = "socket">tcpSocketCommandBuilder</prop>
-           	<prop key = "telnet">telnetCommandBuilder</prop>
-           	<prop key = "http">httpGetCommandBuilder</prop>
-            <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
-            <prop key = "virtual">virtualCommandBuilder</prop>
-            <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "ir">irCommandBuilder</prop>
+                <prop key = "knx">knxCommandBuilder</prop>
+                <prop key = "x10">x10CommandBuilder</prop>
+                <prop key = "socket">tcpSocketCommandBuilder</prop>
+                <prop key = "telnet">telnetCommandBuilder</prop>
+                <prop key = "http">httpGetCommandBuilder</prop>
+                <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
+                <prop key = "virtual">virtualCommandBuilder</prop>
+                <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "onewire">oneWireCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -174,6 +175,9 @@
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
 
+  <!-- 1-wire protocol Command Builder -->
+  <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"/>
+  
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
@@ -185,7 +189,8 @@
    -->
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
-	      
+
+
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>
