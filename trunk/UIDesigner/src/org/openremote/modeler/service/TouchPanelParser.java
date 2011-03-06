@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -49,7 +49,7 @@ import org.openremote.modeler.touchpanel.TouchPanelTabbarDefinition;
 import org.xml.sax.SAXException;
 
 /**
- * The Class PanelParser.
+ * This class is for parsing the predefined touchPanel xml files from local path.
  */
 @SuppressWarnings("unchecked")
 public class TouchPanelParser {

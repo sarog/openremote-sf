@@ -33,7 +33,7 @@ import com.extjs.gxt.ui.client.widget.form.FormPanel;
 import com.google.gwt.core.client.GWT;
 
 /**
- * The Class UploadAndDeleteImageWidget.
+ * The widget is to upload or delete a image for the screen component.
  */
 public class UploadAndDeleteImageWidget extends LayoutContainer {
 

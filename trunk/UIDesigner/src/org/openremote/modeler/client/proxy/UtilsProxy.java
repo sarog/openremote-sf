@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -37,7 +37,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * The Class DeviceBeanModelProxy.
+ * The proxy supports utility methods to export file(openremote.zip), save uiDesignerLayout, restore uiDesignerLayout, 
+ * get some url path, download image and rotate image.
  * 
  * @author handy.wang
  */

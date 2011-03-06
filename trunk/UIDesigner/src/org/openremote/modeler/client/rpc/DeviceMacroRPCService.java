@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -30,13 +30,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 
 /**
- * The Interface DeviceMacroService.
+ * The Interface defines methods to operate macro and macroItem.
  */
 @RemoteServiceRelativePath("deviceMacro.smvc")
 public interface DeviceMacroRPCService extends RemoteService {
 
    /**
-    * Load all.
+    * Load all device macros.
     * 
     * @return the list< device macro>
     */
@@ -64,7 +64,7 @@ public interface DeviceMacroRPCService extends RemoteService {
 
 
    /**
-    * Delete device macro.
+    * Delete device macro by id.
     * 
     * @param id the id
     */
@@ -72,7 +72,7 @@ public interface DeviceMacroRPCService extends RemoteService {
 
 
    /**
-    * Load device macro items.
+    * Load all device macro items under a device macro.
     * 
     * @param deviceMacro the device macro
     * 

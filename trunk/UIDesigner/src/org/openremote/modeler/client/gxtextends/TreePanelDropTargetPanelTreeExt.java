@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -35,6 +35,9 @@ import com.extjs.gxt.ui.client.dnd.DND.Operation;
 import com.extjs.gxt.ui.client.event.DNDEvent;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
+/**
+ * The Class defines a dragSource for the <b>ProfilePanel</b> can drop its nodes on self.
+ */
 public class TreePanelDropTargetPanelTreeExt extends TreePanelDropTarget {
    public TreePanelDropTargetPanelTreeExt(TreePanel<BeanModel> tree) {
       super(tree);

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,7 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class ProtocolAttrDefinition.
+ * The Class defines a attribute of a protocol, which has some validators.
+ * 
+ * The attribute xml segment structure is similar following:</br>
+ * 
+      &lt;attr name="name" label="Name"&gt;</br>
+         &lt;validations&gt;</br>
+            &lt;allowBlank&gt;false&lt;/allowBlank&gt;</br>
+         &lt;/validations&gt;</br>
+      &lt;/attr>
  */
 public class ProtocolAttrDefinition implements Serializable {
 
@@ -37,6 +45,10 @@ public class ProtocolAttrDefinition implements Serializable {
    /** The label. */
    private String label;
 
+   private String value;
+   
+   private List<String> options = new ArrayList<String>();
+   
    /** The validators. */
    private List<ProtocolValidator> validators = new ArrayList<ProtocolValidator>();
 
@@ -94,6 +106,21 @@ public class ProtocolAttrDefinition implements Serializable {
       this.validators = validators;
    }
 
+   public String getValue() {
+      return value;
+   }
+
+   public List<String> getOptions() {
+      return options;
+   }
+
+   public void setValue(String value) {
+      this.value = value;
+   }
+
+   public void setOptions(List<String> options) {
+      this.options = options;
+   }
 
    /* (non-Javadoc)
     * @see java.lang.Object#equals(java.lang.Object)

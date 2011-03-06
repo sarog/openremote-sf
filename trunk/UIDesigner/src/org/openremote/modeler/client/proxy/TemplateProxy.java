@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -36,6 +36,7 @@ import org.openremote.modeler.domain.component.UIGrid;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
+ * The proxy is for managing template.
  * 
  * @author javen
  *

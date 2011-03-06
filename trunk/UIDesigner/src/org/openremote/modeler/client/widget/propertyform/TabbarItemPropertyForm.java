@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -43,7 +43,7 @@ import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 
 /**
- * A panel for display screen button properties.
+ * A panel for editing tabbarItem properties.
  */
 public class TabbarItemPropertyForm extends PropertyForm {
    private NavigateFieldSet navigateSet = null;

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,7 +24,7 @@ import javax.persistence.Transient;
 import org.openremote.modeler.touchpanel.TouchPanelDefinition;
 
 /**
- * The Class ScreenRef.
+ * The ScreenRef is linked screenpair and group, it make a screenpair be share in different group.
  */
 @SuppressWarnings("serial")
 public class ScreenPairRef extends BusinessEntity {
@@ -33,11 +33,17 @@ public class ScreenPairRef extends BusinessEntity {
    
    private Group group;
 
+   /** The touch panel definition is defined as screenpair's canvas. */
    private TouchPanelDefinition touchPanelDefinition;
    
    public ScreenPairRef() {
    }
    
+   /**
+    * Instantiates a new screen pair ref, increase the screenpair's refCount.
+    * 
+    * @param screen the screen
+    */
    public ScreenPairRef(ScreenPair screen) {
       super();
       screen.ref();
@@ -50,7 +56,7 @@ public class ScreenPairRef extends BusinessEntity {
    }
 
    /**
-    * Sets the screen.
+    * Sets the screenpair, decrease the old screenpair's refCount, increase the new one.
     * 
     * @param screen the new screen
     */
@@ -98,6 +104,11 @@ public class ScreenPairRef extends BusinessEntity {
       return screen.getName();
    }
    
+   /**
+    * Gets the screenpair id.
+    * 
+    * @return the screenpair id
+    */
    @Transient
    public long getScreenId() {
       return screen.getOid();

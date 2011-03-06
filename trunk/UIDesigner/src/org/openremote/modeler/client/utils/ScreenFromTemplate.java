@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,6 +28,7 @@ import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.ScreenPair;
 
 /**
+ * Defines a screen which generate from a template, which has devices, macros and a screenPair.
  * 
  * @author javen
  *

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,7 +25,9 @@ import java.util.List;
 
 
 /**
- * The Class Authority.
+ * The Class defines a user's authority, which generate from security context's authentication.
+ * It includes a username and a list of roles.
+ * 
  */
 @SuppressWarnings("serial")
 public class Authority implements Serializable {

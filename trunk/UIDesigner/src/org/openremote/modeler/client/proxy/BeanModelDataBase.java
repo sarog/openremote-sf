@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,7 +25,6 @@ import java.util.List;
 import org.openremote.modeler.client.Constants;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.utils.BeanModelTable;
-import org.openremote.modeler.client.utils.CategoryBeanModelDataBase;
 import org.openremote.modeler.client.utils.DeviceBeanModelTable;
 import org.openremote.modeler.client.utils.DeviceMacroBeanModelTable;
 import org.openremote.modeler.client.utils.GroupTable;
@@ -86,7 +85,7 @@ public class BeanModelDataBase {
    public static final BeanModelTable switchTable = new SwitchBeanModelTable();
    public static final BeanModelTable sensorTable = new SensorBeanModelTable();
    public static final BeanModelTable sliderTable = new SliderBeanModelTable();
-   public static final BeanModelTable configCategoryTable = new CategoryBeanModelDataBase();
+   public static final BeanModelTable configCategoryTable = new BeanModelTable();
    
    
    /**

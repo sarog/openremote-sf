@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -18,7 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2011, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -611,10 +611,10 @@ public class TreePanelBuilder {
    public static TreePanel<BeanModel> buildTemplateTree(final TemplatePanel templatePanel) {
 
       TreeFolderBean privateTemplatesBean = new TreeFolderBean();
-      privateTemplatesBean.setDisplayName("Private templates");
+      privateTemplatesBean.setDisplayName("My private templates");
 
       TreeFolderBean publicTemplatesBean = new TreeFolderBean();
-      publicTemplatesBean.setDisplayName("Public templates");
+      publicTemplatesBean.setDisplayName("My public templates");
 
       RpcProxy<List<BeanModel>> loadTemplateRPCProxy = new RpcProxy<List<BeanModel>>() {
 

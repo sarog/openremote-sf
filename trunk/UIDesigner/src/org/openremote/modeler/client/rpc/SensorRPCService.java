@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,18 +26,53 @@ import org.openremote.modeler.domain.Sensor;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+/**
+ * The Interface is for managing sensor.
+ */
 @RemoteServiceRelativePath("sensor.smvc")
 public interface SensorRPCService extends RemoteService {
 
+   /**
+    * Save sensor into database.
+    * 
+    * @param sensor the sensor
+    * 
+    * @return the sensor
+    */
    Sensor saveSensor(Sensor sensor);
    
+   /**
+    * Update sensor with database.
+    * 
+    * @param sensor the sensor
+    * 
+    * @return the sensor
+    */
    Sensor updateSensor(Sensor sensor);
    
+   /**
+    * Delete sensor by id from database.
+    * 
+    * @param id the id
+    * 
+    * @return the boolean
+    */
    Boolean deleteSensor(long id);
    
+   /**
+    * Load all sensor from database.
+    * 
+    * @return the list< sensor>
+    */
    List<Sensor> loadAll();
    
+   /**
+    * Gets the sensor by id.
+    * 
+    * @param id the id
+    * 
+    * @return the by id
+    */
    Sensor getById(long id);
    
-//   List<Sensor> loadByDevice(Device device);
 }

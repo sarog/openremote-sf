@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -58,6 +58,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 /**
+ * The window to creates or update a slider and save it into server.
  * 
  * @author Javen
  *
@@ -75,6 +76,11 @@ public class SliderWindow extends FormWindow {
    
    private boolean edit = false;
    
+   /**
+    * Instantiates a window to edit a slider.
+    * 
+    * @param slider the slider
+    */
    public SliderWindow(Slider slider) {
       super();
       if (null != slider) {
@@ -91,6 +97,12 @@ public class SliderWindow extends FormWindow {
       show();
    }
    
+   /**
+    * Instantiates a window to create a new slider.
+    * 
+    * @param slider the slider
+    * @param device the device
+    */
    public SliderWindow(Slider slider,Device device){
       super();
       if (null != slider) {
@@ -111,6 +123,9 @@ public class SliderWindow extends FormWindow {
       show();
    }
    
+   /**
+    * Creates the slider property fields, includes name, sensor and setValue command.
+    */
    private void createField() {
       setWidth(380);
       setAutoHeight(true);
@@ -143,7 +158,9 @@ public class SliderWindow extends FormWindow {
             sensorField.setValue(new ComboBoxDataModel<Sensor>(
                   slider.getSliderSensorRef().getSensor().getDisplayName(), slider.getSliderSensorRef().getSensor()));
          }
-         setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
+         if (slider.getSetValueCmd() != null) {
+            setValueBtn.setText(slider.getSetValueCmd().getDisplayName());
+         }
          
 //         sensorField.setEnabled(false);
 //         setValueBtn.setEnabled(false);
@@ -155,7 +172,7 @@ public class SliderWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       Button resetButton = new Button("Reset");
       
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetButton.addSelectionListener(new FormResetListener(form));
       
       form.add(nameField);
@@ -173,14 +190,13 @@ public class SliderWindow extends FormWindow {
    }
    
    
+   /**
+    * The listener to add the slider into current device and server.
+    */
    class SliderSubmitListener implements Listener<FormEvent> {
 
       @Override
       public void handleEvent(FormEvent be) {
-         if (slider.getSetValueCmd() == null) {
-            MessageBox.alert("Slider", "The slider must have a command to control its value", null);
-            return;
-         }
          List<Field<?>> fields = form.getFields();
          for (Field<?> field : fields) {
             if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
@@ -197,14 +213,6 @@ public class SliderWindow extends FormWindow {
                }
             });
          } else {
-            SliderCommandRef cmdRef = new SliderCommandRef(slider);
-            cmdRef.setDeviceCommand(slider.getSetValueCmd().getDeviceCommand());
-            cmdRef.setDeviceName(slider.getDevice().getName());
-            slider.setSetValueCmd(cmdRef);
-            SliderSensorRef sensorRef = new SliderSensorRef(slider);
-            sensorRef.setSensor(slider.getSliderSensorRef().getSensor());
-            
-            slider.setSliderSensorRef(sensorRef);
             SliderBeanModelProxy.update(slider.getBeanModel(),new AsyncSuccessCallback<Slider>(){
                @Override
                public void onSuccess(Slider result) {
@@ -217,6 +225,9 @@ public class SliderWindow extends FormWindow {
    }
    
    
+   /**
+    * The listener to select a setValue command for the slider.
+    */
    class CommandSelectListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -239,12 +250,16 @@ public class SliderWindow extends FormWindow {
                command.setText(deviceCommandRef.getDeviceCommand().getDisplayName());
                SliderCommandRef sliderCommandRef = new SliderCommandRef(slider);
                sliderCommandRef.setDeviceCommand(deviceCommandRef.getDeviceCommand());
+               sliderCommandRef.setDeviceName(slider.getDevice().getName());
                slider.setSetValueCmd(sliderCommandRef);
             }
          });
       }
    }
    
+   /**
+    * The listener to set the sensor for the slider when the sensor selection changed. 
+    */
    class SensorSelectChangeListener extends SelectionChangedListener<ModelData> {
 
       @SuppressWarnings("unchecked")

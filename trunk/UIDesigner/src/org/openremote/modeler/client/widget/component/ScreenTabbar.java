@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -46,6 +46,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 
 /**
+ * This class is to manage screen tabbar items.
+ * The tabbar includes two types: panel and group.
  * 
  * @author javen
  *
@@ -67,6 +69,13 @@ public class ScreenTabbar extends ScreenComponent {
       super(screenCanvas);
    }
 
+   /**
+    * Instantiates a new screen tabbar by the uiTabbar and screenCanvas.
+    * Use the background which defined in the tabbarDefinition.
+    * 
+    * @param screenCanvas the screen canvas
+    * @param uiTabbar the ui tabbar
+    */
    public ScreenTabbar(ScreenCanvas screenCanvas,UITabbar uiTabbar){
       super(screenCanvas);
       this.uiTabbar = uiTabbar;
@@ -92,6 +101,9 @@ public class ScreenTabbar extends ScreenComponent {
       addDeleteListener();
    }
 
+   /**
+    * The drag line is a narrow yellow frame when the tababar item is dragging.
+    */
    private void addDragLine() {
       this.moveBackGround = new LayoutContainer(){
          @Override

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -43,9 +43,6 @@ public class AsyncServiceFactory {
    
    /** The device command service async. */
    private static DeviceCommandRPCServiceAsync deviceCommandServiceAsync = null;
-   
-   /** The device macro item rpc service async. */
-   private static DeviceMacroItemRPCServiceAsync deviceMacroItemRPCServiceAsync = null;
    
    /** The utils rpc service async. */
    private static UtilsRPCServiceAsync utilsRPCServiceAsync = null;
@@ -102,18 +99,6 @@ public class AsyncServiceFactory {
       return deviceCommandServiceAsync;
    }
 
-   /**
-    * Gets the device macro item rpc service async.
-    * 
-    * @return the device macro item rpc service async
-    */
-   public static DeviceMacroItemRPCServiceAsync getDeviceMacroItemRPCServiceAsync() {
-      if (deviceMacroItemRPCServiceAsync == null) {
-         deviceMacroItemRPCServiceAsync = GWT.create(DeviceMacroItemRPCService.class);
-      }
-      return deviceMacroItemRPCServiceAsync;
-   }
-   
    /**
     * Gets the utils rpc service async.
     * 

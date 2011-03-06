@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,6 +32,10 @@ import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.user.client.ui.FlexTable;
 
+/**
+ * A form to edit grid properties.
+ * The grid has row, column, size and position properties.
+ */
 public class GridPropertyForm extends PropertyForm {
    private GridLayoutContainerHandle gridContainer = null;
 

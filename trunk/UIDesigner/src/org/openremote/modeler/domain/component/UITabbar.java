@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,7 +22,11 @@ package org.openremote.modeler.domain.component;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * UITabbar has two scope(group and panel), the default scope is group.
+ * It has some tabbar items.
+ *
+ */
 public class UITabbar extends UIComponent {
 
    private static final long serialVersionUID = 8227607089110291452L;

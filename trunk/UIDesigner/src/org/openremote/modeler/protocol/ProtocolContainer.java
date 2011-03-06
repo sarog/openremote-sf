@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The Class ProtocolContainer.
+ * The Class is used for containing <b>ProtocolDefinition</b> of different protocol types.</br>
+ * The container defined as a hash map, it use protocol displayname as the key, protocolDefinition 
+ * as the value.</br></br>
  * 
  * @author <a href="mailto:allen.wei@finalist.cn">allen.wei</a>
  */

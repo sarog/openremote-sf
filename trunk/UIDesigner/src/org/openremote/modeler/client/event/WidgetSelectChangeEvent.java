@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,6 +24,9 @@ import org.openremote.modeler.client.widget.uidesigner.ComponentContainer;
 import com.extjs.gxt.ui.client.event.BaseEvent;
 import com.extjs.gxt.ui.client.event.EventType;
 
+/**
+ * The Class is for selecting a widget on screen canvas and editing the widget's properties.
+ */
 public class WidgetSelectChangeEvent extends BaseEvent {
 
    public static final EventType WIDGETSELECTCHANGEED = new EventType();

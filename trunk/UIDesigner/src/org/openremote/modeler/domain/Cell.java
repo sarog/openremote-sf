@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,7 +22,8 @@ package org.openremote.modeler.domain;
 import org.openremote.modeler.domain.component.UIComponent;
 
 /**
- * The Class Cell.
+ * The Cell is define the position in grid, the size in a grid(rowspan and colspan).
+ * It include a ui component.
  */
 public class Cell extends BusinessEntity {
    

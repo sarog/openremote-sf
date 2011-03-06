@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openremote.modeler.SpringTestContext;
 import org.openremote.modeler.client.Configuration;
 import org.openremote.modeler.client.Constants;
@@ -75,6 +76,7 @@ import org.testng.annotations.Test;
 
 public class ResourceServiceImplTest {
    
+   private static final Logger log = Logger.getLogger(ResourceServiceImplTest.class);
    private Configuration configuration;
    private ResourceServiceImpl resourceServiceImpl = null;
    private DeviceCommandService deviceCommandService;
@@ -772,7 +774,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
          System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
                configuration.getPanelXsdPath()).getPath()), resourceServiceImpl.getPanelXML(panels)));
       } catch (Exception e) {
-         e.printStackTrace();
+         log.error("Can not output panel xml", e);
          fail();
       }
    }
@@ -782,7 +784,7 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
          System.out.println(XmlParser.validateAndOutputXML(new File(getClass().getResource(
                configuration.getControllerXsdPath()).getPath()), resourceServiceImpl.getControllerXML(screens,IDUtil.nextID())));
       } catch (Exception e) {
-         e.printStackTrace();
+         log.error("Can not output controller xml", e);
          fail();
       }
    }

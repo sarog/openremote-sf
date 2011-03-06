@@ -28,7 +28,7 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel;
 
 /**
- * The Class ImageUploadAdapterField.
+ * The Class ImageSelectAdapterField is to upload a image and delete a image.
  */
 public class ImageUploadAdapterField extends AdapterField {
 

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,22 +25,37 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 
 /**
- * The Interface ConfigurationRPCService.
+ * The Interface is used for getting system configuration from config.properties.
  */
 @RemoteServiceRelativePath("config.smvc")
 public interface ConfigurationRPCService extends RemoteService {
    
   /**
-   * Beehive rest url.
+   * Gets beehive rest url.
    * 
    * @return the string
    */
   String beehiveRESTRootUrl();
   
+  /**
+   * Gets the rest url that to list templates.
+   * 
+   * @return the templates list rest url
+   */
   String getTemplatesListRestUrl();
   
+  /**
+   * Gets the rest url that to save template.
+   * 
+   * @return the template save rest url
+   */
   String getTemplateSaveRestUrl();
   
+  /**
+   * Gets the template rest url that have all public .
+   * 
+   * @return the all public template rest url
+   */
   String getAllPublicTemplateRestUrl();
 
 }

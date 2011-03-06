@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -37,6 +37,17 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("template.smvc")
 public interface TemplateRPCService extends RemoteService {
+   
+   /**
+    * Gets the templates by sharing type.
+    * 
+    * @param isFromPrivate the is from private
+    * If true, get private templates, else get public templates.
+    * 
+    * @return the templates
+    * 
+    * @throws BeehiveNotAvailableException the beehive not available exception
+    */
    List<Template> getTemplates(boolean isFromPrivate) throws BeehiveNotAvailableException;
    /**
     * save a template to the beehive.

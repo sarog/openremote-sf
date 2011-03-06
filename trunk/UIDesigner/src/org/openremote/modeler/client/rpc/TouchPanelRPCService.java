@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,7 +28,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * The Interface PanelRPCService.
+ * The Interface is for get all predefined touch panel definitions from xml files.
  */
 @RemoteServiceRelativePath("touchpanel.smvc")
 public interface TouchPanelRPCService extends RemoteService {

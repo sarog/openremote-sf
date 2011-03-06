@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -59,6 +59,9 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 
+/**
+ * The window to creates or updates a switch in a device.
+ */
 public class SwitchWindow extends FormWindow {
    public static final String SWITCH_NAME_FIELD_NAME = "name";
    public static final String SWITCH_SENSOR_FIELD_NAME = "sensor";
@@ -74,10 +77,21 @@ public class SwitchWindow extends FormWindow {
    
    private boolean edit = false;
    
+   /**
+    * Instantiates a window to edit the switch.
+    * 
+    * @param switchToggle the switch toggle
+    */
    public SwitchWindow(Switch switchToggle) {
       this(switchToggle,null);
    }
    
+   /**
+    * Instantiates a window to create or edit a switch.
+    * 
+    * @param switchToggle the switch toggle
+    * @param device the device
+    */
    public SwitchWindow(Switch switchToggle, Device device) {
       super();
       if (null != switchToggle) {
@@ -97,6 +111,9 @@ public class SwitchWindow extends FormWindow {
       show();
    }
 
+   /**
+    * Creates the switch's fields, which includes name, sensor, on command and off command.
+    */
    private void createField() {
       setWidth(380);
       setAutoHeight(true);
@@ -153,7 +170,7 @@ public class SwitchWindow extends FormWindow {
       form.addButton(submitBtn);
       form.addButton(resetButton);
       
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetButton.addSelectionListener(new FormResetListener(form));
       
       switchOnBtn.addSelectionListener(new CommandSelectListener(true));
@@ -164,6 +181,9 @@ public class SwitchWindow extends FormWindow {
    }
    
 
+   /**
+    * The listener to submit the window, save the switch data into device and server.
+    */
    class SwitchSubmitListener implements Listener<FormEvent> {
 
       @Override
@@ -217,8 +237,19 @@ public class SwitchWindow extends FormWindow {
    }
    
    
+   /**
+    * The listener to select on or off command for the switch.
+    * 
+    */
    class CommandSelectListener extends SelectionListener<ButtonEvent> {
       private boolean forSwitchOn = true;
+      
+      /**
+       * Instantiates a new command select listener by the boolean.
+       * If true, select a on command, else select a off command.
+       * 
+       * @param forSwitchOn the for switch on
+       */
       public CommandSelectListener(boolean forSwitchOn) {
          this.forSwitchOn = forSwitchOn;
       }
@@ -256,6 +287,9 @@ public class SwitchWindow extends FormWindow {
       }
    }
    
+   /**
+    * The listener to select a sensor for the switch.
+    */
    class SensorSelectChangeListener extends SelectionChangedListener<ModelData> {
 
       @SuppressWarnings("unchecked")

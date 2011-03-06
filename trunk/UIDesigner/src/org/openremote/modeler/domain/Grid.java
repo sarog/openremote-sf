@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Class Grid.
+ * The grid define a relative layout, but its in screen's absolute position.
+ * A grid has cells, and the cell has component.
  */
 public class Grid extends BusinessEntity {
 

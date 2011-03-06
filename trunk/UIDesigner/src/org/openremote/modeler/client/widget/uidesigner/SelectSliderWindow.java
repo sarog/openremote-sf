@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -40,6 +40,9 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 
+/**
+ * The window to select a slider command for the slider component.
+ */
 public class SelectSliderWindow extends Dialog {
 
    private ListView<BeanModel> sliderList = new ListView<BeanModel>();
@@ -92,6 +95,7 @@ public class SelectSliderWindow extends Dialog {
                if (slider.getSliderSensorRef() != null) {
                   sliderInfo = sliderInfo + "<p>Sensor: " + slider.getSliderSensorRef().getDisplayName() + "</p>";
                }
+               sliderInfo = sliderInfo + "<p>Device: " + slider.getDevice().getDisplayName() + "</p>";
                sliderInfoHtml.setHtml(sliderInfo);
             }
          }

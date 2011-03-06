@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 /**
- * The Class FileUploadController.
+ * The Class is used for uploading files.
  * 
  * @author handy.wang
  */
@@ -51,7 +51,7 @@ public class FileUploadController extends MultiActionController {
    private ResourceService resourceService;
    
    /**
-    * Creates the.
+    * Import openremote.zip into application, but now is not use.
     * 
     * @param request the request
     * @param response the response
@@ -65,7 +65,7 @@ public class FileUploadController extends MultiActionController {
                MultipartFileUtil.getMultipartFileFromRequest(request, "file").getInputStream());
          response.getWriter().write(importJson);
       } catch (Exception e) {
-         e.printStackTrace();
+         LOGGER.error("Import file error.", e);
          response.getWriter().write("");
       } finally {
          return null;

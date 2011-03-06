@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -54,6 +54,10 @@ import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 
+/**
+ * The window to create or update a custom panel.
+ * It includes name, touchPanel infos and tabbar infos.
+ */
 public class CustomPanelWindow extends FormWindow {
 
    private static final String PANEL_NAME = "panelName";
@@ -73,8 +77,9 @@ public class CustomPanelWindow extends FormWindow {
    
    private String panelImageURL = null;
    private String tabbarImageURL = null; 
+   
    /**
-    * Create profile.
+    * Instantiates a window to create a new custom panel.
     */
    public CustomPanelWindow() {
       super();
@@ -82,12 +87,23 @@ public class CustomPanelWindow extends FormWindow {
       show();
    }
 
+   /**
+    * Instantiates a window to edit a custom panel.
+    * 
+    * @param panel the panel
+    */
    public CustomPanelWindow(Panel panel) {
       super();
       this.panel = panel;
       initial("Edit Custom Panel");
       show();
    }
+   
+   /**
+    * Initial the window style and content.
+    * 
+    * @param heading the heading
+    */
    private void initial(String heading) {
       setWidth(380);
       setAutoHeight(true);
@@ -98,6 +114,9 @@ public class CustomPanelWindow extends FormWindow {
       addImageUploadListenerToForm();
    }
 
+   /**
+    * Creates the fields, which includes name field and panel type field set.
+    */
    private void createFields() {
       form.setFrame(true);
       form.setHeaderVisible(false);
@@ -190,17 +209,23 @@ public class CustomPanelWindow extends FormWindow {
       return typeSet;
    }
    
+   /**
+    * Creates submit and reset buttons.
+    */
    private void createButtons() {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
 
-      submitBtn.addSelectionListener(new SubmitListener());
+      submitBtn.addSelectionListener(new SubmitListener(submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
 
       form.addButton(submitBtn);
       form.addButton(resetBtn);
    }
 
+   /**
+    * Adds the image upload listener to form for setting the touchPanel background or tabbar background image.
+    */
    private void addImageUploadListenerToForm() {
       form.addListener(Events.Submit, new Listener<FormEvent> () {
 
@@ -220,6 +245,9 @@ public class CustomPanelWindow extends FormWindow {
       });
    }
    
+   /**
+    * Creates the tabbar image uploader.
+    */
    private void createTabbarImageUploader (){
       this.tabbarImage = new ImageUploadField("tabbarImage") {
          @Override
@@ -237,6 +265,9 @@ public class CustomPanelWindow extends FormWindow {
       tabbarImage.setAllowBlank(true);
    }
    
+   /**
+    * Creates the background image uploader.
+    */
    private void createBackgroundImageUploader (){
       this.panelImage = new ImageUploadField("panelImage") {
          @Override
@@ -253,6 +284,12 @@ public class CustomPanelWindow extends FormWindow {
       panelImage.setFieldLabel("Panel Image");
       panelImage.setAllowBlank(true);
    }
+   
+   /**
+    * Initializes the integer field style be "text-align:right;".
+    * 
+    * @param fields the fields
+    */
    private void initIntegerFieldStyle(TextField<?>... fields) {
       for (TextField<?> field : fields) {
          field.setLabelStyle("text-align:right;");
@@ -290,7 +327,10 @@ public class CustomPanelWindow extends FormWindow {
    }
    
    private class SubmitListener extends SelectionListener<ButtonEvent> {
-
+      private Button submitBtn;
+      public SubmitListener(Button submitBtn) {
+         this.submitBtn = submitBtn;
+      }
       @Override
       public void componentSelected(ButtonEvent ce) {
          if (!isValid()) return; 
@@ -300,6 +340,7 @@ public class CustomPanelWindow extends FormWindow {
             MessageBox.alert("Warn", "'" + panelName + "' already exists, please select another name.", null);
             return;
          }
+         submitBtn.disable();
          if (panel == null) {
             panel = new Panel();
             panel.setOid(IDUtil.nextID());

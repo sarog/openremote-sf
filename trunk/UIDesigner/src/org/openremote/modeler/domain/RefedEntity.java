@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -20,7 +20,9 @@
 package org.openremote.modeler.domain;
 
 /**
- * The Class RefedEntity defined refCount.
+ * The Class RefedEntity defined refCount, which can be increase or decrease.
+ * The sub classes include Group and ScreenPair.
+ * 
  */
 public class RefedEntity extends BusinessEntity {
 

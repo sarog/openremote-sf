@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,6 +29,9 @@ import org.openremote.modeler.domain.Slider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 
+/**
+ * The proxy is for managing slider.
+ */
 public class SliderBeanModelProxy {
    private SliderBeanModelProxy() {
    }
@@ -70,7 +73,7 @@ public class SliderBeanModelProxy {
 
                   @Override
                   public void onSuccess(Slider result) {
-                     BeanModelDataBase.sliderTable.insert(beanModel);
+                     BeanModelDataBase.sliderTable.insert(result.getBeanModel());
                      callback.onSuccess(result);
                   }
 
@@ -84,7 +87,7 @@ public class SliderBeanModelProxy {
                new AsyncSuccessCallback<Slider>() {
                   @Override
                   public void onSuccess(Slider result) {
-                     BeanModelDataBase.sliderTable.update(beanModel);
+                     BeanModelDataBase.sliderTable.update(result.getBeanModel());
                      callback.onSuccess(result);
                   }
 

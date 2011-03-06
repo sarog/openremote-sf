@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,6 +25,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -76,6 +77,12 @@ public class ProtocolParser {
    
    /** The Constant NAME_ATTR_NAME. */
    private static final String NAME_ATTR_NAME = "name";
+   
+   /** The Constant VALUE_ATTR_NAME for the attr default value. */
+   private static final String VALUE_ATTR_NAME = "value";
+   
+   /** The Constant OPTIONS_ATTR_NAME for the attr predefined values. */
+   private static final String OPTIONS_ATTR_NAME = "options";
    
    /** The Constant DISPLAY_NAME_ATTR_NAME. */
    private static final String DISPLAY_NAME_ATTR_NAME = "displayName";
@@ -155,6 +162,12 @@ public class ProtocolParser {
          ProtocolAttrDefinition attrDefinition = new ProtocolAttrDefinition();
          attrDefinition.setLabel(attr.attributeValue(LABEL_ATTR_NAME));
          attrDefinition.setName(attr.attributeValue(NAME_ATTR_NAME));
+         attrDefinition.setValue(attr.attributeValue(VALUE_ATTR_NAME));
+         String options = attr.attributeValue(OPTIONS_ATTR_NAME);
+         if (options != null && !"".endsWith(options)) {
+            String[] optionArray = options.split(",");
+            attrDefinition.setOptions(Arrays.asList(optionArray));
+         }
          Element validationsElement = attr.element(VALIDATIONS_ElEMENT_NAME);
 
          // parse validators start

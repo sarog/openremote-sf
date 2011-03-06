@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,7 +21,7 @@ package org.openremote.modeler.client.utils;
 
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 /**
- * 
+ * The interface indicate a client object can be edit and have properties form.
  * @author Javen
  *
  */
