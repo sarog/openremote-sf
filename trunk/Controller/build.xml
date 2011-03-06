@@ -28,8 +28,6 @@
  |  Author: Dan Cong
  |  Author: Juha Lindfors
  |  Author: Jerome Velociter
- |
- |  $Id: $
  +-->
 <project name = "controller" default = "run-test" basedir = ".">
   <property file = "build.properties"/>
@@ -65,6 +63,7 @@
     <fileset dir = "${lib.dir}/apache/commons-lang"/>
     <fileset dir = "${lib.dir}/clink"/>
   	<fileset dir = "${lib.dir}/json"/>
+    <fileset dir = "${lib.dir}/onewire"/>
     <path location = "${classes.dir}"/>
   </path>
   
@@ -80,6 +79,7 @@
     <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
     <path location = "${config.dir}"/>
     <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/onewire"/>
   </path>
 
   <path id = "container.libs">
@@ -144,6 +144,9 @@
       </fileset>
       <fileset dir = "${lib.dir}/json">
     	<include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/onewire">
+        <include name = "*.jar"/>
       </fileset>
     </copy>
     <copy todir = "${build.dir}/lib/native" flatten = "true">
