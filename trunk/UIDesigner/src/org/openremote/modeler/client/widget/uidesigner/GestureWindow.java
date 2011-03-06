@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,11 +19,13 @@
 */
 package org.openremote.modeler.client.widget.uidesigner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
+import org.openremote.modeler.client.gxtextends.CheckBoxListViewExt;
 import org.openremote.modeler.client.utils.DeviceAndMacroTree;
 import org.openremote.modeler.client.utils.IDUtil;
 import org.openremote.modeler.client.widget.NavigateFieldSet;
@@ -49,7 +51,6 @@ import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.WindowEvent;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.util.Margins;
-import com.extjs.gxt.ui.client.widget.CheckBoxListView;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Text;
@@ -61,15 +62,27 @@ import com.extjs.gxt.ui.client.widget.layout.BorderLayoutData;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
+/**
+ * The window for managing screen gestures.
+ * It includes four types of gesture, which list in the left of the window,
+ * a command and macro tree in the right-top part, a navigation field set in 
+ * the right-bottom part.
+ */
 public class GestureWindow extends Dialog {
 
    private List<Gesture> gestures;
    private List<Group> groups;
-   private CheckBoxListView<BeanModel> gestureTypeListView;
+   private CheckBoxListViewExt<BeanModel> gestureTypeListView;
    private TreePanel<BeanModel> devicesAndMacrosTree;
    private Gesture selectedGesture = new Gesture(GestureType.swipe_left_to_right);
+   
+   /** The map is to cache the configured gestures. */
    private Map<String, Gesture> gestureMaps = new HashMap<String, Gesture>();
    private final String SELECTED_COMMAND = "Selected command: ";
+   
+   /** The models is for selecting the existent gestures after the window render. */
+   private List<BeanModel> existsGestureTypeModels;
+   
    public GestureWindow(List<Gesture> gestures, List<Group> groups) {
       this.gestures = gestures;
       this.groups = groups;
@@ -112,22 +125,35 @@ public class GestureWindow extends Dialog {
       gestureTypesContainer.setBorders(false);
       gestureTypesContainer.setBodyBorder(false);
       
-      gestureTypeListView = new CheckBoxListView<BeanModel>();
       
       ListStore<BeanModel> gestureStore = new ListStore<BeanModel>();
       GestureType[] gestureTypes = GestureType.values();
+      existsGestureTypeModels = new ArrayList<BeanModel>();
+      
       for (int i = 0; i < gestureTypes.length; i++) {
          Gesture gesture = new Gesture(gestureTypes[i]);
          gesture.setOid(IDUtil.nextID());
          gestureMaps.put(gestureTypes[i].toString(), gesture);
-         gestureStore.add(gesture.getBeanModel());
+         BeanModel gestureBeanModel = gesture.getBeanModel();
+         gestureStore.add(gestureBeanModel);
          for (Gesture existGesture : gestures) {
             if (gestureTypes[i].equals(existGesture.getType())) {
                gestureMaps.put(existGesture.getType().toString(), existGesture);
-               gestureTypeListView.setChecked(gesture.getBeanModel(), true);
+               existsGestureTypeModels.add(gestureBeanModel);
             }
          }
       }
+      
+      gestureTypeListView = new CheckBoxListViewExt<BeanModel>() {
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            for (BeanModel checkedModel : existsGestureTypeModels) {
+               this.setChecked(checkedModel, true);
+            }
+         }
+         
+      };
       gestureTypeListView.setStore(gestureStore);
       gestureTypeListView.setDisplayProperty("type");
       gestureTypeListView.setStyleAttribute("overflow", "auto");
@@ -208,7 +234,6 @@ public class GestureWindow extends Dialog {
       
       gestureTypeListView.addListener(Events.Select, new Listener<ListViewEvent<BeanModel>>() {
          public void handleEvent(ListViewEvent<BeanModel> be) {
-            gestureTypeListView.setChecked(be.getModel(), true);
             Gesture gesture = gestureMaps.get(((Gesture)be.getModel().getBean()).getType().toString());
             if (!gesture.equals(selectedGesture)) {
                selectedGesture = gesture;
@@ -233,4 +258,20 @@ public class GestureWindow extends Dialog {
          }
       });
    }
+
+   /**
+    * Override this method is to select the first existent gesture, and show its configuration.
+    */
+   @Override
+   protected void afterRender() {
+      super.afterRender();
+      if (existsGestureTypeModels.size() > 0) {
+         BeanModel firstCheckedModel = existsGestureTypeModels.get(0);
+         gestureTypeListView.getSelectionModel().select(firstCheckedModel, false);
+         ListViewEvent<BeanModel> listViewEvent = new ListViewEvent<BeanModel>(gestureTypeListView);
+         listViewEvent.setModel(firstCheckedModel);
+         gestureTypeListView.fireEvent(Events.Select, listViewEvent);
+      }
+   }
+   
 }

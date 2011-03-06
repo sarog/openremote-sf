@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -78,7 +78,7 @@ import com.google.gwt.core.client.GWT;
 
 
 /**
- * The Class MacroWindow.
+ * The window to creates or updates a macro.
  */
 public class MacroWindow extends FormWindow {
 
@@ -113,7 +113,7 @@ public class MacroWindow extends FormWindow {
    private SelectionServiceExt<BeanModel> selectionService;
    
    /**
-    * Instantiates a new macro window.
+    * Instantiates a macro window to create a new macro.
     */
    public MacroWindow() {
       setHeading("New Macro");
@@ -122,7 +122,7 @@ public class MacroWindow extends FormWindow {
    }
 
    /**
-    * Instantiates a new macro window.
+    * Instantiates a macro window to edit a macro.
     * 
     * @param deviceMacroModel the device macro
     */
@@ -134,7 +134,7 @@ public class MacroWindow extends FormWindow {
    }
 
    /**
-    * Setup.
+    * Sets the window style and initializes the form.
     */
    private void setup() {
       selectionService = new SelectionServiceExt<BeanModel>();
@@ -175,7 +175,7 @@ public class MacroWindow extends FormWindow {
       createSelectCommandContainer();
 
       Button submitBtn = new Button("OK");
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
 
       form.addButton(submitBtn);
    }

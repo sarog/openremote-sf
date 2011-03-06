@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,7 +29,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 /**
- * The Class CustomSensor.
+ * Make user to define custom sensor states.
+ * It include a list of states.
  */
 @Entity
 @DiscriminatorValue("CUSTOM_SENSOR")

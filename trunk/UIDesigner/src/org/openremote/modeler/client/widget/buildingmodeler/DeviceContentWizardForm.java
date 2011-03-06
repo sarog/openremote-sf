@@ -62,12 +62,24 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
+/**
+ * The wizard form supports to create deviceCommands, sensors, switches and sliders for a device
+ */
 public class DeviceContentWizardForm extends CommonForm {
 
    public static Account account;
    private Device device = null;
    private TreePanel<BeanModel> deviceContentTree;
+   
+   /** The wrapper is the window which wrap the form. */
    private Component wrapper;
+   
+   /**
+    * Instantiates a new device content wizard form by a device model.
+    * 
+    * @param wrapper the wrapper
+    * @param deviceBeanModel the device bean model
+    */
    public DeviceContentWizardForm(Component wrapper, BeanModel deviceBeanModel) {
       super();
       this.wrapper = wrapper;
@@ -76,6 +88,9 @@ public class DeviceContentWizardForm extends CommonForm {
       init();
    }
    
+   /**
+    * Inits the form's style and content.
+    */
    private void init() {
       FormLayout formLayout = new FormLayout();
       formLayout.setLabelAlign(LabelAlign.TOP);
@@ -98,6 +113,13 @@ public class DeviceContentWizardForm extends CommonForm {
       });
    }
    
+   /**
+    * Creates the content container.
+    * It has a treePanel container to store the device content(deviceCommand, sensor, switch and slider),
+    * five buttons to add or delete the device content.
+    * 
+    * @return the layout container
+    */
    private LayoutContainer createContentContainer() {
       LayoutContainer contentContainer = new LayoutContainer();
       contentContainer.setBorders(false);
@@ -168,6 +190,9 @@ public class DeviceContentWizardForm extends CommonForm {
       this.device = device;
    }
    
+   /**
+    * Add submit listener to save the device with its content.
+    */
    private void onSubmit() {
       addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
@@ -184,6 +209,9 @@ public class DeviceContentWizardForm extends CommonForm {
    
 
 
+   /**
+    * Add a listener to add deviceCommand to the device.
+    */
    private final class AddCommandListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -200,6 +228,9 @@ public class DeviceContentWizardForm extends CommonForm {
       }
    }
    
+   /**
+    * Add a listener to add sensor to the device.
+    */
    private final class AddSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -223,10 +254,13 @@ public class DeviceContentWizardForm extends CommonForm {
       }
    }
    
+   /**
+    * Add a listener to add switch to the device.
+    */
    private final class AddSwitchListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
-         final SwitchWizardWidnow switchWizardWindow = new SwitchWizardWidnow(device);
+         final SwitchWizardWindow switchWizardWindow = new SwitchWizardWindow(device);
          switchWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -248,6 +282,9 @@ public class DeviceContentWizardForm extends CommonForm {
       }
    }
    
+   /**
+    * Add a listener to add slider to the device.
+    */
    private final class AddSliderListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
@@ -273,6 +310,9 @@ public class DeviceContentWizardForm extends CommonForm {
       }
    }
    
+   /**
+    * Add a listener to delete the selected device content.
+    */
    private final class DeleteContentListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,7 +32,9 @@ import com.extjs.gxt.ui.client.widget.TabItem;
 import com.extjs.gxt.ui.client.widget.TabPanel;
 
 /**
- * The Class ScreenTab.
+ * The tabPanel stores screenTabItems which display for the screenPair.
+ * If the screenPair has two screens, there would be two screenTabItems,
+ * else has one.
  */
 public class ScreenTab extends TabPanel {
    

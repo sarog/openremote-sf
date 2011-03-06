@@ -62,10 +62,14 @@ import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 import com.google.gwt.core.client.GWT;
 
 /**
- * The Class AccountManageWindow.
+ * This window is for managing users that with the same account, except for the current user.
  */
 public class AccountManageWindow extends Dialog {
    private Icons icons = GWT.create(Icons.class);
+   
+   /** The invited users grid.
+    *  The user has been invited, but not accept the invitation.
+    */
    private EditorGrid<BeanModel> invitedUsersGrid = null;
    private long cureentUserId = 0;
    public AccountManageWindow(long cureentUserId) {
@@ -83,6 +87,11 @@ public class AccountManageWindow extends Dialog {
       show();
    }
    
+   /**
+    * Adds a button, if click it, it would pop up a window to input a email and select role.
+    * After submit the window's data, there would send a invitation to the email, and the invited
+    * user grid would be insert a record.  
+    */
    private void addInviteUserButton() {
       Button inviteUserButton = new Button("Invite other users");
       inviteUserButton.setIcon(icons.add());
@@ -109,6 +118,9 @@ public class AccountManageWindow extends Dialog {
       add(inviteUserButton);
    }
    
+   /**
+    * Initialize the invited user grid's store by getting the invited users from server.
+    */
    private void addInvitedUsers() {
       AsyncServiceFactory.getUserRPCServiceAsync().getPendingInviteesByAccount(new AsyncSuccessCallback<List<User>>() {
          public void onSuccess(List<User> invitedUsers) {
@@ -120,6 +132,10 @@ public class AccountManageWindow extends Dialog {
       });
    }
    
+   /**
+    * Initialize the invited user grid.
+    * The grid has three columns: invited user info, role combobox and the delete button. 
+    */
    private void createInvitedUserGrid() {
       List<ColumnConfig> invitedUserConfigs = new ArrayList<ColumnConfig>();
       invitedUserConfigs.add(new ColumnConfig("email", "Invited user", 180));
@@ -158,6 +174,11 @@ public class AccountManageWindow extends Dialog {
       center();
    }
 
+   /**
+    * Creates the user accessed grid, the grid stores the user that can access the account.
+    * The grid is used for managing the accessed users, except the current user, it has three 
+    * columns: email, role and delete.
+    */
    private void createAccessUserGrid() {
       List<ColumnConfig> accessUserConfigs = new ArrayList<ColumnConfig>();
       
@@ -243,6 +264,14 @@ public class AccountManageWindow extends Dialog {
       });
    }
    
+   /**
+    * Creates the role combobox for selecting role.
+    * 
+    * @param model the model
+    * @param property the property
+    * 
+    * @return the simple combo box< string>
+    */
    private SimpleComboBox<String> createRoleCombo(final BeanModel model, String property) {
       SimpleComboBox<String> combo = new SimpleComboBox<String>();
       combo.setWidth(182);
@@ -272,6 +301,14 @@ public class AccountManageWindow extends Dialog {
       return combo;
    }
 
+   /**
+    * Creates the delete button to delete the user record in the grid.
+    * 
+    * @param model the model
+    * @param store the store
+    * 
+    * @return the button
+    */
    private Button createDeleteButton(final BeanModel model, final ListStore<BeanModel> store) {
       Button deleteButton = new Button();
       deleteButton.setIcon(icons.delete());
@@ -288,6 +325,9 @@ public class AccountManageWindow extends Dialog {
       return deleteButton;
    }
 
+   /**
+    * The inner class is for inviting a user have the same account, it would send a invitation to the email.
+    */
    private class InviteUserWindow extends FormWindow {
       public InviteUserWindow() {
          setSize(370, 150);
@@ -298,6 +338,10 @@ public class AccountManageWindow extends Dialog {
          add(form);
          show();
       }
+      
+      /**
+       * Creates two fields: email address input and role combobox.
+       */
       private void createFields() {
          final TextField<String> emailField = new TextField<String>();
          emailField.setFieldLabel("Email address");
@@ -334,9 +378,14 @@ public class AccountManageWindow extends Dialog {
          });
       }
       
+      /**
+       * Creates two buttons to send invitation or cancel.
+       * 
+       * @param window the window
+       */
       private void createButtons(final InviteUserWindow window) {
          Button send = new Button("Send invitation");
-         send.addSelectionListener(new FormSubmitListener(form));
+         send.addSelectionListener(new FormSubmitListener(form, send));
          Button cancel = new Button("Cancel");
          cancel.addSelectionListener(new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent ce) {

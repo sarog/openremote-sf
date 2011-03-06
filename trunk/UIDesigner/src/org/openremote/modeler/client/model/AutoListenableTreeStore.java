@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -39,9 +39,8 @@ import com.extjs.gxt.ui.client.store.TreeStoreEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * The Class AutoListenableTreeStore.
+ * The tree store can auto update the deviceMacroTree.
  * 
- * @param <T> the generics
  */
 @SuppressWarnings("unchecked")
 public class AutoListenableTreeStore<T extends ModelData> extends TreeStore {

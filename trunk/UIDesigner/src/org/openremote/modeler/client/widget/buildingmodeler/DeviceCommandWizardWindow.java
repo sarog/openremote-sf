@@ -35,6 +35,9 @@ import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.widget.form.Field;
 
+/**
+ * The window creates a deviceCommand, but not save into server.
+ */
 public class DeviceCommandWizardWindow extends DeviceCommandWindow {
 
    public DeviceCommandWizardWindow(Device device) {
@@ -55,7 +58,7 @@ public class DeviceCommandWizardWindow extends DeviceCommandWindow {
                   attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
                         .toString());
                } else {
-                  if (f.getValue() != null && !"".equals(f.getValue().toString())) {
+                  if (f.getValue() != null && !"".equals(f.getValue().toString()) && ! INFO_FIELD.equals(f.getName())) {
                      attrMap.put(f.getName(), f.getValue().toString());
                   }
                }
@@ -69,6 +72,9 @@ public class DeviceCommandWizardWindow extends DeviceCommandWindow {
                hide();
             } else {
                hideWindow = true;
+               unmask();
+               info.setText("Command '" + deviceCommand.getName() + "' is saved.");
+               info.show();
             }
          }
       });

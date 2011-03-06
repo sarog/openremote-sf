@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 /**
- * The Class CommandDelay.
+ * It define a delay second for sending a delay command.
  */
 @Entity
 @DiscriminatorValue("CMD_DELAY")

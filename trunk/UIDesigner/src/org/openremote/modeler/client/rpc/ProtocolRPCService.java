@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,13 +28,13 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 
 /**
- * The Interface ProtocolService.
+ * The Interface is for loading all predefined protocols from local xml files.
  */
 @RemoteServiceRelativePath("protocol.smvc")
 public interface ProtocolRPCService extends RemoteService {
 
    /**
-    * Gets the protocols.
+    * Gets all the protocols.
     * 
     * @return the protocols
     */

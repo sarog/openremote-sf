@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -38,7 +38,8 @@ public class Modeler implements EntryPoint {
    }
 
    /**
-    * Inits the application.
+    * Inits the application, hide the loading image and message.
+    * Display the application view.
     */
    private void init() {
       DOM.setStyleAttribute(RootPanel.get("loading-cont").getElement(), "display", "none");

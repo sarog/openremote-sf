@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -31,6 +31,7 @@ import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.Protocols;
+import org.openremote.modeler.client.widget.ComboBoxExt;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -51,23 +52,22 @@ import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
 import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.FieldSet;
+import com.extjs.gxt.ui.client.widget.form.LabelField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 
 
 /**
- * The Class DeviceCommandWindow.
+ * The window creates or updates a deviceCommand into server.
  */
 public class DeviceCommandWindow extends FormWindow {
    
    /** The Constant DEVICE_COMMAND_NAME. */
-   public static final String DEVICE_COMMAND_NAME = "name";
+   public static final String DEVICE_COMMAND_NAME = "device_command_name";
    
    /** The Constant DEVICE_COMMAND_PROTOCOL. */
    public static final String DEVICE_COMMAND_PROTOCOL = "protocol";
@@ -80,6 +80,8 @@ public class DeviceCommandWindow extends FormWindow {
    
    protected boolean hideWindow = true;
    
+   protected LabelField info;
+   protected static final String INFO_FIELD = "infoField";
    /**
     * Instantiates a new device command window.
     * 
@@ -125,14 +127,19 @@ public class DeviceCommandWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       form.addButton(submitBtn);
 
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       if (deviceCommand == null) {
-         Button continueButton = new Button("Submit and continue");
+         info = new LabelField();
+         info.setName(INFO_FIELD);
+         form.add(info);
+         info.hide();
+         Button continueButton = new Button("Submit and Continue");
          form.addButton(continueButton);
          continueButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
             public void componentSelected(ButtonEvent ce) {
                if (form.isValid()) {
                   hideWindow = false;
+                  mask("Saving command......");
                   form.submit();
                }
             }
@@ -142,6 +149,7 @@ public class DeviceCommandWindow extends FormWindow {
       Button resetButton = new Button("Reset");
       resetButton.addSelectionListener(new FormResetListener(form));
       form.addButton(resetButton);
+      
       
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
@@ -154,7 +162,7 @@ public class DeviceCommandWindow extends FormWindow {
                   attrMap.put(DEVICE_COMMAND_PROTOCOL, p.getValue().get(ComboBoxDataModel.getDisplayProperty())
                         .toString());
                } else {
-                  if (f.getValue() != null && !"".equals(f.getValue().toString())) {
+                  if (f.getValue() != null && !"".equals(f.getValue().toString()) && ! INFO_FIELD.equals(f.getName())) {
                      attrMap.put(f.getName(), f.getValue().toString());
                   }
                }
@@ -167,6 +175,9 @@ public class DeviceCommandWindow extends FormWindow {
                      hide();
                   } else {
                      hideWindow = true;
+                     unmask();
+                     info.setText("Command '" + deviceCommandModel.get("name") + "' is saved.");
+                     info.show();
                   }
                }
             };
@@ -194,10 +205,7 @@ public class DeviceCommandWindow extends FormWindow {
       nameField.setAllowBlank(false);
       nameField.ensureDebugId(DebugId.DEVICE_COMMAND_NAME_FIELD);
 
-      ComboBox<ModelData> protocol = new ComboBox<ModelData>();
-      protocol.setEditable(false);
-      ListStore<ModelData> store = new ListStore<ModelData>();
-      protocol.setStore(store);
+      ComboBoxExt protocol = new ComboBoxExt();
       protocol.setFieldLabel("Protocol");
       protocol.setName(DEVICE_COMMAND_PROTOCOL);
       protocol.setAllowBlank(false);
@@ -206,7 +214,7 @@ public class DeviceCommandWindow extends FormWindow {
       for (String key : protocols.keySet()) {
          if (!key.equalsIgnoreCase(Protocol.INFRARED_TYPE)) {
             ComboBoxDataModel<ProtocolDefinition> data = new ComboBoxDataModel<ProtocolDefinition>(key, protocols.get(key));
-            store.add(data);
+            protocol.getStore().add(data);
          }
       }
 
@@ -220,7 +228,11 @@ public class DeviceCommandWindow extends FormWindow {
          @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent<ModelData> se) {
             if (form.getItems().size() > 2) {
-               form.getItem(2).removeFromParent();
+               if (info == null) {
+                  form.getItem(2).removeFromParent();
+               } else if (form.getItems().size() > 3) {
+                  form.getItem(3).removeFromParent();
+               }
             }
             addAttrs((ComboBoxDataModel<ProtocolDefinition>) se.getSelectedItem());
          }
@@ -252,19 +264,45 @@ public class DeviceCommandWindow extends FormWindow {
       attrSet.setHeading(data.getLabel() + " attributes");
 
       for (ProtocolAttrDefinition attrDefinition : data.getData().getAttrs()) {
-         TextField<String> attrField = new TextField<String>();
-         attrField.setName(attrDefinition.getName());
-         TextField<String>.TextFieldMessages messages = attrField.getMessages();
-         attrField.setFieldLabel(attrDefinition.getLabel());
-         if (deviceCommand != null) {
+         List<String> options = attrDefinition.getOptions();
+         String value = "";
+         if (attrDefinition.getValue() != null) {
+            value = attrDefinition.getValue();
+         } else if (deviceCommand != null) {
             for (ProtocolAttr attr : deviceCommand.getProtocol().getAttributes()) {
                if (attrDefinition.getName().equals(attr.getName())) {
-                  attrField.setValue(attr.getValue());
+                  value = attr.getValue();
                }
             }
          }
-         setValidators(attrField, messages, attrDefinition.getValidators());
-         attrSet.add(attrField);
+
+         if (options.size() > 0) {
+            ComboBoxExt comboAttrField = new ComboBoxExt();
+            comboAttrField.setName(attrDefinition.getName());
+            comboAttrField.setFieldLabel(attrDefinition.getLabel());
+            ComboBoxExt.ComboBoxMessages comboBoxMessages = comboAttrField.getMessages();
+            for (String option : options) {
+               if (!"".equals(option)) {
+                  StringComboBoxData comboData = new StringComboBoxData(option, option);
+                  comboAttrField.getStore().add(comboData);
+                  if (value.equals(option)) {
+                     comboAttrField.setValue(comboData);
+                  }
+               }
+            }
+            setComboBoxValidators(comboAttrField, comboBoxMessages, attrDefinition.getValidators());
+            attrSet.add(comboAttrField);
+         } else {
+            TextField<String> attrField = new TextField<String>();
+            attrField.setName(attrDefinition.getName());
+            TextField<String>.TextFieldMessages messages = attrField.getMessages();
+            attrField.setFieldLabel(attrDefinition.getLabel());
+            if (!"".equals(value)) {
+               attrField.setValue(value);
+            }
+            setValidators(attrField, messages, attrDefinition.getValidators());
+            attrSet.add(attrField);
+         }
       }
       form.add(attrSet);
       form.layout();
@@ -276,30 +314,66 @@ public class DeviceCommandWindow extends FormWindow {
    /**
     * Sets the validators.
     * 
-    * @param attrFile the attr file
+    * @param attrField the attr file
     * @param messages the messages
     * @param protocolValidators the protocol validators
     */
-   private void setValidators(TextField<String> attrFile, TextField<String>.TextFieldMessages messages,
+   private void setValidators(TextField<String> attrField, TextField<String>.TextFieldMessages messages,
          List<ProtocolValidator> protocolValidators) {
       for (ProtocolValidator protocolValidator : protocolValidators) {
          if (protocolValidator.getType() == ProtocolValidator.ALLOW_BLANK_TYPE) {
             if (Boolean.valueOf(protocolValidator.getValue())) {
-               attrFile.setAllowBlank(true);
+               attrField.setAllowBlank(true);
             } else {
-               attrFile.setAllowBlank(false);
+               attrField.setAllowBlank(false);
                messages.setBlankText(protocolValidator.getMessage());
             }
          } else if (protocolValidator.getType() == ProtocolValidator.MAX_LENGTH_TYPE) {
-            attrFile.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
+            attrField.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
             messages.setMaxLengthText(protocolValidator.getMessage());
          } else if (protocolValidator.getType() == ProtocolValidator.MIN_LENGTH_TYPE) {
-            attrFile.setMinLength(Integer.valueOf(protocolValidator.getValue()));
+            attrField.setMinLength(Integer.valueOf(protocolValidator.getValue()));
             messages.setMinLengthText(protocolValidator.getMessage());
          } else if (protocolValidator.getType() == ProtocolValidator.REGEX_TYPE) {
-            attrFile.setRegex(protocolValidator.getValue());
+            attrField.setRegex(protocolValidator.getValue());
             messages.setRegexText(protocolValidator.getMessage());
          }
+      }
+   }
+   
+   private void setComboBoxValidators(ComboBoxExt comboField, ComboBoxExt.ComboBoxMessages messages,
+         List<ProtocolValidator> protocolValidators) {
+      for (ProtocolValidator protocolValidator : protocolValidators) {
+         if (protocolValidator.getType() == ProtocolValidator.ALLOW_BLANK_TYPE) {
+            if (Boolean.valueOf(protocolValidator.getValue())) {
+               comboField.setAllowBlank(true);
+            } else {
+               comboField.setAllowBlank(false);
+               messages.setBlankText(protocolValidator.getMessage());
+            }
+         } else if (protocolValidator.getType() == ProtocolValidator.MAX_LENGTH_TYPE) {
+            comboField.setMaxLength(Integer.valueOf(protocolValidator.getValue()));
+            messages.setMaxLengthText(protocolValidator.getMessage());
+         } else if (protocolValidator.getType() == ProtocolValidator.MIN_LENGTH_TYPE) {
+            comboField.setMinLength(Integer.valueOf(protocolValidator.getValue()));
+            messages.setMinLengthText(protocolValidator.getMessage());
+         } else if (protocolValidator.getType() == ProtocolValidator.REGEX_TYPE) {
+            comboField.setRegex(protocolValidator.getValue());
+            messages.setRegexText(protocolValidator.getMessage());
+         }
+      }
+   }
+   
+   /**
+    * The data model to store String value in ComboBoxExt.
+    */
+   private class StringComboBoxData extends ComboBoxDataModel<String> {
+      private static final long serialVersionUID = 1L;
+      public StringComboBoxData(String label, String t) {
+         super(label, t);
+      }
+      public String toString() {
+         return super.getData();
       }
    }
 }

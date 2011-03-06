@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -115,7 +115,7 @@ public class ScreenWindow extends FormWindow {
    private void createButtons() {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
       
       form.addButton(submitBtn);
@@ -189,17 +189,11 @@ public class ScreenWindow extends FormWindow {
       groupTreeContainer.setEnabled(operation==Operation.NEW);
       groupTreeContainer.setStyleAttribute("backgroundColor", "white");
 
-      if (null != this.selectItem) {
-         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW)) {
-            groupSelectTree.getSelectionModel().select(selectItem, false);
-         } 
-//         else if (selectItem.getBean() instanceof ScreenRef && operation == Operation.EDIT) {
-//            ScreenRef screenRef = (ScreenRef) selectItem.getBean();
-//            nameField.setValue(screenRef.getScreen().getName());
-//            BeanModel selectedGroup = TreePanelBuilder.buildPanelTree(screenTab).getStore().getParent(selectItem);
-//            groupSelectTree.getSelectionModel().select(selectedGroup, false);
-//         }
-      }
+//      if (null != this.selectItem) {
+//         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW)) {
+//            groupSelectTree.getSelectionModel().select(selectItem, false);
+//         } 
+//      }
       return groupTreeContainer;
    }
 
@@ -225,4 +219,15 @@ public class ScreenWindow extends FormWindow {
    public static enum Operation{
       NEW,EDIT;
    }
+
+   protected void afterRender() {
+      super.afterRender();
+      if (null != this.selectItem) {
+         if (this.selectItem.getBean() instanceof GroupRef && (operation==Operation.NEW)) {
+            groupSelectTree.getSelectionModel().select(selectItem, false);
+         } 
+      }
+   }
+   
+   
 }

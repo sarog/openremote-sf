@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -31,7 +31,8 @@ import javax.persistence.Transient;
 
 
 /**
- * The Class DeviceCommand.
+ * DeviceCommand is represent a command that the device have, which can be sent 
+ * to the device and control it.
  * 
  * @author Dan 2009-7-6
  */
@@ -41,16 +42,16 @@ public class DeviceCommand extends BusinessEntity {
    
    private static final long serialVersionUID = -3654650649337382535L;
 
-   /** The device. */
+   /** The device that the command belonged to. */
    private Device device;
    
-   /** The protocol. */
+   /** Represent the command's type(e.g:Infrared, KNX, X10, etc.), it include protocol attributes. */
    private Protocol protocol;
    
    /** The name. */
    private String name;
    
-   /** The section id. */
+   /** The section id is optional property, and is for the command which import from beehive(Infrared protocol). */
    private String sectionId;
 
    /**

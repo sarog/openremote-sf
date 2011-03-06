@@ -48,6 +48,9 @@ import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.layout.FitLayout;
 
+/**
+ * The window to edit group properties.
+ */
 public class GroupEditWindow extends FormWindow {
 
    private TextField<String> nameField = null;
@@ -127,7 +130,7 @@ public class GroupEditWindow extends FormWindow {
    private void createButtons() {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
       
       form.addButton(submitBtn);

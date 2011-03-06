@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -19,6 +19,7 @@
 */
 package org.openremote.modeler;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -33,6 +34,8 @@ import org.testng.annotations.BeforeClass;
  * @author Dan 2009-7-10
  */
 public class TestNGBase {
+   
+   private static final Logger log = Logger.getLogger(TestNGBase.class);
    
    /** The session factory. */
    private SessionFactory sessionFactory;
@@ -57,7 +60,7 @@ public class TestNGBase {
       try {
          s.flush();
       } catch (Throwable e) {
-         e.printStackTrace();
+         log.error("Can not flush session", e);
       }
 
       TransactionSynchronizationManager.unbindResource(sessionFactory);

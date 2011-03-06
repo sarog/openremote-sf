@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -31,6 +31,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 /**
+ * The class make the screenPair be edit in property form.
  * 
  * @author Javen
  *
@@ -42,8 +43,10 @@ public class ScreenPropertyEditable implements PropertyEditable {
    private ScreenPair screen = null;
    private ScreenPairRef screenPairRef = null;
 
+   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
    private TreePanel<BeanModel> profileTree = null;
 
+   /** The screen tab is in the page center part for editing screen components. */
    private ScreenTab screenTab = null;
    
    public ScreenPropertyEditable() {
@@ -86,7 +89,7 @@ public class ScreenPropertyEditable implements PropertyEditable {
 
    @Override
    public String getTitle() {
-      return "Screen Property";
+      return "Screen Pair Property";
    }
    
 }

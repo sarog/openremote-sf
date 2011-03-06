@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -34,7 +34,16 @@ import flexjson.JSON;
 
 
 /**
- * The Class Device.
+ * Device is represent a specific controllable machine, eg: ligth, fridge, etc.
+ * It includes name, vendor, model, deviceCommands. As the device is created by 
+ * a account, so it associated with account.
+ * 
+ * In addition, the device could have sensor which include a command that can get
+ * the device's status, have switch which include switch command and sensor that
+ * can switch the device in two state, have slider which include slider command 
+ * and sensor that can set the device's range state. 
+ * 
+ * The device can be created by the user or imported from beehive(now support IR type devices).
  * 
  * @author Dan 2009-7-6
  */
@@ -44,13 +53,13 @@ public class Device extends BusinessEntity {
    
    private static final long serialVersionUID = 2591003357551228807L;
 
-   /** The name. */
+   /** The device name. */
    private String name;
    
-   /** The vendor. */
+   /** The vendor who product the device. */
    private String vendor;
    
-   /** The model. */
+   /** The device's model. */
    private String model;
    
    /** The device commands. */
@@ -59,7 +68,7 @@ public class Device extends BusinessEntity {
    /** The device attrs. */
    private List<DeviceAttr> deviceAttrs;
    
-   /** The account. */
+   /** The account who created the device in this application. */
    private Account account; 
 
    private List<Switch> switchs = new ArrayList<Switch>();
@@ -92,7 +101,7 @@ public class Device extends BusinessEntity {
    }
 
    /**
-    * Gets the name.
+    * Gets the device name.
     * 
     * @return the name
     */
@@ -102,7 +111,7 @@ public class Device extends BusinessEntity {
    }
 
    /**
-    * Sets the name.
+    * Sets the device name.
     * 
     * @param name the new name
     */

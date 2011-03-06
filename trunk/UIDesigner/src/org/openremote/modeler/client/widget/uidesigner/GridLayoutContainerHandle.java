@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -26,6 +26,10 @@ import org.openremote.modeler.domain.component.UIGrid;
 
 import com.extjs.gxt.ui.client.widget.LayoutContainer;
 
+/**
+ * The container handle to indicate that the grid can be drag, which include a handle and a grid container.
+ * Its property form is to edit grid properties.
+ */
 public class GridLayoutContainerHandle extends ScreenComponent {
    
    public static final int DEFALUT_HANDLE_WIDTH = 16;

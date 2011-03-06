@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -75,24 +75,40 @@ import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
+/**
+ * The window to create or update a sensor.
+ */
 public class SensorWindow extends FormWindow {
 
    private BeanModel sensorModel = null;
    protected TextField<String> nameField = new TextField<String>();
+   
+   /** The tree for selecting a command for the sensor. */
    protected TreePanel<BeanModel> commandSelectTree = null;
+   
+   /** The combobox for selecting a type for the sensor. */
    protected ComboBoxExt typeList = new ComboBoxExt();
+   
+   /** The field set for managing custom sensor states. */
    private FieldSet customFieldSet = null;
+   
+   /** The min field for range sensor. */
    protected TextField<Integer> minField = new TextField<Integer>();
+   
+   /** The max field for range sensor. */
    protected TextField<Integer> maxField = new TextField<Integer>();
+   
+   /** The grid to store custom sensor states. */
    protected EditorGrid<BeanModel> grid = null;
    private int stateRowIndex = -1;
    
    private Device device = null;
-   public SensorWindow() {
-      setHeading("New sensor");
-      init();
-      show();
-   }
+   
+   /**
+    * Instantiates a window to edit a sensor.
+    * 
+    * @param sensorModel the sensor model
+    */
    public SensorWindow(BeanModel sensorModel) {
       this.sensorModel = sensorModel;
       setHeading("Edit sensor");
@@ -100,6 +116,11 @@ public class SensorWindow extends FormWindow {
       show();
    }
    
+   /**
+    * Instantiates a window to create a new sensor.
+    * 
+    * @param device the device
+    */
    public SensorWindow(Device device){
       this.device = device;
       if(device==null){
@@ -109,6 +130,10 @@ public class SensorWindow extends FormWindow {
       init();
       show();
    }
+   
+   /**
+    * Inits the window style and the form contents.
+    */
    private void init() {
       setWidth(360);
       setAutoHeight(true);
@@ -124,6 +149,9 @@ public class SensorWindow extends FormWindow {
       addListenerToForm();
    }
    
+   /**
+    * Creates the fields.
+    */
    private void createFields() {
       nameField.setFieldLabel("Name");
       nameField.setAllowBlank(false);
@@ -204,6 +232,11 @@ public class SensorWindow extends FormWindow {
       }
    }
    
+   /**
+    * Creates a view to contain the command tree.
+    * 
+    * @return the layout container
+    */
    private LayoutContainer createCommandTreeView() {
       LayoutContainer deviceCommandTreeContainer = new LayoutContainer();
       deviceCommandTreeContainer.setSize(230, 120);
@@ -218,6 +251,11 @@ public class SensorWindow extends FormWindow {
       return deviceCommandTreeContainer;
    }
    
+   /**
+    * Builds the device's commands as a tree to select.
+    * 
+    * @param device the device
+    */
    protected void buildCommandSelectTree(Device device) {
       BeanModel selectedCommandModel = null;
       if (sensorModel != null) {
@@ -228,6 +266,13 @@ public class SensorWindow extends FormWindow {
       }
       commandSelectTree = TreePanelBuilder.buildCommandTree(device!=null?device:((Sensor)sensorModel.getBean()).getDevice(), selectedCommandModel);
    }
+   
+   /**
+    * Creates a filed set for the range sensor.
+    * It includes min and max fields.
+    * 
+    * @return the field set
+    */
    private FieldSet createRangeSet() {
       FieldSet rangeSet = new FieldSet();
       rangeSet.setWidth(300);
@@ -250,6 +295,11 @@ public class SensorWindow extends FormWindow {
       return rangeSet;
    }
    
+   /**
+    * The custom set includes a grid and two buttons to manage the custom sensor states.
+    * 
+    * @return the field set
+    */
    private FieldSet createCustomSet() {
       FieldSet customSet = new FieldSet();
       customSet.setHeading("Custom state items");
@@ -348,7 +398,7 @@ public class SensorWindow extends FormWindow {
       Button submitBtn = new Button("Submit");
       Button resetBtn = new Button("Reset");
 
-      submitBtn.addSelectionListener(new FormSubmitListener(form));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
       resetBtn.addSelectionListener(new FormResetListener(form));
 
       form.addButton(submitBtn);

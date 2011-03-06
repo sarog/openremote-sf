@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -24,7 +24,8 @@ import java.util.List;
 import org.openremote.modeler.domain.UICommand;
 
 /**
- * UIControl act as all domain component's super class.
+ * UIControl acts as all control domain's super class.
+ * It have some commands.
  */
 public abstract class UIControl extends UIComponent {
 
@@ -45,6 +46,11 @@ public abstract class UIControl extends UIComponent {
       return "UIControl";
    }
    
+   /**
+    * Gets the contained commands.
+    * 
+    * @return the commands
+    */
    public abstract List<UICommand> getCommands();
    
   

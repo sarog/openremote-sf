@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -17,19 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.modeler.client.utils;
+package org.openremote.modeler.client.listener;
 
+import org.openremote.modeler.client.event.AbsoluteBoundsEvent;
 
+/**
+ * The listener interface for receiving absoluteBounds events.
+ * The class that is interested in processing a absoluteBounds
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addAbsoluteBoundsListener<code> method. When
+ * the absoluteBounds event occurs, that object's appropriate
+ * method is invoked.
+ * 
+ * @see AbsoluteBoundsEvent
+ */
+public interface AbsoluteBoundsListener {
 
-
-
-public class CategoryBeanModelDataBase extends BeanModelTable {
-   public CategoryBeanModelDataBase() {
-     /* ControllerConfigBeanProxy.getAllCategory(new AsyncSuccessCallback<Set<ConfigCategory>>() {
-         @Override
-         public void onSuccess(Set<ConfigCategory> result) {
-            return;
-         }
-      });*/
-   }
+   void handleEvent(AbsoluteBoundsEvent event);
 }

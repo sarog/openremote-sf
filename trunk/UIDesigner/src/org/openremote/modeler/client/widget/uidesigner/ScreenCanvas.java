@@ -1,5 +1,5 @@
 /*
- * OpenRemote, the Home of the Digital Home. Copyright 2008-2009, OpenRemote Inc.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2011, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a full listing of individual contributors.
  * 
@@ -62,7 +62,7 @@ import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.user.client.Event;
 
 /**
- * A layout container for create and dnd components.
+ * A layout container for create components.
  */
 public class ScreenCanvas extends ComponentContainer {
 
@@ -83,15 +83,25 @@ public class ScreenCanvas extends ComponentContainer {
    /**
     * Instantiates a new screen canvas.
     * 
-    * @param screen
-    *           the screen
+    * @param dropTarget
+    *           the container to drop components
     */
-   public ScreenCanvas(Screen screen) {
+   public ScreenCanvas(Screen screen, LayoutContainer dropTarget) {
       this.screen = screen;
       TouchPanelCanvasDefinition canvas = screen.getTouchPanelDefinition().getCanvas();
       setSize(canvas.getWidth(), canvas.getHeight());
       setBorders(true);
       setStyleAttribute("position", "relative");
+      if (screen.getGrids().size() > 0) {
+         List<UIGrid> grids = screen.getGrids();
+         for (UIGrid grid : grids) {
+            GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
+            this.add(gridContainer);
+            gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop()
+                  - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
+            createGridDragSource(gridContainer, this);
+         }
+      }
       if (screen.getAbsolutes().size() > 0) {
          List<Absolute> absolutes = screen.getAbsolutes();
          for (Absolute absolute : absolutes) {
@@ -106,19 +116,9 @@ public class ScreenCanvas extends ComponentContainer {
             createDragSource(this, componentContainer);
          }
       }
-      if (screen.getGrids().size() > 0) {
-         List<UIGrid> grids = screen.getGrids();
-         for (UIGrid grid : grids) {
-            GridLayoutContainerHandle gridContainer = createGridLayoutContainer(grid);
-            this.add(gridContainer);
-            gridContainer.setPosition(grid.getLeft() - GridLayoutContainerHandle.DEFALUT_HANDLE_WIDTH, grid.getTop()
-                  - GridLayoutContainerHandle.DEFAULT_HANDLE_HEIGHT);
-            createGridDragSource(gridContainer, this);
-         }
-      }
       layout();
 
-      addDropTargetDNDListener(screen);
+      addDropTargetDNDListener(screen, dropTarget);
       moveBackGround.addStyleName("move-background");
       moveBackGround.hide();
       add(moveBackGround);
@@ -126,13 +126,14 @@ public class ScreenCanvas extends ComponentContainer {
       setStyleAttribute("backgroundRepeat", "no-repeat");
       setStyleAttribute("overflow", "hidden");
       updateGround();
-      new DragSource(this);
+      new DragSource(dropTarget);
       /*
        * if (screen.isHasTabbar()) { addTabbar(); }
        */
       if (this.tabbarContainer != null) {
          add(tabbarContainer);
       }
+      sinkEvents(Event.ONMOUSEDOWN);
    }
 
    public void updateGround() {
@@ -159,9 +160,9 @@ public class ScreenCanvas extends ComponentContainer {
     * @param screen
     *           the screen
     */
-   private void addDropTargetDNDListener(final Screen screen) {
+   private void addDropTargetDNDListener(final Screen screen, LayoutContainer dropTarget) {
       final ScreenCanvas canvas = this;
-      DropTarget target = new DropTarget(canvas);
+      DropTarget target = new DropTarget(dropTarget);
       target.addDNDListener(new DNDListener() {
 
          @Override
@@ -187,61 +188,74 @@ public class ScreenCanvas extends ComponentContainer {
          @Override
          public void dragLeave(DNDEvent e) {
             moveBackGround.hide();
-            Object data = e.getData();
-            if (data instanceof GridCellContainer) {
-               final GridCellContainer cellContainer = (GridCellContainer) data;
-               MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-                  public void handleEvent(MessageBoxEvent be) {
-                     if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                        WidgetSelectionUtil.setSelectWidget(null);
-                     } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
-                        cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
-                        cellContainer.getGridContainer().addGridCellContainer(cellContainer);
+            if (!canDrop(canvas, e)) {
+               Object data = e.getData();
+               if (data instanceof GridCellContainer) {
+                  final GridCellContainer cellContainer = (GridCellContainer) data;
+                  MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                     public void handleEvent(MessageBoxEvent be) {
+                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                           WidgetSelectionUtil.setSelectWidget(null);
+                        } else if (be.getButtonClicked().getItemId().equals(Dialog.NO)) {
+                           cellContainer.getGridContainer().getGrid().addCell(cellContainer.getCell());
+                           cellContainer.getGridContainer().addGridCellContainer(cellContainer);
+                        }
                      }
+                  });
+               } else if (data instanceof LayoutContainer) {
+                  if (data instanceof GridLayoutContainerHandle) {
+                     final GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle) e.getData();
+                     gridContainer.show();
+                     MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent be) {
+                           if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                              ScreenCanvas.this.getScreen()
+                                    .removeGrid(gridContainer.getGridlayoutContainer().getGrid());
+                              gridContainer.removeFromParent();
+                              WidgetSelectionUtil.setSelectWidget(null);
+                           }
+                        }
+                     });
+                  } else {
+                     final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
+                     MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
+                        public void handleEvent(MessageBoxEvent be) {
+                           if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
+                              ScreenCanvas.this.getScreen().removeAbsolute(controlContainer.getAbsolute());
+                              controlContainer.removeFromParent();
+                              WidgetSelectionUtil.setSelectWidget(null);
+                           }
+                        }
+                     });
                   }
-               });
-            } else if (data instanceof LayoutContainer) {
-               if (data instanceof GridLayoutContainerHandle) {
-                  final GridLayoutContainerHandle gridContainer = (GridLayoutContainerHandle) e.getData();
-                  gridContainer.show();
-                  MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-                     public void handleEvent(MessageBoxEvent be) {
-                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           ScreenCanvas.this.getScreen().removeGrid(gridContainer.getGridlayoutContainer().getGrid());
-                           gridContainer.removeFromParent();
-                           WidgetSelectionUtil.setSelectWidget(null);
-                        }
-                     }
-                  });
-               } else {
-                  final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
-                  MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
-                     public void handleEvent(MessageBoxEvent be) {
-                        if (be.getButtonClicked().getItemId().equals(Dialog.YES)) {
-                           ScreenCanvas.this.getScreen().removeAbsolute(controlContainer.getAbsolute());
-                           controlContainer.removeFromParent();
-                           WidgetSelectionUtil.setSelectWidget(null);
-                        }
-                     }
-                  });
                }
             }
+         }
+
+         /**
+          * @param canvas the current canvas
+          * @param e the dndEvent
+          * @return
+          */
+         private boolean canDrop(final ScreenCanvas canvas, DNDEvent e) {
+            if (absolutePosition == null) {
+               absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
+            }
+            Point mousePoint = e.getXY();
+            boolean canDrop = false;
+            int x = getWidth() - (mousePoint.x - absolutePosition.x);
+            int y = getHeight() - (mousePoint.y - absolutePosition.y);
+            if (x > -5 && x < getWidth() + 5 && y > -5 && y < getHeight() + 5) {
+               canDrop = true;
+            }
+            return canDrop;
          }
 
          @SuppressWarnings("unchecked")
          @Override
          public void dragDrop(DNDEvent e) {
-            if (absolutePosition == null) {
-               absolutePosition = new Point(canvas.getAbsoluteLeft(), canvas.getAbsoluteTop());
-            }
+            boolean canDrop = canDrop(canvas, e);
             Object data = e.getData();
-            Point mousePoint = e.getXY();
-            boolean canDrop = false;
-            int x = getWidth() - (mousePoint.x - absolutePosition.x);
-            int y = getHeight() - (mousePoint.y - absolutePosition.y);
-            if (x > 0 && x < getWidth() && y > 0 && y < getHeight()) {
-               canDrop = true;
-            }
             if (data instanceof GridCellContainer) {
                final GridCellContainer controlContainer = (GridCellContainer) data;
                if (!canDrop) {
@@ -258,9 +272,8 @@ public class ScreenCanvas extends ComponentContainer {
                } else {
                   Point position = getPosition(e);
                   controlContainer.setPosition(position.x, position.y);
-                  LayoutContainer componentContainer = new LayoutContainer();
                   GridCellBounds recorder = controlContainer.getData(GridLayoutContainer.BOUNDS_RECORD_NAME);
-                  componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
+                  AbsoluteLayoutContainer componentContainer = dragComponentFromGrid(screen, controlContainer, recorder);
                   createDragSource(canvas, componentContainer);
                   canvas.add(componentContainer);
                   componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
@@ -306,7 +319,24 @@ public class ScreenCanvas extends ComponentContainer {
                   Point position = getPosition(e);
                   final AbsoluteLayoutContainer controlContainer = (AbsoluteLayoutContainer) data;
                   if (canDrop) {
-                     controlContainer.setPosition(position.x, position.y);
+                     int x = position.x;
+                     int y = position.y;
+                     if (x < 0) {
+                        x = 0;
+                     }
+                     if (x + controlContainer.getWidth() > getWidth()) {
+                        x = getWidth() - controlContainer.getWidth();
+                     }
+                     if (y < 0) {
+                        y = 0;
+                     }
+                     if (y + controlContainer.getHeight() > getHeight()) {
+                        y = getHeight() - controlContainer.getHeight();
+                     }
+                     controlContainer.setPosition(x, y);
+                     screen.removeAbsolute(controlContainer.getAbsolute());
+                     screen.addAbsolute(controlContainer.getAbsolute());
+                     controlContainer.el().updateZIndex(1);
                   } else {
                      MessageBox.confirm("Delete", "Are you sure you want to delete?", new Listener<MessageBoxEvent>() {
                         public void handleEvent(MessageBoxEvent be) {
@@ -350,13 +380,13 @@ public class ScreenCanvas extends ComponentContainer {
                      resizable.setMinHeight(10);
                      resizable.setMinWidth(10);
                   }
-                  WidgetSelectionUtil.setSelectWidget(componentContainer);
                   canvas.add(componentContainer);
                   Object model = dataModel.getBean();
                   if (!(model instanceof UITabbar) && !(model instanceof UITabbarItem)) {
                      componentContainer.setPosition(e.getClientX() - absolutePosition.x, e.getClientY()
                            - absolutePosition.y);
                   }
+                  WidgetSelectionUtil.setSelectWidget(componentContainer);
                }
             }
 
@@ -466,12 +496,22 @@ public class ScreenCanvas extends ComponentContainer {
                if (screenControl instanceof ScreenButton) {
                   ((ScreenButton) screenControl).setDefaultImage();
                }
+            } else if (ce.getEventTypeInt() == Event.ONDBLCLICK) {
+               WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
             }
             ce.cancelBubble();
             super.onComponentEvent(ce);
          }
+
+         @Override
+         protected void afterRender() {
+            super.afterRender();
+            this.el().updateZIndex(1);
+         }
+         
       };
       controlContainer.sinkEvents(Event.ONMOUSEUP);
+      controlContainer.sinkEvents(Event.ONDBLCLICK);
       controlContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeAbsolute(absolute);
@@ -549,6 +589,8 @@ public class ScreenCanvas extends ComponentContainer {
          public void onBrowserEvent(Event event) {
             if (event.getTypeInt() == Event.ONMOUSEDOWN) {
                WidgetSelectionUtil.setSelectWidget(this);
+            } else if (event.getTypeInt() == Event.ONDBLCLICK) {
+               WidgetSelectionUtil.setSelectWidget(this.getScreenCanvas());
             }
             event.stopPropagation();
             super.onBrowserEvent(event);
@@ -561,6 +603,7 @@ public class ScreenCanvas extends ComponentContainer {
          }
 
       };
+      gridContainer.sinkEvents(Event.ONDBLCLICK);
       gridContainer.addListener(WidgetDeleteEvent.WIDGETDELETE, new Listener<WidgetDeleteEvent>() {
          public void handleEvent(WidgetDeleteEvent be) {
             screen.removeGrid(grid);

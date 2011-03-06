@@ -47,6 +47,9 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.Field;
 
+/**
+ * The wizard window to create a new slider for the current device.
+ */
 public class SliderWizardWindow extends SliderWindow {
 
    private Device device;
@@ -60,6 +63,9 @@ public class SliderWizardWindow extends SliderWindow {
       onSubmit();
    }
 
+   /**
+    * Adds the button for adding a new sensor to the current device.
+    */
    private void addNewSensorButton() {
       Button newSensorButton = new Button("New sensor..");
       newSensorButton.addSelectionListener(new NewSensorListener());
@@ -69,6 +75,9 @@ public class SliderWizardWindow extends SliderWindow {
       layout();
    }
    
+   /**
+    * Inits the sensor filed, added the device's sensors into a combobox for selection.
+    */
    private void initSensorFiled() {
       ListStore<ModelData> sensorStore = sensorField.getStore();
       sensorStore.removeAll();
@@ -81,13 +90,13 @@ public class SliderWizardWindow extends SliderWindow {
       setValueBtn.removeAllListeners();
       setValueBtn.addSelectionListener(new CommandSelectionListener());
    }
+   
+   /**
+    * Add the new slider into the current device.
+    */
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          public void handleEvent(FormEvent be) {
-            if (slider.getSetValueCmd() == null) {
-               MessageBox.alert("Slider", "The slider must have a command to control its value", null);
-               return;
-            }
             List<Field<?>> fields = form.getFields();
             for (Field<?> field : fields) {
                if (SLIDER_NAME_FIELD_NAME.equals(field.getName())) {
@@ -102,10 +111,14 @@ public class SliderWizardWindow extends SliderWindow {
       });
    }
    
+   /**
+    * The listener to create a new sensor for the current device.
+    */
    private final class NewSensorListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {
          final SensorWizardWindow sensorWizardWindow = new SensorWizardWindow(device);
+         // The submit listener to create a new sensor, and add it into the device content container.
          sensorWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
             @Override
             public void afterSubmit(SubmitEvent be) {
@@ -121,6 +134,7 @@ public class SliderWizardWindow extends SliderWindow {
                fireEvent(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardEvent(sensor.getBeanModel()));
             }
          });
+         // The listener to transform the data into deviceContent and add it.
          sensorWizardWindow.addListener(DeviceWizardEvent.ADD_CONTENT, new DeviceWizardListener() {
             @Override
             public void afterAdd(DeviceWizardEvent be) {
@@ -130,6 +144,9 @@ public class SliderWizardWindow extends SliderWindow {
       }
    }
    
+   /**
+    * The listener to create a new command for the current device.
+    */
    private final class CommandSelectionListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {

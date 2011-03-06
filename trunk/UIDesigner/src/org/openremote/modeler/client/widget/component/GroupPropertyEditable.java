@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -30,6 +30,7 @@ import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 
 /**
+ * The class make the group be edit in property form.
  * 
  * @author Javen
  *
@@ -40,6 +41,8 @@ public class GroupPropertyEditable implements PropertyEditable {
 
    private Group group = null;
    private GroupRef groupRef = null;
+   
+   /** The profile tree is the tree in the page west that contains panels, groups and screens. */
    private TreePanel<BeanModel> profileTree = null;
 
    public GroupPropertyEditable() {

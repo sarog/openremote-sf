@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,7 +28,7 @@ import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
- * The Class DeviceMacroController.
+ * The server side implementation of the RPC service <code>DeviceMacroRPCService</code>.
  */
 @SuppressWarnings("serial")
 public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateSupport implements DeviceMacroRPCService {

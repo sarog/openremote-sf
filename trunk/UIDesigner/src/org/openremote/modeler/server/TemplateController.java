@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -29,7 +29,7 @@ import org.openremote.modeler.exception.BeehiveNotAvailableException;
 import org.openremote.modeler.service.TemplateService;
 
 /**
- * The controller for Template. 
+ * The server side implementation of the RPC service <code>TemplateRPCService</code>. 
  * @author javen
  *
  */

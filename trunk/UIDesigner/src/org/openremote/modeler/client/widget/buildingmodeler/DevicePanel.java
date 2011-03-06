@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -77,7 +77,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * The Class DevicePanel.
+ * The panel contains a toolbar and a treePanel to manage the device, deviceCommand, sensor, switch and slider.
+ * It display in the west part of the page.
  */
 public class DevicePanel extends ContentPanel {
 
@@ -136,7 +137,7 @@ public class DevicePanel extends ContentPanel {
    }
    
    /**
-    * Creates the menu.
+    * Creates the toolbar which contains some menus.
     */
    private void createMenu() {      
       Button newButton = new Button("New");
@@ -158,6 +159,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSliderMenuItem);
       newMenu.add(newSwitchMenuItem);
       
+      // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
          @Override
          public void handleEvent(MenuEvent be) {
@@ -427,31 +429,34 @@ public class DevicePanel extends ContentPanel {
    }
    
    private void editSensor(final BeanModel selectedModel) {
-      final SensorWindow deviceCommandWindow = new SensorWindow(selectedModel);
-      deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+      final SensorWindow sensorWindow = new SensorWindow(selectedModel);
+      sensorWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             Sensor sensor = be.getData();
             tree.getStore().removeAll(selectedModel);
             tree.getStore().add(selectedModel, sensor.getSensorCommandRef().getBeanModel(), false);
             Info.display("Info", "Edit sensor " + sensor.getBeanModel().get("name") + " success.");
-            deviceCommandWindow.hide();
+            sensorWindow.hide();
          }
       });
    }
    
    private void editSlider(final BeanModel selectedModel) {
       Slider slider = selectedModel.getBean();
-      final SliderWindow deviceCommandWindow = new SliderWindow(slider);
-      deviceCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+      final SliderWindow sliderWindow = new SliderWindow(slider);
+      sliderWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
             BeanModel sliderBeanModel = be.getData();
             Slider slider = sliderBeanModel.getBean();
             tree.getStore().removeAll(selectedModel);
-            tree.getStore().add(selectedModel, slider.getSetValueCmd().getBeanModel(), false);
-            Info.display("Info", "Edit device command " + sliderBeanModel.get("name") + " success.");
-            deviceCommandWindow.hide();
+            if (slider.getSetValueCmd() != null) {
+               tree.getStore().add(selectedModel, slider.getSetValueCmd().getBeanModel(), false);
+            }
+            tree.getStore().update(selectedModel);
+            Info.display("Info", "Edit slider " + sliderBeanModel.get("name") + " success.");
+            sliderWindow.hide();
          }
       });
    }
@@ -462,12 +467,12 @@ public class DevicePanel extends ContentPanel {
       switchWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
-            BeanModel sliderBeanModel = be.getData();
-            Switch swh = sliderBeanModel.getBean();
+            BeanModel switchBeanModel = be.getData();
+            Switch swh = switchBeanModel.getBean();
             tree.getStore().removeAll(selectedModel);
             tree.getStore().add(selectedModel, swh.getSwitchCommandOnRef().getBeanModel(), false);
             tree.getStore().add(selectedModel, swh.getSwitchCommandOffRef().getBeanModel(), false);
-            Info.display("Info", "Edit device command " + sliderBeanModel.get("name") + " success.");
+            Info.display("Info", "Edit switch " + switchBeanModel.get("name") + " success.");
             switchWindow.hide();
          }
       });

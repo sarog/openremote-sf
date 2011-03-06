@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -35,7 +35,7 @@ import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.NumberField;
 
 /**
- * The Class DelayWindow.
+ * Creates a delay command for the macro.
  */
 public class DelayWindow extends FormWindow {
 
@@ -77,7 +77,7 @@ public class DelayWindow extends FormWindow {
 
       Button addBtn = new Button("OK");
       
-      addBtn.addSelectionListener(new FormSubmitListener(form));
+      addBtn.addSelectionListener(new FormSubmitListener(form, addBtn));
       
       form.addButton(addBtn);
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {

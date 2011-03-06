@@ -51,6 +51,9 @@ import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 
+/**
+ * The wizard window to create new sensor, but not save into server.
+ */
 public class SensorWizardWindow extends SensorWindow {
 
    private Device device;
@@ -59,7 +62,6 @@ public class SensorWizardWindow extends SensorWindow {
       this.device = device;
       addNewCommandButton();
       form.removeAllListeners();
-      addCommandSelectListeners();
       onSubmit();
    }
    
@@ -91,8 +93,10 @@ public class SensorWizardWindow extends SensorWindow {
       layout();
    }
    
-   private void addCommandSelectListeners() {
-   }
+   /**
+    * Add the new sensor into the current device.
+    * According to the different sensor type, get the different sensor content.
+    */
    private void onSubmit() {
       form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
          @SuppressWarnings("unchecked")
@@ -146,6 +150,10 @@ public class SensorWizardWindow extends SensorWindow {
       });
    }
    
+   /**
+    * This listener pops up a command window  to create a new device command for the current device.
+    * And the current sensor can select the new command. 
+    */
    private final class NewCommandListener extends SelectionListener<ButtonEvent> {
       @Override
       public void componentSelected(ButtonEvent ce) {

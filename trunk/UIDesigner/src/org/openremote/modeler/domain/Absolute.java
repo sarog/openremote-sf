@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2009, OpenRemote Inc.
+* Copyright 2008-2010, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -25,7 +25,7 @@ import org.openremote.modeler.domain.component.UIComponent;
 import flexjson.JSON;
 
 /**
- * The Class Absolute.
+ * Define a absolute position and size in screen, store a uiComponent.
  */
 public class Absolute extends BusinessEntity {
 
@@ -43,9 +43,10 @@ public class Absolute extends BusinessEntity {
    /** The height. */
    private int height;
    
-   /** The ui control. */
+   /** The ui component is store in the absolute. */
    private UIComponent uiComponent;
    
+   /** The absolute is the absoluteLayoutContainer's model,  have this property can manage absoluteLayoutContainer's size. */
    private transient AbsoluteLayoutContainer belongsTo= null;
    
    public Absolute() {
