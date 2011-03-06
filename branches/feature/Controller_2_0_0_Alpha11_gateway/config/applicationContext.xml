@@ -245,7 +245,7 @@
 	</bean>
 	   
 	<!-- Telnet Protocol Builder -->
-	<bean id="telnetProtocolBuilder" class="org.openremote.controller.gateway.protocol.telnet.TelnetProtocolBuilder" scope="prototype" />	
+	<bean id="telnetProtocolBuilder" class="org.openremote.controller.gateway.protocol.telnet.TelnetProtocolBuilder" />	
    <!-- Rich Turner Additions -->
    
 </beans>

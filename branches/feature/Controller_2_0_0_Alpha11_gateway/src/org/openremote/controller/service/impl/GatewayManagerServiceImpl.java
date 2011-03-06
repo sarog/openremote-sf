@@ -35,31 +35,38 @@ import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.gateway.Gateway;
 import org.openremote.controller.gateway.GatewayBuilder;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
+import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.GatewayManagerService;
 import org.openremote.controller.service.StatusCacheService;
-import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.exception.GatewayException;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.gateway.ProtocolFactory;
 import org.openremote.controller.gateway.Protocol;
 import org.openremote.controller.gateway.command.Command;
+import org.openremote.controller.gateway.component.EnumComponentType;
 /**
  * 
  * @author Rich Turner 2011-02-09
  *
  */
 public class GatewayManagerServiceImpl implements GatewayManagerService {
-   private static Logger log = Logger.getLogger(GatewayManagerServiceImpl.class);
    private StatusCacheService statusCacheService;
    private RemoteActionXMLParser remoteActionXMLParser;
    private StringBuffer controllerXMLFileContent = new StringBuffer();
    private StringBuffer panelXMLFileContent = new StringBuffer();
    
+   /* String constant for the top level gateway element connection type attribute: ("{@value}") */
+   public final static String CONNECTION_ATTRIBUTE_NAME = "connectionType";
+    
+   /* String constant for the top level gateway element polling method attribute: ("{@value}") */
+   public final static String POLLING_ATTRIBUTE_NAME = "pollingMethod";
+     
    /* This is the protocol factory for returning the protocol builder */
    private ProtocolFactory protocolFactory;
    
-   private Logger logger = Logger.getLogger("INIT");
+   private Logger logger = Logger.getLogger(GatewayManagerServiceImpl.class);
    private List<Gateway> gateways = new ArrayList<Gateway>();
    private Map<Integer, Integer> commandGatewayMap = new HashMap<Integer, Integer>();
    /**
@@ -87,21 +94,36 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
          if (document == null) {
             commandElements = remoteActionXMLParser.queryElementsFromXMLByName("command");
             sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
-            gatewayElements = getGatewayElements(commandElements);
+            gatewayElements = remoteActionXMLParser.queryElementsFromXMLByName("gateway");
          } else {
             commandElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "command");
             sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
-            gatewayElements = getGatewayElements(commandElements);
+            gatewayElements = remoteActionXMLParser.queryElementsFromXMLByName("gateway");
          }
+         if (gatewayElements == null) {
+            gatewayElements = getGatewayElements(commandElements);
+            if (gatewayElements.size() == 0) {
+               throw new GatewayException();
+            }
+         }         
       } catch (ControllerXMLNotFoundException e) {
          logger.warn("No commands, sensors and/or gateways to init, controller.xml not found.");
+         return;
+      } catch (GatewayException e) {
+         logger.warn("Error retrieving gateway elements from controller.xml.", e);
          return;
       }
       
       // Build gateways
       for (Element gatewayElement : gatewayElements)
       {
-         createGateway(gatewayElement, commandElements);
+         try {
+            /* Create gateway */
+            createGateway(gatewayElement, commandElements);
+         } catch (GatewayException e) {
+            logger.error("Failed to create gateway: " + e.getMessage(), e);
+         }
+            
       }      
       
       /* Add each polling command map to corresponding gateway */
@@ -137,6 +159,12 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    }
    
    /**
+    * *********************************
+    * GATEWAY ELEMENT BUILDER CODE END
+    * *********************************
+    */
+   
+   /**
     * Create unique gateway elements from command elements, this is needed because
     * the controller.xml doesn't explicitly define gateway elements at present
     */
@@ -147,8 +175,17 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
          {
             Element gatewayElement = getGatewayElement(commandElement);            
             if(gatewayElement != null) {
-               int gatewayId = gatewayElements.indexOf(gatewayElement);
-               if (gatewayId < 0) {
+               String gatewayStr = gatewayElement.toString();
+               int matchedId = -1;
+               int gatewayIndex = 0;
+               for (Element gatewayElem : gatewayElements) {
+                  if(gatewayStr.equals(gatewayElem.toString())) {
+                     matchedId = gatewayIndex;
+                     break;  
+                  }
+                  gatewayIndex++;
+               }
+               if (matchedId < 0) {
                   gatewayElements.add(gatewayElement);
                }
             }
@@ -165,45 +202,11 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
          props.add("ipAddress");
          props.add("port");
          props.add("promptString");
+         props.add("timeOut");
          gatewayElement = buildGatewayElement(commandElement, protocolType, props);
       }
       return gatewayElement;
-   }   
-      
-   public Map<Integer, Command> getCommands(Element gatewayElement, List<Element> commandElements) {
-      // Cycle through command Elements and find the ones that share the same gateway protocol settings
-      Map<Integer, Command> commands = new HashMap<Integer, Command> ();
-      // Fudge for gatewayID as currently this doesn't exist in the XML
-      int gatewayId = this.gateways.size();
-      if (commandElements != null) {
-         for (Element commandElement : commandElements)
-         {
-            Element commandGatewayElement = getGatewayElement(commandElement);            
-            if(commandGatewayElement != null) {
-               if (commandGatewayElement.toString().equals(gatewayElement.toString())) {
-                  // This command belongs to this gateway
-                  Integer commandId = Integer.parseInt(commandElement.getAttributeValue("id"));
-                  Command command = new Command(commandElement);
-                  commands.put(commandId, command);
-                  addCommandMap(commandId, new Integer(gatewayId));
-               }
-            }
-         }
-      }
-      return commands;
    }
-      
-   public void createGateway(Element gatewayElement, List<Element> commandElements) {
-      Gateway gateway = null;
-      int gatewayId = this.gateways.size();
-      try {
-         gateway = new Gateway(gatewayId, gatewayElement, getProtocol(gatewayElement), getCommands(gatewayElement, commandElements), statusCacheService);
-      }
-      catch (Exception e) {
-         logger.error("Gateway initialisation error");
-      }
-      this.gateways.add(gateway);
-   }   
    
    private Element buildGatewayElement(Element element, String protocolType, List<String> props) {
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
@@ -220,7 +223,67 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
            }
       }
       return gatewayElement;
+   }   
+   /**
+    * *********************************
+    * GATEWAY ELEMENT BUILDER CODE END
+    * *********************************
+    */   
+
+   // Instantiate the gateway objects and add to the gateway manager
+   public void createGateway(Element gatewayElement, List<Element> commandElements) {
+      Gateway gateway = null;
+      int gatewayId = this.gateways.size() + 1;
+      List<Command> commands = getCommands(gatewayElement, commandElements);
+      gateway = new Gateway(gatewayId, gatewayElement.getAttributeValue(CONNECTION_ATTRIBUTE_NAME), gatewayElement.getAttributeValue(POLLING_ATTRIBUTE_NAME), getProtocol(gatewayElement), commands, statusCacheService);
+      if (gateway != null) {
+         /* Map commands to this gateway */
+         for(Command command : commands) {
+            addCommandMap(command.getId(), new Integer(gatewayId));
+         }
+      }
+      this.gateways.add(gateway);
    }
+
+   /*
+    * Get the commnd map for this gateway, when controller xml supports gateways will be able to 
+    * just look at the ref attribute of the commands, until then we manually deterine which commands
+    * belong to this gateway, adds prcessing but allows existing XML schema to be used.
+    */
+   public List<Command> getCommands(Element gatewayElement, List<Element> commandElements) {
+      // Cycle through command Elements and find the ones that share the same gateway protocol settings
+      List<Command> commands = new ArrayList<Command> ();
+      // Fudge for gatewayID as currently this doesn't exist in the XML
+      int gatewayId = this.gateways.size();
+      if (commandElements != null) {
+         for (Element commandElement : commandElements)
+         {
+            Element commandGatewayElement = getGatewayElement(commandElement);            
+            if(commandGatewayElement != null) {
+               if (commandGatewayElement.toString().equals(gatewayElement.toString())) {
+                  // This command belongs to this gateway
+                  Integer commandId = Integer.parseInt(commandElement.getAttributeValue("id"));
+                  Command command = new Command(commandId, commandElement);
+                  commands.add(command);
+               }
+            }
+         }
+      }
+      /*
+       * Check that at least one command has been retrieved for this gateway
+       * if not throw gateway exception
+       */
+      if (commands.size() == 0) {
+         throw new GatewayException("No gateway commands found.");
+      }
+      return commands;
+   }
+   
+   /* Get the protocol for a particular gateway */
+   private Protocol getProtocol(Element gatewayElement) {
+      Protocol protocol = (Protocol)protocolFactory.getProtocol(gatewayElement);
+      return protocol;
+   }   
    
    private void addCommandMap(Integer commandId, Integer gatewayId) {
         commandGatewayMap.put(commandId, gatewayId);
@@ -241,47 +304,156 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       }
    }
    
+   /* Start the gateways */
    public void startGateways() {
       for (Gateway gateway : gateways) {
-         gateway.start();  
+         gateway.startUp();  
       }
+   }   
+   
+   /* Fetch gateways from controller.xml and start them */
+   public void restartGateways() {
+      String restartMsg = "Gateway Manager is restarting"; 
+      logger.info(restartMsg);
+      System.out.println(restartMsg);
+      
+      /* Kill and clear existing gateway data */
+      killGateways();
+      clearGateways();
+
+      /* Clear status info */
+      clearStatusCache();
+
+      /* Rebuild and start gateways */
+      initGatewaysWithControllerXML(null);
+      startGateways();
    }
    
+   /* Stop each gateway */
    public void killGateways() {
       for (Gateway gateway : gateways) {
          gateway.kill();
       }
-   }   
-   
-   public boolean restart() {
-      System.out.println("Gateway Manager is restarting");
-      
-      // Kill and clear existing gateway data
-      killGateways();
-      clearGateways();
-
-      // Clear status info
-      clearStatusCache();
-
-      // Rebuild and start gateways
-      boolean success = true;
-      try {
-         initGatewaysWithControllerXML(null);
-         startGateways();         
-      } catch (ControllerException e) {
-         logger.error("Failed to init gateway manager with controller.xml ." + e.getMessage(), e);
-         success = false;
-      }
-      return success;
    }
    
+   /* Clear existing status data */
    private void clearStatusCache() {
       this.statusCacheService.clearAllStatusCache();
    }
    
+   /* Remove gateways from manager */
    private void clearGateways() {
       this.gateways.clear();
       this.commandGatewayMap.clear();
+   }
+   
+   /* Trigger the commands associated with a panel control */
+   public void trigger(String controlId, String controlAction) {
+      Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlId);
+      if (controlElement == null) {
+         throw new NoSuchComponentException("No such component id :" + controlId);
+      }
+            
+      /* Get control type without having to instantiate control */
+      String componentTypeStr = controlElement.getName();
+      EnumComponentType componentType = EnumComponentType.enumValueOf(componentTypeStr);
+      if (componentType == null) {
+         throw new GatewayException("No such component type in component type enum definition:" + componentTypeStr);
+      }
+      
+      // Validate control action      
+      Boolean actionValid = isComponentActionValid(componentType, controlAction);
+      
+      if (actionValid) {
+         /* Get all of the commands associated with this control */
+         List<Integer> commandIds = getControlCommandIds(controlElement);
+         
+         /* Execute each command through respective gateway */
+         try {
+            for (Integer commandId : commandIds) {
+               Gateway commandGateway = getCommandGateway(commandId);
+               commandGateway.executeCommand(commandId, controlAction);
+            }
+         } catch (Exception e) {
+            logger.error("Gateway command execution failed: " + e.getMessage(), e);
+         }
+      }
+   }
+   
+   /**
+    * There's no way to get supported actions from current component model without
+    * instantiating, this is not efficient and should be reviewed
+    */
+   public Boolean isComponentActionValid(EnumComponentType componentType, String controlAction) {
+      Boolean response = false;
+      Boolean actionValidated = false;
+      List<String> supportedActions = new ArrayList<String>();
+      switch(componentType) {
+         case BUTTON:
+            supportedActions.add("click");
+            break;
+         case TOGGLE:
+            break;
+         case SWITCH:
+            supportedActions.add("on");
+            supportedActions.add("off");
+            break;
+         case LABEL:
+            break;
+         case SLIDER:
+            // An integer isn't a very descriptive action type
+            try {
+               Integer.parseInt(controlAction);
+               response = true;
+            } catch (NumberFormatException e) {}
+            actionValidated = true;
+            break;
+         case GESTURE:
+            supportedActions.add("swipe");
+            break;
+         case IMAGE:
+            break;
+      }
+      if(!actionValidated) {
+         response = supportedActions.contains(controlAction);
+      }
+      return response;
+   }
+   
+   
+   /**
+    * Returns the commands that should be triggered by the control
+    * look at the <include type="command" ref="" /> elements up to two levels
+    * deep below the control Element
+    */
+   private List<Integer> getControlCommandIds(Element controlElem) {
+      List<Integer> commandIds = new ArrayList<Integer>();
+      List<Element> children = controlElem.getChildren();
+      for (Element childElem : children) {
+         commandIds.addAll(getChildCommandIds(childElem));
+         if (childElem.getChildren().size() > 0) {
+            List<Element> childChildElems = childElem.getChildren();
+            for (Element childChildElem : childChildElems) {
+               commandIds.addAll(getChildCommandIds(childChildElem));
+            }
+         }
+      }
+      return commandIds;
+   }
+   
+   private List<Integer> getChildCommandIds(Element elem) {
+      List<Integer> commandIds = new ArrayList<Integer>();
+      List<Element> childElems = elem.getChildren();
+      for (Element childElem : childElems) {
+         if("include".equalsIgnoreCase(childElem.getName())) {
+            if("command".equalsIgnoreCase(childElem.getAttributeValue("type"))) {
+               try {
+                  commandIds.add(Integer.parseInt(childElem.getAttributeValue("ref")));
+               } catch (Exception e) {}
+            }
+         }  
+      }
+      return commandIds;      
    }
    
    /**
@@ -292,13 +464,12 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    
    /* Find correct gateway for specified command */
    private Gateway getCommandGateway(Integer commandId) {
-      return gateways.get(commandGatewayMap.get(commandId));
-   }
-   
-   /* Get the protocol for a particular gateway */
-   private Protocol getProtocol(Element gatewayElement) {
-      Protocol protocol = (Protocol)protocolFactory.getProtocol(gatewayElement);
-      return protocol;
+      Gateway gateway = null;
+      if(gateways.size() > 0) {
+         Integer gatewayIndex = commandGatewayMap.get(commandId) - 1;
+         gateway = gateways.get(gatewayIndex);
+      }
+      return gateway;
    }
    
    public void setStatusCacheService(StatusCacheService statusCacheService) {

@@ -35,12 +35,6 @@ public interface ProtocolInterface
    public String getName();
    
    /**
-    * This method returns the current connection state each protocol
-    * needs it's own way of determining the current connection state.
-    */
-   public EnumGatewayConnectionState getConnectionState();
-   
-   /**
     * Opens connection to server and sets input and output streams
     */
    public EnumGatewayConnectionState connect();
@@ -53,14 +47,14 @@ public interface ProtocolInterface
    /**
     * This method writes to the outputStream of the connector
     */
-   public EnumProtocolIOResult send(String value, Map<String, String> args);
+   public void send(String value, Map<String, String> args);
    
    /**
     * This method reads from the inputStream of the connector then
     * converts it into a gateway friendly string that the gateway will be
     * able to filter using regex and possibly convert into a sensor type value
     */
-   public String read(String value, Map<String, String> args);
+   public String read(String value, Map<String, String> args) throws Exception;
    
    public void clearInputStream();
 

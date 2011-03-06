@@ -39,9 +39,11 @@ public interface GatewayManagerService {
    public void startGateways();
 
    /** Restart all the gateways */
-   public boolean restart();
+   public void restartGateways();
 
    public String getControllerXMLFileContent();
 
    public String getPanelXMLFileContent();
+   
+   public void trigger(String commandId, String commandValue);
 }

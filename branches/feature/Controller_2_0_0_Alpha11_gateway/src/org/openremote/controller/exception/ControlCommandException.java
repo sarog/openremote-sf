@@ -53,12 +53,6 @@ public class ControlCommandException extends ControllerException {
    
    public final static int INVALID_REFERENCE = 430;
 
-   public final static int PROTOCOL_BUILDER_ERROR = 431;
-
-   public final static int NO_SUCH_PROTOCOL_BUILDER = 432;
-
-   public final static int NO_SUCH_COMMAND_SCRIPT = 433;
-
    /**
     * Instantiates a new button command exception.
     */

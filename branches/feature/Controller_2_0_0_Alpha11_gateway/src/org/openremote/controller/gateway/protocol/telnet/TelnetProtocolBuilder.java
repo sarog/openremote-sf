@@ -47,8 +47,8 @@ public class TelnetProtocolBuilder implements ProtocolBuilder {
             telnetEvent.setPort(ele.getAttributeValue("value"));
          } else if("ipAddress".equals(ele.getAttributeValue("name"))){
             telnetEvent.setIp(ele.getAttributeValue("value"));
-         } else if("command".equals(ele.getAttributeValue("name"))){
-            telnetEvent.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("promptString".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setPromptString(ele.getAttributeValue("value"));
          } else if("timeout".equals(ele.getAttributeValue("timeout"))){
             telnetEvent.setTimeOut(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          }
