@@ -1,5 +1,6 @@
 Juha Lindfors
 Marcus Redeker
+Eric Bariaux
 Jaroslav Misura
 OpenRemote, Inc. employees and contractors.
 
