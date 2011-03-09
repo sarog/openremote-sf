@@ -27,6 +27,8 @@
 
 #define TWICE 2 // Constant of parsing panel.xml .
 
+@class LocalLogic;
+
 /**
  * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
  */
@@ -37,6 +39,7 @@
 	NSMutableArray *screens;
 	NSMutableArray *labels;
 	TabBar *tabBar;
+	LocalLogic *localLogic;
 	NSMutableArray *imageNames;
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
@@ -111,6 +114,7 @@
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,retain) NSMutableArray *labels;
 @property (nonatomic,retain) TabBar *tabBar;
+@property (nonatomic, readonly) LocalLogic *localLogic;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;
 @property	(nonatomic,copy) NSString *username;
