@@ -33,6 +33,9 @@
 #import "ControllerException.h"
 #import "Slider.h"
 #import "SliderView.h"
+#import "LocalLogic.h"
+#import "LocalCommand.h"
+#import "AppDelegate.h"
 
 @interface ControlView (Private)
 
@@ -98,25 +101,33 @@
 }
 
 #pragma mark delegate methods of Protocol ControlDelegate.
-- (void)sendCommandRequest:(NSString *)commandType{
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
-	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
-	
-	
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
-	
-	[CredentialUtil addCredentialToNSMutableURLRequest:request];
-	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-	
-	[location release];
-	[url	 release];
-	[request release];
-	[connection autorelease];	
+- (void)sendCommandRequest:(NSString *)commandType {
+	// Check for local command first
+	LocalCommand *localCommand = [[Definition sharedDefinition].localLogic commandForId:component.componentId];
+	if (localCommand) {
+		Class clazz = NSClassFromString(localCommand.className);
+		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);
+		[clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
+	} else {	
+		NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
+		NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
+		NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
+		
+		
+		//assemble put request 
+		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+		[request setURL:url];
+		[request setHTTPMethod:@"POST"];
+		
+		[CredentialUtil addCredentialToNSMutableURLRequest:request];
+		
+		URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+		
+		[location release];
+		[url	 release];
+		[request release];
+		[connection autorelease];
+	}
 }
 
 #pragma mark delegate methods of NSURLConnection abstract into Protocol URLConnectionHelperDelegate.
