@@ -25,6 +25,10 @@
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
 #import "ControllerException.h"
+#import "AppDelegate.h"
+#import "Definition.h"
+#import "LocalLogic.h"
+#import "LocalSensor.h"
 
 //retry polling after half a second
 #define POLLING_RETRY_DELAY 0.5
@@ -37,8 +41,22 @@
 	if (self = [super init]) {
 		isPolling = NO;
 		isError = NO;
-		[ids retain];
-		pollingStatusIds = ids;
+		
+		NSMutableArray *remoteSensors = [NSMutableArray array];
+		NSMutableArray *tempLocalSensors = [NSMutableArray array];
+		for (NSString *anId in [ids componentsSeparatedByString:@","]) {
+			LocalSensor *sensor = [[Definition sharedDefinition].localLogic sensorForId:[anId intValue]];
+			if (sensor) {
+				[tempLocalSensors addObject:sensor];
+			} else {
+				[remoteSensors addObject:anId];
+			}
+		}
+		if ([remoteSensors count] > 0) {
+			pollingStatusIds = [[remoteSensors componentsJoinedByString:@","] retain];
+		}
+		localSensors = [[NSArray arrayWithArray:tempLocalSensors] retain];
+		NSLog(@"pollingStatusIds %@", pollingStatusIds);
 	}
 	
 	return self;
@@ -50,38 +68,59 @@
 		return;
 	}
 	isPolling = YES;
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition statusRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@",pollingStatusIds]];
-	NSLog(@"%@", [location stringByAppendingFormat:@"/%@",pollingStatusIds]);
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"GET"];
 	
-	connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	// Only if remote sensors
+	if (pollingStatusIds) {
+		NSString *location = [[NSString alloc] initWithFormat:@"%@/%@", [ServerDefinition statusRESTUrl], pollingStatusIds];
+		NSURL *url = [[NSURL alloc] initWithString:location];
+		//assemble put request 
+		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+		[request setURL:url];
+		[request setHTTPMethod:@"GET"];
+		
+		connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
+		
+		[location release];
+		[url	 release];
+		[request release];
+		//[connection autorelease];
+
+		// TODO: EBR - connection will leak the way it's implemented, to check
+	}
 	
-	[location release];
-	[url	 release];
-	[request release];
-	//[connection autorelease];	
+	// For local sensors, schedule timers to handle calling the required method
+	localSensorTimers = [[NSMutableDictionary dictionaryWithCapacity:[localSensors count]] retain];
+	for (LocalSensor *sensor in localSensors) {
+		[localSensorTimers setObject:[NSTimer scheduledTimerWithTimeInterval:(sensor.refreshRate / 1000.0) target:self selector:@selector(handleLocalSensorForTimer:) userInfo:sensor repeats:YES]
+							  forKey:[NSNumber numberWithInt:sensor.componentId]];
+	}
 }
 
 - (void)doPolling {
 	NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition pollingRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]];
-	NSLog(@"%@", [location stringByAppendingFormat:@"/%@/%@",deviceId,pollingStatusIds]);
+	NSString *location = [[NSString alloc] initWithFormat:@"%@/%@/%@", [ServerDefinition pollingRESTUrl], deviceId, pollingStatusIds];
+	NSURL *url = [[NSURL alloc] initWithString:location];
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
 	[request setHTTPMethod:@"GET"];
 	
-	connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
 	
 	[location release];
 	[url	 release];
 	[request release];
 	//[connection autorelease];	
+	
+	// TODO: EBR - connection will leak the way it's implemented, to check
+}
+
+- (void)cancelLocalSensors {
+	// Cancel local sensors
+	for (NSTimer *timer in [localSensorTimers allValues]) {
+		[timer invalidate];
+	}
+	[localSensorTimers removeAllObjects];	
 }
 
 - (void)cancelPolling {
@@ -89,8 +128,21 @@
 	if (connection) {
 		[connection cancelConnection];
 	}
+	[self cancelLocalSensors];
 }
 
+- (void)handleLocalSensorForTimer:(NSTimer*)theTimer {
+	LocalSensor *sensor = (LocalSensor *)[theTimer userInfo];
+
+	Class clazz = NSClassFromString(sensor.className);
+	SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", sensor.methodName]);
+	NSString *retValue = [clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
+
+	PollingStatusParserDelegate *delegate = [[PollingStatusParserDelegate alloc] init];
+	[delegate publishNewValue:retValue forSensorId:[NSString stringWithFormat:@"%d", sensor.componentId]];
+	[delegate release];
+	
+}
 
 - (void)handleServerResponseWithStatusCode:(int) statusCode {
 
@@ -185,6 +237,9 @@
 - (void)dealloc {
 	[connection release];
 	[pollingStatusIds release];
+	[self cancelLocalSensors];
+	[localSensors release];
+	[localSensorTimers release];
 	[updateController release];
 	[super dealloc];
 }

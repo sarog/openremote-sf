@@ -33,7 +33,7 @@
  'id' is sensor id, element body is latest status.
  so here sensor '1' is 'on'; sensor '2' is 'off'.
 */
-@interface PollingStatusParserDelegate : NSObject {
+@interface PollingStatusParserDelegate : NSObject <NSXMLParserDelegate> {
 	
 	NSString *lastId;                 //last sensor id while parsing
 	NSMutableDictionary *statusMap;   //contains sensor id and related latest status value
@@ -43,5 +43,11 @@
 @property (nonatomic,readonly)	NSString *lastId;
 @property (nonatomic,readonly)	NSMutableDictionary *statusMap;
 
+/**
+ * The sensor value is usually published as part of parsing the XML reply from the controller.
+ * However, there are certain cases (e.g. local sensors) where we want to be able to update a sensor value from "the outside".
+ * This method provides this ability and appropriately notifies observers of the change.
+ */
+- (void)publishNewValue:(NSString *)status forSensorId:(NSString *)sensorId;
 
 @end
