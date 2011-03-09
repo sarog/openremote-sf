@@ -160,7 +160,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    
    /**
     * *********************************
-    * GATEWAY ELEMENT BUILDER CODE END
+    * GATEWAY ELEMENT BUILDER CODE START
     * *********************************
     */
    
@@ -173,15 +173,15 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       if (commandElements != null) {
          for (Element commandElement : commandElements)
          {
-            Element gatewayElement = getGatewayElement(commandElement);            
+            Element gatewayElement = getGatewayElement(commandElement);
             if(gatewayElement != null) {
-               String gatewayStr = gatewayElement.toString();
+               String gatewayConnStr = getGatewayConnectionString(gatewayElement);
                int matchedId = -1;
                int gatewayIndex = 0;
                for (Element gatewayElem : gatewayElements) {
-                  if(gatewayStr.equals(gatewayElem.toString())) {
+                  if(gatewayConnStr.equals(getGatewayConnectionString(gatewayElem))) {
                      matchedId = gatewayIndex;
-                     break;  
+                     break;
                   }
                   gatewayIndex++;
                }
@@ -206,6 +206,27 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
          gatewayElement = buildGatewayElement(commandElement, protocolType, props);
       }
       return gatewayElement;
+   }
+   
+   private String getGatewayConnectionString(Element gatewayElement) {
+      String connectionStr = "";
+      String protocolType = gatewayElement.getAttributeValue("protocol");
+      List<Element> propertyEles = gatewayElement.getChildren();
+      if ("telnet".equals(protocolType)) {
+         String ipAddress = "";
+         String port = "";
+         for(Element ele : propertyEles){
+              if("ipAddress".equals(ele.getAttributeValue("name"))) {
+                 ipAddress = ele.getAttributeValue("value");
+              } else if ("port".equals(ele.getAttributeValue("name"))) {
+                 port = ele.getAttributeValue("value");
+              }
+         }
+         if (!"".equals(port) && !"".equals(ipAddress)) {
+            connectionStr = "ipAddress=" + ipAddress + ";port=" + port;  
+         }
+      }
+      return connectionStr;
    }
    
    private Element buildGatewayElement(Element element, String protocolType, List<String> props) {
@@ -251,17 +272,17 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
     * belong to this gateway, adds prcessing but allows existing XML schema to be used.
     */
    public List<Command> getCommands(Element gatewayElement, List<Element> commandElements) {
-      // Cycle through command Elements and find the ones that share the same gateway protocol settings
       List<Command> commands = new ArrayList<Command> ();
-      // Fudge for gatewayID as currently this doesn't exist in the XML
-      int gatewayId = this.gateways.size();
-      if (commandElements != null) {
+      String gatewayConnStr = "";
+      
+      if (commandElements != null && gatewayElement != null) {
+         gatewayConnStr = getGatewayConnectionString(gatewayElement);
+         // Cycle through command Elements and find the ones that share the same gateway protocol settings
          for (Element commandElement : commandElements)
          {
-            Element commandGatewayElement = getGatewayElement(commandElement);            
-            if(commandGatewayElement != null) {
-               if (commandGatewayElement.toString().equals(gatewayElement.toString())) {
-                  // This command belongs to this gateway
+            Element tempGatewayElement = getGatewayElement(commandElement);
+            if(tempGatewayElement != null) {
+               if(gatewayConnStr.equals(getGatewayConnectionString(tempGatewayElement))) {
                   Integer commandId = Integer.parseInt(commandElement.getAttributeValue("id"));
                   Command command = new Command(commandId, commandElement);
                   commands.add(command);
@@ -269,10 +290,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
             }
          }
       }
-      /*
-       * Check that at least one command has been retrieved for this gateway
-       * if not throw gateway exception
-       */
+      
       if (commands.size() == 0) {
          throw new GatewayException("No gateway commands found.");
       }
@@ -430,30 +448,33 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       List<Integer> commandIds = new ArrayList<Integer>();
       List<Element> children = controlElem.getChildren();
       for (Element childElem : children) {
-         commandIds.addAll(getChildCommandIds(childElem));
+         Integer commandId = getElemCommandId(childElem);
+         if (commandId != null) {
+            commandIds.add(commandId);
+         }
          if (childElem.getChildren().size() > 0) {
             List<Element> childChildElems = childElem.getChildren();
             for (Element childChildElem : childChildElems) {
-               commandIds.addAll(getChildCommandIds(childChildElem));
+               commandId = getElemCommandId(childChildElem);
+               if (commandId != null) {
+                  commandIds.add(commandId);
+               }
             }
          }
       }
       return commandIds;
    }
    
-   private List<Integer> getChildCommandIds(Element elem) {
-      List<Integer> commandIds = new ArrayList<Integer>();
-      List<Element> childElems = elem.getChildren();
-      for (Element childElem : childElems) {
-         if("include".equalsIgnoreCase(childElem.getName())) {
-            if("command".equalsIgnoreCase(childElem.getAttributeValue("type"))) {
-               try {
-                  commandIds.add(Integer.parseInt(childElem.getAttributeValue("ref")));
-               } catch (Exception e) {}
-            }
-         }  
+   private Integer getElemCommandId(Element elem) {
+      Integer commandId = null;
+      if("include".equalsIgnoreCase(elem.getName())) {
+         if("command".equalsIgnoreCase(elem.getAttributeValue("type"))) {
+            try {
+               commandId = (Integer.parseInt(elem.getAttributeValue("ref")));
+            } catch (Exception e) {}
+         }
       }
-      return commandIds;      
+      return commandId;      
    }
    
    /**

@@ -247,11 +247,11 @@ public class Gateway extends Thread
    		if (this.connectionState == EnumGatewayConnectionState.CONNECTED) {
    			break;
    		}
-   		if (sleepPeriod < SLEEP_INTERVAL_MAX) {
-   		   sleepPeriod = sleepPeriod + 1000;
-   	   }
       	String sleepSeconds = Integer.toString(sleepPeriod/1000);
-      	logger.error("Gateway [" +  this.protocol.getName() + "] connection lost going to sleep for " + sleepSeconds + " seconds.");
+      	
+      	// Inform user that connection has failed; exception will catch it also and add to log file
+      	System.out.println("Cannot establish Gateway connection [" +  this.protocol.getName() + "] so going to sleep for " + sleepSeconds + " seconds.");
+      	
          try
          {
       		Thread.sleep(sleepPeriod);
@@ -259,6 +259,9 @@ public class Gateway extends Thread
             // TODO : must be fixed to interrupt correctly
             logger.error("Gateway thread is interrupted", e);
       	}
+   		if (sleepPeriod < SLEEP_INTERVAL_MAX) {
+   		   sleepPeriod = sleepPeriod + 5000;
+   	   }
 	   }
    }
    

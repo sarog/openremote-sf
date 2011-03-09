@@ -177,7 +177,7 @@ public class TelnetProtocol extends Protocol {
          }         
       }
       catch (Exception e) {
-         logger.error("Telnet protocol connection failed to connect. " + e.getMessage(), e);
+         logger.warn("Telnet protocol connection failed to connect. " + e.getMessage(), e);
       }
       return responseState;
    }
