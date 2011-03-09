@@ -45,6 +45,7 @@ extern NSString *const PASSIVE;
 extern NSString *const MIN_VALUE;
 extern NSString *const MAX_VALUE;
 extern NSString *const IMAGE;
+extern NSString *const WEB;
 extern NSString *const TRACK_IMAGE;
 
 extern NSString *const LABEL;
@@ -57,6 +58,8 @@ extern NSString *const DEFAULT;
 extern NSString *const PRESSED;
 
 extern NSString *const SRC;
+extern NSString *const USERNAME;
+extern NSString *const PASSWORD;
 extern NSString *const STYLE;
 
 extern NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT;
@@ -83,6 +86,14 @@ extern NSString *const TABBAR;
 extern NSString *const ITEM;
 
 extern NSString *const NAVIGATE;
+
+extern NSString *const LOCALLOGIC;
+extern NSString *const CLASS;
+extern NSString *const METHOD;
+extern NSString *const REFRESH_RATE;
+
+extern NSString *const COMMAND;
+extern NSString *const TASK;
 
 
 /* This is an abstract class for all entities (element) in panel.xml.
