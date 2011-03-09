@@ -39,6 +39,37 @@
 		33CCF02C128A36FB001686C5 /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33CCF02B128A36FB001686C5 /* GetPanelsController.m */; };
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
+		608FBAAA131FECC300C9089F /* dtmf.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBAA5131FECC300C9089F /* dtmf.m */; };
+		608FBAAB131FECC300C9089F /* ring.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBAA7131FECC300C9089F /* ring.m */; };
+		608FBAAC131FECC300C9089F /* call.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBAA9131FECC300C9089F /* call.m */; };
+		608FBB00131FF04800C9089F /* NSNotificationAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBAFF131FF04800C9089F /* NSNotificationAdditions.m */; };
+		608FBB20131FF1EB00C9089F /* libpj-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB1F131FF1EB00C9089F /* libpj-arm-apple-darwin9.a */; };
+		608FBB22131FF1F700C9089F /* libpjlib-util-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB21131FF1F700C9089F /* libpjlib-util-arm-apple-darwin9.a */; };
+		608FBB27131FF20500C9089F /* libpjmedia-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB23131FF20500C9089F /* libpjmedia-arm-apple-darwin9.a */; };
+		608FBB28131FF20500C9089F /* libpjmedia-audiodev-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB24131FF20500C9089F /* libpjmedia-audiodev-arm-apple-darwin9.a */; };
+		608FBB29131FF20500C9089F /* libpjmedia-codec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB25131FF20500C9089F /* libpjmedia-codec-arm-apple-darwin9.a */; };
+		608FBB2A131FF20500C9089F /* libpjsdp-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB26131FF20500C9089F /* libpjsdp-arm-apple-darwin9.a */; };
+		608FBB2C131FF21200C9089F /* libpjnath-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB2B131FF21200C9089F /* libpjnath-arm-apple-darwin9.a */; };
+		608FBB31131FF21E00C9089F /* libpjsip-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB2D131FF21E00C9089F /* libpjsip-arm-apple-darwin9.a */; };
+		608FBB32131FF21E00C9089F /* libpjsip-simple-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB2E131FF21E00C9089F /* libpjsip-simple-arm-apple-darwin9.a */; };
+		608FBB33131FF21E00C9089F /* libpjsip-ua-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB2F131FF21E00C9089F /* libpjsip-ua-arm-apple-darwin9.a */; };
+		608FBB34131FF21E00C9089F /* libpjsua-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB30131FF21E00C9089F /* libpjsua-arm-apple-darwin9.a */; };
+		608FBB3C131FF22D00C9089F /* libg7221codec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB35131FF22D00C9089F /* libg7221codec-arm-apple-darwin9.a */; };
+		608FBB3D131FF22D00C9089F /* libgsmcodec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB36131FF22D00C9089F /* libgsmcodec-arm-apple-darwin9.a */; };
+		608FBB3E131FF22D00C9089F /* libilbccodec-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB37131FF22D00C9089F /* libilbccodec-arm-apple-darwin9.a */; };
+		608FBB3F131FF22D00C9089F /* libmilenage-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB38131FF22D00C9089F /* libmilenage-arm-apple-darwin9.a */; };
+		608FBB40131FF22D00C9089F /* libresample-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB39131FF22D00C9089F /* libresample-arm-apple-darwin9.a */; };
+		608FBB41131FF22D00C9089F /* libspeex-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB3A131FF22D00C9089F /* libspeex-arm-apple-darwin9.a */; };
+		608FBB42131FF22D00C9089F /* libsrtp-arm-apple-darwin9.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB3B131FF22D00C9089F /* libsrtp-arm-apple-darwin9.a */; };
+		608FBB77131FF90500C9089F /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
+		608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
+		608FBDD113211DED00C9089F /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
+		608FBDD5132120D200C9089F /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
+		608FBDD8132120D700C9089F /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
+		608FBDDB132120DD00C9089F /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
+		608FBE8F132134BE00C9089F /* TimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBE8E132134BE00C9089F /* TimeManager.m */; };
+		60A85C85131F965500C7918A /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
+		60A85C96131F972000C7918A /* ORWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C95131F972000C7918A /* ORWebView.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
@@ -288,6 +319,50 @@
 		33CCF02B128A36FB001686C5 /* GetPanelsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPanelsController.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
+		608FBAA4131FECC300C9089F /* dtmf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dtmf.h; sourceTree = "<group>"; };
+		608FBAA5131FECC300C9089F /* dtmf.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = dtmf.m; sourceTree = "<group>"; };
+		608FBAA6131FECC300C9089F /* ring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ring.h; sourceTree = "<group>"; };
+		608FBAA7131FECC300C9089F /* ring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ring.m; sourceTree = "<group>"; };
+		608FBAA8131FECC300C9089F /* call.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = call.h; sourceTree = "<group>"; };
+		608FBAA9131FECC300C9089F /* call.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = call.m; sourceTree = "<group>"; };
+		608FBAFD131FF04800C9089F /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
+		608FBAFE131FF04800C9089F /* NSNotificationAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSNotificationAdditions.h; sourceTree = "<group>"; };
+		608FBAFF131FF04800C9089F /* NSNotificationAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSNotificationAdditions.m; sourceTree = "<group>"; };
+		608FBB1F131FF1EB00C9089F /* libpj-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpj-arm-apple-darwin9.a"; path = "pjsip/pjlib/lib/libpj-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB21131FF1F700C9089F /* libpjlib-util-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjlib-util-arm-apple-darwin9.a"; path = "pjsip/pjlib-util/lib/libpjlib-util-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB23131FF20500C9089F /* libpjmedia-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-arm-apple-darwin9.a"; path = "pjsip/pjmedia/lib/libpjmedia-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB24131FF20500C9089F /* libpjmedia-audiodev-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-audiodev-arm-apple-darwin9.a"; path = "pjsip/pjmedia/lib/libpjmedia-audiodev-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB25131FF20500C9089F /* libpjmedia-codec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjmedia-codec-arm-apple-darwin9.a"; path = "pjsip/pjmedia/lib/libpjmedia-codec-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB26131FF20500C9089F /* libpjsdp-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsdp-arm-apple-darwin9.a"; path = "pjsip/pjmedia/lib/libpjsdp-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB2B131FF21200C9089F /* libpjnath-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjnath-arm-apple-darwin9.a"; path = "pjsip/pjnath/lib/libpjnath-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB2D131FF21E00C9089F /* libpjsip-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-arm-apple-darwin9.a"; path = "pjsip/pjsip/lib/libpjsip-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB2E131FF21E00C9089F /* libpjsip-simple-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-simple-arm-apple-darwin9.a"; path = "pjsip/pjsip/lib/libpjsip-simple-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB2F131FF21E00C9089F /* libpjsip-ua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsip-ua-arm-apple-darwin9.a"; path = "pjsip/pjsip/lib/libpjsip-ua-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB30131FF21E00C9089F /* libpjsua-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpjsua-arm-apple-darwin9.a"; path = "pjsip/pjsip/lib/libpjsua-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB35131FF22D00C9089F /* libg7221codec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libg7221codec-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libg7221codec-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB36131FF22D00C9089F /* libgsmcodec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgsmcodec-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libgsmcodec-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB37131FF22D00C9089F /* libilbccodec-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libilbccodec-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libilbccodec-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB38131FF22D00C9089F /* libmilenage-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libmilenage-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libmilenage-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB39131FF22D00C9089F /* libresample-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libresample-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libresample-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB3A131FF22D00C9089F /* libspeex-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libspeex-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libspeex-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB3B131FF22D00C9089F /* libsrtp-arm-apple-darwin9.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsrtp-arm-apple-darwin9.a"; path = "pjsip/third_party/lib/libsrtp-arm-apple-darwin9.a"; sourceTree = "<group>"; };
+		608FBB75131FF90500C9089F /* SipController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SipController.h; sourceTree = "<group>"; };
+		608FBB76131FF90500C9089F /* SipController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SipController.m; sourceTree = "<group>"; };
+		608FBB9D131FF9C300C9089F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		608FBDCF13211DED00C9089F /* LocalLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalLogic.h; sourceTree = "<group>"; };
+		608FBDD013211DED00C9089F /* LocalLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalLogic.m; sourceTree = "<group>"; };
+		608FBDD3132120D200C9089F /* LocalSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalSensor.h; sourceTree = "<group>"; };
+		608FBDD4132120D200C9089F /* LocalSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalSensor.m; sourceTree = "<group>"; };
+		608FBDD6132120D700C9089F /* LocalCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalCommand.h; sourceTree = "<group>"; };
+		608FBDD7132120D700C9089F /* LocalCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommand.m; sourceTree = "<group>"; };
+		608FBDD9132120DD00C9089F /* LocalTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalTask.h; sourceTree = "<group>"; };
+		608FBDDA132120DD00C9089F /* LocalTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalTask.m; sourceTree = "<group>"; };
+		608FBE8D132134BE00C9089F /* TimeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeManager.h; sourceTree = "<group>"; };
+		608FBE8E132134BE00C9089F /* TimeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeManager.m; sourceTree = "<group>"; };
+		60A85C83131F965500C7918A /* Web.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Web.h; sourceTree = "<group>"; };
+		60A85C84131F965500C7918A /* Web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Web.m; sourceTree = "<group>"; };
+		60A85C94131F972000C7918A /* ORWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORWebView.h; sourceTree = "<group>"; };
+		60A85C95131F972000C7918A /* ORWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORWebView.m; sourceTree = "<group>"; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLConnectionHelper.m; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
@@ -503,6 +578,25 @@
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */,
+				608FBB20131FF1EB00C9089F /* libpj-arm-apple-darwin9.a in Frameworks */,
+				608FBB22131FF1F700C9089F /* libpjlib-util-arm-apple-darwin9.a in Frameworks */,
+				608FBB27131FF20500C9089F /* libpjmedia-arm-apple-darwin9.a in Frameworks */,
+				608FBB28131FF20500C9089F /* libpjmedia-audiodev-arm-apple-darwin9.a in Frameworks */,
+				608FBB29131FF20500C9089F /* libpjmedia-codec-arm-apple-darwin9.a in Frameworks */,
+				608FBB2A131FF20500C9089F /* libpjsdp-arm-apple-darwin9.a in Frameworks */,
+				608FBB2C131FF21200C9089F /* libpjnath-arm-apple-darwin9.a in Frameworks */,
+				608FBB31131FF21E00C9089F /* libpjsip-arm-apple-darwin9.a in Frameworks */,
+				608FBB32131FF21E00C9089F /* libpjsip-simple-arm-apple-darwin9.a in Frameworks */,
+				608FBB33131FF21E00C9089F /* libpjsip-ua-arm-apple-darwin9.a in Frameworks */,
+				608FBB34131FF21E00C9089F /* libpjsua-arm-apple-darwin9.a in Frameworks */,
+				608FBB3C131FF22D00C9089F /* libg7221codec-arm-apple-darwin9.a in Frameworks */,
+				608FBB3D131FF22D00C9089F /* libgsmcodec-arm-apple-darwin9.a in Frameworks */,
+				608FBB3E131FF22D00C9089F /* libilbccodec-arm-apple-darwin9.a in Frameworks */,
+				608FBB3F131FF22D00C9089F /* libmilenage-arm-apple-darwin9.a in Frameworks */,
+				608FBB40131FF22D00C9089F /* libresample-arm-apple-darwin9.a in Frameworks */,
+				608FBB41131FF22D00C9089F /* libspeex-arm-apple-darwin9.a in Frameworks */,
+				608FBB42131FF22D00C9089F /* libsrtp-arm-apple-darwin9.a in Frameworks */,
+				608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,6 +621,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				608FBE8C132134B300C9089F /* Local Logic */,
+				608FBB74131FF8F900C9089F /* SIP */,
+				608FBAFA131FF02A00C9089F /* Siphon */,
 				8CC6364210BD35E2009C25C9 /* delegate */,
 				33981AFD10B0F1240076DB59 /* service */,
 				8C267AB10FD27DE20054743E /* exception */,
@@ -574,6 +671,12 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				608FBAA4131FECC300C9089F /* dtmf.h */,
+				608FBAA5131FECC300C9089F /* dtmf.m */,
+				608FBAA6131FECC300C9089F /* ring.h */,
+				608FBAA7131FECC300C9089F /* ring.m */,
+				608FBAA8131FECC300C9089F /* call.h */,
+				608FBAA9131FECC300C9089F /* call.m */,
 				32CA4F630368D1EE00C91783 /* openremote_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
@@ -606,6 +709,24 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				608FBB35131FF22D00C9089F /* libg7221codec-arm-apple-darwin9.a */,
+				608FBB36131FF22D00C9089F /* libgsmcodec-arm-apple-darwin9.a */,
+				608FBB37131FF22D00C9089F /* libilbccodec-arm-apple-darwin9.a */,
+				608FBB38131FF22D00C9089F /* libmilenage-arm-apple-darwin9.a */,
+				608FBB39131FF22D00C9089F /* libresample-arm-apple-darwin9.a */,
+				608FBB3A131FF22D00C9089F /* libspeex-arm-apple-darwin9.a */,
+				608FBB3B131FF22D00C9089F /* libsrtp-arm-apple-darwin9.a */,
+				608FBB2D131FF21E00C9089F /* libpjsip-arm-apple-darwin9.a */,
+				608FBB2E131FF21E00C9089F /* libpjsip-simple-arm-apple-darwin9.a */,
+				608FBB2F131FF21E00C9089F /* libpjsip-ua-arm-apple-darwin9.a */,
+				608FBB30131FF21E00C9089F /* libpjsua-arm-apple-darwin9.a */,
+				608FBB2B131FF21200C9089F /* libpjnath-arm-apple-darwin9.a */,
+				608FBB23131FF20500C9089F /* libpjmedia-arm-apple-darwin9.a */,
+				608FBB24131FF20500C9089F /* libpjmedia-audiodev-arm-apple-darwin9.a */,
+				608FBB25131FF20500C9089F /* libpjmedia-codec-arm-apple-darwin9.a */,
+				608FBB26131FF20500C9089F /* libpjsdp-arm-apple-darwin9.a */,
+				608FBB21131FF1F700C9089F /* libpjlib-util-arm-apple-darwin9.a */,
+				608FBB1F131FF1EB00C9089F /* libpj-arm-apple-darwin9.a */,
 				33981B3410B119BC0076DB59 /* libsqlite3.dylib */,
 				331A591510AD6D21001AB869 /* SenTestingKit.framework */,
 				8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */,
@@ -614,6 +735,7 @@
 				8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				608FBB9D131FF9C300C9089F /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -669,6 +791,34 @@
 				33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */,
 			);
 			name = viewbase;
+			sourceTree = "<group>";
+		};
+		608FBAFA131FF02A00C9089F /* Siphon */ = {
+			isa = PBXGroup;
+			children = (
+				608FBAFD131FF04800C9089F /* constants.h */,
+				608FBAFE131FF04800C9089F /* NSNotificationAdditions.h */,
+				608FBAFF131FF04800C9089F /* NSNotificationAdditions.m */,
+			);
+			name = Siphon;
+			sourceTree = "<group>";
+		};
+		608FBB74131FF8F900C9089F /* SIP */ = {
+			isa = PBXGroup;
+			children = (
+				608FBB75131FF90500C9089F /* SipController.h */,
+				608FBB76131FF90500C9089F /* SipController.m */,
+			);
+			name = SIP;
+			sourceTree = "<group>";
+		};
+		608FBE8C132134B300C9089F /* Local Logic */ = {
+			isa = PBXGroup;
+			children = (
+				608FBE8D132134BE00C9089F /* TimeManager.h */,
+				608FBE8E132134BE00C9089F /* TimeManager.m */,
+			);
+			name = "Local Logic";
 			sourceTree = "<group>";
 		};
 		8C267AB10FD27DE20054743E /* exception */ = {
@@ -858,6 +1008,16 @@
 				8CECF88710EB6E3300C0E1BB /* User.m */,
 				8CECF88810EB6E3300C0E1BB /* XMLEntity.h */,
 				8CECF88910EB6E3300C0E1BB /* XMLEntity.m */,
+				60A85C83131F965500C7918A /* Web.h */,
+				60A85C84131F965500C7918A /* Web.m */,
+				608FBDCF13211DED00C9089F /* LocalLogic.h */,
+				608FBDD013211DED00C9089F /* LocalLogic.m */,
+				608FBDD3132120D200C9089F /* LocalSensor.h */,
+				608FBDD4132120D200C9089F /* LocalSensor.m */,
+				608FBDD6132120D700C9089F /* LocalCommand.h */,
+				608FBDD7132120D700C9089F /* LocalCommand.m */,
+				608FBDD9132120DD00C9089F /* LocalTask.h */,
+				608FBDDA132120DD00C9089F /* LocalTask.m */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -891,6 +1051,8 @@
 				8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */,
 				338D2ED410D8AADB0043BFE9 /* ClippedUIImage.h */,
 				338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */,
+				60A85C94131F972000C7918A /* ORWebView.h */,
+				60A85C95131F972000C7918A /* ORWebView.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -991,6 +1153,7 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -1187,6 +1350,18 @@
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
 				8CEFDA8C11BF35EE00CEDC24 /* LoadingHUDView.m in Sources */,
 				33CCF02C128A36FB001686C5 /* GetPanelsController.m in Sources */,
+				60A85C85131F965500C7918A /* Web.m in Sources */,
+				60A85C96131F972000C7918A /* ORWebView.m in Sources */,
+				608FBAAA131FECC300C9089F /* dtmf.m in Sources */,
+				608FBAAB131FECC300C9089F /* ring.m in Sources */,
+				608FBAAC131FECC300C9089F /* call.m in Sources */,
+				608FBB00131FF04800C9089F /* NSNotificationAdditions.m in Sources */,
+				608FBB77131FF90500C9089F /* SipController.m in Sources */,
+				608FBDD113211DED00C9089F /* LocalLogic.m in Sources */,
+				608FBDD5132120D200C9089F /* LocalSensor.m in Sources */,
+				608FBDD8132120D700C9089F /* LocalCommand.m in Sources */,
+				608FBDDB132120DD00C9089F /* LocalTask.m in Sources */,
+				608FBE8F132134BE00C9089F /* TimeManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1293,8 +1468,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1303,16 +1478,32 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					pjsip/pjnath/include,
+					pjsip/pjmedia/include,
+					"pjsip/pjlib-util/include",
+					pjsip/pjsip/include,
+					pjsip/pjlib/include,
+				);
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/pjsip/pjlib/lib\"",
+					"\"$(SRCROOT)/pjsip/pjlib-util/lib\"",
+					"\"$(SRCROOT)/pjsip/pjmedia/lib\"",
+					"\"$(SRCROOT)/pjsip/pjnath/lib\"",
+					"\"$(SRCROOT)/pjsip/pjsip/lib\"",
+					"\"$(SRCROOT)/pjsip/third_party/lib\"",
+				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = OpenRemote;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = "Simulator 3.2";
@@ -1417,6 +1608,15 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/pjsip/pjlib/lib\"",
+					"\"$(SRCROOT)/pjsip/pjlib-util/lib\"",
+					"\"$(SRCROOT)/pjsip/pjmedia/lib\"",
+					"\"$(SRCROOT)/pjsip/pjnath/lib\"",
+					"\"$(SRCROOT)/pjsip/pjsip/lib\"",
+					"\"$(SRCROOT)/pjsip/third_party/lib\"",
+				);
 				PRODUCT_NAME = OpenRemote;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1464,6 +1664,15 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/pjsip/pjlib/lib\"",
+					"\"$(SRCROOT)/pjsip/pjlib-util/lib\"",
+					"\"$(SRCROOT)/pjsip/pjmedia/lib\"",
+					"\"$(SRCROOT)/pjsip/pjnath/lib\"",
+					"\"$(SRCROOT)/pjsip/pjsip/lib\"",
+					"\"$(SRCROOT)/pjsip/third_party/lib\"",
+				);
 				PRODUCT_NAME = OpenRemote;
 				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
@@ -1505,8 +1714,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -1514,8 +1723,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
+				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = "Simulator 3.2";
