@@ -53,6 +53,7 @@ NSString *const VERTICAL = @"vertical";
 NSString *const PASSIVE = @"passive";
 NSString *const MIN_VALUE = @"min";
 NSString *const MAX_VALUE = @"max";
+NSString *const WEB = @"web";
 NSString *const IMAGE = @"image";
 NSString *const TRACK_IMAGE = @"trackImage";
 
@@ -66,6 +67,8 @@ NSString *const DEFAULT = @"default";
 NSString *const PRESSED = @"pressed";
 
 NSString *const SRC = @"src";
+NSString *const USERNAME = @"username";
+NSString *const PASSWORD = @"password";
 NSString *const STYLE = @"style";
 
 NSString *const BG_IMAGE_RELATIVE_POSITION_LEFT = @"LEFT";
@@ -92,6 +95,15 @@ NSString *const TABBAR = @"tabbar";
 NSString *const ITEM = @"item";
 
 NSString *const NAVIGATE = @"navigate";
+
+NSString *const LOCALLOGIC = @"locallogic";
+
+NSString *const CLASS = @"class";
+NSString *const METHOD = @"method";
+NSString *const REFRESH_RATE = @"refreshRate";
+
+NSString *const COMMAND = @"command";
+NSString *const TASK = @"task";
 
 
 // NOTE: This is an abstract method, must be implemented in subclass
