@@ -51,7 +51,7 @@ static Definition *myInstance = nil;
 @implementation Definition
 
 
-@synthesize isUpdating, lastUpdateTime, groups, screens, labels, tabBar, imageNames, loading, username, password;
+@synthesize isUpdating, lastUpdateTime, groups, screens, labels, tabBar, localLogic, imageNames, loading, username, password;
 
 - (id)init {			
 	if (myInstance != nil) {
@@ -296,6 +296,9 @@ static Definition *myInstance = nil;
 	} else if ([elementName isEqualToString:@"tabbar"]) {
 		NSLog(@"start at tabbar");
 		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	} else if ([elementName isEqualToString:@"locallogic"]) {
+		NSLog(@"start at locallogic");
+		localLogic = [[LocalLogic alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}
 }
 
