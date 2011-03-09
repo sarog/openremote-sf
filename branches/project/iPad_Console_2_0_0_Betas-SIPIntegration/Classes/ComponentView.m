@@ -25,6 +25,8 @@
 #import "LabelView.h"
 #import "Image.h"
 #import "ImageView.h"
+#import "Web.h"
+#import "ORWebView.h"
 #import "Control.h"
 
 @implementation ComponentView
@@ -42,6 +44,8 @@
 		componentView = [LabelView alloc];
 	} else if ([component isKindOfClass:[Image class]]) {
 		componentView	= [ImageView alloc];
+	} else if ([component isKindOfClass:[Web class]]) {
+		componentView = [ORWebView alloc];
 	} else {
 		return [ControlView buildWithControl:(Control *)component frame:frame];
 	}

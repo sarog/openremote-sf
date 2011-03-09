@@ -22,6 +22,7 @@
 #import "Component.h"
 #import "Control.h"
 #import "Label.h"
+#import "Web.h"
 #import "Image.h"
 #import "Definition.h"
 
@@ -35,6 +36,8 @@
 		newComponent = [Label alloc];
 	} else if ([componentType isEqualToString:IMAGE]) {
 		newComponent = [Image alloc];
+	} else if ([componentType isEqualToString:WEB]) {
+		newComponent = [Web alloc];
 	} else {
 		return [Control buildWithXMLParser:componentType parser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 	}
