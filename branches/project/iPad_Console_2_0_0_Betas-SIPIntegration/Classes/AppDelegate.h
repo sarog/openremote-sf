@@ -32,6 +32,8 @@
 #import "UpdateController.h"
 #import "DefaultViewController.h"
 
+@class SipController;
+
 /*
  * This is the entrypoint of the application.
  *  After application have been started applicationDidFinishLaunching method will be called.
@@ -42,9 +44,13 @@
 	UIView *defaultView;
 	DefaultViewController *defaultViewController;
 	UpdateController *updateController;
+
+	SipController *sipController;
+	NSMutableDictionary *localContext;
 }
 
-
+@property (readonly) SipController *sipController;
+@property (readonly) NSMutableDictionary *localContext;
 
 @end
 

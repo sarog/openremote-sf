@@ -27,6 +27,7 @@
 #import "AppDelegate.h"
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
+#import "SipController.h"
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -39,8 +40,12 @@
 
 @implementation AppDelegate
 
+@synthesize sipController, localContext;
+
 //Entry point method
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+	
+	localContext = [[NSMutableDictionary alloc] init];
 	
 	// Load logined iphone user last time.
 	[[DataBaseService sharedDataBaseService] initLastLoginUser];
@@ -60,6 +65,9 @@
     // - (void)didUseLocalCache:(NSString *)errorMessage;
     // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
+	
+	sipController = [[SipController alloc] init];
+	[sipController sipConnect];
 	
 	[self checkConfigAndUpdate];
 	
@@ -133,7 +141,8 @@
 	[updateController release];
 	[defaultViewController release];	
 	[window release];	
-	
+	[sipController release];
+	[localContext release];
 	[super dealloc];
 }
 
