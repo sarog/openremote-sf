@@ -31,6 +31,8 @@
 @interface PollingHelper : NSObject <URLConnectionHelperDelegate> {
 	
 	NSString *pollingStatusIds;
+	NSArray *localSensors;
+	NSMutableDictionary *localSensorTimers;
 	BOOL isPolling;
 	BOOL isError;
 	URLConnectionHelper *connection;

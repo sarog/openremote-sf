@@ -24,7 +24,6 @@
 
 @implementation PollingStatusParserDelegate
 
-
 @synthesize lastId, statusMap;
 
 - (id)init {
@@ -56,6 +55,11 @@
 		// notify latest sensor status to component listener by sensor id
 		[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[lastId intValue]] object:self];
 	}
+}
+
+- (void)publishNewValue:(NSString *)status forSensorId:(NSString *)sensorId {
+	[statusMap setObject:status forKey:sensorId];
+	[[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:NotificationPollingStatusIdFormat,[sensorId intValue]] object:self];
 }
 
 - (void)dealloc {
