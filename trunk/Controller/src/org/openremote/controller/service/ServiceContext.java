@@ -22,6 +22,7 @@ package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
+import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
@@ -41,6 +42,13 @@ import org.openremote.controller.command.RemoteActionXMLParser;
 public abstract class ServiceContext
 {
 
+
+  // TODO :
+  //        the various configuration related services (e.g. lutron) need a better API (higher
+  //        degree of de-typing)
+
+
+
   // Constants ------------------------------------------------------------------------------------
 
   /**
@@ -58,6 +66,8 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),
 
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),
+
+    LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),
 
     DEVICE_POLLING("pollingMachinesService"),
 
@@ -115,6 +125,21 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Roundrobin Configuration service implementation has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static LutronHomeWorksConfig getLutronHomeWorksConfiguration()
+  {
+    try
+    {
+      return (LutronHomeWorksConfig)getInstance().getService(ServiceName.LUTRON_HOMEWORKS_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Lutron HomeWorks Configuration service has had an incompatible change.", e
       );
     }
   }
