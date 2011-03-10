@@ -30,8 +30,7 @@ import org.openremote.controller.exception.NoSuchCommandException;
 
 public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 
-	// Constants
-	// ------------------------------------------------------------------------------------
+	// Constants ------------------------------------------------------------------------------------
 
 	/**
 	 * A common log category name intended to be used across all classes related
@@ -62,29 +61,35 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 	 * controller.xml file.
 	 */
 	public final static String LUTRON_XMLPROPERTY_SCENE = "scene";
+	
+	/**
+	 * String constant for parsing Lutron Homeworks protocol XML entries from
+	 * controller.xml file.
+	 */
+	public final static String LUTRON_XMLPROPERTY_LEVEL = "level";
 
-	// Class Members
-	// --------------------------------------------------------------------------------
+	// Class Members --------------------------------------------------------------------------------
 
 	/**
 	 * Lutron logger. Uses a common category for all Lutron related logging.
 	 */
 	private final static Logger log = Logger.getLogger(LutronHomeWorksCommandBuilder.LUTRON_LOG_CATEGORY);
 
-	// Instance Fields
-	// ------------------------------------------------------------------------------
+	// Instance Fields ------------------------------------------------------------------------------
 
 	private LutronHomeWorksGateway gateway;
 
-	// Constructors
-	// ---------------------------------------------------------------------------------
+
+  // Constructors ---------------------------------------------------------------------------------
 
   public LutronHomeWorksCommandBuilder()
   {
-    
+
   }
-	// Implements EventBuilder
-	// ----------------------------------------------------------------------
+
+
+  
+	// Implements EventBuilder ----------------------------------------------------------------------
 
 	/**
 	 * Parses the Lutron HomeWorks command XML snippets and builds a
@@ -100,6 +105,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 	 *   <property name = "command" value = ""/>
 	 *   <property name = "scene" value = ""/>
 	 *   <property name = "key" value = ""/>
+	 *   <property name = "level" value = ""/>
 	 * </command>
 	 * }
 	 * </pre>
@@ -120,10 +126,12 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 		String commandAsString = null;
 		String sceneAsString = null;
 		String keyAsString = null;
+		String levelAsString = null;
 
 		LutronHomeWorksAddress address = null;
 		Integer scene = null;
 		Integer key = null;
+		Integer level = null;
 		
 		// Get the list of properties from XML...
 
@@ -147,6 +155,10 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 
 			else if (LUTRON_XMLPROPERTY_SCENE.equalsIgnoreCase(propertyName)) {
 				sceneAsString = propertyValue;
+			}
+			
+			else if (LUTRON_XMLPROPERTY_LEVEL.equalsIgnoreCase(propertyName)) {
+				levelAsString = propertyValue;
 			}
 
 			else {
@@ -194,9 +206,30 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 			}
 		}
 		
+		// If a level was provided, attempt to convert to integer
+		if (levelAsString != null && !"".equals(levelAsString)) {
+			try {
+				level = Integer.parseInt(levelAsString);
+			} catch (NumberFormatException e) {
+				throw new NoSuchCommandException(e.getMessage(), e);
+			}
+		}
+		
+		if (level == null) {
+			// No specific level provided, check for parameter (passed in from Slider)
+			String paramValue = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+			if (paramValue != null && !paramValue.equals("")) {
+				try {
+					level = Integer.parseInt(paramValue);
+				} catch (NumberFormatException e) {
+					throw new NoSuchCommandException(e.getMessage(), e);
+				}
+			}
+		}
+		
 		// Translate the command string to a type safe Lutron Command types...
 
-		Command cmd = LutronHomeWorksCommand.createCommand(commandAsString, gateway, address, scene, key);
+		Command cmd = LutronHomeWorksCommand.createCommand(commandAsString, gateway, address, scene, key, level);
 
 		log.info("Created Lutron Command " + cmd + " for address '" + address + "'");
 
@@ -204,6 +237,8 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 
 	}
 	
+	// Getters / Setters ----------------------------------------------------------------------------
+
 	public LutronHomeWorksGateway getGateway() {
 		return gateway;
 	}
@@ -211,6 +246,5 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 	public void setGateway(LutronHomeWorksGateway gateway) {
 		this.gateway = gateway;
 	}
-
 
 }
