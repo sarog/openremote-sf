@@ -76,4 +76,10 @@ public class DummyServer extends Thread {
    public void setError(String error) {
       this.error = error;
    }
+
+   @Override
+   public void interrupt() {
+      this.socket.close();
+      super.interrupt();
+   }
 }

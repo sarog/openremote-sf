@@ -34,9 +34,7 @@
 	<classpathentry kind="lib" path="lib/apache/commons-lang/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/rxtx/RXTXcomm-2.2-pre2.jar"/>
 	<classpathentry kind="lib" path="lib/apache/commons-beanutils-1.8.3/commons-beanutils-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/core/EZMorph/ezmorph-1.0.6.jar"/>
-	<classpathentry kind="lib" path="lib/core/json-lib/json-lib-2.3-jdk15.jar"/>
-	<classpathentry kind="lib" path="lib/core/xom/xom-1.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/clink/clink170.jar"/>
+	<classpathentry kind="lib" path="/home/ogandit/workspace/or-knx/lib/json/json-20110113.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
