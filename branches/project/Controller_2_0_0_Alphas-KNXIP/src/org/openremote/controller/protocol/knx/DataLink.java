@@ -73,10 +73,10 @@ class DataLink
   private final static Logger log = Logger.getLogger(KNXCommandBuilder.KNX_LOG_CATEGORY);
 
 
-  static boolean isDataIndicateFrame(byte msgCode)
-  {
-    return msgCode == MessageCode.DATA_INDICATE_BYTE;
-  }
+//  static boolean isDataIndicateFrame(byte msgCode)
+//  {
+//    return msgCode == MessageCode.DATA_INDICATE_BYTE;
+//  }
 
 
   static String findServicePrimitiveByMessageCode(byte msgCode)
@@ -130,19 +130,18 @@ class DataLink
     }
   }
 
-  // TODO move this to cEMI class
-  private static class MessageCode
+  public static class MessageCode
   {
-    private final static int DATA_REQUEST_BYTE  = 0x11;
-    private final static int DATA_INDICATE_BYTE = 0x29;
-    private final static int DATA_CONFIRM_BYTE  = 0x2E;
+    public final static int DATA_REQUEST_BYTE  = 0x11;
+    public final static int DATA_INDICATE_BYTE = 0x29;
+    public final static int DATA_CONFIRM_BYTE  = 0x2E;
 
-    private final static int POLL_REQUEST_BYTE  = 0x13;
-    private final static int POLL_CONFIRM_BYTE  = 0x25;
+    public final static int POLL_REQUEST_BYTE  = 0x13;
+    public final static int POLL_CONFIRM_BYTE  = 0x25;
 
-    private final static int RAW_REQUEST_BYTE   = 0x10;
-    private final static int RAW_INDICATE_BYTE  = 0x2D;
-    private final static int RAW_CONFIRM_BYTE   = 0x2F;
+    public final static int RAW_REQUEST_BYTE   = 0x10;
+    public final static int RAW_INDICATE_BYTE  = 0x2D;
+    public final static int RAW_CONFIRM_BYTE   = 0x2F;
 
 
     private static Map<Byte, MessageCode> lookup = new ConcurrentHashMap<Byte, MessageCode>(25);
