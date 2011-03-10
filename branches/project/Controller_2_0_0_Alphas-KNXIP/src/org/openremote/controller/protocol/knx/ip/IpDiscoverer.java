@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.knx.ip.tunnel;
+package org.openremote.controller.protocol.knx.ip;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -6,10 +6,10 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
-import org.openremote.controller.protocol.knx.ip.tunnel.message.Hpai;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverResp;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverReq;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage;
+import org.openremote.controller.protocol.knx.ip.message.Hpai;
+import org.openremote.controller.protocol.knx.ip.message.IpDiscoverReq;
+import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage;
 
 public class IpDiscoverer implements IpProcessorListener {
    private IpProcessor processor;
@@ -45,7 +45,7 @@ public class IpDiscoverer implements IpProcessorListener {
 
    @Override
    public void notifyMessage(IpMessage message) {
-      // Handle discovery responses only
+      // Handle discovery responses only, ignore other messages
       if (message instanceof IpDiscoverResp) {
          this.discoveryListener.notifyDiscovery(this, ((IpDiscoverResp) message).getControlEndpoint().getAddress());
       }

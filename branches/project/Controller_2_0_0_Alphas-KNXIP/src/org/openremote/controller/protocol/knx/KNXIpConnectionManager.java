@@ -21,11 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
-import org.openremote.controller.protocol.knx.ip.tunnel.DiscoveryListener;
-import org.openremote.controller.protocol.knx.ip.tunnel.IpClient;
-import org.openremote.controller.protocol.knx.ip.tunnel.IpDiscoverer;
-import org.openremote.controller.protocol.knx.ip.tunnel.IpMessageListener;
-import org.openremote.controller.protocol.knx.ip.tunnel.KnxIpException;
+import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
+import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
+import org.openremote.controller.protocol.knx.ip.IpMessageListener;
+import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
+import org.openremote.controller.protocol.knx.ip.KnxIpException;
 
 public class KNXIpConnectionManager implements DiscoveryListener {
    // Class Members --------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) throws KnxIpException,
          IOException, InterruptedException {
       this();
-      this.connection = new KNXConnectionImpl(new IpClient(srcAddr, destControlEndpointAddr));
+      this.connection = new KNXConnectionImpl(new IpTunnelClient(srcAddr, destControlEndpointAddr));
    }
 
    // Implements DiscoveryListener -----------------------------------------------------------------
@@ -81,9 +81,8 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
          // The first interface found we be used for the connection
          if (this.connection == null) {
-            this.connection = new KNXConnectionImpl(new IpClient(discoverer.getSrcAddr(), destControlEndpointAddr));
-
-            // TODO asynchronously stop discovery process on other NICs
+            this.connection = new KNXConnectionImpl(
+                  new IpTunnelClient(discoverer.getSrcAddr(), destControlEndpointAddr));
          }
       }
    }
@@ -134,6 +133,19 @@ public class KNXIpConnectionManager implements DiscoveryListener {
     * @throws ConnectionException
     */
    protected KNXConnection getConnection() throws ConnectionException {
+      KNXConnectionImpl c = this.waitForConnection();
+
+      // We have a connection, stop discovery process
+      try {
+         this.stopDiscovery();
+      } catch (InterruptedException e) {
+         Thread.currentThread().interrupt();
+      }
+
+      return c;
+   }
+
+   private KNXConnectionImpl waitForConnection() throws ConnectionException {
       if (this.connection != null) return this.connection;
 
       // Wait for a connection
@@ -397,13 +409,18 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    // Inner Classes --------------------------------------------------------------------------------
 
    private class KNXConnectionImpl implements KNXConnection, IpMessageListener {
-
-      private IpClient client;
+      private IpTunnelClient client;
       private Map<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU> internalState = new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU>(
             1000);
+      /**
+       * Set to <code>true</code> when cEMI server is correctly initialized
+       */
+      private Object syncLock;
+      private byte[] con;
 
-      public KNXConnectionImpl(IpClient client) {
+      public KNXConnectionImpl(IpTunnelClient client) {
          this.client = client;
+         this.syncLock = new Object();
          this.client.register(this);
       }
 
@@ -411,12 +428,12 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
       @Override
       public void send(GroupValueWrite command) {
-         this.ipSend(command);
+         this.runtimeService(command);
       }
 
       @Override
       public synchronized ApplicationProtocolDataUnit read(GroupValueRead command) {
-         this.ipSend(command);
+         this.runtimeService(command);
          try {
             this.wait(KNXIpConnectionManager.READ_TIMEOUT);
          } catch (InterruptedException e) {
@@ -436,99 +453,26 @@ public class KNXIpConnectionManager implements DiscoveryListener {
       // Implements IpMessageListener -----------------------------------------------------------------
 
       @Override
-      public void receive(byte[] cemiFrame) {
-         this.handleResponse(cemiFrame);
-      }
-
-      // Private Instance Methods ---------------------------------------------------------------------
-
-      private void stop() {
+      public void receive(byte[] cEmiFrame) {
          try {
-            this.client.disconnect();
-         } catch (KnxIpException e) {
-            log.error(e.getMessage());
-         } catch (InterruptedException e) {
-            // Ignore
-            Thread.currentThread().interrupt();
-         } catch (IOException e) {
-            log.error(e.getMessage());
-         }
-      }
+            // Check cEMI message code
+            switch (cEmiFrame[KNXCommand.CEMI_MESSAGECODE_OFFSET]) {
 
-      private void ipSend(KNXCommand command) {
-         Byte[] f = command.getCEMIFrame();
-         byte[] m = new byte[f.length];
-         for (int i = 0; i < f.length; ++i) {
-            m[i] = f[i];
-         }
-         try {
-            this.client.send(m);
-         } catch (KnxIpException e) {
-            log.error(e.getMessage());
-         } catch (InterruptedException e) {
-            // Ignore
-         } catch (IOException e) {
-            log.error(e.getMessage());
-         }
-      }
-
-      private void handleResponse(byte[] frame) {
-         try {
-            // TODO : properly handle AdditionalInfo field when AddInfo is present (currently breaks this impl.)
-
-            if (DataLink.isDataIndicateFrame(frame[KNXCommand.CEMI_MESSAGECODE_OFFSET])) {
-               GroupAddress address = new GroupAddress(frame[KNXCommand.CEMI_DESTADDR_HIGH_OFFSET],
-                     frame[KNXCommand.CEMI_DESTADDR_LOW_OFFSET]);
-
-               byte dataLen = frame[KNXCommand.CEMI_DATALEN_OFFSET];
-               byte apciHi = frame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
-               byte apciLoData = frame[KNXCommand.CEMI_APCI_DATA_OFFSET];
-
-               // sanity checks -- is a response?
-
-               if (!ApplicationProtocolDataUnit.isGroupValueResponse(new byte[] { apciHi, apciLoData })) {
-                  log.debug("Ignoring frame");
-
-                  // TODO : should handle write requests coming to gateway, e.g. motion sensors
-
-                  return;
+            // Property write confirmation
+            case Cemi.M_PROPWRITE_CON:
+               // Runtime frame confirmation
+            case Cemi.L_DATA_CON:
+               synchronized (this.syncLock) {
+                  this.con = cEmiFrame;
                }
+               break;
 
-               ApplicationProtocolDataUnit.ResponseAPDU apdu = null;
-
-               if (dataLen == 1) {
-                  apdu = ApplicationProtocolDataUnit.ResponseAPDU.create6BitResponse(new byte[] { apciHi, apciLoData });
-               }
-
-               else if (dataLen == 2) {
-                  apdu = ApplicationProtocolDataUnit.ResponseAPDU.create8BitResponse(new byte[] { apciHi, apciLoData,
-                        frame[KNXCommand.CEMI_DATA1_OFFSET] });
-               }
-
-               else if (dataLen == 3) {
-                  apdu = ApplicationProtocolDataUnit.ResponseAPDU.createTwoByteResponse(new byte[] { apciHi,
-                        apciLoData, KNXCommand.CEMI_DATA1_OFFSET, KNXCommand.CEMI_DATA2_OFFSET });
-               }
-
-               else if (dataLen == 4) {
-                  apdu = ApplicationProtocolDataUnit.ResponseAPDU.createThreeByteResponse(new byte[] { apciHi,
-                        apciLoData, KNXCommand.CEMI_DATA1_OFFSET, KNXCommand.CEMI_DATA2_OFFSET,
-                        KNXCommand.CEMI_DATA3_OFFSET });
-               }
-
-               else if (dataLen == 5) {
-                  apdu = ApplicationProtocolDataUnit.ResponseAPDU.createFourByteResponse(new byte[] { apciHi,
-                        apciLoData, KNXCommand.CEMI_DATA1_OFFSET, KNXCommand.CEMI_DATA2_OFFSET,
-                        KNXCommand.CEMI_DATA3_OFFSET, KNXCommand.CEMI_DATA4_OFFSET });
-               }
-
-               else {
-                  byte[] data = new byte[dataLen];
-                  System.arraycopy(frame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
-
-                  apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
-               }
-               internalState.put(address, apdu);
+            // Incoming runtime frame
+            case Cemi.L_DATA_IND:
+               this.handleLDataInd(cEmiFrame);
+               break;
+            default:
+               log.debug("Ignoring frame");
             }
 
             /*
@@ -576,6 +520,100 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
             // TODO
          }
+      }
+
+      // Private Instance Methods ---------------------------------------------------------------------
+
+      private void stop() {
+         try {
+            this.client.disconnect();
+         } catch (KnxIpException e) {
+            log.error(e.getMessage());
+         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+         } catch (IOException e) {
+            log.error(e.getMessage());
+         }
+      }
+
+      private synchronized byte[] runtimeService(KNXCommand command) {
+         Byte[] f = command.getCEMIFrame();
+         byte[] m = new byte[f.length];
+         for (int i = 0; i < f.length; ++i) {
+            m[i] = f[i];
+         }
+         try {
+            synchronized (this.syncLock) {
+               this.client.service(m);
+
+               // Wait for server confirmation and check it
+               this.syncLock.wait(Cemi.RUNTIME_SERVICE_TIMEOUT);
+               return this.con;
+            }
+         } catch (KnxIpException e) {
+            log.error(e.getMessage());
+         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // Ignore
+         } catch (IOException e) {
+            log.error(e.getMessage());
+         }
+         return null;
+      }
+
+      private void handleLDataInd(byte[] cEmiFrame) {
+         // TODO : properly handle AdditionalInfo field when AddInfo is present (currently breaks this impl.)
+         GroupAddress address = new GroupAddress(cEmiFrame[KNXCommand.CEMI_DESTADDR_HIGH_OFFSET],
+               cEmiFrame[KNXCommand.CEMI_DESTADDR_LOW_OFFSET]);
+
+         byte dataLen = cEmiFrame[KNXCommand.CEMI_DATALEN_OFFSET];
+         byte apciHi = cEmiFrame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
+         byte apciLoData = cEmiFrame[KNXCommand.CEMI_APCI_DATA_OFFSET];
+
+         // sanity checks -- is a response?
+
+         if (!ApplicationProtocolDataUnit.isGroupValueResponse(new byte[] { apciHi, apciLoData })) {
+            log.debug("Ignoring frame");
+
+            // TODO : should handle write requests coming to gateway, e.g. motion sensors
+
+            return;
+         }
+
+         ApplicationProtocolDataUnit.ResponseAPDU apdu = null;
+
+         if (dataLen == 1) {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.create6BitResponse(new byte[] { apciHi, apciLoData });
+         }
+
+         else if (dataLen == 2) {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.create8BitResponse(new byte[] { apciHi, apciLoData,
+                  cEmiFrame[KNXCommand.CEMI_DATA1_OFFSET] });
+         }
+
+         else if (dataLen == 3) {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createTwoByteResponse(new byte[] { apciHi, apciLoData,
+                  KNXCommand.CEMI_DATA1_OFFSET, KNXCommand.CEMI_DATA2_OFFSET });
+         }
+
+         else if (dataLen == 4) {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createThreeByteResponse(new byte[] { apciHi, apciLoData,
+                  KNXCommand.CEMI_DATA1_OFFSET, KNXCommand.CEMI_DATA2_OFFSET, KNXCommand.CEMI_DATA3_OFFSET });
+         }
+
+         else if (dataLen == 5) {
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createFourByteResponse(new byte[] { apciHi, apciLoData,
+                  KNXCommand.CEMI_DATA1_OFFSET, KNXCommand.CEMI_DATA2_OFFSET, KNXCommand.CEMI_DATA3_OFFSET,
+                  KNXCommand.CEMI_DATA4_OFFSET });
+         }
+
+         else {
+            byte[] data = new byte[dataLen];
+            System.arraycopy(cEmiFrame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
+
+            apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
+         }
+         internalState.put(address, apdu);
       }
    }
 }

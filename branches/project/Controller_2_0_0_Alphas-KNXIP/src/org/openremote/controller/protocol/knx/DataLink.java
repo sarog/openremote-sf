@@ -130,9 +130,9 @@ class DataLink
     }
   }
 
+  // TODO move this to cEMI class
   private static class MessageCode
   {
-
     private final static int DATA_REQUEST_BYTE  = 0x11;
     private final static int DATA_INDICATE_BYTE = 0x29;
     private final static int DATA_CONFIRM_BYTE  = 0x2E;
