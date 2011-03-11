@@ -3,10 +3,14 @@ package org.openremote.controller.protocol.knx.ip;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.openremote.controller.protocol.knx.ip.message.Hpai;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectReq;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
+import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateReq;
+import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectReq;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
@@ -20,6 +24,7 @@ public class IpTunnelClient implements IpProcessorListener {
    private IpProcessor processor;
    private InetSocketAddress destControlEndpointAddr;
    private InetSocketAddress destDataEndpointAddr;
+   private Timer heartBeat;
 
    public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
       this.destControlEndpointAddr = destControlEndpointAddr;
@@ -85,6 +90,10 @@ public class IpTunnelClient implements IpProcessorListener {
 
             // set destDataEndpointAddr with response HPAI value
             this.destDataEndpointAddr = cr.getDataEndpoint().getAddress();
+
+            // Start Heartbeat
+            this.heartBeat = new Timer("KNX IP heartbeat");
+            this.heartBeat.schedule(new HeartBeatTask(), 0, 60000);
          } else {
             throw new KnxIpException("Connect failed, response error : " + st);
          }
@@ -102,14 +111,19 @@ public class IpTunnelClient implements IpProcessorListener {
       if (resp instanceof IpDisconnectResp) {
          IpDisconnectResp cr = (IpDisconnectResp) resp;
          if (this.channelId == cr.getChannelId()) {
+            // Stop heartbeat
+            this.heartBeat.cancel();
+
+            // Stop IP processor
+            this.processor.stop();
+
+            // Set server date endpoint address to null to force reconnection before sending new values
+            this.destDataEndpointAddr = null;
+
+            // Check status anyway
             int st = cr.getStatus();
             if (st != IpDisconnectResp.OK) {
                throw new KnxIpException("Response error : " + st);
-            } else {
-               this.processor.stop();
-
-               // Set server date endpoint address to null to force reconnection before sending new values
-               this.destDataEndpointAddr = null;
             }
          } else {
             throw new KnxIpException("Disconnect failed, response wrong channel id");
@@ -126,7 +140,7 @@ public class IpTunnelClient implements IpProcessorListener {
          if (req.getChannelId() == this.channelId) {
             int seqCounter = req.getSeqCounter();
             // TODO check seq counter
-            
+
             // Send ACK
             try {
                this.processor.send(new IpTunnelingAck(this.channelId, seqCounter, IpTunnelingAck.OK),
@@ -134,7 +148,7 @@ public class IpTunnelClient implements IpProcessorListener {
             } catch (IOException e) {
                // ACK not sent, ignore
             }
-            
+
             // Notify listener
             IpMessageListener l = this.messageListener;
             if (l != null) {
@@ -142,6 +156,58 @@ public class IpTunnelClient implements IpProcessorListener {
             }
          } else {
             // TODO send NACK?
+         }
+      }
+   }
+
+   private class HeartBeatTask extends TimerTask {
+
+      @Override
+      public void run() {
+         int nbErrs = 0;
+         while (nbErrs < 3) {
+            try {
+               this.monitor();
+               return;
+            } catch (KnxIpException e) {
+               // TODO log?
+            } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+            } catch (IOException e) {
+               // TODO log?
+            }
+            nbErrs++;
+         }
+         try {
+            IpTunnelClient.this.disconnect();
+         } catch (KnxIpException e) {
+            // TODO log?
+         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+         } catch (IOException e) {
+            // TODO log?
+         }
+      }
+
+      private void monitor() throws KnxIpException, InterruptedException, IOException {
+         Hpai ep = new Hpai(IpTunnelClient.this.processor.getSrcAddr());
+         IpMessage resp = IpTunnelClient.this.processor.service(new IpConnectionStateReq(IpTunnelClient.this.channelId,
+               ep), IpTunnelClient.this.destControlEndpointAddr);
+
+         // Check response
+         if (resp instanceof IpConnectionStateResp) {
+            IpConnectionStateResp cr = (IpConnectionStateResp) resp;
+            int cId = cr.getChannelId();
+            if (cId == IpTunnelClient.this.channelId) {
+               int st = cr.getStatus();
+               if (st != IpConnectResp.OK) {
+                  throw new KnxIpException("Monitor failed, response error : " + st);
+               }
+            } else {
+               throw new KnxIpException("Monitor failed, wrong channel id : " + cId);
+            }
+         } else {
+            throw new KnxIpException("Monitor failed, unexepected response");
          }
       }
    }
