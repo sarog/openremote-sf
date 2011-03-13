@@ -27,9 +27,6 @@ import java.util.Map;
  */
 public interface ProtocolInterface
 {
-   /* Default time in ms to wait for connection */
-   int DEFAULT_TIMEOUT = 1000;
-   
    /**
     * This is a method for getting a unique identifier string for the protocol
     * used for identification in log messages etc. If no name available then
@@ -40,7 +37,7 @@ public interface ProtocolInterface
    /**
     * Opens connection to server and sets input and output streams
     */
-   public void connect() throws Exception;
+   public void connect(int timeOut) throws Exception;
    
    /**
     * Cleans up and closes the connection to the server

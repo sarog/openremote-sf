@@ -48,9 +48,6 @@ public class TelnetProtocol extends Protocol {
    /** The port that is opened */
    private String port;
    
-   /** The wait timeout period in seconds */
-   private Integer timeOut = DEFAULT_TIMEOUT;
-   
    private TelnetClient telnetClient;
 
    /**
@@ -111,39 +108,14 @@ public class TelnetProtocol extends Protocol {
    public void setPort(String port) {
       this.port = port;
    }
-   
-   /**
-    * Sets the timeOut
-    * @param timeOut the new timeOut
-    */   
-   public void setTimeOut(String timeOut) {
-      try {
-         Integer tempValue = Integer.parseInt(timeOut.trim());
-         if (tempValue > 0) {
-            this.timeOut = tempValue;
-         }
-      }
-      catch (NumberFormatException e) {
-         logger.error("time out property in controller.xml is not an integer", e);
-      }
-   }
-   
-   /**
-    * Gets the timeOut
-    * @return the timeOut
-    */
-   public String getTimeOut() {
-      return this.timeOut.toString();  
-   }
 
    /**
     * Connects to the telnet server and establishes the input/output streams
     * Exception handling is done by the Gateway class
     */
-   public void connect() throws Exception {
-      this.telnetClient = new TelnetClient();
-      Calendar endTime = Calendar.getInstance();
-      //this.telnetClient.setDefaultTimeout(Integer.parseInt(getTimeOut()));
+   public void connect(int timeOut) throws Exception {
+      telnetClient = new TelnetClient();
+      this.telnetClient.setConnectTimeout(timeOut);
       this.telnetClient.connect(getIp(), Integer.parseInt(getPort()));
       super.inputStream = this.telnetClient.getInputStream();
       super.outputStream = this.telnetClient.getOutputStream();
@@ -165,7 +137,6 @@ public class TelnetProtocol extends Protocol {
    public Boolean validateSendAction(String value, Map<String, String> args) {
       // Look for required send args and make sure value is appropriate for this protocol
       Boolean result = true;
-      
       return result;
    }
 }

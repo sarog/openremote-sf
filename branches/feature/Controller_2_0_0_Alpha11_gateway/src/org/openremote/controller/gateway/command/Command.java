@@ -75,6 +75,9 @@ public class Command
    /* The ID of this command */
    private Integer id;
    
+   /* Optional polling interval */
+   private Integer pollingInterval = 0;
+   
    /* Constructor */   
    public Command(Integer commandId, Element commandElement) {
       //Extract actions from the command XML Elment
@@ -87,6 +90,16 @@ public class Command
             String property = element.getAttributeValue("name");
             String value = "";
             Map<String, String> args = new HashMap<String, String>();
+            
+            // Look for optional polling interval parameter
+            if("pollinginterval".equalsIgnoreCase(property)) {
+               try {
+                  Integer num = Integer.parseInt(propertyValue);
+                  this.pollingInterval = num;
+               } catch (NumberFormatException e) {
+                  logger.warn("Invalid command polling interval value.");
+               }
+            }
             
             // Only interested in property elements that are send, read or script others are protocol related
             if("send".equals(property) || "read".equals(property) || "script".equals(property)) {
@@ -178,5 +191,10 @@ public class Command
    /* Get command id */
    public Integer getId() {
       return this.id;  
+   }
+
+   /* Get polling interval */
+   public Integer getPollingInterval() {
+      return this.pollingInterval;
    }
 }
