@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.gateway.command;
+package org.openremote.controller.gateway;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngineManager;
@@ -28,7 +28,7 @@ import javax.script.Invocable;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
-import org.openremote.controller.exception.GatewayScriptException;
+import org.openremote.controller.gateway.exception.GatewayScriptException;
 import org.openremote.controller.utils.PathUtil;
 import java.io.File;
 import java.io.IOException;
@@ -68,11 +68,12 @@ public class ScriptManager
     * extension is supported and validating the script code, returns true
     * if successfully added, otherwise returns false
     */
-   public void addScript(String scriptName) {
-
+   public Boolean addScript(String scriptName) {
+      Boolean result = true;
+      
       // Check to see if script already added
       if (invocableEngines.containsKey(scriptName)) {
-         return;
+         return result;
       }
       
       int pos = scriptName.lastIndexOf('.');
@@ -97,7 +98,8 @@ public class ScriptManager
             throw new GatewayScriptException(e);
          }
       }
-   } 
+      return result;
+   }
    
    public String executeScript(String scriptName, Map<String, String> args, String currentCommandValue) {
       String result = "";

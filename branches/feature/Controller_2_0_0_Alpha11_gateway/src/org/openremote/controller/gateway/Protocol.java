@@ -28,12 +28,13 @@ import java.io.OutputStream;
  */
 public abstract class Protocol implements ProtocolInterface
 {
+   protected InputStream inputStream;
+   protected OutputStream outputStream;
+   
    /**
     * Every protocol needs to make use of the input and output stream
     * defined here for sending and receiving data
     */
-   protected InputStream inputStream;
-   protected OutputStream outputStream;
    
    /** The response buffer for any formatted text received from the server */
    private String responseBuffer;
@@ -51,14 +52,16 @@ public abstract class Protocol implements ProtocolInterface
     * This method deals with opening up communication with the server and 
     * should validate that connection is established and aim to return CONNECTED
     */
-   public EnumGatewayConnectionState connect() {
-      return EnumGatewayConnectionState.CONNECTED;   
+   public void connect() throws Exception {
+      
    }
    
    /**
     * Cleans up and closes the connection to the server
     */
-   public void disconnect() {}
+   public void disconnect() throws Exception {
+
+   }
 
    /**
     * This method should determine the state of gateway at the particular moment it is called

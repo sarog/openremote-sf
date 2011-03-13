@@ -27,6 +27,9 @@ import java.util.Map;
  */
 public interface ProtocolInterface
 {
+   /* Default time in ms to wait for connection */
+   int DEFAULT_TIMEOUT = 1000;
+   
    /**
     * This is a method for getting a unique identifier string for the protocol
     * used for identification in log messages etc. If no name available then
@@ -37,26 +40,12 @@ public interface ProtocolInterface
    /**
     * Opens connection to server and sets input and output streams
     */
-   public EnumGatewayConnectionState connect();
+   public void connect() throws Exception;
    
    /**
     * Cleans up and closes the connection to the server
     */
-   public void disconnect();
+   public void disconnect() throws Exception;
    
-   /**
-    * This method writes to the outputStream of the connector
-    */
-   public void send(String value, Map<String, String> args);
-   
-   /**
-    * This method reads from the inputStream of the connector then
-    * converts it into a gateway friendly string that the gateway will be
-    * able to filter using regex and possibly convert into a sensor type value
-    */
-   public String read(String value, Map<String, String> args) throws Exception;
-   
-   public void clearInputStream();
-
    public Boolean validateSendAction(String value, Map<String, String> args);
 }

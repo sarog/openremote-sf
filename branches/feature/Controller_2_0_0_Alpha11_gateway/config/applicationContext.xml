@@ -234,7 +234,7 @@
    <!-- gateway manager service -->
    <bean id="gatewayManagerService" class="org.openremote.controller.service.impl.GatewayManagerServiceImpl" />
    
-   <bean id="scriptManager" class="org.openremote.controller.gateway.command.ScriptManager" />
+   <bean id="scriptManager" class="org.openremote.controller.gateway.ScriptManager" />
    
     <bean id="protocolFactory" class="org.openremote.controller.gateway.ProtocolFactory">
 		<property name="protocolBuilders">
