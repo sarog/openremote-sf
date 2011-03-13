@@ -55,9 +55,6 @@ public class Gateway extends Thread
    /* This is the time in milliseconds between status update runs */
    private static final int POLLING_INTERVAL = 1000;
    
-   /* This is the time in milliseconds before a connection attempt stops */
-   private static final int CONNECT_TIMEOUT = 1000;
-   
    /* This is the min time in milliseconds to wait after a connection failure before trying again */
    private static final int SLEEP_INTERVAL_MIN = 5000;
 
@@ -66,12 +63,14 @@ public class Gateway extends Thread
 
    /* This is the max time in milliseconds to wait for gateway to become free when busy */
    private static final int BUSY_TIMEOUT = 1000;
-                  
-   /* This is the time in milliseconds before send command attempt stops */
-   private static final int SEND_TIMEOUT = 200;
+   
+   /* This is the max time in milliseconds to wait for gateway to become free when busy */
+   private static final int CONNECT_TIMEOUT = 1000;   
 
    /* This is the time in milliseconds before send command attempt stops */
    private static final int READ_TIMEOUT = 200;
+   
+   private static final String SEND_TERMINATOR = "\n";
                   
    private static final String UNKNOWN_STATUS = "N/A";
       
@@ -107,16 +106,31 @@ public class Gateway extends Thread
    private Map<Integer, String> queuedCommands = new HashMap<Integer, String>();
    
    /* Parent status cache service reference */
-   private StatusCacheService statusCacheService;
+   protected StatusCacheService statusCacheService;
    
    /* Script manager */
    private ScriptManager scriptManager;
    
    /* Gateway ID */
    private int id;
-               
+   
+   /* Connect timeout */
+   Integer connectTimeout = CONNECT_TIMEOUT;
+
+   /* Read timeout */
+   Integer readTimeout = READ_TIMEOUT;
+   
+   /* Send Terminator */
+   String sendTerminator = SEND_TERMINATOR;
+   
+   /* Polling Timer */
+   Integer pollingTimer = 0;
+   
    // Constructor ------------------------------------------------------------------------------------   
    public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService) {
+        this(gatewayId, connectionType, pollingMethod, protocol, commands, statusCacheService, null);
+   }
+   public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService, Map<String, String> params) {
       // Check no null parameters have been supplied
       if (gatewayId <= 0 || protocol == null || commands == null || statusCacheService == null) {
          throw new GatewayException("At least one required parameter is null.");
@@ -145,6 +159,33 @@ public class Gateway extends Thread
                 
       // Validate commands
       initialiseCommands();
+      
+      // Apply supplied params
+      if (params != null) {
+         Set<Map.Entry<String, String>> paramMaps = params.entrySet();
+         for (Map.Entry<String, String> paramMap : paramMaps)
+         {
+            String paramName = paramMap.getKey();
+            String paramValue = paramMap.getValue();
+            if ("connecttimeout".equalsIgnoreCase(paramName)) {
+               try {
+                  Integer num = Integer.parseInt(paramValue);
+                  this.connectTimeout = num;
+               } catch (NumberFormatException e) {
+                  logger.error("Invalid connect timeout parameter supplied to gateway");  
+               }
+            } else if ("readtimeout".equalsIgnoreCase(paramName)) {
+               try {
+                  Integer num = Integer.parseInt(paramValue);
+                  this.readTimeout = num;
+               } catch (NumberFormatException e) {
+                  logger.error("Invalid read timeout parameter supplied to gateway");  
+               }
+            } else if ("sendterminator".equalsIgnoreCase(paramName)) {
+               this.sendTerminator = paramValue;
+            }
+         }
+      }
    }
    
    // Methods ------------------------------------------------------------------------------------
@@ -168,6 +209,9 @@ public class Gateway extends Thread
       	 * failure enter sleep mode
       	 */
          try {
+            // Increment polling timer and go to sleep until next polling interval
+            this.pollingTimer += POLLING_INTERVAL;
+                        
             if (this.connectionState == EnumGatewayConnectionState.DISCONNECTED) {
                protocolConnect();
             }
@@ -180,7 +224,10 @@ public class Gateway extends Thread
                protocolDisconnect();
             }
             
-            // Go to sleep until next polling interval
+            // Reset timer if 24 hours have passed
+            if (this.pollingTimer >= 86400000) {
+               this.pollingTimer = 0;  
+            }
             Thread.sleep(POLLING_INTERVAL);
          } catch (GatewayConnectionException e) {
             //Connection has failed
@@ -317,18 +364,26 @@ public class Gateway extends Thread
       Set<Map.Entry<Integer, Integer>> pollingMaps = this.pollingCommandMap.entrySet();
       for (Map.Entry<Integer, Integer> pollingMap : pollingMaps)
       {
-         /* Clear any queued commands  before continuing */
+         /* Clear any queued commands before continuing */
          doQueuedCommands();
                   
          Integer commandId = pollingMap.getKey();
          Integer sensorId = pollingMap.getValue();
          Command command = getCommand(commandId);
+         Integer pollingInterval = command.getPollingInterval();
          String result = UNKNOWN_STATUS;         
          String commandResult = "";
          
          // Skip command if invalid or null
          if (command == null || !command.isValid()) {
             continue;
+         }
+         
+         // If polling interval set then check it's time to run it
+         if (pollingInterval > 0) {
+            if (this.pollingTimer % pollingInterval != 0) {
+               continue;
+            }
          }
          
          /** QUERY polling then clear the response buffer before sending each command
@@ -345,7 +400,7 @@ public class Gateway extends Thread
                protocolClear();
                
                // Execute command
-               commandResult = executeCommand(command);
+               commandResult = executeCommand(command, sensorId);
                
                if (!"".equals(commandResult)) {
                   result = commandResult;
@@ -457,8 +512,23 @@ public class Gateway extends Thread
     * args format is correct
     */
    public Boolean validateReadAction(String value, Map<String, String> args) {
-      // Read command has no parameters at present so ignore
-      return true;
+      Boolean result = true;
+//       Set<Map.Entry<String, String>> paramMaps = args.entrySet();
+//       for (Map.Entry<String, String> paramMap : paramMaps)
+//       {
+//          String paramName = paramMap.getKey();
+//          String paramValue = paramMap.getValue();
+//          if ("timeout".equalsIgnoreCase(paramName)) {
+//             try {
+//                Integer num = Integer.parseInt(paramValue);
+//                this.connectTimeout = num;
+//             } catch (NumberFormatException e) {
+//                logger.warn("Invalid read action timeout value");
+//                result = false;
+//             }
+//          }
+//       }
+      return result;
    }
    
    /* Add command to queue */
@@ -472,10 +542,17 @@ public class Gateway extends Thread
     * send commands can push a dynamic value into the command as sensors, buttons and
     * other components need to push the value back to the appropriate gateway server
     */
+
    public String executeCommand(Command command) {
-      return executeCommand(command, null);   
-   }   
+      return executeCommand(command, null, null);   
+   }
+   public String executeCommand(Command command, Integer sensorId) {
+      return executeCommand(command, null, sensorId);
+   }
    public String executeCommand(Command command, String actionParam) {
+      return executeCommand(command, actionParam, null);
+   }
+   public String executeCommand(Command command, String actionParam, Integer sensorId) {
       String commandResult = "";
       List<Action> commandActions = command.getActions();
       
@@ -502,9 +579,16 @@ public class Gateway extends Thread
                   commandResult = protocolRead(value, args);
                   break;
                case SCRIPT:
-                  //Inject actionParam as dynamicValue arg to script
-                  args.put(Command.DYNAMIC_VALUE_ARG_NAME, actionParam);
-                  commandResult = scriptManager.executeScript(value, args, commandResult);
+                  try {
+                     // Inject actionParam as dynamicValue arg to script
+                     args.put(Command.DYNAMIC_VALUE_ARG_NAME, actionParam);
+                     // Inject sensorId that command is linked to
+                     args.put("sensorId", sensorId.toString());
+                  } catch (NullPointerException e) {
+                     // Ignore this error
+                  }                     
+                  // Call script manager execute script and send in status cache service
+                  commandResult = scriptManager.executeScript(value, args, commandResult, this.statusCacheService);
             }
          }
       } catch (GatewayScriptException e) {
@@ -512,9 +596,8 @@ public class Gateway extends Thread
          
          // Script error so mark the command as invalid
          command.setCommandIsValid(false);
-      } finally {      
-         return commandResult;
       }
+      return commandResult;
    }
    
    // Proocol Communication methods -------------------------------------------------------
@@ -525,8 +608,8 @@ public class Gateway extends Thread
     */
    public void protocolConnect() {
       try {
-         // Call protocol connect method
-         this.protocol.connect();
+         // Call protocol connect method with timeout parameter
+         this.protocol.connect(this.connectTimeout);
          this.connectionState = EnumGatewayConnectionState.CONNECTED;
       } catch (Exception e) {
          throw new GatewayConnectionException("Gateway connection error: " + e.getMessage(), e);
@@ -552,7 +635,7 @@ public class Gateway extends Thread
     */
    public void protocolSend(String value, Map<String, String> args) {
       try {
-         this.protocol.outputStream.write((value + "\n").getBytes());
+         this.protocol.outputStream.write((value + this.sendTerminator).getBytes());
          this.protocol.outputStream.flush();
       } catch (IOException e) {
          throw new GatewayConnectionException("Gateway connection send error: " + e.getMessage(), e);
@@ -564,9 +647,9 @@ public class Gateway extends Thread
     * issue so throw a gateway connection exception
     */
    public String protocolRead(String value, Map<String, String> args) {
-      Calendar endTime = Calendar.getInstance();
-      endTime.add(Calendar.MILLISECOND, 1000);
       String readString = "";
+      Calendar endTime = Calendar.getInstance();
+      endTime.add(Calendar.MILLISECOND, this.readTimeout);
       try {
          while (Calendar.getInstance().before(endTime)) {
             while (this.protocol.inputStream.available() != 0) {
@@ -582,9 +665,8 @@ public class Gateway extends Thread
          }
       } catch (IOException e) {
          throw new GatewayConnectionException("Gateway connection read error: " + e.getMessage(), e);
-      } finally {
-         return readString;
       }
+      return readString;
    }
    
    /**

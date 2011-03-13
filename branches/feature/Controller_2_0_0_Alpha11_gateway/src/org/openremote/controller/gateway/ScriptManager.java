@@ -30,9 +30,9 @@ import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.gateway.exception.GatewayScriptException;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.service.StatusCacheService;
 import java.io.File;
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
@@ -101,13 +101,19 @@ public class ScriptManager
       return result;
    }
    
-   public String executeScript(String scriptName, Map<String, String> args, String currentCommandValue) {
+   /**
+    * Execute a script that should already be in the script engine list
+    * add in reference to status cache so script can update the sensor for this
+    * command if it wishes to
+    */   
+   public String executeScript(String scriptName, Map<String, String> args, String currentCommandValue, StatusCacheService statusCacheService) {
       String result = "";
       
       try {
          ScriptEngine engine = getScriptEngine(scriptName);
          if (engine != null) {
-            
+            StatusCache statusCache = new StatusCache(statusCacheService);
+            engine.put("statusCache", statusCache);
             for(String key: args.keySet())
             {
                 engine.put(key, args.get(key)); 
@@ -137,5 +143,23 @@ public class ScriptManager
    /* Remove registered scripts */
    public void reset() {
       this.invocableEngines.clear();
+   }
+   
+   /**
+    * This is a fudge to allow the status cache value to be
+    * updated within a script, when the statuscacheservice
+    * was put directly into the script engine it kpt trying
+    * to find a saveOrUpdateStatus method that took (string, string)
+    * parameters, method resolution doesn't seem to work with Integer
+    * instead of int
+    */
+   public class StatusCache {
+      StatusCacheService statusCacheService;
+      public StatusCache(StatusCacheService statusCacheService) {
+         this.statusCacheService = statusCacheService;
+      }
+      public void setValue(int sensorId, String value) {
+         statusCacheService.saveOrUpdateStatus(sensorId, value);
+      }
    }
 }

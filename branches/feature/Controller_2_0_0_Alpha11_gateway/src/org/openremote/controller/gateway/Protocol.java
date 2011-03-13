@@ -52,7 +52,7 @@ public abstract class Protocol implements ProtocolInterface
     * This method deals with opening up communication with the server and 
     * should validate that connection is established and aim to return CONNECTED
     */
-   public void connect() throws Exception {
+   public void connect(int timeOut) throws Exception {
       
    }
    
