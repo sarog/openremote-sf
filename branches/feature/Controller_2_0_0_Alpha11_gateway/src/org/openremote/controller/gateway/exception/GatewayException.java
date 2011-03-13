@@ -17,29 +17,28 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.controller.exception;
-
+package org.openremote.controller.gateway.exception;
 /**
- * The exception class when Gateway Protocol problem
  * 
  * @author Rich Turner 2011-03-05
+ *
  */
 @SuppressWarnings("serial")
-public class GatewayProtocolException extends GatewayException {
-
-   public GatewayProtocolException() {
+public class GatewayException extends RuntimeException {
+   
+   public GatewayException() {
       super();
    }
 
-   public GatewayProtocolException(String message, Throwable cause) {
+   public GatewayException(String message, Throwable cause) {
       super(message, cause);
    }
 
-   public GatewayProtocolException(String message) {
+   public GatewayException(String message) {
       super(message);
    }
 
-   public GatewayProtocolException(Throwable cause) {
+   public GatewayException(Throwable cause) {
       super(cause);
-   }
+   }   
 }

@@ -32,16 +32,16 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.gateway.Gateway;
-import org.openremote.controller.gateway.GatewayBuilder;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.GatewayManagerService;
 import org.openremote.controller.service.StatusCacheService;
-import org.openremote.controller.exception.GatewayException;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.CommandUtil;
+import org.openremote.controller.gateway.Gateway;
+import org.openremote.controller.gateway.GatewayBuilder;
+import org.openremote.controller.gateway.exception.GatewayException;
 import org.openremote.controller.gateway.ProtocolFactory;
 import org.openremote.controller.gateway.Protocol;
 import org.openremote.controller.gateway.command.Command;
@@ -121,7 +121,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
             /* Create gateway */
             createGateway(gatewayElement, commandElements);
          } catch (GatewayException e) {
-            logger.error("Failed to create gateway: " + e.getMessage(), e);
+            logger.error("Failed to create gateway: " + e.getMessage());
          }
             
       }      
@@ -350,7 +350,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    /* Stop each gateway */
    public void killGateways() {
       for (Gateway gateway : gateways) {
-         gateway.kill();
+         gateway.closeDown();
       }
    }
    
@@ -384,16 +384,16 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       
       if (actionValid) {
          /* Get all of the commands associated with this control */
-         List<Integer> commandIds = getControlCommandIds(controlElement);
+         List<Integer> commandIds = getControlCommandIds(controlElement, controlAction);
          
          /* Execute each command through respective gateway */
          try {
             for (Integer commandId : commandIds) {
                Gateway commandGateway = getCommandGateway(commandId);
-               commandGateway.executeCommand(commandId, controlAction);
+               commandGateway.doCommand(commandId, controlAction);
             }
          } catch (Exception e) {
-            logger.error("Gateway command execution failed: " + e.getMessage(), e);
+            logger.error("Unhandled gateway exception: " + e.getMessage(), e);
          }
       }
    }
@@ -444,8 +444,15 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
     * look at the <include type="command" ref="" /> elements up to two levels
     * deep below the control Element
     */
-   private List<Integer> getControlCommandIds(Element controlElem) {
+   private List<Integer> getControlCommandIds(Element controlElem, String controlAction) {
       List<Integer> commandIds = new ArrayList<Integer>();
+      String controlType = controlElem.getName();
+      if (controlType == "switch") {
+         controlElem = controlElem.getChild(controlAction, controlElem.getNamespace());
+      }
+      if (controlElem == null) {
+         return commandIds;
+      }
       List<Element> children = controlElem.getChildren();
       for (Element childElem : children) {
          Integer commandId = getElemCommandId(childElem);

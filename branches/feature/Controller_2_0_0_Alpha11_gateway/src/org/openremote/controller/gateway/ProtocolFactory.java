@@ -21,9 +21,8 @@
 package org.openremote.controller.gateway;
 
 import java.util.Properties;
-
+import org.openremote.controller.gateway.exception.GatewayException;
 import org.jdom.Element;
-import org.openremote.controller.exception.GatewayProtocolException;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 
@@ -53,22 +52,19 @@ public class ProtocolFactory extends ApplicationObjectSupport
 
          if (protocolType == null || "".equals(protocolType))
          {
-            throw new GatewayProtocolException("Gateway Protocol type is null.");
+            throw new GatewayException("Gateway Protocol type is null.");
          }
 
          String builder = protocolBuilders.getProperty(protocolType);
 
          if (builder == null)
          {
-            throw new GatewayProtocolException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' gateway protocol.");
+            throw new GatewayException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' gateway protocol.");
          }
 
          ProtocolBuilder protocolBuilder = (ProtocolBuilder) getApplicationContext().getBean(builder);
 
          protocol = protocolBuilder.build(element);
-      }
-      if (protocol == null) {
-         throw new GatewayProtocolException("Failed to get protocol object for gateway.");
       }
       return protocol;
    }
