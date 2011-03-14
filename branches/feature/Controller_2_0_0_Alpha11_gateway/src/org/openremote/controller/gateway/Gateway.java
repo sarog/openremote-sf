@@ -209,9 +209,6 @@ public class Gateway extends Thread
       	 * failure enter sleep mode
       	 */
          try {
-            // Increment polling timer and go to sleep until next polling interval
-            this.pollingTimer += POLLING_INTERVAL;
-                        
             if (this.connectionState == EnumGatewayConnectionState.DISCONNECTED) {
                protocolConnect();
             }
@@ -228,6 +225,10 @@ public class Gateway extends Thread
             if (this.pollingTimer >= 86400000) {
                this.pollingTimer = 0;  
             }
+            
+            // Increment polling timer and go to sleep until next polling interval
+            this.pollingTimer += POLLING_INTERVAL;
+            
             Thread.sleep(POLLING_INTERVAL);
          } catch (GatewayConnectionException e) {
             //Connection has failed
