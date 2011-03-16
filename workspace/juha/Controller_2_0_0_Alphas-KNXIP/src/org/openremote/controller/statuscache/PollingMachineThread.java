@@ -58,6 +58,7 @@ public class PollingMachineThread extends Thread
 
 	@Override public void run()
   {
+
 System.out.println(" -------- Started thread for sensor " + sensor);
 
 		while (alive)
