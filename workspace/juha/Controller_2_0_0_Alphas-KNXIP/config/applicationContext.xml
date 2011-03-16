@@ -42,6 +42,7 @@
         <list>
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
+            <value>classpath:lutron_homeworks.properties</value>
           </list>
       </property>
   </bean>
@@ -80,6 +81,15 @@
       <property name="groupMemberCandidateURLs" value="${controller.groupmember.candidate.urls}" />
   </bean>
 
+  <bean id="lutronHomeWorksConfig" class="org.openremote.controller.LutronHomeWorksConfig">
+    <property name="userName" value="${lutron_homeworks.username}" />
+    <property name="password" value="${lutron_homeworks.password}" />
+    <property name="address" value="${lutron_homeworks.address}" />
+    <property name="port" value="${lutron_homeworks.port}" />
+  </bean>
+  
+  <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
+
     <!-- service for control command from panel -->
     <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
     
@@ -117,29 +127,31 @@
 	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
 	
 	<!-- status cache service -->
-    <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    	<property name="cache" ref="statusCache"></property>
-    </bean>
-    
-    <bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
+  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
+    <property name="cache" ref="statusCache"></property>
+  </bean>
+
+  <bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
 	
 	<!-- controller.xml change service -->
-    <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	
+  <bean id = "controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />
 	
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
-		        <prop key = "ir">irCommandBuilder</prop>
-		        <prop key = "knx">knxCommandBuilder</prop>
-		        <prop key = "x10">x10CommandBuilder</prop>
-           	<prop key = "socket">tcpSocketCommandBuilder</prop>
-           	<prop key = "telnet">telnetCommandBuilder</prop>
-           	<prop key = "http">httpGetCommandBuilder</prop>
-            <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
-            <prop key = "virtual">virtualCommandBuilder</prop>
-            <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "ir">irCommandBuilder</prop>
+                <prop key = "knx">knxCommandBuilder</prop>
+                <prop key = "x10">x10CommandBuilder</prop>
+                <prop key = "socket">tcpSocketCommandBuilder</prop>
+                <prop key = "telnet">telnetCommandBuilder</prop>
+                <prop key = "http">httpGetCommandBuilder</prop>
+                <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
+                <prop key = "virtual">virtualCommandBuilder</prop>
+                <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "onewire">oneWireCommandBuilder</prop>
+            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -157,7 +169,9 @@
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
 	
 	<!-- KNX Command Builder -->
-	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder"/>
+	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
+    <property name="stateCache" ref="statusCacheService"></property>
+  </bean>
 	
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
@@ -174,6 +188,9 @@
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
 
+  <!-- 1-wire protocol Command Builder -->
+  <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"/>
+  
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
@@ -185,6 +202,11 @@
    -->
 	<bean id = "mockupCommandBuilder" class = "org.openremote.controller.protocol.test.mockup.MockupCommandBuilder"
 	      scope = "prototype" />
+
+
+	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
+		<property name="gateway" ref="lutronHomeWorksGateway"></property>
+	</bean>
 	      
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
