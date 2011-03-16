@@ -68,7 +68,7 @@ public class Logger extends java.util.logging.Logger
     {
       java.util.logging.Logger.getLogger("").warning(
           "Log category '" + name + "' is not using parent log category " +
-          Constants.CONTROLLER_ROOT_LOG_CATEGORY + ". The logging behavior not be " +
+          Constants.CONTROLLER_ROOT_LOG_CATEGORY + ". The logging behavior may not be " +
           "what was expected."
       );
     }
