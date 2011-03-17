@@ -248,7 +248,7 @@ public class Gateway extends Thread
                closeDown();
                logger.warn("Gateway thread is interrupted", e);
          } catch (Exception e) {
-            logger.error("Unhandled exception in gateway thread: " + this);
+            logger.error("Unhandled exception in gateway thread: " + this + " " + e.getMessage());
          }
    	}
    	System.out.println(" -------- GATEWAY: Stopped gateway for (" +  this.protocol.getName() + ")  " + this);
@@ -309,10 +309,11 @@ public class Gateway extends Thread
    
    public Command getCommand(Integer commandId) {
       Command retCommand = null;
-      if (commands != null) {
-         for(Command command : commands) {
-            if (command.getId() == commandId) {
+      if (this.commands != null) {
+         for(Command command : this.commands) {
+            if (command.getId().equals(commandId)) {
                retCommand = command;
+               break;
             }
          }
       }
@@ -371,7 +372,6 @@ public class Gateway extends Thread
          Integer commandId = pollingMap.getKey();
          Integer sensorId = pollingMap.getValue();
          Command command = getCommand(commandId);
-         Integer pollingInterval = command.getPollingInterval();
          String result = UNKNOWN_STATUS;         
          String commandResult = "";
          
@@ -379,6 +379,7 @@ public class Gateway extends Thread
          if (command == null || !command.isValid()) {
             continue;
          }
+         Integer pollingInterval = command.getPollingInterval();
          
          // If polling interval set then check it's time to run it
          if (pollingInterval > 0) {
@@ -558,7 +559,7 @@ public class Gateway extends Thread
       List<Action> commandActions = command.getActions();
       
       // Exit if no actions or command is invalid
-      if(commandActions.size() == 0 || !command.isValid()) {
+      if(!command.isValid()) {
          return commandResult;
       }
       

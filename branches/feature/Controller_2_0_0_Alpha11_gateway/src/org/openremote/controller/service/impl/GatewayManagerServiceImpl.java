@@ -494,8 +494,10 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    private Gateway getCommandGateway(Integer commandId) {
       Gateway gateway = null;
       if(gateways.size() > 0) {
-         Integer gatewayIndex = commandGatewayMap.get(commandId) - 1;
-         gateway = gateways.get(gatewayIndex);
+         Integer gatewayIndex = commandGatewayMap.get(commandId);
+         if (gatewayIndex != null) {
+            gateway = gateways.get(gatewayIndex - 1);
+         }
       }
       return gateway;
    }

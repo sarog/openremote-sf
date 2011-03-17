@@ -141,6 +141,11 @@ public class Command
                }
             }
          }
+         
+         // Check there's at least one action
+         if (this.commandActions.size() == 0) {
+            this.valid = false;  
+         }
       }
    }
    
