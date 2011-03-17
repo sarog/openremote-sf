@@ -48,9 +48,10 @@ import org.openremote.controller.service.StatusCommandService;
 public class StatusCommandServiceImpl implements StatusCommandService
 {
     
-  private RemoteActionXMLParser remoteActionXMLParser;
+//  private RemoteActionXMLParser remoteActionXMLParser;
+//  private ComponentFactory componentFactory;
+
   private StatusCacheService statusCacheService;
-  private ComponentFactory componentFactory;
   private ControllerXMLListenSharingData controllerXMLListenSharingData;
 
 
@@ -85,19 +86,19 @@ public class StatusCommandServiceImpl implements StatusCommandService
     return sb.toString();
   }
     
-  private EventProducer getStatusCommand(String sensorID)
-  {
-    Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
-
-    if (sensorElement == null)
-    {
-      throw new NoSuchComponentException("Cannot find that sensor with id = " + sensorID);
-    }
-
-    Component component = componentFactory.getComponent(sensorElement, Command.STATUS_COMMAND);
-
-    return component.getStatusCommand();
-  }
+//  private EventProducer getStatusCommand(String sensorID)
+//  {
+//    Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
+//
+//    if (sensorElement == null)
+//    {
+//      throw new NoSuchComponentException("Cannot find that sensor with id = " + sensorID);
+//    }
+//
+//    Component component = componentFactory.getComponent(sensorElement, Command.STATUS_COMMAND);
+//
+//    return component.getStatusCommand();
+//  }
 
   @Override public String readFromCache(String unParsedSensorIDs)
   {
@@ -147,20 +148,20 @@ public class StatusCommandServiceImpl implements StatusCommandService
     return statusSensorIDs;
   }
    
-  public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser)
-  {
-     this.remoteActionXMLParser = remoteActionXMLParser;
-  }
+//  public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser)
+//  {
+//     this.remoteActionXMLParser = remoteActionXMLParser;
+//  }
 
   public void setStatusCacheService(StatusCacheService statusCacheService)
   {
     this.statusCacheService = statusCacheService;
   }
 
-  public void setComponentFactory(ComponentFactory componentFactory)
-  {
-    this.componentFactory = componentFactory;
-  }
+//  public void setComponentFactory(ComponentFactory componentFactory)
+//  {
+//    this.componentFactory = componentFactory;
+//  }
 
   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData)
   {
