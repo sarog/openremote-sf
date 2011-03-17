@@ -40,38 +40,38 @@ public class SwitchBuilder extends ComponentBuilder
 
   @Override public Control build(Element componentElement, String commandParam)
   {
-  Switch switchToggle = new Switch();
+    Switch switchToggle = new Switch();
 
-  if (!switchToggle.isValidActionWith(commandParam))
-  {
-     return switchToggle;
-  }
-
-  List<Element> operationElements = componentElement.getChildren();
-
-  for (Element operationElement : operationElements)
-  {
-    if (hasIncludeSensorElement(operationElement))
+    if (!switchToggle.isValidActionWith(commandParam))
     {
-      Sensor sensor = parseSensor(componentElement, operationElement);
-      switchToggle.setSensor(sensor);
+       return switchToggle;
     }
 
-    if (commandParam.equalsIgnoreCase(operationElement.getName()))
-    {
-      List<Element> commandRefElements = operationElement.getChildren();
+    List<Element> operationElements = componentElement.getChildren();
 
-      for (Element commandRefElement : commandRefElements)
+    for (Element operationElement : operationElements)
+    {
+      if (hasIncludeSensorElement(operationElement))
       {
-        String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
-        Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
-        Command command = commandFactory.getCommand(commandElement);
-        switchToggle.addExecutableCommand((ExecutableCommand) command);
+        Sensor sensor = parseSensor(componentElement, operationElement);
+        switchToggle.setSensor(sensor);
+      }
+
+      if (commandParam.equalsIgnoreCase(operationElement.getName()))
+      {
+        List<Element> commandRefElements = operationElement.getChildren();
+
+        for (Element commandRefElement : commandRefElements)
+        {
+          String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+          Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
+          Command command = commandFactory.getCommand(commandElement);
+          switchToggle.addExecutableCommand((ExecutableCommand) command);
+        }
       }
     }
-  }
 
-  return switchToggle;
+    return switchToggle;
   }
 
 }
