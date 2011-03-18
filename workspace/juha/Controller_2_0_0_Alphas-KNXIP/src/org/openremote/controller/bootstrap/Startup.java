@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import java.util.logging.LogManager;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.MessageFormat;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.InitializationException;
@@ -178,8 +179,6 @@ public class Startup
   /**
    * Java util logging handler implementation to map JUL log records to log4j API and send
    * log messages to log4j. <p>
-   *
-   * TODO : not handling parameterized log messages currently
    */
   private final static class Log4jRedirect extends Handler
   {
@@ -198,6 +197,7 @@ public class Startup
       String msg  = logRecord.getMessage();
       String category = logRecord.getLoggerName();
       Throwable thrown = logRecord.getThrown();
+      Object[] params = logRecord.getParameters();
 
       // translate to log4j log category (1 to 1 name mapping)...
 
@@ -209,17 +209,32 @@ public class Startup
 
       // and log...
 
-      if (thrown != null)
+      if (log4j.isEnabledFor(log4jLevel))
       {
-        if (log4j.isEnabledFor(log4jLevel))
+        if (params != null)
+        {
+          try
+          {
+            msg = MessageFormat.format(msg, params);
+          }
+          catch (IllegalArgumentException e)
+          {
+            msg = msg + "  [LOG MESSAGE PARAMETERIZATION ERROR: " +
+                  e.getMessage().toUpperCase() + "]";
+          }
+        }
+
+        if (thrown != null)
+        {
           log4j.log(log4jLevel, msg, thrown);
+        }
+
+        else
+        {
+          log4j.log(log4jLevel, msg);
+        }
       }
 
-      else
-      {
-        if (log4j.isEnabledFor(log4jLevel))
-          log4j.log(log4jLevel, msg);
-      }
     }
 
     /**
