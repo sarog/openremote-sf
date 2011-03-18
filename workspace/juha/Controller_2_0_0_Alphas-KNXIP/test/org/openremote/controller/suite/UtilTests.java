@@ -27,6 +27,7 @@ import org.openremote.controller.utils.ConfigFactoryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.utils.RemoteActionXMLParserTest;
 import org.openremote.controller.utils.StringsTest;
+import org.openremote.controller.utils.LoggerTest;
 
 
 @RunWith(Suite.class)
@@ -35,10 +36,12 @@ import org.openremote.controller.utils.StringsTest;
    MacrosIrDelayUtilTest.class,
    RemoteActionXMLParserTest.class,
    ConfigFactoryTest.class,
-   StringsTest.class
+   StringsTest.class,
+
+   LoggerTest.class
 }
 )
-public class AllUtilTests
+public class UtilTests
 {
 
 }
