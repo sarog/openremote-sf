@@ -1,0 +1,23 @@
+This is a simple Android app for demonstrating playing streaming
+video over RTSP.  See src/org/openremote/demo/rtpstream/PlayRTPStream.java
+for more information as well as to change the URL used.
+
+This started out with the following code fragment given to me
+by Juha Lindfors (the licensing of which I don't know):
+
+==
+VideoView vv = new VideoView(this);
+vv.setMinimumHeight(200);
+vv.setMinimumWidth(400);
+vv.setBackgroundColor(0xaaaaaa);
+MediaController mediaController = new MediaController(this);
+mediaController.setAnchorView(vv);
+vv.setMediaController(mediaController);
+contentLayout.addView(vv);
+
+vv.setVideoURI(Uri.parse("rtsp://video3.americafree.tv/AFTVComedyH2641000.sdp"));
+vv.start();
+==
+
+Andrew Ball
+aball@osintegrators.com
