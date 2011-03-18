@@ -105,6 +105,17 @@ public class LoggerTest
     log.debug("test {0} message with {1}", new RuntimeException("log debug testing"), "debug", this.getClass());
   }
 
+
+  /**
+   * TODO : trace not yet implemented
+   */
+  @Test public void testTraceMethod()
+  {
+    throw new Error("Not Yet Implemented");
+
+  }
+  
+
   /**
    * Test behavior with null args on logger error facade.
    */
