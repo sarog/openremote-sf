@@ -23,6 +23,7 @@ package org.openremote.controller.utils;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.LogRecord;
 
 import org.openremote.controller.Constants;
 
@@ -129,7 +130,21 @@ public class Logger extends java.util.logging.Logger
    */
   public void error(String msg)
   {
-    super.severe(msg);
+    super.log(Level.SEVERE, msg);
+  }
+
+  /**
+   * Same as {@link #error} but allows parameterized log messages.
+   *
+   * @param msg     log message
+   * @param params  log message parameters -- message parameterization must be compatible with
+   *                {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void error(String msg, Object... params)
+  {
+    super.log(Level.SEVERE, msg, params);
   }
 
   /**
@@ -143,6 +158,28 @@ public class Logger extends java.util.logging.Logger
     super.log(Level.SEVERE, msg, throwable);
   }
 
+  /**
+   * Same as {@link #error} with an additional exception stack trace and message parameterization
+   * added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   * @param params      log message parameters -- message parameterization must be compatible with
+   *                    {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void error(String msg, Throwable throwable, Object... params)
+  {
+    LogRecord record = new LogRecord(Level.SEVERE, msg);
+    record.setThrown(throwable);
+    record.setParameters(params);
+
+    super.log(record);
+  }
+
+
+  // Warning Logging ------------------------------------------------------------------------------
 
   /**
    * Synonymous to using {@link java.util.logging.Logger#warning}.
@@ -151,8 +188,24 @@ public class Logger extends java.util.logging.Logger
    */
   public void warn(String msg)
   {
-    super.warning(msg);
+    super.log(Level.WARNING, msg);
   }
+
+
+  /**
+   * Same as {@link #warn} but allows parameterized log messages.
+   *
+   * @param msg     log message
+   * @param params  log message parameters -- message parameterization must be compatible with
+   *                {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void warn(String msg, Object... params)
+  {
+    super.log(Level.WARNING, msg, params);
+  }
+
 
   /**
    * Same as {@link #warn} with an additional exception stack trace added to the logging record.
@@ -167,6 +220,91 @@ public class Logger extends java.util.logging.Logger
 
 
   /**
+   * Same as {@link #warn} with an additional exception stack trace and message parameterization
+   * added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   * @param params      log message parameters -- message parameterization must be compatible with
+   *                    {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void warn(String msg, Throwable throwable, Object... params)
+  {
+    LogRecord record = new LogRecord(Level.WARNING, msg);
+    record.setThrown(throwable);
+    record.setParameters(params);
+
+    super.log(record);
+  }
+
+
+  // Info Logging ---------------------------------------------------------------------------------
+
+
+  /**
+   * Synonymous to using {@link java.util.logging.Logger#info(String)}.
+   *
+   * Further, {@link org.openremote.controller.bootstrap.Startup#redirectJULtoLog4j()} maps
+   * JUL {@link java.util.logging.Level#INFO} to log4j <tt>INFO</tt> priority.
+   *
+   * @param msg   log message
+   */
+  public void info(String msg)
+  {
+    super.log(Level.INFO, msg);
+  }
+
+  /**
+   * Same as {@link #info} but allows parameterized log messages.
+   *
+   * @param msg     log message
+   * @param params  log message parameters -- message parameterization must be compatible with
+   *                {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void info(String msg, Object... params)
+  {
+    super.log(Level.INFO, msg, params);
+  }
+
+  /**
+   * Same as {@link #info} with an additional exception stack trace added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   */
+  public void info(String msg, Throwable throwable)
+  {
+    super.log(Level.INFO, msg, throwable);
+  }
+
+  /**
+   * Same as {@link #info} with an additional exception stack trace and message parameterization
+   * added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   * @param params      log message parameters -- message parameterization must be compatible with
+   *                    {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void info(String msg, Throwable throwable, Object... params)
+  {
+    LogRecord record = new LogRecord(Level.INFO, msg);
+    record.setThrown(throwable);
+    record.setParameters(params);
+
+    super.log(record);
+  }
+
+
+  // Debug Logging --------------------------------------------------------------------------------
+
+  /**
    * Synonymous to using {@link java.util.logging.Logger#fine}.
    *
    * Further, {@link org.openremote.controller.bootstrap.Startup#redirectJULtoLog4j()} maps
@@ -176,7 +314,21 @@ public class Logger extends java.util.logging.Logger
    */
   public void debug(String msg)
   {
-    super.fine(msg);
+    super.log(Level.FINE, msg);
+  }
+
+  /**
+   * Same as {@link #debug} but allows parameterized log messages.
+   *
+   * @param msg     log message
+   * @param params  log message parameters -- message parameterization must be compatible with
+   *                {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void debug(String msg, Object... params)
+  {
+    super.log(Level.FINE, msg, params);
   }
 
   /**
@@ -190,6 +342,25 @@ public class Logger extends java.util.logging.Logger
     super.log(Level.FINE, msg, throwable);
   }
 
+  /**
+   * Same as {@link #debug} with an additional exception stack trace and message parameterization
+   * added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   * @param params      log message parameters -- message parameterization must be compatible with
+   *                    {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void debug(String msg, Throwable throwable, Object... params)
+  {
+    LogRecord record = new LogRecord(Level.FINE, msg);
+    record.setThrown(throwable);
+    record.setParameters(params);
+
+    super.log(record);
+  }
 
 }
 
