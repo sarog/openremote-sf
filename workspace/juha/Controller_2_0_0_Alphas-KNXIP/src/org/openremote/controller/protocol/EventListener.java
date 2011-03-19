@@ -68,7 +68,7 @@ package org.openremote.controller.protocol;
  *      ServiceContext.getDeviceStateCache().update(sensorID, "0");
  *
  *      // This implementation starts a listening thread per sensor. If you want multiple
- *      // listeners / sensors to same same resources or threads, this can be managed in
+ *      // listeners / sensors to share same resources or threads, this can be managed in
  *      // the command builder implementation...
  *
  *      Thread t = new Thread(this);
@@ -112,7 +112,7 @@ public interface EventListener extends EventProducer
   /**
    * Each event listener is initialized with one or more sensor IDs the listener is bound to.
    * If the listener is used as an input for multiple sensors, this callback is invoked multiple
-   * times, once for each associated sensor IDs.
+   * times, once for each associated sensor ID.
    * 
    * @param sensorID    sensor this event listener is bound to
    */
