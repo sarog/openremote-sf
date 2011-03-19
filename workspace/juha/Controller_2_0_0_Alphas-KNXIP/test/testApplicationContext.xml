@@ -79,7 +79,7 @@
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
-            	<prop key = "test">testCommandBuilder</prop>
+            	<prop key = "virtual">virtualCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -94,8 +94,7 @@
 	 | extend the implementation with additional command types.
 	 +-->
 
-	<bean id = "testCommandBuilder" class = "org.openremote.controller.protocol.test.TestCommandBuilder"
-	      scope = "prototype" />
+	<bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 	      
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
@@ -121,9 +120,6 @@
 	 +-->  	
 	<!-- Button Builder -->
 	<bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder"/>
-	
-	<!-- Toggle Builder -->
-	<bean id = "toggleBuilder" class = "org.openremote.controller.component.control.toggle.ToggleBuilder"/>
 	
 	<!-- Switch Builder -->
 	<bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
