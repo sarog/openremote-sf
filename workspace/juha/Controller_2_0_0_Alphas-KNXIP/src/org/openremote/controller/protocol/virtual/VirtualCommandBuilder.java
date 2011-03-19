@@ -25,6 +25,8 @@ import java.util.List;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.service.ServiceContext;
 import org.jdom.Element;
 import org.apache.log4j.Logger;
 
@@ -163,9 +165,16 @@ public class VirtualCommandBuilder implements CommandBuilder
     }
 
     String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
-    VirtualCommand cmd;
+    Command cmd;
 
-    if (commandParam == null || commandParam.equals(""))
+    if (command.equalsIgnoreCase("TemperatureSensor") ||
+        command.equalsIgnoreCase("Temperature_Sensor") ||
+        command.equalsIgnoreCase("Temperature-Sensor"))
+    {
+      cmd = new ThermometerListener();
+    }
+
+    else if (commandParam == null || commandParam.equals(""))
     {
       cmd = new VirtualCommand(address, command);
     }
@@ -178,6 +187,55 @@ public class VirtualCommandBuilder implements CommandBuilder
 
 
     return cmd;
+  }
+
+
+  /**
+   * A fake temp sensor implemented as a listener that fluxuates the values between -50 and 50
+   * on 5 second intervals.
+   */
+  static class ThermometerListener implements EventListener, Runnable
+  {
+    private int id;
+
+    @Override public void setSensorID(int ID)
+    {
+      this.id = ID;
+
+      ServiceContext.getDeviceStateCache().update(id, "0");
+      
+      Thread t = new Thread(this);
+      t.start();
+    }
+
+    @Override public void run()
+    {
+      boolean running = true;
+      int temp = 0;
+      int step = 1;
+
+      while (running)
+      {
+        try
+        {
+          Thread.sleep(5000);
+
+          temp = temp + step;
+
+          if (temp >= 50)
+            step = -1;
+
+          if (temp <= -50)
+            step = 1;
+
+          ServiceContext.getDeviceStateCache().update(id, Integer.toString(temp));
+        }
+        catch (InterruptedException e)
+        {
+          running = false;
+        }
+      }
+    }
   }
 }
 
