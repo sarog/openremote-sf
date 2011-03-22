@@ -76,7 +76,7 @@ public class Gateway extends Thread
       
    // Properties ------------------------------------------------------------------------------------
    /** The logger. */
-   private Logger logger = Logger.getLogger(Gateway.class);
+   private Logger logger = Logger.getLogger(this.getClass().getName());
       
    /* This is the builder for creating the required protocol object */
    private Protocol protocol;

@@ -32,14 +32,17 @@ import org.jdom.Document;
  * @author Rich Turner 2011-02-09
  */
 public interface GatewayManagerService {
-   /** Create Gateway instances from controller xml */
+   /* Create Gateway instances from controller xml */
    public void initGatewaysWithControllerXML(Document document);
    
-   /**  Fire up the gateway threads */
+   /* Fire up the gateway threads */
    public void startGateways();
 
-   /** Restart all the gateways */
+   /* Restart all the gateways */
    public void restartGateways();
+   
+   /* Stop all the gateway */
+   public void stopGateways();
 
    public String getControllerXMLFileContent();
 
