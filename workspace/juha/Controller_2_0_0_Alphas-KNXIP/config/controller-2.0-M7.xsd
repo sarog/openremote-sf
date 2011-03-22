@@ -34,7 +34,7 @@
       This defines the following:
 
       1. device component: such as a switch or a slider... whose id is consistent with
-			                     the one in panel.xml
+                           the one in panel.xml
       2. status sensor :   used to do polling to get current status of a device
       3. device command:   such as "TV on", to support different device command protocol
       4. configuration:    controller configuration properties
@@ -53,33 +53,33 @@
     <xsd:annotation>
       <xsd:documentation><![CDATA[
 
-	      The top level (typically root) element.
+        The top level (typically root) element.
 
-	      The document is structured into four main sections: components, sensors, commands and
-	      configuration.
+        The document is structured into four main sections: components, sensors, commands and
+        configuration.
 
-	      Components aggregate sets of commands and sensors into component level abstractions such
-	      as switches, sliders, labels, and so on. These are directly mapped via their ID to their
-	      corresponding panel UI widgets.
+        Components aggregate sets of commands and sensors into component level abstractions such
+        as switches, sliders, labels, and so on. These are directly mapped via their ID to their
+        corresponding panel UI widgets.
 
-	      Sensors abstract incoming events from devices, either through polling or listening to
-	      devices that actively broadcast their state changes. Sensors are bound to components
-	      that support displaying state changes via sensor's ID attribute. Sensors in this
-	      revision support four distinct datatypes: boolean switches (on/off), arbitrary range
-	      values (integers), a specific level range (integer between 0-100) and finite set of
-	      custom state strings.
+        Sensors abstract incoming events from devices, either through polling or listening to
+        devices that actively broadcast their state changes. Sensors are bound to components
+        that support displaying state changes via sensor's ID attribute. Sensors in this
+        revision support four distinct datatypes: boolean switches (on/off), arbitrary range
+        values (integers), a specific level range (integer between 0-100) and finite set of
+        custom state strings.
 
-	      Commands abstract device read and write requests to protocol level wire format. Commands
-	      support set of properties that can be used to translate them to the desired protocol
-	      payload or serialization format. Protocol integration and adding new protocols happens
-	      via this abstraction.
+        Commands abstract device read and write requests to protocol level wire format. Commands
+        support set of properties that can be used to translate them to the desired protocol
+        payload or serialization format. Protocol integration and adding new protocols happens
+        via this abstraction.
 
-	      Configuration section are controller configuration properties that can be used to
-	      change the behavior of the controller itself either by editing the configuration locally
-	      or through online tools.
+        Configuration section are controller configuration properties that can be used to
+        change the behavior of the controller itself either by editing the configuration locally
+        or through online tools.
 
       ]]></xsd:documentation>
-		</xsd:annotation>
+    </xsd:annotation>
 
     <xsd:complexType>
       <xsd:sequence>
@@ -228,8 +228,8 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-	
-	
+
+
   <!--
   =================================================================================================
 
@@ -321,7 +321,7 @@
       <xsd:minInclusive value = "1"/>
     </xsd:restriction>
   </xsd:simpleType>
-	
+
 
 
   <!--
@@ -396,21 +396,21 @@
           An example of a switch component definition might look like this:
 
             <components>
-		          <switch id = "nnn">
-			          <on>
-			            <include type = "command" ref = "nnn" />
-			            <include type = "command" ref = "nnn" />
-			            <include type = "command" ref = "nnn" />
-			          </on>
+              <switch id = "nnn">
+                <on>
+                  <include type = "command" ref = "nnn" />
+                  <include type = "command" ref = "nnn" />
+                  <include type = "command" ref = "nnn" />
+                </on>
 
-			          <off>
-			            <include type = "command" ref = "nnn" />
-			          </off>
+                <off>
+                  <include type = "command" ref = "nnn" />
+                </off>
 
-			          <include type = "sensor" ref = "nnn" />
-		          </switch>
-		          ...
-		        </components>
+                <include type = "sensor" ref = "nnn" />
+              </switch>
+              ...
+            </components>
 
 
       ]]></xsd:documentation>
@@ -498,15 +498,15 @@
           An example of a slider component definition might look like this:
 
             <components>
-		          <slider id = "nnn">
-			          <setValue>
-			            <include type = "command" ref = "nnn" />
-			          </setValue>
+              <slider id = "nnn">
+                <setValue>
+                  <include type = "command" ref = "nnn" />
+                </setValue>
 
-			          <include type = "sensor" ref = "nnn" />
-		          </slider>
-		          ...
-		        </components>
+                <include type = "sensor" ref = "nnn" />
+              </slider>
+              ...
+            </components>
 
 
       ]]></xsd:documentation>
@@ -564,14 +564,14 @@
           An example button element is as follows:
 
             <components>
-		          <button id = "nnn">
-			            <include type = "command" ref = "nnn" />
-			            <include type = "command" ref = "nnn" />
-			            <delay>500</delay>
-			            <include type = "command" ref = "nnn" />
-		          </button>
-		          ...
-		        </components>
+              <button id = "nnn">
+                  <include type = "command" ref = "nnn" />
+                  <include type = "command" ref = "nnn" />
+                  <delay>500</delay>
+                  <include type = "command" ref = "nnn" />
+              </button>
+              ...
+            </components>
 
       ]]></xsd:documentation>
     </xsd:annotation>
@@ -608,11 +608,11 @@
           An example label element is as follows:
 
             <components>
-		          <label id = "nnn">
-			            <include type = "sensor" ref = "nnn" />
-		          </label>
-		          ...
-		        </components>
+              <label id = "nnn">
+                  <include type = "sensor" ref = "nnn" />
+              </label>
+              ...
+            </components>
 
       ]]></xsd:documentation>
     </xsd:annotation>
@@ -649,11 +649,11 @@
           An example image element is as follows:
 
             <components>
-		          <image id = "nnn">
-			          <include type = "sensor" ref = "nnn" />
-		          </image>
-		          ...
-		        </components>
+              <image id = "nnn">
+                <include type = "sensor" ref = "nnn" />
+              </image>
+              ...
+            </components>
 
       ]]></xsd:documentation>
     </xsd:annotation>
@@ -948,14 +948,14 @@
     <xsd:annotation>
       <xsd:documentation><![CDATA[
 
-					Sensor data type definitions:
+          Sensor data type definitions:
 
-					1) Switch: returns boolean 'on' or 'off' strings
-					2) Level:  An integer value as a string that is scaled to an implicit range of [0-100]
-					3) Range:  Integer value as a string within a given boundary range
-					5) Custom: A customized finite set of state strings
+          1) Switch: returns boolean 'on' or 'off' strings
+          2) Level:  An integer value as a string that is scaled to an implicit range of [0-100]
+          3) Range:  Integer value as a string within a given boundary range
+          5) Custom: A customized finite set of state strings
 
-				]]>
+        ]]>
       </xsd:documentation>
     </xsd:annotation>
 
@@ -1120,7 +1120,7 @@
   </xsd:element>
 
 
-  
+
 
   <!--
   =================================================================================================
