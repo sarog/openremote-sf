@@ -61,5 +61,6 @@ public class InitConnectionManager extends ApplicationObjectSupport implements S
     */
    @Override
    public void contextDestroyed(ServletContextEvent event) {
+      gatewayManagerService.stopGateways();
    }
 }

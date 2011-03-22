@@ -48,7 +48,7 @@ import java.util.ArrayList;
 public class ScriptManager
 {
    /* The logger. */
-   private Logger logger = Logger.getLogger(ScriptManager.class);
+   private Logger logger = Logger.getLogger(this.getClass().getName());
 
    /* The controller configuration properties */
    private Configuration configuration;
@@ -61,7 +61,6 @@ public class ScriptManager
    
    /* Script file names */
    private List<String> scriptNames = new ArrayList<String>();
-   
    
    /**
     * Adds a new script to the manager by first checking that the script
@@ -131,11 +130,13 @@ public class ScriptManager
       return result;   
    }
    
+   /* Get the script engine for a script */
    public ScriptEngine getScriptEngine(String scriptName) {
       ScriptEngine engine = null;
       return this.invocableEngines.get(scriptName);
    }
    
+   /* Set the Controller Configuration */
    public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
    }
@@ -148,7 +149,7 @@ public class ScriptManager
    /**
     * This is a fudge to allow the status cache value to be
     * updated within a script, when the statuscacheservice
-    * was put directly into the script engine it kpt trying
+    * was put directly into the script engine it kept trying
     * to find a saveOrUpdateStatus method that took (string, string)
     * parameters, method resolution doesn't seem to work with Integer
     * instead of int
