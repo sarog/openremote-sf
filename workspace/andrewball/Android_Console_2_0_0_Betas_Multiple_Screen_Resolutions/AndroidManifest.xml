@@ -45,7 +45,8 @@
         </activity>
     </application>
     
-    <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" />
+    <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" 
+                      android:anyDensity="false" />
     
     <uses-sdk android:minSdkVersion="4" />
 </manifest>
