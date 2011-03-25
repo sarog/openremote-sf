@@ -27,7 +27,9 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.protocol.EventProducer;
 import org.openremote.controller.protocol.EventListener;
-import org.openremote.controller.command.ReadCommand;
+import org.openremote.controller.protocol.ReadCommand;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.model.sensor.StateSensor;
 
 /**
  * Basic tests on the {@link Sensor} superclass. Specific sensor implementations have their

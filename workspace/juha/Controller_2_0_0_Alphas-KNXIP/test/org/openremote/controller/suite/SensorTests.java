@@ -21,8 +21,8 @@
 package org.openremote.controller.suite;
 
 import org.openremote.controller.component.SensorTest;
-import org.openremote.controller.component.SwitchSensorTest;
-import org.openremote.controller.component.StateSensorTest;
+import org.openremote.controller.model.sensor.SwitchSensorTest;
+import org.openremote.controller.model.sensor.StateSensorTest;
 import org.openremote.controller.component.LevelSensorTest;
 import org.openremote.controller.component.RangeSensorTest;
 import org.junit.runners.Suite;
