@@ -24,18 +24,44 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.openremote.controller.command.StatusCommand;
+import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.protocol.EventProducer;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
 
 /**
- * TODO : Sensor will listen status change by using {@link StatusCommand}.
+ * Sensors abstract incoming events from devices, either through polling or listening to
+ * devices that actively broadcast their state changes. Sensors operate on protocol handlers
+ * to execute read requests on devices to fetch the current device state.  <p>
  *
- * TODO : is immutable
+ * Each polling sensor (for passive devices) has a thread associated with it. Sensors bound to
+ * event listeners do not create threads of their own but the event listener implementations
+ * themselves are usually multi-threaded. <p>
+ *
+ * Each sensor can have list of properties which it makes available to implementations of
+ * read commands and event listeners. These properties may be used by protocol implementers to
+ * direct their event producer output values to suit the sensor's configuration. <p>
+ *
+ * A sensor class is designed as immutable. This immutability should be maintained by the sensor's
+ * subclasses in order to make it safe to pass the sensor instances to protocol handlers and
+ * possibly to other plugins and/or components.
+ *
  *
  * TODO : per sensor polling frequency
  *
  * TODO : cache polling reads
+ *
+ * TODO : move to model pkg (some protocols have dependencies so waiting to do this later)
+ *
+ * TODO : get sensor properties
+ *
+ * TODO : push to state cache by listeners
+ *
+ * TODO : keep track of event producer ID  associated with this sensor
+ *
+ * TODO : sensor name
  *
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -61,7 +87,15 @@ public abstract class Sensor
   public final static String RANGE_MAX_STATE = "_range_max_state_";
 
 
-  
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common log category for runtime operations on sensors.
+   */
+  protected final static Logger log = Logger.getLogger(Constants.RUNTIME_SENSORS_LOG_CATEGORY);
+
+
+
   // Instance Fields ------------------------------------------------------------------------------
 
   /**
@@ -72,6 +106,8 @@ public abstract class Sensor
   /**
    * The datatype of sensor. The sensor should return values on its {@link #read} operation
    * only according to its datatype.
+   *
+   * NOTE: this is going away with the legacy StatusCommand interface
    */
   private EnumSensorType sensorType;
 
@@ -88,11 +124,8 @@ public abstract class Sensor
   private EventProducer eventProducer;
 
   /**
-   * Sensor properties. These properties are used to handle the implementation of different types
-   * of sensors (see {@link EnumSensorType}) to direct the implementation towards a specific
-   * behavior.
-   *
-   * TODO: key is state name, value is actual state value.
+   * Sensor properties. These properties can be used by the protocol implementors to direct
+   * their implementation on read commands and event listeners according to sensor configuration.
    */
   private Map<String, String> sensorProperties;
 
@@ -104,12 +137,12 @@ public abstract class Sensor
    * Constructs a new sensor with a given ID, sensor datatype, an event producing protocol handler,
    * and a set of sensor properties
    *
-   * @param sensorID
-   * @param sensorType
-   * @param eventProducer
-   * @param sensorProperties
+   * @param sensorID          an unique sensor ID
+   * @param sensorType        datatype for this sensor
+   * @param eventProducer     event producing protocol handler implementation
+   * @param sensorProperties  additional sensor properties
    */
-  public Sensor(int sensorID, EnumSensorType sensorType, EventProducer eventProducer,
+  protected Sensor(int sensorID, EnumSensorType sensorType, EventProducer eventProducer,
                Map<String, String> sensorProperties)
   {
     if (sensorType == null || eventProducer == null)
@@ -149,39 +182,47 @@ public abstract class Sensor
    * Returns this sensor's datatype. Datatype dictates the types of values a sensor may
    * return.
    *
+   * @deprecated  Sensor types are available via proper object model where each sensor is a
+   *              subclass of this abstract sensor class -- therefore normal type checks
+   *              using 'instanceof' apply. The EnumSensorType however is exposed via a public
+   *              API used by protocol implementers and therefore must still remain -- use of
+   *              it (and use of this method by extension) is heavily discouraged though.
+   *
    * @return  this sensor's data type
    */
-  public EnumSensorType getSensorType()
+  @Deprecated public EnumSensorType getSensorType()
   {
     return sensorType;
   }
 
 
   /**
-   * State map contains all supported states.
-   * key is state name, value is actual state value.
-   * e.g. for a switch may be:
-   * <ul>
-   * <li>on:light1_on</li>
-   * <li>off:light1_off</li>
-   * </ul>
+   * Returns the current state of this sensor.  <p>
    *
-   * This map is used to find state name according to returned state value.
+   * If the sensor is bound to a read command implementation, the read command is invoked --
+   * this may yield an active state request on the connecting transport unless the read
+   * command implementation caches certain values and returns them from memory. <p>
    *
-   * @return TODO
-   */
-  public Map<String, String> getStateMap()
-  {
-    // TODO : this is only used in tests
-    return sensorProperties;
-  }
-
-
-
-  /**
-   * TODO : Read status using status command.
+   * In case of an event listener, this method does not invoke anything on the listener itself
+   * but returns the last stored state from the controller's device state cache associated with
+   * this sensor's ID. An event listener implementation is responsible of actively updating and
+   * inserting the device state values into the controller's cache. <p>
    *
-   * @return TODO
+   * In case of errors, {@link org.openremote.controller.protocol.ReadCommand#UNKNOWN_STATUS} is
+   * returned.  <p>
+   *
+   * This default implementation does not validate the input from protocol read commands in any
+   * way (other than handling implementation errors that yield runtime exceptions) -- it is the
+   * responsiblity of the concrete subclasses to validate the inputs from read commands to ensure
+   * the sensor returns values that adhere to its datatype.
+   *
+   * @see org.openremote.controller.model.sensor.StateSensor#read
+   * @see org.openremote.controller.model.sensor.SwitchSensor#read
+   * @see org.openremote.controller.protocol.EventListener
+   * @see org.openremote.controller.protocol.ReadCommand
+   *
+   * @return sensor's value, according to its datatype and provided by protocol handlers (read
+   *         command or event listener)
    */
   public String read()
   {
@@ -203,7 +244,16 @@ public abstract class Sensor
     {
       StatusCommand statusCommand = (StatusCommand)eventProducer;
 
-      return statusCommand.read(sensorType, sensorProperties);
+      try
+      {
+        return statusCommand.read(sensorType, sensorProperties);
+      }
+      catch (Throwable t)
+      {
+        log.error("Implementation error in protocol handler " + eventProducer);
+
+        return ReadCommand.UNKNOWN_STATUS;
+      }
     }
 
     else
@@ -212,7 +262,6 @@ public abstract class Sensor
           "Sensor has been initialized with an event producer that is neither a read command " +
           "or event listener. The implementation must be updated to accommodate this new type."
       );
-
     }
   }
 
@@ -220,9 +269,9 @@ public abstract class Sensor
 
 
   /**
-   * TODO
+   * Indicates if this sensor is bound to an event listener.
    *
-   * @return
+   * @return  true if this sensor is bound to an event listener implementation, false otherwise
    */
   public boolean isEventListener()
   {
@@ -231,22 +280,31 @@ public abstract class Sensor
 
 
   /**
-   * TODO
+   * Indicates whether this sensor is bound to read commands that has a polling sensor associated
+   * to it, or receives state updates via other means.
    *
-   * @return
+   * @return    true if a polling thread is associated with this thread, false otherwise
    */
   public boolean isPolling()
   {
-    return eventProducer instanceof StatusCommand;
+    return eventProducer instanceof ReadCommand;
   }
 
 
 
   /**
-   * TODO
+   * TODO :
    *
+   *   - Starts the sensor. This currently only applies to event listeners (which are initialized
+   *     with a reference to this sensor). It should also apply to polling sensors by creating
+   *     the polling thread (which ought to be managed by the sensor implementation itself).
+   *     Further, the sensor should register itself with the deployer once it starts.
+   *
+   *     This all needs to wait until the thread polling thread mess is sorted out and a proper
+   *     deployer is created.
+   *                                                                                    [JPL]
    */
-  public void initListener()
+  public void start()
   {
     if (isEventListener())
     {
@@ -261,15 +319,14 @@ public abstract class Sensor
   // Object Overrides -----------------------------------------------------------------------------
 
   /**
-   * String represenation of this sensor, with sensor ID, sensor's type identifier and
+   * String represenation of this sensor, including sensor type, its unique identifier and
+   * the event producer the sensor is bound to.
    *
-   * TODO
-   *
-   * @return
+   * @return  string representation of this sensor
    */
   @Override public String toString()
   {
-    return sensorID + " " + sensorType + " " + eventProducer;
+    return sensorType + " Sensor (ID = " + sensorID + ") bound to event producer " + eventProducer;
   }
 
   /**
