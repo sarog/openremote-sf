@@ -243,7 +243,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
     try
     {
-      HttpResponse response = ORNetworkCheck.verifyControllerURL(ctx, "");
+      ORNetworkCheck.verifyControllerURL(ctx, "");
 
       fail ("should not get here");
     }
@@ -261,7 +261,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   {
     try
     {
-      HttpResponse response = ORNetworkCheck.verifyControllerURL(
+      ORNetworkCheck.verifyControllerURL(
           ctx, "http://controller.openremotetest.org/test/controller"
       );
 
