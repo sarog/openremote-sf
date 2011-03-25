@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.Assert;
-import org.openremote.controller.command.ReadCommand;
+import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.component.EnumSensorType;
