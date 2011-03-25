@@ -30,7 +30,6 @@ import org.openremote.android.console.model.PollingHelper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.AbsoluteLayout;
 import android.widget.ImageView;
