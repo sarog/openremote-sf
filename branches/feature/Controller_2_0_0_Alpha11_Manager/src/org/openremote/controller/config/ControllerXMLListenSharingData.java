@@ -37,6 +37,7 @@ public class ControllerXMLListenSharingData {
    private List<Sensor> sensors = new ArrayList<Sensor>();
    private StringBuffer controllerXMLFileContent = new StringBuffer();
    private StringBuffer panelXMLFileContent = new StringBuffer();
+   private Boolean xmlInitialised = false;
    
    public Sensor findSensorById(String id) {
       for (Sensor sensor : sensors) {
@@ -47,7 +48,14 @@ public class ControllerXMLListenSharingData {
       return null;
    }
    
-   public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
+   public Boolean isXmlInitialised() {
+      return this.xmlInitialised;  
+   }
+   
+   public void setXmlInitialised() {
+      this.xmlInitialised = true;
+   }
+      public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
       this.pollingMachineThreads.add(pollingMachineThread);
    }
    
