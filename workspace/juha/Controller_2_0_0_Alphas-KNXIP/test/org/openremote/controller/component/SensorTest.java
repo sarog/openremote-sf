@@ -48,9 +48,9 @@ public class SensorTest
     EventProducer ep1 = new TestEventProducer1();
     EventProducer ep2 = new TestEventProducer2();
 
-    Sensor s1 = new RangeSensor(1, ep1, -50, 50);
-    Sensor s2 = new LevelSensor(1, ep2);
-    Sensor s3 = new RangeSensor(1, ep1, -20, 20);
+    Sensor s1 = new RangeSensor("range", 1, ep1, -50, 50);
+    Sensor s2 = new LevelSensor("level", 1, ep2);
+    Sensor s3 = new RangeSensor("range", 1, ep1, -20, 20);
 
     // there should be only one sensor with the same id which is the only one that matters in
     // equals comparison...
@@ -72,7 +72,7 @@ public class SensorTest
 
     // And different ID should not be equals...
 
-    Sensor s4 = new RangeSensor(2, ep1, -50, 50);
+    Sensor s4 = new RangeSensor("range", 2, ep1, -50, 50);
 
     Assert.assertFalse(s1.equals(s4));
     Assert.assertFalse(s4.equals(s1));
@@ -90,7 +90,7 @@ public class SensorTest
   {
     try
     {
-      Sensor s1 = new SwitchSensor(4, null);
+      Sensor s1 = new SwitchSensor("switch", 4, null);
 
       Assert.fail("should not reach here");
     }
@@ -101,7 +101,7 @@ public class SensorTest
 
     try
     {
-      Sensor s1 = new RangeSensor(54, null, 0, 0);
+      Sensor s1 = new RangeSensor("range", 54, null, 0, 0);
 
       Assert.fail("should not reach here");
     }
@@ -112,7 +112,7 @@ public class SensorTest
 
     try
     {
-      Sensor s1 = new StateSensor(455, null, null);
+      Sensor s1 = new StateSensor("state", 455, null, null);
 
       Assert.fail("should not reach here");
     }
@@ -127,30 +127,48 @@ public class SensorTest
    */
   @Test public void testSensorInitialization()
   {
-    Sensor s1 = new SwitchSensor(9, new EventProducer() {});
+    Sensor s1 = new SwitchSensor("switch", 9, new EventProducer() {});
 
     Assert.assertTrue(s1.getSensorID() == 9);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
+    Assert.assertTrue(s1.getName().equals("switch"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
 
 
-    RangeSensor s2 = new RangeSensor(99, new EventProducer() {}, 0, 0);
+    RangeSensor s2 = new RangeSensor("range", 99, new EventProducer() {}, 0, 0);
 
     Assert.assertTrue(s2.getSensorID() == 99);
     Assert.assertTrue(s2.getMaxValue() == 0);
     Assert.assertTrue(s2.getMinValue() == 0);
     Assert.assertTrue(s2.getSensorType() == EnumSensorType.RANGE);
+    Assert.assertTrue(s2.getName().equals("range"));
+    Assert.assertTrue(s2.getProperties().size() == 2);
 
 
-    Sensor s3 = new StateSensor(444, new EventProducer() {}, null);
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addState("one");
+    states.addState("two");
+
+    Sensor s3 = new StateSensor("state", 444, new EventProducer() {}, states);
 
     Assert.assertTrue(s3.getSensorID() == 444);
     Assert.assertTrue(s3.getSensorType() == EnumSensorType.CUSTOM);
+    Assert.assertTrue(s3.getName().equals("state"));
+    Assert.assertTrue(s3.getProperties().size() == 2);
+    Assert.assertTrue(s3.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s3.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s3.getProperties().values().contains("one"));
+    Assert.assertTrue(s3.getProperties().values().contains("two"));
 
     
-    Sensor s4 = new LevelSensor(993, new EventProducer() {});
+    LevelSensor s4 = new LevelSensor("level", 993, new EventProducer() {});
 
     Assert.assertTrue(s4.getSensorID() == 993);
     Assert.assertTrue(s4.getSensorType() == EnumSensorType.LEVEL);
+    Assert.assertTrue(s4.getName().equals("level"));
+    Assert.assertTrue(s4.getProperties().size() == 0);
+    Assert.assertTrue(s4.getMaxValue() == 100);
+    Assert.assertTrue(s4.getMinValue() == 0);
   }
 
 
@@ -159,7 +177,7 @@ public class SensorTest
    */
   @Test public void testSensorRead()
   {
-    Sensor s1 = new SwitchSensor(84, new SwitchRead(EnumSensorType.SWITCH));
+    Sensor s1 = new SwitchSensor("switch", 84, new SwitchRead(EnumSensorType.SWITCH));
 
     String returnValue = s1.read();
 
@@ -167,7 +185,7 @@ public class SensorTest
 
 
 
-    Sensor s2 = new RangeSensor(33, new RangeRead(EnumSensorType.RANGE), 0, 0);
+    Sensor s2 = new RangeSensor("range", 33, new RangeRead(EnumSensorType.RANGE), 0, 0);
 
     returnValue = s2.read();
 
@@ -180,12 +198,12 @@ public class SensorTest
    */
   @Test public void testPollingVsListener()
   {
-    Sensor s1 = new SwitchSensor(4555, new Listener(4555));
+    Sensor s1 = new SwitchSensor("switch", 4555, new Listener(4555));
 
     Assert.assertTrue(s1.isEventListener());
     Assert.assertFalse(s1.isPolling());
 
-    Sensor s2 = new SwitchSensor(9933, new SwitchRead(EnumSensorType.SWITCH));
+    Sensor s2 = new SwitchSensor("switch", 9933, new SwitchRead(EnumSensorType.SWITCH));
 
     Assert.assertTrue(s2.isPolling());
     Assert.assertFalse(s2.isEventListener());
