@@ -56,18 +56,14 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    private StringBuffer controllerXMLFileContent = new StringBuffer();
    private StringBuffer panelXMLFileContent = new StringBuffer();
    
-   /* String constant for the top level gateway element connection type attribute: ("{@value}") */
-   public final static String CONNECTION_ATTRIBUTE_NAME = "connectionType";
-    
-   /* String constant for the top level gateway element polling method attribute: ("{@value}") */
-   public final static String POLLING_ATTRIBUTE_NAME = "pollingMethod";
-     
    /* This is the protocol factory for returning the protocol builder */
    private ProtocolFactory protocolFactory;
    
    private Logger logger = Logger.getLogger(GatewayManagerServiceImpl.class);
    private List<Gateway> gateways = new ArrayList<Gateway>();
    private Map<Integer, Integer> commandGatewayMap = new HashMap<Integer, Integer>();
+   
+   // Methods -------------------------------------------------------------------------
    /**
     * Process controller.xml and extract Gateway elements and instantiate each one
     * and associate commands with respective gateway
@@ -77,8 +73,9 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
        * First store controller and panel xml files as xml change service
        * will be looking for changes every 15s
        */
-      storeXMLContent(Constants.CONTROLLER_XML);
-      storeXMLContent(Constants.PANEL_XML);
+      // Handled by PollingMachinesService
+      // storeXMLContent(Constants.CONTROLLER_XML);
+      // storeXMLContent(Constants.PANEL_XML);
       
       /** 
        * Get list of commands and build gateways from this info
@@ -92,10 +89,12 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       try {
          if (document == null) {
             commandElements = remoteActionXMLParser.queryElementsFromXMLByName("command");
+            commandElements = filterSupportedCommands(commandElements);
             sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
             gatewayElements = remoteActionXMLParser.queryElementsFromXMLByName("gateway");
          } else {
             commandElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "command");
+            commandElements = filterSupportedCommands(commandElements);
             sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
             gatewayElements = remoteActionXMLParser.queryElementsFromXMLByName("gateway");
          }
@@ -173,7 +172,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    }
    
    /* Trigger the commands associated with a panel control */
-   public void trigger(String controlId, String controlAction) {
+   public void trigger(String controlId, String controlAction, List<Integer> controlCommands) {
       Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlId);
       if (controlElement == null) {
          throw new NoSuchComponentException("No such component id :" + controlId);
@@ -189,13 +188,10 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       // Validate control action      
       Boolean actionValid = isComponentActionValid(componentType, controlAction);
       
-      if (actionValid) {
-         /* Get all of the commands associated with this control */
-         List<Integer> commandIds = getControlCommandIds(controlElement, controlAction);
-         
+      if (actionValid && controlCommands != null) {         
          /* Execute each command through respective gateway */
          try {
-            for (Integer commandId : commandIds) {
+            for (Integer commandId : controlCommands) {
                Gateway commandGateway = getCommandGateway(commandId);
                commandGateway.doCommand(commandId, controlAction);
             }
@@ -294,7 +290,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
     */
    private Map<String, Boolean> getProtocolProperties(String protocolType) {
       Map<String, Boolean> props = new HashMap<String, Boolean>();
-      if ("telnet".equals(protocolType)) {
+      if ("telnet-gateway".equals(protocolType)) {
          props.put("ipaddress", true);
          props.put("port", true);
          props.put("promptstring", false);
@@ -314,7 +310,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       String connectionStr = "";
       String protocolType = gatewayElement.getAttributeValue("protocol");
       List<Element> propertyEles = gatewayElement.getChildren();
-      if ("telnet".equals(protocolType)) {
+      if ("telnet-gateway".equals(protocolType)) {
          String ipAddress = "";
          String port = "";
          Map<String, Boolean> props = getProtocolProperties(protocolType);
@@ -409,7 +405,25 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    private Protocol getProtocol(Element gatewayElement) {
       Protocol protocol = (Protocol)protocolFactory.getProtocol(gatewayElement);
       return protocol;
-   }   
+   }
+   
+   /* Determines if specified protocol is supported by gateway manager */
+   public Boolean isProtocolSupported(String protocolType) {
+      return supportedProtocols.contains(protocolType);
+   }
+   
+   /* Filter command elements and return only supported protocol command elemets */
+   private List<Element> filterSupportedCommands(List<Element> commandElements) {
+      List<Element> supportedCommandElements = new ArrayList<Element> ();
+      for (Element commandElement : commandElements)
+      {
+         String protocolType = commandElement.getAttributeValue("protocol");
+         if (isProtocolSupported(protocolType)) {
+            supportedCommandElements.add(commandElement);  
+         }
+      }
+      return supportedCommandElements;
+   }
    
    /* Add a Command Gateway Map */
    private void addCommandMap(Integer commandId, Integer gatewayId) {
@@ -499,7 +513,12 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
     * deep below the control Element. This is an alternative to instantiating the control
     * object.
     */
-   private List<Integer> getControlCommandIds(Element controlElem, String controlAction) {
+   public List<Integer> getComponentCommandIds(String controlId, String controlAction) {
+      Element controlElem = remoteActionXMLParser.queryElementFromXMLById(controlId);
+      if (controlElem == null) {
+         throw new NoSuchComponentException("No such component id :" + controlId);
+      }
+      
       List<Integer> commandIds = new ArrayList<Integer>();
       String controlType = controlElem.getName();
       if (controlType == "switch") {
@@ -512,14 +531,34 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       for (Element childElem : children) {
          Integer commandId = getElemCommandId(childElem);
          if (commandId != null) {
-            commandIds.add(commandId);
+            // Get the commandElement and determine protocol
+            Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandId.toString());
+            if (commandElement != null) {
+               String protocolType = commandElement.getAttributeValue("protocol");
+               if (isProtocolSupported(protocolType)) {
+                  commandIds.add(commandId);
+               } else {
+                  commandIds.clear();
+                  break;  
+               }
+            }
          }
          if (childElem.getChildren().size() > 0) {
             List<Element> childChildElems = childElem.getChildren();
             for (Element childChildElem : childChildElems) {
                commandId = getElemCommandId(childChildElem);
                if (commandId != null) {
-                  commandIds.add(commandId);
+                  // Get the commandElement and determine protocol
+                  Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandId.toString());
+                  if (commandElement != null) {
+                     String protocolType = commandElement.getAttributeValue("protocol");
+                     if (isProtocolSupported(protocolType)) {                  
+                        commandIds.add(commandId);
+                     } else {
+                        commandIds.clear();
+                        break;  
+                     }  
+                  }
                }
             }
          }
