@@ -41,6 +41,7 @@ import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.service.GatewayManagerService;
 
 /**
  * Controller.xml monitoring service.
@@ -55,6 +56,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    private CommandFactory commandFactory;
    private StatusCacheService statusCacheService;
    private ChangedStatusTable changedStatusTable;
+   private GatewayManagerService gatewayManagerService;
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
@@ -65,7 +67,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          return true;
       }
       
-      logger.info("Controller.xml of Controller changed, refreshing controller.xml");
+      logger.info("Controller.xml or panel.xml of Controller changed, restarting controller");
       boolean success = false;
       tagControllerXMLChanged(true);
       try {
@@ -74,6 +76,8 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          clearStatusCache();
          clearAndReloadSensors();
          restartPollingMachineThreads();
+         // Restart gateways
+         gatewayManagerService.restartGateways();
          success = true;
       } catch (ControllerException e) {
          logger.error("Error occured while refreshing controller.", e);
@@ -81,7 +85,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       } finally {
          tagControllerXMLChanged(false);
          String isSuccessInfo = success ? " success " : " failed ";
-         logger.info("Finished refreshing controller.xml" + isSuccessInfo);
+         logger.info("Finished restarting controller." + isSuccessInfo);
          return success;
       }
       
@@ -104,7 +108,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          logger.warn("Skipped " + observedXMLFileName + " change check, Failed to read " + observedXMLFile.getAbsolutePath());
          return false;
       }
-      if (oldXMLFileContent.equals(fileContent.toString())) {
+      if (oldXMLFileContent.equals(fileContent.toString()) || !controllerXMLListenSharingData.isXmlInitialised()) {
          return false;
       }
       if (Constants.CONTROLLER_XML.equals(observedXMLFileName)) {
@@ -157,18 +161,22 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
       Iterator<Element> sensorElementIterator = sensorElements.iterator();
       while(sensorElementIterator.hasNext()) {
          Element sensorElement = sensorElementIterator.next();
-//         for (Element sensorElement : sensorElements) {
-         Sensor sensor = new Sensor();
-         sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
-         sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
-
          Element includeElement = sensorElement.getChild(Constants.INCLUDE_ELEMENT_NAME, sensorElement.getNamespace());
          String statusCommandID = includeElement.getAttributeValue(Constants.REF_ATTRIBUTE_NAME);
          Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
-         StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
-         sensor.setStatusCommand(statusCommand);
+         String protocolType = statusCommandElement.getAttributeValue("protocol");
+         
+         // Only build sensor if protocol not supported by gateway manager
+         if (!gatewayManagerService.isProtocolSupported(protocolType)) {
+            Sensor sensor = new Sensor();
+            sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
+            sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
 
-         controllerXMLListenSharingData.addSensor(sensor);
+            StatusCommand statusCommand = (StatusCommand) commandFactory.getCommand(statusCommandElement);
+            sensor.setStatusCommand(statusCommand);
+
+            controllerXMLListenSharingData.addSensor(sensor);
+         }
       }
    }
    
@@ -200,6 +208,10 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
    
    public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
       this.changedStatusTable = changedStatusTable;
+   }
+   
+   public void setGatewayManagerService(GatewayManagerService gatewayManagerService) {
+      this.gatewayManagerService = gatewayManagerService;
    }
 
    private void nap(long milliseconds) {
