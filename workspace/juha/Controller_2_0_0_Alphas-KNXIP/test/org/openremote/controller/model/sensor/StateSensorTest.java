@@ -44,12 +44,16 @@ public class StateSensorTest
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("foo");
 
-    StateSensor s1 = new StateSensor(1, new StateReadCommand("foo"), states);
+    StateSensor s1 = new StateSensor("single", 1, new StateReadCommand("foo"), states);
 
     Assert.assertTrue(s1.read().equals("foo"));
     Assert.assertTrue(s1.getSensorID() == 1);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("single"));
+    Assert.assertTrue(s1.getProperties().size() == 1);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().values().contains("foo"));
   }
 
   /**
@@ -61,12 +65,18 @@ public class StateSensorTest
     states.addState("foo");
     states.addState("bar");
 
-    StateSensor s1 = new StateSensor(2, new StateReadCommand("foo", "bar"), states);
+    StateSensor s1 = new StateSensor("twostate", 2, new StateReadCommand("foo", "bar"), states);
 
     Assert.assertTrue(s1.read().equals("foo"));
     Assert.assertTrue(s1.getSensorID() == 2);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("twostate"));
+    Assert.assertTrue(s1.getProperties().size() == 2);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().values().contains("foo"));
+    Assert.assertTrue(s1.getProperties().values().contains("bar"));
 
 
     Assert.assertTrue(s1.read().equals("bar"));
@@ -84,12 +94,20 @@ public class StateSensorTest
     states.addState("bar");
     states.addState("acme");
 
-    StateSensor s1 = new StateSensor(3, new StateReadCommand("foo", "bar", "acme"), states);
+    StateSensor s1 = new StateSensor("threestate", 3, new StateReadCommand("foo", "bar", "acme"), states);
 
     Assert.assertTrue(s1.read().equals("foo"));
     Assert.assertTrue(s1.getSensorID() == 3);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("threestate"));
+    Assert.assertTrue(s1.getProperties().size() == 3);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-3"));
+    Assert.assertTrue(s1.getProperties().values().contains("foo"));
+    Assert.assertTrue(s1.getProperties().values().contains("bar"));
+    Assert.assertTrue(s1.getProperties().values().contains("acme"));
 
 
     Assert.assertTrue(s1.read().equals("bar"));
@@ -115,7 +133,7 @@ public class StateSensorTest
     states.addState("ten");
 
     StateSensor s1 = new StateSensor(
-        4,
+        "tenstate", 4,
         new StateReadCommand("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"),
         states
     );
@@ -124,7 +142,29 @@ public class StateSensorTest
     Assert.assertTrue(s1.getSensorID() == 4);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("tenstate"));
+    Assert.assertTrue(s1.getProperties().size() == 10);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-3"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-4"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-5"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-6"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-7"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-8"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-9"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-10"));
 
+    Assert.assertTrue(s1.getProperties().values().contains("one"));
+    Assert.assertTrue(s1.getProperties().values().contains("two"));
+    Assert.assertTrue(s1.getProperties().values().contains("three"));
+    Assert.assertTrue(s1.getProperties().values().contains("four"));
+    Assert.assertTrue(s1.getProperties().values().contains("five"));
+    Assert.assertTrue(s1.getProperties().values().contains("six"));
+    Assert.assertTrue(s1.getProperties().values().contains("seven"));
+    Assert.assertTrue(s1.getProperties().values().contains("eight"));
+    Assert.assertTrue(s1.getProperties().values().contains("nine"));
+    Assert.assertTrue(s1.getProperties().values().contains("ten"));
 
     Assert.assertTrue(s1.read().equals("two"));
     Assert.assertTrue(s1.read().equals("three"));
@@ -148,12 +188,18 @@ public class StateSensorTest
     states.addState("bar");
     states.addState("foo");
 
-    StateSensor s1 = new StateSensor(5, new StateReadCommand("acme", "foo", "bar"), states);
+    StateSensor s1 = new StateSensor("funky", 5, new StateReadCommand("acme", "foo", "bar"), states);
 
     Assert.assertTrue(s1.read().equals(ReadCommand.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 5);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("funky"));
+    Assert.assertTrue(s1.getProperties().size() == 2);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().values().contains("foo"));
+    Assert.assertTrue(s1.getProperties().values().contains("bar"));
 
 
     String readVal = s1.read();
@@ -173,12 +219,20 @@ public class StateSensorTest
     states.addStateMapping("1", "Cloudy");
     states.addStateMapping("2", "Sunny");
 
-    StateSensor s1 = new StateSensor(6, new StateReadCommand("0", "1", "2"), states);
+    StateSensor s1 = new StateSensor("mapped", 6, new StateReadCommand("0", "1", "2"), states);
 
     Assert.assertTrue(s1.read().equals("Raining"));
     Assert.assertTrue(s1.getSensorID() == 6);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("mapped"));
+    Assert.assertTrue(s1.getProperties().size() == 3);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-3"));
+    Assert.assertTrue(s1.getProperties().values().contains("0"));
+    Assert.assertTrue(s1.getProperties().values().contains("1"));
+    Assert.assertTrue(s1.getProperties().values().contains("2"));
 
 
     Assert.assertTrue(s1.read().equals("Cloudy"));
@@ -204,13 +258,22 @@ public class StateSensorTest
     states.addStateMapping("1", "Cloudy");
     states.addStateMapping("2", "Sunny");
 
-    StateSensor s1 = new StateSensor(7, new BrokenCommand(), states);
+    StateSensor s1 = new StateSensor("broken", 7, new BrokenCommand(), states);
 
     Assert.assertTrue(s1.read().equals(ReadCommand.UNKNOWN_STATUS));
 
     Assert.assertTrue(s1.getSensorID() == 7);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("broken"));
+    Assert.assertTrue(s1.getProperties().size() == 3);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-3"));
+    Assert.assertTrue(s1.getProperties().values().contains("0"));
+    Assert.assertTrue(s1.getProperties().values().contains("1"));
+    Assert.assertTrue(s1.getProperties().values().contains("2"));
+
   }
 
 

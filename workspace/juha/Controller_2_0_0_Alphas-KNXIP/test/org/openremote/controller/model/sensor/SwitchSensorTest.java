@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
@@ -42,12 +41,14 @@ public class SwitchSensorTest
    */
   @Test public void testSwitchOnState()
   {
-    SwitchSensor s1 = new SwitchSensor(1, new SwitchReadCommand("on"));
+    SwitchSensor s1 = new SwitchSensor("switch on", 1, new SwitchReadCommand("on"));
 
     Assert.assertTrue(s1.read().equals("on"));
     Assert.assertTrue(s1.getSensorID() == 1);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("switch on"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
   }
 
   /**
@@ -55,12 +56,14 @@ public class SwitchSensorTest
    */
   @Test public void testSwitchOffState()
   {
-    SwitchSensor s1 = new SwitchSensor(2, new SwitchReadCommand("off"));
+    SwitchSensor s1 = new SwitchSensor("switch off", 2, new SwitchReadCommand("off"));
 
     Assert.assertTrue(s1.read().equals("off"));
     Assert.assertTrue(s1.getSensorID() == 2);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("switch off"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
   }
 
 
@@ -69,12 +72,14 @@ public class SwitchSensorTest
    */
   @Test public void testSwitchUnknownState()
   {
-    SwitchSensor s1 = new SwitchSensor(3, new SwitchReadCommand("foo"));
+    SwitchSensor s1 = new SwitchSensor("unknown", 3, new SwitchReadCommand("foo"));
 
     Assert.assertTrue(s1.read().equals(StatusCommand.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 3);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("unknown"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
   }
 
 
@@ -88,30 +93,36 @@ public class SwitchSensorTest
     mapping.addStateMapping("on", "open");
 
     
-    SwitchSensor s1 = new SwitchSensor(4, new SwitchReadCommand("on"), mapping);
+    SwitchSensor s1 = new SwitchSensor("door sensor", 4, new SwitchReadCommand("on"), mapping);
 
     Assert.assertTrue(s1.read().equals("open"));
     Assert.assertTrue(s1.getSensorID() == 4);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("door sensor"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
 
 
 
-    SwitchSensor s2 = new SwitchSensor(5, new SwitchReadCommand("off"), mapping);
+    SwitchSensor s2 = new SwitchSensor("door", 5, new SwitchReadCommand("off"), mapping);
 
     Assert.assertTrue(s2.read().equals("close"));
     Assert.assertTrue(s2.getSensorID() == 5);
     Assert.assertTrue(s2.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s2.isPolling());
+    Assert.assertTrue(s2.getName().equals("door"));
+    Assert.assertTrue(s2.getProperties().size() == 0);
 
 
 
-    SwitchSensor s3 = new SwitchSensor(6, new SwitchReadCommand("bar"), mapping);
+    SwitchSensor s3 = new SwitchSensor("unknown", 6, new SwitchReadCommand("bar"), mapping);
 
     Assert.assertTrue(s3.read().equals(StatusCommand.UNKNOWN_STATUS));
     Assert.assertTrue(s3.getSensorID() == 6);
     Assert.assertTrue(s3.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s3.isPolling());
+    Assert.assertTrue(s3.getName().equals("unknown"));
+    Assert.assertTrue(s3.getProperties().size() == 0);
 
   }
 
@@ -121,12 +132,14 @@ public class SwitchSensorTest
    */
   @Test public void testBrokenCommand()
   {
-    SwitchSensor s1 = new SwitchSensor(7, new BrokenCommand());
+    SwitchSensor s1 = new SwitchSensor("broken", 7, new BrokenCommand());
 
     Assert.assertTrue(s1.read().equals(ReadCommand.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 7);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertTrue(s1.getName().equals("broken"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
 
   }
 
