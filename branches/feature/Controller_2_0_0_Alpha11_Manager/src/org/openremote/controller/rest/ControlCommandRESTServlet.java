@@ -33,6 +33,9 @@ import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.InvalidCommandTypeException;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.service.GatewayManagerService;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * The Class Control Command REST Servlet.
@@ -46,6 +49,8 @@ public class ControlCommandRESTServlet extends HttpServlet {
    
    private static ControlCommandService controlCommandService = 
       (ControlCommandService) SpringContext.getInstance().getBean("controlCommandService");
+   // private static ControlCommandService controlCommandService = (ControlCommandService) SpringContext.getInstance().getBean("controlCommandService");
+   private static GatewayManagerService gatewayManagerService = (GatewayManagerService)SpringContext.getInstance().getBean("gatewayManagerService");
    
    /* (non-Javadoc)
     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -73,10 +78,19 @@ public class ControlCommandRESTServlet extends HttpServlet {
          commandParam = matcher.group(2);
          try{
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
-                  controlCommandService.trigger(controlID, commandParam);
+      			/**
+      			 * If control uses commands that are managed by the gateway manager
+      			 * then direct the request to the gateway manager
+      			 */
+               List<Integer> componentCommands = gatewayManagerService.getComponentCommandIds(controlID, commandParam);
+               if (componentCommands.size() > 0) {
+                  gatewayManagerService.trigger(controlID, commandParam, componentCommands);
                } else {
-                  throw new InvalidCommandTypeException(commandParam);
+                  controlCommandService.trigger(controlID, commandParam);
                }
+            } else {
+               throw new InvalidCommandTypeException(commandParam);
+            }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
             response.sendError(e.getErrorCode(),e.getMessage());
