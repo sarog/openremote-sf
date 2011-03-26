@@ -227,4 +227,25 @@
 	<!-- imageBuilder -->
 	<bean id="imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
 
+   <!-- ********************************* Gateway Manager Additions *********************************************** -->
+   <!-- gateway Manager Service -->
+   <bean id="gatewayManagerService" class="org.openremote.controller.service.impl.GatewayManagerServiceImpl" />
+   
+   <!-- script Manager -->
+   <bean id="scriptManager" class="org.openremote.controller.gateway.ScriptManager" />
+   
+   <!-- Protocol Factory -->
+   <bean id="protocolFactory" class="org.openremote.controller.gateway.ProtocolFactory">
+		<property name="protocolBuilders">
+		    <props>
+           	<prop key="telnet-gateway">telnetProtocolBuilder</prop>
+		    </props>
+		</property>
+	</bean>
+	   
+	<!-- Telnet Protocol Builder -->
+	<bean id="telnetProtocolBuilder" class="org.openremote.controller.gateway.protocol.telnet.TelnetProtocolBuilder" />	
+	
+   <!-- ********************************* Gateway Manager Additions *********************************************** -->
+   
 </beans>
