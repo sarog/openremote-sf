@@ -10,6 +10,7 @@
 			<map>
 			  <entry key="controllerXMLChangeService" value-ref="controllerXMLChangeService" />
 			  <entry key="controllerXMLListenSharingData" value-ref="controllerXMLListenSharingData" />
+			  <entry key="gatewayManagerService" value-ref="gatewayManagerService" />
 			</map>
 		</property>             
 	</bean>
