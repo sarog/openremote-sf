@@ -69,16 +69,22 @@ public class StatusCommandServiceImpl implements StatusCommandService {
        sb.append(Constants.STATUS_XML_HEADER);
        
        Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
-       for (String sensorID : sensorIDs) {
-           sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
-           Sensor sensor = controllerXMLListenSharingData.findSensorById(sensorID);
-           sb.append(sensor == null ? StatusCommand.UNKNOWN_STATUS : sensor.readStatus());
-           sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
-           sb.append("\n");
-       }
-       
-       sb.append(Constants.STATUS_XML_TAIL);       
-       return sb.toString();
+      String sensorStatus;
+      
+      for (String sensorID : sensorIDs) {
+         sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
+         try {
+            sensorStatus = statusCacheService.getStatusBySensorId(Integer.parseInt(sensorID));
+         } catch (NumberFormatException e) {
+            throw new NoSuchComponentException("The sensor id '" + sensorID + "' should be digit", e);
+         }           
+         sb.append(sensorStatus == null ? StatusCommand.UNKNOWN_STATUS : sensorStatus);
+         sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+         sb.append("\n");
+      }
+      
+      sb.append(Constants.STATUS_XML_TAIL);       
+      return sb.toString();
    }
     
    private StatusCommand getStatusCommand(String sensorID) {
