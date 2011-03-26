@@ -23,14 +23,15 @@ package org.openremote.controller.component;
 
 import junit.framework.Assert;
 
-import org.jdom.Document;
+
 import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
 import org.junit.Test;
+import org.junit.BeforeClass;
+import org.junit.AfterClass;
 import org.openremote.controller.Constants;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.utils.SpringTestContext;
 
 /**
  * Sensor Builder Test.
@@ -38,18 +39,47 @@ import org.openremote.controller.utils.SpringTestContext;
  * fixture: org/openremote/controller/fixture/controller.xml
  * 
  * @author Dan Cong 
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class SensorBuilderTest
 {
 
-  private static SensorBuilder sensorBuilder = (SensorBuilder) SpringTestContext.getInstance()
-       .getBean("sensorBuilder");
-  private static RemoteActionXMLParser remoteActionXMLParser = (RemoteActionXMLParser) SpringTestContext.getInstance()
-       .getBean("remoteActionXMLParser");
+  private static SensorBuilder sensorBuilder;
+  private static RemoteActionXMLParser controllerXMLParser;
 
 
+
+  // Test Lifecycle -------------------------------------------------------------------------------
+
+  @BeforeClass public static void beforeTests()
+  {
+    try
+    {
+      sensorBuilder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
+      controllerXMLParser = ServiceContext.getControllerXMLParser();
+
+      AllTests.deleteControllerXML();
+      AllTests.restoreControllerXML();
+
+      AllTests.replaceControllerXML(Constants.CONTROLLER_XML);
+    }
+
+    catch (Throwable t)
+    {
+      Assert.fail("Cannot initialize tests: " + t.getMessage());  
+    }
+  }
+
+  @AfterClass public static void afterTests()
+  {
+    AllTests.restoreControllerXML();
+  }
+
+  // Tests ----------------------------------------------------------------------------------------
 
   /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
    * <pre>{@code
    * <sensor id="1008" name="range sensor" type="range">
    *   <include type="command" ref="96" />
@@ -58,18 +88,23 @@ public class SensorBuilderTest
    * </sensor>
    *
    * }</pre>
+   *
+   * @throws Exception if the test fails
    */
   @Test public void testCreateRangeSensor() throws Exception
   {
-    Sensor s = getSensor(EnumSensorType.RANGE);
+    RangeSensor s = (RangeSensor)getSensor(EnumSensorType.RANGE);
     Assert.assertEquals(EnumSensorType.RANGE, s.getSensorType());
-    Assert.assertEquals("100", s.getRangeMaxSatateValue());
-    Assert.assertEquals("-20", s.getRangeMinSatateValue());
-    Assert.assertNotNull(s.getStatusCommand());
+    Assert.assertEquals(100, s.getMaxValue());
+    Assert.assertEquals(-20, s.getMinValue());
+    Assert.assertTrue(s.getName().equals("range sensor"));
+    Assert.assertTrue(s.getProperties().size() == 2);
   }
 
 
   /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
    * <pre>{@code
    * <sensor id="1001" name="lampA power sensor" type="switch">
    *   <include type="command" ref="98" />
@@ -78,20 +113,21 @@ public class SensorBuilderTest
    * </sensor>
    *
    * }</pre>
+   *
+   * @throws Exception if test fails
    */
   @Test public void testCreateSwitchSensor() throws Exception
   {
     Sensor s = getSensor(EnumSensorType.SWITCH);
     Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
-    Assert.assertEquals("on", s.getStateMap().get("on"));
-    Assert.assertEquals("off", s.getStateMap().get("off"));
-    Assert.assertNull(s.getRangeMaxSatateValue());
-    Assert.assertNull(s.getRangeMinSatateValue());
-    Assert.assertNotNull(s.getStatusCommand());
+    Assert.assertTrue(s.getName().equals("lampA power sensor"));
+    Assert.assertTrue(s.getProperties().size() == 0);
   }
 
 
   /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
    * <pre>{@code
    * <sensor id="1010" name="range sensor" type="level">
    *   <include type="command" ref="96" />
@@ -100,18 +136,23 @@ public class SensorBuilderTest
    * </sensor>
    *
    * }</pre>
+   *
+   * @throws Exception if test fails
    */
   @Test public void testCreateLevelSensor() throws Exception
   {
-    Sensor s = getSensor(EnumSensorType.LEVEL);
+    LevelSensor s = (LevelSensor)getSensor(EnumSensorType.LEVEL);
     Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
-    Assert.assertEquals("100", s.getRangeMaxSatateValue());
-    Assert.assertEquals("0", s.getRangeMinSatateValue());
-    Assert.assertNotNull(s.getStatusCommand());
+    Assert.assertEquals(100, s.getMaxValue());
+    Assert.assertEquals(0, s.getMinValue());
+    Assert.assertTrue(s.getName().equals("range sensor"));
+    Assert.assertTrue(s.getProperties().size() == 0);
   }
 
 
   /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
    * <pre>{@code
    * <sensor id="1009" name="Door power sensor" type="custom">
    *   <include type="command" ref="98" />
@@ -120,17 +161,28 @@ public class SensorBuilderTest
    * </sensor>
    *
    * }</pre>
+   *
+   * @throws Exception if test fails
    */
   @Test public void testCreateCustomSensor() throws Exception
   {
     Sensor s = getSensor(EnumSensorType.CUSTOM);
     Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
-    Assert.assertEquals("on", s.getStateMap().get("open"));
-    Assert.assertEquals("off", s.getStateMap().get("close"));
-    Assert.assertNull(s.getStateMap().get("on"));
-    Assert.assertNull(s.getRangeMaxSatateValue());
-    Assert.assertNull(s.getRangeMinSatateValue());
-    Assert.assertNotNull(s.getStatusCommand());
+    Assert.assertTrue(s.getName().equals("Door power sensor"));
+    Assert.assertTrue(s.getProperties().size() == 2);
+    Assert.assertTrue(s.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s.getProperties().values().contains("on"));
+    Assert.assertTrue(s.getProperties().values().contains("off"));
+  }
+
+
+  @Test public void testInvalidConfigs()
+  {
+    // need more tests to make sure different configuration variants are initialized correctly
+    // and also test some error handling...
+    
+    Assert.fail("Not Yet Implemented.");
   }
 
 
@@ -140,35 +192,25 @@ public class SensorBuilderTest
   private Sensor getSensor(EnumSensorType type) throws Exception
   {
 
-    String controllerXmlFixturePath = AllTests.getFixtureFile(Constants.CONTROLLER_XML);
-
-    Document doc = null;
-    SAXBuilder builder = new SAXBuilder();
-
-    doc = builder.build(controllerXmlFixturePath);
 
     Element ele = null;
 
     switch (type)
     {
       case RANGE:
-        ele = remoteActionXMLParser.queryElementFromXMLById(doc, "1008");
+        ele = controllerXMLParser.queryElementFromXMLById("1008");
         break;
 
       case LEVEL:
-        ele = remoteActionXMLParser.queryElementFromXMLById(doc, "1010");
+        ele = controllerXMLParser.queryElementFromXMLById("1010");
         break;
 
       case SWITCH:
-        ele = remoteActionXMLParser.queryElementFromXMLById(doc, "1001");
+        ele = controllerXMLParser.queryElementFromXMLById("1001");
         break;
 
       case CUSTOM:
-        ele = remoteActionXMLParser.queryElementFromXMLById(doc, "1009");
-        break;
-
-      case COLOR:
-        //TODO
+        ele = controllerXMLParser.queryElementFromXMLById("1009");
         break;
 
       default:
