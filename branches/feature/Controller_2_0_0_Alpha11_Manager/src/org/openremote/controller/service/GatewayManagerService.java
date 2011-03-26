@@ -20,7 +20,8 @@
 package org.openremote.controller.service;
 
 import org.jdom.Document;
-
+import java.util.List;
+import java.util.Arrays;
 /**
  * This service is for generating the connection gateways that deal with command sending and receiving.<br /><br />
  * 
@@ -32,6 +33,19 @@ import org.jdom.Document;
  * @author Rich Turner 2011-02-09
  */
 public interface GatewayManagerService {
+
+   /* String constant for the top level gateway element connection type attribute: ("{@value}") */
+   public String CONNECTION_ATTRIBUTE_NAME = "connectionType";
+    
+   /* String constant for the top level gateway element polling method attribute: ("{@value}") */
+   public String POLLING_ATTRIBUTE_NAME = "pollingMethod";
+   
+   /**
+    * A List of supported gateway Protocols, these protocols will be handled
+    * by the gateway manager whereas others will go through the standard controller route
+    */
+   public List<String> supportedProtocols = Arrays.asList("telnet-gateway");
+
    /* Create Gateway instances from controller xml */
    public void initGatewaysWithControllerXML(Document document);
    
@@ -48,5 +62,9 @@ public interface GatewayManagerService {
 
    public String getPanelXMLFileContent();
    
-   public void trigger(String commandId, String commandValue);
+   public Boolean isProtocolSupported(String protocolType);
+   
+   public void trigger(String controlId, String controlAction, List<Integer> controlCommands);
+
+   public List<Integer> getComponentCommandIds(String controlId, String controlAction);
 }
