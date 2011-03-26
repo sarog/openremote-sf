@@ -42,6 +42,7 @@ import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.service.GatewayManagerService;
 
 /**
  * Polling status from devices by sensor status command. 
@@ -56,7 +57,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
    private RemoteActionXMLParser remoteActionXMLParser;
    private CommandFactory commandFactory;
    private ControllerXMLListenSharingData controllerXMLListenSharingData;
-
+   private GatewayManagerService gatewayManagerService;
    private Logger logger = Logger.getLogger("INIT");
    
    /**
@@ -81,20 +82,26 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
          for (Element sensorElement : sensorElements)
          {
             String sensorID = sensorElement.getAttributeValue("id");
-
-System.out.println("============ ADDING SENSOR ID " + sensorID);
-           
-
-            Sensor sensor = new Sensor(Integer.parseInt(sensorID), 
-                  sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), 
-                  getStatusCommand(document, sensorElement),
-                  getStateMap(sensorElement));
-
-            sensors.add(sensor);
-
-            controllerXMLListenSharingData.addSensor(sensor);
-
-            statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "N/A");
+            Element includeElement = sensorElement.getChild(Constants.INCLUDE_ELEMENT_NAME, sensorElement.getNamespace());
+            String statusCommandID = includeElement.getAttributeValue(Constants.REF_ATTRIBUTE_NAME);
+            Element statusCommandElement = remoteActionXMLParser.queryElementFromXMLById(statusCommandID);
+            String protocolType = statusCommandElement.getAttributeValue("protocol");
+            
+            // Only build sensor if protocol not supported by gateway manager
+            if (!gatewayManagerService.isProtocolSupported(protocolType)) {
+            
+               System.out.println("============ ADDING SENSOR ID " + sensorID);
+               Sensor sensor = new Sensor(Integer.parseInt(sensorID), 
+                     sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), 
+                     getStatusCommand(document, sensorElement),
+                     getStateMap(sensorElement));
+   
+               sensors.add(sensor);
+   
+               controllerXMLListenSharingData.addSensor(sensor);
+   
+               statusCacheService.saveOrUpdateStatus(Integer.parseInt(sensorID), "N/A");
+            }
          }
       }
       
@@ -126,6 +133,7 @@ System.out.println("============ ADDING SENSOR ID " + sensorID);
       
       storeXMLContent(Constants.CONTROLLER_XML);
       storeXMLContent(Constants.PANEL_XML);
+      controllerXMLListenSharingData.setXmlInitialised();
    }
    
    private void storeXMLContent(String xmlFileName) {
@@ -191,4 +199,7 @@ System.out.println("============ ADDING SENSOR ID " + sensorID);
       this.controllerXMLListenSharingData = controllerXMLListenSharingData;
    }
    
+   public void setGatewayManagerService(GatewayManagerService gatewayManagerService) {
+      this.gatewayManagerService = gatewayManagerService;
+   }   
 }
