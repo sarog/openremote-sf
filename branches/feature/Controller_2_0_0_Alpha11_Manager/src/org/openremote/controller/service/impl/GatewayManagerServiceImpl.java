@@ -276,9 +276,11 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    private Element getGatewayElement(Element commandElement) {
       Element gatewayElement = null;
       String protocolType = commandElement.getAttributeValue("protocol");
-      Map<String, Boolean> protocolProps = getProtocolProperties(protocolType);
-      if (protocolProps.size() > 0) {
-         gatewayElement = buildGatewayElement(commandElement, protocolType, protocolProps);
+      if (isProtocolSupported(protocolType)) {
+         Map<String, Boolean> protocolProps = getProtocolProperties(protocolType);
+         if (protocolProps.size() > 0) {
+            gatewayElement = buildGatewayElement(commandElement, protocolType, protocolProps);
+         }
       }
       return gatewayElement;
    }
