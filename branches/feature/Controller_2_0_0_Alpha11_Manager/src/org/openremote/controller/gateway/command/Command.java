@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import org.jdom.Element;
-import java.util.StringTokenizer;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
+import java.util.StringTokenizer;
 import org.openremote.controller.utils.CommandUtil;
 /**
  * 
@@ -63,6 +65,9 @@ public class Command
     */
    public static final String DYNAMIC_PARAM_PLACEHOLDER_REGEXP = "\\$\\{param\\}";
 
+   /* Minimum Allowed Polling Interval */
+   public static final Integer MIN_POLLING_INTERVAL = 1000;
+   
    /**
     * Validation property, if command is invalid it will be ignored
     * by the gateway if an attempt is made to execute it
@@ -83,7 +88,11 @@ public class Command
       //Extract actions from the command XML Elment
       if (commandElement != null) {
          this.id = commandId;
+         String protocolType = commandElement.getAttributeValue("protocol");
          List<Element> propertyEles = commandElement.getChildren("property", commandElement.getNamespace());
+         
+         // Convert property elements to new gateway format which is protocol independent
+         propertyEles = convertProperties(protocolType, propertyEles);
          
          for(Element element : propertyEles){
             String propertyValue = CommandUtil.parseStringWithParam(commandElement, element.getAttributeValue("value"));;
@@ -91,54 +100,60 @@ public class Command
             String value = "";
             Map<String, String> args = new HashMap<String, String>();
             
-            // Look for optional polling interval parameter
+            // Look for optional command polling interval parameter
             if("pollinginterval".equalsIgnoreCase(property)) {
                try {
                   Integer num = Integer.parseInt(propertyValue);
-                  this.pollingInterval = num;
+                  if (num > MIN_POLLING_INTERVAL) {
+                     this.pollingInterval = num;
+                  }
                } catch (NumberFormatException e) {
                   logger.warn("Invalid command polling interval value.");
                }
             }
-            
-            // Only interested in property elements that are send, read or script others are protocol related
-            if("send".equals(property) || "read".equals(property) || "script".equals(property)) {
+            /**
+             * Build command actions list. Only interested in property
+             * elements that are send, read or script others are protocol related
+             */
+            if("send".equals(property)) {
+               // Doesn't support action args as only means of communication with protocol is through the outputStream
+               value = propertyValue;
+               if (value.length() == 0) {
+                  this.valid = false;  
+               }               
+            } else if ("read".equals(property)) {
+               // Doesn't take any parameters just reads inputStream
+               value = "";
+            } else if ("script".equals(property)) {
+               // Script actions take scriptName as value and then any number of args
                // Action arg format should be semi-colon separated param value pairs param=value;param=value;...
-               
-               // Check args have been specified if not a read action
-               if (!"read".equals(property) && propertyValue.length() == 0) {
-                     this.valid = false;                
-               } else {
-                  // Check args are valid and pull out action values for send and script actions
-                  StringTokenizer st = new StringTokenizer(propertyValue, ";");
-                  while (st.hasMoreElements()) {
-                     String paramValuePair = (String) st.nextElement();
-                     String[] paramArray = paramValuePair.split("=");
-                     if (paramArray.length != 2) {
-                        this.valid = false;
-                        break;
+               List<String> valArgPairs = Arrays.asList(Pattern.compile("[^\\];").split(propertyValue));
+               for (String valArgPair : valArgPairs){
+                  valArgPair = Pattern.compile("\\;").matcher(valArgPair).replaceAll(";");
+                  String[] paramArray = valArgPair.split("=");
+                  if (paramArray.length != 2) {
+                     this.valid = false;
+                     break;
+                  } else {
+                     // Pull out the action value params
+                     if("scriptName".equals(paramArray[0])) {
+                        value = paramArray[1];
                      } else {
-                        // Pull out the action value params
-                        if("command".equals(paramArray[0]) || "scriptName".equals(paramArray[0])) {
-                           value = paramArray[1];
-                        } else {
-                           args.put(paramArray[0], paramArray[1]);
-                        }
+                        args.put(paramArray[0], paramArray[1]);
                      }
                   }
                }
-               // Check a value is defined for send and script actions
-               if(("send".equals(property) || "script".equals(property)) && value.length() == 0) {
-                  this.valid = false;
+               if (value.length() == 0) {
+                  this.valid = false;  
                }
+            }
                
-               // Add action if valid otherwise abort and warn user
-               if (this.valid) {
-                  addAction(new Action(value, EnumCommandActionType.enumValueOf(property), args));
-               } else {
-                  logger.error("Command action is not valid: '" + property + "'");
-                  break;
-               }
+            // Add action if valid otherwise abort and warn user
+            if (this.valid) {
+               addAction(new Action(value, EnumCommandActionType.enumValueOf(property), args));
+            } else {
+               logger.error("Command action is not valid: '" + property + ": " + propertyValue + "'");
+               break;
             }
          }
          
@@ -147,6 +162,77 @@ public class Command
             this.valid = false;  
          }
       }
+   }
+   
+   /**
+    * Convert command properties to new gateway format
+    * Can only assume old commands are send actions in new gateway command structure
+    * as we don't have any more information available at this point
+    */
+   private List<Element> convertProperties(String protocolType, List<Element> propertyEles) {
+      List<Element> formattedEles = new ArrayList<Element>();
+      List<String> props = new ArrayList<String>();
+      String actionValue = "";
+      
+      // Get list of properties that form a command for this protocol
+      if ("telnet-gateway".equals(protocolType)) {
+         props.add("command");
+      } else if ("http-gateway".equals(protocolType)) {
+         props.add("url");
+      } else if ("x10-gateway".equals(protocolType)) {
+         props.add("address");
+         props.add("command");
+      } else if ("onewire-gateway".equals(protocolType)) {
+         props.add("filename");
+         props.add("deviceaddress");
+      } else if ("knx-gateway".equals(protocolType)) {
+         props.add("groupaddress");
+         props.add("dpt");
+         props.add("command");
+      } else if ("socket-gateway".equals(protocolType)) {
+         props.add("command");
+      } else if ("udp-gateway".equals(protocolType)) {
+         props.add("command");
+      }
+      
+      // Cycle through the properties and pick out the ones needed to build this protocol command
+      for (Element element : propertyEles) {
+         String propertyValue = element.getAttributeValue("value");
+         String property = element.getAttributeValue("name").toLowerCase();
+         if(props.contains(property)) {
+            // If props only contains 1 item then this is a simple command so no need to store paramValue pair list
+            if (props.size() == 1) {
+               actionValue = propertyValue;
+            } else {
+               actionValue += property + "=" + propertyValue + ";";
+            }
+         }
+      }
+      if (actionValue.length() > 0) {
+         // Telnet protocol could have multiple send commands in one using the pipe as a seperator, check for this
+         if ("telnet-gateway".equals(protocolType) && actionValue.indexOf("|") >= 0) {
+            StringTokenizer st = new StringTokenizer(actionValue, "|");
+            int count = 0;
+            while (st.hasMoreElements()) {
+               String cmd = (String) st.nextElement();
+               if (count % 2 != 0) {
+                  formattedEles.add(buildPropertyElement(cmd));
+               }
+               count++;
+            }
+         } else {
+            formattedEles.add(buildPropertyElement(actionValue));
+         }
+      }
+      return formattedEles;
+   }
+   
+   /* Build the new property Element */
+   private Element buildPropertyElement(String value) {
+      Element propElement = new Element("property");
+      propElement.setAttribute("name", "send");
+      propElement.setAttribute("value", value);
+      return propElement;
    }
    
    /* Set command valid flag */
