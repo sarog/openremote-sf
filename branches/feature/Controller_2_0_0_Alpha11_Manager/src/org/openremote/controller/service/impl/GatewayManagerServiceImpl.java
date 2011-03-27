@@ -292,14 +292,18 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
     */
    private Map<String, Boolean> getProtocolProperties(String protocolType) {
       Map<String, Boolean> props = new HashMap<String, Boolean>();
-      if ("telnet-gateway".equals(protocolType)) {
+      
+      if ("telnet".equals(protocolType)) {
          props.put("ipaddress", true);
          props.put("port", true);
-         props.put("promptstring", false);
-         props.put("connecttimeout", false);
-         props.put("readtimeout", false);
-         props.put("sendterminator", false);
       }
+      
+      // General properties applicable to all protocols
+      props.put("defaultpollinginterval", false);
+      props.put("connecttimeout", false);
+      props.put("readtimeout", false);
+      props.put("sendterminator", false);
+      
       return props;
    }
    
@@ -312,21 +316,18 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       String connectionStr = "";
       String protocolType = gatewayElement.getAttributeValue("protocol");
       List<Element> propertyEles = gatewayElement.getChildren();
-      if ("telnet-gateway".equals(protocolType)) {
-         String ipAddress = "";
-         String port = "";
-         Map<String, Boolean> props = getProtocolProperties(protocolType);
-         for(Element ele : propertyEles){
-            Boolean isCompulsory = props.get(ele.getAttributeValue("name"));
-            if (isCompulsory != null) { 
-               if(isCompulsory) {
-                  connectionStr += ele.getAttributeValue("name") + "=" + ele.getAttributeValue("value") + ";";
-              }
+      Map<String, Boolean> props = getProtocolProperties(protocolType);
+      
+      for(Element ele : propertyEles){
+         Boolean isCompulsory = props.get(ele.getAttributeValue("name"));
+         if (isCompulsory != null) { 
+            if(isCompulsory) {
+               connectionStr += ele.getAttributeValue("name") + "=" + ele.getAttributeValue("value") + ";";
            }
-         }
-         if (connectionStr.length() > 0) {
-            connectionStr = connectionStr.substring(0, connectionStr.length() - 1);
-         }
+        }
+      }
+      if (connectionStr.length() > 0) {
+         connectionStr = connectionStr.substring(0, connectionStr.length() - 1);
       }
       return connectionStr;
    }
@@ -337,7 +338,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
     */
    private Element buildGatewayElement(Element element, String protocolType, Map<String, Boolean> props) {
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-      Element gatewayElement = new Element("gateway");
+      Element gatewayElement = new Element("gateway", element.getNamespace());
       gatewayElement.setAttribute("protocol", protocolType);
       //For testing set gateway connection type to permanent and sensor polling method to query
       gatewayElement.setAttribute(CONNECTION_ATTRIBUTE_NAME, "permanent");
@@ -362,7 +363,10 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       Gateway gateway = null;
       int gatewayId = this.gateways.size() + 1;
       List<Command> commands = getCommands(gatewayElement, commandElements);
-      gateway = new Gateway(gatewayId, gatewayElement.getAttributeValue(CONNECTION_ATTRIBUTE_NAME), gatewayElement.getAttributeValue(POLLING_ATTRIBUTE_NAME), getProtocol(gatewayElement), commands, statusCacheService);
+      List<Element> propertyEles = gatewayElement.getChildren("property", gatewayElement.getNamespace());
+
+      gateway = new Gateway(gatewayId, gatewayElement.getAttributeValue(CONNECTION_ATTRIBUTE_NAME), gatewayElement.getAttributeValue(POLLING_ATTRIBUTE_NAME), getProtocol(gatewayElement), commands, statusCacheService, propertyEles);
+      
       if (gateway != null) {
          /* Map commands to this gateway */
          for(Command command : commands) {

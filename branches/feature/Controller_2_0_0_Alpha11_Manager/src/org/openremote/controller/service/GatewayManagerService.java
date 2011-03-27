@@ -44,7 +44,7 @@ public interface GatewayManagerService {
     * A List of supported gateway Protocols, these protocols will be handled
     * by the gateway manager whereas others will go through the standard controller route
     */
-   public List<String> supportedProtocols = Arrays.asList("telnet-gateway");
+   public List<String> supportedProtocols = Arrays.asList("telnet");
 
    /* Create Gateway instances from controller xml */
    public void initGatewaysWithControllerXML(Document document);

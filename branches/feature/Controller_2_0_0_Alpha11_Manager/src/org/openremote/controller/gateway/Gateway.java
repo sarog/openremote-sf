@@ -53,7 +53,10 @@ public class Gateway extends Thread
    private static final String XML_ATTRIBUTENAME_VALUE = "value";
 
    /* This is the time in milliseconds between status update runs */
-   private static final int POLLING_INTERVAL = 1000;
+   private static final int DEFAULT_POLLING_INTERVAL = 1000;
+   
+   /* This is the max time in milliseconds between status update runs */
+   private static final int MAX_POLLING_INTERVAL = 86400000;
    
    /* This is the min time in milliseconds to wait after a connection failure before trying again */
    private static final int SLEEP_INTERVAL_MIN = 5000;
@@ -115,22 +118,25 @@ public class Gateway extends Thread
    private int id;
    
    /* Connect timeout */
-   Integer connectTimeout = CONNECT_TIMEOUT;
+   int connectTimeout = CONNECT_TIMEOUT;
 
    /* Read timeout */
-   Integer readTimeout = READ_TIMEOUT;
+   int readTimeout = READ_TIMEOUT;
    
    /* Send Terminator */
    String sendTerminator = SEND_TERMINATOR;
    
+   /* Polling interval */
+   int pollingInterval = DEFAULT_POLLING_INTERVAL;
+   
    /* Polling Timer */
-   Integer pollingTimer = 0;
+   int pollingTimer = 0;
    
    // Constructor ------------------------------------------------------------------------------------   
    public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService) {
         this(gatewayId, connectionType, pollingMethod, protocol, commands, statusCacheService, null);
    }
-   public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService, Map<String, String> params) {
+   public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService, List<Element> params) {
       // Check no null parameters have been supplied
       if (gatewayId <= 0 || protocol == null || commands == null || statusCacheService == null) {
          throw new GatewayException("At least one required parameter is null.");
@@ -162,22 +168,34 @@ public class Gateway extends Thread
       
       // Apply supplied params
       if (params != null) {
-         Set<Map.Entry<String, String>> paramMaps = params.entrySet();
-         for (Map.Entry<String, String> paramMap : paramMaps)
-         {
-            String paramName = paramMap.getKey();
-            String paramValue = paramMap.getValue();
-            if ("connecttimeout".equalsIgnoreCase(paramName)) {
+         for (Element ele : params) {
+            String paramName = ele.getAttributeValue("name");
+            String paramValue = ele.getAttributeValue("value");
+
+            if ("defaultpollinginterval".equalsIgnoreCase(paramName)) {
                try {
-                  Integer num = Integer.parseInt(paramValue);
-                  this.connectTimeout = num;
+                  int num = Integer.parseInt(paramValue);
+                  if ((num*1000) > DEFAULT_POLLING_INTERVAL && (num*1000) <= MAX_POLLING_INTERVAL) {
+                     this.pollingInterval = (num*1000);
+                  }
+               } catch (NumberFormatException e) {
+                  logger.error("Invalid default polling interval parameter supplied to gateway");  
+               }
+            } else if ("connecttimeout".equalsIgnoreCase(paramName)) {
+               try {
+                  int num = Integer.parseInt(paramValue);
+                  if (num <= 60000) {
+                     this.connectTimeout = num;
+                  }
                } catch (NumberFormatException e) {
                   logger.error("Invalid connect timeout parameter supplied to gateway");  
                }
             } else if ("readtimeout".equalsIgnoreCase(paramName)) {
                try {
-                  Integer num = Integer.parseInt(paramValue);
-                  this.readTimeout = num;
+                  int num = Integer.parseInt(paramValue);
+                  if (num <= 5000) {
+                     this.readTimeout = num;
+                  }
                } catch (NumberFormatException e) {
                   logger.error("Invalid read timeout parameter supplied to gateway");  
                }
@@ -222,14 +240,14 @@ public class Gateway extends Thread
             }
             
             // Reset timer if 24 hours have passed
-            if (this.pollingTimer >= 86400000) {
+            if (this.pollingTimer >= MAX_POLLING_INTERVAL) {
                this.pollingTimer = 0;  
             }
             
             // Increment polling timer and go to sleep until next polling interval
-            this.pollingTimer += POLLING_INTERVAL;
+            this.pollingTimer += DEFAULT_POLLING_INTERVAL;
             
-            Thread.sleep(POLLING_INTERVAL);
+            Thread.sleep(DEFAULT_POLLING_INTERVAL);
          } catch (GatewayConnectionException e) {
             //Connection has failed
             System.out.println("Gateway connection failure for (" +  this.protocol.getName() + ") gateway will enter sleep mode and periodically try and establish connection.");
@@ -379,13 +397,16 @@ public class Gateway extends Thread
          if (command == null || !command.isValid()) {
             continue;
          }
-         Integer pollingInterval = command.getPollingInterval();
+         int pollingInterval = command.getPollingInterval();
          
-         // If polling interval set then check it's time to run it
-         if (pollingInterval > 0) {
-            if (this.pollingTimer % pollingInterval != 0) {
-               continue;
-            }
+         // If polling interval not set then use default
+         if (pollingInterval == 0) {
+            pollingInterval = this.pollingInterval;  
+         }
+            
+         // Only run command if it time to
+         if (this.pollingTimer % pollingInterval != 0) {
+            continue;
          }
          
          /** QUERY polling then clear the response buffer before sending each command

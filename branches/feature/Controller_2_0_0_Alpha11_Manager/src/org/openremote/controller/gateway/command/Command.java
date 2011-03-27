@@ -68,6 +68,9 @@ public class Command
    /* Minimum Allowed Polling Interval */
    public static final Integer MIN_POLLING_INTERVAL = 1000;
    
+   /* Max polling interval */
+   public static final Integer MAX_POLLING_INTERVAL = 86400000;
+   
    /**
     * Validation property, if command is invalid it will be ignored
     * by the gateway if an attempt is made to execute it
@@ -103,9 +106,9 @@ public class Command
             // Look for optional command polling interval parameter
             if("pollinginterval".equalsIgnoreCase(property)) {
                try {
-                  Integer num = Integer.parseInt(propertyValue);
-                  if (num > MIN_POLLING_INTERVAL) {
-                     this.pollingInterval = num;
+                  int num = Integer.parseInt(propertyValue);
+                  if ((num*1000) > MIN_POLLING_INTERVAL && (num*1000) <= MAX_POLLING_INTERVAL) {
+                     this.pollingInterval = (num*1000);
                   }
                } catch (NumberFormatException e) {
                   logger.warn("Invalid command polling interval value.");
@@ -175,7 +178,7 @@ public class Command
       String actionValue = "";
       
       // Get list of properties that form a command for this protocol
-      if ("telnet-gateway".equals(protocolType)) {
+      if ("telnet".equals(protocolType)) {
          props.add("command");
       } else if ("http-gateway".equals(protocolType)) {
          props.add("url");
@@ -210,7 +213,7 @@ public class Command
       }
       if (actionValue.length() > 0) {
          // Telnet protocol could have multiple send commands in one using the pipe as a seperator, check for this
-         if ("telnet-gateway".equals(protocolType) && actionValue.indexOf("|") >= 0) {
+         if ("telnet".equals(protocolType) && actionValue.indexOf("|") >= 0) {
             StringTokenizer st = new StringTokenizer(actionValue, "|");
             int count = 0;
             while (st.hasMoreElements()) {
