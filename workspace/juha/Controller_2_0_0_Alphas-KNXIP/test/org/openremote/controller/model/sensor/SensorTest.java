@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.component;
+package org.openremote.controller.model.sensor;
 
 
 import java.util.Map;
@@ -28,8 +28,9 @@ import org.junit.Assert;
 import org.openremote.controller.protocol.EventProducer;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.ReadCommand;
-import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
  * Basic tests on the {@link Sensor} superclass. Specific sensor implementations have their
@@ -177,7 +178,7 @@ public class SensorTest
    */
   @Test public void testSensorRead()
   {
-    Sensor s1 = new SwitchSensor("switch", 84, new SwitchRead(EnumSensorType.SWITCH));
+    Sensor s1 = new SwitchSensor("switch", 84, new SwitchRead("switch", 84));
 
     String returnValue = s1.read();
 
@@ -185,7 +186,7 @@ public class SensorTest
 
 
 
-    Sensor s2 = new RangeSensor("range", 33, new RangeRead(EnumSensorType.RANGE), 0, 0);
+    Sensor s2 = new RangeSensor("range", 33, new RangeRead("range", 33, 0, 1), 0, 1);
 
     returnValue = s2.read();
 
@@ -203,7 +204,7 @@ public class SensorTest
     Assert.assertTrue(s1.isEventListener());
     Assert.assertFalse(s1.isPolling());
 
-    Sensor s2 = new SwitchSensor("switch", 9933, new SwitchRead(EnumSensorType.SWITCH));
+    Sensor s2 = new SwitchSensor("switch", 9933, new SwitchRead("switch", 9933));
 
     Assert.assertTrue(s2.isPolling());
     Assert.assertFalse(s2.isEventListener());
@@ -219,37 +220,60 @@ public class SensorTest
   // Nested Classes -------------------------------------------------------------------------------
 
 
-  private static class SwitchRead implements ReadCommand
+  private static class SwitchRead extends ReadCommand
   {
-    private EnumSensorType type;
 
-    SwitchRead(EnumSensorType expectedType)
+    private String expectedName;
+    private int expectedid;
+
+    SwitchRead(String expectedName, int expectedid)
     {
-      this.type = expectedType;
+      this.expectedName = expectedName;
+      this.expectedid = expectedid;
     }
 
-    public String read(EnumSensorType type, Map<String, String> properties)
+    public String read(Sensor s)
     {
-      Assert.assertTrue(type == this.type);
+      Assert.assertTrue(s instanceof SwitchSensor);
+      Assert.assertTrue(s.getProperties().size() == 0);
+      Assert.assertTrue(s.getSensorID() == expectedid);
+      Assert.assertTrue(s.getName().equals(expectedName));
 
       return "on";
     }
   }
 
 
-  private static class RangeRead implements ReadCommand
+  private static class RangeRead extends ReadCommand
   {
-    private EnumSensorType type;
+    private String expectedName;
+    private int expectedid;
+    private int max;
+    private int min;
 
-    RangeRead(EnumSensorType expectedType)
+    RangeRead(String expectedName, int expectedid, int min, int max)
     {
-      this.type = expectedType;
+      this.expectedName = expectedName;
+      this.expectedid = expectedid;
+      this.min = min;
+      this.max = max;
     }
 
-    public String read(EnumSensorType type, Map<String, String> properties)
+    public String read(Sensor s)
     {
-      Assert.assertTrue(type == this.type);
+      Assert.assertTrue(s instanceof RangeSensor);
+      Assert.assertTrue(s.getSensorID() == expectedid);
+      Assert.assertTrue(s.getName().equals(expectedName));
 
+      Assert.assertTrue(s.getProperties().size() == 2);
+      Assert.assertTrue(s.getProperties().keySet().contains(Sensor.RANGE_MAX_STATE));
+      Assert.assertTrue(s.getProperties().keySet().contains(Sensor.RANGE_MIN_STATE));
+      Assert.assertTrue(s.getProperties().values().contains(Integer.toString(min)));
+      Assert.assertTrue(s.getProperties().values().contains(Integer.toString(max)));
+
+      RangeSensor r = (RangeSensor)s;
+      Assert.assertTrue(r.getMaxValue() == 1);
+      Assert.assertTrue(r.getMinValue() == 0);
       return "0";
     }
   }
