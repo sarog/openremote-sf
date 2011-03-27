@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.model.sensor;
 
-import java.util.Map;
 import java.util.Arrays;
 import java.util.List;
 
@@ -190,7 +189,7 @@ public class StateSensorTest
 
     StateSensor s1 = new StateSensor("funky", 5, new StateReadCommand("acme", "foo", "bar"), states);
 
-    Assert.assertTrue(s1.read().equals(ReadCommand.UNKNOWN_STATUS));
+    Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 5);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
@@ -260,7 +259,7 @@ public class StateSensorTest
 
     StateSensor s1 = new StateSensor("broken", 7, new BrokenCommand(), states);
 
-    Assert.assertTrue(s1.read().equals(ReadCommand.UNKNOWN_STATUS));
+    Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
 
     Assert.assertTrue(s1.getSensorID() == 7);
     Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
@@ -299,7 +298,7 @@ public class StateSensorTest
 
   // Nested Classes -------------------------------------------------------------------------------
 
-  private static class StateReadCommand implements ReadCommand
+  private static class StateReadCommand extends ReadCommand
   {
 
     private String[] returnValue;
@@ -310,20 +309,20 @@ public class StateSensorTest
       this.returnValue = returnValue;
     }
 
-    @Override public String read(EnumSensorType type, Map<String, String> properties)
+    @Override public String read(Sensor s)
     {
       if (index >= returnValue.length )
         index = 0;
 
-      Assert.assertTrue(type == EnumSensorType.CUSTOM);
+      Assert.assertTrue(s instanceof StateSensor);
 
       List<String> vals = Arrays.asList(returnValue);
 
       for (int i = 1; i <= returnValue.length; ++i)
       {
-        Assert.assertTrue(properties.keySet().contains("state-" + i));
+        Assert.assertTrue(s.getProperties().keySet().contains("state-" + i));
 
-        String state = properties.get("state-" + 1);
+        String state = s.getProperties().get("state-" + 1);
 
         Assert.assertTrue(vals.contains(state));
       }
@@ -332,10 +331,10 @@ public class StateSensorTest
     }
   }
 
-  private static class BrokenCommand implements ReadCommand
+  private static class BrokenCommand extends ReadCommand
   {
 
-    @Override public String read(EnumSensorType type, Map<String, String> properties)
+    @Override public String read(Sensor s)
     {
       throw new NullPointerException("this should have been handled.");
     }
