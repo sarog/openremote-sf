@@ -157,42 +157,40 @@ public class StateSensor extends Sensor
 
   // Sensor Overrides -----------------------------------------------------------------------------
 
+
   /**
-   * Wraps the basic sensor read operation to an event producer with state sensor behavior which
-   * 1) only allows event producers return values this sensor advertizes as producing (any other
-   * values are converted to {@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS}
-   * values) and 2) maps the return values from event producers to translated values if such
+   * Enforce read values for state sensor which 1) only allow event producers to return values this
+   * sensor advertizes as producing (any other values are converted to
+   * {@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS} values) and
+   * 2) map the return values from event producers to translated values if such
    * have been configured for this sensor.
    *
    * @return  the state strings of this sensor or their translated versions
    */
-  @Override public String read()
+  @Override public String processEvent(String value)
   {
-    String returnValue = super.read();
-
-    if (!states.hasState(returnValue))
+    if (!states.hasState(value))
     {
       log.warn(
-          "Event producer bound to sensor (ID = {0}, type = {1}) returned a value that is not " +
-          "consistent with sensor's datatype : {2}",
-          super.getSensorID(), super.getSensorType(), returnValue
+          "Event producer bound to sensor (ID = {0}) returned a value that is not " +
+          "consistent with sensor's datatype : {1}",
+          super.getSensorID(), value
       );
 
       return Sensor.UNKNOWN_STATUS;
     }
 
-    if (!states.hasMapping(returnValue))
+    if (!states.hasMapping(value))
     {
-      return returnValue;
+      return value;
     }
 
     else
     {
-      return states.getMapping(returnValue);
+      return states.getMapping(value);
     }
+
   }
-
-
 
   // Nested Classes -------------------------------------------------------------------------------
 
