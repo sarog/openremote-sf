@@ -288,9 +288,9 @@ public class SensorTest
       this.id = expectedID;
     }
 
-    public void setSensorID(int sensorID)
+    @Override public void setSensor(Sensor sensor)
     {
-      Assert.assertTrue(sensorID == id);
+      Assert.assertTrue(sensor.getSensorID() == id);
     }
   }
 
