@@ -21,13 +21,14 @@
 package org.openremote.controller.exception;
 
 /**
- * Generic exception class indicating configuration error in various configuration files that
+ * Exception class indicating configuration error in various configuration files that
  * user may have changed or modified, for example applicationContext.xml, controller.xml,
- * config.properties, etc.
+ * config.properties, etc. These types of exceptions are in general raised during the
+ * controller initialization phase -- whether startup, warm re-start or redeployment.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ConfigurationException extends OpenRemoteException
+public class ConfigurationException extends InitializationException
 {
 
   /**

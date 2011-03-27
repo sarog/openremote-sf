@@ -21,11 +21,12 @@
 package org.openremote.controller.exception;
 
 /**
- * Exception class to indicate errors with XML parsing related tasks.
+ * Exception class to indicate errors with XML parsing related tasks, specifically during
+ * the controller initialization phases -- at startup, warm re-start or redeployment.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class XMLParsingException extends OpenRemoteException
+public class XMLParsingException extends InitializationException
 {
 
   /**
