@@ -556,6 +556,7 @@ public class Gateway extends Thread
    }
    public String executeCommand(Command command, String actionParam, Integer sensorId) {
       String commandResult = "";
+      EnumCommandActionType lastActionType = null;
       List<Action> commandActions = command.getActions();
       
       // Exit if no actions or command is invalid
@@ -568,7 +569,9 @@ public class Gateway extends Thread
          {
             String value = commandAction.getValue();
             Map<String, String> args = commandAction.getArgs();
-            switch (commandAction.getType()) {
+            lastActionType = commandAction.getType();
+            
+            switch (lastActionType) {
                case SEND:
                   // Send action using the protocol first replace regex ${PARAM} with
                   // actionParam
@@ -592,6 +595,11 @@ public class Gateway extends Thread
                   // Call script manager execute script and send in status cache service
                   commandResult = scriptManager.executeScript(value, args, commandResult, this.statusCacheService);
             }
+         }
+         
+         // If command execution is for a sensor update then ensure a read action is carried out
+         if ("".equals(commandResult) && lastActionType != EnumCommandActionType.READ && sensorId != null) {
+            commandResult = protocolRead(null, null);
          }
       } catch (GatewayScriptException e) {
          logger.error("Gateway script error, command will be marked as invalid: " + e.getMessage(), e);
