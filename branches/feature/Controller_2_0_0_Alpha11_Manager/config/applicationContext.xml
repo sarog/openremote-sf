@@ -238,7 +238,7 @@
    <bean id="protocolFactory" class="org.openremote.controller.gateway.ProtocolFactory">
 		<property name="protocolBuilders">
 		    <props>
-           	<prop key="telnet-gateway">telnetProtocolBuilder</prop>
+           	<prop key="telnet">telnetProtocolBuilder</prop>
 		    </props>
 		</property>
 	</bean>
