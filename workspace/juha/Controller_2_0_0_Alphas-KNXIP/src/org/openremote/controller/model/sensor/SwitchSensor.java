@@ -62,13 +62,14 @@ public class SwitchSensor extends StateSensor
    * Constructs a new switch sensor with given sensor ID and event producer. The sensor
    * implementation will return 'on' or 'off' string values.
    *
+   * @param name        human-readable name of this sensor
    * @param sensorID    controller unique identifier
    * @param producer    the protocol handler that backs this sensor either with a read command
    *                    or event listener implementation
    */
-  public SwitchSensor(int sensorID, EventProducer producer)
+  public SwitchSensor(String name, int sensorID, EventProducer producer)
   {
-    this(sensorID, producer, createSwitchStates());
+    this(name, sensorID, producer, createSwitchStates());
   }
 
 
@@ -79,14 +80,15 @@ public class SwitchSensor extends StateSensor
    *
    * The sensor implementation will return 'on or 'off' string values.
    *
+   * @param name        human-readable name of this sensor
    * @param sensorID    controller unique identifier
    * @param producer    the protocol handler that backs this sensor either with a read command
    *                    or event listener implementation
    * @param states      state string mappings for the default 'on' and 'off' values
    */
-  public SwitchSensor(int sensorID, EventProducer producer, DistinctStates states)
+  public SwitchSensor(String name, int sensorID, EventProducer producer, DistinctStates states)
   {
-    super(sensorID, EnumSensorType.SWITCH, producer, states, false);
+    super(name, sensorID, EnumSensorType.SWITCH, producer, states, false);
   }
 
 
