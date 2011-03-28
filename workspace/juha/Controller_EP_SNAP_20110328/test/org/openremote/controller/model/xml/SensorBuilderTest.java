@@ -191,6 +191,14 @@ public class SensorBuilderTest
   }
 
 
+  @Test public void testSwitchStateMappingWithNoValue()
+  {
+    // there's a NPE if 'switch' sensor has an incomplete <state> element with no value
+    // i.e. <state name = "on"/> instead of <state name = "blah" value = "on"/>
+
+    Assert.fail("Not Yet Implemented.");
+  }
+
 
   // Helpers --------------------------------------------------------------------------------------
 
