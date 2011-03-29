@@ -45,6 +45,12 @@
       </property>
   </bean>
 
+  <bean id="russoundConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<property name="location">
+		<value>classpath:russound.properties</value>
+	</property>
+  </bean>
+
   <!--
   | Configuration variable mapping from controller config.properties file
   | to org.openremote.controller.Configuration class.
@@ -137,6 +143,7 @@
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "virtual">virtualCommandBuilder</prop>
             <prop key = "mockup">mockupCommandBuilder</prop>
+            <prop key = "russound">russoundCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -174,6 +181,10 @@
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
+  <!-- Russound Command Builder -->
+  <bean id = "russoundCommandBuilder"
+        class = "org.openremote.controller.protocol.russound.RussoundCommandBuilder"
+        scope = "prototype"/>
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
