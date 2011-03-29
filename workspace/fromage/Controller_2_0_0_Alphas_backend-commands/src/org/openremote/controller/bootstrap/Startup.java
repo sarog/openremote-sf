@@ -329,5 +329,71 @@ public class Startup
       }
     }
   }
+  
+  /**
+   * The Apache implementation defaults to setting 'use parent handlers' as false to all JUL
+   * handlers that are explicitly declared in logging.properties file. This is the behavior
+   * we want for the controller log root category as well. However, we are setting the handler
+   * for controller root log category programmatically (to log to log4j, see
+   * {@link org.openremote.controller.bootstrap.Startup#redirectJULtoLog4j()) which
+   * Apache's LogManager implementation is not aware of. Therefore we must explicitly set
+   * the '.useParentHandlers' property to false.
+   *
+   * Ideally this could be done declaratively in the logging.properties file. However, the
+   * Apache implementation ignores an explicit false setting to this property with the
+   * (incorrect) assumption that it is not necessary to explicitly set, since all handlers
+   * default to false value (which is only true if they're configured through the
+   * logging.properties file).
+   *
+   * Therefore we set the property here programmatically, rather than declaratively in the
+   * config file.
+   *
+   * Alternative fixes would be to replace the Apache JUL LogManager implementation completely
+   * which may be relevant at some point (where log4j is no longer desired) but at the moment is
+   * too much of a distraction. The other option would be to configure the log4j redirector
+   * declaratively through Tomcat's conf/logging.properties (rather than programmatically) but
+   * this is likely to require the handler implementation to be extracted from the web archive
+   * and deployed as part of Tomcat's server library since the logging is initialized far
+   * earlier than loading web archive bundles.
+   *
+   * http://svn.apache.org/viewvc/tomcat/trunk/java/org/apache/juli/ClassLoaderLogManager.java?revision=1060586&view=markup
+   * 
+   */
+  public static void doNotDelegateControllerLogsToParentHandlers()
+  {
+    try
+    {
+      final Logger controllerRootLogger = Logger.getLogger(Constants.CONTROLLER_ROOT_LOG_CATEGORY);
+
+      // ---- BEGIN PRIVILEGED CODE BLOCK ---------------------------------------------------------
+
+      AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Void>()
+      {
+        public Void run()
+        {
+          controllerRootLogger.setUseParentHandlers(false);
+
+          return null;
+        }
+      });
+
+      // ---- END PRIVILEGED CODE BLOCK -----------------------------------------------------------
+
+      controllerRootLogger.info(
+          "Programmatically set 'useParentHandlers=false' in '" +
+          Constants.CONTROLLER_ROOT_LOG_CATEGORY + "' log category."
+      );
+    }
+
+    catch (SecurityException exception)
+    {
+      LogManager.getLogManager().getLogger("").warning(
+          "Can't disable parent handler delegation on " + Constants.CONTROLLER_ROOT_LOG_CATEGORY +
+          " log category due to security restrictions: " + exception.getMessage()
+      );
+    }
+
+  }
+
 }
 
