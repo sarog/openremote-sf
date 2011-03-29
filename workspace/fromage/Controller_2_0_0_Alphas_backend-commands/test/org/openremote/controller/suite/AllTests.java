@@ -26,6 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.junit.Assert;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
+import org.openremote.controller.agent.AgentTest;
 import org.openremote.controller.model.PanelTest;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.spring.SpringContext;
@@ -49,7 +50,9 @@ import org.openremote.controller.spring.SpringContext;
    RESTTests.class,
    KNXTests.class,
    VirtualProtocolTests.class,
-   PanelTest.class
+   PanelTest.class,
+   
+   AgentTest.class
 
 })
 
