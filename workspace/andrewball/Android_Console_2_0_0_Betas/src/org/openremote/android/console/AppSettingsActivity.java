@@ -125,7 +125,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
     
-    appSettingsView.addView(createAutoLayout());
+    createAutoLayout();
     appSettingsView.addView(createChooseControllerLabel());
     
     currentServer = "";
@@ -380,23 +380,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * @return the relative layout
    */
   private RelativeLayout createAutoLayout() {
-    RelativeLayout autoLayout = new RelativeLayout(this);
-    autoLayout.setPadding(10, 5, 10, 10);
-    autoLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 80));
-    TextView autoText = new TextView(this);
-    RelativeLayout.LayoutParams autoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    autoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-    autoTextLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-    autoText.setLayoutParams(autoTextLayout);
-    autoText.setText("Auto Discovery");
+    ToggleButton autoButton = (ToggleButton) findViewById(R.id.autoButton);
 
-    ToggleButton autoButton = new ToggleButton(this);
-    autoButton.setWidth(150);
-    RelativeLayout.LayoutParams autoButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    autoButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    autoButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-    autoButton.setLayoutParams(autoButtonLayout);
     autoButton.setChecked(autoMode);
+    
     autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         appSettingsView.removeViewAt(2);
@@ -412,18 +399,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       }
     });
     
-    TextView infoText = new TextView(this);
-    RelativeLayout.LayoutParams infoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-    infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-    infoText.setLayoutParams(infoTextLayout);
-    infoText.setTextSize(10);
-    infoText.setText("Turn off auto-discovery to input controller url manually.");
-    
-    autoLayout.addView(autoText);
-    autoLayout.addView(autoButton);
-    autoLayout.addView(infoText);
-    return autoLayout;
+    return (RelativeLayout) findViewById(R.id.autoLayout);
   }
 
   /**
