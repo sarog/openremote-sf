@@ -42,6 +42,8 @@
 				          android:textSize="10sp"
 				/>
 			</RelativeLayout>
+			
+			<include layout="@layout/choose_controller_bar" />
 		</LinearLayout>
 	</ScrollView>
 
