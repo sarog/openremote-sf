@@ -126,9 +126,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     ScrollView scrollView = (ScrollView) findViewById(R.id.settingsScrollView);
     scrollView.setVerticalScrollBarEnabled(true);
     
-    appSettingsView = new LinearLayout(this);
-    appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    appSettingsView.setOrientation(LinearLayout.VERTICAL);
+    appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
     
     appSettingsView.addView(createAutoLayout());
     appSettingsView.addView(createChooseControllerLabel());
@@ -146,7 +144,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     appSettingsView.addView(createCacheText());
     appSettingsView.addView(createClearImageCacheButton());
     appSettingsView.addView(createSSLLayout());
-    scrollView.addView(appSettingsView);
     
     mainLayout.addView(createDoneAndCancelLayout());
     
