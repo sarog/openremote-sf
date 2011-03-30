@@ -116,12 +116,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
     
+    setContentView(R.layout.app_settings);
+    
     // The main layout contains all application configuration items.
-    LinearLayout mainLayout = new LinearLayout(this);
-    mainLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    mainLayout.setOrientation(LinearLayout.VERTICAL);
-    mainLayout.setBackgroundColor(0);
-    mainLayout.setTag(R.string.settings);
+    LinearLayout mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
     
     loadingPanelProgress = new ProgressDialog(this);
     
@@ -154,7 +152,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     mainLayout.addView(scroll);
     mainLayout.addView(createDoneAndCancelLayout());
     
-    setContentView(mainLayout);
     initSSLState();
     addOnclickListenerOnDoneButton();
     addOnclickListenerOnCancelButton();
