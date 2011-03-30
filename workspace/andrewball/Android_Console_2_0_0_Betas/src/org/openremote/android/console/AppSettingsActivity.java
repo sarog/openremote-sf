@@ -118,9 +118,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     setContentView(R.layout.app_settings);
     
-    // The main layout contains all application configuration items.
-    LinearLayout mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
-    
     loadingPanelProgress = new ProgressDialog(this);
     
     ScrollView scrollView = (ScrollView) findViewById(R.id.settingsScrollView);
