@@ -123,10 +123,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     loadingPanelProgress = new ProgressDialog(this);
     
-    // The scroll view contains appSettingsView, and make the appSettingsView can be scrolled.
-    ScrollView scroll = new ScrollView(this);
-    scroll.setVerticalScrollBarEnabled(true);
-    scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
+    ScrollView scrollView = (ScrollView) findViewById(R.id.settingsScrollView);
+    scrollView.setVerticalScrollBarEnabled(true);
+    
     appSettingsView = new LinearLayout(this);
     appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
     appSettingsView.setOrientation(LinearLayout.VERTICAL);
@@ -147,9 +146,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     appSettingsView.addView(createCacheText());
     appSettingsView.addView(createClearImageCacheButton());
     appSettingsView.addView(createSSLLayout());
-    scroll.addView(appSettingsView);
+    scrollView.addView(appSettingsView);
     
-    mainLayout.addView(scroll);
     mainLayout.addView(createDoneAndCancelLayout());
     
     initSSLState();
