@@ -126,7 +126,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
     
     createAutoLayout();
-    appSettingsView.addView(createChooseControllerLabel());
     
     currentServer = "";
     if (autoMode) {
@@ -172,18 +171,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     choosePanelInfo.setText("Choose Panel Identity:");
     choosePanelInfo.setBackgroundColor(Color.DKGRAY);
     return choosePanelInfo;
-  }
-
-  /**
-   * Creates the choose controller bar, which contains "Choose controller:" text and 
-   * a progress bar(used in auto discovery servers).
-   * 
-   * @return the linear layout
-   */
-  private LinearLayout createChooseControllerLabel() {
-    LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-    LinearLayout chooseController = (LinearLayout)inflater.inflate(R.layout.choose_controller_bar, null);
-    return chooseController;
   }
   
   /**
