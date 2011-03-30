@@ -145,8 +145,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     appSettingsView.addView(createClearImageCacheButton());
     appSettingsView.addView(createSSLLayout());
     
-    mainLayout.addView(createDoneAndCancelLayout());
-    
     initSSLState();
     addOnclickListenerOnDoneButton();
     addOnclickListenerOnCancelButton();
@@ -189,17 +187,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
     LinearLayout chooseController = (LinearLayout)inflater.inflate(R.layout.choose_controller_bar, null);
     return chooseController;
-  }
-
-  /**
-   * Creates the done and cancel layout that is inflated from xml.
-   * 
-   * @return the linear layout
-   */
-  private LinearLayout createDoneAndCancelLayout() {
-    LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-    LinearLayout saveAndCancelLayout = (LinearLayout)inflater.inflate(R.layout.bottom_button_bar, null);
-    return saveAndCancelLayout;
   }
   
   /**
