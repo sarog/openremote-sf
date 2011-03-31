@@ -50,7 +50,7 @@ typedef enum {
  *    <navigate to="setting" />
  * </gesture>
  */
-@interface Gesture : Control {
+@interface Gesture : Control <NSXMLParserDelegate> {
 	GestureSwipeType swipeType;
 	BOOL hasControlCommand;
 	Navigate *navigate;

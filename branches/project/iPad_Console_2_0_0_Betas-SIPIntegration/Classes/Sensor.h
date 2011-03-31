@@ -29,7 +29,7 @@
  * ......
  * </link>
  */
-@interface Sensor : XMLEntity {
+@interface Sensor : XMLEntity <NSXMLParserDelegate> {
 	
 	int sensorId;
 	

@@ -32,7 +32,7 @@
  *    <link type="sensor" ref="60" />
  * </slider>
  */
-@interface Slider : SensorComponent {
+@interface Slider : SensorComponent <NSXMLParserDelegate> {
 	Image *thumbImage;
 	BOOL vertical;
 	BOOL passive;

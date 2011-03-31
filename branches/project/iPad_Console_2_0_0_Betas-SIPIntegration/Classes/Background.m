@@ -29,7 +29,7 @@
 
 #pragma mark constructor
 //Initialize itself accoding to xml parser
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	NSLog(@"Begin Constructed background");
 	if (self = [super init]) {
 		NSString *relativeStr = [[attributeDict objectForKey:@"relative"] copy];

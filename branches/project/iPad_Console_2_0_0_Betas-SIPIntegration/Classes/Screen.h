@@ -40,7 +40,7 @@
  *    </absolute>
  * </screen>
  */
-@interface Screen : XMLEntity {
+@interface Screen : XMLEntity <NSXMLParserDelegate> {
 	
 	int screenId;
 	NSString *name;

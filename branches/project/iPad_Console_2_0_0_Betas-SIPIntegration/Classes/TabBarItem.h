@@ -42,7 +42,7 @@
  *    </item>                
  * </tabbar>
  */
-@interface TabBarItem : XMLEntity {
+@interface TabBarItem : XMLEntity <NSXMLParserDelegate> {
 	NSString *tabBarItemName;
 	Navigate *navigate;
 	Image *tabBarItemImage;

@@ -40,7 +40,7 @@
  *    </item>                
  * </tabbar>
  */
-@interface TabBar : XMLEntity {
+@interface TabBar : XMLEntity <NSXMLParserDelegate> {
 	NSMutableArray *tabBarItems;
 }
 

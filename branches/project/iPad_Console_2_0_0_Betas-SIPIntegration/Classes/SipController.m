@@ -16,7 +16,7 @@
 		[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
 																 @"siphon", @"username",
 																 @"siphon", @"authname",
-																 @"192.168.11.104", @"server",
+																 @"192.168.1.112", @"server",
 																 [NSNumber numberWithInt:30], @"regTimeout",
 																 [NSNumber numberWithBool:TRUE], @"enableGSM",
 																 [NSNumber numberWithBool:TRUE], @"enableG711a",

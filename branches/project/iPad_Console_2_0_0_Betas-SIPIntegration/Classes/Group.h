@@ -32,7 +32,7 @@
  *    <include type="screen" ref="45" />
  * </group>
  */
-@interface Group : XMLEntity {
+@interface Group : XMLEntity <NSXMLParserDelegate> {
 	
 	int groupId;
 	NSString *name;

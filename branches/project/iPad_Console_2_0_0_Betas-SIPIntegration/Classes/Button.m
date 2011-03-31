@@ -26,7 +26,7 @@
 
 @synthesize defaultImage, pressedImage, repeat, hasCommand, name, navigate, subElememntNameOfBackground;
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		componentId = [[attributeDict objectForKey:@"id"] intValue];
 		name = [[attributeDict objectForKey:@"name"] copy];

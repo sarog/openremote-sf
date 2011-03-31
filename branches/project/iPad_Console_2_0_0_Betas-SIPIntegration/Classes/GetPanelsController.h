@@ -32,7 +32,7 @@
 @end
 
 
-@interface GetPanelsController : NSObject {
+@interface GetPanelsController : NSObject <NSXMLParserDelegate> {
 	NSMutableArray *panels;
 	
 	id<GetPanelsDelegate> _delegate;

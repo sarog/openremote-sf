@@ -33,7 +33,7 @@
 }
 
 // init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {
 		componentId = [[attributeDict objectForKey:ID] intValue];
 		src = [[attributeDict objectForKey:SRC] copy];

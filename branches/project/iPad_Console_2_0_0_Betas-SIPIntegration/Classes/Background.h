@@ -30,7 +30,7 @@
  *    <image src="living_colors_320.png" />
  * </background>
  */
-@interface Background : XMLEntity {
+@interface Background : XMLEntity <NSXMLParserDelegate> {
 	int backgroundImageAbsolutePositionLeft;
 	int backgroundImageAbsolutePositionTop;
 	BOOL isBackgroundImageAbsolutePosition;

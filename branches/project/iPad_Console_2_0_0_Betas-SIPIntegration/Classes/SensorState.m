@@ -30,7 +30,7 @@
 	return STATE;
 }
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		name = [[attributeDict objectForKey:NAME] copy];
 		value = [[attributeDict objectForKey:VALUE] copy];
