@@ -52,9 +52,9 @@
 // Load panel list from remote controller server.
 - (void)requestPanelList {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:location];
-	NSLog(@"panels:%@",location);
+	NSString *location = [ServerDefinition panelsRESTUrl];
+	NSURL *url = [[NSURL alloc] initWithString:location];
+	NSLog(@"panels:%@", location);
 	
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
@@ -62,9 +62,8 @@
 	[request setHTTPMethod:@"GET"];
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
 	
-	[location release];
 	[url	 release];
 	[request release];
 	[connection autorelease];	

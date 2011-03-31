@@ -39,21 +39,18 @@
 
 
 - (void)requestLogout {
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition logoutUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:location];
+	NSURL *url = [[NSURL alloc] initWithString:[ServerDefinition logoutUrl]];
 	
 	//assemble put request 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
 	[request setHTTPMethod:@"POST"];
+
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
 	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-	
-	[location release];
-	[url	 release];
+	[url release];
 	[request release];
-	[connection autorelease];	
-	
+	[connection autorelease];
 }
 
 // Handle the server response which are from controller server with status code.

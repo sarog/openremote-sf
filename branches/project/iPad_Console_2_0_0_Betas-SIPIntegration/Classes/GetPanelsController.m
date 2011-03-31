@@ -36,9 +36,9 @@
 		_delegate = delegateParam;
 		
 		panels = [[NSMutableArray alloc] init];
-		NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition panelsRESTUrl]];
-		NSURL *url = [[NSURL alloc]initWithString:location];
-		NSLog(@"panels:%@",location);
+		NSString *location = [ServerDefinition panelsRESTUrl];
+		NSURL *url = [[NSURL alloc] initWithString:location];
+		NSLog(@"panels:%@", location);
 		
 		//assemble put request 
 		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
@@ -46,13 +46,12 @@
 		[request setHTTPMethod:@"GET"];
 		[CredentialUtil addCredentialToNSMutableURLRequest:request];
 		
-		URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+		URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
 		
 		// Cancel the connection after GET_PANELS_TIMER_INTERVAL
 		NSTimer *getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:GET_PANELS_TIMER_INTERVAL target:connection selector:@selector(cancelConnection) userInfo:nil repeats:NO] retain];
 		
-		[location release];
-		[url	 release];
+		[url release];
 		[request release];
 		[connection autorelease];
 		[getAutoServersTimer autorelease];

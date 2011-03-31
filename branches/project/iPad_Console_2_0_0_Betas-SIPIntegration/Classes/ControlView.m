@@ -109,10 +109,9 @@
 		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);
 		[clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
 	} else {	
-		NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
-		NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]];
-		NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",component.componentId,commandType]);
-		
+		NSString *location = [[ServerDefinition controlRESTUrl] stringByAppendingFormat:@"/%d/%@", component.componentId, commandType];
+        NSURL *url = [[NSURL alloc] initWithString:location];
+		NSLog(@"%@", location);
 		
 		//assemble put request 
 		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
@@ -123,8 +122,7 @@
 		
 		URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
 		
-		[location release];
-		[url	 release];
+		[url release];
 		[request release];
 		[connection autorelease];
 	}

@@ -99,10 +99,9 @@
 //		return;
 //	}
 	
-	
-	NSString *location = [[NSString alloc] initWithFormat:[ServerDefinition controlRESTUrl]];
-	NSURL *url = [[NSURL alloc]initWithString:[location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]];
-	NSLog(@"%@", [location stringByAppendingFormat:@"/%d/%@",componentId,@"swipe"]);
+	NSString *location = [[ServerDefinition controlRESTUrl] stringByAppendingFormat:@"/%d/swipe", componentId];
+	NSURL *url = [[NSURL alloc] initWithString:location];
+	NSLog(@"%@", location);
 	
 	
 	//assemble put request 
@@ -112,10 +111,9 @@
 	
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
+	URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
 	
-	[location release];
-	[url	 release];
+	[url release];
 	[request release];
 	[connection autorelease];	
 }
