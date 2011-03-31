@@ -33,6 +33,7 @@
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
 #import "CheckNetwork.h"
+#import "LocalLogic.h"
 
 @interface Definition (Private)
 - (void)postNotificationToMainThread:(NSString *)notificationName;
