@@ -24,7 +24,7 @@
 /**
  * It's responsible for Controlling presentation of choosing panel view.
  */
-@interface ChoosePanelViewController : UITableViewController {
+@interface ChoosePanelViewController : UITableViewController <NSXMLParserDelegate> {
 	
 	NSMutableArray *panels;
 	NSIndexPath *currentSelectedPanelIndex;

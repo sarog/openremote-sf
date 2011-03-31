@@ -26,7 +26,7 @@
 
 @synthesize x,y,rowspan,colspan,component;
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		x = [[attributeDict objectForKey:@"x"] intValue];		
 		y = [[attributeDict objectForKey:@"y"] intValue];

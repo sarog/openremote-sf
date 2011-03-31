@@ -34,7 +34,7 @@
 /**
  * Initialize according to the XML parser.
  */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {
 		tabBarItemName = [[attributeDict objectForKey:NAME] copy];
 		NSLog(@"TabbarItem name is %@ in parsing", tabBarItemName);

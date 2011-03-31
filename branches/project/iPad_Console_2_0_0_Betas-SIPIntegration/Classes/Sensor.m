@@ -34,7 +34,7 @@
 /**
  * Construct sensor instance.
  */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		sensorId = [[attributeDict objectForKey:REF] intValue];
 		NSLog(@"sensor ref id=%d",sensorId);

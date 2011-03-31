@@ -33,7 +33,7 @@
  *    </link>
  * </switch>
  */
-@interface Switch : SensorComponent {
+@interface Switch : SensorComponent <NSXMLParserDelegate> {
 
 	Image *onImage;
 	Image *offImage;

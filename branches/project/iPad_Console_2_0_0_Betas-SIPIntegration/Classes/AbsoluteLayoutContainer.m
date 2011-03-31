@@ -26,7 +26,7 @@
 
 @synthesize component;
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		left = [[attributeDict objectForKey:@"left"] intValue];		
 		top = [[attributeDict objectForKey:@"top"] intValue];

@@ -30,7 +30,7 @@
  * <state name="on" value="light is on" />
  * ......
  */
-@interface SensorState : XMLEntity {
+@interface SensorState : XMLEntity <NSXMLParserDelegate> {
 
 	NSString *name;
 	NSString *value;

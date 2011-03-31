@@ -32,7 +32,7 @@
 /**
  * Initialize according to the XML parser.
  */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {
 		groupId = [[attributeDict objectForKey:ID] intValue];					
 		name = [[attributeDict objectForKey:NAME] copy];		

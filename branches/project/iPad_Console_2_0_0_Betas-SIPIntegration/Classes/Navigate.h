@@ -28,7 +28,7 @@
  * <navigate toGroup="491" toScreen="493" />
  * <navigate to="setting" />
  */
-@interface Navigate : XMLEntity {
+@interface Navigate : XMLEntity <NSXMLParserDelegate> {
 	
 	int toScreen;
 	int toGroup;

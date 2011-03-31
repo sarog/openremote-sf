@@ -32,7 +32,7 @@
 /**
  * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
  */
-@interface Definition : NSObject {		
+@interface Definition : NSObject <NSXMLParserDelegate> {		
 	BOOL isUpdating;
 	NSDate *lastUpdateTime;
 	NSMutableArray *groups;

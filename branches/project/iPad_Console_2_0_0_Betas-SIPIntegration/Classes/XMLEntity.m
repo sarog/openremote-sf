@@ -118,7 +118,7 @@ NSString *const TASK = @"task";
 /* init a xml entity with NSXMLParser and remember its xmlparser parent delegate
  * NOTE: This is an abstract method, must be implemented in subclass
  */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }

@@ -30,7 +30,7 @@
  * ......
  * </absolute>
  */
-@interface AbsoluteLayoutContainer : LayoutContainer {
+@interface AbsoluteLayoutContainer : LayoutContainer <NSXMLParserDelegate> {
 	Component *component;
 }
 

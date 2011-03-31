@@ -31,7 +31,7 @@
  *    </cell>
  * </grid>
  */
-@interface GridCell : XMLEntity {
+@interface GridCell : XMLEntity <NSXMLParserDelegate> {
 	int x;
 	int y;
 	int rowspan;

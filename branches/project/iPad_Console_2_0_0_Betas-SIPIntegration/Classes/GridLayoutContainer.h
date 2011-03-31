@@ -30,7 +30,7 @@
  *    </cell>
  * </grid>
  */
-@interface GridLayoutContainer : LayoutContainer {
+@interface GridLayoutContainer : LayoutContainer <NSXMLParserDelegate> {
 	NSMutableArray *cells;
 	int rows;
 	int cols;
