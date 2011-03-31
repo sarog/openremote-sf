@@ -26,7 +26,7 @@
 
 @synthesize className, methodName;
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {
 		componentId = [[attributeDict objectForKey:ID] intValue];
 		className = [[attributeDict objectForKey:CLASS] retain];
