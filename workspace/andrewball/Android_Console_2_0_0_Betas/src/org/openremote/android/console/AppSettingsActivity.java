@@ -103,6 +103,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private LinearLayout progressLayout;
   
   private ListView autoServersListView;
+  /** ListAdapter for automatically detected controllers */
+  private ArrayAdapter<String> autoServerListAdapter;
   private LinearLayout customServersLayout;
   
   private ProgressDialog loadingPanelProgress;
@@ -133,7 +135,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     constructAutoServersView();
     constructCustomServersView();
-    if (!autoMode) {
+    if (autoMode) {
+      startControllerAutoDiscovery();
+    } else {
       switchToCustomServersView();
     }
     
@@ -339,6 +343,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         if (isChecked) {
           IPAutoDiscoveryServer.isInterrupted = false;
           switchToAutoServersView();
+          startControllerAutoDiscovery();
         } else {
           IPAutoDiscoveryServer.isInterrupted = true;
           switchToCustomServersView();
@@ -458,19 +463,38 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   }
   
   /**
-   * Auto discovery servers and add them in a list view.
-   * Click a list item and make it as current server.
-   * 
-   * @return the list view
+   * Do initialization that can't be done in XML for the ListView showing controllers
+   * discovered automatically.
    */
-  private ListView constructAutoServersView() {
-    final ListView lv = (ListView) findViewById(R.id.auto_servers_list_view);
+  private void constructAutoServersView() {
+    autoServersListView.setItemsCanFocus(true);
     
-    lv.setItemsCanFocus(true);
-    
-    final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
+    autoServerListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
         new ArrayList<String>());
-    lv.setAdapter(serverListAdapter);
+    autoServersListView.setAdapter(autoServerListAdapter);
+    
+    autoServersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        currentServer = (String)parent.getItemAtPosition(position);
+        AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+        requestPanelList();
+      }
+    });
+  }
+
+  /**
+   * Starts a new {@link IPAutoDiscoveryServer} thread, which starts a server to receive
+   * messages declaring the presence of controllers.  Once the server is started,
+   * a message is sent via multicast over UDP to announce that such messages are desired.
+   * 
+   * The list of controllers discovered this way is cleared before the new discovery
+   * thread begins.
+   * 
+   * If any controllers are found, the first one found is automatically selected and its
+   * panel list is requested.
+   */
+  private void startControllerAutoDiscovery() {
+    autoServerListAdapter.clear();
     
     new IPAutoDiscoveryServer() {
       @Override
@@ -484,11 +508,11 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       protected void onPostExecute(List<String> result) {
         int length = result.size();
         for (int i = 0; i < length; i++) {
-          serverListAdapter.add(result.get(i));
+          autoServerListAdapter.add(result.get(i));
         }
         if (length > 0) {
-          lv.setItemChecked(0, true);
-          currentServer = serverListAdapter.getItem(0);
+          autoServersListView.setItemChecked(0, true);
+          currentServer = autoServerListAdapter.getItem(0);
           AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
         }
         if (progressLayout != null) {
@@ -497,18 +521,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         requestPanelList();
       }
     }.execute((Void) null);
-    
-    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        currentServer = (String)parent.getItemAtPosition(position);
-        AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
-        requestPanelList();
-      }
-    });
-    
-    return lv;
   }
-
+  
   /**
    *  Construct custom servers to a string which split by "," and write it to customServers.xml.
    */
