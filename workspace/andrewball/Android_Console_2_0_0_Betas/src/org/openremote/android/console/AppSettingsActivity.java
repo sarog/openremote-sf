@@ -49,7 +49,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -69,7 +68,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -142,7 +140,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     
-    appSettingsView.addView(createCacheText());
     appSettingsView.addView(createClearImageCacheButton());
     appSettingsView.addView(createSSLLayout());
 
@@ -160,19 +157,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private void switchToCustomServersView() {
     autoServersListView.setVisibility(View.GONE);
     customServersLayout.setVisibility(View.VISIBLE);
-  }
-
-  /**
-   * Creates the image cache text view.
-   *
-   * @return the text view
-   */
-  private TextView createCacheText() {
-    TextView cacheText = new TextView(this);
-    cacheText.setPadding(10, 5, 0, 5);
-    cacheText.setText("Image Cache:");
-    cacheText.setBackgroundColor(Color.DKGRAY);
-    return cacheText;
   }
   
   /**
