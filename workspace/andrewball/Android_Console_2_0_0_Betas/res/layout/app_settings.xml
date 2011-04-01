@@ -43,6 +43,8 @@
 				/>
 			</RelativeLayout>
 			
+			<include layout="@layout/choose_controller_bar" />
+			
 			<FrameLayout android:id="@+id/controller_selection_frame_layout"
 			             android:layout_width="fill_parent"
 			             android:layout_height="280dp">
@@ -93,7 +95,14 @@
 				</LinearLayout>
 			</FrameLayout>
 			
-			<include layout="@layout/choose_controller_bar" />
+			<TextView android:text="Choose Panel Identity:"
+					  android:background="@color/dark_gray"
+					  android:paddingLeft="10dp"
+					  android:paddingTop="5dp"
+					  android:paddingRight="0dp"
+					  android:paddingBottom="5dp"
+					  android:layout_width="fill_parent"
+					  android:layout_height="wrap_content" />
 		</LinearLayout>
 	</ScrollView>
 
