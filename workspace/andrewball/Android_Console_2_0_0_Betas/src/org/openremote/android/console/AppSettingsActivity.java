@@ -140,7 +140,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     
     createClearImageCacheButton();
-    appSettingsView.addView(createSSLLayout());
 
     initSSLState();
     addOnclickListenerOnDoneButton();
@@ -156,18 +155,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private void switchToCustomServersView() {
     autoServersListView.setVisibility(View.GONE);
     customServersLayout.setVisibility(View.VISIBLE);
-  }
-  
-  /**
-   * Creates the ssl layout.
-   * It contains ssl switch and ssl port.
-   * 
-   * @return the linear layout
-   */
-  private LinearLayout createSSLLayout() {
-    LinearLayout sslLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.ssl_field_view, null);
-    
-    return sslLayout;
   }
 
   /**

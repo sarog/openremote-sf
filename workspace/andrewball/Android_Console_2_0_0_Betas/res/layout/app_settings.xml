@@ -126,6 +126,8 @@
 				        android:layout_height="wrap_content"
 				        android:layout_alignParentRight="true" />
 			</RelativeLayout>
+			
+			<include layout="@layout/ssl_field_view" />
 		</LinearLayout>
 	</ScrollView>
 
