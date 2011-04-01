@@ -202,7 +202,11 @@ public class Command
       for (Element element : propertyEles) {
          String propertyValue = element.getAttributeValue("value");
          String property = element.getAttributeValue("name").toLowerCase();
-         if(props.contains(property)) {
+         
+         // Add new property elements automatically
+         if ("send".equals(property) || "read".equals(property) || "script".equals(property)) {
+            formattedEles.add(element);
+         } else if(props.contains(property)) {
             // If props only contains 1 item then this is a simple command so no need to store paramValue pair list
             if (props.size() == 1) {
                actionValue = propertyValue;
