@@ -46,6 +46,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,6 +68,19 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       super(context);
       setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT));
+      
+      constructorCommonCode(context);
+   }
+   
+   /** Constructor used when inflating from XML */
+   public PanelSelectSpinnerView(Context context, AttributeSet attrs) {
+     super(context, attrs);
+     
+     constructorCommonCode(context);
+   }
+   
+   /** Code common to all constructors, put here to putting the same code in multiple places. */
+   private void constructorCommonCode(Context context) {
       arrayAdapter = new ArrayAdapter<String>(context, R.layout.simple_spinner_item_center);
       arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
       setAdapter(arrayAdapter);

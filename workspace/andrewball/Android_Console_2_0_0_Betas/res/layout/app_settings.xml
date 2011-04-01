@@ -103,6 +103,11 @@
 					  android:paddingBottom="5dp"
 					  android:layout_width="fill_parent"
 					  android:layout_height="wrap_content" />
+			
+			<org.openremote.android.console.view.PanelSelectSpinnerView
+			    android:id="@+id/panel_select_spinner_view"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content" />
 		</LinearLayout>
 	</ScrollView>
 

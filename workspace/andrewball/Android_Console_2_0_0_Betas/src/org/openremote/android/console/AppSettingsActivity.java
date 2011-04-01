@@ -140,8 +140,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       switchToCustomServersView();
     }
     
-    panelSelectSpinnerView = new PanelSelectSpinnerView(this);
-    appSettingsView.addView(panelSelectSpinnerView);
+    panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     
     appSettingsView.addView(createCacheText());
     appSettingsView.addView(createClearImageCacheButton());
