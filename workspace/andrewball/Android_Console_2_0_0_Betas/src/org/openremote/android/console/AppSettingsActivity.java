@@ -140,7 +140,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       switchToCustomServersView();
     }
     
-    appSettingsView.addView(createChoosePanelLabel());
     panelSelectSpinnerView = new PanelSelectSpinnerView(this);
     appSettingsView.addView(panelSelectSpinnerView);
     
@@ -175,19 +174,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     cacheText.setText("Image Cache:");
     cacheText.setBackgroundColor(Color.DKGRAY);
     return cacheText;
-  }
-  
-  /**
-   * Creates the choose panel identity text.
-   *
-   * @return the text view
-   */
-  private TextView createChoosePanelLabel() {
-    TextView choosePanelInfo = new TextView(this);
-    choosePanelInfo.setPadding(10, 5, 0, 5);
-    choosePanelInfo.setText("Choose Panel Identity:");
-    choosePanelInfo.setBackgroundColor(Color.DKGRAY);
-    return choosePanelInfo;
   }
   
   /**
