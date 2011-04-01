@@ -524,13 +524,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * @return the list view
    */
   private ListView constructAutoServersView() {
-    final ListView lv = new ListView(this);
-    lv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
-    lv.setPadding(20, 5, 5, 10);
-    lv.setBackgroundColor(0);
-    lv.setCacheColorHint(0);
+    final ListView lv = (ListView) getLayoutInflater().inflate(R.layout.auto_servers_view, null);
+    
     lv.setItemsCanFocus(true);
-    lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    
     final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
         new ArrayList<String>());
     lv.setAdapter(serverListAdapter);
