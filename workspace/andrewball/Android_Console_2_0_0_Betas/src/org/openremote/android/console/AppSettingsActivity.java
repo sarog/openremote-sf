@@ -54,7 +54,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -106,6 +105,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   /** The progress layout display auto discovery progress. */
   private LinearLayout progressLayout;
   
+  private ListView autoServersListView;
+  private LinearLayout customServersLayout;
+  
   private ProgressDialog loadingPanelProgress;
   
   @Override
@@ -118,6 +120,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     setContentView(R.layout.app_settings);
     
+    autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
+    customServersLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
+    
     loadingPanelProgress = new ProgressDialog(this);
     
     ScrollView scrollView = (ScrollView) findViewById(R.id.settingsScrollView);
@@ -128,11 +133,13 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     createAutoLayout();
     
     currentServer = "";
-    if (autoMode) {
-       appSettingsView.addView(constructAutoServersView());
-    } else {
-       appSettingsView.addView(constructCustomServersView());
+    
+    constructAutoServersView();
+    constructCustomServersView();
+    if (!autoMode) {
+      switchToCustomServersView();
     }
+    
     appSettingsView.addView(createChoosePanelLabel());
     panelSelectSpinnerView = new PanelSelectSpinnerView(this);
     appSettingsView.addView(panelSelectSpinnerView);
@@ -140,11 +147,21 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     appSettingsView.addView(createCacheText());
     appSettingsView.addView(createClearImageCacheButton());
     appSettingsView.addView(createSSLLayout());
-    
+
     initSSLState();
     addOnclickListenerOnDoneButton();
     addOnclickListenerOnCancelButton();
-    progressLayout = (LinearLayout)findViewById(R.id.choose_controller_progress);
+    progressLayout = (LinearLayout) findViewById(R.id.choose_controller_progress);
+  }
+  
+  private void switchToAutoServersView() {
+    autoServersListView.setVisibility(View.VISIBLE);
+    customServersLayout.setVisibility(View.GONE);
+  }
+  
+  private void switchToCustomServersView() {
+    autoServersListView.setVisibility(View.GONE);
+    customServersLayout.setVisibility(View.VISIBLE);
   }
 
   /**
@@ -180,8 +197,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * @return the linear layout
    */
   private LinearLayout createSSLLayout() {
-    LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-    LinearLayout sslLayout = (LinearLayout)inflater.inflate(R.layout.ssl_field_view, null);
+    LinearLayout sslLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.ssl_field_view, null);
     
     return sslLayout;
   }
@@ -373,14 +389,13 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        appSettingsView.removeViewAt(2);
         currentServer = "";
         if (isChecked) {
           IPAutoDiscoveryServer.isInterrupted = false;
-          appSettingsView.addView(constructAutoServersView(), 2);
+          switchToAutoServersView();
         } else {
           IPAutoDiscoveryServer.isInterrupted = true;
-          appSettingsView.addView(constructCustomServersView(), 2);
+          switchToCustomServersView();
         }
         AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
       }
@@ -418,23 +433,12 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    *
    * @return the linear layout
    */
-  private LinearLayout constructCustomServersView() {
-    LinearLayout custumeView = new LinearLayout(this);
-    custumeView.setOrientation(LinearLayout.VERTICAL);
-    custumeView.setPadding(20, 5, 5, 0);
-    custumeView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-    
+  private void constructCustomServersView() {
     ArrayList<String> customServers = new ArrayList<String>();
     initCustomServersFromFile(customServers);
     
-    RelativeLayout buttonsView = new RelativeLayout(this);
-    buttonsView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 80));
-    Button addServer = new Button(this);
-    addServer.setWidth(80);
-    RelativeLayout.LayoutParams addServerLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    addServerLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-    addServer.setLayoutParams(addServerLayout);
-    addServer.setText("Add");
+    Button addServer = (Button) findViewById(R.id.add_server_button);
+    
     addServer.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
         Intent intent = new Intent();
@@ -442,12 +446,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         startActivityForResult(intent, Constants.REQUEST_CODE);
       }
     });
-    Button deleteServer = new Button(this);
-    deleteServer.setWidth(80);
-    RelativeLayout.LayoutParams deleteServerLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    deleteServerLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    deleteServer.setLayoutParams(deleteServerLayout);
-    deleteServer.setText("Delete");
+    
+    Button deleteServer = (Button) findViewById(R.id.delete_server_button);
+    
     deleteServer.setOnClickListener(new OnClickListener() {
       @SuppressWarnings("unchecked")
       public void onClick(View v) {
@@ -462,17 +463,13 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       }
     });
     
-    buttonsView.addView(addServer);
-    buttonsView.addView(deleteServer);
-
-    customListView = new ListView(this);
-    customListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
-    customListView.setCacheColorHint(0);
+    customListView = (ListView) findViewById(R.id.custom_server_list_view);
+    
     final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
         customServers);
     customListView.setAdapter(serverListAdapter);
     customListView.setItemsCanFocus(true);
-    customListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    
     if (currentCustomServerIndex != -1) {
        customListView.setItemChecked(currentCustomServerIndex, true);
        currentServer = (String)customListView.getItemAtPosition(currentCustomServerIndex);
@@ -486,10 +483,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
        }
     });
     
-    custumeView.addView(customListView);
-    custumeView.addView(buttonsView);
     requestPanelList();
-    return custumeView;
   }
 
   /**
@@ -524,7 +518,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * @return the list view
    */
   private ListView constructAutoServersView() {
-    final ListView lv = (ListView) getLayoutInflater().inflate(R.layout.auto_servers_view, null);
+    final ListView lv = (ListView) findViewById(R.id.auto_servers_list_view);
     
     lv.setItemsCanFocus(true);
     
