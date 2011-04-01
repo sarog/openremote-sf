@@ -58,7 +58,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -140,7 +139,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     
-    appSettingsView.addView(createClearImageCacheButton());
+    createClearImageCacheButton();
     appSettingsView.addView(createSSLLayout());
 
     initSSLState();
@@ -320,16 +319,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * Creates the clear image cache button, add listener for clear image cache.
    * @return the relative layout
    */
-  private RelativeLayout createClearImageCacheButton() {
-    RelativeLayout clearImageView = new RelativeLayout(this);
-    clearImageView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+  private void createClearImageCacheButton() {
+    Button clearImageCacheButton = (Button) findViewById(R.id.clear_image_cache_button);
     
-    Button clearImgCacheBtn = new Button(this);
-    clearImgCacheBtn.setText("Clear Image Cache");
-    RelativeLayout.LayoutParams clearButtonLayout = new RelativeLayout.LayoutParams(150, LayoutParams.WRAP_CONTENT);
-    clearButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    clearImgCacheBtn.setLayoutParams(clearButtonLayout);
-    clearImgCacheBtn.setOnClickListener(new OnClickListener() {
+    clearImageCacheButton.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
         ViewHelper.showAlertViewWithTitleYesOrNo(AppSettingsActivity.this, "",
             "Are you sure you want to clear image cache?",
@@ -340,9 +333,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
             });
       }
     });
-    
-    clearImageView.addView(clearImgCacheBtn);
-    return clearImageView;
   }
 
   /**
