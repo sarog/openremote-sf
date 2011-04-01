@@ -43,6 +43,56 @@
 				/>
 			</RelativeLayout>
 			
+			<FrameLayout android:id="@+id/controller_selection_frame_layout"
+			             android:layout_width="fill_parent"
+			             android:layout_height="280dp">
+				<ListView android:id="@+id/auto_servers_list_view"
+				          android:layout_width="fill_parent"
+				          android:layout_height="fill_parent"
+				          android:paddingLeft="20dp"
+				          android:paddingTop="5dp"
+				          android:paddingRight="5dp"
+				          android:paddingBottom="10dp"
+				          android:background="#000000"
+				          android:cacheColorHint="#000000"
+				          android:choiceMode="singleChoice">
+				</ListView>
+				
+				<!-- do we really want height to wrap content here? -->
+				<!-- custumeView -->
+				<LinearLayout android:id="@+id/custom_servers_layout"
+				              android:orientation="vertical"
+				              android:paddingLeft="20dp"
+				              android:paddingTop="5dp"
+				              android:paddingRight="5dp"
+				              android:paddingBottom="0dp"
+				              android:layout_width="fill_parent"
+				              android:layout_height="wrap_content"
+				              android:visibility="invisible">
+					
+					<ListView android:id="@+id/custom_server_list_view"
+					          android:layout_width="fill_parent"
+					          android:layout_height="200dp"
+					          android:cacheColorHint="#000000"
+					          android:choiceMode="singleChoice" />
+					
+					<RelativeLayout android:layout_width="fill_parent"
+					                android:layout_height="80dp">
+						<Button android:id="@+id/add_server_button"
+						        android:layout_width="wrap_content"
+						        android:layout_height="wrap_content"
+						        android:layout_centerHorizontal="true"
+						        android:text="Add" />
+						
+						<Button android:id="@+id/delete_server_button"
+						        android:layout_width="wrap_content"
+						        android:layout_height="wrap_content"
+						        android:layout_alignParentRight="true"
+						        android:text="Delete" />
+					</RelativeLayout>
+				</LinearLayout>
+			</FrameLayout>
+			
 			<include layout="@layout/choose_controller_bar" />
 		</LinearLayout>
 	</ScrollView>
