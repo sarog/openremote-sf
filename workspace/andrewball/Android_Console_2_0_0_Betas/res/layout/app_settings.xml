@@ -108,6 +108,15 @@
 			    android:id="@+id/panel_select_spinner_view"
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content" />
+			
+			<TextView android:text="Image Cache:"
+			          android:paddingLeft="10dp"
+			          android:paddingTop="5dp"
+			          android:paddingRight="0dp"
+			          android:paddingBottom="5dp"
+			          android:background="@color/dark_gray"
+			          android:layout_width="fill_parent"
+			          android:layout_height="wrap_content" />
 		</LinearLayout>
 	</ScrollView>
 
