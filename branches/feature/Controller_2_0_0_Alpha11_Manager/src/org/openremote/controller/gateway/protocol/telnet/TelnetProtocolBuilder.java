@@ -22,10 +22,9 @@ package org.openremote.controller.gateway.protocol.telnet;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.gateway.Gateway;
 import org.openremote.controller.gateway.Protocol;
 import org.openremote.controller.gateway.ProtocolBuilder;
-import org.openremote.controller.utils.CommandUtil;
-
 
 /**
  * The Class TelnetProtocolBuilder.
@@ -33,20 +32,24 @@ import org.openremote.controller.utils.CommandUtil;
  * @author Rich Turner 2011-02-13
  */
 public class TelnetProtocolBuilder implements ProtocolBuilder {
-   /**
-    * {@inheritDoc}
-    */
+
    @SuppressWarnings("unchecked")
    public Protocol build(Element element) {
       TelnetProtocol telnetEvent = new TelnetProtocol();
       List<Element> propertyEles = element.getChildren();
       for(Element ele : propertyEles){
-         if("name".equals(ele.getAttributeValue("name"))){
+         if("name".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setName(ele.getAttributeValue("value"));
-         } else if("port".equals(ele.getAttributeValue("name"))){
+         } else if("port".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setPort(ele.getAttributeValue("value"));
-         } else if("ipAddress".equals(ele.getAttributeValue("name"))){
+         } else if("ipaddress".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setIp(ele.getAttributeValue("value"));
+         } else if("readtimeout".equalsIgnoreCase(ele.getAttributeValue("name"))){
+            telnetEvent.setReadTimeout(ele.getAttributeValue("value"));
+         } else if("connecttimeout".equalsIgnoreCase(ele.getAttributeValue("name"))){
+            telnetEvent.setConnectTimeout(ele.getAttributeValue("value"));
+         } else if("sendterminator".equalsIgnoreCase(ele.getAttributeValue("name"))){
+            telnetEvent.setSendTerminator(ele.getAttributeValue("value"));
          }
       }
       return telnetEvent;

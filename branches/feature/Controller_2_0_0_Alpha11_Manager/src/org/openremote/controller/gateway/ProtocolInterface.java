@@ -21,6 +21,10 @@
 package org.openremote.controller.gateway;
 
 import java.util.Map;
+import org.openremote.controller.gateway.command.Action;
+import org.openremote.controller.gateway.EnumGatewayConnectionType;
+import org.openremote.controller.gateway.EnumGatewayPollingMethod;
+
 /**
  * 
  * @author Rich Turner 2011-02-11
@@ -37,12 +41,21 @@ public interface ProtocolInterface
    /**
     * Opens connection to server and sets input and output streams
     */
-   public void connect(int timeOut) throws Exception;
+   public void connect() throws Exception;
    
    /**
     * Cleans up and closes the connection to the server
     */
    public void disconnect() throws Exception;
    
-   public Boolean validateSendAction(String value, Map<String, String> args);
+   /* Protocols that use a buffer just clear it */
+   public void clearBuffer() throws Exception;
+   
+   public String doAction(Action action) throws Exception;
+   
+   public Boolean isValidAction(Action action);
+   
+   public EnumGatewayPollingMethod checkSetPollingMethod(EnumGatewayPollingMethod pollingMethod);
+   
+   public EnumGatewayConnectionType checkSetConnectionType(EnumGatewayConnectionType connectionType);
 }

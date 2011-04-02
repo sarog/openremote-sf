@@ -29,9 +29,6 @@ import org.jdom.Element;
  */
 public class Action
 {
-   /* The action value */
-   private String value;
-      
    /**
     * The type of action
     */
@@ -41,15 +38,9 @@ public class Action
    private Map<String, String> args = new HashMap<String, String> ();
    
    /* Constructor */   
-   public Action(String value, EnumCommandActionType type, Map<String, String> args) {
-      this.value = value;
+   public Action(EnumCommandActionType type, Map<String, String> args) {
       this.type = type;
       this.args = args;
-   }
-   
-   /* Return the action value */
-   public String getValue() {
-      return this.value;   
    }
 
    /* Return the action type */

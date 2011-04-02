@@ -34,6 +34,8 @@ import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.gateway.exception.GatewayException;
 import org.openremote.controller.gateway.exception.GatewayScriptException;
 import org.openremote.controller.gateway.exception.GatewayConnectionException;
+import org.openremote.controller.gateway.ProtocolFactory;
+import org.openremote.controller.gateway.Protocol;
 import java.io.IOException;
 /**
  * 
@@ -43,6 +45,15 @@ public class Gateway extends Thread
 {
    // Constants ------------------------------------------------------------------------------------
  
+   /* String constant for the top level gateway element id attribute: ("{@value}") */
+   public static final String ID_ATTRIBUTE_NAME = "id";
+   
+   /* String constant for the top level gateway element connection type attribute: ("{@value}") */
+   public static final String CONNECTION_ATTRIBUTE_NAME = "connectionType";
+    
+   /* String constant for the top level gateway element polling method attribute: ("{@value}") */
+   public static final String POLLING_ATTRIBUTE_NAME = "pollingMethod";
+   
    /* String constant for the child property list elements: ("{@value}") */
    private static final String XML_ELEMENT_PROPERTY = "property";
    
@@ -63,17 +74,12 @@ public class Gateway extends Thread
 
    /* This is the max time in milliseconds to wait after a connection failure before trying again */
    private static final int SLEEP_INTERVAL_MAX = 60000;
-
-   /* This is the max time in milliseconds to wait for gateway to become free when busy */
-   private static final int BUSY_TIMEOUT = 1000;
    
-   /* This is the max time in milliseconds to wait for gateway to become free when busy */
-   private static final int CONNECT_TIMEOUT = 1000;   
+   /* This is the time in milliseconds before connection attempt stops */
+   public static final int CONNECT_TIMEOUT = 1000;   
 
-   /* This is the time in milliseconds before send command attempt stops */
-   private static final int READ_TIMEOUT = 200;
-   
-   private static final String SEND_TERMINATOR = "\n";
+   /* This is the time in milliseconds before read command attempt stops */
+   public static final int READ_TIMEOUT = 200;
                   
    private static final String UNKNOWN_STATUS = "N/A";
       
@@ -96,7 +102,7 @@ public class Gateway extends Thread
    /* Gateway thread keep alive flag */
    private Boolean alive = true;
    
-   /* Falg to indicate that gateway is valid and should be run */
+   /* Flag to indicate that gateway is valid and should be run */
    private Boolean isValid = true;
    
    /* The commands associated with this gateway and their IDs */
@@ -114,17 +120,11 @@ public class Gateway extends Thread
    /* Script manager */
    private ScriptManager scriptManager;
    
+   /* This is the protocol factory for returning the protocol builder */
+   private ProtocolFactory protocolFactory;
+   
    /* Gateway ID */
    private int id;
-   
-   /* Connect timeout */
-   int connectTimeout = CONNECT_TIMEOUT;
-
-   /* Read timeout */
-   int readTimeout = READ_TIMEOUT;
-   
-   /* Send Terminator */
-   String sendTerminator = SEND_TERMINATOR;
    
    /* Polling interval */
    int pollingInterval = DEFAULT_POLLING_INTERVAL;
@@ -133,23 +133,22 @@ public class Gateway extends Thread
    int pollingTimer = 0;
    
    // Constructor ------------------------------------------------------------------------------------   
-   public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService) {
-        this(gatewayId, connectionType, pollingMethod, protocol, commands, statusCacheService, null);
-   }
-   public Gateway(int gatewayId, String connectionType, String pollingMethod, Protocol protocol, List<Command> commands, StatusCacheService statusCacheService, List<Element> params) {
+   public Gateway(Element gatewayElement, List<Command> commands, StatusCacheService statusCacheService) {
+
+      int gatewayId = Integer.parseInt(gatewayElement.getAttributeValue(ID_ATTRIBUTE_NAME));
+      String connectionType = gatewayElement.getAttributeValue(CONNECTION_ATTRIBUTE_NAME);
+      String pollingMethod = gatewayElement.getAttributeValue(POLLING_ATTRIBUTE_NAME);
+      protocolFactory = (ProtocolFactory)SpringContext.getInstance().getBean("protocolFactory");
+      Protocol protocol = getProtocol(gatewayElement);
+      List<Element> propertyEles = gatewayElement.getChildren("property", gatewayElement.getNamespace());
+      
       // Check no null parameters have been supplied
-      if (gatewayId <= 0 || protocol == null || commands == null || statusCacheService == null) {
-         throw new GatewayException("At least one required parameter is null.");
+      if (gatewayId <= 0 || "".equals(connectionType) || "".equals(pollingMethod) || protocol == null || commands == null || statusCacheService == null) {
+         throw new GatewayException("Cannot create gateway, at least one required parameter is null.");
       }
       
       // Set gateway id 
       this.id = gatewayId;
-      
-      // Set reference to status cache for storing sensor values
-      this.statusCacheService = statusCacheService;
-      
-      // Set protocol object info generated from gateway element
-      this.protocol = protocol;
       
       // Set connection type
       this.connectionType = EnumGatewayConnectionType.enumValueOf(connectionType);
@@ -157,56 +156,63 @@ public class Gateway extends Thread
       // Set polling method
       this.pollingMethod = EnumGatewayPollingMethod.enumValueOf(pollingMethod);
       
+      // Set reference to status cache for storing sensor values
+      this.statusCacheService = statusCacheService;
+      
+      // Set protocol object info generated from gateway element
+      this.protocol = protocol;
+      
       // Set commands
       this.commands = commands;
       
       // Set script manager using spring context
       this.scriptManager = (ScriptManager)SpringContext.getInstance().getBean("scriptManager");
+      
+      /**
+       * Validate connection settings by sending them to the protocol
+       * for validation, the protocol will dictate what's allowed here
+       * allow protocol to set these values if only one option supported
+       */
+      this.connectionType = this.protocol.checkSetConnectionType(this.connectionType);
+      this.pollingMethod = this.protocol.checkSetPollingMethod(this.pollingMethod);
+      
+      // Check connection settings have been identified
+      if (this.connectionType == null || this.pollingMethod == null) {
+         throw new GatewayException("Cannot create gateway, invalid connection type and/or polling method.");
+      }
                 
       // Validate commands
       initialiseCommands();
       
       // Apply supplied params
-      if (params != null) {
-         for (Element ele : params) {
-            String paramName = ele.getAttributeValue("name");
-            String paramValue = ele.getAttributeValue("value");
+      for (Element ele : propertyEles) {
+         String paramName = ele.getAttributeValue("name");
+         String paramValue = ele.getAttributeValue("value");
 
-            if ("defaultpollinginterval".equalsIgnoreCase(paramName)) {
-               try {
-                  int num = Integer.parseInt(paramValue);
-                  if ((num*1000) > DEFAULT_POLLING_INTERVAL && (num*1000) <= MAX_POLLING_INTERVAL) {
-                     this.pollingInterval = (num*1000);
-                  }
-               } catch (NumberFormatException e) {
-                  logger.error("Invalid default polling interval parameter supplied to gateway");  
+         if ("defaultpollinginterval".equalsIgnoreCase(paramName)) {
+            try {
+               int num = Integer.parseInt(paramValue);
+               if ((num*1000) > DEFAULT_POLLING_INTERVAL && (num*1000) <= MAX_POLLING_INTERVAL) {
+                  this.pollingInterval = (num*1000);
                }
-            } else if ("connecttimeout".equalsIgnoreCase(paramName)) {
-               try {
-                  int num = Integer.parseInt(paramValue);
-                  if (num <= 60000) {
-                     this.connectTimeout = num;
-                  }
-               } catch (NumberFormatException e) {
-                  logger.error("Invalid connect timeout parameter supplied to gateway");  
-               }
-            } else if ("readtimeout".equalsIgnoreCase(paramName)) {
-               try {
-                  int num = Integer.parseInt(paramValue);
-                  if (num <= 5000) {
-                     this.readTimeout = num;
-                  }
-               } catch (NumberFormatException e) {
-                  logger.error("Invalid read timeout parameter supplied to gateway");  
-               }
-            } else if ("sendterminator".equalsIgnoreCase(paramName)) {
-               this.sendTerminator = paramValue;
+            } catch (NumberFormatException e) {
+               logger.error("Invalid default polling interval parameter supplied to gateway");  
             }
          }
       }
    }
    
    // Methods ------------------------------------------------------------------------------------
+   /* Get the protocol for a particular gateway */
+   private Protocol getProtocol(Element gatewayElement) {
+      Protocol protocol = (Protocol)protocolFactory.getProtocol(gatewayElement);
+      return protocol;
+   }
+   
+   public int getGatewayId() {
+      return this.id;
+   }
+      
    /* Do startup prep and start thread */
    public void startUp() {
       start();
@@ -365,7 +371,7 @@ public class Gateway extends Thread
             this.connectionState = EnumGatewayConnectionState.CONNECTED;
             
             // Disconnect unless connection type is permanent
-            if (this.connectionType != EnumGatewayConnectionType.PERMANENT) {
+            if (this.connectionType != EnumGatewayConnectionType.PERMANENT || this.connectionType != EnumGatewayConnectionType.TIMED) {
                protocolDisconnect();
             }
          } catch (GatewayConnectionException e) {
@@ -382,6 +388,10 @@ public class Gateway extends Thread
       // Process polling commands if any queeud commands appear between
       // each polling command then give them priority
       Set<Map.Entry<Integer, Integer>> pollingMaps = this.pollingCommandMap.entrySet();
+      
+      // Set gateway as busy
+      this.connectionState = EnumGatewayConnectionState.BUSY;
+      
       for (Map.Entry<Integer, Integer> pollingMap : pollingMaps)
       {
          /* Clear any queued commands before continuing */
@@ -413,9 +423,6 @@ public class Gateway extends Thread
           * BROADCAST polling then read in any unread server response then add it to temp
           * buffer and try and find information relating to each sensor
           */
-
-         // Set gateway as busy
-         this.connectionState = EnumGatewayConnectionState.BUSY;
          
          switch (this.pollingMethod) {
             case QUERY:
@@ -435,11 +442,11 @@ public class Gateway extends Thread
                //tempBuffer += this.protocol.read(command.getValue(), command.getArgs());
          }
          
-         // Set gateway as available
-         this.connectionState = EnumGatewayConnectionState.CONNECTED;
-         
          this.statusCacheService.saveOrUpdateStatus(sensorId, result);
       }
+      
+      // Set gateway as available
+      this.connectionState = EnumGatewayConnectionState.CONNECTED;
    }
    
    /* Execute any queued commands */
@@ -482,27 +489,24 @@ public class Gateway extends Thread
             Boolean valid = true;
             for (Action commandAction : commandActions)
             {
-               String value = commandAction.getValue();
-               Map<String, String> args = commandAction.getArgs();
                switch (commandAction.getType()) {
-                  case SEND:
-                     // Validate command and args using protocol
-                     valid = validateSendAction(value, args);
-                     if (!valid) {
-                        throw new GatewayException("Send action is invalid");
-                     }
-                     break;
-                  case READ:
-                     valid = validateReadAction(value, args);
-                     if (!valid) {
-                        throw new GatewayException("Read action is invalid");
-                     }
-                     break;
                   case SCRIPT:
-                     valid = scriptManager.addScript(value);
+                     Map<String,String> args = commandAction.getArgs();
+                     if (args.containsKey("scriptName")) {
+                        valid = scriptManager.addScript(args.get("scriptName"));
+                     } else {
+                        valid = false;
+                     }
                      if (!valid) {
-                        throw new GatewayException("Send action is invalid");
-                     }                
+                        throw new GatewayException("Script action is invalid");
+                     }
+                     break;
+                  default:
+                     // Validate action using protocol
+                     valid = this.protocol.isValidAction(commandAction);
+                     if (!valid) {
+                        throw new GatewayException("Command action is invalid");
+                     }               
                }
             }
             if (valid) {
@@ -518,40 +522,6 @@ public class Gateway extends Thread
       if (validCommandCount == 0) {
          throw new GatewayException("No valid gateway commands");
       }
-   }
-   
-   /**
-    * Validate a send action by checking with the protocol that the
-    * args format is correct
-    */
-   public Boolean validateSendAction(String value, Map<String, String> args) {
-      Boolean result = false;
-      result = this.protocol.validateSendAction(value, args);
-      return result;
-   }
-   
-   /**
-    * Validate a read action by checking with the protocol that the
-    * args format is correct
-    */
-   public Boolean validateReadAction(String value, Map<String, String> args) {
-      Boolean result = true;
-//       Set<Map.Entry<String, String>> paramMaps = args.entrySet();
-//       for (Map.Entry<String, String> paramMap : paramMaps)
-//       {
-//          String paramName = paramMap.getKey();
-//          String paramValue = paramMap.getValue();
-//          if ("timeout".equalsIgnoreCase(paramName)) {
-//             try {
-//                Integer num = Integer.parseInt(paramValue);
-//                this.connectTimeout = num;
-//             } catch (NumberFormatException e) {
-//                logger.warn("Invalid read action timeout value");
-//                result = false;
-//             }
-//          }
-//       }
-      return result;
    }
    
    /* Add command to queue */
@@ -588,39 +558,42 @@ public class Gateway extends Thread
       try {
          for (Action commandAction : commandActions)
          {
-            String value = commandAction.getValue();
             Map<String, String> args = commandAction.getArgs();
             lastActionType = commandAction.getType();
+            Action tempAction = null;
             
             switch (lastActionType) {
-               case SEND:
-                  // Send action using the protocol first replace regex ${PARAM} with
-                  // actionParam
-                  if (actionParam != null) {
-                     value = value.replaceAll(Command.DYNAMIC_PARAM_PLACEHOLDER_REGEXP, actionParam);
-                  }
-                  protocolSend(value, args);
-                  break;
-               case READ:
-                  commandResult = protocolRead(value, args);
-                  break;
                case SCRIPT:
                   try {
                      // Inject actionParam as dynamicValue arg to script
                      args.put(Command.DYNAMIC_VALUE_ARG_NAME, actionParam);
                      // Inject sensorId that command is linked to
-                     args.put("sensorId", sensorId.toString());
+                     if (sensorId != null) {
+                        args.put("sensorId", sensorId.toString());
+                     }
+                     tempAction = new Action(lastActionType, args);
                   } catch (NullPointerException e) {
                      // Ignore this error
                   }                     
                   // Call script manager execute script and send in status cache service
-                  commandResult = scriptManager.executeScript(value, args, commandResult, this.statusCacheService);
+                  commandResult = scriptManager.executeScript(tempAction, commandResult, this.statusCacheService);
+                  break;
+               default:
+                  // Send action using the protocol first replace regex ${PARAM} with
+                  // actionParam
+                  if (actionParam != null) {
+                     args.put("command", args.get("command").replaceAll(Command.DYNAMIC_PARAM_PLACEHOLDER_REGEXP, actionParam));
+                  }
+                  tempAction = new Action(lastActionType, args);
+                  commandResult = doProtocolAction(tempAction);
+                  break;
             }
          }
          
          // If command execution is for a sensor update then ensure a read action is carried out
          if ("".equals(commandResult) && lastActionType != EnumCommandActionType.READ && sensorId != null) {
-            commandResult = protocolRead(null, null);
+            Action tempAction = new Action(EnumCommandActionType.READ, null);
+            commandResult = doProtocolAction(tempAction);
          }
       } catch (GatewayScriptException e) {
          logger.error("Gateway script error, command will be marked as invalid: " + e.getMessage(), e);
@@ -640,7 +613,7 @@ public class Gateway extends Thread
    public void protocolConnect() {
       try {
          // Call protocol connect method with timeout parameter
-         this.protocol.connect(this.connectTimeout);
+         this.protocol.connect();
          this.connectionState = EnumGatewayConnectionState.CONNECTED;
       } catch (Exception e) {
          throw new GatewayConnectionException("Gateway connection error: " + e.getMessage(), e);
@@ -664,40 +637,14 @@ public class Gateway extends Thread
     * Write to server output stream catch IO exception, indicates a connection
     * issue so throw a gateway connection exception
     */
-   public void protocolSend(String value, Map<String, String> args) {
+   public String doProtocolAction(Action action) {
+      String response = "";
       try {
-         this.protocol.outputStream.write((value + this.sendTerminator).getBytes());
-         this.protocol.outputStream.flush();
-      } catch (IOException e) {
+         response = this.protocol.doAction(action);
+      } catch (Exception e) {
          throw new GatewayConnectionException("Gateway connection send error: " + e.getMessage(), e);
       }
-   }
-
-   /**
-    * Read from server input stream catch IO exception, indicates a connection
-    * issue so throw a gateway connection exception
-    */
-   public String protocolRead(String value, Map<String, String> args) {
-      String readString = "";
-      Calendar endTime = Calendar.getInstance();
-      endTime.add(Calendar.MILLISECOND, this.readTimeout);
-      try {
-         while (Calendar.getInstance().before(endTime)) {
-            while (this.protocol.inputStream.available() != 0) {
-               readString += (char) this.protocol.inputStream.read();
-            }
-            // If data recieved then assume this is what we're waiting for
-            if (readString.length() > 0) {
-               break;
-            }
-            try {
-               Thread.sleep(50);
-            } catch (Exception e) {}
-         }
-      } catch (IOException e) {
-         throw new GatewayConnectionException("Gateway connection read error: " + e.getMessage(), e);
-      }
-      return readString;
+      return response;
    }
    
    /**
@@ -707,10 +654,8 @@ public class Gateway extends Thread
    public void protocolClear() {
       // Just read inputStream content but don't store it
       try {
-         while (this.protocol.inputStream.available() != 0) {
-            this.protocol.inputStream.read();
-         }
-      } catch (IOException e) {
+         this.protocol.clearBuffer();
+      } catch (Exception e) {
          throw new GatewayConnectionException("Gateway connection read error: " + e.getMessage(), e);
       }
    }

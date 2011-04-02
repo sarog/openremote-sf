@@ -33,19 +33,7 @@ import java.util.Arrays;
  * @author Rich Turner 2011-02-09
  */
 public interface GatewayManagerService {
-
-   /* String constant for the top level gateway element connection type attribute: ("{@value}") */
-   public String CONNECTION_ATTRIBUTE_NAME = "connectionType";
-    
-   /* String constant for the top level gateway element polling method attribute: ("{@value}") */
-   public String POLLING_ATTRIBUTE_NAME = "pollingMethod";
    
-   /**
-    * A List of supported gateway Protocols, these protocols will be handled
-    * by the gateway manager whereas others will go through the standard controller route
-    */
-   public List<String> supportedProtocols = Arrays.asList("telnet");
-
    /* Create Gateway instances from controller xml */
    public void initGatewaysWithControllerXML(Document document);
    
