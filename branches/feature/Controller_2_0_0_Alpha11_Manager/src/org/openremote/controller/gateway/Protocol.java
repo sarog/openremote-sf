@@ -22,23 +22,22 @@ package org.openremote.controller.gateway;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.openremote.controller.gateway.EnumGatewayConnectionType;
+import org.openremote.controller.gateway.EnumGatewayPollingMethod;
+
 /**
  * 
  * @author Rich Turner 2011-02-11
  */
 public abstract class Protocol implements ProtocolInterface
-{
-   protected InputStream inputStream;
-   protected OutputStream outputStream;
+{   
+   protected List<EnumGatewayConnectionType> supportedConnectionTypes = new ArrayList<EnumGatewayConnectionType>();
    
-   /**
-    * Every protocol needs to make use of the input and output stream
-    * defined here for sending and receiving data
-    */
-   
-   /** The response buffer for any formatted text received from the server */
-   private String responseBuffer;
-   
+   protected List<EnumGatewayPollingMethod> supportedPollingMethods = new ArrayList<EnumGatewayPollingMethod>();
+
    /**
     *
     * THE FOLLOWING METHODS ARE HERE TO MAINTAIN GATEWAY COMPATIBILITY FOR
@@ -49,8 +48,7 @@ public abstract class Protocol implements ProtocolInterface
     */
    
    /**
-    * This method deals with opening up communication with the server and 
-    * should validate that connection is established and aim to return CONNECTED
+    * This method deals with opening up communication with the server
     */
    public void connect(int timeOut) throws Exception {
       
@@ -62,10 +60,39 @@ public abstract class Protocol implements ProtocolInterface
    public void disconnect() throws Exception {
 
    }
+   
+   /* Clears server response buffer */
+   public void clearBuffer() throws Exception {
+      
+   }
 
-   /**
-    * This method should determine the state of gateway at the particular moment it is called
-    * the way in which the current connection state is determined will vary from one protocol
-    * to the next
-    */
+   public EnumGatewayPollingMethod checkSetPollingMethod(EnumGatewayPollingMethod pollingMethod) {
+      EnumGatewayPollingMethod result = null;
+      for (EnumGatewayPollingMethod connType : supportedPollingMethods) {
+         if (connType.equals(pollingMethod)) {
+            result = pollingMethod;
+            break;
+         }
+      }
+      if (result == null && supportedPollingMethods.size() == 1) {
+         result = supportedPollingMethods.get(0);  
+      }
+      
+      return result;
+   }
+   
+   public EnumGatewayConnectionType checkSetConnectionType(EnumGatewayConnectionType connectionType) {
+      EnumGatewayConnectionType result = null;
+      for (EnumGatewayConnectionType connType : supportedConnectionTypes) {
+         if (connType.equals(connectionType)) {
+            result = connectionType;
+            break;
+         }
+      }
+      if (result == null && supportedConnectionTypes.size() == 1) {
+         result = supportedConnectionTypes.get(0);  
+      }
+      
+      return result;
+   }
 }

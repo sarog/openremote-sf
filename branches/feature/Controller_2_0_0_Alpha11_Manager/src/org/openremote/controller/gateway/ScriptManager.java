@@ -28,6 +28,7 @@ import javax.script.Invocable;
 import org.apache.log4j.Logger;
 import org.openremote.controller.Configuration;
 import org.openremote.controller.Constants;
+import org.openremote.controller.gateway.command.Action;
 import org.openremote.controller.gateway.exception.GatewayScriptException;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.service.StatusCacheService;
@@ -105,7 +106,9 @@ public class ScriptManager
     * add in reference to status cache so script can update the sensor for this
     * command if it wishes to
     */   
-   public String executeScript(String scriptName, Map<String, String> args, String currentCommandValue, StatusCacheService statusCacheService) {
+   public String executeScript(Action commandAction, String currentCommandValue, StatusCacheService statusCacheService) {
+      Map<String, String> args = commandAction.getArgs();
+      String scriptName = args.get("scriptName");
       String result = "";
       
       try {
