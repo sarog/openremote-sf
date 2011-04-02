@@ -39,6 +39,10 @@ public enum EnumComponentType {
    }
    
    public static EnumComponentType enumValueOf(String componentTypeValue) {
-      return Enum.valueOf(EnumComponentType.class, componentTypeValue.toUpperCase());
+      EnumComponentType result = null;
+      try {
+         result = Enum.valueOf(EnumComponentType.class, componentTypeValue.toUpperCase());
+      } catch (Exception e) {}
+      return result;
    }
 }

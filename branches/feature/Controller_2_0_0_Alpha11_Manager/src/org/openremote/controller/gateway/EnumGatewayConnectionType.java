@@ -27,6 +27,7 @@ package org.openremote.controller.gateway;
 public enum EnumGatewayConnectionType {
       MANAGED,
       PERMANENT,
+      TIMED,
       CONNECTIONLESS;
    
    @Override
@@ -35,6 +36,10 @@ public enum EnumGatewayConnectionType {
    }
    
    public static EnumGatewayConnectionType enumValueOf(String connectionTypeValueOfGateway) {
-      return Enum.valueOf(EnumGatewayConnectionType.class, connectionTypeValueOfGateway.toUpperCase());
+      EnumGatewayConnectionType result = null;
+      try {
+         result = Enum.valueOf(EnumGatewayConnectionType.class, connectionTypeValueOfGateway.toUpperCase());
+      } catch (Exception e) {}
+      return result;
    }
 }

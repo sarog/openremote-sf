@@ -35,6 +35,10 @@ public enum EnumCommandActionType {
    }
    
    public static EnumCommandActionType enumValueOf(String commandActionTypeValue) {
-      return Enum.valueOf(EnumCommandActionType.class, commandActionTypeValue.toUpperCase());
+      EnumCommandActionType result = null;
+      try {
+         result = Enum.valueOf(EnumCommandActionType.class, commandActionTypeValue.toUpperCase());
+      } catch (Exception e) {}
+      return result;
    }
 }

@@ -34,6 +34,10 @@ public enum EnumGatewayPollingMethod {
    }
    
    public static EnumGatewayPollingMethod enumValueOf(String connectionTypeValueOfGateway) {
-      return Enum.valueOf(EnumGatewayPollingMethod.class, connectionTypeValueOfGateway.toUpperCase());
+      EnumGatewayPollingMethod result = null;
+      try {
+         result = Enum.valueOf(EnumGatewayPollingMethod.class, connectionTypeValueOfGateway.toUpperCase());
+      } catch (Exception e) {}
+      return result;
    }
 }
