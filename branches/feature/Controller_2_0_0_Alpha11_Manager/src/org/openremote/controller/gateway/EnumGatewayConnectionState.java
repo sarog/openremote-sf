@@ -37,6 +37,10 @@ public enum EnumGatewayConnectionState {
    }
    
    public static EnumGatewayConnectionType enumValueOf(String connectionTypeValueOfGateway) {
-      return Enum.valueOf(EnumGatewayConnectionType.class, connectionTypeValueOfGateway.toUpperCase());
+      EnumGatewayConnectionType result = null;
+      try {
+         result = Enum.valueOf(EnumGatewayConnectionType.class, connectionTypeValueOfGateway.toUpperCase());
+      } catch (Exception e) {}
+      return result;
    }
 }

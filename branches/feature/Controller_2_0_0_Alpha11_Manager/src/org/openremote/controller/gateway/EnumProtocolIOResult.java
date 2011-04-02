@@ -35,6 +35,10 @@ public enum EnumProtocolIOResult {
    }
    
    public static EnumProtocolIOResult enumValueOf(String ioResultValueOfProtocol) {
-      return Enum.valueOf(EnumProtocolIOResult.class, ioResultValueOfProtocol.toUpperCase());
+      EnumProtocolIOResult result = null;
+      try {
+         result = Enum.valueOf(EnumProtocolIOResult.class, ioResultValueOfProtocol.toUpperCase());
+      } catch (Exception e) {}
+      return result;
    }
 }
