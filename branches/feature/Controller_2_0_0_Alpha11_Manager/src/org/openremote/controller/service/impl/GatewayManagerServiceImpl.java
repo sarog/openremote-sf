@@ -293,7 +293,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    /**
     * Get list of property names that the specified protocol uses, if protocol
     * not supported then an empty map is returned. Compulsory properties are indicated
-    * by a true value for the property key
+    * by a true value for the keys value
     */
    private Map<String, Boolean> getProtocolProperties(String protocolType) {
       Map<String, Boolean> props = new HashMap<String, Boolean>();
