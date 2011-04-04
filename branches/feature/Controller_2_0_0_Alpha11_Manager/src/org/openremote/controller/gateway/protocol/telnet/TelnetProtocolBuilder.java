@@ -20,7 +20,6 @@
 package org.openremote.controller.gateway.protocol.telnet;
 
 import java.util.List;
-
 import org.jdom.Element;
 import org.openremote.controller.gateway.Gateway;
 import org.openremote.controller.gateway.Protocol;
@@ -33,6 +32,9 @@ import org.openremote.controller.gateway.ProtocolBuilder;
  */
 public class TelnetProtocolBuilder implements ProtocolBuilder {
 
+   /**
+    * {@inheritDoc}
+    */
    @SuppressWarnings("unchecked")
    public Protocol build(Element element) {
       TelnetProtocol telnetEvent = new TelnetProtocol();
