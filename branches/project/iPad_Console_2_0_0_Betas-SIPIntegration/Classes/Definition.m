@@ -162,7 +162,7 @@ static Definition *myInstance = nil;
 	if (updateOperation) {
 		[updateOperation release];
 	}
-	updateOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinationUpdateDidFinishedNotification];
+	updateOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinitionUpdateDidFinishNotification];
 	isUpdating = NO;
 	
 	
@@ -190,6 +190,9 @@ static Definition *myInstance = nil;
 	
 	[downloadXmlOperation release];
 	[parseXmlOperation release];
+    
+    // TODO - EBR : check what needs to be added to queue e.g. updateOperation is not here
+    // updateOperation added to queue in parseXMLData method, why ?
 }
 
 - (void)changeLoadingMessage:(NSString *)msg {

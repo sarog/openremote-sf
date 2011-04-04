@@ -23,7 +23,7 @@
 #import <Foundation/Foundation.h>
 
 // This notification will be post when UpdateController have been finished to update.
-extern NSString *const DefinationUpdateDidFinishedNotification;
+extern NSString *const DefinitionUpdateDidFinishNotification;
 extern NSString *const DefinationNeedNotUpdate;
 
 // This notificaton will be post while needing to show appsetting view.

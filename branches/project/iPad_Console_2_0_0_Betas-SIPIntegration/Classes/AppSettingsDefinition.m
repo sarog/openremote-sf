@@ -165,9 +165,9 @@ static NSString *unsavedChosenServerUrl = nil;
 	}
 }
 
-//Read server url from file, if find it will set currentServerUrl value and return NO else return NO.
+// Read server url from file, if find it will set currentServerUrl value and return NO else return NO.
 // after read you can get all the details through AppSettingsDefinition api.
-+ (BOOL)readServerUrlFromFile{
++ (BOOL)readServerUrlFromFile {
 	[self reloadData];
 	
 	NSString *serverUrl = nil;
@@ -188,6 +188,7 @@ static NSString *unsavedChosenServerUrl = nil;
 		}		
 		serverUrl = (serverUrl?serverUrl: [[[self getAutoServers] objectAtIndex:0] valueForKey:@"url"]);
 	} else {
+        // No autodiscovery, check the list of custom defined server, return the one selected or the first one if none selected
 		if ([self getCustomServers].count == 0) {
 			return NO;
 		}
@@ -198,6 +199,7 @@ static NSString *unsavedChosenServerUrl = nil;
 				break;
 			}
 		}
+        // TODO - EBR : breaks if array empty
 		serverUrl = (serverUrl?serverUrl: [[[self getCustomServers] objectAtIndex:0] valueForKey:@"url"]);
 	}
 	if (serverUrl) {

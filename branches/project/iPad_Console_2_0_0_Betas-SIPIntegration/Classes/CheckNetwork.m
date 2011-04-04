@@ -33,6 +33,7 @@
 #define TIMEOUT_INTERVAL 5
 
 @implementation CheckNetwork
+
 +(void)checkWhetherNetworkAvailable {
 	if ([[Reachability sharedReachability] localWiFiConnectionStatus] == NotReachable) {
 		@throw [CheckNetworkException exceptionWithTitle:@"Check Network Fail" message:@"Please connect your device to network."];
