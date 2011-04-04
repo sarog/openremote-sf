@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.gateway.protocol;
 
+import org.openremote.controller.gateway.exception.GatewayException;
 import org.jdom.Element;
 
 /**
@@ -71,6 +72,6 @@ public interface ProtocolBuilder
    *          be completed for any reason
    *
    */
-  Protocol build(Element element);
+  Protocol build(Element element) throws GatewayException;
    
 }

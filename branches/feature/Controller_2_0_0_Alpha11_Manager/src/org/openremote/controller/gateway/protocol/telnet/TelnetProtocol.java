@@ -19,22 +19,22 @@
 */
 package org.openremote.controller.gateway.protocol.telnet;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Map;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.net.telnet.TelnetClient;
+import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.openremote.controller.gateway.Gateway;
-import org.openremote.controller.gateway.exception.GatewayConnectionException;
-import org.openremote.controller.gateway.command.Action;
-import org.openremote.controller.gateway.Protocol;
-import org.openremote.controller.gateway.ProtocolInterface;
+import org.openremote.controller.gateway.protocol.Protocol;
+import org.openremote.controller.gateway.protocol.ProtocolInterface;
 import org.openremote.controller.gateway.EnumGatewayConnectionType;
 import org.openremote.controller.gateway.EnumGatewayPollingMethod;
+import org.openremote.controller.gateway.command.Action;
 import org.openremote.controller.gateway.command.EnumCommandActionType;
+import org.apache.commons.net.telnet.TelnetClient;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * The Telnet Protocol.
@@ -55,6 +55,11 @@ public class TelnetProtocol extends Protocol {
    
    /* Set supported polling methods */
    List<EnumGatewayPollingMethod> supportedPollingMethods = Arrays.asList(EnumGatewayPollingMethod.QUERY, EnumGatewayPollingMethod.BROADCAST);
+   
+   /* Set protocol parameters as map of parameter string and isRequired boolean */
+   protocolParameters.put("ipaddress", true);
+   protocolParameters.put("port", true);
+   protocolParameters.put("sendterminator", false);
    
    private InputStream inputStream;
    private OutputStream outputStream;
@@ -267,27 +272,21 @@ public class TelnetProtocol extends Protocol {
          case READ:
             Calendar endTime = Calendar.getInstance();
             endTime.add(Calendar.MILLISECOND, this.readTimeout);
-            try {
-               while (Calendar.getInstance().before(endTime) && inputStream.available() == 0) {
-                  try {
-                     Thread.sleep(50);
-                  } catch (Exception e) {}
-               }
+            while (Calendar.getInstance().before(endTime) && inputStream.available() == 0) {
+               try {
+                  Thread.sleep(50);
+               } catch (Exception e) {}
+            }
                
-               while (inputStream.available() > 0) {
-                  actionResult += (char) inputStream.read();
-               }
+            while (inputStream.available() > 0) {
+               actionResult += (char) inputStream.read();
+            }
 
-               // If data received then assume this is what we're waiting for
-               if (actionResult.length() > 0) {
-                  break;
-               }
-            } catch (Exception e) {
-               throw new GatewayConnectionException("Gateway connection read error: " + e.getMessage(), e);
+            // If data received then assume this is what we're waiting for
+            if (actionResult.length() > 0) {
+               break;
             }
             break;
-      }
-      
       return actionResult;
    }
 }
