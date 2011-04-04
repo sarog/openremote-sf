@@ -34,8 +34,8 @@ import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.gateway.exception.GatewayException;
 import org.openremote.controller.gateway.exception.GatewayScriptException;
 import org.openremote.controller.gateway.exception.GatewayConnectionException;
-import org.openremote.controller.gateway.ProtocolFactory;
-import org.openremote.controller.gateway.Protocol;
+import org.openremote.controller.gateway.protocol.ProtocolFactory;
+import org.openremote.controller.gateway.protocol.Protocol;
 import java.io.IOException;
 /**
  * 
@@ -204,7 +204,7 @@ public class Gateway extends Thread
    
    // Methods ------------------------------------------------------------------------------------
    /* Get the protocol for a particular gateway */
-   private Protocol getProtocol(Element gatewayElement) {
+   private Protocol getProtocol(Element gatewayElement) throws GatewayException {
       Protocol protocol = (Protocol)protocolFactory.getProtocol(gatewayElement);
       return protocol;
    }
@@ -585,7 +585,7 @@ public class Gateway extends Thread
                      args.put("command", args.get("command").replaceAll(Command.DYNAMIC_PARAM_PLACEHOLDER_REGEXP, actionParam));
                   }
                   tempAction = new Action(lastActionType, args);
-                  commandResult = doProtocolAction(tempAction);
+                  commandResult = protocolDoAction(tempAction);
                   break;
             }
          }
@@ -593,7 +593,7 @@ public class Gateway extends Thread
          // If command execution is for a sensor update then ensure a read action is carried out
          if ("".equals(commandResult) && lastActionType != EnumCommandActionType.READ && sensorId != null) {
             Action tempAction = new Action(EnumCommandActionType.READ, null);
-            commandResult = doProtocolAction(tempAction);
+            commandResult = protocolDoAction(tempAction);
          }
       } catch (GatewayScriptException e) {
          logger.error("Gateway script error, command will be marked as invalid: " + e.getMessage(), e);
@@ -637,12 +637,12 @@ public class Gateway extends Thread
     * Write to server output stream catch IO exception, indicates a connection
     * issue so throw a gateway connection exception
     */
-   public String doProtocolAction(Action action) {
+   public String protocolDoAction(Action action) {
       String response = "";
       try {
          response = this.protocol.doAction(action);
       } catch (Exception e) {
-         throw new GatewayConnectionException("Gateway connection send error: " + e.getMessage(), e);
+         throw new GatewayConnectionException("Gateway send/receive error: " + e.getMessage(), e);
       }
       return response;
    }
