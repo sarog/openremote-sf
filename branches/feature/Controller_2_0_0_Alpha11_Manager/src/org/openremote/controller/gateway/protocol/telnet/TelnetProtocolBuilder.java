@@ -22,8 +22,8 @@ package org.openremote.controller.gateway.protocol.telnet;
 import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.gateway.Gateway;
-import org.openremote.controller.gateway.Protocol;
-import org.openremote.controller.gateway.ProtocolBuilder;
+import org.openremote.controller.gateway.protocol.Protocol;
+import org.openremote.controller.gateway.protocol.ProtocolBuilder;
 
 /**
  * The Class TelnetProtocolBuilder.

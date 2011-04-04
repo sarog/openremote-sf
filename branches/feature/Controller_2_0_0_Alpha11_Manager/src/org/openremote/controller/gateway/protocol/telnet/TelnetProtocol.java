@@ -56,11 +56,6 @@ public class TelnetProtocol extends Protocol {
    /* Set supported polling methods */
    List<EnumGatewayPollingMethod> supportedPollingMethods = Arrays.asList(EnumGatewayPollingMethod.QUERY, EnumGatewayPollingMethod.BROADCAST);
    
-   /* Set protocol parameters as map of parameter string and isRequired boolean */
-   protocolParameters.put("ipaddress", true);
-   protocolParameters.put("port", true);
-   protocolParameters.put("sendterminator", false);
-   
    private InputStream inputStream;
    private OutputStream outputStream;
    
@@ -287,6 +282,7 @@ public class TelnetProtocol extends Protocol {
                break;
             }
             break;
+      }
       return actionResult;
    }
 }
