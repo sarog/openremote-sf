@@ -406,7 +406,7 @@
 
 
 #pragma mark Delegate method of UpdateController
-- (void)didUpadted {
+- (void)didUpdate {
 	[self dismissModalViewControllerAnimated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }

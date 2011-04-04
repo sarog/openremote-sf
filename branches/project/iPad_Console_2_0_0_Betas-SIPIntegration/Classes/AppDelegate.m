@@ -32,7 +32,7 @@
 //Private method declare
 @interface AppDelegate (Private)
 - (void)updateDidFinished;
-- (void)didUpadted;
+- (void)didUpdate;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
 - (void)checkConfigAndUpdate;
@@ -61,13 +61,13 @@
 	[window addSubview:defaultView];
 	
 	//Init UpdateController and set delegate to this class, it have three delegate methods
-    // - (void)didUpadted;
+    // - (void)didUpdate;
     // - (void)didUseLocalCache:(NSString *)errorMessage;
     // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
 	
 	sipController = [[SipController alloc] init];
-	[sipController sipConnect];
+//	[sipController sipConnect];
 	
 	[self checkConfigAndUpdate];
 	
@@ -99,7 +99,7 @@
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
 	NSLog(@"----------updateDidFinished------");
-	
+
 	if ([defaultViewController isAppLaunching]) {//blocked from app launching, should refresh all groups.
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		[defaultViewController initGroups];
@@ -111,7 +111,8 @@
 
 
 #pragma mark delegate method of updateController
-- (void)didUpadted {
+- (void)didUpdate {
+    NSLog(@">>AppDelegate.didUpdate");
 	[self updateDidFinished];
 }
 
@@ -145,6 +146,5 @@
 	[localContext release];
 	[super dealloc];
 }
-
 
 @end

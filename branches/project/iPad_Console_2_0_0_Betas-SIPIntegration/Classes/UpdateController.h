@@ -39,7 +39,7 @@
 
 #pragma mark delegate method
 // This method will be called after update did finished.
-- (void)didUpadted;
+- (void)didUpdate;
 // This method will be called after application choose to use local cache.
 - (void)didUseLocalCache:(NSString *)errorMessage;
 // This method will be called after update failed and application can't use local cache.

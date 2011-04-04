@@ -26,7 +26,7 @@
 
 @implementation NotificationConstant
 
-NSString *const DefinationUpdateDidFinishedNotification = @"updateDidFinishedNotification";
+NSString *const DefinitionUpdateDidFinishNotification = @"updateDidFinishedNotification";
 NSString *const DefinationNeedNotUpdate = @"needNotUpdateNotification";
 NSString *const NotificationShowSettingsView = @"showSettingsViewNotification";
 NSString *const NotificationHideInitView = @"hideInitViewNotification";

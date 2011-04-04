@@ -22,7 +22,7 @@
 /*
   * For the update behavior.  
   * If you need know the update result and do something, you must set delegate and implement three delegate methods
-  * - (void)didUpadted;
+  * - (void)didUpdate;
   * - (void)didUseLocalCache:(NSString *)errorMessage;
   * - (void)didUpdateFail:(NSString *)errorMessage;
   */
@@ -81,7 +81,7 @@
 // Read Application settings from appSettings.plist.
 // If there have an defined server url. It will call checkNetworkAndUpdate method
 // else if auto discovery is enable it will try to find another server url using auto discovery,
-//        elese it will check local cache or call didUpdateFail method.
+// else it will check local cache or call didUpdateFail method.
 - (void)checkConfigAndUpdate {
 	if ([Definition sharedDefinition].groups.count > 0) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
@@ -123,14 +123,14 @@
 // Check if network is available. If network is available, then update client.
 - (void)checkNetworkAndUpdate {
 	NSLog(@"checkNetworkAndUpdate");
-	@try {	
+	@try {
 		// this method will throw CheckNetworkException if the check failed.
 		[CheckNetwork checkAll];
 		
 		[self getRoundRobinGroupMembers];
 
 		//Add an Observer to listern Definition's update behavior
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpadted) name:DefinationUpdateDidFinishedNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdate) name:DefinitionUpdateDidFinishNotification object:nil];
 		// If all the check success, it will call Definition's update method to update resouces.
 		[[Definition sharedDefinition] update];
 	}
@@ -220,10 +220,12 @@
 }
 
 #pragma mark call the delegate method which the the delegate implemented.
-- (void)didUpadted {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:DefinationUpdateDidFinishedNotification object:nil];
-	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpadted)]) {
-		[theDelegate performSelector:@selector(didUpadted)];
+- (void)didUpdate {
+    NSLog(@">>UpdateController.didUpdate");
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:DefinitionUpdateDidFinishNotification object:nil];
+    NSLog(@"theDelegate %@", theDelegate);
+	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpdate)]) {
+		[theDelegate performSelector:@selector(didUpdate)];
 	}
 }
 

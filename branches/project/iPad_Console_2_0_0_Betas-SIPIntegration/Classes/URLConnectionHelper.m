@@ -418,7 +418,7 @@ static BOOL isWifiActive = NO;
 }
 
 #pragma mark Delegate method of UpdateController
-- (void)didUpadted {
+- (void)didUpdate {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
