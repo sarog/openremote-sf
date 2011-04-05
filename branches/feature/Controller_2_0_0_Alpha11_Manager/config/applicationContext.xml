@@ -235,7 +235,7 @@
    <bean id="scriptManager" class="org.openremote.controller.gateway.ScriptManager" />
    
    <!-- Protocol Factory -->
-   <bean id="protocolFactory" class="org.openremote.controller.gateway.ProtocolFactory">
+   <bean id="protocolFactory" class="org.openremote.controller.gateway.protocol.ProtocolFactory">
 		<property name="protocolBuilders">
 		    <props>
            	<prop key="telnet">telnetProtocolBuilder</prop>
