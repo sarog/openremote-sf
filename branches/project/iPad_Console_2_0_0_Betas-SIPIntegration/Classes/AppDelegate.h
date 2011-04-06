@@ -41,7 +41,6 @@
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
 	
 	GestureWindow *window;
-	UIView *defaultView;
 	DefaultViewController *defaultViewController;
 	UpdateController *updateController;
 
