@@ -31,11 +31,13 @@
 
 //Private method declare
 @interface AppDelegate (Private)
+
 - (void)updateDidFinished;
 - (void)didUpdate;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
 - (void)checkConfigAndUpdate;
+
 @end
 
 @implementation AppDelegate
@@ -51,14 +53,12 @@
 	[[DataBaseService sharedDataBaseService] initLastLoginUser];
 	
 	defaultViewController = [[DefaultViewController alloc] initWithDelegate:self];
-	
-	defaultView = defaultViewController.view;
-	
+
 	// Default window for the app
 	window = [[GestureWindow alloc] initWithDelegate:defaultViewController];
 	[window makeKeyAndVisible];
 	
-	[window addSubview:defaultView];
+	[window addSubview:defaultViewController.view];
 	
 	//Init UpdateController and set delegate to this class, it have three delegate methods
     // - (void)didUpdate;
@@ -70,7 +70,6 @@
 //	[sipController sipConnect];
 	
 	[self checkConfigAndUpdate];
-	
 }
 
 // when it's launched by other apps.
@@ -83,7 +82,6 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[defaultViewController refreshPolling];
 }
-
 
 // To save battery, it will disconnect from WIFI when in sleep mode. 
 // if its plugged into USB or a charger it remains connect.
@@ -109,8 +107,8 @@
 	}
 }
 
-
 #pragma mark delegate method of updateController
+
 - (void)didUpdate {
     NSLog(@">>AppDelegate.didUpdate");
 	[self updateDidFinished];
@@ -137,11 +135,10 @@
 	
 }
 
-
 - (void)dealloc {
 	[updateController release];
 	[defaultViewController release];	
-	[window release];	
+	[window release];
 	[sipController release];
 	[localContext release];
 	[super dealloc];

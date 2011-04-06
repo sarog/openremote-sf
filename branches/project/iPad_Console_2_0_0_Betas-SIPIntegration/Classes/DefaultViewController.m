@@ -78,8 +78,7 @@
 	//Must add xib file view into window to detect current device orientation.
 	
 	//Init the error view with xib
-	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" 
-																													 message:@"Please check your setting or define a group with screens first."];
+	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please check your setting or define a group with screens first."];
 	[self.view addSubview:errorViewController.view];
 
 	
