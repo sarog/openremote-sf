@@ -18,6 +18,7 @@
 }
 
 - (BOOL)sipConnect;
+- (BOOL)sipDisconnect;
 
 - (app_config_t *)pjsipConfig;
 
