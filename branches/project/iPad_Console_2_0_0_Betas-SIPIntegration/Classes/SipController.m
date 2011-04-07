@@ -8,6 +8,7 @@
 
 #import "SipController.h"
 #import "AppDelegate.h"
+#import "AppSettingsDefinition.h"
 
 @implementation SipController
 
@@ -16,8 +17,7 @@
 		[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
 																 @"siphon", @"username",
 																 @"siphon", @"authname",
-																 @"192.168.1.112", @"server",
-																 [NSNumber numberWithInt:30], @"regTimeout",
+																 [NSNumber numberWithInt:900], @"regTimeout",
 																 [NSNumber numberWithBool:TRUE], @"enableGSM",
 																 [NSNumber numberWithBool:TRUE], @"enableG711a",
 																 [NSNumber numberWithBool:TRUE], @"enableG722",
@@ -25,9 +25,35 @@
 		// Start as not connected
 		_sip_acc_id = PJSUA_INVALID_ID;
 
+        
+        
+        
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(definitionDidUpdate) name:DefinitionUpdateDidFinishNotification object:nil];
 	}
 	return self;
 }
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super dealloc];
+}
+
+- (void)definitionDidUpdate {
+    // EBR: temp, need to review settings load mechanism
+    NSLog(@"====> Current server URL %@", [AppSettingsDefinition getCurrentServerUrl]);
+    NSLog(@"Host %@", [[NSURL URLWithString:[AppSettingsDefinition getCurrentServerUrl]] host]);
+    
+    [self sipDisconnect];
+    // TODO: check that this does un-register in SIP servlet
+    
+    [[NSUserDefaults standardUserDefaults] setObject:[[NSURL URLWithString:[AppSettingsDefinition getCurrentServerUrl]] host] forKey:@"server"];    
+    [self sipConnect];
+}
+
+
+// TODO: must un-register
+
 
 - (void)processCallState:(NSNotification *)notification {
 	NSLog(@"processCallState: %@", notification);
