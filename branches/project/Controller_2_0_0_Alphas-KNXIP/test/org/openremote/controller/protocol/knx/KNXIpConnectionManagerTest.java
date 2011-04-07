@@ -21,7 +21,7 @@ public class KNXIpConnectionManagerTest {
          this.server.wait();
       }
    }
-   
+
    @After
    public void tearDown() throws InterruptedException {
       this.server.interrupt();
@@ -42,23 +42,24 @@ public class KNXIpConnectionManagerTest {
             (byte) 0x00), new CommandParameter("0")));
       c.send(GroupValueWrite.createCommand("off", DataPointType.BINARY_VALUE, mgr, new GroupAddress((byte) 0x80,
             (byte) 0x00), new CommandParameter("0")));
+      System.out.println("error = " + this.server.getError());
       Assert.assertNull(this.server.getError());
       discoverServer.interrupt();
       discoverServer.join();
    }
 
-//   @Test
-//   public void testConnect() throws ConnectionException, ConversionException, KnxIpException, IOException,
-//         InterruptedException {
-//      KNXIpConnectionManager mgr = new KNXIpConnectionManager(InetAddress.getByName("127.0.0.1"), new InetSocketAddress(
-//            "127.0.0.1", DummyServer.PORT));
-//      mgr.start();
-//      KNXConnection c = mgr.getConnection();
-//      c.send(GroupValueWrite.createCommand("on", DataPointType.BINARY_VALUE, mgr, new GroupAddress((byte) 0x80,
-//            (byte) 0x00), new CommandParameter("0")));
-//      c.send(GroupValueWrite.createCommand("off", DataPointType.BINARY_VALUE, mgr, new GroupAddress((byte) 0x80,
-//            (byte) 0x00), new CommandParameter("0")));
-//      mgr.stop();
-//      Assert.assertNull(this.server.getError());
-//   }
+   // @Test
+   // public void testConnect() throws ConnectionException, ConversionException, KnxIpException, IOException,
+   // InterruptedException {
+   // KNXIpConnectionManager mgr = new KNXIpConnectionManager(InetAddress.getByName("127.0.0.1"), new InetSocketAddress(
+   // "127.0.0.1", DummyServer.PORT));
+   // mgr.start();
+   // KNXConnection c = mgr.getConnection();
+   // c.send(GroupValueWrite.createCommand("on", DataPointType.BINARY_VALUE, mgr, new GroupAddress((byte) 0x80,
+   // (byte) 0x00), new CommandParameter("0")));
+   // c.send(GroupValueWrite.createCommand("off", DataPointType.BINARY_VALUE, mgr, new GroupAddress((byte) 0x80,
+   // (byte) 0x00), new CommandParameter("0")));
+   // mgr.stop();
+   // Assert.assertNull(this.server.getError());
+   // }
 }

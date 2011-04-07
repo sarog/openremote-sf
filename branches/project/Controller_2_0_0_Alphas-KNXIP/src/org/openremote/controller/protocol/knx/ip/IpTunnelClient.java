@@ -25,11 +25,13 @@ public class IpTunnelClient implements IpProcessorListener {
    private InetSocketAddress destControlEndpointAddr;
    private InetSocketAddress destDataEndpointAddr;
    private Timer heartBeat;
+   private Thread shutdownHook;
 
    public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
       this.destControlEndpointAddr = destControlEndpointAddr;
       this.processor = new IpProcessor(srcAddr, this);
       this.destDataEndpointAddr = null;
+      this.shutdownHook = new ShutdownHook();
    }
 
    public void register(IpMessageListener l) {
@@ -94,6 +96,9 @@ public class IpTunnelClient implements IpProcessorListener {
             // Start Heartbeat
             this.heartBeat = new Timer("KNX IP heartbeat");
             this.heartBeat.schedule(new HeartBeatTask(), 0, 60000);
+
+            // Register shutdown hook
+            Runtime.getRuntime().addShutdownHook(IpTunnelClient.this.shutdownHook);
          } else {
             throw new KnxIpException("Connect failed, response error : " + st);
          }
@@ -111,6 +116,9 @@ public class IpTunnelClient implements IpProcessorListener {
       if (resp instanceof IpDisconnectResp) {
          IpDisconnectResp cr = (IpDisconnectResp) resp;
          if (this.channelId == cr.getChannelId()) {
+            // Unregister shutdown hook
+            Runtime.getRuntime().removeShutdownHook(IpTunnelClient.this.shutdownHook);
+
             // Stop heartbeat
             this.heartBeat.cancel();
 
@@ -208,6 +216,21 @@ public class IpTunnelClient implements IpProcessorListener {
             }
          } else {
             throw new KnxIpException("Monitor failed, unexepected response");
+         }
+      }
+   }
+
+   private class ShutdownHook extends Thread {
+      @Override
+      public void run() {
+         try {
+            IpTunnelClient.this.disconnect();
+         } catch (KnxIpException e) {
+            // Ignore
+         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+         } catch (IOException e) {
+            // Ignore
          }
       }
    }
