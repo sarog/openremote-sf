@@ -61,6 +61,11 @@ public class Constants
   public static final String NON_WIFI_MULTICAST_ADDRESS = "10.0.2.2";
   public static final int MULTICAST_PORT = 3333;
   public static final int LOCAL_SERVER_PORT = 2346;
+  /**
+   * How long (in milliseconds) the local server that receives responses from controllers for
+   * auto-discovery will wait before timing out (set to 0 for no time out)
+   */
+  public static final int LOCAL_DISCOVERY_SERVER_TIMEOUT = 0;
   public static final String PANEL_XML = "panel.xml";
   public static final String FILE_FOLDER_PATH = "/data/data/org.openremote.android.console/files/";
   public static final int SECURED_HTTP_PORT = 8443;
