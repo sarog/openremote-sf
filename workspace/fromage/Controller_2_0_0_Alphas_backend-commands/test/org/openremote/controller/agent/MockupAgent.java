@@ -20,8 +20,13 @@
 package org.openremote.controller.agent;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
+import org.junit.Assert;
 
 /**
  * Mockup for the agent so that it doesn't start/stop tomcat and uses fake properties
@@ -32,6 +37,7 @@ public class MockupAgent extends BackendCommandsAgent{
    protected String deployPath;
    protected String backupPath;
    protected String tmpPath;
+   protected String logsPath;
 
    public MockupAgent() throws AgentException {
    }
@@ -50,6 +56,8 @@ public class MockupAgent extends BackendCommandsAgent{
       config.setProperty("controller.url", "http://fake-controller");
       deployPath = makeTmpDir();
       config.setProperty("controller.deploy.path", deployPath);
+      logsPath = makeTmpDir();
+      config.setProperty("controller.logs.path", logsPath);
       backupPath = makeTmpDir();
       config.setProperty("controller.backup.path", backupPath);
       tmpPath = makeTmpDir();
@@ -68,6 +76,40 @@ public class MockupAgent extends BackendCommandsAgent{
       } catch (IOException e) {
          throw new AgentException("Failed to create tmp dir", e);
       }
+   }
+
+   protected void makeMockDir(String path) {
+      try {
+         FileOutputStream os = new FileOutputStream(new File(path, "file3"));
+         os.write(new byte[]{0,1,2,3,4});
+         os.flush();
+         os.close();
+         new File(path, "dir2").mkdir();
+         os = new FileOutputStream(new File(path, "dir2/file4"));
+         os.write(new byte[]{0,1,2,3,4,5});
+         os.flush();
+         os.close();
+      } catch (IOException e) {
+         throw new RuntimeException(e);
+      }
+   }
+   
+   protected void checkZippedMockDir(File file){
+      JarFile war;
+      try {
+         war = new JarFile(file);
+      } catch (IOException e) {
+         throw new RuntimeException(e);
+      }
+      Assert.assertEquals(2, war.size());
+      // first file
+      ZipEntry entry = war.getEntry("file3");
+      Assert.assertNotNull(entry);
+      Assert.assertEquals(5, entry.getSize());
+      // second file
+      entry = war.getEntry("dir2/file4");
+      Assert.assertNotNull(entry);
+      Assert.assertEquals(6, entry.getSize());
    }
 
    @Override

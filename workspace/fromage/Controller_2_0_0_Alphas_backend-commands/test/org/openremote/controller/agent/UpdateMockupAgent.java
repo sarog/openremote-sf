@@ -51,7 +51,7 @@ public class UpdateMockupAgent extends MockupAgent {
    UpdateMockupAgent.State state = State.GET_COMMAND;
    
    public UpdateMockupAgent() throws AgentException {
-      makeMockDeploy();
+      makeMockDir(deployPath);
    }
 
    @Override
@@ -72,7 +72,7 @@ public class UpdateMockupAgent extends MockupAgent {
       case GET_COMMAND:
          Assert.assertEquals("http://fake-backend/beehive/rest/user/user/command-queue", url);
          state = State.DOWNLOAD_UPDATE;
-         return new MockRESTCall("{'commands':{'update-command':{'@resource':'http://fake-backend/beehive/rest/user/stef/resources/update-1','@type':'update-controller','id':1}}}");
+         return new MockRESTCall("{'commands':{'command':{'@resource':'http://fake-backend/beehive/rest/user/stef/resources/update-1','@type':'update-controller','id':1}}}");
       case DOWNLOAD_UPDATE:
          Assert.assertEquals("http://fake-backend/beehive/rest/user/stef/resources/update-1", url);
          state = State.SHUTDOWN_TOMCAT;
@@ -96,22 +96,6 @@ public class UpdateMockupAgent extends MockupAgent {
          os.flush();
          os.close();
          return war;
-      } catch (IOException e) {
-         throw new RuntimeException(e);
-      }
-   }
-
-   private void makeMockDeploy() {
-      try {
-         FileOutputStream os = new FileOutputStream(new File(deployPath, "file3"));
-         os.write(new byte[]{0,1,2,3,4});
-         os.flush();
-         os.close();
-         new File(deployPath, "dir2").mkdir();
-         os = new FileOutputStream(new File(deployPath, "dir2/file4"));
-         os.write(new byte[]{0,1,2,3,4,5});
-         os.flush();
-         os.close();
       } catch (IOException e) {
          throw new RuntimeException(e);
       }
@@ -142,21 +126,7 @@ public class UpdateMockupAgent extends MockupAgent {
       File backupDir = new File(backupPath);
       Assert.assertEquals(1, backupDir.listFiles().length);
       File backupWar = backupDir.listFiles()[0];
-      JarFile war;
-      try {
-         war = new JarFile(backupWar);
-      } catch (IOException e) {
-         throw new RuntimeException(e);
-      }
-      Assert.assertEquals(2, war.size());
-      // first file
-      ZipEntry entry = war.getEntry("file3");
-      Assert.assertNotNull(entry);
-      Assert.assertEquals(5, entry.getSize());
-      // second file
-      entry = war.getEntry("dir2/file4");
-      Assert.assertNotNull(entry);
-      Assert.assertEquals(6, entry.getSize());
+      checkZippedMockDir(backupWar);
    }
    
    @Override
