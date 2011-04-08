@@ -51,6 +51,11 @@ public class MockRESTCall extends RESTCall {
    }
    
    @Override
+   public void invoke(InputStream is) throws AgentException {
+      // do nothing
+   }
+   
+   @Override
    public InputStream getInputStream() throws IOException {
       return new FileInputStream(file);
    }

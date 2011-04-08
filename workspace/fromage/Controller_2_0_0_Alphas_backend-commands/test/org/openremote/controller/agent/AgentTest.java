@@ -39,7 +39,7 @@ public class AgentTest {
       CommandQueueMockupAgent agent = new CommandQueueMockupAgent();
 
       // works with one command
-      agent.contents = "{'commands':{'update-command':{'@resource':'http://fake-backend/beehive/rest/user/stef/resources/update-1','@type':'update-controller','id':1}}}";
+      agent.contents = "{'commands':{'command':{'@resource':'http://fake-backend/beehive/rest/user/stef/resources/update-1','@type':'update-controller','id':1}}}";
       JSONObject nextCommand = agent.getNextCommand();
       Assert.assertNotNull(nextCommand);
       Assert.assertEquals("update-controller", nextCommand.getString("@type"));
@@ -47,7 +47,7 @@ public class AgentTest {
       Assert.assertEquals("1", nextCommand.getString("id"));
 
       // works with multiple commands
-      agent.contents = "{'commands':{'update-command':["
+      agent.contents = "{'commands':{'command':["
       +"{'@resource':'http://fake-backend/beehive/rest/user/stef/resources/update-1','@type':'update-controller','id':1},"
       +"{'@resource':'http://fake-backend/beehive/rest/user/stef/resources/update-2','@type':'update-controller','id':2}"
       +"]}}";
@@ -62,7 +62,17 @@ public class AgentTest {
    public void testUpdate() throws AgentException{
       UpdateMockupAgent agent = new UpdateMockupAgent();
       agent.runOnce();
-      Assert.assertEquals(State.SUCCESS, agent.state);
+      Assert.assertEquals(UpdateMockupAgent.State.SUCCESS, agent.state);
+      // make sure the tmp dir is clean as well
+      File tmp = new File(agent.tmpPath);
+      Assert.assertEquals(0, tmp.list().length);
+   }
+
+   @Test
+   public void testUploadLogs() throws AgentException{
+      UploadLogsMockupAgent agent = new UploadLogsMockupAgent();
+      agent.runOnce();
+      Assert.assertEquals(UploadLogsMockupAgent.State.SUCCESS, agent.state);
       // make sure the tmp dir is clean as well
       File tmp = new File(agent.tmpPath);
       Assert.assertEquals(0, tmp.list().length);

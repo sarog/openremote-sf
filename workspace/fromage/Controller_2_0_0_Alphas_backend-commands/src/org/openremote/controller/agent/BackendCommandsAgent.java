@@ -20,10 +20,12 @@
 package org.openremote.controller.agent;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -61,6 +63,7 @@ public class BackendCommandsAgent {
    private int controllerRetryAttemps;
    private String controllerDeployPath;
    private String controllerBackupPath;
+   private String controllerLogsPath;
    private String tmpPath;
 
    public BackendCommandsAgent() throws AgentException{
@@ -87,6 +90,7 @@ public class BackendCommandsAgent {
       controllerCommand = getRequiredProperty(config, "controller.command");
       controllerURL = getRequiredProperty(config, "controller.url");
       controllerDeployPath = getRequiredProperty(config, "controller.deploy.path");
+      controllerLogsPath = getRequiredProperty(config, "controller.logs.path");
       checkPath(controllerDeployPath, "controller.deploy.path");
       controllerRetryInterval = getIntProperty(config, "controller.retry.interval", 5000);
       controllerRetryAttemps = getIntProperty(config, "controller.retry.attemps", 10);
@@ -169,6 +173,8 @@ public class BackendCommandsAgent {
       }
       if("update-controller".equals(type)){
          updateController(command);
+      }else if("upload-logs".equals(type)){
+            uploadLogs(command);
       }else if(type == null){
          throw new AgentException("Missing command type");
       }else{
@@ -180,17 +186,8 @@ public class BackendCommandsAgent {
    // Commands
    
    protected void updateController(JSONObject command) throws AgentException{
-      String id, resource;
-      try{
-         resource = command.getString("@resource");
-         if(StringUtils.isEmpty(resource))
-            throw new AgentException("Missing @resource parameter");
-         id = command.getString("id");
-         if(StringUtils.isEmpty(id))
-            throw new AgentException("Missing id parameter");
-      }catch(JSONException x){
-         throw new AgentException("JSON error", x);
-      }
+      String id = getID(command);
+      String resource = getResource(command);
       
       File tmpFile = downloadUpdate(resource);
       
@@ -204,6 +201,59 @@ public class BackendCommandsAgent {
       startTomcat();
       
       ackCommand(id);
+   }
+
+   protected void uploadLogs(JSONObject command) throws AgentException {
+      String id = getID(command);
+      String resource = getResource(command);
+      
+      File zip = zipLogs();
+      try{
+         uploadLogs(zip, resource);
+      }finally{
+         zip.delete();
+      }
+      
+      ackCommand(id);
+   }
+
+   protected void uploadLogs(File zip, String resource) throws AgentException {
+      log.info("uploading logs to "+resource);
+      RESTCall call = makeRESTCall("POST", resource);
+      FileInputStream is;
+      try {
+         is = new FileInputStream(zip);
+      } catch (FileNotFoundException e) {
+         throw new AgentException("Failed to open zip file for output", e);
+      }
+      try {
+         call.invoke(is);
+      } finally {
+         try {
+            is.close();
+         } catch (IOException e) {
+            // we don't care do we?
+            log.warn("Failed to close logs zip after reading", e);
+         }
+      }
+   }
+
+   protected File zipLogs() throws AgentException {
+      File zip;
+      try {
+         zip = File.createTempFile("controller-logs-", ".zip", new File(tmpPath));
+      } catch (IOException e) {
+         throw new AgentException("Failed to create temporary file", e);
+      }
+      try {
+         log.info("Saving logs from "+controllerLogsPath+" to "+zip.getAbsolutePath());
+         ZipUtil.zip(controllerLogsPath, zip);
+      } catch (IOException e) {
+         // cleanup
+         zip.delete();
+         throw new AgentException("Failed to zip logs", e);
+      }
+      return zip;
    }
 
    protected void ackCommand(String id) throws AgentException {
@@ -331,8 +381,8 @@ public class BackendCommandsAgent {
             // this can't be that bad
             log.error("Failed to close input stream", e);
          }
+         call.disconnect();
       }
-      call.disconnect();
       return tmpFile;
    }
 
@@ -361,7 +411,7 @@ public class BackendCommandsAgent {
          if(!(root instanceof JSONObject)){
             throw new AgentException("Invalid JSON output: unknown 'commands' object type: "+root);
          }
-         Object commands = ((JSONObject)root).get("update-command");
+         Object commands = ((JSONObject)root).get("command");
          log.info("this is what we get: "+commands);
          if(commands == null
                || ((commands instanceof JSONArray
@@ -371,7 +421,7 @@ public class BackendCommandsAgent {
          }
          if(!(commands instanceof JSONObject)
                && !(commands instanceof JSONArray)){
-            throw new AgentException("Invalid JSON output: unknown 'update-command' object type: "+commands);
+            throw new AgentException("Invalid JSON output: unknown 'command' object type: "+commands);
          }
          JSONObject command;
          if (commands instanceof JSONArray)
@@ -382,6 +432,25 @@ public class BackendCommandsAgent {
          return command;
       }catch(JSONException x){
          throw new AgentException("JSON parsing error", x);
+      }
+   }
+
+   private String getResource(JSONObject command) throws AgentException {
+      return getNonEmptyString(command, "@resource");
+   }
+
+   private String getID(JSONObject command) throws AgentException {
+      return getNonEmptyString(command, "id");
+   }
+
+   private String getNonEmptyString(JSONObject command, String key) throws AgentException {
+      try{
+         String resource = command.getString(key);
+         if(StringUtils.isEmpty(resource))
+            throw new AgentException("Missing "+key+" parameter");
+         return resource;
+      }catch(JSONException x){
+         throw new AgentException("JSON error", x);
       }
    }
 
