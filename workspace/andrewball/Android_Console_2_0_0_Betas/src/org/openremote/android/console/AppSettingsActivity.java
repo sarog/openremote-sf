@@ -82,7 +82,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 
 public class AppSettingsActivity extends GenericActivity implements ORConnectionDelegate {
-  public static final String TAG = Constants.LOG_CATEGORY + "AppSettingsActivity";
 
   /** The app settings view contains auto discovery, auto servers, custom servers,
    * select panel identity, clear image cache and security configuration. 
@@ -110,8 +109,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   
   private ProgressDialog loadingPanelProgress;
   
-  private IPAutoDiscoveryServer autoDiscoveryServer;
-
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -349,7 +346,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
           startControllerAutoDiscovery();
         } else {
           IPAutoDiscoveryServer.isInterrupted = true;
-          stopControllerAutoDiscovery();
           switchToCustomServersView();
         }
         AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
@@ -500,7 +496,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private void startControllerAutoDiscovery() {
     autoServerListAdapter.clear();
     
-    autoDiscoveryServer = new IPAutoDiscoveryServer() {
+    new IPAutoDiscoveryServer() {
       @Override
       protected void onProgressUpdate(Void... values) {
         if (progressLayout != null) {
@@ -524,15 +520,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         }
         requestPanelList();
       }
-    };
-
-    autoDiscoveryServer.execute((Void) null);
-  }
-
-  public void stopControllerAutoDiscovery() {
-    if (autoDiscoveryServer != null) {
-      autoDiscoveryServer.cancel(true);
-    }
+    }.execute((Void) null);
   }
   
   /**
