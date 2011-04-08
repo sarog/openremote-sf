@@ -50,9 +50,9 @@ public class IPAutoDiscoveryClient implements Runnable {
          DatagramPacket dgram;
          dgram = new DatagramPacket(b, b.length, InetAddress.getByName(getMulticastAddress()), Constants.MULTICAST_PORT);
          socket.send(dgram);
-         Log.i("AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT);
+         Log.i("OpenRemote-AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT);
       } catch (Exception e) {
-         Log.e("AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT
+         Log.e("OpenRemote-AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT
                + " failed", e);
       }
 
