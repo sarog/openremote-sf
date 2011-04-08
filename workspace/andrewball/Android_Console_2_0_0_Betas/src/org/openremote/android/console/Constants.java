@@ -65,7 +65,7 @@ public class Constants
    * How long (in milliseconds) the local server that receives responses from controllers for
    * auto-discovery will wait before timing out (set to 0 for no time out)
    */
-  public static final int LOCAL_DISCOVERY_SERVER_TIMEOUT = 0;
+  public static final int LOCAL_DISCOVERY_SERVER_TIMEOUT = 1000;
   public static final String PANEL_XML = "panel.xml";
   public static final String FILE_FOLDER_PATH = "/data/data/org.openremote.android.console/files/";
   public static final int SECURED_HTTP_PORT = 8443;
