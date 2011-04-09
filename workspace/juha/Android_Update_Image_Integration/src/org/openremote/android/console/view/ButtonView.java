@@ -53,7 +53,7 @@ public class ButtonView extends ControlView {
       super(context);
       setComponent(button);
       if (button != null) {
-         uiButton  = new Button(context);
+         uiButton  = new Button(context, null, android.R.attr.buttonStyleSmall);
          initButton(button);
       }
    }
