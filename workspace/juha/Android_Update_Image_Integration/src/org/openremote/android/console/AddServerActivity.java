@@ -19,8 +19,8 @@
  */
 package org.openremote.android.console;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -77,12 +77,12 @@ public class AddServerActivity extends GenericActivity {
                 }
                 try {
                   String httpUrl = "http://" + noProtocolUrl;
-                  new URL(httpUrl);
+                  new URI(httpUrl);
                   Intent intent = getIntent();
                   intent.setData(Uri.parse(noProtocolUrl));
                   setResult(Constants.RESULT_CONTROLLER_URL, intent);
                   finish();
-               } catch (MalformedURLException e) {
+               } catch (URISyntaxException e) {
                   Toast toast = Toast.makeText(getApplicationContext(), "URL format is not correct.", 1);
                   toast.show();
                }
