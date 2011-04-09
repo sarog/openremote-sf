@@ -21,6 +21,7 @@
 package org.openremote.android.console.net;
 
 import java.net.HttpURLConnection;
+import java.io.IOException;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
@@ -62,8 +63,10 @@ public class ORNetworkCheck
    * @param url                   an URL to a controller instance
    *
    * @return TODO: returns null or HttpResponse
+   *
+   * @throws IOException TODO
    */
-  public static HttpResponse verifyControllerURL(Context context, String url)
+  public static HttpResponse verifyControllerURL(Context context, String url) throws IOException
   {
     // TODO : Use URL class instead of string in param
 
@@ -77,7 +80,7 @@ public class ORNetworkCheck
     Log.d(LOG_CATEGORY, "HTTP Response: " + response);
 
     if (response == null)
-      return null;
+      return null;  // TODO : fix this, it is stupid - throw an exception
 
     int status = response.getStatusLine().getStatusCode();
 
@@ -89,14 +92,14 @@ public class ORNetworkCheck
 
     if (controllerURL == null || "".equals(controllerURL))
     {
-      return null;
+      return null;  // TODO : fix this, it is stupid - throw an exception
     }
 
     String currentPanelIdentity = AppSettingsModel.getCurrentPanelIdentity(context);
 
     if (currentPanelIdentity == null || "".equals(currentPanelIdentity))
     {
-      return null;
+      return null;  // TODO : fix this, it is stupid - throw an exception
     }
 
     String restfulPanelURL = controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
@@ -119,20 +122,15 @@ public class ORNetworkCheck
    * @return  returns the HTTP response from the attempt to connect to the configured controller
    *          or null, in case of failure (note that the HTTP response code may also include
    *          an error code from connection attempt).
+   *
+   * @throws IOException TODO
    */
-  private static HttpResponse isControllerAvailable(Context context)
+  private static HttpResponse isControllerAvailable(Context context) throws IOException
   {
     if (!hasWifiAndControllerConfig(context))
       return null;
 
     String controllerURL = AppSettingsModel.getSecuredServer(context);
-
-    Log.i(LOG_CATEGORY, "controllerURL: " + controllerURL);
-
-    if (controllerURL == null || "".equals(controllerURL))
-    {
-      return null;
-    }
 
     return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
   }
