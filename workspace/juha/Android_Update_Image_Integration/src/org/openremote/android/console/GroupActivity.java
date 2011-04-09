@@ -54,6 +54,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -113,7 +114,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-      getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+      // Only hide the title bar if we are not on Android 3.0, as all of the current
+      // Android 3.0 devices are tablets without menu buttons and the action bar
+      // doesn't appear without the title bar's being shown.
+      if (VERSION.SDK_INT != 11) {
+         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+      }
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
