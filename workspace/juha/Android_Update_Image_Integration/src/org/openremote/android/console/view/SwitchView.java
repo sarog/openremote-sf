@@ -53,7 +53,7 @@ public class SwitchView extends SensoryControlView {
       super(context);
       setComponent(switchComponent);
       if (switchComponent != null) {
-         button = new Button(context);
+         button = new Button(context, null, android.R.attr.buttonStyleSmall);
          button.setTextSize(Constants.DEFAULT_FONT_SIZE);
          initSwitch(switchComponent);
          if (switchComponent.getSensor() != null) {

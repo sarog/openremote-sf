@@ -19,21 +19,39 @@
 */
 package org.openremote.android.console;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.http.HttpResponse;
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
+import org.openremote.android.console.net.ORConnection;
+import org.openremote.android.console.net.ORConnectionDelegate;
+import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +83,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  *
  */
 
-public class AppSettingsActivity extends GenericActivity {
+public class AppSettingsActivity extends GenericActivity implements ORConnectionDelegate {
 
    /** The app settings view contains auto discovery, auto servers, custom servers,
     * select panel identity, clear image cache and security configuration. 
@@ -86,6 +104,8 @@ public class AppSettingsActivity extends GenericActivity {
    /** The progress layout display auto discovery progress. */
    private LinearLayout progressLayout;
    
+   private ProgressDialog loadingPanelProgress;
+   
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -100,6 +120,8 @@ public class AppSettingsActivity extends GenericActivity {
       mainLayout.setOrientation(LinearLayout.VERTICAL);
       mainLayout.setBackgroundColor(0);
       mainLayout.setTag(R.string.settings);
+      
+      loadingPanelProgress = new ProgressDialog(this);
       
       // The scroll view contains appSettingsView, and make the appSettingsView can be scrolled.
       ScrollView scroll = new ScrollView(this);
@@ -454,12 +476,14 @@ public class AppSettingsActivity extends GenericActivity {
             currentServer = (String)parent.getItemAtPosition(position);
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
             writeCustomServerToFile();
+            requestPanelList();
          }
          
       });
       
       custumeView.addView(customListView);
       custumeView.addView(buttonsView);
+      requestPanelList();
       return custumeView;
   }
 
@@ -482,6 +506,7 @@ public class AppSettingsActivity extends GenericActivity {
                customListView.setItemChecked(customeListAdapter.getCount() - 1, true);
                AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
                writeCustomServerToFile();
+               requestPanelList();
             }
          }
       }
@@ -527,6 +552,7 @@ public class AppSettingsActivity extends GenericActivity {
             if (progressLayout != null) {
                progressLayout.setVisibility(View.INVISIBLE);
             }
+            requestPanelList();
          }
       }.execute((Void) null);
       
@@ -534,6 +560,7 @@ public class AppSettingsActivity extends GenericActivity {
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             currentServer = (String)parent.getItemAtPosition(position);
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+            requestPanelList();
          }
       });
       
@@ -563,5 +590,86 @@ public class AppSettingsActivity extends GenericActivity {
          }
       }
    }
+
+   /**
+    * Request panel identity list from controller.
+    * 
+    * @param ORConnectionDelegate the delegate to handle the connection
+    */
+   private void requestPanelList() {
+      setEmptySpinnerContent();
+      if (!TextUtils.isEmpty(AppSettingsActivity.currentServer)) {
+         loadingPanelProgress.show();
+         new ORConnection(this.getApplicationContext() ,ORHttpMethod.GET, true, AppSettingsActivity.currentServer + "/rest/panels", this);
+      }
+   }
    
+   @Override
+   public void urlConnectionDidFailWithException(Exception e) {
+      loadingPanelProgress.dismiss();
+   }
+
+   @Override
+   public void urlConnectionDidReceiveData(InputStream data) {
+      loadingPanelProgress.dismiss();
+      try {
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder builder = factory.newDocumentBuilder();
+         Document dom = builder.parse(data);
+         Element root = dom.getDocumentElement();
+
+         NodeList nodeList = root.getElementsByTagName("panel");
+         int nodeNums = nodeList.getLength();
+         if (nodeNums == 1) {
+            panelSelectSpinnerView.setOnlyPanel(nodeList.item(0).getAttributes().getNamedItem("name").getNodeValue());
+         }
+      } catch (IOException e) {
+         Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "The data is from ORConnection is bad", e);
+         return;
+      } catch (ParserConfigurationException e) {
+         Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "Cant build new Document builder", e);
+         return;
+      } catch (SAXException e) {
+         Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "Parse data error", e);
+         return;
+      }
+      
+   }
+
+   @Override
+   public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
+      int statusCode = httpResponse.getStatusLine().getStatusCode();
+      if (statusCode != Constants.HTTP_SUCCESS) {
+         loadingPanelProgress.dismiss();
+         if (statusCode == ControllerException.UNAUTHORIZED) {
+            LoginDialog loginDialog = new LoginDialog(getApplicationContext());
+            loginDialog.setOnClickListener(loginDialog.new OnloginClickListener() {
+               @Override
+               public void onClick(View v) {
+                  super.onClick(v);
+                  requestPanelList();
+               }
+               
+            });
+         } else {
+            // The following code customizes the dialog, because the finish method should do after dialog show and click ok.
+            AlertDialog alertDialog = new AlertDialog.Builder(getApplicationContext()).create();
+            alertDialog.setTitle("Panel List Not Found");
+            alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
+            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+               public void onClick(DialogInterface dialog, int which) {
+                  return;
+               }
+            });
+            alertDialog.show();
+         }
+      }
+      
+   }
+   
+   private void setEmptySpinnerContent() {
+      if (panelSelectSpinnerView != null) {
+         panelSelectSpinnerView.setOnlyPanel(PanelSelectSpinnerView.CHOOSE_PANEL);
+      }
+   }
 }
