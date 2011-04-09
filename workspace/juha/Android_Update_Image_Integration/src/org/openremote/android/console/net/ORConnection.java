@@ -24,10 +24,9 @@ package org.openremote.android.console.net;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -111,6 +110,27 @@ public class ORConnection
 
     httpClient = new DefaultHttpClient(params);
 
+
+    try
+    {
+       URL targetUrl = new URL(url);
+       targetUrl.toURI();
+       if ("https".equals(targetUrl.getProtocol()))
+       {
+          Scheme sch = new Scheme(targetUrl.getProtocol(), new SelfCertificateSSLSocketFactory(), targetUrl.getPort());
+          httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+       }
+    }
+
+    catch (MalformedURLException e)
+    {
+       Log.e(LOG_CATEGORY, "Create URL fail:" + url);
+       return;
+    } catch (URISyntaxException e) {
+       Log.e(LOG_CATEGORY, "Could not convert " + url + " to a compliant URI");
+       return;
+   }
+
     if (ORHttpMethod.POST.equals(httpMethod))
     {
        httpRequest = new HttpPost(url);
@@ -119,23 +139,7 @@ public class ORConnection
     {
        httpRequest = new HttpGet(url);
     }
-
-    try
-    {
-       URL uri = new URL(url);
-
-       if ("https".equals(uri.getProtocol()))
-       {
-          Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
-          httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-       }
-    }
-
-    catch (MalformedURLException e)
-    {
-       Log.e(LOG_CATEGORY, "Create URL fail:" + url);
-    }
-
+    
     if (httpRequest == null)
     {
        Log.e(LOG_CATEGORY, "Create HttpRequest fail:" + url);
@@ -288,28 +292,26 @@ public class ORConnection
 
     HttpClient client = new DefaultHttpClient(params);
 
-    if (ORHttpMethod.POST.equals(httpMethod))
+    switch (httpMethod)
     {
-       request = new HttpPost(targetURI);
+      case POST:
+        request = new HttpPost(targetURI);
+        break;
+
+      case GET:
+        request = new HttpGet(targetURI);
+        break;
+
+      default:
+        throw new IOException("Unsupported HTTP Method: " + httpMethod);
     }
 
-    else if (ORHttpMethod.GET.equals(httpMethod))
-    {
-       request = new HttpGet(targetURI);
-    }
-
-//    if (request == null)
-//    {
-//       Log.i(LOG_CATEGORY, "checking URL creation failed:" + targetURL);
-//       return null;
-//    }
 
     if (useHTTPAuth)
     {
        SecurityUtil.addCredentialToHttpRequest(context, request);
     }
 
-    //URL uri = new URL(url);
 
     if ("https".equals(targetURL.getProtocol()))
     {
