@@ -30,6 +30,7 @@ import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.control.button.Button;
 import org.openremote.controller.component.control.button.ButtonBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
 /**
@@ -53,7 +54,7 @@ public class ButtonBuilderTest {
       return XMLUtil.getElementByID(doc, id);
    }
 
-   private Button getButtonByID(String buttonID, String cmdParam) {
+   private Button getButtonByID(String buttonID, String cmdParam) throws ConfigurationException {
       Element controlElement = getElementByID(buttonID);
       if (!controlElement.getName().equals("button")) {
          throw new NoSuchComponentException("button .");
@@ -71,13 +72,13 @@ public class ButtonBuilderTest {
    }
 
    @Test
-   public void testNotNull() {
+   public void testNotNull() throws Exception {
       Button btn = getButtonByID("9", "click");
       Assert.assertNotNull(btn);
    }
 
    @Test
-   public void testGetCommand() {
+   public void testGetCommand() throws Exception {
       Button btn = getButtonByID("9", "click");
       Assert.assertEquals(btn.getExecutableCommands().size(), 2);
 

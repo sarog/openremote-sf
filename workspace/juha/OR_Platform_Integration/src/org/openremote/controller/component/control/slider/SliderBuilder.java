@@ -27,19 +27,38 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.InvalidElementException;
+import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
+import org.openremote.controller.service.ServiceContext;
 
 /**
- * TODO
- * 
+ * TODO : XML parsing for the <slider> component in controller.xml
+ *
  * @author Handy.Wang 2009-11-10
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class SliderBuilder extends ComponentBuilder
 {
-   
+
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common log category for all XML parsing related issues.
+   */
+  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+
+
+
+  // Implements ComponentBuilder ------------------------------------------------------------------
+
   @Override public Control build(Element componentElement, String commandParam)
+      throws InitializationException
   {
     Slider slider = new Slider();
 
@@ -52,16 +71,20 @@ public class SliderBuilder extends ComponentBuilder
 
     for (Element operationElement : operationElements)
     {
-      /** sensor Element */
-      if (isIncludedSensorElement(operationElement))
+      /* sensor Element */
+      if (hasIncludeSensorElement(operationElement))
       {
-        Sensor sensor = parseSensor(componentElement, operationElement);
+        //Sensor sensor = parseSensor(componentElement, operationElement);
+
+        SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
+        Sensor sensor = builder.buildFromComponentInclude(operationElement);
+
         slider.setSensor(sensor);
 
         continue;
       }
 
-      /** non-sensor Element */
+      /* non-sensor Element */
       if (Slider.EXECUTE_CONTENT_ELEMENT_NAME.equalsIgnoreCase(operationElement.getName()))
       {
         Element commandRefElement = (Element) operationElement.getChildren().get(0);
@@ -70,14 +93,12 @@ public class SliderBuilder extends ComponentBuilder
         commandElement.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, commandParam);
         Command command = commandFactory.getCommand(commandElement);
         slider.addExecutableCommand((ExecutableCommand) command);
-
-        continue;
       }
 
       else
       {
-        throw new InvalidElementException(
-            "Don't support element name \"" + operationElement.getName() + "\" in slider."
+        throw new XMLParsingException(
+            "Element <{0}> not supported in slider.", operationElement.getName()
         );
       }
     }

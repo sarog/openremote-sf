@@ -25,15 +25,31 @@ import java.util.List;
 import org.jdom.Element;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
+import org.openremote.controller.service.ServiceContext;
 
 /**
  * TODO : This class is used to build a Label by parse controll.xml
  *
  * @author Javen, Handy
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class LabelBuilder extends ComponentBuilder
 {
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common log category for all XML parsing related issues.
+   */
+  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+
+
+  // Implements ComponentBuilder ------------------------------------------------------------------
 
   @Override public Component build(Element componentElement, String commandParam)
   {
@@ -50,8 +66,22 @@ public class LabelBuilder extends ComponentBuilder
     {
       if (hasIncludeSensorElement(operationElement))
       {
-        Sensor sensor = parseSensor(componentElement, operationElement);
-        label.setSensor(sensor);
+        try
+        {
+          //Sensor sensor = parseSensor(componentElement, operationElement);
+          SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
+          Sensor sensor = builder.buildFromComponentInclude(operationElement);
+          
+          label.setSensor(sensor);
+        }
+
+        catch (InitializationException e)
+        {
+          log.error(
+              "Unable to initialize a sensor for a label component. Some label components on " +
+              "panels will not update correctly. Error message: {0}", e.getMessage()
+          );
+        }
       }
     }
 

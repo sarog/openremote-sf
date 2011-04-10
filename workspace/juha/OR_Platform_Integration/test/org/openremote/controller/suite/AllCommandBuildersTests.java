@@ -26,12 +26,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import org.openremote.controller.protocol.http.HttpGetCommandBuilderTest;
 import org.openremote.controller.protocol.infrared.IRCommandBuilderTest;
-import org.openremote.controller.protocol.knx.KNXCommandBuilderTest;
 import org.openremote.controller.protocol.socket.TCPSocketCommandBuilderTest;
 import org.openremote.controller.protocol.telnet.TelnetCommandBuilderTest;
 import org.openremote.controller.protocol.x10.X10CommandBuilderTest;
 import org.openremote.controller.protocol.upnp.UPnPCommandBuilderTest;
-import org.openremote.controller.component.SensorBuilderTest;
+import org.openremote.controller.model.xml.SensorBuilderTest;
 
 /**
  * All tests for protocol command builders.

@@ -26,19 +26,37 @@ import org.jdom.Element;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
+import org.openremote.controller.service.ServiceContext;
 
 /**
  * TODO : It is mainly responsible for build Switch control with control element and commandParam.
  * 
  * @author Handy.Wang 2009-10-23
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class SwitchBuilder extends ComponentBuilder
 {
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Common log category for all XML parsing related issues.
+   */
+  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+
+
+
+  // Implements ComponentBuilder ------------------------------------------------------------------
+
   @Override public Control build(Element componentElement, String commandParam)
+      throws ConfigurationException
   {
     Switch switchToggle = new Switch();
 
@@ -53,8 +71,21 @@ public class SwitchBuilder extends ComponentBuilder
     {
       if (hasIncludeSensorElement(operationElement))
       {
-        Sensor sensor = parseSensor(componentElement, operationElement);
-        switchToggle.setSensor(sensor);
+        try
+        {
+          //Sensor sensor = parseSensor(componentElement, operationElement);
+          SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
+          Sensor sensor = builder.buildFromComponentInclude(operationElement);
+          
+          switchToggle.setSensor(sensor);
+        }
+        catch (InitializationException e)
+        {
+          log.error(
+              "Unable to initialize a sensor for a switch. The switch will not update " +
+              "it's state correctly in response to external events. Error message: {0}", e.getMessage()
+          );
+        }
       }
 
       if (commandParam.equalsIgnoreCase(operationElement.getName()))

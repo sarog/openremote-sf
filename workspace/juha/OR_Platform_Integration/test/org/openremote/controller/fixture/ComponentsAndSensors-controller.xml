@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org ../../../../../config/controller-2.0-M6.xsd ">
   <components>
-		<switch id="1">
+
+
+    <!--
+
+       BASIC SWITCH COMPONENT WITH WRITE ON/OFF COMMANDS
+       AND SENSOR WITH A READ COMMAND
+
+    -->
+		<switch id = "1">
 			<on>
-			    <include type="command" ref="100" />
+			    <include type="command" ref="501" />
 			</on>
 			<off>
-			    <include type="command" ref="99" />
+			    <include type="command" ref="502" />
 			</off>
+
 			<include type="sensor" ref="1001" />
 		</switch>
-		<switch id="2">
+
+
+
+		<switch id = "2">
 			<on>
 			    <include type="command" ref="100" />
 			</on>
@@ -19,7 +31,7 @@
 			</off>
 			<include type="sensor" ref="1002" />
 		</switch>
-		<switch id="3">
+		<switch id = "3">
 			<on>
 			    <include type="command" ref="100" />
 			</on>
@@ -28,7 +40,7 @@
 			</off>
 			<include type="sensor" ref="1003" />
 		</switch>
-		<switch id="4">
+		<switch id = "4">
 			<on>
 			    <include type="command" ref="100" />
 			</on>
@@ -37,31 +49,38 @@
 			</off>
 			<include type="sensor" ref="1004" />
 		</switch>
-		<label id="6">
-			<include type="sensor" ref="1001" />
-		</label>
-		<gesture id="7" >
-			<include type="command" ref= "100"/>
-		</gesture>
-		<!-- active slider -->
-		<slider id="8">
+
+
+    <!--
+
+        "ACTIVE" SLIDER WITH WRITE COMMAND TO SET VALUE
+        AND BOUND TO RANGE SENSOR [-20..100]
+
+    -->
+		<slider id = "8">
 			<setValue>
-			    <include type="command" ref="97" />
+			  <include type = "command" ref = "507" />
 			</setValue>
-			<include type="sensor" ref="1008" />
+
+      <include type = "sensor" ref = "1008" />
 		</slider>
-		<button id="9">
+
+
+    
+		<button id = "9">
 			<delay>500</delay>
       		<include type="command" ref="99" />
     	</button>
-    	<image id="10">
+
+    <image id = "10">
 			<include type="sensor" ref="1005" />
 		</image>
-		<image id="11">
+
+		<image id = "11">
 			<include type="sensor" ref="1009" />
 		</image>
-		<!-- positive slider -->
-		<slider id="12">
+
+		<slider id = "12">
 			<include type="sensor" ref="1008" />
 		</slider>
 	</components>
@@ -93,12 +112,20 @@
 		<sensor id="1005" name="DV sensor" type="custom">
 	    	<include type="command" ref="96" />
 		</sensor>
-		<!-- range sensor -->
-		<sensor id="1008" name="range sensor" type="range">
-	    	<include type="command" ref="96" />
-	    	<min value="-20" />
-	    	<max value="100" />
+
+
+    <!--
+
+          Slider range sensor
+
+    -->
+		<sensor id = "1008" name = "range sensor" type = "range">
+	    	<include type = "command" ref = "96" />
+	    	<min value = "-20" />
+	    	<max value = "100" />
 		</sensor>
+
+
 		<sensor id="1009" name="Door power sensor" type="custom">
 	    	<include type="command" ref="98" />
 	    	<state name="open" value="on" />
@@ -110,27 +137,48 @@
 	    	<max value="100" />
 		</sensor>
 	</sensors>
-	
+
+
+
 	<commands>
-		<command id="100" protocol="virtual">
-			<property name="command" value="ON" />
-      <property name="address" value="cmd1" />
+
+    <!--
+
+          First switch commands on/off
+
+    -->
+    <command id = "501" protocol = "virtual">
+			<property name = "command" value = "ON"/>
+      <property name = "address" value = "switch 1"/>
 		</command>
-		<command id="99" protocol="virtual">
-			<property name="command" value="OFF" />
-      <property name="address" value="cmd2" />
+
+		<command id = "502" protocol = "virtual">
+			<property name = "command" value = "OFF"/>
+      <property name = "address" value = "switch 2"/>
 		</command>
+
+
 		<command id="98" protocol="virtual">
 			<property name="command" value="STATUS" />
-      <property name="address" value="cmd3" />
+      <property name = "address" value = "switch 3"/>
 		</command>
-		<command id="97" protocol="virtual">
-			<property name="command" value="CHANGE" />
-      <property name="address" value="cmd4" />
+
+
+    <!--
+
+          Slider state write command
+
+    -->
+		<command id = "507" protocol = "virtual">
+			<property name = "command" value = "CHANGE" />
+      <property name = "address" value = "slider"/>
 		</command>
+
+
+
 		<command id="96" protocol="virtual">
 			<property name="command" value="STATUS" />
-      <property name="address" value="cmd5" />
+      <property name = "address" value = "switch 5"/>
 		</command>
 	</commands>
 	

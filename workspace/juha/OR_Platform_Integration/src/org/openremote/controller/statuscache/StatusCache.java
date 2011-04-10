@@ -68,7 +68,10 @@ public class StatusCache {
          logger.info("Status is null or \"\" while calling saveOrUpdateStatus in statusCache.");
          return;
       }
-      
+
+
+     // TODO : fix the logic below, it makes little sense  [JPL]
+
       boolean needNotify = false;
       sensorStatus.put(componentID, status);
       if (oldStatus== null || "".equals(oldStatus) || !oldStatus.equals(status)) {
@@ -79,7 +82,25 @@ public class StatusCache {
          updateChangedStatusTable(componentID);
       }
    }
-   
+
+  /**
+   * TODO :
+   *   - using method level synchronization to ensure we're at same concurrency control mechanism
+   *     with the collection we are tweaking compared to the original method above
+   *
+   */
+   public synchronized void update(int componentID, String status)
+   {
+     String oldStatus = sensorStatus.get(componentID);
+     sensorStatus.put(componentID, status);
+
+     if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(status))
+     {
+       changedStatusTable.updateStatusChangedIDs(componentID);
+     }
+   }
+
+
    /**
     * This method is used to query the status whose component id in componentIDs. 
     * @param sensorIDs
@@ -108,7 +129,12 @@ public class StatusCache {
       }
       return result;
    }
-   
+
+   public String queryStatus(Integer sensorId)
+   {
+     return this.sensorStatus.get(sensorId);
+   }
+  
    public void clear() {
       this.sensorStatus.clear();
    }

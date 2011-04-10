@@ -37,6 +37,8 @@ import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.onlysensory.Image;
 import org.openremote.controller.component.onlysensory.ImageBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.utils.SpringTestContext;
 /**
  * 
@@ -68,28 +70,28 @@ public class ImageBuilderTest {
       return elements.get(0);
    }
    @Test
-   public void testGetImageforRealID() throws JDOMException{
+   public void testGetImageforRealID() throws Exception{
       Image image = getImageByID("990");
       Assert.assertNotNull(image);
    }
    @Test
-   public void testGetImageforInvalidImage() throws JDOMException{
+   public void testGetImageforInvalidImage() throws Exception{
       try{
          getImageByID("8");
          fail();
-      } catch (NoSuchComponentException e){
+      } catch (XMLParsingException e){
       }
    }
    @Test
-   public void testGetImageforNoSuchID() throws JDOMException {
+   public void testGetImageforNoSuchID() throws Exception {
       try {
          getImageByID("200");
          fail();
-      } catch (NoSuchComponentException e) {
+      } catch (XMLParsingException e) {
       }
    }
    
-   private Image getImageByID(String imageID) throws JDOMException{
+   private Image getImageByID(String imageID) throws Exception {
       Element controlElement = getElementByID(imageID);
       if (!"image".equalsIgnoreCase(controlElement.getName())) {
          throw new NoSuchComponentException("Invalid Image.");

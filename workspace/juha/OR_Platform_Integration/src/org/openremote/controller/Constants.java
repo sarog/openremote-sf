@@ -61,9 +61,24 @@ public class Constants
   public final static String REST_GET_PANEL_DEF_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".panel.id";
 
   /**
+   * Generic log category for runtime events.
+   */
+  public final static String CONTROLLER_RUNTIME_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".runtime";
+
+  /**
    * Specific log category for reporting runtime system properties.
    */
-  public final static String RUNTIME_CONFIGURATION_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".system.configuration";
+  public final static String RUNTIME_CONFIGURATION_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".configuration";
+
+  /**
+   * Specific log category for reporting executed write commands to devices.
+   */
+  public final static String RUNTIME_COMMAND_EXECUTION_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".writecommand";
+
+  /**
+   * TODO
+   */
+  public final static String RUNTIME_SENSORS_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".sensors";
 
   /**
    * Specific log category for reporting events during the controller startup
@@ -83,7 +98,6 @@ public class Constants
 
   public final static String PANEL_XSD_PATH = "/panel-2.0-M7.xsd";
 
-  public final static String CONTROLLER_XML = "controller.xml";
 
   public final static String OPENREMOTE_WEBSITE= "http://www.openremote.org";
 
@@ -99,13 +113,6 @@ public class Constants
 
   public static final String SERVER_RESPONSE_TIME_OUT = "TIMEOUT";
 
-  /**
-   * File name of the panel UI definition file in the controller. The file is located in the
-   * 'resource path' directory that can be found from the controller configuration object.
-   *
-   * @see ControllerConfiguration#getResourcePath()
-   */
-  public static final String PANEL_XML = "panel.xml";
 
 
   public static final String STATUS_POLLING_SENSOR_IDS_SEPARATOR = ",";
@@ -118,8 +125,6 @@ public class Constants
 
   public static final String INCLUDE_ELEMENT_NAME = "include";
 
-  public static final String SENSOR_TYPE_ATTRIBUTE_NAME = "type";
-
   public static final String ID_ATTRIBUTE_NAME = "id";
 
   public static final String REF_ATTRIBUTE_NAME = "ref";
@@ -129,6 +134,33 @@ public class Constants
 
   /** The Constant XML_TAIL of composed xml-formatted status results. */
   public static final String STATUS_XML_TAIL = "</openremote>";
+
+
+
+  // Configuration Files --------------------------------------------------------------------------
+
+  /**
+   * File name of the panel UI definition file in the controller. The file is located in the
+   * 'resource path' directory that can be found from the controller configuration object.
+   *
+   * @see ControllerConfiguration#getResourcePath()
+   */
+  public static final String PANEL_XML = "panel.xml";
+
+  /**
+   * File name of the command / protocol mapping file in the controller. The file is located in
+   * the 'resource path' directory that can be found from the controller configuration object.
+   *
+   * @see ControllerConfiguration#getResourcePath()
+   */
+  public final static String CONTROLLER_XML = "controller.xml";
+
+  /**
+   * The configuration that contains Java bean bindings to construct the controller runtime
+   * from configurable components (Spring)
+   */
+  public final static String BEAN_BINDING_CONFIGURATION_XML = "applicationContext.xml";
+
 
 
 

@@ -167,7 +167,7 @@
 
         Collection of sensors defined for the controller.
 
-        Sensors operate on protocol commands to execute read requests on devices to fetch the
+        Sensors operate on protocol handlers to execute read requests on devices to fetch the
         current device state, either through polling commands (for 'passive' devices) or through
         event listener implementations on devices that actively broadcast their state changes.
 
@@ -929,7 +929,9 @@
           ...
 
           Note that the event processing chain in the controller's in-memory state cache can
-          be used for similar effect and for more complex processing use-cases.
+          be used for similar effect and for more complex processing use-cases. Also bear in
+          mind that UI rendering components bound to such sensor must support the known state
+          strings or arbitrary state strings.
 
       ]]></xsd:documentation>
     </xsd:annotation>

@@ -31,11 +31,10 @@ import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.component.Sensor;
-import org.openremote.controller.component.SensorBuilder;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerException;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.ChangedStatusTable;
@@ -61,7 +60,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
   private SensorBuilder sensorBuilder;
 
    
-  @SuppressWarnings("finally")
+  @SuppressWarnings("finally")  // TODO : suppressing finally is bad...
   @Override public synchronized boolean refreshController()
   {
     if (!isObservedXMLContentChanged(Constants.CONTROLLER_XML) && !isObservedXMLContentChanged(Constants.PANEL_XML))
@@ -182,36 +181,60 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
     statusCacheService.clearAllStatusCache();
   }
    
-  @SuppressWarnings("unchecked")
   private void clearAndReloadSensors()
   {
     controllerXMLListenSharingData.getSensors().clear();
 
-    // followings are re-parse sensors and their included statuscommand.
+    // re-parse sensors and their included statuscommand...
+
     Element sensorsElement = remoteActionXMLParser.queryElementFromXMLByName(Constants.SENSORS_ELEMENT_NAME);
 
     if (sensorsElement == null)
     {
-      throw new NoSuchComponentException("DOM element " + Constants.SENSORS_ELEMENT_NAME + " doesn't exist in " + Constants.CONTROLLER_XML);
+      return;
+      //throw new NoSuchComponentException("DOM element " + Constants.SENSORS_ELEMENT_NAME + " doesn't exist in " + Constants.CONTROLLER_XML);
     }
 
     List<Element> sensorElements = sensorsElement.getChildren();
 
     if (sensorElements == null)
     {
-      throw new ControllerException("There is no sub DOM elements in " + Constants.SENSORS_ELEMENT_NAME + " in " + Constants.CONTROLLER_XML);
+      return;
+      //throw new InitializationException(MessageFormat.format(
+      //    "The <{0}> element in {1} is empty.",
+      //    Constants.SENSORS_ELEMENT_NAME, Constants.CONTROLLER_XML
+      //));
     }
 
     Iterator<Element> sensorElementIterator = sensorElements.iterator();
 
     while (sensorElementIterator.hasNext())
     {
-      Element sensorElement = sensorElementIterator.next();
-      Sensor sensor = sensorBuilder.build(sensorElement);
-      controllerXMLListenSharingData.addSensor(sensor);
+      try
+      {
+        Element sensorElement = sensorElementIterator.next();
+        Sensor sensor = sensorBuilder.build(sensorElement);
+
+System.out.println("\n\n\n\n ------------------- Adding sensor at runtime: " + sensor.getSensorID());
+        
+        controllerXMLListenSharingData.addSensor(sensor);
+      }
+
+      catch (Throwable t)
+      {
+        // If building the sensor fails for any reason, log it and skip it...
+
+        // TODO :
+        //   - at this point it is likely the component will fail in this case, unless and
+        //     until its error handling is made more robust
+
+        logger.error("Creating sensor failed : " + t.getMessage(), t);
+      }
     }
   }
-   
+
+
+
   private void restartDevicePollingThreads()
   {
     controllerXMLListenSharingData.getPollingMachineThreads().clear();

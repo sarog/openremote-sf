@@ -22,7 +22,7 @@ package org.openremote.controller.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.PollingMachineThread;
 
 /**
