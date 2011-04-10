@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -183,10 +185,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.GET, TEST_CONTROLLER_URL, NO_HTTP_AUTH
     );
 
-    assertNotNullResponse(response, TEST_CONTROLLER_URL);
-    assertHttpReturnCode(response, HttpURLConnection.HTTP_OK);
-    assertNotZeroResponseBody(response);
-    assertHttpContentType(response, TEXTHTML_MIME_TYPE);
+    assertHttpResponse(response, TEST_CONTROLLER_URL, HttpURLConnection.HTTP_OK, TEXTHTML_MIME_TYPE);
   }
 
 
@@ -348,7 +347,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
     assertNotNullResponse(response, NOT_EXIST_TESTURL);
 
-    assertHttpReturnCode(response, HttpURLConnection.HTTP_NOT_FOUND);
+    assertHttpReturnCode(response, NOT_EXIST_TESTURL, HttpURLConnection.HTTP_NOT_FOUND);
   }
 
 
@@ -396,27 +395,12 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK);
-
-
-    // TODO :
-    //   This should be fixed in Controller 2.0 Alpha 12 -- uncomment when online test controller
-    //   has been upgraded (currently returns 'text/plain')
-    //
-    try
-    {
-      assertMimeType(response, APPLICATIONXML_MIME_TYPE);
-
-      fail("\n\nIncorrect content-type issue has been fixed, please update this test.\n\n");
-    }
-    catch (Throwable t)
-    {
-      // TODO: Ignore for now, remove the check once content-type issue has been fixed.
-    }
+    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
 
     Document doc = getDOMDocument(response);
 
     assertOpenRemoteRootElement(doc);
+
 
     NodeList list = doc.getElementsByTagName("panel");
 
@@ -452,30 +436,6 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     );
   }
 
-  /**
-   * TODO:
-   *
-   *  This test points out incorrectly implemented Controller REST/XML API -- returned content
-   *  type should be application/xml. Once the issue has been fixed, this test can be removed.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testKnownBugAgainstController_2_0_Alpha11_RESTAPI() throws IOException
-  {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_PANEL_URI;
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
-
-    // TODO :
-    //   once the issue with incorrect content-type header is fixed, this test can be removed
-    //   and the correct assertions in other tests can be made
-    //                                                                                [JPL]
-    //
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
-  }
-
 
 
   /**
@@ -494,23 +454,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK);
-
-    // TODO :
-    //   This should be fixed in Controller 2.0 Alpha 12 -- uncomment when online test controller
-    //   has been upgraded (currently returns 'text/plain')
-    //
-    try
-    {
-      assertMimeType(response, APPLICATIONXML_MIME_TYPE);
-
-      fail("\n\nIncorrect content-type issue has been fixed, please update this test.\n\n");
-    }
-    catch (Throwable t)
-    {
-      // TODO: Ignore for now, remove the check once content-type issue has been fixed.
-    }
-
+    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
 
     Document doc = getDOMDocument(response);
 
@@ -680,164 +624,106 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    * Tests the HTTP response code on request for panel list against controller that has no
    * configuration deployed.
    *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   * @throws IOException if test fails for any reason
    */
-  public void testControllerGETRestPanelXML_EmptyController() throws IOException
+  public void testControllerGETRestPanelXML_EmptyController() throws Exception
   {
     final String TESTURL = TEST_EMPTY_CONTROLLER_URL + RESTAPI_PANEL_URI;
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
+
+
+    assertMimeType(response, TESTURL, APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL);
+    assertErrorElement(getDOMDocument(response), 426);
+
 
     // TODO :
-    //   Returned HTTP headers specify 'utf8' instead of 'utf-8' as the charset encoding -- this
-    //   test skips the assertion. The buggy charset header value is triggered by another test.
-    //   Once the issue has been fixed (should be in Controller 2.0 Alpha 12), remove the
-    //   SKIP_CHARSET_CHECK parameter.
-    //                                                                                [JPL]
     //
-    assertHttpResponse(response, TESTURL, 426, SKIP_CHARSET_CHECK);
-
-    try
-    {
-      assertHttpResponse(response, TESTURL, 426);
-
-      fail("\n\nIt appears the charset bug has been addressed, please update this test.\n\n");
-    }
-    catch (Throwable t)
-    {
-      // TODO: Ignore this until the charset issue has been fixed...
-    }
-  }
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect character encoding against Controller 2.0 Alpha 11.
-   *   Test can be removed once the controller REST/XML API has been fixed (fix should
-   *   be in Alpha 12).
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testControllerGETRestPanelXML_EmptyController_BROKEN_CHARSET_ENCODING() throws IOException
-  {
-    final String TESTURL = TEST_EMPTY_CONTROLLER_URL + RESTAPI_PANEL_URI;
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
+    //   This test currently fails due to a HTTP response code that does not match the actual
+    //   error code indicated -- HTTP response is 200 (OK) with a body content that indicates
+    //   that an error occured (426, as expected).
+    //
+    //   Correct behavior would be to returh HTTP response 426 *with* the document body that
+    //   has additional error details.
+    //
+    //   HOWEVER, when fixing this issue in the controller, care must be taken that the JSONP
+    //   responses continue to behave as is currently defined (return code 200 (OK) with
+    //   document body that indicates error) -- the JSON client (web console) currently relies
+    //   on this behavior and either it needs to be corrected or the REST/XML and REST/JSON HTTP
+    //   error codes need to be handled through different execution paths.
+    //
+    //   <?xml version="1.0" encoding="UTF-8"?>
+    //   <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/status.xsd">
+    //     <error>
+    //       <code>426</code>
+    //       <message>*panel.xml* not found. Make sure it's in /opt/testsuite-tc6/controller.openremote.org/empty/controller/panel.xml</message>
+    //     </error>
+    //   </openremote>
 
     assertHttpResponse(response, TESTURL, 426);
-
-    fail("\n\nAppears the character encoding issue has been fixed. This test can be removed.\n\n");
   }
+
 
 
   /**
    * Tests the HTTP response code on request for panel list against controller that has a malformed
    * configuration deployed
    *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   * @throws Exception    if test fails for any reason
    */
-  public void testControllerGETRestPanelXML_BrokenPanelXML() throws IOException
+  public void testControllerGETRestPanelXML_BrokenPanelXML() throws Exception
   {
     final String TESTURL = TEST_BROKEN_CONTROLLER_URL + RESTAPI_PANEL_URI;
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
+
+
+    assertMimeType(response, TESTURL, APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL);
+    assertErrorElement(getDOMDocument(response), 424);
 
     // TODO :
-    //   Returned HTTP headers specify 'utf8' instead of 'utf-8' as the charset encoding -- this
-    //   test skips the assertion. The buggy charset header value is triggered by another test.
-    //   Once the issue has been fixed (should be in Controller 2.0 Alpha 12), remove the
-    //   SKIP_CHARSET_CHECK parameter.
-    //                                                                                [JPL]
     //
-    assertHttpResponse(response, TESTURL, 424, SKIP_CHARSET_CHECK);
-
-    try
-    {
-      assertHttpResponse(response, TESTURL, 424);
-
-      fail("\n\nIt appears the charset bug has been addressed, please update this test.\n\n");
-    }
-    catch (Throwable t)
-    {
-      // TODO: Ignore this until the charset issue has been fixed...
-    }
-  }
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect character encoding against Controller 2.0 Alpha 11.
-   *   Test can be removed once the controller REST/XML API has been fixed (fix should
-   *   be in Alpha 12).
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testControllerGETRestPanelXML_BrokenPanelXML_BROKEN_CHARSET_ENCODING() throws IOException
-  {
-    final String TESTURL = TEST_BROKEN_CONTROLLER_URL + RESTAPI_PANEL_URI;
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
+    //   This test currently fails due to a HTTP response code that does not match the actual
+    //   error code indicated -- HTTP response is 200 (OK) with a body content that indicates
+    //   that an error occured (424, as expected).
+    //
+    //   Correct behavior would be to returh HTTP response 424 *with* the document body that
+    //   has additional error details.
+    //
+    //   HOWEVER, when fixing this issue in the controller, care must be taken that the JSONP
+    //   responses continue to behave as is currently defined (return code 200 (OK) with
+    //   document body that indicates error) -- the JSON client (web console) currently relies
+    //   on this behavior and either it needs to be corrected or the REST/XML and REST/JSON HTTP
+    //   error codes need to be handled through different execution paths.
+    //
+    //   <?xml version="1.0" encoding="UTF-8"?>
+    //   <openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/status.xsd">
+    //     <error>
+    //       <code>424</code>
+    //       <message>check the version of schema or structure of panel.xml with its dtd or schema : Error on line 8 of document file:/opt/testsuite-tc6/controller.openremote.org/broken/controller/panel.xml: XML document structures must start and end within the same entity.</message>
+    //     </error>
+    //   </openremote>
 
     assertHttpResponse(response, TESTURL, 424);
 
-    fail("\n\nAppears the character encoding issue has been fixed. This test can be removed.\n\n");
   }
+
 
 
   /**
    * Tests the HTTP response code when requesting panel definition by name that does not exist.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   * @throws ParserConfigurationException if DOM parsing fails on return data
+   * @throws SAXException if parsing fails on return data
    */
-  public void testControllerGETRestFullPanelXML_NotExist() throws IOException
-  {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "DoesNotExist";
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
-
-    // TODO :
-    //   Returned HTTP headers specify 'utf8' instead of 'utf-8' as the charset encoding -- this
-    //   test skips the assertion. The buggy charset header value is triggered by another test.
-    //   Once the issue has been fixed (should be in Controller 2.0 Alpha 12), remove the
-    //   SKIP_CHARSET_CHECK parameter.
-    //                                                                                [JPL]
-    //
-    assertHttpResponse(response, TESTURL, 428, SKIP_CHARSET_CHECK);
-
-    try
-    {
-      assertHttpResponse(response, TESTURL, 428);
-
-      fail("\n\nIt appears the charset bug has been addressed, please update this test.\n\n");
-    }
-    catch (Throwable t)
-    {
-      // TODO: Ignore this until the charset issue has been fixed...
-    }
-  }
-
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect character encoding against Controller 2.0 Alpha 11.
-   *   Test can be removed once the controller REST/XML API has been fixed (fix should
-   *   be in Alpha 12).
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testControllerGETRestFullPanelXML_NotExist_BROKEN_CHARSET_ENCODING() throws IOException
+  public void testControllerGETRestFullPanelXML_NotExist() throws IOException, ParserConfigurationException, SAXException
   {
     final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "DoesNotExist";
 
@@ -845,153 +731,11 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 428);
-
-    fail("\n\nAppears the character encoding issue has been fixed. This test can be removed.\n\n");
+    assertHttpResponse(response, TESTURL, 428, APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL);
+    assertErrorElement(getDOMDocument(response), 428);
   }
 
-  
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect return documents against Controller 2.0 Alpha 11 REST/XML API.
-   *   As per the documentation, an XML document with error data should be returned.
-   *
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   * @throws ParserConfigurationException if DOM parsing fails on return data
-   */
-  public void testControllerGETRestPanelXML_EmptyController_BROKEN_API_IMPL()
-      throws ParserConfigurationException, IOException
-  {
-    final String TESTURL = TEST_EMPTY_CONTROLLER_URL + RESTAPI_PANEL_URI;
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
-
-    // TODO : remove skip once Controller REST/XML API has been fixed...
-
-    assertHttpResponse(response, TESTURL, 426, SKIP_CHARSET_CHECK);
-
-
-    try
-    {
-      getDOMDocument(response);
-    }
-    catch (SAXException e)
-    {
-      fail (
-          "\n\nError codes should return an XML body content as per the API documentation \n" +
-          "This is currently not implemented as per Controller 2.0 Alpha 11 -- \n" +
-          "it is supposedly fixed in /branches/feature/Controller_REST_JSON_API branch.\n\n"
-      );
-    }
-
-
-    // TODO -- once the controller is fixed, this test can be completed...
-
-    fail (
-        "\n\nError type return values issue appears to be fixed (or changed), " +
-        "update this test accordingly.\n\n"
-    );
-  }
-
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect return documents against Controller 2.0 Alpha 11 REST/XML API.
-   *   As per the documentation, an XML document with error data should be returned.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   * @throws ParserConfigurationException if DOM parsing fails on return data
-   */
-  public void testControllerGETRestPanelXML_BrokenPanelXML_BROKEN_API_IMPL()
-      throws IOException, ParserConfigurationException
-  {
-    final String TESTURL = TEST_BROKEN_CONTROLLER_URL + RESTAPI_PANEL_URI;
-
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
-
-    // TODO : remove skip once Controller REST/XML API has been fixed...
-
-    assertHttpResponse(response, TESTURL, 424, SKIP_CHARSET_CHECK);
-
-    try
-    {
-      getDOMDocument(response);
-    }
-    catch (SAXException e)
-    {
-      fail (
-          "\n\nError codes should return an XML body content as per the API documentation \n" +
-          "This is currently not implemented as per Controller 2.0 Alpha 11 -- \n" +
-          "it is supposedly fixed in /branches/feature/Controller_REST_JSON_API branch.\n\n"
-      );
-    }
-
-
-    // TODO -- once the controller is fixed, this test can be completed...
-
-    fail (
-        "\n\nError type return values issue appears to be fixed (or changed), " +
-        "update this test accordingly.\n\n"
-    );
-  }
-
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect return documents against Controller 2.0 Alpha 11 REST/XML API.
-   *   As per the documentation, an XML document with error data should be returned.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   * @throws ParserConfigurationException if DOM parsing fails on return data
-   */
-  public void testControllerGETRestFullPanelXML_NotExist_BROKEN_API_IMPL()
-      throws IOException, ParserConfigurationException
-  {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "DoesNotExist";
-
-    final boolean NO_HTTP_AUTH = false;
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-    );
-
-    // TODO : remove skip once Controller REST/XML API has been fixed...
-
-    assertHttpResponse(response, TESTURL, 428, SKIP_CHARSET_CHECK);
-
-    try
-    {
-      getDOMDocument(response);
-    }
-    catch (SAXException e)
-    {
-      fail (
-          "\n\nError codes should return an XML body content as per the API documentation \n" +
-          "This is currently not implemented as per Controller 2.0 Alpha 11 -- \n" +
-          "it is supposedly fixed in /branches/feature/Controller_REST_JSON_API branch.\n\n"
-      );
-    }
-
-    // TODO -- once the controller is fixed, this test can be completed...
-
-    fail (
-        "\n\nError type return values issue appears to be fixed (or changed), " +
-        "update this test accordingly.\n\n"
-    );
-
-  }
 
   
   /**
@@ -1011,10 +755,32 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
+    assertMimeType(response, TESTURL, APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL);
     assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
   }
 
 
+
+
+  /**
+   * Test the HTTP error response on a command that has invalid XML configuration.
+   *
+   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   */
+  public void testControllerCmdBuildErrorOnButton() throws IOException
+  {
+    final String BROKEN_BUTTON_ID = "999";
+    final String COMMAND_PARAM = "/click";
+
+    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BROKEN_BUTTON_ID + COMMAND_PARAM;
+
+    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
+        activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
+    );
+
+    assertHttpResponse(response, TESTURL, 418);
+  }
 
   /**
    * TODO:
@@ -1062,23 +828,29 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   }
 
   /**
-   * Test the HTTP error response on a command that has invalid XML configuration.
+   * TODO:
+   *
+   *   This test points out incorrect return type -- should return an XML document on error
+   *   with 'application/xml' as the content type
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   * @throws ParserConfigurationException if DOM parsing fails on return data
    */
-  public void testControllerCmdBuildErrorOnButton() throws IOException
+  public void testControllerCmdBuildErrorOnButton_BROKEN_API_IMPL_MIME() throws IOException, ParserConfigurationException
   {
-    final String BROKEN_BUTTON_ID = "999";
+    final String BUTTON_ID = "999";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BROKEN_BUTTON_ID + COMMAND_PARAM;
+    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM;
+
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 418);
+    assertHttpResponse(response, TESTURL, 418, APPLICATIONXML_MIME_TYPE);
   }
+
 
 
   /**
@@ -1147,6 +919,31 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
   }
 
+
+
+  /**
+   * TODO:
+   *
+   *   This test points out incorrect return type -- should return an XML document on error
+   *   with 'application/xml' as the content type
+   *
+   * @throws Exception if test fails for any reason
+   */
+  public void testControllerRESTControlInvalidURI_BROKEN_API_IMPL_MIME() throws Exception
+  {
+    final String INVALID_BUTTON_ID = "must-be-integer";
+    final String COMMAND_PARAM = "/click";
+
+    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM;
+
+    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
+        activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
+    );
+
+    assertHttpResponse(response, TESTURL, 400, APPLICATIONXML_MIME_TYPE);
+  }
+
+
   /**
    * A very light and simple stress test on multiple consequtive button clicks to ensure the
    * behavior and response remains constant.
@@ -1201,33 +998,10 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    * Test HTTP response on a 'click' write command where the component ID is not found.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testControllerButtonCommandUnknownID() throws IOException
-  {
-    final String UNKNOWN_BUTTON_ID = "22222";
-    final String COMMAND_PARAM = "/click";
-
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_BUTTON_ID + COMMAND_PARAM;
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
-    );
-
-    assertHttpResponse(response, TESTURL, 419);
-  }
-
-
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect return documents against Controller 2.0 Alpha 11 REST/XML API.
-   *   As per the documentation, an XML document with error data should be returned.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    * @throws ParserConfigurationException if DOM parsing fails on return data
+   * @throws SAXException if parsing fails on return data
    */
-  public void testControllerButtonCommandUnknownID_BROKEN_API_IMPL() throws IOException, ParserConfigurationException
+  public void testControllerButtonCommandUnknownID() throws IOException, ParserConfigurationException, SAXException
   {
     final String UNKNOWN_BUTTON_ID = "22222";
     final String COMMAND_PARAM = "/click";
@@ -1238,30 +1012,11 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 419);
+    assertHttpResponse(response, TESTURL, 419, APPLICATIONXML_MIME_TYPE);
 
-    try
-    {
-      getDOMDocument(response);
-    }
-    catch (SAXException e)
-    {
-      fail (
-          "\n\nError codes should return an XML body content as per the API documentation \n" +
-          "This is currently not implemented as per Controller 2.0 Alpha 11 -- \n" +
-          "it is supposedly fixed in /branches/feature/Controller_REST_JSON_API branch.\n\n"
-      );
-    }
-
-
-    // TODO -- once the controller is fixed, this test can be completed...
-
-    fail (
-        "\n\nError type return values issue appears to be fixed (or changed), " +
-        "update this test accordingly.\n\n"
-    );
-
+    assertErrorElement(getDOMDocument(response), 419);
   }
+
 
 
   /**
@@ -1331,13 +1086,40 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
 
 
+  /**
+   * TODO:
+   *
+   *   This test points out incorrect return type -- should return an XML document on error
+   *   with 'application/xml' as the content type
+   *
+   * @throws Exception if test fails for any reason
+   */
+  public void testControllerButtonCommandUnknownProtocol_BROKEN_API_IMPL_MIME() throws Exception
+  {
+    final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
+    final String COMMAND_PARAM = "/click";
+
+    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM;
+
+
+    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
+        activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
+    );
+
+    assertHttpResponse(response, TESTURL, 420, APPLICATIONXML_MIME_TYPE);
+
+  }
+
+
+
+
 
   /**
    * Test HTTP Response on button 'click' command when controller XML has not been deployed.
    *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   * @throws Exception if test fails for any reason
    */
-  public void testControllerButtonCommandOnEmptyController() throws IOException
+  public void testControllerButtonCommandOnEmptyController() throws Exception
   {
     final String BUTTON_ID = "444";
     final String COMMAND_PARAM = "/click";
@@ -1348,54 +1130,9 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 422);
-  }
+    assertHttpResponse(response, TESTURL, 422, APPLICATIONXML_MIME_TYPE);
 
-
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect return documents against Controller 2.0 Alpha 11 REST/XML API.
-   *   As per the documentation, an XML document with error data should be returned.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   * @throws ParserConfigurationException if DOM parsing fails on return data
-   */
-  public void testControllerButtonCommandOnEmptyController_BROKEN_API_IMPL() throws IOException, ParserConfigurationException
-  {
-    final String NONEXISTENT_BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/cLiCk";
-
-    final String TESTURL = TEST_EMPTY_CONTROLLER_URL + RESTAPI_CONTROL_URI + NONEXISTENT_BUTTON_ID + COMMAND_PARAM;
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
-    );
-
-    assertHttpResponse(response, TESTURL, 422);
-
-    try
-    {
-      getDOMDocument(response);
-    }
-    catch (SAXException e)
-    {
-      fail (
-          "\n\nError codes should return an XML body content as per the API documentation \n" +
-          "This is currently not implemented as per Controller 2.0 Alpha 11 -- \n" +
-          "it is supposedly fixed in /branches/feature/Controller_REST_JSON_API branch.\n\n"
-      );
-    }
-
-
-    // TODO -- once the controller is fixed, this test can be completed...
-
-    fail (
-        "\n\nError type return values issue appears to be fixed (or changed), " +
-        "update this test accordingly.\n\n"
-    );
-
+    assertErrorElement(getDOMDocument(response), 422);
   }
 
 
@@ -1404,8 +1141,10 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    * Test HTTP error response on 'click' command when the command cannot be parsed (invalid XML).
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
+   * @throws ParserConfigurationException if DOM parsing fails on return data
+   * @throws SAXException if parsing fails on return data
    */
-  public void testControllerButtonCommandOnBrokenControllerXML() throws IOException
+  public void testControllerButtonCommandOnBrokenControllerXML() throws IOException, SAXException, ParserConfigurationException
   {
     final String UNPARSEABLE_BUTTON_ID = "444";
     final String COMMAND_PARAM = "/CLICK";
@@ -1417,7 +1156,9 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 424);
+    assertHttpResponse(response, TESTURL, 424, APPLICATIONXML_MIME_TYPE);
+
+    assertErrorElement(getDOMDocument(response), 424);
   }
 
 
@@ -1441,52 +1182,6 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   }
 
 
-
-  /**
-   * TODO:
-   *
-   *   This test points out incorrect return documents against Controller 2.0 Alpha 11 REST/XML API.
-   *   As per the documentation, an XML document with error data should be returned.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   * @throws ParserConfigurationException if DOM parsing fails on return data
-   */
-  public void testControllerButtonCommandOnBrokenControllerXML_BROKEN_API_IMPL() throws IOException, ParserConfigurationException
-  {
-    final String UNPARSEABLE_BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/Click";
-
-    final String TESTURL = TEST_BROKEN_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNPARSEABLE_BUTTON_ID + COMMAND_PARAM;
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
-    );
-
-    assertHttpResponse(response, TESTURL, 424);
-
-    try
-    {
-      getDOMDocument(response);
-    }
-    catch (SAXException e)
-    {
-      fail (
-          "\n\nError codes should return an XML body content as per the API documentation \n" +
-          "This is currently not implemented as per Controller 2.0 Alpha 11 -- \n" +
-          "it is supposedly fixed in /branches/feature/Controller_REST_JSON_API branch.\n\n"
-      );
-    }
-
-
-    // TODO -- once the controller is fixed, this test can be completed...
-
-    fail (
-        "\n\nError type return values issue appears to be fixed (or changed), " +
-        "update this test accordingly.\n\n"
-    );
-
-  }
 
 
 
@@ -1746,32 +1441,6 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   }
 
 
-  /**
-   * TODO:
-   *
-   *   Demonstrates error in current Controller implementation that returns an incorrect
-   *   HTTP content-type header.
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   * @throws ParserConfigurationException if DOM parsing fails on return data
-   * @throws SAXException if parsing fails on return data
-   */
-  public void testControllerSwitch_BROKEN_API_IMPL() throws IOException, ParserConfigurationException, SAXException
-  {
-    final String SENSOR_ID = "29";
-
-    final String READ_SENSOR_URL =
-        TEST_CONTROLLER_URL + RESTAPI_STATUS_URI + SENSOR_ID;
-
-
-    HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, READ_SENSOR_URL, NO_HTTP_AUTH
-    );
-
-    assertHttpResponse(response, READ_SENSOR_URL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
-  }
-
-
 
   /**
    * Test a simple 'switch' sensor read (disregarding returned state)
@@ -1792,23 +1461,10 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.GET, READ_SENSOR_URL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, READ_SENSOR_URL, HttpURLConnection.HTTP_OK);
+    assertMimeType(response, READ_SENSOR_URL, APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, READ_SENSOR_URL);
+    assertHttpResponse(response, READ_SENSOR_URL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
 
-
-    // TODO :
-    //   This should be fixed in Controller 2.0 Alpha 12 -- uncomment when online test controller
-    //   has been upgraded (currently returns 'text/plain')
-    //
-    try
-    {
-      assertMimeType(response, APPLICATIONXML_MIME_TYPE);
-
-      fail("\n\nIncorrect content-type issue has been fixed, please update this test.\n\n");
-    }
-    catch (Throwable t)
-    {
-      // TODO: Ignore for now, remove the check once content-type issue has been fixed.
-    }
 
     Document doc = getDOMDocument(response);
 
@@ -1883,15 +1539,15 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   private void assertHttpResponse(HttpResponse response, String url, int returnCode, boolean skipCharsetCheck, boolean hasContentBodyCheck)
   {
     assertNotNullResponse(response, url);
-    assertHttpReturnCode(response, returnCode);
+    assertHttpReturnCode(response, url, returnCode);
 
     if (hasContentBodyCheck)
       assertNotZeroResponseBody(response);
 
-    assertHasContentTypeHeader(response);
+    assertHasContentTypeHeader(response, url);
 
     if (!skipCharsetCheck)
-      assertUTF8Encoding(response);
+      assertUTF8Encoding(response, url);
   }
 
 
@@ -1907,7 +1563,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   {
     assertHttpResponse(response, url, returnCode, skipCharsetCheck);
 
-    assertMimeType(response, mimeType);
+    assertMimeType(response, url, mimeType);
   }
 
 
@@ -1934,29 +1590,30 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
 
 
-  private void assertMimeType(HttpResponse response, String mimeType)
+  private void assertMimeType(HttpResponse response, String url, String mimeType)
   {
     String httpMimeContentType = response.getEntity().getContentType().getValue();
 
     assertTrue(
-        "Expected HTTP Mime type '" + mimeType + "', got '" + httpMimeContentType + "'.",
+        "Expected HTTP Mime type '" + mimeType + "', got '" + httpMimeContentType + "' " +
+        "(URL : " + url + ")",
         httpMimeContentType.startsWith(mimeType)
     );
   }
 
 
-  private void assertNotNullResponse(HttpResponse response, String URL)
+  private void assertNotNullResponse(HttpResponse response, String url)
   {
-    assertNotNull("Expected response to " + URL + ", got <null>", response);
+    assertNotNull("Expected response to " + url + ", got <null>", response);
   }
 
 
-  private void assertHttpReturnCode(HttpResponse response, int code)
+  private void assertHttpReturnCode(HttpResponse response, String url, int code)
   {
     int httpResponseCode = response.getStatusLine().getStatusCode();
 
     assertTrue(
-        "Expected HTTP Response '" + code + "', got '" + httpResponseCode + "'.",
+        "Expected HTTP Response '" + code + "' from " + url + ", got '" + httpResponseCode + "'.",
         httpResponseCode == code
     );
   }
@@ -1981,50 +1638,55 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     );
   }
 
-  private void assertHttpContentType(HttpResponse response, String mimeType)
-  {
-    final String HTTP_CONTENT_TYPE_HEADER = "content-type";
+//  private void assertHttpContentType(HttpResponse response, String mimeType)
+//  {
+//    final String HTTP_CONTENT_TYPE_HEADER = "content-type";
+//
+//    String httpContentTypeHeader = response.getEntity().getContentType().getName();
+//    String httpMimeContentType = response.getEntity().getContentType().getValue();
+//
+//    assertTrue(
+//        "Expected HTTP Header '" + HTTP_CONTENT_TYPE_HEADER + "', got '" + httpContentTypeHeader + "'.",
+//        httpContentTypeHeader.equalsIgnoreCase(HTTP_CONTENT_TYPE_HEADER)
+//    );
+//
+//    assertTrue(
+//        "Expected HTTP Mime type '" + mimeType + "', got '" + httpMimeContentType + "'.",
+//        httpMimeContentType.startsWith(mimeType)
+//    );
+//
+//  }
 
-    String httpContentTypeHeader = response.getEntity().getContentType().getName();
-    String httpMimeContentType = response.getEntity().getContentType().getValue();
 
-    assertTrue(
-        "Expected HTTP Header '" + HTTP_CONTENT_TYPE_HEADER + "', got '" + httpContentTypeHeader + "'.",
-        httpContentTypeHeader.equalsIgnoreCase(HTTP_CONTENT_TYPE_HEADER)
-    );
-
-    assertTrue(
-        "Expected HTTP Mime type '" + mimeType + "', got '" + httpMimeContentType + "'.",
-        httpMimeContentType.startsWith(mimeType)
-    );
-
-  }
-
-
-  private void assertUTF8Encoding(HttpResponse response)
+  private void assertUTF8Encoding(HttpResponse response, String url)
   {
     final String HTTP_CHAR_ENCODING = "charset=UTF-8".toUpperCase();
 
-    String httpMimeContentType = response.getEntity().getContentType().getValue();
+    String httpMimeContentType = response.getEntity().getContentType().getValue().toUpperCase();
 
     assertTrue(
-        "Expected character encoding '" + HTTP_CHAR_ENCODING + "', got '" + httpMimeContentType + "'.",
-        httpMimeContentType.toUpperCase().contains(HTTP_CHAR_ENCODING)
+        "Expected character encoding '" + HTTP_CHAR_ENCODING + "' from " + url + ", got '" + httpMimeContentType + "'.",
+        httpMimeContentType.contains(HTTP_CHAR_ENCODING)
     );
 
   }
 
-  private void assertHasContentTypeHeader(HttpResponse response)
+  private void assertHasContentTypeHeader(HttpResponse response, String url)
   {
     final String HTTP_CONTENT_TYPE_HEADER = "content-type";
 
     String httpContentTypeHeader = response.getEntity().getContentType().getName();
 
     assertTrue(
-        "Expected HTTP Header '" + HTTP_CONTENT_TYPE_HEADER + "', got '" + httpContentTypeHeader + "'.",
+        "Expected HTTP Header '" + HTTP_CONTENT_TYPE_HEADER + "', got '" + httpContentTypeHeader +
+        "' (URL : " + url + ")",
         httpContentTypeHeader.equalsIgnoreCase(HTTP_CONTENT_TYPE_HEADER)
     );
   }
+
+
+
+  // Assertions for XML Document Structure --------------------------------------------------------
 
 
   private Document getDOMDocument(HttpResponse response)
@@ -2063,5 +1725,78 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     );
   }
 
+  private void assertErrorElement(Document doc, int errorCode)
+  {
+    assertOpenRemoteRootElement(doc);
+
+    NodeList list = doc.getElementsByTagName("openremote");
+
+    Node openremote = list.item(0);
+
+    List<Node> openremoteChildElements = getChildElements(openremote);
+
+    assertTrue(
+        "Expected exactly one <error> node, got " + openremoteChildElements.size(),
+        openremoteChildElements.size() == 1
+    );
+
+
+    Node error = openremoteChildElements.get(0);
+
+    assertTrue(error.getNodeName().equalsIgnoreCase("error"));
+
+
+    List<Node> errorChildElements = getChildElements(error);
+
+
+    assertTrue(
+        "Expected exactly one <code> node and one <message> node, got " + errorChildElements.size(),
+        errorChildElements.size() == 2
+    );
+
+
+    assertTrue(errorChildElements.get(0).getNodeName().equalsIgnoreCase("code"));
+    assertTrue(errorChildElements.get(1).getNodeName().equalsIgnoreCase("message"));
+
+
+    Node code = errorChildElements.get(0);
+
+    assertTrue(code.getFirstChild().getNodeValue().equalsIgnoreCase("" + errorCode));
+
+    Node message = errorChildElements.get(1);
+
+    assertFalse(message.getFirstChild().getNodeValue().equals(""));
+  }
+
+  
+
+  // DOM Utility classes --------------------------------------------------------------------------
+
+
+  /**
+   * Returns an ordered list of {@link Node#ELEMENT_NODE} elements of a DOM tree,
+   * ignoring other content or nodes. Returns first level of child elements only,
+   * does not recurse deeper into the DOM tree.
+   *
+   * @param   node    root node whose first-level child elements are returned
+   *
+   * @return  an ordered list of DOM element nodes below the given root node
+   */
+  private List<Node> getChildElements(Node node)
+  {
+    NodeList list = node.getChildNodes();
+
+    List<Node> elements = new ArrayList<Node>(list.getLength());
+
+    for (int index = 0; index < list.getLength(); ++index)
+    {
+      Node n = list.item(index);
+
+      if (n.getNodeType() == Node.ELEMENT_NODE)
+        elements.add(n);
+    }
+
+    return elements;
+  }
 }
 
