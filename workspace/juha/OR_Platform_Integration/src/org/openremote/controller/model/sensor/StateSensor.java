@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.openremote.controller.protocol.EventProducer;
-import org.openremote.controller.protocol.ReadCommand;
-import org.openremote.controller.component.Sensor;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
@@ -54,6 +52,16 @@ public class StateSensor extends Sensor
 
   // Class Members --------------------------------------------------------------------------------
 
+
+  /**
+   * Adds distinct states as sensor properties.
+   *
+   * @param include   indicates whether the sensor's distinct states should be included as
+   *                  properties or if an empty property set should be returned instead
+   * @param states    the distinct states of this sensor
+   *
+   * @return    sensor's properties, including the distinct state names if included
+   */
   private static Map<String, String> statesAsProperties(boolean include, DistinctStates states)
   {
     if (states == null || !include)
@@ -100,14 +108,16 @@ public class StateSensor extends Sensor
    * @see org.openremote.controller.protocol.ReadCommand
    * @see org.openremote.controller.protocol.EventListener
    *
+   *
+   * @param name        human-readable name of this sensor
    * @param sensorID    controller unique identifier
    * @param producer    the protocol handler that backs this sensor either with a read command
    *                    or event listener implementation
    * @param states      distinct state values and their mappings this sensor will return
    */
-  public StateSensor(int sensorID, EventProducer producer, DistinctStates states)
+  public StateSensor(String name, int sensorID, EventProducer producer, DistinctStates states)
   {
-    this(sensorID, EnumSensorType.CUSTOM, producer, states, true);
+    this(name, sensorID, EnumSensorType.CUSTOM, producer, states, true);
   }
 
 
@@ -122,6 +132,7 @@ public class StateSensor extends Sensor
    * states explicit, it may not be necessary to pass the additional property information to
    * event producer implementers.
    *
+   * @param name        human-readable name of this sensor
    * @param sensorID    controller unique identifier
    * @param type        enumeration of sensor types -- this enum set is made available to
    *                    event producer implementers to discover the sensor's datatype they
@@ -134,10 +145,10 @@ public class StateSensor extends Sensor
    *                    explicit state strings as sensor properties for event producer implementers
    *                    to inspect
    */
-  protected StateSensor(int sensorID, EnumSensorType type, EventProducer producer,
+  protected StateSensor(String name, int sensorID, EnumSensorType type, EventProducer producer,
                         DistinctStates states, boolean includeStatesAsProperties)
   {
-    super(sensorID, type, producer, statesAsProperties(includeStatesAsProperties, states));
+    super(name, sensorID, type, producer, statesAsProperties(includeStatesAsProperties, states));
 
     this.states = states;
 
@@ -146,42 +157,40 @@ public class StateSensor extends Sensor
 
   // Sensor Overrides -----------------------------------------------------------------------------
 
+
   /**
-   * Wraps the basic sensor read operation to an event producer with state sensor behavior which
-   * 1) only allows event producers return values this sensor advertizes as producing (any other
-   * values are converted to {@link org.openremote.controller.protocol.ReadCommand#UNKNOWN_STATUS}
-   * values) and 2) maps the return values from event producers to translated values if such
+   * Enforce read values for state sensor which 1) only allow event producers to return values this
+   * sensor advertizes as producing (any other values are converted to
+   * {@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS} values) and
+   * 2) map the return values from event producers to translated values if such
    * have been configured for this sensor.
    *
    * @return  the state strings of this sensor or their translated versions
    */
-  @Override public String read()
+  @Override public String processEvent(String value)
   {
-    String returnValue = super.read();
-
-    if (!states.hasState(returnValue))
+    if (!states.hasState(value))
     {
       log.warn(
-          "Event producer bound to sensor (ID = {0}, type = {1}) returned a value that is not " +
-          "consistent with sensor's datatype : {2}",
-          super.getSensorID(), super.getSensorType(), returnValue
+          "Event producer bound to sensor (ID = {0}) returned a value that is not " +
+          "consistent with sensor's datatype : {1}",
+          super.getSensorID(), value
       );
 
-      return ReadCommand.UNKNOWN_STATUS;
+      return Sensor.UNKNOWN_STATUS;
     }
 
-    if (!states.hasMapping(returnValue))
+    if (!states.hasMapping(value))
     {
-      return returnValue;
+      return value;
     }
 
     else
     {
-      return states.getMapping(returnValue);
+      return states.getMapping(value);
     }
+
   }
-
-
 
   // Nested Classes -------------------------------------------------------------------------------
 
@@ -278,7 +287,7 @@ public class StateSensor extends Sensor
      * @param state   the state string which mapping is requested
      *
      * @return        returns the translated value of a given event producer state string, or
-     *                {@link org.openremote.controller.protocol.ReadCommand#UNKNOWN_STATUS} if
+     *                {@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS} if
      *                no such mapping was found
      */
     private String getMapping(String state)
@@ -287,7 +296,7 @@ public class StateSensor extends Sensor
 
       if (mapping == null)
       {
-        return ReadCommand.UNKNOWN_STATUS;
+        return Sensor.UNKNOWN_STATUS;
       }
 
       return mapping;

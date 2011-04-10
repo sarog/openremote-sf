@@ -23,7 +23,11 @@ package org.openremote.controller.exception;
 
 /**
  * Generic exception type to indicate initialization errors during controller
- * startup / warm restart / redeploy phases.
+ * startup / warm restart / redeploy phases.  <p>
+ *
+ * This exception class has specific sub-types that can indicate more accurately what type
+ * of error occured, see {@link XMLParsingException} (for errors in controller's XML protocol
+ * mapping) and {@link ConfigurationException} (errors in controller's configuration or services).
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
