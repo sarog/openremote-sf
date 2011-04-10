@@ -29,7 +29,7 @@ import org.openremote.android.console.model.PollingStatusParser;
 import org.openremote.android.console.util.ImageUtil;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
@@ -41,25 +41,26 @@ import android.widget.FrameLayout;
  * This class is responsible for rendering the switch in screen with the switch data.
  * It has control command and sensory.
  * 
-s */
+ */
 public class SwitchView extends SensoryControlView {
 
    private Button button;
-   private BitmapDrawable onImage;
-   private BitmapDrawable offImage;
+   private Drawable onImage;
+   private Drawable offImage;
    private boolean isOn;
    private boolean canUseImage;
    public SwitchView(Context context, Switch switchComponent) {
       super(context);
       setComponent(switchComponent);
       if (switchComponent != null) {
-         button = new Button(context);
+         button = new Button(context, null, android.R.attr.buttonStyleSmall);
          button.setTextSize(Constants.DEFAULT_FONT_SIZE);
          initSwitch(switchComponent);
          if (switchComponent.getSensor() != null) {
             addPollingSensoryListener();
          }
       }
+      setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
    }
 
    /**
@@ -74,22 +75,24 @@ public class SwitchView extends SensoryControlView {
       button.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (switchComponent.getOnImage() != null) {
          final String onImageName = switchComponent.getOnImage().getSrc();
-         onImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc(), width, height);
+         onImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
+         button.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + onImageName, new OREventListener() {
             public void handleEvent(OREvent event) {
                onImage = null;
-               onImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + onImageName, width, height);
+               onImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + onImageName);
                handler.sendEmptyMessage(1);
             }
          });
       }
       if (switchComponent.getOffImage() != null) {
          final String offImageName = switchComponent.getOffImage().getSrc();
-         offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + offImageName, width, height);
+         offImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
+
          ORListenerManager.getInstance().addOREventListener(ListenerConstant.LISTENER_IMAGE_CHANGE_FORMAT + offImageName, new OREventListener() {
             public void handleEvent(OREvent event) {
                offImage = null;
-               offImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + offImageName, width, height);
+               offImage = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH + offImageName);
                handler.sendEmptyMessage(2);
             }
          });

@@ -46,7 +46,6 @@ import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORRoundRobinConnection;
 import org.openremote.android.console.util.HTTPUtil;
 import org.openremote.android.console.util.ImageUtil;
-import org.openremote.android.console.view.ButtonView;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
@@ -55,6 +54,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -114,7 +114,12 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-      getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+      // Only hide the title bar if we are not on Android 3.0, as all of the current
+      // Android 3.0 devices are tablets without menu buttons and the action bar
+      // doesn't appear without the title bar's being shown.
+      if (VERSION.SDK_INT != 11) {
+         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+      }
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
@@ -194,6 +199,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
       OrientationEventListener orientationListener = new OrientationEventListener(this) {
          @Override
          public void onOrientationChanged(int orientation) {
+            if (currentScreen == null) {
+               setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+               return;
+            }
             if (orientation > 315 || orientation < 45  || (orientation > 135 && orientation < 225)) {
                // portrait
                if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -375,24 +384,26 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
       // The panel or group is empty.
       if (currentGroupView == null) {
-         return true;
+         return false;
       }
       if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
          Log.i("OpenRemote-FLING", "right to left");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_RIGHT2LEFT);
-         moveRight();
+         return moveRight();
       } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
          Log.i("OpenRemote-FLING", "left to right");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_LEFT2RIGHT);
-         moveLeft();
+         return moveLeft();
       } else if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
          Log.i("OpenRemote-FLING", "bottom to top");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_BOTTOM2TOP);
+         return true;
       } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
          Log.i("OpenRemote-FLING", "top to bottom");
          onScreenGestureEvent(Gesture.GESTURE_SWIPE_TYPE_TOP2BOTTOM);
+         return true;
       }
-      return true;
+      return false;
    }
 
    /**
@@ -815,6 +826,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
     * Display the current screen's inverse screen.
     */
    private void rotateToIntefaceOrientation() {
+      if (currentScreen == null) return;
       int inverseScreenId = currentScreen.getInverseScreenId();
       if (currentGroupView != null) {
          cancelCurrentPolling();
@@ -856,13 +868,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
 
    @Override
    public boolean dispatchTouchEvent(MotionEvent ev) {
-       super.dispatchTouchEvent(ev);
-       if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-          ButtonView.MOUSE_MOVE = false;
-       } else if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-          ButtonView.MOUSE_MOVE = true;
-       }
-       return gestureScanner.onTouchEvent(ev);
+	   boolean handled = gestureScanner.onTouchEvent(ev);
+	   if (!handled) {
+		   handled = super.dispatchTouchEvent(ev);
+	   }
+       return handled;
    }
    
    

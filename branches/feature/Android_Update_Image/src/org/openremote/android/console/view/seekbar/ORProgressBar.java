@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+* Copyright 2008-2010, OpenRemote Inc.
+*
+* See the contributors.txt file in the distribution for a
+* full listing of individual contributors.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package org.openremote.android.console.view.seekbar;
 
 import org.openremote.android.console.R;
@@ -22,568 +41,589 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewParent;
-import android.widget.ProgressBar;
 import android.widget.RemoteViews.RemoteView;
 
-
-
-
+/**
+ * This class is rewrite the ProgressBar of Android, and for supporting vertical progress bar.
+ * <p> 
+ * See {@link android.widget.ProgressBar}
+ * </p>
+ * 
+ * @author handy.wang, tomsky.wang
+ */
 @RemoteView
 public class ORProgressBar extends View {
-    private static final int MAX_LEVEL = 10000;
+   private static final int MAX_LEVEL = 10000;
 
-    int mMinWidth;
-    int mMaxWidth;
-    int mMinHeight;
-    int mMaxHeight;
-    boolean vertical = false;
-    
-    private int mProgress;
-    private int mSecondaryProgress;
-    private int mMax;
+   int mMinWidth;
+   int mMaxWidth;
+   int mMinHeight;
+   int mMaxHeight;
+   boolean vertical = false;
 
-    private Drawable mProgressDrawable;
-    private Drawable mCurrentDrawable;
-    Bitmap mSampleTile;
-    private boolean mNoInvalidate;
-    private RefreshProgressRunnable mRefreshProgressRunnable;
-    private long mUiThreadId;
+   private int mProgress;
+   private int mSecondaryProgress;
+   private int mMax;
 
-    private boolean mInDrawing;
+   private Drawable mProgressDrawable;
+   private Drawable mCurrentDrawable;
+   Bitmap mSampleTile;
+   private boolean mNoInvalidate;
+   private RefreshProgressRunnable mRefreshProgressRunnable;
+   private long mUiThreadId;
 
-    protected int mScrollX;
-	protected int mScrollY;
-	protected int mPaddingLeft;
-	protected int mPaddingRight;
-	protected int mPaddingTop;
-	protected int mPaddingBottom;
-	protected ViewParent mParent;
+   private boolean mInDrawing;
 
-    /**
-     * Create a new progress bar with range 0...100 and initial progress of 0.
-     * @param context the application environment
-     */
-    public ORProgressBar(Context context) {
-    	this(context, null);
-    }
+   protected int mScrollX;
+   protected int mScrollY;
+   protected int mPaddingLeft;
+   protected int mPaddingRight;
+   protected int mPaddingTop;
+   protected int mPaddingBottom;
+   protected ViewParent mParent;
 
-    public ORProgressBar(Context context, AttributeSet attrs) {
-        this(context, attrs, android.R.attr.progressBarStyle);
-    }
+   /**
+    * Create a new progress bar with range 0...100 and initial progress of 0.
+    * 
+    * @param context
+    *           the application environment
+    */
+   public ORProgressBar(Context context) {
+      this(context, null);
+   }
 
-    public ORProgressBar(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        mUiThreadId = Thread.currentThread().getId();
-        initProgressBar();
+   public ORProgressBar(Context context, AttributeSet attrs) {
+      this(context, attrs, android.R.attr.progressBarStyle);
+   }
 
-        TypedArray a =
-            context.obtainStyledAttributes(attrs, R.styleable.ProgressBar, defStyle, 0);
+   public ORProgressBar(Context context, AttributeSet attrs, int defStyle) {
+      super(context, attrs, defStyle);
+      mUiThreadId = Thread.currentThread().getId();
+      initProgressBar();
 
-        mNoInvalidate = true;
+      TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ProgressBar, defStyle, 0);
 
-        vertical = a.getBoolean(R.styleable.ProgressBar_vertical, false);
-        Drawable drawable = a.getDrawable(R.styleable.ProgressBar_android_progressDrawable);
-        if (drawable != null) {
-            drawable = tileify(drawable, false);
-            // Calling this method can set mMaxHeight, make sure the corresponding
-            // XML attribute for mMaxHeight is read after calling this method
-            setProgressDrawable(drawable);
-        }
+      mNoInvalidate = true;
 
-        mMinWidth = a.getDimensionPixelSize(R.styleable.ProgressBar_android_minWidth, mMinWidth);
-        mMaxWidth = a.getDimensionPixelSize(R.styleable.ProgressBar_android_maxWidth, mMaxWidth);
-        mMinHeight = a.getDimensionPixelSize(R.styleable.ProgressBar_android_minHeight, mMinHeight);
-        mMaxHeight = a.getDimensionPixelSize(R.styleable.ProgressBar_android_maxHeight, mMaxHeight);
-        
-        setMax(a.getInt(R.styleable.ProgressBar_android_max, mMax));
+      vertical = a.getBoolean(R.styleable.ProgressBar_vertical, false);
+      Drawable drawable = a.getDrawable(R.styleable.ProgressBar_android_progressDrawable);
+      if (drawable != null) {
+         drawable = tileify(drawable, false);
+         // Calling this method can set mMaxHeight, make sure the corresponding
+         // XML attribute for mMaxHeight is read after calling this method
+         setProgressDrawable(drawable);
+      }
 
-        setProgress(a.getInt(R.styleable.ProgressBar_android_progress, mProgress));
+      mMinWidth = a.getDimensionPixelSize(R.styleable.ProgressBar_android_minWidth, mMinWidth);
+      mMaxWidth = a.getDimensionPixelSize(R.styleable.ProgressBar_android_maxWidth, mMaxWidth);
+      mMinHeight = a.getDimensionPixelSize(R.styleable.ProgressBar_android_minHeight, mMinHeight);
+      mMaxHeight = a.getDimensionPixelSize(R.styleable.ProgressBar_android_maxHeight, mMaxHeight);
 
-        setSecondaryProgress(
-                a.getInt(R.styleable.ProgressBar_android_secondaryProgress, mSecondaryProgress));
+      setMax(a.getInt(R.styleable.ProgressBar_android_max, mMax));
 
-        mNoInvalidate = false;
+      setProgress(a.getInt(R.styleable.ProgressBar_android_progress, mProgress));
 
-        a.recycle();
-    }
+      setSecondaryProgress(a.getInt(R.styleable.ProgressBar_android_secondaryProgress, mSecondaryProgress));
 
-    /**
-     * Converts a drawable to a tiled version of itself. It will recursively
-     * traverse layer and state list drawables.
-     */
-    private Drawable tileify(Drawable drawable, boolean clip) {
+      mNoInvalidate = false;
 
-        if (drawable instanceof LayerDrawable) {
-        	LayerDrawable background = (LayerDrawable) drawable;
-            final int N = background.getNumberOfLayers();
-            Drawable[] outDrawables = new Drawable[N];
+      a.recycle();
+   }
 
-            for (int i = 0; i < N; i++) {
-                int id = background.getId(i);
-                outDrawables[i] = tileify(background.getDrawable(i),
-                        (id == android.R.id.progress || id == android.R.id.secondaryProgress));
+   /**
+    * Converts a drawable to a tiled version of itself. It will recursively traverse layer and state list drawables.
+    */
+   private Drawable tileify(Drawable drawable, boolean clip) {
+
+      if (drawable instanceof LayerDrawable) {
+         LayerDrawable background = (LayerDrawable) drawable;
+         final int N = background.getNumberOfLayers();
+         Drawable[] outDrawables = new Drawable[N];
+
+         for (int i = 0; i < N; i++) {
+            int id = background.getId(i);
+            outDrawables[i] = tileify(background.getDrawable(i),
+                  (id == android.R.id.progress || id == android.R.id.secondaryProgress));
+         }
+
+         LayerDrawable newBg = new LayerDrawable(outDrawables);
+
+         for (int i = 0; i < N; i++) {
+            newBg.setId(i, background.getId(i));
+         }
+
+         return newBg;
+
+      } else if (drawable instanceof StateListDrawable) {
+         StateListDrawable in = (StateListDrawable) drawable;
+         StateListDrawable out = new StateListDrawable();
+         /*
+          * int numStates = in.getStateCount(); for (int i = 0; i < numStates; i++) { out.addState(in.getStateSet(i),
+          * tileify(in.getStateDrawable(i), clip)); }
+          */
+         return out;
+
+      } else if (drawable instanceof BitmapDrawable) {
+         final Bitmap tileBitmap = ((BitmapDrawable) drawable).getBitmap();
+         if (mSampleTile == null) {
+            mSampleTile = tileBitmap;
+         }
+
+         final ShapeDrawable shapeDrawable = new ShapeDrawable(getDrawableShape());
+         return (clip) ? new ClipDrawable(shapeDrawable, Gravity.LEFT, ClipDrawable.HORIZONTAL) : shapeDrawable;
+      }
+
+      return drawable;
+   }
+
+   Shape getDrawableShape() {
+      final float[] roundedCorners = new float[] { 5, 5, 5, 5, 5, 5, 5, 5 };
+      return new RoundRectShape(roundedCorners, null, null);
+   }
+
+   /**
+    * <p>
+    * Initialize the progress bar's default values:
+    * </p>
+    * <ul>
+    * <li>progress = 0</li>
+    * <li>max = 100</li>
+    * </ul>
+    */
+   private void initProgressBar() {
+      mMax = 100;
+      mProgress = 0;
+      mSecondaryProgress = 0;
+      mMinWidth = 24;
+      mMaxWidth = 48;
+      mMinHeight = 24;
+      mMaxHeight = 48;
+   }
+
+   /**
+    * <p>
+    * Get the drawable used to draw the progress bar in progress mode.
+    * </p>
+    * 
+    * @return a {@link android.graphics.drawable.Drawable} instance
+    * 
+    * @see #setProgressDrawable(android.graphics.drawable.Drawable)
+    */
+   public Drawable getProgressDrawable() {
+      return mProgressDrawable;
+   }
+
+   /**
+    * <p>
+    * Define the drawable used to draw the progress bar in progress mode.
+    * </p>
+    * 
+    * @param d
+    *           the new drawable
+    * 
+    * @see #getProgressDrawable()
+    */
+   public void setProgressDrawable(Drawable d) {
+      if (d != null) {
+         d.setCallback(this);
+         if (vertical) {
+            // Make sure the ProgressBar is always tall enough
+            int drawableHeight = d.getMinimumHeight();
+            if (mMaxHeight < drawableHeight) {
+               mMaxHeight = drawableHeight;
+               requestLayout();
             }
-
-            LayerDrawable newBg = new LayerDrawable(outDrawables);
-
-            for (int i = 0; i < N; i++) {
-                newBg.setId(i, background.getId(i));
-            }
-
-            return newBg;
-
-        } else if (drawable instanceof StateListDrawable) {
-            StateListDrawable in = (StateListDrawable) drawable;
-            StateListDrawable out = new StateListDrawable();
-            /*int numStates = in.getStateCount();
-            for (int i = 0; i < numStates; i++) {
-                out.addState(in.getStateSet(i), tileify(in.getStateDrawable(i), clip));
-            }*/
-            return out;
-
-        } else if (drawable instanceof BitmapDrawable) {
-            final Bitmap tileBitmap = ((BitmapDrawable) drawable).getBitmap();
-            if (mSampleTile == null) {
-                mSampleTile = tileBitmap;
-            }
-
-            final ShapeDrawable shapeDrawable = new ShapeDrawable(getDrawableShape());
-            return (clip) ? new ClipDrawable(shapeDrawable, Gravity.LEFT,
-                    ClipDrawable.HORIZONTAL) : shapeDrawable;
-        }
-
-        return drawable;
-    }
-
-    Shape getDrawableShape() {
-        final float[] roundedCorners = new float[] { 5, 5, 5, 5, 5, 5, 5, 5 };
-        return new RoundRectShape(roundedCorners, null, null);
-    }
-
-    /**
-     * <p>
-     * Initialize the progress bar's default values:
-     * </p>
-     * <ul>
-     * <li>progress = 0</li>
-     * <li>max = 100</li>
-     * </ul>
-     */
-    private void initProgressBar() {
-        mMax = 100;
-        mProgress = 0;
-        mSecondaryProgress = 0;
-        mMinWidth = 24;
-        mMaxWidth = 48;
-        mMinHeight = 24;
-        mMaxHeight = 48;
-    }
-
-    /**
-     * <p>Get the drawable used to draw the progress bar in
-     * progress mode.</p>
-     *
-     * @return a {@link android.graphics.drawable.Drawable} instance
-     *
-     * @see #setProgressDrawable(android.graphics.drawable.Drawable)
-     */
-    public Drawable getProgressDrawable() {
-        return mProgressDrawable;
-    }
-
-    /**
-     * <p>Define the drawable used to draw the progress bar in
-     * progress mode.</p>
-     *
-     * @param d the new drawable
-     *
-     * @see #getProgressDrawable()
-     */
-    public void setProgressDrawable(Drawable d) {
-        if (d != null) {
-            d.setCallback(this);
-            if (vertical) {
-               // Make sure the ProgressBar is always tall enough
-               int drawableHeight = d.getMinimumHeight();
-               if (mMaxHeight < drawableHeight) {
-                  mMaxHeight = drawableHeight;
-                  requestLayout();
-               }
-            } else {
+         } else {
             // Make sure the ProgressBar is always wide enough
-               int drawableWidth = d.getMinimumWidth();
-               if (mMaxWidth < drawableWidth) {
-                  mMaxWidth = drawableWidth;
-                   requestLayout();
-               }
+            int drawableWidth = d.getMinimumWidth();
+            if (mMaxWidth < drawableWidth) {
+               mMaxWidth = drawableWidth;
+               requestLayout();
             }
-        }
-        mProgressDrawable = d;
-        mCurrentDrawable = d;
-        postInvalidate();
-    }
+         }
+      }
+      mProgressDrawable = d;
+      mCurrentDrawable = d;
+      postInvalidate();
+   }
 
-    /**
-     * @return The drawable currently used to draw the progress bar
-     */
-    Drawable getCurrentDrawable() {
-        return mCurrentDrawable;
-    }
+   /**
+    * @return The drawable currently used to draw the progress bar
+    */
+   Drawable getCurrentDrawable() {
+      return mCurrentDrawable;
+   }
 
-    @Override
-    protected boolean verifyDrawable(Drawable who) {
-        return who == mProgressDrawable || super.verifyDrawable(who);
-    }
+   @Override
+   protected boolean verifyDrawable(Drawable who) {
+      return who == mProgressDrawable || super.verifyDrawable(who);
+   }
 
-    @Override
-    public void postInvalidate() {
-        if (!mNoInvalidate) {
-            super.postInvalidate();
-        }
-    }
+   @Override
+   public void postInvalidate() {
+      if (!mNoInvalidate) {
+         super.postInvalidate();
+      }
+   }
 
-    private class RefreshProgressRunnable implements Runnable {
+   private class RefreshProgressRunnable implements Runnable {
 
-        private int mId;
-        private int mProgress;
-        private boolean mFromUser;
+      private int mId;
+      private int mProgress;
+      private boolean mFromUser;
 
-        RefreshProgressRunnable(int id, int progress, boolean fromUser) {
-            mId = id;
-            mProgress = progress;
-            mFromUser = fromUser;
-        }
+      RefreshProgressRunnable(int id, int progress, boolean fromUser) {
+         mId = id;
+         mProgress = progress;
+         mFromUser = fromUser;
+      }
 
-        public void run() {
-            doRefreshProgress(mId, mProgress, mFromUser);
-            // Put ourselves back in the cache when we are done
-            mRefreshProgressRunnable = this;
-        }
+      public void run() {
+         doRefreshProgress(mId, mProgress, mFromUser);
+         // Put ourselves back in the cache when we are done
+         mRefreshProgressRunnable = this;
+      }
 
-        public void setup(int id, int progress, boolean fromUser) {
-            mId = id;
-            mProgress = progress;
-            mFromUser = fromUser;
-        }
+      public void setup(int id, int progress, boolean fromUser) {
+         mId = id;
+         mProgress = progress;
+         mFromUser = fromUser;
+      }
 
-    }
+   }
 
-    private synchronized void doRefreshProgress(int id, int progress, boolean fromUser) {
-        float scale = mMax > 0 ? (float) progress / (float) mMax : 0;
-        final Drawable d = mCurrentDrawable;
-        if (d != null) {
-            Drawable progressDrawable = null;
+   private synchronized void doRefreshProgress(int id, int progress, boolean fromUser) {
+      float scale = mMax > 0 ? (float) progress / (float) mMax : 0;
+      final Drawable d = mCurrentDrawable;
+      if (d != null) {
+         Drawable progressDrawable = null;
 
-            if (d instanceof LayerDrawable) {
-                progressDrawable = ((LayerDrawable) d).findDrawableByLayerId(id);
-            }
+         if (d instanceof LayerDrawable) {
+            progressDrawable = ((LayerDrawable) d).findDrawableByLayerId(id);
+         }
 
-            final int level = (int) (scale * MAX_LEVEL);
-            (progressDrawable != null ? progressDrawable : d).setLevel(level);
-        } else {
-            invalidate();
-        }
+         final int level = (int) (scale * MAX_LEVEL);
+         (progressDrawable != null ? progressDrawable : d).setLevel(level);
+      } else {
+         invalidate();
+      }
 
-        if (id == android.R.id.progress) {
-            onProgressRefresh(scale, fromUser);
-        }
-    }
+      if (id == android.R.id.progress) {
+         onProgressRefresh(scale, fromUser);
+      }
+   }
 
-    void onProgressRefresh(float scale, boolean fromUser) {
-    }
+   void onProgressRefresh(float scale, boolean fromUser) {
+   }
 
-    private synchronized void refreshProgress(int id, int progress, boolean fromUser) {
-        if (mUiThreadId == Thread.currentThread().getId()) {
-            doRefreshProgress(id, progress, fromUser);
-        } else {
-            RefreshProgressRunnable r;
-            if (mRefreshProgressRunnable != null) {
-                // Use cached RefreshProgressRunnable if available
-                r = mRefreshProgressRunnable;
-                // Uncache it
-                mRefreshProgressRunnable = null;
-                r.setup(id, progress, fromUser);
-            } else {
-                // Make a new one
-                r = new RefreshProgressRunnable(id, progress, fromUser);
-            }
-            post(r);
-        }
-    }
+   private synchronized void refreshProgress(int id, int progress, boolean fromUser) {
+      if (mUiThreadId == Thread.currentThread().getId()) {
+         doRefreshProgress(id, progress, fromUser);
+      } else {
+         RefreshProgressRunnable r;
+         if (mRefreshProgressRunnable != null) {
+            // Use cached RefreshProgressRunnable if available
+            r = mRefreshProgressRunnable;
+            // Uncache it
+            mRefreshProgressRunnable = null;
+            r.setup(id, progress, fromUser);
+         } else {
+            // Make a new one
+            r = new RefreshProgressRunnable(id, progress, fromUser);
+         }
+         post(r);
+      }
+   }
 
-    /**
-     * <p>Set the current progress to the specified value.</p>
-     *
-     * @param progress the new progress, between 0 and {@link #getMax()}
-     *
-     * @see #getProgress()
-     * @see #incrementProgressBy(int)
-     */
-    public synchronized void setProgress(int progress) {
-        setProgress(progress, false);
-    }
+   /**
+    * <p>
+    * Set the current progress to the specified value.
+    * </p>
+    * 
+    * @param progress
+    *           the new progress, between 0 and {@link #getMax()}
+    * 
+    * @see #getProgress()
+    * @see #incrementProgressBy(int)
+    */
+   public synchronized void setProgress(int progress) {
+      setProgress(progress, false);
+   }
 
-    synchronized void setProgress(int progress, boolean fromUser) {
-        if (progress < 0) {
-            progress = 0;
-        }
+   synchronized void setProgress(int progress, boolean fromUser) {
+      if (progress < 0) {
+         progress = 0;
+      }
 
-        if (progress > mMax) {
-            progress = mMax;
-        }
+      if (progress > mMax) {
+         progress = mMax;
+      }
 
-        if (progress != mProgress) {
-            mProgress = progress;
-            refreshProgress(android.R.id.progress, mProgress, fromUser);
-        }
-    }
+      if (progress != mProgress) {
+         mProgress = progress;
+         refreshProgress(android.R.id.progress, mProgress, fromUser);
+      }
+   }
 
-    /**
-     * <p>
-     * Set the current secondary progress to the specified value.
-     * </p>
-     *
-     * @param secondaryProgress the new secondary progress, between 0 and {@link #getMax()}
-     * @see #getSecondaryProgress()
-     * @see #incrementSecondaryProgressBy(int)
-     */
-    public synchronized void setSecondaryProgress(int secondaryProgress) {
-        if (secondaryProgress < 0) {
-            secondaryProgress = 0;
-        }
+   /**
+    * <p>
+    * Set the current secondary progress to the specified value.
+    * </p>
+    * 
+    * @param secondaryProgress
+    *           the new secondary progress, between 0 and {@link #getMax()}
+    * @see #getSecondaryProgress()
+    * @see #incrementSecondaryProgressBy(int)
+    */
+   public synchronized void setSecondaryProgress(int secondaryProgress) {
+      if (secondaryProgress < 0) {
+         secondaryProgress = 0;
+      }
 
-        if (secondaryProgress > mMax) {
-            secondaryProgress = mMax;
-        }
+      if (secondaryProgress > mMax) {
+         secondaryProgress = mMax;
+      }
 
-        if (secondaryProgress != mSecondaryProgress) {
-            mSecondaryProgress = secondaryProgress;
-            refreshProgress(android.R.id.secondaryProgress, mSecondaryProgress, false);
-        }
-    }
+      if (secondaryProgress != mSecondaryProgress) {
+         mSecondaryProgress = secondaryProgress;
+         refreshProgress(android.R.id.secondaryProgress, mSecondaryProgress, false);
+      }
+   }
 
-    /**
-     * <p>Get the progress bar's current level of progress.</p>
-     *
-     * @return the current progress, between 0 and {@link #getMax()}
-     *
-     * @see #setProgress(int)
-     * @see #setMax(int)
-     * @see #getMax()
-     */
-    @ViewDebug.ExportedProperty
-    public synchronized int getProgress() {
-        return mProgress;
-    }
+   /**
+    * <p>
+    * Get the progress bar's current level of progress.
+    * </p>
+    * 
+    * @return the current progress, between 0 and {@link #getMax()}
+    * 
+    * @see #setProgress(int)
+    * @see #setMax(int)
+    * @see #getMax()
+    */
+   @ViewDebug.ExportedProperty
+   public synchronized int getProgress() {
+      return mProgress;
+   }
 
-    /**
-     * <p>Get the progress bar's current level of secondary progress.</p>
-     *
-     * @return the current secondary progress, between 0 and {@link #getMax()}
-     *
-     * @see #setSecondaryProgress(int)
-     * @see #setMax(int)
-     * @see #getMax()
-     */
-    @ViewDebug.ExportedProperty
-    public synchronized int getSecondaryProgress() {
-        return mSecondaryProgress;
-    }
+   /**
+    * <p>
+    * Get the progress bar's current level of secondary progress.
+    * </p>
+    * 
+    * @return the current secondary progress, between 0 and {@link #getMax()}
+    * 
+    * @see #setSecondaryProgress(int)
+    * @see #setMax(int)
+    * @see #getMax()
+    */
+   @ViewDebug.ExportedProperty
+   public synchronized int getSecondaryProgress() {
+      return mSecondaryProgress;
+   }
 
-    /**
-     * <p>Return the upper limit of this progress bar's range.</p>
-     *
-     * @return a positive integer
-     *
-     * @see #setMax(int)
-     * @see #getProgress()
-     * @see #getSecondaryProgress()
-     */
-    @ViewDebug.ExportedProperty
-    public synchronized int getMax() {
-        return mMax;
-    }
+   /**
+    * <p>
+    * Return the upper limit of this progress bar's range.
+    * </p>
+    * 
+    * @return a positive integer
+    * 
+    * @see #setMax(int)
+    * @see #getProgress()
+    * @see #getSecondaryProgress()
+    */
+   @ViewDebug.ExportedProperty
+   public synchronized int getMax() {
+      return mMax;
+   }
 
-    /**
-     * <p>Set the range of the progress bar to 0...<tt>max</tt>.</p>
-     *
-     * @param max the upper range of this progress bar
-     *
-     * @see #getMax()
-     * @see #setProgress(int)
-     * @see #setSecondaryProgress(int)
-     */
-    public synchronized void setMax(int max) {
-        if (max < 0) {
-            max = 0;
-        }
-        if (max != mMax) {
-            mMax = max;
-            postInvalidate();
+   /**
+    * <p>
+    * Set the range of the progress bar to 0...<tt>max</tt>.
+    * </p>
+    * 
+    * @param max
+    *           the upper range of this progress bar
+    * 
+    * @see #getMax()
+    * @see #setProgress(int)
+    * @see #setSecondaryProgress(int)
+    */
+   public synchronized void setMax(int max) {
+      if (max < 0) {
+         max = 0;
+      }
+      if (max != mMax) {
+         mMax = max;
+         postInvalidate();
 
-            if (mProgress > max) {
-                mProgress = max;
-                refreshProgress(android.R.id.progress, mProgress, false);
-            }
-        }
-    }
+         if (mProgress > max) {
+            mProgress = max;
+            refreshProgress(android.R.id.progress, mProgress, false);
+         }
+      }
+   }
 
-    /**
-     * <p>Increase the progress bar's progress by the specified amount.</p>
-     *
-     * @param diff the amount by which the progress must be increased
-     *
-     * @see #setProgress(int)
-     */
-    public synchronized final void incrementProgressBy(int diff) {
-        setProgress(mProgress + diff);
-    }
+   /**
+    * <p>
+    * Increase the progress bar's progress by the specified amount.
+    * </p>
+    * 
+    * @param diff
+    *           the amount by which the progress must be increased
+    * 
+    * @see #setProgress(int)
+    */
+   public synchronized final void incrementProgressBy(int diff) {
+      setProgress(mProgress + diff);
+   }
 
-    /**
-     * <p>Increase the progress bar's secondary progress by the specified amount.</p>
-     *
-     * @param diff the amount by which the secondary progress must be increased
-     *
-     * @see #setSecondaryProgress(int)
-     */
-    public synchronized final void incrementSecondaryProgressBy(int diff) {
-        setSecondaryProgress(mSecondaryProgress + diff);
-    }
+   /**
+    * <p>
+    * Increase the progress bar's secondary progress by the specified amount.
+    * </p>
+    * 
+    * @param diff
+    *           the amount by which the secondary progress must be increased
+    * 
+    * @see #setSecondaryProgress(int)
+    */
+   public synchronized final void incrementSecondaryProgressBy(int diff) {
+      setSecondaryProgress(mSecondaryProgress + diff);
+   }
 
-    @Override
-    public void setVisibility(int v) {
-        if (getVisibility() != v) {
-            super.setVisibility(v);
-        }
-    }
+   @Override
+   public void setVisibility(int v) {
+      if (getVisibility() != v) {
+         super.setVisibility(v);
+      }
+   }
 
-    @Override
-    public void invalidateDrawable(Drawable dr) {
-        if (!mInDrawing) {
-            if (verifyDrawable(dr)) {
-                final Rect dirty = dr.getBounds();
-                final int scrollX = mScrollX + mPaddingLeft;
-                final int scrollY = mScrollY + mPaddingTop;
+   @Override
+   public void invalidateDrawable(Drawable dr) {
+      if (!mInDrawing) {
+         if (verifyDrawable(dr)) {
+            final Rect dirty = dr.getBounds();
+            final int scrollX = mScrollX + mPaddingLeft;
+            final int scrollY = mScrollY + mPaddingTop;
 
-                invalidate(dirty.left + scrollX, dirty.top + scrollY,
-                        dirty.right + scrollX, dirty.bottom + scrollY);
-            } else {
-                super.invalidateDrawable(dr);
-            }
-        }
-    }
+            invalidate(dirty.left + scrollX, dirty.top + scrollY, dirty.right + scrollX, dirty.bottom + scrollY);
+         } else {
+            super.invalidateDrawable(dr);
+         }
+      }
+   }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        // onDraw will translate the canvas so we draw starting at 0,0
-        int right = w - mPaddingRight - mPaddingLeft;
-        int bottom = h - mPaddingBottom - mPaddingTop;
+   @Override
+   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+      // onDraw will translate the canvas so we draw starting at 0,0
+      int right = w - mPaddingRight - mPaddingLeft;
+      int bottom = h - mPaddingBottom - mPaddingTop;
 
-        if (mProgressDrawable != null) {
-            mProgressDrawable.setBounds(0, 0, right, bottom);
-        }
-    }
+      if (mProgressDrawable != null) {
+         mProgressDrawable.setBounds(0, 0, right, bottom);
+      }
+   }
 
-    @Override
-    protected synchronized void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+   @Override
+   protected synchronized void onDraw(Canvas canvas) {
+      super.onDraw(canvas);
 
-        Drawable d = mCurrentDrawable;
-        if (d != null) {
-            // Translate canvas so a indeterminate circular progress bar with padding
-            // rotates properly in its animation
-            canvas.save();
-            canvas.translate(mPaddingLeft, mPaddingTop);
-            d.draw(canvas);
-            canvas.restore();
-        }
-    }
+      Drawable d = mCurrentDrawable;
+      if (d != null) {
+         // Translate canvas so a indeterminate circular progress bar with padding
+         // rotates properly in its animation
+         canvas.save();
+         canvas.translate(mPaddingLeft, mPaddingTop);
+         d.draw(canvas);
+         canvas.restore();
+      }
+   }
 
-    @Override
-    protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Drawable d = mCurrentDrawable;
+   @Override
+   protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      Drawable d = mCurrentDrawable;
 
-        int dw = 0;
-        int dh = 0;
-        if (d != null) {
-            dw = Math.max(mMinWidth, Math.min(mMaxWidth, d.getIntrinsicWidth()));
-            dh = Math.max(mMinHeight, Math.min(mMaxHeight, d.getIntrinsicHeight()));
-        }
-        dw += mPaddingLeft + mPaddingRight;
-        dh += mPaddingTop + mPaddingBottom;
+      int dw = 0;
+      int dh = 0;
+      if (d != null) {
+         dw = Math.max(mMinWidth, Math.min(mMaxWidth, d.getIntrinsicWidth()));
+         dh = Math.max(mMinHeight, Math.min(mMaxHeight, d.getIntrinsicHeight()));
+      }
+      dw += mPaddingLeft + mPaddingRight;
+      dh += mPaddingTop + mPaddingBottom;
 
-        setMeasuredDimension(resolveSize(dw, widthMeasureSpec),
-                resolveSize(dh, heightMeasureSpec));
-    }
+      setMeasuredDimension(resolveSize(dw, widthMeasureSpec), resolveSize(dh, heightMeasureSpec));
+   }
 
-    @Override
-    protected void drawableStateChanged() {
-        super.drawableStateChanged();
+   @Override
+   protected void drawableStateChanged() {
+      super.drawableStateChanged();
 
-        int[] state = getDrawableState();
+      int[] state = getDrawableState();
 
-        if (mProgressDrawable != null && mProgressDrawable.isStateful()) {
-            mProgressDrawable.setState(state);
-        }
-    }
+      if (mProgressDrawable != null && mProgressDrawable.isStateful()) {
+         mProgressDrawable.setState(state);
+      }
+   }
 
-    static class SavedState extends BaseSavedState {
-        int progress;
-        int secondaryProgress;
+   static class SavedState extends BaseSavedState {
+      int progress;
+      int secondaryProgress;
 
-        /**
-         * Constructor called from {@link ProgressBar#onSaveInstanceState()}
-         */
-        SavedState(Parcelable superState) {
-            super(superState);
-        }
+      /**
+       * Constructor called from {@link ProgressBar#onSaveInstanceState()}
+       */
+      SavedState(Parcelable superState) {
+         super(superState);
+      }
 
-        /**
-         * Constructor called from {@link #CREATOR}
-         */
-        private SavedState(Parcel in) {
-            super(in);
-            progress = in.readInt();
-            secondaryProgress = in.readInt();
-        }
+      /**
+       * Constructor called from {@link #CREATOR}
+       */
+      private SavedState(Parcel in) {
+         super(in);
+         progress = in.readInt();
+         secondaryProgress = in.readInt();
+      }
 
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt(progress);
-            out.writeInt(secondaryProgress);
-        }
+      @Override
+      public void writeToParcel(Parcel out, int flags) {
+         super.writeToParcel(out, flags);
+         out.writeInt(progress);
+         out.writeInt(secondaryProgress);
+      }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
+      public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+         public SavedState createFromParcel(Parcel in) {
+            return new SavedState(in);
+         }
 
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
+         public SavedState[] newArray(int size) {
+            return new SavedState[size];
+         }
+      };
+   }
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        // Force our ancestor class to save its state
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState ss = new SavedState(superState);
+   @Override
+   public Parcelable onSaveInstanceState() {
+      // Force our ancestor class to save its state
+      Parcelable superState = super.onSaveInstanceState();
+      SavedState ss = new SavedState(superState);
 
-        ss.progress = mProgress;
-        ss.secondaryProgress = mSecondaryProgress;
+      ss.progress = mProgress;
+      ss.secondaryProgress = mSecondaryProgress;
 
-        return ss;
-    }
+      return ss;
+   }
 
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
+   @Override
+   public void onRestoreInstanceState(Parcelable state) {
+      SavedState ss = (SavedState) state;
+      super.onRestoreInstanceState(ss.getSuperState());
 
-        setProgress(ss.progress);
-        setSecondaryProgress(ss.secondaryProgress);
-    }
+      setProgress(ss.progress);
+      setSecondaryProgress(ss.secondaryProgress);
+   }
 }

@@ -33,6 +33,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 /**
@@ -72,6 +73,7 @@ public class LabelView extends ComponentView implements SensoryDelegate {
    private void initLabel(Label label) {
       textView.setId(label.getComponentId());
       textView.setGravity(Gravity.CENTER);
+      textView.setLayoutParams(new FrameLayout.LayoutParams(label.getFrameWidth(), label.getFrameHeight()));
       text = label.getText();
       if (text != null) {
          textView.setText(text);
