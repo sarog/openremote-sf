@@ -20,22 +20,51 @@
  */
 package org.openremote.controller.exception;
 
+import java.text.MessageFormat;
 
 /**
- * Generic exception type to indicate initialization errors during controller
- * startup / warm restart / redeploy phases.
+ * A common (checked) exception super-class for shared functionality.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class InitializationException extends OpenRemoteException
+public class OpenRemoteException extends Exception
 {
+
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * Handles the message formatting (and possible errors originating from it).
+   *
+   * @param msg     exception message to format
+   * @param params  exception message parameters -- message parameterization must be
+   *                compatible with {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   *
+   * @return  message formatted with given parameters
+   */
+  protected static String format(String msg, Object... params)
+  {
+    try
+    {
+      return MessageFormat.format(msg, params);
+    }
+
+    catch (Throwable t)
+    {
+      return msg + "  [EXCEPTION MESSAGE FORMATTING ERROR: " + t.getMessage().toUpperCase() + "]";
+    }
+  }
+
+
+  // Constructors ---------------------------------------------------------------------------------
 
   /**
    * Constructs a new exception with a given message.
    *
    * @param msg  human-readable error message
    */
-  public InitializationException(String msg)
+  public OpenRemoteException(String msg)
   {
     super(msg);
   }
@@ -49,7 +78,7 @@ public class InitializationException extends OpenRemoteException
    *
    * @see java.text.MessageFormat
    */
-  public InitializationException(String msg, Object... params)
+  public OpenRemoteException(String msg, Object... params)
   {
     super(format(msg, params));
   }
@@ -60,7 +89,7 @@ public class InitializationException extends OpenRemoteException
    * @param msg     human-readable error message
    * @param cause   root exception cause
    */
-  public InitializationException(String msg, Throwable cause)
+  public OpenRemoteException(String msg, Throwable cause)
   {
     super(msg, cause);
   }
@@ -75,7 +104,7 @@ public class InitializationException extends OpenRemoteException
    *
    * @see java.text.MessageFormat
    */
-  public InitializationException(String msg, Throwable cause, Object... params)
+  public OpenRemoteException(String msg, Throwable cause, Object... params)
   {
     super(format(msg, params), cause);
   }

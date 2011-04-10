@@ -20,14 +20,14 @@
  */
 package org.openremote.controller.exception;
 
-
 /**
- * Generic exception type to indicate initialization errors during controller
- * startup / warm restart / redeploy phases.
+ * Generic exception class indicating configuration error in various configuration files that
+ * user may have changed or modified, for example applicationContext.xml, controller.xml,
+ * config.properties, etc.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class InitializationException extends OpenRemoteException
+public class ConfigurationException extends OpenRemoteException
 {
 
   /**
@@ -35,7 +35,7 @@ public class InitializationException extends OpenRemoteException
    *
    * @param msg  human-readable error message
    */
-  public InitializationException(String msg)
+  public ConfigurationException(String msg)
   {
     super(msg);
   }
@@ -49,7 +49,7 @@ public class InitializationException extends OpenRemoteException
    *
    * @see java.text.MessageFormat
    */
-  public InitializationException(String msg, Object... params)
+  public ConfigurationException(String msg, Object... params)
   {
     super(format(msg, params));
   }
@@ -60,7 +60,7 @@ public class InitializationException extends OpenRemoteException
    * @param msg     human-readable error message
    * @param cause   root exception cause
    */
-  public InitializationException(String msg, Throwable cause)
+  public ConfigurationException(String msg, Throwable cause)
   {
     super(msg, cause);
   }
@@ -75,7 +75,7 @@ public class InitializationException extends OpenRemoteException
    *
    * @see java.text.MessageFormat
    */
-  public InitializationException(String msg, Throwable cause, Object... params)
+  public ConfigurationException(String msg, Throwable cause, Object... params)
   {
     super(format(msg, params), cause);
   }

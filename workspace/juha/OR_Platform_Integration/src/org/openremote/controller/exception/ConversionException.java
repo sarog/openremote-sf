@@ -26,7 +26,7 @@ package org.openremote.controller.exception;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class ConversionException extends Exception
+public class ConversionException extends OpenRemoteException
 {
 
   /**
@@ -40,6 +40,20 @@ public class ConversionException extends Exception
   }
 
   /**
+   * Constructs a new exception with a parameterized message.
+   *
+   * @param msg     human-readable error message
+   * @param params  exception message parameters -- message parameterization must be
+   *                compatible with {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public ConversionException(String msg, Object... params)
+  {
+    super(format(msg, params));
+  }
+
+  /**
    * Constructs a new exception with a given message and root cause.
    *
    * @param msg     human-readable error message
@@ -49,4 +63,21 @@ public class ConversionException extends Exception
   {
     super(msg, cause);
   }
+
+  /**
+   * Constructs a new exception with a parameterized message and root cause.
+   *
+   * @param msg     human-readable error message
+   * @param cause   root exception cause
+   * @param params  exception message parameters -- message parameterization must be
+   *                compatible with {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public ConversionException(String msg, Throwable cause, Object... params)
+  {
+    super(format(msg, params), cause);
+  }
+
+
 }

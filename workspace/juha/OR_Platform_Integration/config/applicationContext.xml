@@ -170,7 +170,7 @@
 	
 	<!-- KNX Command Builder -->
 	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder"/>
-	
+
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
 	      scope = "prototype"/>
@@ -231,9 +231,6 @@
 	 
 	<!-- Button Builder -->
 	<bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder"/>
-	
-	<!-- Toggle Builder -->
-	<bean id = "toggleBuilder" class = "org.openremote.controller.component.control.toggle.ToggleBuilder"/>
 	
 	<!-- Switch Builder -->
 	<bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>

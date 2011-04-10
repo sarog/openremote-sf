@@ -66,6 +66,11 @@ public class Constants
   public final static String RUNTIME_CONFIGURATION_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".system.configuration";
 
   /**
+   * Specific log category for reporting events during the controller startup
+   */
+  public final static String INIT_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".startup";
+
+  /**
    * Specific log category for deployers.
    */
   public final static String DEPLOYER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".deployer";
