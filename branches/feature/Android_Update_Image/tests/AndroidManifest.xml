@@ -4,7 +4,7 @@
     package="org.openremote.android.test">
 
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-
+	<uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application>
         <uses-library android:name="android.test.runner" />
@@ -14,5 +14,5 @@
                      android:targetPackage="org.openremote.android.console"
                      android:label="Tests for android console."/>
                      
-    <uses-sdk android:minSdkVersion="3" />
+    <uses-sdk android:minSdkVersion="4" />
 </manifest>

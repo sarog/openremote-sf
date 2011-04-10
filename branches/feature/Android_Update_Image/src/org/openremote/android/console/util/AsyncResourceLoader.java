@@ -21,6 +21,7 @@
 package org.openremote.android.console.util;
 
 import java.util.Iterator;
+import java.io.IOException;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
@@ -80,7 +81,25 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
 
       String serverUrl = AppSettingsModel.getSecuredServer(activity);
 
-      HttpResponse checkResponse = ORNetworkCheck.verifyControllerURL(activity, AppSettingsModel.getCurrentServer(activity));
+      HttpResponse checkResponse = null;
+
+      try
+      {
+        checkResponse = ORNetworkCheck.verifyControllerURL(activity, AppSettingsModel.getCurrentServer(activity));
+      }
+      catch (IOException e)
+      {
+        // TODO :
+        //   right now still not doing anything with this, user is still completely in the dark
+        //   what went wrong, need to untangle the async loader mess before can propagate info
+        //   back to user
+        //
+        //   So for now, an empty catch block, until I can build proper test cases for these
+        //                                                                                    [JPL]
+        //
+      }
+
+     
       isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
 
       if (isDownloadSuccess) {
@@ -193,9 +212,11 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
          intent.setClass(activity, LoginViewActivity.class);
          intent.setData(Uri.parse(Main.LOAD_RESOURCE));
          break;
-      case SWITCH_TO_OTHER_CONTROLER:  // this fails on samsung
+      case SWITCH_TO_OTHER_CONTROLER:
+        
          ORControllerServerSwitcher.doSwitch(activity);
          return;
+
       default:
          ViewHelper.showAlertViewWithTitle(activity, "Send Request Error", ControllerException.exceptionMessageOfCode(result.getStatusCode()));
          return;

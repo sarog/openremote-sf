@@ -22,7 +22,7 @@ package org.openremote.android.console.util;
 
 import org.apache.http.HttpRequest;
 import org.openremote.android.console.model.UserCache;
-import org.openremote.android.console.util.base64.BASE64Encoder;
+import org.openremote.android.console.util.base64.Base64Coder;
 
 import android.content.Context;
 
@@ -39,8 +39,9 @@ public class SecurityUtil {
 		String username = UserCache.getUsername(context);
 		String password = UserCache.getPassword(context);
 		
-		BASE64Encoder base64Encoder = new BASE64Encoder();		
-		String encodedUsernameAndPassword = base64Encoder.encode((username+":"+password).getBytes());
+//		BASE64Encoder base64Encoder = new BASE64Encoder();		
+//		String encodedUsernameAndPassword = base64Encoder.encode((username+":"+password).getBytes());
+		String encodedUsernameAndPassword = Base64Coder.encodeString(username+":"+password);
 		httpRequest.addHeader("Authorization", "Basic " + encodedUsernameAndPassword);
    }
 

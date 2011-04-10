@@ -164,7 +164,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
                
             });
          } else {
-            // The following code customizes the dialog, becaurse the finish method should do after dialog show and click ok.
+            // The following code customizes the dialog, because the finish method should do after dialog show and click ok.
             AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
             alertDialog.setTitle("Panel List Not Found");
             alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
@@ -206,5 +206,11 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
       }
    }
 
+   public void setOnlyPanel(String panelName) {
+      if (arrayAdapter != null) {
+         arrayAdapter.clear();
+         arrayAdapter.add(panelName);
+      }
+   }
    
 }

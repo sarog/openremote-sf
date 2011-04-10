@@ -69,7 +69,7 @@ public class ScreenView extends AbsoluteLayout {
          LayoutContainerView la = LayoutContainerView.buildWithLayoutContainer(context, layouts.get(i));
          if (la != null) {
             LayoutContainer layout = layouts.get(i);
-            addView(la, new AbsoluteLayout.LayoutParams(layout.getWidth(), layout.getHeight(), layout.getLeft(), layout
+            addView(la, new AbsoluteLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, layout.getLeft(), layout
                   .getTop()));
          }
       }

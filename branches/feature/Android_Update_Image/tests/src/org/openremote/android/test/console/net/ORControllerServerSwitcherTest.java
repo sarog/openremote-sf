@@ -18,7 +18,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.openremote.android.test.net;
+package org.openremote.android.test.console.net;
 
 import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.model.AppSettingsModel;
@@ -39,15 +39,15 @@ public class ORControllerServerSwitcherTest extends ActivityInstrumentationTestC
 		super("org.openremote.android.console", AppSettingsActivity.class);
 	}
 
-	@MediumTest
-	public void testDetectGroupMembers() {
-		AppSettingsModel.setCurrentServer(getActivity(), "http://192.168.100.113:8080/controller");
-		ORControllerServerSwitcher.detectGroupMembers(getActivity());
-		Log.i("TEST INFO", ORControllerServerSwitcher.findAllGroupMembersFromFile(getActivity()).toString());
-	}
-	
-	public void testDoSwitch() {
-		ORControllerServerSwitcher.doSwitch(getActivity());
-	}
+//	@MediumTest
+//	public void testDetectGroupMembers() {
+//		AppSettingsModel.setCurrentServer(getActivity(), "http://192.168.100.113:8080/controller");
+//		ORControllerServerSwitcher.detectGroupMembers(getActivity());
+//		Log.i("TEST INFO", ORControllerServerSwitcher.findAllGroupMembersFromFile(getActivity()).toString());
+//	}
+//
+//	public void testDoSwitch() {
+//		ORControllerServerSwitcher.doSwitch(getActivity());
+//	}
 
 }
