@@ -66,7 +66,8 @@
 		</slider>
 
 
-    
+
+
 		<button id = "9">
 			<delay>500</delay>
       		<include type="command" ref="99" />
@@ -126,6 +127,30 @@
 		</sensor>
 
 
+    <!--
+
+          Temperature range sensor  (EVENT LISTENER)
+
+    -->
+		<sensor id = "1088" name = "temperature" type = "range">
+	    	<include type = "command" ref = "510" />
+	    	<min value = "-50" />
+	    	<max value = "50" />
+		</sensor>
+
+
+    <!--
+
+          TODO :  VERIFY THE ERROR HANDLING / MESSAGE WHEN COMMAND REF IS NOT FOUND
+
+		<sensor id = "1088" name = "temperature" type = "range">
+	    	<include type = "command" ref = "520" />
+	    	<min value = "-50" />
+	    	<max value = "50" />
+		</sensor>
+
+    -->
+
 		<sensor id="1009" name="Door power sensor" type="custom">
 	    	<include type="command" ref="98" />
 	    	<state name="open" value="on" />
@@ -154,13 +179,13 @@
 
 		<command id = "502" protocol = "virtual">
 			<property name = "command" value = "OFF"/>
-      <property name = "address" value = "switch 2"/>
+      <property name = "address" value = "switch 1"/>
 		</command>
 
 
 		<command id="98" protocol="virtual">
 			<property name="command" value="STATUS" />
-      <property name = "address" value = "switch 3"/>
+      <property name = "address" value = "switch 1"/>
 		</command>
 
 
@@ -180,6 +205,19 @@
 			<property name="command" value="STATUS" />
       <property name = "address" value = "switch 5"/>
 		</command>
+
+    <command id="96" protocol="virtual">
+      <property name="command" value="STATUS" />
+      <property name = "address" value = "switch 5"/>
+    </command>
+
+
+    <command id = "510" protocol = "virtual">
+      <property name = "command" value = "TemperatureSensor" />
+      <property name = "address" value = "thermo 1"/>
+    </command>
+
+
 	</commands>
 	
 	<config>

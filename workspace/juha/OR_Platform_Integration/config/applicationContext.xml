@@ -123,9 +123,14 @@
     <bean id="statusPollingService" class="org.openremote.controller.service.impl.StatusPollingServiceImpl" />
     
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
-	
-	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache" />
-	
+
+
+
+	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache">
+    <property name = "eventProcessorChain" ref = "eventProcessorChain" /> 
+  </bean>
+
+
 	<!-- status cache service -->
   <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     <property name="cache" ref="statusCache"></property>
@@ -219,7 +224,20 @@
 		    </props>
 		</property>
 	</bean>
-	
+
+
+  <!-- EVENT PROCESSING CHAIN =====================================================================
+   |
+   |
+   |
+   +-->
+  <bean id = "eventProcessorChain" class = "org.openremote.controller.statuscache.EventProcessorChain">
+    <property name = "eventProcessors">
+      <bean class = "org.openremote.controller.statuscache.rules.DroolsEventProcessor" />
+    </property>
+  </bean>
+
+
 	<!-- UI COMPONENT BUILDERS ============================================================================
 	 |
 	 | Implementation specific builders for the UI component Factory bean. In short, each distinct command

@@ -36,6 +36,7 @@ import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.Constants;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.RangeSensor;
@@ -183,6 +184,12 @@ public class SensorBuilder
 
   private static Namespace orNamespace = Namespace.getNamespace(Constants.OPENREMOTE_WEBSITE);
 
+  
+  /**
+   * Common log category for all XML parsing related activities.
+   */
+  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+
 
   // Private Instance Fields ----------------------------------------------------------------------
 
@@ -276,14 +283,14 @@ public class SensorBuilder
    */
   public Sensor build(Element sensorElement) throws InitializationException
   {
-    return build(null, sensorElement);
+    return build(sensorElement.getDocument(), sensorElement);
   }
 
 
   /**
    * TODO : Builds a sensor from XML element.
    *
-   * @param sensorElement   JDOM element for sensor
+   * @param componentIncludeElement   JDOM element for sensor
    *
    * @throws InitializationException    if the sensor model cannot be built from the given XML
    *                                    element
@@ -617,15 +624,35 @@ public class SensorBuilder
    */
   private StateSensor.DistinctStates getSwitchStateMapping(Element sensorElement)
   {
-    List<Element>sensorChildren = getChildren(sensorElement);
-    StateSensor.DistinctStates mapping = new StateSensor.DistinctStates();
+    String sensorIDValue = sensorElement.getAttributeValue("id");
+    String sensorName = sensorElement.getAttributeValue(XML_SENSOR_STATE_NAME_ATTR);
 
+    List<Element> sensorChildren = getChildren(sensorElement);
+    StateSensor.DistinctStates mapping = new StateSensor.DistinctStates();
+    
     for (Element sensorChild : sensorChildren)
     {
       if (sensorChild.getName().equalsIgnoreCase(XML_SENSOR_STATE_ELEMENT_NAME))
       {
         String nameAttr = sensorChild.getAttributeValue(XML_SENSOR_STATE_NAME_ATTR);
         String valueAttr = sensorChild.getAttributeValue(XML_SENSOR_STATE_VALUE_ATTR);
+
+        if (valueAttr == null)
+        {
+          // TODO :
+          //   - this is really an error, declaring the states for switch sensor without mapping
+          //     is completely redundant (as they're always 'on' and 'off'), however the tooling
+          //     in its current state practices this redundancy in the XML documents it creates
+          //     so treating it as a debug statement rather than a schema error.
+
+          log.debug(
+            "A switch sensor (Name = ''{0}'', ID = {1}) has an incomplete <state> element mapping, " +
+            "the 'value' attribute is missing in <state name = {2}/>.",
+            sensorName, sensorIDValue, nameAttr
+          );
+
+          continue;
+        }
 
         if (valueAttr.equalsIgnoreCase(XML_SWITCH_STATE_VALUE_ON))
         {

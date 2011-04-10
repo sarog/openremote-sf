@@ -27,9 +27,12 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.protocol.EventProducer;
 import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.Event;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
+import org.openremote.controller.model.event.Switch;
+import org.openremote.controller.model.event.Range;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
@@ -325,9 +328,35 @@ public abstract class Sensor
    */
   public void update(String state)
   {
+    // TODO :
+    //   - should update with an event instance
+    //   - *must* match sensor's type on return of processEvent
+    //   - the check on enumSensorType is a temp hack, needs to go through the concrete sensor impl.
+
     String value = processEvent(state);
 
-    ServiceContext.getDeviceStateCache().update(getSensorID(), value);
+    if (getSensorType() == EnumSensorType.SWITCH)
+    {
+      Switch.State switchState;
+
+      if (value.equalsIgnoreCase("on"))
+        switchState = Switch.State.ON;
+      else if (value.equalsIgnoreCase("off"))
+        switchState = Switch.State.OFF;
+      else
+        throw new Error("TYPE MISMATCH");   // TODO
+
+      Event evt = new Switch(getSensorID(), getName(), switchState);
+
+      ServiceContext.getDeviceStateCache().update(evt);
+    }
+
+    else if (getSensorType() == EnumSensorType.RANGE)
+    {
+      Event evt = new Range(getSensorID(), getName(), Integer.parseInt(state));
+
+      ServiceContext.getDeviceStateCache().update(evt);
+    }
   }
 
 

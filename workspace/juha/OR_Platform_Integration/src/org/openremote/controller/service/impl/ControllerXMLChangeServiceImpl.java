@@ -59,10 +59,21 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
   private ChangedStatusTable changedStatusTable;
   private SensorBuilder sensorBuilder;
 
-   
+  private boolean startup = true;
+
+
   @SuppressWarnings("finally")  // TODO : suppressing finally is bad...
   @Override public synchronized boolean refreshController()
   {
+
+    if (startup)
+    {
+      startup = false;
+
+      return true;
+    }
+
+
     if (!isObservedXMLContentChanged(Constants.CONTROLLER_XML) && !isObservedXMLContentChanged(Constants.PANEL_XML))
     {
        return true;

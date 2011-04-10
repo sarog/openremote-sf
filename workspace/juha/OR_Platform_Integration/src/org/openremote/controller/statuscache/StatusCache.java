@@ -1,62 +1,74 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.statuscache;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.protocol.Event;
+import org.openremote.controller.Constants;
 
 /**
- * In the experiment the other day, we found KNX has to read the status one by one, which is very slow if we want to
- * query 5 devices at one time. Considering quick response, we also add cache interface (dummy thread implementation for
- * now) for Controller status querying. 
- * 
- * 
- * In the future, there may and will be another asynchronous polling between Controller and
- * devices, because if user turns on the lamp switch on the wall, not from iPhone, Controller won't know this changed
- * state, so Controller has to do polling for devices more frequently. Since Controller hardware is more powerful than
- * iPhone hardware, we assume Controller can ensure it's synchronous with devices by all means.
- * 
+ * TODO
+ *
  * @author Javen Zhang
- * 
  */
-public class StatusCache {
+public class StatusCache
+{
 
-   private ChangedStatusTable changedStatusTable;
+  // Class Members --------------------------------------------------------------------------------
 
-   private Map<Integer, String> sensorStatus = null;
-   
-   private Logger logger = Logger.getLogger(this.getClass().getName());
+  private final static Logger logger = Logger.getLogger(Constants.RUNTIME_STATECACHE_LOG_CATEGORY);
 
-   public StatusCache() {
-      sensorStatus = new HashMap<Integer, String>();
-   }
 
-   public StatusCache(ChangedStatusTable changedStatusTable) {
-      super();
-      this.changedStatusTable = changedStatusTable;
-   }
-   
+  // Private Instance Fields ----------------------------------------------------------------------
+
+  private ChangedStatusTable changedStatusTable;
+
+  private Map<Integer, String> sensorStatus = null;
+
+  private EventProcessorChain eventProcessorChain;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public StatusCache()
+  {
+    sensorStatus = new HashMap<Integer, String>();
+  }
+
+  public StatusCache(ChangedStatusTable changedStatusTable)
+  {
+    super();
+    this.changedStatusTable = changedStatusTable;
+  }
+
+
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+
    /**
     * This method is used to let the cache to store the status for all the device.
     * @param componentID
@@ -89,16 +101,19 @@ public class StatusCache {
    *     with the collection we are tweaking compared to the original method above
    *
    */
-   public synchronized void update(int componentID, String status)
-   {
-     String oldStatus = sensorStatus.get(componentID);
-     sensorStatus.put(componentID, status);
+  public synchronized void update(Event event)
+  {
+    eventProcessorChain.push(event);
+     
 
-     if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(status))
-     {
-       changedStatusTable.updateStatusChangedIDs(componentID);
-     }
-   }
+    String oldStatus = sensorStatus.get(event.getSourceID());
+    sensorStatus.put(event.getSourceID(), event.serialize());
+
+    if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(event.getValue()))
+    {
+      changedStatusTable.updateStatusChangedIDs(event.getSourceID());
+    }
+  }
 
 
    /**
@@ -146,6 +161,18 @@ public class StatusCache {
    public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
       this.changedStatusTable = changedStatusTable;
    }
+
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  public void setEventProcessorChain(EventProcessorChain processorChain)
+  {
+    this.eventProcessorChain = processorChain;
+  }
+
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
 
    private void updateChangedStatusTable(Integer controlId) {
       changedStatusTable.updateStatusChangedIDs(controlId);
