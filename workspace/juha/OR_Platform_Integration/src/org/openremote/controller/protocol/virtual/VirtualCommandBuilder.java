@@ -27,6 +27,7 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.model.sensor.Sensor;
 import org.jdom.Element;
 import org.apache.log4j.Logger;
 
@@ -196,13 +197,14 @@ public class VirtualCommandBuilder implements CommandBuilder
    */
   static class ThermometerListener implements EventListener, Runnable
   {
-    private int id;
 
-    @Override public void setSensorID(int ID)
+    private Sensor sensor;
+
+    @Override public void setSensor(Sensor sensor)
     {
-      this.id = ID;
+      this.sensor = sensor;
 
-      ServiceContext.getDeviceStateCache().update(id, "0");
+      sensor.update("0");
       
       Thread t = new Thread(this);
       t.start();
@@ -228,7 +230,7 @@ public class VirtualCommandBuilder implements CommandBuilder
           if (temp <= -50)
             step = 1;
 
-          ServiceContext.getDeviceStateCache().update(id, Integer.toString(temp));
+          sensor.update(Integer.toString(temp));
         }
         catch (InterruptedException e)
         {

@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.model.sensor.Sensor;
 
 /**
  * TODO

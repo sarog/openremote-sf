@@ -68,7 +68,7 @@ public class InitCachedStatusDBListenerTest
     doc = builder.build(controllerXMLPath);
 
     sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(doc, "sensor");
-    pollingMachinesService.initStatusCacheWithControllerXML(doc);
+    pollingMachinesService.initStatusCacheWithControllerXML(null);
     pollingMachinesService.startPollingMachineMultiThread();
   }
 

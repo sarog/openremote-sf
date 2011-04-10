@@ -20,23 +20,14 @@
  */
 package org.openremote.controller.service.impl;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.jdom.Element;
 import org.openremote.controller.Constants;
-import org.openremote.controller.protocol.EventProducer;
-import org.openremote.controller.command.Command;
-import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.Component;
-import org.openremote.controller.component.ComponentFactory;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.config.ControllerXMLChangedException;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusCommandService;
 
@@ -47,45 +38,58 @@ import org.openremote.controller.service.StatusCommandService;
  */
 public class StatusCommandServiceImpl implements StatusCommandService
 {
-    
+  // Class Members --------------------------------------------------------------------------------
+
+  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+
 //  private RemoteActionXMLParser remoteActionXMLParser;
 //  private ComponentFactory componentFactory;
 
   private StatusCacheService statusCacheService;
   private ControllerXMLListenSharingData controllerXMLListenSharingData;
 
-
-  public String trigger(String unParsedSensorIDs)
-  {
-    String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
-    //Map<String, EventProducer> sensorIdAndStatusCommandsMap = new HashMap<String, EventProducer>();
-    Set<String> sensorIds = new HashSet<String>(100);
-
-    for (String sensorID : parsedSensorIDs)
-    {
-      sensorIds.add(sensorID/*, getStatusCommand(sensorID)*/);
-    }
-
-    StringBuffer sb = new StringBuffer();
-    sb.append(Constants.STATUS_XML_HEADER);
-
-    //Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
-    for (String sensorID : sensorIds)
-    {
-      sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
-      Sensor sensor = controllerXMLListenSharingData.findSensorById(sensorID);
-
-      sb.append(sensor == null ? StatusCommand.UNKNOWN_STATUS : sensor.readStatus());
-
-      sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
-      sb.append("\n");
-    }
-
-    sb.append(Constants.STATUS_XML_TAIL);
-
-    return sb.toString();
-  }
-    
+// TODO : looks like dead code [JPL]
+//  
+//  public String trigger(String unParsedSensorIDs)
+//  {
+//
+//    String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
+//    //Map<String, EventProducer> sensorIdAndStatusCommandsMap = new HashMap<String, EventProducer>();
+//    Set<String> sensorIds = new HashSet<String>(100);
+//    sensorIds.addAll(Arrays.asList(parsedSensorIDs));
+//
+////    for (String sensorID : parsedSensorIDs)
+////    {
+////      sensorIds.add(sensorID/*, getStatusCommand(sensorID)*/);
+////    }
+//
+//    StringBuffer sb = new StringBuffer();
+//    sb.append(Constants.STATUS_XML_HEADER);
+//
+//    //Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
+//    for (String sensorID : sensorIds)
+//    {
+//      sb.append("<")
+//          .append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME)
+//          .append(" ")
+//          .append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY)
+//          .append("=\"")
+//          .append(sensorID)
+//          .append("\">");
+//
+//      Sensor sensor = controllerXMLListenSharingData.findSensorById(sensorID);
+//
+//      sb.append(sensor == null ? StatusCommand.UNKNOWN_STATUS : sensor.read());
+//
+//      sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+//      sb.append("\n");
+//    }
+//
+//    sb.append(Constants.STATUS_XML_TAIL);
+//
+//    return sb.toString();
+//  }
+//
 //  private EventProducer getStatusCommand(String sensorID)
 //  {
 //    Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
@@ -116,9 +120,17 @@ public class StatusCommandServiceImpl implements StatusCommandService
 
     for (Integer sensorID : sensorIDs)
     {
-      sb.append("<" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + " " + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY + "=\"" + sensorID + "\">");
+      sb.append("<")
+          .append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME)
+          .append(" ")
+          .append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY)
+          .append("=\"")
+          .append(sensorID)
+          .append("\">");
+
       sb.append(latestStatuses.get(sensorID));
-      sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
+      sb.append("</");
+      sb.append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
       sb.append("\n");
     }
 
@@ -141,7 +153,7 @@ public class StatusCommandServiceImpl implements StatusCommandService
 
       catch (NumberFormatException e)
       {
-        throw new NoSuchComponentException("No such sensor whose id is :" + statusSensorID, e);
+        log.warn("Sensor ID = {0} is not a valid integer ID. Skipping...", statusSensorID);
       }
     }
 

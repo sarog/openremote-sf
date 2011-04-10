@@ -20,10 +20,12 @@
  */
 package org.openremote.controller.statuscache;
 
-import org.apache.log4j.Logger;
+
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.Sensor;
+import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.service.StatusCacheService;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
 
 /**
  * 
@@ -32,13 +34,18 @@ import org.openremote.controller.service.StatusCacheService;
 public class PollingMachineThread extends Thread
 {
 
+  // Class Members --------------------------------------------------------------------------------
+
+  private final static Logger log = Logger.getLogger(Constants.RUNTIME_SENSORS_LOG_CATEGORY);
+
+
+  private volatile boolean alive = true;
+
   private Sensor sensor;
 	private StatusCacheService statusCacheService;
 	private String lastStatus = StatusCommand.UNKNOWN_STATUS;
 	private static final long INTERVAL = 500;
-	private boolean alive = true;
-	private static Logger logger = Logger.getLogger(PollingMachineThread.class);
-	
+
 	/** milliseconds */
 	private long pollingMachineInterval;
 	
@@ -56,28 +63,32 @@ public class PollingMachineThread extends Thread
   }
 
 
-	@Override public void run()
+  @Override public void run()
   {
-System.out.println(" -------- Started thread for sensor " + sensor);
+    log.info("Started sensor (ID = {0}, type = {1}).", sensor.getSensorID(), sensor.getSensorType());
 
-		while (alive)
+    while (alive)
     {
-		   lastStatus = sensor.readStatus();
-			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
+      lastStatus = sensor.read();
+      statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
 
-			try
+      try
       {
-				Thread.sleep(pollingMachineInterval);
-			}
+        Thread.sleep(pollingMachineInterval);
+      }
       catch (InterruptedException e)
       {
-			   logger.error("PollingMachineThread is interrupted", e);
+        alive = false;
 
-        // TODO : must be fixed to interrupt correctly
-			}
-		}
-	}
-	
+        log.info("Shutting down sensor (ID = {0}, type = {1}).", sensor.getSensorID(), sensor.getSensorType());
+
+        // Allow the container to handle thread cleanup if it wants to...
+
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+
 	public void kill()
   {
 	   this.alive = false;

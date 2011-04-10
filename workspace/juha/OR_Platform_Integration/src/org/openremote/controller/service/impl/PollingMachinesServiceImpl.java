@@ -29,10 +29,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.Sensor;
-import org.openremote.controller.component.SensorBuilder;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -71,21 +71,21 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
 
   // Implements PollingMachinesService ------------------------------------------------------------
 
-  @Override public void initStatusCacheWithControllerXML(Document document)
+  @Override public void initStatusCacheWithControllerXML(Document doc)
   {
     List<Element> sensorElements = null;
 
     try
     {
-      if (document == null)
-      {
+//      if (document == null)
+//      {
         sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
-      }
-
-      else
-      {
-        sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
-      }
+//      }
+//
+//      else
+//      {
+//        sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
+//      }
     }
     catch (ControllerXMLNotFoundException e)
     {
@@ -115,7 +115,9 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
       {
         try
         {
-          Sensor sensor = sensorBuilder.build(document, sensorElement);
+          Sensor sensor = sensorBuilder.build(sensorElement);
+
+System.out.println(" --------------- Add Sensor: " + sensor.getSensorID());
 
           controllerXMLListenSharingData.addSensor(sensor);
 
@@ -157,7 +159,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
 
       if (sensor.isEventListener())
       {
-        sensor.initListener();
+        sensor.start();
       }
     }
 

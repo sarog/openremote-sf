@@ -235,7 +235,7 @@ public class ServletStartup implements ServletContextListener
   {
     PollingMachinesService devicePollingService = ServiceContext.getDevicePollingService();
 
-    devicePollingService.initStatusCacheWithControllerXML(null);
+    devicePollingService.initStatusCacheWithControllerXML(null );
     devicePollingService.startPollingMachineMultiThread();
   }
 

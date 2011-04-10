@@ -39,7 +39,7 @@ public enum EnumSensorType {
       return super.toString().toLowerCase();
    }
    
-   public static EnumSensorType enumValueOf(String typePropertyValueOfSensor) {
-      return Enum.valueOf(EnumSensorType.class, typePropertyValueOfSensor.toUpperCase());
-   }
+//   public static EnumSensorType enumValueOf(String typePropertyValueOfSensor) {
+//      return Enum.valueOf(EnumSensorType.class, typePropertyValueOfSensor.toUpperCase());
+//   }
 }

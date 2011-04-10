@@ -37,8 +37,9 @@ import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.control.slider.Slider;
 import org.openremote.controller.component.control.slider.SliderBuilder;
-import org.openremote.controller.exception.InvalidElementException;
+//import org.openremote.controller.exception.InvalidElementException;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.utils.SpringTestContext;
 
 /**
@@ -63,24 +64,24 @@ public class SliderBuilderTest {
    
    /** Get invalid slider with control id from controller.xml. */
    @Test
-   public void testGetInvalidSlider() throws JDOMException{
+   public void testGetInvalidSlider() throws Exception{
       try {
          getSliderByID("1");
          fail("Valid slider");
-      } catch (InvalidElementException e) {
+      } catch (XMLParsingException e) {
       }
    }
    
    /** Get a non-null slider and it's valid. */
    @Test
-   public void testGetSliderNotNull() throws JDOMException{
+   public void testGetSliderNotNull() throws Exception{
       Slider slider = getSliderByID("8");
       Assert.assertNotNull(slider);
    }
    
    /** Get slider with control id from controller.xml but the control don't exsit in controller.xml.  */
    @Test
-   public void testGetSliderNoSuchID() throws JDOMException{
+   public void testGetSliderNoSuchID() throws Exception{
       Slider slider  = null;
       try{
          slider = getSliderByID("13");
@@ -92,7 +93,7 @@ public class SliderBuilderTest {
    
    /** Get the slider and check whether the executable commands are null. */
    @Test
-   public void testGetExecutableCommandsOfSlider() throws JDOMException {
+   public void testGetExecutableCommandsOfSlider() throws Exception {
       Slider slider = getSliderByID("8");
       Assert.assertNotNull(slider.getExecutableCommands());
       Assert.assertTrue(slider.getExecutableCommands().size() > 0);
@@ -115,7 +116,8 @@ public class SliderBuilderTest {
       return elements.get(0);
    }
    
-   private Slider getSliderByID(String sliderID) throws JDOMException{
+   private Slider getSliderByID(String sliderID) throws Exception
+   {
       Element controlElement = getElementByID(sliderID);
       return (Slider) sliderBuilder.build(controlElement, "20");
    }

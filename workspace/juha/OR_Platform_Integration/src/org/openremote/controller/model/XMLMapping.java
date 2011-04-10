@@ -36,7 +36,66 @@ public class XMLMapping
   public final static String XML_DECLARATION_UTF8 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
   public final static String XML_DOCUMENT_INDENT = "  ";
+
+
+
+  // Include Element XML Constants ----------------------------------------------------------------
+
+  /**
+   * Include element name in controller.xml file, i.e.
+   *
+   * <pre>
+   * {@code
+   *       <include type = "xxx" ref = "nnn" />
+   * }</pre>
+   */
+  public final static String XML_INCLUDE_ELEMENT_NAME = "include";
+
+  /**
+   * Include element 'type' attribute name in controller.xml file, i.e.
+   *
+   * <pre>
+   * {@code
+   *       <include type = "xxx" ref = "nnn"/>
+   * }</pre>
+   */
+  public final static String XML_INCLUDE_ELEMENT_TYPE_ATTR = "type";
+
+  /**
+   * Include element 'type' attribute value 'sensor' in controller.xml file, i.e.
+   *
+   * <pre>
+   * {@code
+   *       <include type = "sensor" ref = "nnn"/>
+   * }</pre>
+   */
+  public final static String XML_INCLUDE_ELEMENT_TYPE_SENSOR = "sensor";
+
+  /**
+   * Include element 'type' attribute value 'command' in controller.xml file, i.e.
+   *
+   * <pre>
+   * {@code
+   *       <include type = "command" ref = "nnn"/>
+   * }</pre>
+   */
+  public final static String XML_INCLUDE_ELEMENT_TYPE_COMMAND = "command";
+
+  /**
+   * Include element 'ref' attribute in controller.xml file, i.e.
+   *
+   * <pre>
+   * {@code
+   *       <include type = "sensor" ref = "nnn"/>
+   * }</pre>
+   */
+  public final static String XML_INCLUDE_ELEMENT_REF_ATTR = "ref";
+
+
+
   
+
+
 
   // Class Members --------------------------------------------------------------------------------
 

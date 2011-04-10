@@ -20,10 +20,14 @@
  */
 package org.openremote.controller.spring;
 
+import java.util.Properties;
+import java.util.Map;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.command.CommandFactory;
 
 /**
  * TODO : ApplicationContext for Spring container
@@ -71,9 +75,32 @@ public class SpringContext extends ServiceContext
   }
 
 
-  @Override public Object getService(ServiceName name)
+  @Override public Object getService(ServiceName name, Object... params)
   {
-    return getBean(name.getSpringBeanName());
+    if (name == ServiceName.PROTOCOL && params != null)
+    {
+      CommandFactory cf = (CommandFactory)getBean(name.getSpringBeanName());
+      Map<String, String> protocols = cf.getProtocols();
+
+      String paramValue = (String)params[0];
+      String protocolImplName = protocols.get(paramValue);
+
+      return getBean(protocolImplName);
+    }
+
+    else if (name == ServiceName.XML_BINDING)
+    {
+      if (params == null || params[0] == null)
+        throw new IllegalArgumentException("XML Binding service requires a component name parameter");
+
+      String suffix = (String)params[0];
+
+      return getBean(suffix + name.getSpringBeanName());
+    }
+    else
+    {
+      return getBean(name.getSpringBeanName());
+    }
   }
 
   

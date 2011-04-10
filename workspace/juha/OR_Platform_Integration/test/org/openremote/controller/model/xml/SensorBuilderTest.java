@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.component;
+package org.openremote.controller.model.xml;
 
 
 import junit.framework.Assert;
@@ -29,6 +29,11 @@ import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
 import org.openremote.controller.Constants;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;

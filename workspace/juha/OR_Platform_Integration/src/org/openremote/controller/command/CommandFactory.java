@@ -21,33 +21,34 @@
 package org.openremote.controller.command;
 
 import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jdom.Element;
 import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.exception.NoSuchCommandBuilderException;
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.service.ServiceContext;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 
 /**
- * A factory for creating Command objects.
+ * TODO : A factory for creating Command objects.
  * 
  * @author Handy.Wang 2009-10-13
  */
-public class CommandFactory extends ApplicationObjectSupport
+public class CommandFactory //extends ApplicationObjectSupport
 {
    
-   /** The command builders. */
    private Properties commandBuilders;
    
-   /**
-    * Gets the command.
-    * 
-    * @param element the element
-    * 
-    * @return the command
-    */
-   public Command getCommand(Element element)
+   public Command getCommand(Element element) throws ConfigurationException
    {
+     if (commandBuilders == null)
+     {
+       throw new IllegalArgumentException("CommandFactory has not been initialized with protocol builders.");
+     }
+
       if (element == null)
       {
          throw new CommandBuildException("Command DOM element is null.");
@@ -67,18 +68,22 @@ public class CommandFactory extends ApplicationObjectSupport
          throw new NoSuchCommandBuilderException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' protocol.");
       }
 
-      CommandBuilder commandBuilder = (CommandBuilder) getApplicationContext().getBean(builder);
+      CommandBuilder commandBuilder = //(CommandBuilder) getApplicationContext().getBean(builder);
+        ServiceContext.getProtocol(protocolType);
 
       return commandBuilder.build(element);
    }
 
-   /**
-    * Sets the command builders.
-    * 
-    * @param commandBuilders the new command builders
-    */
    public void setCommandBuilders(Properties commandBuilders)
    {
       this.commandBuilders = commandBuilders;
    }
+
+  public Map<String, String> getProtocols()
+  {
+    Map protocols = new HashMap(20);
+    protocols.putAll(commandBuilders);
+
+    return protocols;
+  }
 }

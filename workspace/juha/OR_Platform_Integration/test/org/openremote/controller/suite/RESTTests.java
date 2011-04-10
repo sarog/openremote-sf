@@ -41,6 +41,7 @@ import org.openremote.controller.rest.ControlStatusPollingRESTServletTest;
 import org.openremote.controller.rest.FindPanelByIDTest;
 import org.openremote.controller.rest.SkipStateTrackTest;
 import org.openremote.controller.rest.ListPanelIDsTest;
+import org.openremote.controller.rest.SensorStatusTest;
 import org.openremote.controller.rest.support.json.JSONTranslatorTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
 import org.openremote.controller.statuscache.StatusCacheTest;
@@ -62,7 +63,8 @@ import org.w3c.dom.Node;
    JSONTranslatorTest.class,
 
    FindPanelByIDTest.class,
-   ListPanelIDsTest.class
+   ListPanelIDsTest.class,
+   SensorStatusTest.class
 }
 )
 
@@ -266,12 +268,7 @@ public class RESTTests
 
   public static Document getDOMDocument(InputStream in) throws Exception
   {
-    BufferedInputStream bin = new BufferedInputStream(in);
-
-    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder parser = domFactory.newDocumentBuilder();
-
-    return parser.parse(bin);
+    return AllTests.getDOMDocument(in);
   }
 
 
@@ -281,27 +278,30 @@ public class RESTTests
 
   public static void restoreControllerPanelXML()
   {
-    String containerPanelXml = AllTests.getFixtureFile(Constants.PANEL_XML);
-
-    if (new File(containerPanelXml + ".bak").exists())
-    {
-       new File(containerPanelXml + ".bak").renameTo(new File(containerPanelXml));
-    }
+    AllTests.restorePanelXML();
+//    String containerPanelXml = AllTests.getFixtureFile(Constants.PANEL_XML);
+//
+//    if (new File(containerPanelXml + ".bak").exists())
+//    {
+//       new File(containerPanelXml + ".bak").renameTo(new File(containerPanelXml));
+//    }
   }
 
 
   public static void replaceControllerPanelXML(String filename)
   {
-    String fixtureFile = AllTests.getFixtureFile(filename);
-
-    String containerPanelXml = RESTTests.getContainerPanelXML();
-
-    if (new File(containerPanelXml).exists())
-    {
-       new File(containerPanelXml).renameTo(new File(containerPanelXml + ".bak"));
-    }
-
-    copyFile(fixtureFile, containerPanelXml);
+    AllTests.replacePanelXML(filename);
+//
+//    String fixtureFile = AllTests.getFixtureFile(filename);
+//
+//    String containerPanelXml = RESTTests.getContainerPanelXML();
+//
+//    if (new File(containerPanelXml).exists())
+//    {
+//       new File(containerPanelXml).renameTo(new File(containerPanelXml + ".bak"));
+//    }
+//
+//    copyFile(fixtureFile, containerPanelXml);
   }
 
   public static void deleteControllerPanelXML()
@@ -321,47 +321,6 @@ public class RESTTests
 
   
 
-  // Helpers --------------------------------------------------------------------------------------
-
-  private static void copyFile(String src, String dest)
-  {
-    File inputFile = new File(src);
-    File outputFile = new File(dest);
-
-    FileReader in;
-
-    try
-    {
-      in = new FileReader(inputFile);
-
-      if (!outputFile.getParentFile().exists())
-      {
-        outputFile.getParentFile().mkdirs();
-      }
-
-      if (!outputFile.exists())
-      {
-        outputFile.createNewFile();
-      }
-
-      FileWriter out = new FileWriter(outputFile);
-
-      int c;
-
-      while ((c = in.read()) != -1)
-      {
-        out.write(c);
-      }
-
-      in.close();
-      out.close();
-    }
-
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-  }
 
 
 

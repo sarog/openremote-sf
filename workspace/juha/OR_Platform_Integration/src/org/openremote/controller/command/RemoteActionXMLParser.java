@@ -1,22 +1,23 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 package org.openremote.controller.command;
 
@@ -40,27 +41,46 @@ import org.openremote.controller.utils.PathUtil;
 
 
 /**
- * The controller.xml Parser.
+ * TODO : The controller.xml Parser.
  * 
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParser {
-   
-   private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
-   
-   private ControllerConfiguration configuration;
-   
-   /**
-    * Query element from default controller.xml by Id.
-    * 
-    * @param id
-    *           element id
-    * @return element
-    */
-   public Element queryElementFromXMLById(String id) {
-      return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
-   }
-   
+public class RemoteActionXMLParser
+{
+
+  // Class Members --------------------------------------------------------------------------------
+
+  private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private ControllerConfiguration configuration;
+
+
+  // Instance Methods -----------------------------------------------------------------------------
+
+  /**
+   * Query element from default controller.xml by Id.
+   */
+  public Element queryElementFromXMLById(String id)
+  {
+    return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
+  }
+
+  /**
+   * TODO
+   * 
+   * @param doc
+   * @param id
+   * @return
+   */
+  public Element getElement(Document doc, int id)
+  {
+    return queryElementFromXMLById(doc, Integer.toString(id));
+  }
+
+
    /**
     * Query element from a specified controller.xml by Id.
     * 
@@ -73,7 +93,16 @@ public class RemoteActionXMLParser {
    public Element queryElementFromXMLById(Document doc, String id) {
       return queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
    }
-   
+
+  public Element queryElementById(Document doc, int id)
+  {
+    if (doc == null)
+      return queryElementFromXMLById(Integer.toString(id));
+    else
+      return queryElementFromXMLById(doc, Integer.toString(id));
+  }
+
+  
    public Element queryElementFromXMLByName(String elementName) {
       return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
    }

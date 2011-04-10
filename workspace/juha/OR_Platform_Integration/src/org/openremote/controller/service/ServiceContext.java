@@ -25,6 +25,7 @@ import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.command.CommandBuilder;
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -59,8 +60,11 @@ public abstract class ServiceContext
 
   // Enums ----------------------------------------------------------------------------------------
 
+  final static boolean IS_SUFFIX = true;
+
   public static enum ServiceName
   {
+
     CONTROLLER_XML_PARSER("remoteActionXMLParser"),
 
     CONTROLLER_CONFIGURATION("configuration"),
@@ -73,8 +77,13 @@ public abstract class ServiceContext
 
     DEVICE_STATE_CACHE("statusCache"),
 
-    FILE_RESOURCE_SERVICE("fileService");
+    FILE_RESOURCE_SERVICE("fileService"),
 
+    DEPLOYMENT_SERVICE("controllerXMLChangeService"),
+
+    PROTOCOL("commandFactory"),
+
+    XML_BINDING("Builder");
 
     private String springBeanName;
 
@@ -82,6 +91,7 @@ public abstract class ServiceContext
     {
       this.springBeanName = springBeanName;
     }
+
 
     public String getSpringBeanName()
     {
@@ -206,6 +216,48 @@ public abstract class ServiceContext
     }
   }
 
+  public static ControllerXMLChangeService getDeployer()
+  {
+    try
+    {
+      return (ControllerXMLChangeService)getInstance().getService(ServiceName.DEPLOYMENT_SERVICE);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Deployment service implementation has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static CommandBuilder getProtocol(String name)
+  {
+    Object service = getInstance().getService(ServiceName.PROTOCOL, name);
+
+    if (service instanceof CommandBuilder)
+    {
+      return (CommandBuilder) service;
+    }
+
+    else
+    {
+      throw new Error(
+          "Protocol builder service implementation has had an incompatible change. " +
+          "Expected " + CommandBuilder.class.getName() + " type."
+      );
+    }
+  }
+
+
+
+  public static Object getXMLBinding(String namePrefix)
+  {
+    return getInstance().getService(ServiceName.XML_BINDING, namePrefix);
+
+    // TODO : returning object since SensorBuilder does not adhere to any common type
+  }
+
 
   public static ServiceContext getInstance()    // TODO : go to private once spring context getinstance has been removed
   {
@@ -248,13 +300,21 @@ public abstract class ServiceContext
 
   // Constructors ---------------------------------------------------------------------------------
 
-  protected ServiceContext()
-  {
-    
-  }
+  protected ServiceContext() { }
 
 
-  public abstract Object getService(ServiceName name);
+  /**
+   * Returns a service implementation by the given service name. This is customizable per
+   * different runtimes (Java SE, Android, etc.). This also abstracts away compile-time
+   * dependencies to any particular bean-binding or service frameworks. The concrete
+   * implementations are free to use whichever framework or API mechanisms to retrieve and
+   * return the requested service implementations.
+   *
+   * @param   name    service name
+   * @param   params  TODO
+   * @return  service implementation
+   */
+  public abstract Object getService(ServiceName name, Object... params);
 
 
 }

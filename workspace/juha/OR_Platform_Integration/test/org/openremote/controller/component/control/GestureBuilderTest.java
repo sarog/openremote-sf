@@ -31,6 +31,7 @@ import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.control.gesture.Gesture;
 import org.openremote.controller.component.control.gesture.GestureBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
 /**
@@ -53,20 +54,22 @@ public class GestureBuilderTest {
       return XMLUtil.getElementByID(doc, id);
    }
    
-   private Gesture getGestureByID(String labelID) throws JDOMException{
+   private Gesture getGestureByID(String labelID) throws JDOMException, ConfigurationException {
       Element controlElement = getElementByID(labelID);
       if(! controlElement.getName().equals("gesture")) {
          throw new NoSuchComponentException("Invalid Gesture.");
       }
       return (Gesture) builder.build(controlElement, "test");
    }
+
    @Test
-   public void testGetGestureforRealID() throws JDOMException{
+   public void testGetGestureforRealID() throws Exception{
       Gesture gesture = getGestureByID("7");
       Assert.assertNotNull(gesture);
    }
+
    @Test
-   public void testGetGestureforInvalidGesture() throws JDOMException{
+   public void testGetGestureforInvalidGesture() throws Exception{
       try{
          getGestureByID("8");
          fail();
@@ -74,7 +77,7 @@ public class GestureBuilderTest {
       }
    }
    @Test
-   public void testGetGestureforNoSuchID() throws JDOMException{
+   public void testGetGestureforNoSuchID() throws Exception{
       try{
          getGestureByID("200");
          fail();

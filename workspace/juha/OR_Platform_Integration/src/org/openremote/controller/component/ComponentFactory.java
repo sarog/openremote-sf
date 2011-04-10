@@ -24,6 +24,10 @@ import java.util.Properties;
 
 import org.jdom.Element;
 import org.openremote.controller.exception.NoSuchCommandBuilderException;
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.Constants;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
@@ -37,14 +41,17 @@ public class ComponentFactory extends ApplicationObjectSupport
   private Properties componentBuilders;
 
   public Component getComponent(Element componentElement, String commandParam)
+      throws InitializationException
   {
     String componentType = componentElement.getName();
     String componentBuilderName = componentBuilders.getProperty(componentType);
 
     if(componentBuilderName == null || componentBuilderName.equals(""))
     {
-      //TODO: refactored to NoSuchComponentBuilderException();
-      throw new NoSuchCommandBuilderException("No such component builder with the component " + componentElement.getName());
+      throw new ConfigurationException(
+          "Component builder in {0} was not found for component type <{1}>.",
+          Constants.BEAN_BINDING_CONFIGURATION_XML, componentElement.getName()
+      );
     }
 
     ComponentBuilder componentBuilder = (ComponentBuilder)getApplicationContext().getBean(componentBuilderName);
