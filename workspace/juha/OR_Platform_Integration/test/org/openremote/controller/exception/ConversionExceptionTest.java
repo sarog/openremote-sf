@@ -18,27 +18,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.suite;
+package org.openremote.controller.exception;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-import org.openremote.controller.utils.ConfigFactoryTest;
-import org.openremote.controller.utils.MacrosIrDelayUtilTest;
-import org.openremote.controller.utils.RemoteActionXMLParserTest;
-import org.openremote.controller.utils.StringsTest;
+import org.junit.Test;
+import org.junit.Assert;
 
-
-@RunWith(Suite.class)
-@SuiteClasses(
-{
-   MacrosIrDelayUtilTest.class,
-   RemoteActionXMLParserTest.class,
-   ConfigFactoryTest.class,
-   StringsTest.class
-}
-)
-public class AllUtilTests
+/**
+ * Just test the constructors of {@link org.openremote.controller.exception.ConversionException}
+ * class to make sure everything is alright.
+ *
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
+ */
+public class ConversionExceptionTest
 {
 
+  @Test public void testConstructors()
+  {
+    new ConversionException("message");
+
+    ConversionException e = new ConversionException("Test message {0}", 1);
+    Assert.assertTrue(e.getMessage().equals("Test message 1"));
+
+    e = new ConversionException("Test {0} {1}", new RuntimeException("cause"), 1, 2);
+
+    Assert.assertTrue(e.getMessage().equals("Test 1 2"));
+    Assert.assertTrue(e.getCause().getMessage().equals("cause"));
+  }
+
 }
+

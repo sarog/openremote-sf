@@ -21,7 +21,14 @@
 package org.openremote.controller.command;
 
 /**
- * TODO
+ * TODO  :
+ *   - This is only a tagging interface but the name abstraction 'Command' no longer makes sense
+ *     as it also includes "EventListener" implementations (which has no command to execute).
+ *     Something like 'ProtocolHandler' would be more appropriate. Rename will however affect
+ *     everyone (and documentation) so leaving it for next major version (or if the existing one
+ *     is very stable)
+ *                                                                                           [JPL]
+ *
  * 
  * @author Handy.Wang 2009-10-15
  * @author Dan Cong

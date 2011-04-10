@@ -37,5 +37,5 @@ public interface PollingMachinesService {
    public void initStatusCacheWithControllerXML(Document document);
    
    /** Create looped threads initialized by <b>STATUSCOMMAND</b> */
-   public void startPollingMachineMultiThread();
+   public void startPollingMachineMultiThread() throws InterruptedException;
 }

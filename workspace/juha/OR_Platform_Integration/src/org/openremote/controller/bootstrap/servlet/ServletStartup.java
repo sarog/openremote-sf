@@ -125,13 +125,27 @@ public class ServletStartup implements ServletContextListener
       Thread.sleep(10);
     }
 
+    catch (InterruptedException e)
+    {
+      // There's nothing for us to do -- mark the thread interrupted in case the servlet
+      // container wants to play nice...
+
+      Thread.currentThread().interrupt();
+
+      String msg =
+          "\n\n=============================================================================\n\n" +
+
+          " Application initialization was INTERRUPTED." +
+
+          "\n\n=============================================================================\n\n";
+
+
+      System.err.println(msg);
+    }
     catch (Throwable t)
     {
-
       // In case any initialization fails, wrap a clear message to user who is deploying the
-      // controller about the error. Propagating the exception up in the call stack, it is
-      // ultimately up to the servlet container to handle and report the error to the user
-      // in the most appropriate way.
+      // controller about the error.
 
       String msg =
           "\n\n=============================================================================\n\n" +
@@ -142,7 +156,8 @@ public class ServletStartup implements ServletContextListener
           "\n\n=============================================================================\n\n";
 
 
-      throw new Error(msg, t);
+      System.err.println(msg);
+      t.printStackTrace(System.err);
     }
   }
 
@@ -214,8 +229,9 @@ public class ServletStartup implements ServletContextListener
    * TODO
    *
    * @throws ControllerException
+   * @throws InterruptedException
    */
-  private void initializeStateCache() throws ControllerException
+  private void initializeStateCache() throws ControllerException, InterruptedException
   {
     PollingMachinesService devicePollingService = ServiceContext.getDevicePollingService();
 
