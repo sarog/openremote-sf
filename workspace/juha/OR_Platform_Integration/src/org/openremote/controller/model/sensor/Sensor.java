@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.component;
+package org.openremote.controller.model.sensor;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -30,6 +30,7 @@ import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
+import org.openremote.controller.component.EnumSensorType;
 
 /**
  * Sensors abstract incoming events from devices, either through polling or listening to
@@ -53,15 +54,7 @@ import org.openremote.controller.Constants;
  *
  * TODO : cache polling reads
  *
- * TODO : move to model pkg (some protocols have dependencies so waiting to do this later)
- *
- * TODO : get sensor properties
- *
- * TODO : push to state cache by listeners
- *
  * TODO : keep track of event producer ID  associated with this sensor
- *
- * TODO : sensor name
  *
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -70,6 +63,8 @@ public abstract class Sensor
 {
 
   // Constants ------------------------------------------------------------------------------------
+
+  public final static String UNKNOWN_STATUS = StatusCommand.UNKNOWN_STATUS;
 
   // TODO :
   //   both constants below are a result of a rather poorly designed API -- they may well be
@@ -87,6 +82,8 @@ public abstract class Sensor
   public final static String RANGE_MAX_STATE = "_range_max_state_";
 
 
+
+
   // Class Members --------------------------------------------------------------------------------
 
   /**
@@ -97,6 +94,10 @@ public abstract class Sensor
 
 
   // Instance Fields ------------------------------------------------------------------------------
+
+
+  private String sensorName;
+
 
   /**
    * Sensors unique ID. Must be unique per controller deployment (unique within controller.xml file)
@@ -137,12 +138,13 @@ public abstract class Sensor
    * Constructs a new sensor with a given ID, sensor datatype, an event producing protocol handler,
    * and a set of sensor properties
    *
+   * @param name              human-readable name of the sensor
    * @param sensorID          an unique sensor ID
    * @param sensorType        datatype for this sensor
    * @param eventProducer     event producing protocol handler implementation
    * @param sensorProperties  additional sensor properties
    */
-  protected Sensor(int sensorID, EnumSensorType sensorType, EventProducer eventProducer,
+  protected Sensor(String name, int sensorID, EnumSensorType sensorType, EventProducer eventProducer,
                Map<String, String> sensorProperties)
   {
     if (sensorType == null || eventProducer == null)
@@ -158,6 +160,7 @@ public abstract class Sensor
       sensorProperties = new HashMap<String, String>(0);
     }
 
+    this.sensorName = name;
     this.sensorID = sensorID;
     this.sensorType = sensorType;
     this.eventProducer = eventProducer;
@@ -167,6 +170,16 @@ public abstract class Sensor
 
 
   // Public Instance Methods ----------------------------------------------------------------------
+
+  /**
+   * Returns the human readable name of this sensor.
+   *
+   * @return  sensor's name as defined in tooling and in controller.xml file
+   */
+  public String getName()
+  {
+    return sensorName;
+  }
 
   /**
    * Returns this sensors ID. The sensor ID is unique in a controller deployment.
@@ -197,6 +210,23 @@ public abstract class Sensor
 
 
   /**
+   * Returns sensor's properties. Properties are simply string based name-value mappings.
+   * Concrete sensor implementations may specify which particular properties they expose. <p>
+   *
+   * The returned map does not reference this sensor instance and can be modified freely.
+   *
+   * @return  sensor properties or an empty collection
+   */
+  public Map<String, String> getProperties()
+  {
+    HashMap<String, String> props = new HashMap<String, String>(5);
+    props.putAll(sensorProperties);
+
+    return props;
+  }
+
+
+  /**
    * Returns the current state of this sensor.  <p>
    *
    * If the sensor is bound to a read command implementation, the read command is invoked --
@@ -208,14 +238,16 @@ public abstract class Sensor
    * this sensor's ID. An event listener implementation is responsible of actively updating and
    * inserting the device state values into the controller's cache. <p>
    *
-   * In case of errors, {@link org.openremote.controller.protocol.ReadCommand#UNKNOWN_STATUS} is
+   * In case of errors, {@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS} is
    * returned.  <p>
    *
    * This default implementation does not validate the input from protocol read commands in any
    * way (other than handling implementation errors that yield runtime exceptions) -- it is the
-   * responsiblity of the concrete subclasses to validate the inputs from read commands to ensure
-   * the sensor returns values that adhere to its datatype.
+   * responsiblity of the concrete subclasses to validate the inputs from read commands
+   * (by implementing {@link Sensor#processEvent}) to ensure the sensor returns values that
+   * adhere to its datatype.
    *
+   * @see Sensor#processEvent(String)
    * @see org.openremote.controller.model.sensor.StateSensor#read
    * @see org.openremote.controller.model.sensor.SwitchSensor#read
    * @see org.openremote.controller.protocol.EventListener
@@ -234,7 +266,7 @@ public abstract class Sensor
     {
       String status = ServiceContext.getDeviceStateCache().queryStatus(sensorID);
 
-      return (status == null) ? StatusCommand.UNKNOWN_STATUS : status;
+      return (status == null) ? UNKNOWN_STATUS : status;
     }
 
     // If we are dealing with regular read commands, execute it to explicitly fetch the
@@ -242,17 +274,33 @@ public abstract class Sensor
 
     if (isPolling())
     {
-      StatusCommand statusCommand = (StatusCommand)eventProducer;
-
       try
       {
-        return statusCommand.read(sensorType, sensorProperties);
+        // Support legacy API...
+
+        if (eventProducer instanceof StatusCommand)
+        {
+          StatusCommand statusCommand = (StatusCommand)eventProducer;
+
+          String returnValue = statusCommand.read(sensorType, sensorProperties);
+
+          return processEvent(returnValue);
+        }
+
+        else
+        {
+          ReadCommand command = (ReadCommand)eventProducer;
+
+          String returnValue = command.read(this);
+
+          return processEvent(returnValue);
+        }
       }
       catch (Throwable t)
       {
         log.error("Implementation error in protocol handler " + eventProducer);
 
-        return ReadCommand.UNKNOWN_STATUS;
+        return Sensor.UNKNOWN_STATUS;
       }
     }
 
@@ -265,6 +313,37 @@ public abstract class Sensor
     }
   }
 
+
+  /**
+   * Call path for event listeners. Allow direct update of the sensor's value in the controller's
+   * global state cache. <p>
+   *
+   * Before updating the state cache, the value is first validated by concrete sensor
+   * implementation's {@link Sensor#processEvent(String)} method.
+   *
+   * @param state   the new value for this sensor
+   */
+  public void update(String state)
+  {
+    String value = processEvent(state);
+
+    ServiceContext.getDeviceStateCache().update(getSensorID(), value);
+  }
+
+
+  /**
+   * Callback to subclasses to apply their event producer validations and other processing
+   * if necessary. This method is called both when a polling sensor (read command) value is
+   * fetched or when an event listener adds a new sensor value to state cache.
+   *
+   * @see Sensor#read
+   * @see Sensor#update
+   *
+   * @param value   value returned by the event producer
+   *
+   * @return validated and processed value of the event producer
+   */
+  protected abstract String processEvent(String value);
 
 
 
@@ -287,7 +366,7 @@ public abstract class Sensor
    */
   public boolean isPolling()
   {
-    return eventProducer instanceof ReadCommand;
+    return eventProducer instanceof ReadCommand || eventProducer instanceof StatusCommand;
   }
 
 
@@ -306,15 +385,20 @@ public abstract class Sensor
    */
   public void start()
   {
+    // TODO :
+    //    register the sensor with state cache -- the cache should control the
+    //    sensor start/stop lifecycle...
+
     if (isEventListener())
     {
       EventListener listener = (EventListener)eventProducer;
 
-      listener.setSensorID(sensorID);
+      listener.setSensor(this);
     }
   }
 
 
+  
 
   // Object Overrides -----------------------------------------------------------------------------
 

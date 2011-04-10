@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.protocol;
 
+import org.openremote.controller.model.sensor.Sensor;
+
 
 /**
  * Event listeners are intended for collecting events from "active" devices which broadcast
@@ -27,45 +29,42 @@ package org.openremote.controller.protocol;
  * KNX bus or IP-network broadcasts.  <p>
  *
  * An event listener can be used with the same 'sensor' abstraction (seen for example in
- * the controller's <tt>controller.xml</tt) configuration file) as the
- * {@link org.openremote.controller.command.StatusCommand status command}. Both
- * <tt>EventListener</tt> and <tt>StatusCommand</tt> are treated as
+ * the controller's <tt>controller.xml</tt) configuration file) as
+ * {@link org.openremote.controller.protocol.ReadCommand read commands}. Both
+ * <tt>EventListener</tt> and <tt>ReadCommand</tt> are treated as
  * {@link org.openremote.controller.protocol.EventProducer event producers}. <p>
  *
  * Creating an event listener may occur via the common
  * {@link org.openremote.controller.command.CommandBuilder} interface.  <p>
  *
  * The <tt>EventListener</tt> implementations are disconnected from the sensor polling
- * threads used with (polling) read commands (a.k.a. <tt>StatusCommand</tt>). No active threads
- * are associated with an <tt>EventListener</tt> instance on behalf of the controller
- * framework. Instead, <tt>EventListener</tt> instances are expected to create their own threads
+ * threads used with (polling) read commands. No active threads are associated with an
+ * <tt>EventListener</tt> instance on behalf of the controller framework. Instead,
+ * <tt>EventListener</tt> instances are expected to create their own threads
  * which implement the listening functionality and also directly push received events to the
- * (global) state cache of the controller using the callback API provided.  <p>
+ * (global) state cache of the controller using the sensor callback API provided.  <p>
  *
- * The <tt>EventListener</tt> implementations can use two APIs to interact with the controller's
- * device state cache: a callback interface is provided by the controller at initialization time
- * which provides sensor identifier(s) this event listener is bound to. Events themselves can
- * be pushed to state cache using the state cache's
- * {@link org.openremote.controller.statuscache.StatusCache#update} method which is available
- * via {@link org.openremote.controller.service.ServiceContext#getDeviceStateCache()} method,
- * as shown in the example below:
+ * Event listener implementations can use the sensor
+ * {@link org.openremote.controller.model.sensor.Sensor#update} method to push state changes
+ * into the controller, as shown in the example below:
  *
  * <pre>{@code
  *
  *  public class BusListener implements EventListener, Runnable
  *  {
  *    // This implementation assumes a listener instance per sensor, so only deals with a
- *    // single sensor ID value...
+ *    // single sensor reference...
  *
- *    private int sensorID;
+ *    private Sensor sensor;
  *
- *    @Override public void setID(int ID)
+ *    @Override public void setSensor(Sensor sensor)
  *    {
- *      this.sensorID = ID;
+ *      this.sensor = sensor;
  *
- *      // Initialize the sensor with a default value...
+ *      // Initialize the sensor with a default value. The sensor implementation may provide
+ *      // additional validation or translations to these values...
  *
- *      ServiceContext.getDeviceStateCache().update(sensorID, "0");
+ *      sensor.update("0");
  *
  *      // This implementation starts a listening thread per sensor. If you want multiple
  *      // listeners / sensors to share same resources or threads, this can be managed in
@@ -79,7 +78,7 @@ package org.openremote.controller.protocol;
  *    {
  *      String sensorValue = implementYourListenerLogic()
  *
- *      ServiceContext.getDeviceStateCache().update(sensorID, sensorValue);
+ *      sensor.update(sensorValue);
  *    }
  *  }
  *
@@ -93,9 +92,7 @@ package org.openremote.controller.protocol;
  *              that not too many events are created.
  *
  * @see EventProducer
- * @see org.openremote.controller.command.StatusCommand
- * @see org.openremote.controller.service.ServiceContext
- * @see org.openremote.controller.statuscache.StatusCache
+ * @see ReadCommand
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -105,17 +102,17 @@ public interface EventListener extends EventProducer
   // TODO :
   //   - the API can (and eventually should) be improved for use case where a listener is bound to
   //     multiple sensors by giving a single callback ID for listener implementor to deal with,
-  //     and mapping that to multiple sensor ID's on controller framework side so the implementer
+  //     and mapping that to multiple sensor's on controller framework side so the implementer
   //     does not need to deal with updating multiple sensors explicitly.
 
 
   /**
-   * Each event listener is initialized with one or more sensor IDs the listener is bound to.
+   * Each event listener is initialized with one or more sensor references the listener is bound to.
    * If the listener is used as an input for multiple sensors, this callback is invoked multiple
-   * times, once for each associated sensor ID.
+   * times, once for each associated sensor.
    * 
-   * @param sensorID    sensor this event listener is bound to
+   * @param sensor    sensor this event listener is bound to
    */
-  public void setSensorID(int sensorID);
+  public void setSensor(Sensor sensor);
 
 }

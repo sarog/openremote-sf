@@ -18,33 +18,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.suite;
+package org.openremote.controller.protocol;
 
-import org.openremote.controller.model.sensor.SensorTest;
-import org.openremote.controller.model.sensor.SwitchSensorTest;
-import org.openremote.controller.model.sensor.StateSensorTest;
-import org.openremote.controller.component.LevelSensorTest;
-import org.openremote.controller.component.RangeSensorTest;
-import org.junit.runners.Suite;
-import org.junit.runner.RunWith;
+import org.junit.Test;
+import org.junit.Assert;
 
 /**
- * Unit tests for sensor implementations.
+ * TODO
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses(
-  {
-    SensorTest.class,
-    SwitchSensorTest.class,
-    RangeSensorTest.class,
-    LevelSensorTest.class,
-    StateSensorTest.class
-  }
-)
-public class SensorTests
+public class EventListenerTest
 {
 
+  @Test public void testImplementations()
+  {
+    // test a few different styles of implementation and also attempt incorrect implementations...
+
+    Assert.fail("Not Yet Implemented.");
+  }
 }
 
