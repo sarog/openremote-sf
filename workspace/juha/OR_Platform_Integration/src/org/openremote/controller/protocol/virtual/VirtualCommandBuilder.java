@@ -26,10 +26,10 @@ import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.EventListener;
-import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
 import org.jdom.Element;
-import org.apache.log4j.Logger;
 
 /**
  * Represents a virtual OpenRemote rooms/devices that can be used for demonstrations and
@@ -50,7 +50,7 @@ public class VirtualCommandBuilder implements CommandBuilder
    * A common log category name intended to be used across all classes related to
    * OpenRemote virtual protocol implementation.
    */
-  public final static String LOG_CATEGORY = "virtual";
+  public final static String LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "virtual";
 
   /**
    * String constant for parsing virtual protocol XML entries from controller.xml file.

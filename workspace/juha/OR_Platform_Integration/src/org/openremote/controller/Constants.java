@@ -81,6 +81,11 @@ public class Constants
   public final static String RUNTIME_SENSORS_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".sensors";
 
   /**
+   * TODO
+   */
+  public final static String RUNTIME_STATECACHE_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".cache";
+  
+  /**
    * Specific log category for reporting events during the controller startup
    */
   public final static String INIT_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".startup";
