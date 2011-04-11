@@ -1,0 +1,14 @@
+package org.openremote.controller.protocol
+
+rule "Show Temp"
+
+when
+
+  $evt:Event ( source == "temperature" )
+
+then
+
+  System.out.println("Current Temperature is " + $evt.getValue() + "'C.");
+
+end
+
