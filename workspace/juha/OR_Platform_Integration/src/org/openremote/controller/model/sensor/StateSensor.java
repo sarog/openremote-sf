@@ -171,11 +171,11 @@ public class StateSensor extends Sensor
   {
     if (!states.hasState(value))
     {
-      log.warn(
-          "Event producer bound to sensor (ID = {0}) returned a value that is not " +
-          "consistent with sensor's datatype : {1}",
-          super.getSensorID(), value
-      );
+//      log.warn(
+//          "Event producer bound to sensor (ID = {0}) returned a value that is not " +
+//          "consistent with sensor's datatype : {1}",
+//          super.getSensorID(), value
+//      );
 
       return Sensor.UNKNOWN_STATUS;
     }
