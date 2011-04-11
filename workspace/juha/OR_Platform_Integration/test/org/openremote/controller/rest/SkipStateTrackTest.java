@@ -28,6 +28,7 @@ import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import junit.framework.Assert;
 
 /**
  * This class is mainly used to test the <b>SkipStateTrack</b>.<br /><br />
@@ -41,135 +42,153 @@ import com.meterware.httpunit.WebResponse;
  * @author Handy.Wang 2009-10-26
  */
 public class SkipStateTrackTest {
-   
-   private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   /**
-    * <b>Situation1:</b><br />
-    * 
-    *  Not found time out record in TIME_OUT_TABLE during polling operation,<br />
-    *  not timeout while observing and Getting the changed status at last.
-    */
-   @Test
-   public void testCase1() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001");
-      try {
-         WebResponse wr = wc.getResponse(request);
-         System.out.println("The result is : \n" + wr.getText());
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was timeout.");
-         }
-      }
-   }
+  // TODO :
+  //
+  //    - commenting out these tests for now for a few reasons:
+  //
+  //      1) I don't know what they are trying to accomplish
+  //      2) They do not make any assertions, only logging, which makes them
+  //         completely unusable for *automated* unit tests
+  //      3) They tend to run for long time making it seem like tests are
+  //         hanging (and at times they do seem to hang indefinitely)
+  //
+  //                                                                      [JPL]
 
-   /**
-    * <b>Situation2:</b><br />
-    * 
-    * <b>First polling request:</b> Not found time out record in TIME_OUT_TABLE during polling operation,<br /> 
-    * timeout while observing, this time out request will record into TIME_OUT_TABLE,<br />
-    * client gets 503 error at last.<br /><br />
-    * 
-    * <b>Second Polling request:</b> Found previous time out record in TIME_OUT_TABLE,<br /> 
-    * gets the changed status with <b>the value of column STATUS_CHANGED_IDS in TIME_OUT_TABLE</b> from<br /> 
-    * CachedStatus table(currently it's simulated).<br /><br />
-    * 
-    * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase2</b> which was called<br />
-    * while <b>InitCachedStatusDBListener</b> starting.
-    */
-   @Test
-   public void testCase2() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1002");
-      WebResponse wr;
-      try {
-         wr = wc.getResponse(request);
-         System.out.println("The result of first polling request is : \n" + wr.getText());
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was timeout.");
-            try {
-               wr = wc.getResponse(request);
-               System.out.println("The result of second polling request is : \n" + wr.getText());
-            } catch (HttpException e2) {
-               if (e2.getResponseCode() == 504) {
-                  logger.info("Polling request was timeout.");
-               }
-            }
-         }
-      }
-   }
-   
-   /**
-    * <b>Situation3:</b><br /><br />
-    * 
-    * <b>First polling request:</b> Not found time out record in TIME_OUT_TABLE during polling operation,<br />
-    * timeout while observing, this time out request will record into TIME_OUT_TABLE,<br />
-    * client gets 503 error at last.<br /><br />
-    * 
-    * <b>Second polling request:</b> Found previous time out record in TIME_OUT_TABLE,<br />
-    * but the statuses which previous polling request care about didn't change.<br />
-    * So, current polling request observes the change of statuses and gets the changed status at last.<br /><br />
-    * 
-    * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase3</b> which was called<br />
-    * while <b>InitCachedStatusDBListener</b> starting.
-    */
-   @Test
-   public void testCase3() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
-      WebResponse wr;
-      try {
-         wr = wc.getResponse(request);
-         System.out.println("The result of first polling request is : \n" + wr.getText());
-      } catch (HttpException e2) {
-         if (e2.getResponseCode() == 504) {
-            logger.info("Polling request was timeout.");
-            try {
-               wr = wc.getResponse(request);
-               System.out.println("The result of second polling request is : \n" + wr.getText());
-            } catch (HttpException e1) {
-               if (e1.getResponseCode() == 504) {
-                  logger.info("Polling request was timeout.");
-               }
-            }
-         }
-      }
-   }
+  @Test public void testNeedsRewrite()
+  {
+    Assert.fail("Tests should be rewritten with proper assertions to automate them.");
+  }
 
-   /**
-    * <b>Situation4:</b><br /><br />
-    * 
-    * <b>First polling request:</b> Not found time out record in TIME_OUT_TABLE during polling operation,<br />
-    * timeout while observing, this time out request will record into TIME_OUT_TABLE,<br />
-    * client gets 503 error at last.<br /><br />
-    * 
-    * <b>Second polling request:</b> Found previous time out record in TIME_OUT_TABLE,<br />
-    * but the statuses which previous polling request care about didn't change.<br />
-    * So, current polling request observes the change of statuses but timeout,<br />
-    * client gets 503 error at last.<br /><br />
-    */
-   @Test
-   public void testCase4() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1004");
-      WebResponse wr;
-      try {
-         wr = wc.getResponse(request);
-         System.out.println("The result of first polling request is : \n" + wr.getText());
-      } catch (HttpException e1) {
-         if (e1.getResponseCode() == 504) {
-            logger.info("Polling request was timeout.");
-            try {
-               wr = wc.getResponse(request);
-               System.out.println("The result of second polling request is : \n" + wr.getText());
-            } catch (HttpException e2) {
-               if (e2.getResponseCode() == 504) {
-                  logger.info("Polling request was timeout.");
-               }
-            }
-         }
-      }
-   }
+
+//   private Logger logger = Logger.getLogger(this.getClass().getName());
+//
+//   /**
+//    * <b>Situation1:</b><br />
+//    *
+//    *  Not found time out record in TIME_OUT_TABLE during polling operation,<br />
+//    *  not timeout while observing and Getting the changed status at last.
+//    */
+//   @Test
+//   public void testCase1() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001");
+//      try {
+//         WebResponse wr = wc.getResponse(request);
+//         System.out.println("The result is : \n" + wr.getText());
+//      } catch (HttpException e) {
+//         if (e.getResponseCode() == 504) {
+//            logger.info("Polling request was timeout.");
+//         }
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation2:</b><br />
+//    *
+//    * <b>First polling request:</b> Not found time out record in TIME_OUT_TABLE during polling operation,<br />
+//    * timeout while observing, this time out request will record into TIME_OUT_TABLE,<br />
+//    * client gets 503 error at last.<br /><br />
+//    *
+//    * <b>Second Polling request:</b> Found previous time out record in TIME_OUT_TABLE,<br />
+//    * gets the changed status with <b>the value of column STATUS_CHANGED_IDS in TIME_OUT_TABLE</b> from<br />
+//    * CachedStatus table(currently it's simulated).<br /><br />
+//    *
+//    * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase2</b> which was called<br />
+//    * while <b>InitCachedStatusDBListener</b> starting.
+//    */
+//   @Test
+//   public void testCase2() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1002");
+//      WebResponse wr;
+//      try {
+//         wr = wc.getResponse(request);
+//         System.out.println("The result of first polling request is : \n" + wr.getText());
+//      } catch (HttpException e) {
+//         if (e.getResponseCode() == 504) {
+//            logger.info("Polling request was timeout.");
+//            try {
+//               wr = wc.getResponse(request);
+//               System.out.println("The result of second polling request is : \n" + wr.getText());
+//            } catch (HttpException e2) {
+//               if (e2.getResponseCode() == 504) {
+//                  logger.info("Polling request was timeout.");
+//               }
+//            }
+//         }
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation3:</b><br /><br />
+//    *
+//    * <b>First polling request:</b> Not found time out record in TIME_OUT_TABLE during polling operation,<br />
+//    * timeout while observing, this time out request will record into TIME_OUT_TABLE,<br />
+//    * client gets 503 error at last.<br /><br />
+//    *
+//    * <b>Second polling request:</b> Found previous time out record in TIME_OUT_TABLE,<br />
+//    * but the statuses which previous polling request care about didn't change.<br />
+//    * So, current polling request observes the change of statuses and gets the changed status at last.<br /><br />
+//    *
+//    * <b>NOTE:</b> This situation must work with method <b>simulateSkipStateTrackTestCase3</b> which was called<br />
+//    * while <b>InitCachedStatusDBListener</b> starting.
+//    */
+//   @Test
+//   public void testCase3() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
+//      WebResponse wr;
+//      try {
+//         wr = wc.getResponse(request);
+//         System.out.println("The result of first polling request is : \n" + wr.getText());
+//      } catch (HttpException e2) {
+//         if (e2.getResponseCode() == 504) {
+//            logger.info("Polling request was timeout.");
+//            try {
+//               wr = wc.getResponse(request);
+//               System.out.println("The result of second polling request is : \n" + wr.getText());
+//            } catch (HttpException e1) {
+//               if (e1.getResponseCode() == 504) {
+//                  logger.info("Polling request was timeout.");
+//               }
+//            }
+//         }
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation4:</b><br /><br />
+//    *
+//    * <b>First polling request:</b> Not found time out record in TIME_OUT_TABLE during polling operation,<br />
+//    * timeout while observing, this time out request will record into TIME_OUT_TABLE,<br />
+//    * client gets 503 error at last.<br /><br />
+//    *
+//    * <b>Second polling request:</b> Found previous time out record in TIME_OUT_TABLE,<br />
+//    * but the statuses which previous polling request care about didn't change.<br />
+//    * So, current polling request observes the change of statuses but timeout,<br />
+//    * client gets 503 error at last.<br /><br />
+//    */
+//   @Test
+//   public void testCase4() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1004");
+//      WebResponse wr;
+//      try {
+//         wr = wc.getResponse(request);
+//         System.out.println("The result of first polling request is : \n" + wr.getText());
+//      } catch (HttpException e1) {
+//         if (e1.getResponseCode() == 504) {
+//            logger.info("Polling request was timeout.");
+//            try {
+//               wr = wc.getResponse(request);
+//               System.out.println("The result of second polling request is : \n" + wr.getText());
+//            } catch (HttpException e2) {
+//               if (e2.getResponseCode() == 504) {
+//                  logger.info("Polling request was timeout.");
+//               }
+//            }
+//         }
+//      }
+//   }
 }
