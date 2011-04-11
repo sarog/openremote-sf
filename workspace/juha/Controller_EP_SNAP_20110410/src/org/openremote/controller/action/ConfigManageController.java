@@ -32,6 +32,7 @@ import org.openremote.controller.exception.ForbiddenException;
 import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.FileService;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.spring.SpringContext;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -90,7 +91,7 @@ public class ConfigManageController extends MultiActionController {
       String password = request.getParameter("password");
       boolean success = false;
       try {
-         success = fileService.syncConfigurationWithModeler(username, password);
+         success = ServiceContext.getFileResourceService().syncConfigurationWithModeler(username, password);
          if (success) {
             controllerXMLChangeService.refreshController();
          }
@@ -103,6 +104,8 @@ public class ConfigManageController extends MultiActionController {
          response.getWriter().print("missing");
       } catch (ControlCommandException e) {
          response.getWriter().print(e.getMessage());
+      } catch (Throwable t) {
+         t.printStackTrace();
       }
       return null;
    }
