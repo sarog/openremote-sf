@@ -22,8 +22,10 @@ package org.openremote.controller.servlet.sip;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -38,7 +40,7 @@ import javax.servlet.sip.URI;
 
 import org.apache.log4j.Logger;
 
-@javax.servlet.sip.annotation.SipServlet (applicationName="org.openremote.controller.servlet.sip.PanelProxyServiceApplication")
+@javax.servlet.sip.annotation.SipServlet
 public class PanelProxySipServlet extends SipServlet {
     private static final long serialVersionUID = 1L;
 
@@ -64,10 +66,12 @@ public class PanelProxySipServlet extends SipServlet {
       }
       SipFactory sipFactory = (SipFactory)getServletContext().getAttribute(SIP_FACTORY);
       List<URI> contactAddresses  = new ArrayList<URI>();
-      HashMap<String, String> users = (HashMap<String, String>) getServletContext().getAttribute("panelUsersMap");
-          logger.info("Registered panel users : " + users);
-      for (String user : users.values()) {
-        contactAddresses.add(sipFactory.createURI(user));
+      Set<String> addresses = (Set<String>) getServletContext().getAttribute("panelUsersMap");
+      if (logger.isInfoEnabled()) {
+        logger.info("Registered panel addresses : " + addresses);
+      }
+      for (String address : addresses) {
+        contactAddresses.add(sipFactory.createURI(address));
       }
           
       if(contactAddresses != null && contactAddresses.size() > 0) {     
@@ -78,7 +82,7 @@ public class PanelProxySipServlet extends SipServlet {
         proxy.proxyTo(contactAddresses);    
       } else {
         if(logger.isInfoEnabled()) {
-          logger.info(request.getRequestURI().toString() + " is not currently registered");
+          logger.info("No panels currently registered");
         }
         SipServletResponse sipServletResponse = 
           request.createResponse(SipServletResponse.SC_MOVED_PERMANENTLY, "Moved Permanently");
@@ -90,11 +94,15 @@ public class PanelProxySipServlet extends SipServlet {
     protected void doRegister(SipServletRequest req) throws ServletException,
         IOException {
       if(logger.isInfoEnabled()) {
-        logger.info("Received register request: " + req.getTo());
+        logger.info("Received register request: " + req.getFrom());
       }
       
       boolean isPanelUser = false;
-      if (req.getFrom().getURI().isSipURI()) {
+      if (!req.getFrom().getURI().isSipURI()) {
+        // Only SIP supported
+        SipServletResponse sipServletResponse = req.createResponse(SipServletResponse.SC_NOT_IMPLEMENTED);
+        sipServletResponse.send();
+      } else {
         logger.info("User " + ((SipURI)req.getFrom().getURI()).getUser());
         if ("siphon".equals(((SipURI)req.getFrom().getURI()).getUser())) {
           isPanelUser = true;
@@ -103,9 +111,12 @@ public class PanelProxySipServlet extends SipServlet {
       
       int response = SipServletResponse.SC_OK;
       SipServletResponse resp = req.createResponse(response);
+      
+      
+      /*
       HashMap<String, String> users;
       if (isPanelUser) {
-        users= (HashMap<String, String>) getServletContext().getAttribute("panelUsersMap");
+        users = (HashMap<String, String>) getServletContext().getAttribute("panelUsersMap");
         if (users == null) {
           users = new HashMap<String, String>();
           getServletContext().setAttribute("panelUsersMap", users);
@@ -138,6 +149,42 @@ public class PanelProxySipServlet extends SipServlet {
             " registered with an Expire time of " + expires);
         }
       }
+      */
+      
+      Set<String> users;
+      if (isPanelUser) {
+        users = (Set<String>) getServletContext().getAttribute("panelUsersMap");
+        if (users == null) {
+          users = new HashSet<String>();
+          getServletContext().setAttribute("panelUsersMap", users);
+        }
+      } else {
+        users= (Set<String>) getServletContext().getAttribute("registeredUsersMap");
+        if (users == null) {
+          users = new HashSet<String>();
+          getServletContext().setAttribute("registeredUsersMap", users);
+        }
+      }
+      
+      Address address = req.getAddressHeader(CONTACT_HEADER);
+      
+      int expires = address.getExpires();
+      if(expires < 0) {
+        expires = req.getExpires();
+      }
+      if(expires == 0) {
+        users.remove(address.getURI().toString());
+        if(logger.isInfoEnabled()) {
+          logger.info("Address " + address.getURI() + " unregistered");
+        }
+      } else {
+        resp.setAddressHeader(CONTACT_HEADER, address);
+        users.add(address.getURI().toString());
+        if(logger.isInfoEnabled()) {
+          logger.info("Address " + address.getURI() + 
+            " registered with an Expire time of " + expires);
+        }
+      }      
       resp.send();
     }
 
