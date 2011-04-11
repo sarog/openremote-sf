@@ -6,7 +6,7 @@
         <property name="mappings">
             <props>
                 <prop key="config.htm">configManageController</prop>
-                <prop key="monitor.htm">monitorController</prop>
+                <!--<prop key="monitor.htm">monitorController</prop>-->
             </props>
         </property>
     </bean>
@@ -57,8 +57,8 @@
     </bean>
 	
 	<bean id="configManageController" class="org.openremote.controller.action.ConfigManageController" />
-	
+	<!--
 	<bean id="monitorController" class="org.openremote.controller.action.MonitorController" />
-	
+	-->
 
 </beans>
