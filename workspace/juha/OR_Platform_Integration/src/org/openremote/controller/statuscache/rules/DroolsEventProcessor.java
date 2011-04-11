@@ -31,6 +31,9 @@ import org.openremote.controller.protocol.Event;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.ResourceType;
+import org.drools.builder.ResourceConfiguration;
+import org.drools.builder.DecisionTableConfiguration;
+import org.drools.builder.DecisionTableInputType;
 import org.drools.io.ResourceFactory;
 import org.drools.KnowledgeBase;
 import org.drools.runtime.StatelessKnowledgeSession;
@@ -84,7 +87,7 @@ public class DroolsEventProcessor extends EventProcessor
 //    }
 
     session.execute(event);
-    
+
     return event;
   }
 
@@ -93,7 +96,6 @@ public class DroolsEventProcessor extends EventProcessor
   @Override public void init()
   {
     KnowledgeBuilder builder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-
     ControllerConfiguration config = ServiceContext.getControllerConfiguration();
     String path = config.getResourcePath();
 
@@ -122,7 +124,10 @@ public class DroolsEventProcessor extends EventProcessor
 
       else if (file.getName().endsWith(".csv"))
       {
-        builder.add(ResourceFactory.newFileResource(file), ResourceType.DTABLE);
+        DecisionTableConfiguration conf = KnowledgeBuilderFactory.newDecisionTableConfiguration();
+        conf.setInputType(DecisionTableInputType.CSV);
+
+        builder.add(ResourceFactory.newFileResource(file), ResourceType.DTABLE, conf);
 
         System.out.println("++++ Added Decision Table: " + file.getName());
       }
@@ -131,6 +136,11 @@ public class DroolsEventProcessor extends EventProcessor
       {
         System.out.println("Skipped unrecognized rule file: " + file.getName());
       }
+    }
+
+    if (builder.hasErrors())
+    {
+      throw new RuntimeException(builder.getErrors().toString());
     }
 
     kb = builder.newKnowledgeBase();
