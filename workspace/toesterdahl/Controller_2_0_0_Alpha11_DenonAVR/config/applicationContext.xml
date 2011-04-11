@@ -45,6 +45,12 @@
       </property>
   </bean>
 
+  <bean id="denonAVRSerialConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<property name="location">
+		<value>classpath:denonAVRSerial.properties</value>
+	</property>
+  </bean>
+
   <!--
   | Configuration variable mapping from controller config.properties file
   | to org.openremote.controller.Configuration class.
@@ -137,6 +143,7 @@
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "virtual">virtualCommandBuilder</prop>
             <prop key = "mockup">mockupCommandBuilder</prop>
+            <prop key = "denonAVRSerial">denonAVRSerialCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -174,6 +181,10 @@
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
+  <!-- Russound Command Builder -->
+  <bean id = "denonAVRSerialCommandBuilder"
+        class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
+        scope = "prototype"/>
 
   <!-- Universal Plug'n'Play Command Builder -->
   <!--
