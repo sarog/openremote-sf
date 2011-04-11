@@ -237,6 +237,32 @@ public class ServletStartup implements ServletContextListener
 
     devicePollingService.initStatusCacheWithControllerXML(null);
     devicePollingService.startPollingMachineMultiThread();
+
+    Thread t = new Thread(new Runnable()
+    {
+      @Override public void run()
+      {
+        while (true)
+        {
+          ServiceContext.getDeployer().refreshController();
+
+          try
+          {
+            Thread.sleep(5000);
+
+          }
+          catch (InterruptedException e)
+          {
+            Thread.currentThread().interrupt();
+
+            break;
+          }
+        }
+
+      }
+    });
+
+    t.start();
   }
 
 
