@@ -31,6 +31,7 @@ import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
+import junit.framework.Assert;
 
 /**
  * ControlStatusPollingRESTServlet TestCase with JUnit and HttpUnit.<br /><br />
@@ -51,139 +52,158 @@ import com.meterware.httpunit.WebResponse;
  * @author Handy.Wang 2009-10-20
  */
 public class ControlStatusPollingRESTServletTest {
-   
-   private Logger logger = Logger.getLogger(this.getClass().getName());
 
-   /**
-    * <b>Situation 1</b><br />
-    * 
-    * Test StatusPolling RESTful Service when the App server didn't startup.<br />
-    * So plean run this method in the situation of app server wasn't running.
-    * 
-    * @throws Exception the exception
-    */
-   @Test
-   public void testDoPostWithAppServerNotStartup() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
-      try {
-         WebResponse wr = wc.getResponse(request);
-         System.out.println(wr.getText());
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was  timeout.");
-         }
-      }
-   }
-   
-   /**
-    * <b>Situation2</b><br />
-    * 
-    * Test StatusPolling RESTful Service when app server was running but the response will be time out.<br />
-    * 
-    * If you want simulate several panels making polling request, you can run this method more times.<br />
-    * <b>And also</b>, if you want simulate: 
-    *     some polling requests will time out, some won't, You can run this method at the same time running the method named testDoPostWithoutTimeOutSingleRequest.
-    */
-   @Test
-   public void testDoPostWithTimeOutSingleRequest() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebResponse pollingResponse;
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc,
-            "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
-      try {
-         pollingResponse = wc.getResponse(pollingGetMethodRequest);
-         System.out.println(pollingResponse.getText());
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was  timeout.");
-         }
-      }      
-   }
-   
-   /**
-    * <b>Situation3</b><br />
-    * 
-    * This method simulate multi polling requests and the requests will time out.<br />
-    */
-   @Test
-   public void testDoPostWithTimeOutMultiRequests() throws Exception {
-      for (int i = 1; i <=1; i++) {
-         Thread t = new Thread() {
-            @Override
-            public void run() {
-                  WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
-               try {
-                  WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
-                  System.out.println(pollingResponse.getText());
-               } catch (HttpException e) {
-                  if (e.getResponseCode() == 504) {
-                     logger.info("Polling request was  timeout.");
-                  }
-               } catch (IOException e) {
-                  e.printStackTrace();
-               } catch (SAXException e) {
-                  e.printStackTrace();
-               }
-            }
-         };
-         t.start();
-      }
-   }
-   
-   /**
-    * <b>Situation4</b><br />
-    * 
-    * Test StatusPolling RESTful Service when app server was running and the response will be getted by client.<br />
-    * 
-    * If you want simulate several panels making polling request, you can run this method more times.<br />
-    * <b>And also</b>, if you want simulate: 
-    *     some polling requests will time out, some won't, You can run this method at the same time running the previous test method named testDoPostWithTimeOutSingleRequest.
-    */
-   @Test
-   public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
-      WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
-      try {
-         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
-         System.out.println(wr.getText());
-      } catch (HttpException e) {
-         if (e.getResponseCode() == 504) {
-            logger.info("Polling request was  timeout.");
-         }
-      }
-   }
-   
-   /**
-    * <b>Situation5</b><br />
-    * 
-    * This method simulate multi polling requests and response the corresponding result.<br />
-    */
-   @Test
-   public void testDoPostWithoutTimeOutMultiRequests() throws Exception {
-      for (int i = 1; i <= 1; i++) {
-         Thread t = new Thread() {
-            @Override
-            public void run() {
-                  WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
-               try {
-                  WebResponse wr = wc.getResponse(pollingGetMethodRequest);
-                  System.out.println(wr.getText());
-               } catch (HttpException e) {
-                  if (e.getResponseCode() == 504) {
-                     logger.info("Polling request was  timeout.");
-                  }
-               } catch (IOException e) {
-                  e.printStackTrace();
-               } catch (SAXException e) {
-                  e.printStackTrace();
-               }
-            }
-         };
-         t.start();
-      }
-      Thread.sleep(60);
-   }
+
+  // TODO :
+  //
+  //    - commenting out these tests for now for a few reasons:
+  //
+  //      1) I don't know what they are trying to accomplish
+  //      2) They do not make any assertions, only logging, which makes them
+  //         completely unusable for *automated* unit tests
+  //      3) They tend to run for long time making it seem like tests are
+  //         hanging (and at times they do seem to hang indefinitely)
+  //
+  //                                                                      [JPL]
+
+  @Test public void testNeedsRewrite()
+  {
+    Assert.fail("Tests should be rewritten with proper assertions to automate them.");
+  }
+
+  
+//   private Logger logger = Logger.getLogger(this.getClass().getName());
+//
+//   /**
+//    * <b>Situation 1</b><br />
+//    *
+//    * Test StatusPolling RESTful Service when the App server didn't startup.<br />
+//    * So plean run this method in the situation of app server wasn't running.
+//    *
+//    * @throws Exception the exception
+//    */
+//   @Test
+//   public void testDoPostWithAppServerNotStartup() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
+//      try {
+//         WebResponse wr = wc.getResponse(request);
+//         System.out.println(wr.getText());
+//      } catch (HttpException e) {
+//         if (e.getResponseCode() == 504) {
+//            logger.info("Polling request was  timeout.");
+//         }
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation2</b><br />
+//    *
+//    * Test StatusPolling RESTful Service when app server was running but the response will be time out.<br />
+//    *
+//    * If you want simulate several panels making polling request, you can run this method more times.<br />
+//    * <b>And also</b>, if you want simulate:
+//    *     some polling requests will time out, some won't, You can run this method at the same time running the method named testDoPostWithoutTimeOutSingleRequest.
+//    */
+//   @Test
+//   public void testDoPostWithTimeOutSingleRequest() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebResponse pollingResponse;
+//      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc,
+//            "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
+//      try {
+//         pollingResponse = wc.getResponse(pollingGetMethodRequest);
+//         System.out.println(pollingResponse.getText());
+//      } catch (HttpException e) {
+//         if (e.getResponseCode() == 504) {
+//            logger.info("Polling request was  timeout.");
+//         }
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation3</b><br />
+//    *
+//    * This method simulate multi polling requests and the requests will time out.<br />
+//    */
+//   @Test
+//   public void testDoPostWithTimeOutMultiRequests() throws Exception {
+//      for (int i = 1; i <=1; i++) {
+//         Thread t = new Thread() {
+//            @Override
+//            public void run() {
+//                  WebConversation wc = new WebConversation();
+//                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
+//               try {
+//                  WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
+//                  System.out.println(pollingResponse.getText());
+//               } catch (HttpException e) {
+//                  if (e.getResponseCode() == 504) {
+//                     logger.info("Polling request was  timeout.");
+//                  }
+//               } catch (IOException e) {
+//                  e.printStackTrace();
+//               } catch (SAXException e) {
+//                  e.printStackTrace();
+//               }
+//            }
+//         };
+//         t.start();
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation4</b><br />
+//    *
+//    * Test StatusPolling RESTful Service when app server was running and the response will be getted by client.<br />
+//    *
+//    * If you want simulate several panels making polling request, you can run this method more times.<br />
+//    * <b>And also</b>, if you want simulate:
+//    *     some polling requests will time out, some won't, You can run this method at the same time running the previous test method named testDoPostWithTimeOutSingleRequest.
+//    */
+//   @Test
+//   public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
+//      WebConversation wc = new WebConversation();
+//      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
+//      try {
+//         WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+//         System.out.println(wr.getText());
+//      } catch (HttpException e) {
+//         if (e.getResponseCode() == 504) {
+//            logger.info("Polling request was  timeout.");
+//         }
+//      }
+//   }
+//
+//   /**
+//    * <b>Situation5</b><br />
+//    *
+//    * This method simulate multi polling requests and response the corresponding result.<br />
+//    */
+//   @Test
+//   public void testDoPostWithoutTimeOutMultiRequests() throws Exception {
+//      for (int i = 1; i <= 1; i++) {
+//         Thread t = new Thread() {
+//            @Override
+//            public void run() {
+//                  WebConversation wc = new WebConversation();
+//                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
+//               try {
+//                  WebResponse wr = wc.getResponse(pollingGetMethodRequest);
+//                  System.out.println(wr.getText());
+//               } catch (HttpException e) {
+//                  if (e.getResponseCode() == 504) {
+//                     logger.info("Polling request was  timeout.");
+//                  }
+//               } catch (IOException e) {
+//                  e.printStackTrace();
+//               } catch (SAXException e) {
+//                  e.printStackTrace();
+//               }
+//            }
+//         };
+//         t.start();
+//      }
+//      Thread.sleep(60);
+//   }
 }
