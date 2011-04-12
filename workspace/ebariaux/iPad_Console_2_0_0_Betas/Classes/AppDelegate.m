@@ -118,7 +118,9 @@
 	if ([errorMessage isEqualToString:@"401"]) {
 		[defaultViewController populateLoginView:nil];
 	} else {
-		[[[ViewHelper alloc] init] showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];		
+        ViewHelper *viewHelper = [[ViewHelper alloc] init];
+		[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Warning" Message:[errorMessage stringByAppendingString:@" Using cached content."]];
+		[viewHelper release];
 		[self updateDidFinished];
 	}
 	
@@ -129,7 +131,9 @@
 	if ([errorMessage isEqualToString:@"401"]) {
 		[defaultViewController populateLoginView:nil];
 	} else {
-		[[[ViewHelper alloc] init] showAlertViewWithTitleAndSettingNavigation:@"Update Failed" Message:errorMessage];		
+        ViewHelper *viewHelper = [[ViewHelper alloc] init];
+		[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Update Failed" Message:errorMessage];		
+		[viewHelper release];
 		[self updateDidFinished];
 	}
 	

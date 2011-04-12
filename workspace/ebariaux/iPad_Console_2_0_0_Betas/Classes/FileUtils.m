@@ -45,32 +45,33 @@ NSFileManager *fileManager;
 	}
 }
 
-+ (void)downloadFromURL:(NSString *) url  path:(NSString *)p {
++ (void)downloadFromURL:(NSString *)URLString  path:(NSString *)p {
 	[self makeSurePathExists:p];
 	NSError *error = nil;
 	NSURLResponse *response = nil;
-	NSString *encodedUrl = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)url, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc]initWithString:encodedUrl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
+	NSString *encodedUrl = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)URLString, NULL, (CFStringRef)@"", kCFStringEncodingUTF8);
+    NSURL *url = [[NSURL alloc] initWithString:encodedUrl];
+	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
+    [url release];
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 	NSData *data = [[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&response error:&error];
 	
 	if (error) {
 		NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"[%d]%@",[httpResp statusCode], [error localizedDescription]] message:url delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"[%d]%@",[httpResp statusCode], [error localizedDescription]] message:URLString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
 		[alert release];
 		return;
 	}
 	
-	NSString *fileName = [StringUtils parsefileNameFromString:url];
+	NSString *fileName = [StringUtils parsefileNameFromString:URLString];
 	NSString *filePathToSave = [p stringByAppendingPathComponent:fileName];
 	
 	//delete the file
 	[fileManager removeItemAtPath:filePathToSave error:NULL];
 	
 	[fileManager createFileAtPath:filePathToSave contents:data attributes:nil];
-	[request release];
-	
+	[request release];	
 }
 
 + (BOOL)checkFileExistsWithPath:(NSString *)path {

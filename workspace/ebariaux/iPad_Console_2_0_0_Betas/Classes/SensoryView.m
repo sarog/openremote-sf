@@ -30,7 +30,7 @@
 
 // Add notification observer for polling
 - (void) addPollingNotificationObserver {
-	int sensorId;
+	int sensorId = 0;
 	if ([component isKindOfClass:[Label class]]) {
 		sensorId = ((Label *)component).sensor.sensorId;
 	} else if ([component isKindOfClass:[Image class]]) {
