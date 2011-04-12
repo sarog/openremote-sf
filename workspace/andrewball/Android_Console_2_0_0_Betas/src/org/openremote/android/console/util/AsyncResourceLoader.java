@@ -22,6 +22,7 @@ package org.openremote.android.console.util;
 
 import java.util.Iterator;
 import java.io.IOException;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
@@ -79,7 +80,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
 
       Log.i("OpenRemote/DOWNLOAD", "Getting panel: " + panelName);
 
-      String serverUrl = AppSettingsModel.getSecuredServer(activity);
+      URL serverUrl = AppSettingsModel.getSecuredServer(activity);
 
       HttpResponse checkResponse = null;
 
@@ -103,7 +104,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
       isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
 
       if (isDownloadSuccess) {
-         int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl, panelName);
+         int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl.toString(), panelName);
          if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
             Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail.");
             if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
@@ -139,7 +140,7 @@ public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLo
             while (images.hasNext()) {
                imageName = images.next();
                publishProgress(imageName);
-               HTTPUtil.downLoadImage(activity, AppSettingsModel.getSecuredServer(activity), imageName);
+               HTTPUtil.downLoadImage(activity, serverUrl.toString(), imageName);
             }
          }
       } else { // Download failed.
