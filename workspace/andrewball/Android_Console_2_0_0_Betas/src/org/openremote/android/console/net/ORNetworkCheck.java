@@ -21,6 +21,7 @@
 package org.openremote.android.console.net;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
@@ -66,11 +67,8 @@ public class ORNetworkCheck
    *
    * @throws IOException TODO
    */
-  public static HttpResponse verifyControllerURL(Context context, String url) throws IOException
+  public static HttpResponse verifyControllerURL(Context context, URL url) throws IOException
   {
-    // TODO : Use URL class instead of string in param
-
-
     // TODO : modifying the settings probably doesn't belong here, as it is an undocumented side-effect
     AppSettingsModel.setCurrentServer(context, url);
 
@@ -88,9 +86,9 @@ public class ORNetworkCheck
       return response;
 
 
-    String controllerURL = AppSettingsModel.getSecuredServer(context);
+    URL controllerURL = AppSettingsModel.getSecuredServer(context);
 
-    if (controllerURL == null || "".equals(controllerURL))
+    if (controllerURL == null)
     {
       return null;  // TODO : fix this, it is stupid - throw an exception
     }
@@ -102,7 +100,7 @@ public class ORNetworkCheck
       return null;  // TODO : fix this, it is stupid - throw an exception
     }
 
-    String restfulPanelURL = controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity);
+    URL restfulPanelURL = new URL(controllerURL + "/rest/panel/" + HTTPUtil.encodePercentUri(currentPanelIdentity));
 
     Log.i(LOG_CATEGORY, "Getting panel URL " + restfulPanelURL);
 
@@ -130,7 +128,7 @@ public class ORNetworkCheck
     if (!hasWifiAndControllerConfig(context))
       return null;
 
-    String controllerURL = AppSettingsModel.getSecuredServer(context);
+    URL controllerURL = AppSettingsModel.getSecuredServer(context);
 
     return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
   }
@@ -163,11 +161,11 @@ public class ORNetworkCheck
 
     // Has controller URL been configured...?
 
-    String controllerURL = AppSettingsModel.getCurrentServer(context);
+    URL controllerURL = AppSettingsModel.getCurrentServer(context);
 
     Log.d(LOG_CATEGORY, "controllerURL: " + controllerURL);
 
-    if (controllerURL == null || "".equals(controllerURL))
+    if (controllerURL == null)
     {
       return false;
     }
