@@ -26,8 +26,8 @@
 @implementation TextFieldCell
 @synthesize textField;
 
-- (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString *)reuseIdentifier {
-    if (self = [super initWithFrame:frame reuseIdentifier:reuseIdentifier]) {
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
 			textField = [[UITextField alloc] initWithFrame:CGRectZero];
 			textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 			textField.font = [UIFont systemFontOfSize:22];
