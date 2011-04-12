@@ -704,6 +704,8 @@ OpenRemote Sub-components:
   below.
 * Quartz library is licensed under Apache License Version 2.0, see license
   below.
+* Drools rule engine is licensed under Apache License Version 2.0, see
+  license below.
 * Jakarta Standard Tag Library is licensed under Apache License Version 2.0,
   see license below.
 * X10 Classes in package com.jpeterson are licensed under GNU Lesser General
