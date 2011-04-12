@@ -38,7 +38,7 @@
 			isBackgroundImageAbsolutePosition = NO;
 		}
 		
-		NSString *absoluteStr = [[attributeDict objectForKey:@"absolute"] copy];
+		NSString *absoluteStr = [attributeDict objectForKey:@"absolute"];
 		if (absoluteStr) {
 			// Devide the absolute string by comma
 			NSRange rangeOfComma = [absoluteStr rangeOfString:@","];
@@ -48,8 +48,8 @@
 			isBackgroundImageAbsolutePosition = YES;
 		}
 		
-		NSString *fillScreenStr = [[attributeDict objectForKey:@"fillScreen"] copy];
-		fillScreen = (fillScreenStr) ? (([@"true" isEqualToString:[fillScreenStr lowercaseString]]) ? YES : NO) : NO;
+		NSString *fillScreenStr = [attributeDict objectForKey:@"fillScreen"];
+		fillScreen = (fillScreenStr) ? ([@"true" isEqualToString:[fillScreenStr lowercaseString]]) : NO;
 		
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];

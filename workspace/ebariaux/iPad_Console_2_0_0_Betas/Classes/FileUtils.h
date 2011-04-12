@@ -33,7 +33,7 @@
 /**
  * Download resouce file from specified url and save into the specified path.
  */
-+ (void) downloadFromURL:(NSString *) url  path:(NSString *)p;
++ (void) downloadFromURL:(NSString *)URLString  path:(NSString *)p;
 
 /**
  * Delete folder with specified path.

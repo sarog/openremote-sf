@@ -29,12 +29,13 @@
 #pragma mark instance methods
 // Implement the delegate method for adding notification observer of polling.
 - (void) addPollingNotificationObserver {
-	int sensorId;
+	int sensorId = 0;
 	if ([component isKindOfClass:[Slider class]]) {
 		sensorId = ((Slider *)component).sensor.sensorId;
 	} else if ([component isKindOfClass:[Switch class]]) {
 		sensorId = ((Switch *)component).sensor.sensorId;
 	}
+    // TODO - EBR: what about other types of sensors (labels and images), could test for SensorComponent class and cast to that
 	if (sensorId > 0 ) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 	}

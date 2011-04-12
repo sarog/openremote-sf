@@ -134,6 +134,7 @@
 			break;
 		}
 	}
+    [uiLabel release];
 }
 
 #pragma mark dealloc

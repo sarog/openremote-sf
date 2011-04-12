@@ -86,10 +86,12 @@
 					//left to right -->
 					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeLeftToRight orientation:orientation];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
+                    [g release];
 				} else if (previousTouchLocation.x > location.x) {
 					//right to left <--
 					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeRightToLeft orientation:orientation];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
+                    [g release];
 				}
 			} 
 			
@@ -100,11 +102,13 @@
 					//up to down V
 					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeTopToBottom orientation:orientation];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
+                    [g release];
 				} else if (previousTouchLocation.y > location.y) {
 					//donw to up ^
 					//           |
 					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeBottomToTop orientation:orientation];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
+                    [g release];
 				}
 			}
 		} else if (touch.phase == UITouchPhaseMoved) {
