@@ -138,17 +138,16 @@
 
      This parameter is read by the ContextLoaderListener implementation (see below).
 
+     Currently only adding spring-servlet.xml definition to load additional administrative and
+     monitoring servlets that provide a Web UI to the controller.
+
   -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      /WEB-INF/classes/spring-context.xml, /WEB-INF/classes/spring-quartz.xml
+      /WEB-INF/classes/spring-servlet.xml
     </param-value>
   </context-param>
-
-
-
-
 
 
 
@@ -219,25 +218,6 @@
 
   <!--
 
-    Loads the component definitions (Java Beans) from the applicationContext.xml and binds
-    the controller runtime together.
-
-    This bootstrap listener reads the 'contextConfigLocation' application parameter for a list
-    of additional XML files that can be used to define additional components loaded into
-    the controller application.
-
-    See http://goo.gl/BhUSY (ContextLoader) and http://goo.gl/GHfHZ (ContextLoaderListener) for
-    more information.
-    
-   -->
-  <listener>
-    <listener-class>
-      org.springframework.web.context.ContextLoaderListener
-    </listener-class>
-  </listener>
-
-  <!--
-
     OpenRemote Controller specific bootstrap listener that initializes/starts specific service
     implementations.
 
@@ -253,7 +233,22 @@
   </listener>
 
 
+  <!--
 
+    Loads additional component definitions (Java Beans) specified by 'contextConfigLocation'
+    property above into the controller runtime.
+
+    In this configuration the additional components are loaded after the servlet startup to
+    ensure that the service context lookups are initialized and ready to be used.
+
+    See http://goo.gl/BhUSY (ContextLoader) and http://goo.gl/GHfHZ (ContextLoaderListener) for
+    more information.
+  -->
+  <listener>
+    <listener-class>
+      org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
 
 
 
