@@ -233,8 +233,8 @@ public class ORConnection
   /**
    * TODO
    *
-   * Establish the httpconnection with url for caller and then the caller can deal with the
-   * httprequest result within ORConnectionDelegate instance. if check failed, return null.
+   * Establish HTTP connection to a controller for caller and then the caller can deal with the
+   * HTTP result within ORConnectionDelegate instance. if check failed, return null.
    *
    * @param context         global Android application context
    * @param httpMethod      enum POST or GET
@@ -251,7 +251,7 @@ public class ORConnection
    *                      or any other IO error occured (generic IOException)
    */
   public static HttpResponse checkURLWithHTTPProtocol(Context context, ORHttpMethod httpMethod,
-                                                      String urlString, boolean useHTTPAuth)
+                                                      URL targetURL, boolean useHTTPAuth)
       throws IOException
   {
     // TODO : could move this method to ORNetworkCheck class, no one else is using it.
@@ -263,7 +263,6 @@ public class ORConnection
     //
     // This can go away when the API is fixed...
 
-    URL targetURL = new URL(urlString);
     URI targetURI;
 
     try
@@ -276,7 +275,7 @@ public class ORConnection
       // MalformedURLException...
 
       throw new MalformedURLException(
-          "Could not convert " + urlString + " to a compliant URI: " + e.getMessage()
+          "Could not convert " + targetURL + " to a compliant URI: " + e.getMessage()
       );
     }
 
