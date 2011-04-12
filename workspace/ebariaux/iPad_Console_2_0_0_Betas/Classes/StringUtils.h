@@ -34,14 +34,4 @@
  */
 + (NSString *)parsefileNameFromString:(NSString *)str ;
 
-/**
- * Get the port from server url.
- */
-+ (NSString *)parsePortFromServerUrl:(NSString *)serverUrl;
-
-/**
- * Get host name from server url.
- */
-+ (NSString *)parseHostNameFromServerUrl:(NSString *)serverUrl;
-
 @end

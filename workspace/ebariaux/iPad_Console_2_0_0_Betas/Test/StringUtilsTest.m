@@ -32,29 +32,10 @@
 
 @implementation StringUtilsTest
 
-
 //parse file name
 - (void) testParsefileNameFromString {
 	NSString *name = [StringUtils parsefileNameFromString:@"doc/panel.xml"];
 	STAssertTrue([@"panel.xml" isEqualToString:name], @"expected panel.xml, but %@",name);
 }
-
-//parse port
-- (void) testParsePort {
-	NSString *port = [StringUtils parsePortFromServerUrl:@"http://10.10.10.103:8080/HA_controller"];
-	STAssertTrue([@"8080" isEqualToString:port], @"expected 8080, but %@",port);
-}
-
-- (void) testParsePortWithSlash {
-	NSString *port = [StringUtils parsePortFromServerUrl:@"http://10.10.10.103:8080/HA_controller/"];
-	STAssertTrue([@"8080" isEqualToString:port], @"expected 8080, but %@",port);
-}
-
-//parse host name
-- (void) testParseHostNameFromServerUrl {
-	NSString *name = [StringUtils parseHostNameFromServerUrl:@"http://10.10.10.103:8080/HA_controller"];
-	STAssertTrue([@"10.10.10.103" isEqualToString:name], @"expected 10.10.10.103, but %@",name);
-}
-
 
 @end
