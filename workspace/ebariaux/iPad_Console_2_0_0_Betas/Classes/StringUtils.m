@@ -34,20 +34,4 @@
 	return nil;
 }
 
-+ (NSString *)parsePortFromServerUrl:(NSString *)serverUrl {
-	NSRange colonStrRange = [serverUrl rangeOfString:@":" options:NSBackwardsSearch];
-	NSString *appnameAndPortStr = [serverUrl substringFromIndex:colonStrRange.location + 1];
-	NSCharacterSet *cs = [NSCharacterSet characterSetWithCharactersInString:@"/"];
-	appnameAndPortStr = [appnameAndPortStr stringByTrimmingCharactersInSet:cs];
-	NSRange slashRange = [appnameAndPortStr rangeOfString:@"/" options:NSBackwardsSearch];
-	return [appnameAndPortStr substringToIndex:slashRange.location];
-}
-
-+ (NSString *)parseHostNameFromServerUrl:(NSString *)serverUrl {
-	NSRange protocolStrRange = [serverUrl rangeOfString:@"/"];
-	NSString *hostAndPortAndAppNameStr = [serverUrl substringFromIndex:protocolStrRange.location + 2];
-	NSRange colonStrRange = [hostAndPortAndAppNameStr rangeOfString:@":" options:NSBackwardsSearch];
-	return [hostAndPortAndAppNameStr substringToIndex:colonStrRange.location];
-}
-
 @end

@@ -21,7 +21,7 @@
 
 #import "ServerDefinition.h"
 #import "AppSettingsDefinition.h"
-#import "StringUtils.h"
+#import "NSString+ORAdditions.h"
 
 
 @implementation ServerDefinition
@@ -105,7 +105,7 @@
 }
 
 + (NSString *)hostName {
-	return [StringUtils parseHostNameFromServerUrl:[self serverUrl]];
+	return [[self serverUrl] hostOfURL];
 }
 
 @end
