@@ -3,6 +3,8 @@ Changes in OpenRemote Android 2.0 Beta 3
 
 - Bug fix: illegal argument exception on SSL port out of range caused application crash (R3269) 
 - Bug fix: screen orientation change caused application crash (NPE) (R3273) 
+- Feature: Support multiple screen resolution and densities up to API 11 (Android 3.0)
+- Raise minimum SDK requirements to API 4 (Android 1.6)
 
 
 Changes in OpenRemote Android 2.0 Beta 2
