@@ -46,7 +46,7 @@
 		self.title = [NSString stringWithFormat:@"Editing %@",[[editingItem valueForKey:@"url"] stringValue]];
 	}
 	if (!serverUrlFieldCell) {
-		serverUrlFieldCell = [[TextFieldCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"serverUrlCell"];
+		serverUrlFieldCell = [[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"serverUrlCell"];
 		[serverUrlFieldCell.textField setDelegate:self];
 	}
 	serverUrlFieldCell.textField.text = [editingItem valueForKey:@"url"];
