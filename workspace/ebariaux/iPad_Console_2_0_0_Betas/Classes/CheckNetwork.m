@@ -29,6 +29,7 @@
 #import "CredentialUtil.h"
 #import "ControllerException.h"
 #import "URLConnectionHelper.h"
+#import "NSString+ORAdditions.h"
 
 #define TIMEOUT_INTERVAL 5
 
@@ -47,10 +48,18 @@
 	@catch (CheckNetworkException * e) {
 		@throw e;
 	}
-	
-	[[Reachability sharedReachability] setHostName:[ServerDefinition serverUrl]];
-	if ([[Reachability sharedReachability] internetConnectionStatus] == NotReachable) {
-		NSLog(@"checkIPAddress status is ",[[Reachability sharedReachability] internetConnectionStatus]);
+    
+	// Extract host from server URL to use in reachability test
+    NSString *host = [[ServerDefinition serverUrl] hostOfURL];
+    if ([host isValidIPAddress]) {
+        [[Reachability sharedReachability] setAddress:host];
+    } else {
+        [[Reachability sharedReachability] setHostName:host];
+    }
+
+    NetworkStatus remoteHostReachability = [[Reachability sharedReachability] remoteHostStatus];
+	if (remoteHostReachability == NotReachable) {
+		NSLog(@"checkIPAddress status is %d", remoteHostReachability);
 		@throw [CheckNetworkException exceptionWithTitle:@"Check controller ip address Fail" message:@"Your server address is wrong, please check your settings"];
 	}
 }
