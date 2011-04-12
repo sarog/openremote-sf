@@ -99,9 +99,11 @@
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.pressedImage.src]];	
 		ClippedUIImage *clippedUIImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];		
 		[uiButton setBackgroundImage:clippedUIImage forState:UIControlStateNormal];
+        [clippedUIImage release];
 		if (uiImagePressed) {
 			ClippedUIImage *clippedUIImagePressed = [[ClippedUIImage alloc] initWithUIImage:uiImagePressed dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
 			[uiButton setBackgroundImage:clippedUIImagePressed forState:UIControlStateHighlighted];
+            [clippedUIImagePressed release];
 		}
 		//use top-left alignment
 		[uiButton setFrame:CGRectMake(0, 0, clippedUIImage.size.width, clippedUIImage.size.height)];

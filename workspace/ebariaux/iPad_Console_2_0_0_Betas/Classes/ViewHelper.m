@@ -23,35 +23,35 @@
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
 
-
 @implementation ViewHelper
 
-+(void) showAlertViewWithTitle:(NSString *)title Message:(NSString *)message  {
++ (void)showAlertViewWithTitle:(NSString *)title Message:(NSString *)message  {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
-	[alert autorelease];
+	[alert release];
 }
 
--(void) showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
+- (void)showAlertViewWithTitleAndSettingNavigation:(NSString *)title Message:(NSString *)message  {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+    [self retain]; // We want to stick around as we set ourself as delegate
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert addButtonWithTitle:@"Settings"];
 	[alert show];
-	[alert setDelegate:self];
-	[alert autorelease];
+	[alert release];
 }
 
 // Delegate method of UIAlertViewDelegate.
 // Called when a button is clicked. The view will be automatically dismissed after this call returns
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {//setting button
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateSettingsView object:nil];
-	} else {
-		
 	}
-
 }
 
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    alertView.delegate = nil; // Make sure we won't receive any further message after we release ourself
+    [self release];
+}
 
 @end

@@ -55,6 +55,7 @@
 		NSLog(@"find item %@", tabBarItem.tabBarItemName);
 		[tabBarItems addObject:tabBarItem];
 		NSLog(@"end item in tabbar");
+        [tabBarItem release];
 	}
 }
 
