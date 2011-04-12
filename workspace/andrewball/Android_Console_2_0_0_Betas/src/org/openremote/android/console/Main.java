@@ -128,7 +128,7 @@ public class Main extends GenericActivity {
      */
     private boolean checkServerAndPanel () {
        Log.i("OpenRemote-toSetting", AppSettingsModel.getCurrentServer(this) + "," + AppSettingsModel.getCurrentPanelIdentity(this));
-       if (TextUtils.isEmpty(AppSettingsModel.getCurrentServer(this)) || 
+       if (AppSettingsModel.getCurrentServer(this) == null ||
              TextUtils.isEmpty(AppSettingsModel.getCurrentPanelIdentity(this))) {
           doSettings();
           return true;
