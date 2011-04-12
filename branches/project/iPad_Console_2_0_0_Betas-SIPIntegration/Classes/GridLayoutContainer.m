@@ -46,7 +46,7 @@
 }
 
 - (NSArray *)pollingComponentsIds {
-	NSMutableArray *ids = [[NSMutableArray alloc] init];
+	NSMutableArray *ids = [[[NSMutableArray alloc] init] autorelease];
 	for (GridCell *cell in cells) {
 		if ([cell.component isKindOfClass:SensorComponent.class]){
 			Sensor *sensor = ((SensorComponent *)cell.component).sensor;

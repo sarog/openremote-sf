@@ -56,7 +56,7 @@
 }
 
 - (NSArray *)pollingComponentsIds {
-	NSMutableArray *ids = [[NSMutableArray alloc] init];
+	NSMutableArray *ids = [[[NSMutableArray alloc] init] autorelease];
 	for (LayoutContainer *layout in layouts) {		
 		[ids addObjectsFromArray:[layout pollingComponentsIds]];
 	}

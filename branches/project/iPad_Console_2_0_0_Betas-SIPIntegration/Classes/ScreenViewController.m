@@ -51,9 +51,8 @@
 	[screen release];
 	screen = s;
 	if ([[screen pollingComponentsIds] count] > 0 ) {
-		polling = [[PollingHelper alloc] initWithComponentIds:[[[screen pollingComponentsIds] componentsJoinedByString:@","] retain]];
+		polling = [[PollingHelper alloc] initWithComponentIds:[[screen pollingComponentsIds] componentsJoinedByString:@","]];
 	}
-	
 }
 
 /**
