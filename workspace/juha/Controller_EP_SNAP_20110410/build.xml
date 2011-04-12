@@ -107,7 +107,7 @@
   <taskdef resource = "checkstyletask.properties" classpathref = "test.path.id"/>
   <property name = "checkstyle.report.style" value = "${build-config.dir}/checkstyle-noframes-sorted.xsl"/>
 
-  d
+  
   <!--
     | CLEAN:
     |
