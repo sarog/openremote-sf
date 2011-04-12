@@ -285,6 +285,7 @@ static BOOL isWifiActive = NO;
 	} else {
 		ViewHelper *viewHelper = [[ViewHelper alloc] init];
 		[viewHelper showAlertViewWithTitleAndSettingNavigation:@"Connection failed" Message:@"There's no server available. Leave this problem?"];
+        [viewHelper release];
 	}
 }
 
@@ -356,6 +357,7 @@ static BOOL isWifiActive = NO;
 	NSLog(@"Switching to groupmember controller server %@, please wait...", groupMemberUrl);
 	UpdateController *updateController = [[UpdateController alloc] initWithDelegate:self];
 	[updateController checkConfigAndUpdate];
+    [updateController release];
 }
 
 #pragma mark delegate method of NSURLConnection
