@@ -49,18 +49,15 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -70,7 +67,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -106,6 +102,11 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   /** The progress layout display auto discovery progress. */
   private LinearLayout progressLayout;
   
+  private ListView autoServersListView;
+  /** ListAdapter for automatically detected controllers */
+  private ArrayAdapter<String> autoServerListAdapter;
+  private LinearLayout customServersLayout;
+  
   private ProgressDialog loadingPanelProgress;
   
   @Override
@@ -116,111 +117,48 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
     
-    // The main layout contains all application configuration items.
-    LinearLayout mainLayout = new LinearLayout(this);
-    mainLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    mainLayout.setOrientation(LinearLayout.VERTICAL);
-    mainLayout.setBackgroundColor(0);
-    mainLayout.setTag(R.string.settings);
+    setContentView(R.layout.app_settings);
+    
+    autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
+    customServersLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
     
     loadingPanelProgress = new ProgressDialog(this);
     
-    // The scroll view contains appSettingsView, and make the appSettingsView can be scrolled.
-    ScrollView scroll = new ScrollView(this);
-    scroll.setVerticalScrollBarEnabled(true);
-    scroll.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
-    appSettingsView = new LinearLayout(this);
-    appSettingsView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-    appSettingsView.setOrientation(LinearLayout.VERTICAL);
+    ScrollView scrollView = (ScrollView) findViewById(R.id.settingsScrollView);
+    scrollView.setVerticalScrollBarEnabled(true);
     
-    appSettingsView.addView(createAutoLayout());
-    appSettingsView.addView(createChooseControllerLabel());
+    appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
+    
+    createAutoLayout();
     
     currentServer = "";
+    
+    constructAutoServersView();
+    constructCustomServersView();
     if (autoMode) {
-       appSettingsView.addView(constructAutoServersView());
+      startControllerAutoDiscovery();
     } else {
-       appSettingsView.addView(constructCustomServersView());
+      switchToCustomServersView();
     }
-    appSettingsView.addView(createChoosePanelLabel());
-    panelSelectSpinnerView = new PanelSelectSpinnerView(this);
-    appSettingsView.addView(panelSelectSpinnerView);
     
-    appSettingsView.addView(createCacheText());
-    appSettingsView.addView(createClearImageCacheButton());
-    appSettingsView.addView(createSSLLayout());
-    scroll.addView(appSettingsView);
+    panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     
-    mainLayout.addView(scroll);
-    mainLayout.addView(createDoneAndCancelLayout());
-    
-    setContentView(mainLayout);
+    createClearImageCacheButton();
+
     initSSLState();
     addOnclickListenerOnDoneButton();
     addOnclickListenerOnCancelButton();
-    progressLayout = (LinearLayout)findViewById(R.id.choose_controller_progress);
-  }
-
-  /**
-   * Creates the image cache text view.
-   *
-   * @return the text view
-   */
-  private TextView createCacheText() {
-    TextView cacheText = new TextView(this);
-    cacheText.setPadding(10, 5, 0, 5);
-    cacheText.setText("Image Cache:");
-    cacheText.setBackgroundColor(Color.DKGRAY);
-    return cacheText;
+    progressLayout = (LinearLayout) findViewById(R.id.choose_controller_progress);
   }
   
-  /**
-   * Creates the choose panel identity text.
-   *
-   * @return the text view
-   */
-  private TextView createChoosePanelLabel() {
-    TextView choosePanelInfo = new TextView(this);
-    choosePanelInfo.setPadding(10, 5, 0, 5);
-    choosePanelInfo.setText("Choose Panel Identity:");
-    choosePanelInfo.setBackgroundColor(Color.DKGRAY);
-    return choosePanelInfo;
-  }
-
-  /**
-   * Creates the choose controller bar, which contains "Choose controller:" text and 
-   * a progress bar(used in auto discovery servers).
-   * 
-   * @return the linear layout
-   */
-  private LinearLayout createChooseControllerLabel() {
-    LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-    LinearLayout chooseController = (LinearLayout)inflater.inflate(R.layout.choose_controller_bar, null);
-    return chooseController;
-  }
-
-  /**
-   * Creates the done and cancel layout that is inflated from xml.
-   * 
-   * @return the linear layout
-   */
-  private LinearLayout createDoneAndCancelLayout() {
-    LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-    LinearLayout saveAndCancelLayout = (LinearLayout)inflater.inflate(R.layout.bottom_button_bar, null);
-    return saveAndCancelLayout;
+  private void switchToAutoServersView() {
+    autoServersListView.setVisibility(View.VISIBLE);
+    customServersLayout.setVisibility(View.GONE);
   }
   
-  /**
-   * Creates the ssl layout.
-   * It contains ssl switch and ssl port.
-   * 
-   * @return the linear layout
-   */
-  private LinearLayout createSSLLayout() {
-    LayoutInflater inflater = (AppSettingsActivity.this).getLayoutInflater();
-    LinearLayout sslLayout = (LinearLayout)inflater.inflate(R.layout.ssl_field_view, null);
-    
-    return sslLayout;
+  private void switchToCustomServersView() {
+    autoServersListView.setVisibility(View.GONE);
+    customServersLayout.setVisibility(View.VISIBLE);
   }
 
   /**
@@ -372,16 +310,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * Creates the clear image cache button, add listener for clear image cache.
    * @return the relative layout
    */
-  private RelativeLayout createClearImageCacheButton() {
-    RelativeLayout clearImageView = new RelativeLayout(this);
-    clearImageView.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+  private void createClearImageCacheButton() {
+    Button clearImageCacheButton = (Button) findViewById(R.id.clear_image_cache_button);
     
-    Button clearImgCacheBtn = new Button(this);
-    clearImgCacheBtn.setText("Clear Image Cache");
-    RelativeLayout.LayoutParams clearButtonLayout = new RelativeLayout.LayoutParams(150, LayoutParams.WRAP_CONTENT);
-    clearButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    clearImgCacheBtn.setLayoutParams(clearButtonLayout);
-    clearImgCacheBtn.setOnClickListener(new OnClickListener() {
+    clearImageCacheButton.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
         ViewHelper.showAlertViewWithTitleYesOrNo(AppSettingsActivity.this, "",
             "Are you sure you want to clear image cache?",
@@ -392,9 +324,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
             });
       }
     });
-    
-    clearImageView.addView(clearImgCacheBtn);
-    return clearImageView;
   }
 
   /**
@@ -404,50 +333,26 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * @return the relative layout
    */
   private RelativeLayout createAutoLayout() {
-    RelativeLayout autoLayout = new RelativeLayout(this);
-    autoLayout.setPadding(10, 5, 10, 10);
-    autoLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, 80));
-    TextView autoText = new TextView(this);
-    RelativeLayout.LayoutParams autoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    autoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-    autoTextLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-    autoText.setLayoutParams(autoTextLayout);
-    autoText.setText("Auto Discovery");
+    ToggleButton autoButton = (ToggleButton) findViewById(R.id.autoButton);
 
-    ToggleButton autoButton = new ToggleButton(this);
-    autoButton.setWidth(150);
-    RelativeLayout.LayoutParams autoButtonLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    autoButtonLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    autoButtonLayout.addRule(RelativeLayout.CENTER_VERTICAL);
-    autoButton.setLayoutParams(autoButtonLayout);
     autoButton.setChecked(autoMode);
+    
     autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        appSettingsView.removeViewAt(2);
         currentServer = "";
         if (isChecked) {
           IPAutoDiscoveryServer.isInterrupted = false;
-          appSettingsView.addView(constructAutoServersView(), 2);
+          switchToAutoServersView();
+          startControllerAutoDiscovery();
         } else {
           IPAutoDiscoveryServer.isInterrupted = true;
-          appSettingsView.addView(constructCustomServersView(), 2);
+          switchToCustomServersView();
         }
         AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
       }
     });
     
-    TextView infoText = new TextView(this);
-    RelativeLayout.LayoutParams infoTextLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-    infoTextLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-    infoText.setLayoutParams(infoTextLayout);
-    infoText.setTextSize(10);
-    infoText.setText("Turn off auto-discovery to input controller url manually.");
-    
-    autoLayout.addView(autoText);
-    autoLayout.addView(autoButton);
-    autoLayout.addView(infoText);
-    return autoLayout;
+    return (RelativeLayout) findViewById(R.id.autoLayout);
   }
 
   /**
@@ -479,23 +384,12 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    *
    * @return the linear layout
    */
-  private LinearLayout constructCustomServersView() {
-    LinearLayout custumeView = new LinearLayout(this);
-    custumeView.setOrientation(LinearLayout.VERTICAL);
-    custumeView.setPadding(20, 5, 5, 0);
-    custumeView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-    
+  private void constructCustomServersView() {
     ArrayList<String> customServers = new ArrayList<String>();
     initCustomServersFromFile(customServers);
     
-    RelativeLayout buttonsView = new RelativeLayout(this);
-    buttonsView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 80));
-    Button addServer = new Button(this);
-    addServer.setWidth(80);
-    RelativeLayout.LayoutParams addServerLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    addServerLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-    addServer.setLayoutParams(addServerLayout);
-    addServer.setText("Add");
+    Button addServer = (Button) findViewById(R.id.add_server_button);
+    
     addServer.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
         Intent intent = new Intent();
@@ -503,12 +397,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         startActivityForResult(intent, Constants.REQUEST_CODE);
       }
     });
-    Button deleteServer = new Button(this);
-    deleteServer.setWidth(80);
-    RelativeLayout.LayoutParams deleteServerLayout = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    deleteServerLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    deleteServer.setLayoutParams(deleteServerLayout);
-    deleteServer.setText("Delete");
+    
+    Button deleteServer = (Button) findViewById(R.id.delete_server_button);
+    
     deleteServer.setOnClickListener(new OnClickListener() {
       @SuppressWarnings("unchecked")
       public void onClick(View v) {
@@ -523,17 +414,13 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       }
     });
     
-    buttonsView.addView(addServer);
-    buttonsView.addView(deleteServer);
-
-    customListView = new ListView(this);
-    customListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
-    customListView.setCacheColorHint(0);
+    customListView = (ListView) findViewById(R.id.custom_server_list_view);
+    
     final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
         customServers);
     customListView.setAdapter(serverListAdapter);
     customListView.setItemsCanFocus(true);
-    customListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    
     if (currentCustomServerIndex != -1) {
        customListView.setItemChecked(currentCustomServerIndex, true);
        currentServer = (String)customListView.getItemAtPosition(currentCustomServerIndex);
@@ -547,10 +434,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
        }
     });
     
-    custumeView.addView(customListView);
-    custumeView.addView(buttonsView);
     requestPanelList();
-    return custumeView;
   }
 
   /**
@@ -579,22 +463,38 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   }
   
   /**
-   * Auto discovery servers and add them in a list view.
-   * Click a list item and make it as current server.
-   * 
-   * @return the list view
+   * Do initialization that can't be done in XML for the ListView showing controllers
+   * discovered automatically.
    */
-  private ListView constructAutoServersView() {
-    final ListView lv = new ListView(this);
-    lv.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 200));
-    lv.setPadding(20, 5, 5, 10);
-    lv.setBackgroundColor(0);
-    lv.setCacheColorHint(0);
-    lv.setItemsCanFocus(true);
-    lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-    final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
+  private void constructAutoServersView() {
+    autoServersListView.setItemsCanFocus(true);
+    
+    autoServerListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
         new ArrayList<String>());
-    lv.setAdapter(serverListAdapter);
+    autoServersListView.setAdapter(autoServerListAdapter);
+    
+    autoServersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        currentServer = (String)parent.getItemAtPosition(position);
+        AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+        requestPanelList();
+      }
+    });
+  }
+
+  /**
+   * Starts a new {@link IPAutoDiscoveryServer} thread, which starts a server to receive
+   * messages declaring the presence of controllers.  Once the server is started,
+   * a message is sent via multicast over UDP to announce that such messages are desired.
+   * 
+   * The list of controllers discovered this way is cleared before the new discovery
+   * thread begins.
+   * 
+   * If any controllers are found, the first one found is automatically selected and its
+   * panel list is requested.
+   */
+  private void startControllerAutoDiscovery() {
+    autoServerListAdapter.clear();
     
     new IPAutoDiscoveryServer() {
       @Override
@@ -608,11 +508,11 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       protected void onPostExecute(List<String> result) {
         int length = result.size();
         for (int i = 0; i < length; i++) {
-          serverListAdapter.add(result.get(i));
+          autoServerListAdapter.add(result.get(i));
         }
         if (length > 0) {
-          lv.setItemChecked(0, true);
-          currentServer = serverListAdapter.getItem(0);
+          autoServersListView.setItemChecked(0, true);
+          currentServer = autoServerListAdapter.getItem(0);
           AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
         }
         if (progressLayout != null) {
@@ -621,18 +521,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         requestPanelList();
       }
     }.execute((Void) null);
-    
-    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        currentServer = (String)parent.getItemAtPosition(position);
-        AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
-        requestPanelList();
-      }
-    });
-    
-    return lv;
   }
-
+  
   /**
    *  Construct custom servers to a string which split by "," and write it to customServers.xml.
    */
