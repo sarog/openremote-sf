@@ -30,43 +30,42 @@ import android.util.Log;
 /**
  * Controller IP auto discovery client, this is a Multicast UDP client broadcasting request to Controllers for asking
  * their IPs.
- * 
+ *
  * @author Tomsky Wang
- * 
+ *
  */
 public class IPAutoDiscoveryClient implements Runnable {
-   
-   public static boolean isNetworkTypeWIFI;
-   
-   /**
-    * To send a Multicast UDP client broadcasting request.
-    * 
-    * @see java.lang.Runnable#run()
-    */
-   public void run() {
-      try {
-         DatagramSocket socket = new DatagramSocket();
-         byte[] b = new byte[512];
-         DatagramPacket dgram;
-         dgram = new DatagramPacket(b, b.length, InetAddress.getByName(getMulticastAddress()), Constants.MULTICAST_PORT);
-         socket.send(dgram);
-         Log.i("OpenRemote-AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT);
-      } catch (Exception e) {
-         Log.e("OpenRemote-AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT
-               + " failed", e);
-      }
 
-   }
-   
-   /**
-    * Gets the multicast address by net type.
-    * 
-    * @return the multicast address
-    */
-   public static String getMulticastAddress() {
-      if (isNetworkTypeWIFI) {
-         return Constants.MULTICAST_ADDRESS;
-      }
-      return Constants.NON_WIFI_MULTICAST_ADDRESS;
-   }
+  public static boolean isNetworkTypeWIFI;
+
+ /**
+  * To send a Multicast UDP client broadcasting request.
+  *
+  * @see java.lang.Runnable#run()
+  */
+  public void run() {
+    try {
+      DatagramSocket socket = new DatagramSocket();
+      byte[] b = new byte[512];
+      DatagramPacket dgram;
+      dgram = new DatagramPacket(b, b.length, InetAddress.getByName(getMulticastAddress()), Constants.MULTICAST_PORT);
+      socket.send(dgram);
+      Log.i("OpenRemote-AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT);
+    } catch (Exception e) {
+      Log.e("OpenRemote-AUTO DISCOVER", "auto discovery on " + getMulticastAddress() + ":" + Constants.MULTICAST_PORT
+          + " failed", e);
+    }
+  }
+
+  /**
+   * Gets the multicast address by net type.
+   *
+   * @return the multicast address
+   */
+  public static String getMulticastAddress() {
+    if (isNetworkTypeWIFI) {
+      return Constants.MULTICAST_ADDRESS;
+    }
+    return Constants.NON_WIFI_MULTICAST_ADDRESS;
+  }
 }
