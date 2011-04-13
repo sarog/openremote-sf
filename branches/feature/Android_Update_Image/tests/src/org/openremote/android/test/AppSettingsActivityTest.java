@@ -117,21 +117,45 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
 
     toggleSSL(true);
 
-    sslEditField.setText("1234");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("1234");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
+    
     int sslPort = AppSettingsModel.getSSLPort(activity);
 
     Assert.assertTrue("Expected SSL port value 1234, got " + sslPort, sslPort == 1234);
 
-    sslEditField.setText("8443");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("8443");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
 
+    getInstrumentation().waitForIdleSync();
+    
     Assert.assertTrue(AppSettingsModel.getSSLPort(ctx) == 8443);
 
-    sslEditField.setText("443");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("443");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
+    
     Assert.assertTrue(AppSettingsModel.getSSLPort(ctx) == 443);
   }
 
@@ -140,13 +164,29 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
    */
   public void testSSLPortLimits()
   {
-    sslEditField.setText("0");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("0");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
+    
     Assert.assertTrue(AppSettingsModel.getSSLPort(ctx) == 0);
 
-    sslEditField.setText("65535");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("65535");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
 
     Assert.assertTrue(AppSettingsModel.getSSLPort(ctx) == 65535);
   }
@@ -159,8 +199,16 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
   {
     AppSettingsModel.setSSLPort(ctx, 8443);
 
-    sslEditField.setText("100000");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("100000");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
 
     assertTrue(AppSettingsModel.getSSLPort(ctx) == 8443);
   }
@@ -173,9 +221,17 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
   {
     AppSettingsModel.setSSLPort(ctx, 8443);
 
-    sslEditField.setText("abc");
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("abc");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
 
+    getInstrumentation().waitForIdleSync();
+    
     assertTrue(AppSettingsModel.getSSLPort(ctx) == 8443);
   }
 
@@ -211,7 +267,15 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
 
     // click toggle...
 
-    sslToggle.performClick();
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslToggle.performClick();
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
 
     // check the toggle is unchecked, but still visible, enabled and focusable..
 
@@ -241,15 +305,30 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
   {
     toggleSSL(true);
 
-    sslEditField.setText("5000");
-
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
-
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("5000");
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
+    
     assertTrue(AppSettingsModel.getSSLPort(ctx) == 5000);
 
-    sslEditField.setText("100000");
-
-    sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+    activity.runOnUiThread(
+      new Runnable() {
+        public void run() {
+          sslEditField.setText("100000");
+          sslEditField.requestFocus();
+          sslEditField.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        }
+      }
+    );
+    
+    getInstrumentation().waitForIdleSync();
 
     assertTrue(AppSettingsModel.getSSLPort(ctx) == 5000);
 
