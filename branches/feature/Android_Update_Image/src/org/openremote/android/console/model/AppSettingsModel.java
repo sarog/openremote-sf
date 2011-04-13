@@ -111,15 +111,27 @@ public class AppSettingsModel implements Serializable
    *
    * @param   context  global Android application context
    *
-   * @return  Returns the (user) configured URL to controller, as-is, or empty string if nothing
-   *          has been stored
+   * @return  Returns the (user) configured URL to controller, as-is, or null if nothing
+   *          has been stored or the stored URL has incorrect syntax.
    */
-  public static String getCurrentServer(Context context)
+  public static URL getCurrentServer(Context context)
   {
-    // TODO: return URL instead of String
+    String currentServer = context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE)
+                                .getString(CURRENT_SERVER, "");
+    if (currentServer.equals("")) {
+      return null;
+    }
 
-    return context.getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE)
-                  .getString(CURRENT_SERVER, "");
+    try {
+      URL currentServerURL = new URL(currentServer);
+      return currentServerURL;
+    } catch (MalformedURLException e) {
+      Log.e(LOG_CATEGORY,
+          "invalid URL syntax retrieved from preferences file in getCurrentServer(): \"" +
+          currentServer + "\"");
+      // TODO send an intent so that a GUI notification can be made for this error or throw exception
+      return null;
+    }
   }
 
 
@@ -161,49 +173,46 @@ public class AppSettingsModel implements Serializable
    * @return  modified controller URL according to SSL settings, or null if the user-configured
    *          controller URL is malformed.
    */
-  public static String getSecuredServer(Context context)
+  public static URL getSecuredServer(Context context)
   {
-    // TODO : return URL instead of string
+    URL configuredControllerURL = getCurrentServer(context);
 
-    try
+    if (configuredControllerURL == null) {
+      return null;
+    }
+
+    int port = configuredControllerURL.getPort();
+    String protocol = configuredControllerURL.getProtocol();
+    String host = configuredControllerURL.getHost();
+    String file = configuredControllerURL.getFile();
+
+    if (isSSLEnabled(context))
     {
-      URL configuredControllerURL = new URL(getCurrentServer(context));
+      protocol = "https";
 
-      int port = configuredControllerURL.getPort();
-      String protocol = configuredControllerURL.getProtocol();
-      String host = configuredControllerURL.getHost();
-      String file = configuredControllerURL.getFile();
-
-      if (isSSLEnabled(context))
+      if (getSSLPort(context) == -1 && port == -1)
       {
-        protocol = "https";
-
-        if (getSSLPort(context) == -1 && port == -1)
-        {
-          port = DEFAULT_HTTPD_SSL_PORT;
-        }
-
-        else if (getSSLPort(context) == -1)
-        {
-          port = DEFAULT_TOMCAT_SSL_PORT;
-        }
-
-        else
-        {
-          port = getSSLPort(context);
-        }
+        port = DEFAULT_HTTPD_SSL_PORT;
       }
 
-      String realURL = new URL(protocol, host, port, file).toExternalForm();
+      else if (getSSLPort(context) == -1)
+      {
+        port = DEFAULT_TOMCAT_SSL_PORT;
+      }
 
-      Log.d(LOG_CATEGORY, realURL);
-
-      return realURL;
+      else
+      {
+        port = getSSLPort(context);
+      }
     }
-    catch (MalformedURLException e)
-    {
-      // TODO : should propagate malformed URL up to user, so they know they messed up, requires API modification
 
+    try {
+      URL realURL = new URL(protocol, host, port, file);
+      Log.d(LOG_CATEGORY, realURL.toString());
+      return realURL;
+    } catch (MalformedURLException e) {
+      Log.wtf(LOG_CATEGORY, "Failed to create realURL object in getSecuredServer() even though I had a valid URL object to start from");
+      // TODO : should propagate malformed URL up to user, so they know they messed up, requires API modification
       return null;
     }
   }
@@ -215,16 +224,18 @@ public class AppSettingsModel implements Serializable
    * @param context        global Android application context
    * @param controllerURL  controller URL to save in the application settings
    */
-  public static void setCurrentServer(Context context, String controllerURL)
+  public static void setCurrentServer(Context context, URL controllerURL)
   {
-    // TODO : use URL instead of String in the API
-
     SharedPreferences.Editor editor = context.getSharedPreferences(
         APP_SETTINGS,
         Context.MODE_PRIVATE
     ).edit();
 
-    editor.putString(CURRENT_SERVER, controllerURL);
+    if (controllerURL != null) {
+      editor.putString(CURRENT_SERVER, controllerURL.toString());
+    } else {
+      editor.putString(CURRENT_SERVER, "");
+    }
     editor.commit();
   }
 
@@ -350,11 +361,11 @@ public class AppSettingsModel implements Serializable
     if (port != -1)
       return port;
 
-    String configuredControllerURL = getCurrentServer(context);
+    URL configuredControllerURL = getCurrentServer(context);
 
-    try
+    if (configuredControllerURL != null)
     {
-      int configuredPort = new URL(configuredControllerURL).getPort();
+      int configuredPort = configuredControllerURL.getPort();
 
       if (configuredPort == -1)
       {
@@ -366,12 +377,12 @@ public class AppSettingsModel implements Serializable
       }
 
     }
-    catch (MalformedURLException e)
+    else
     {
       //   if we enforce proper URL on controller URL set, we can assume this only occurs
       //   as programming error, no need to propagate back up to user
 
-      Log.e(LOG_CATEGORY, "Controller URL is invalid", e);
+      Log.e(LOG_CATEGORY, "getSSLPort(): Controller URL is invalid");
 
       // Best guess return value...
 

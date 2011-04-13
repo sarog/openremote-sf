@@ -21,7 +21,6 @@ package org.openremote.android.console.model;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
@@ -67,7 +66,7 @@ public class PollingHelper {
    private boolean isPolling;
    private HttpClient client;
    private HttpGet httpGet;
-   private String serverUrl;
+   private URL serverUrl;
    private Context context;
    public static String deviceId = null;
    private Handler handler;
@@ -127,15 +126,11 @@ public class PollingHelper {
       }
       
       try {
-         URL uri = new URL(serverUrl);
-         uri.toURI();
-         if ("https".equals(uri.getProtocol())) {
-            Scheme sch = new Scheme(uri.getProtocol(), new SelfCertificateSSLSocketFactory(), uri.getPort());
+         serverUrl.toURI();
+         if ("https".equals(serverUrl.getProtocol())) {
+            Scheme sch = new Scheme(serverUrl.getProtocol(), new SelfCertificateSSLSocketFactory(), serverUrl.getPort());
             client.getConnectionManager().getSchemeRegistry().register(sch);
          }
-      } catch (MalformedURLException e) {
-         Log.e(LOG_CATEGORY, "Create URL fail:" + serverUrl);
-         return;
       } catch (URISyntaxException e) {
          Log.e(LOG_CATEGORY, "Could not convert " + serverUrl + " to a compliant URI");
          return;

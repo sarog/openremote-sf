@@ -22,6 +22,7 @@
 package org.openremote.android.test.console.net;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.net.MalformedURLException;
 import java.io.IOException;
@@ -107,6 +108,8 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    */
   public void testVerifyControllerURL() throws IOException
   {
+    URL publicControllerUrl = new URL("http://controller.openremote.org/test/controller");
+
     try
     {
       AppSettingsModel.setCurrentPanelIdentity(ctx, "SimpleName");
@@ -115,7 +118,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
         fail(wifiRequired());
 
       HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, "http://controller.openremote.org/test/controller"
+          ctx, publicControllerUrl
       );
 
       assertNotNull("Got null HTTP response, was expecting: " + HttpURLConnection.HTTP_OK, response);
@@ -140,6 +143,8 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    */
   public void testVerifyControllerURLWrongPanelName() throws IOException
   {
+    URL publicControllerUrl = new URL("http://controller.openremote.org/test/controller");
+
     try
     {
       AppSettingsModel.setCurrentPanelIdentity(ctx, "nothing");
@@ -148,7 +153,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
         fail(wifiRequired());
 
       HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, "http://controller.openremote.org/test/controller"
+          ctx, publicControllerUrl
       );
 
       assertNotNull("Was expecting error response 428, got null.", response);
@@ -172,6 +177,8 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    */
   public void testVerifyControllerURLSpacesInPanelName() throws IOException
   {
+    URL publicControllerUrl = new URL("http://controller.openremote.org/test/controller");
+
     try
     {
       AppSettingsModel.setCurrentPanelIdentity(ctx, "Name With Spaces");
@@ -180,7 +187,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
       //  fail(wifiRequired());
 
       HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, "http://controller.openremote.org/test/controller"
+          ctx, publicControllerUrl
       );
 
       assertNotNull("Got null response, was expecting " + HttpURLConnection.HTTP_OK, response);
@@ -206,6 +213,8 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    */
   public void testVerifyControllerWrongURL() throws IOException
   {
+    URL publicControllerUrl = new URL("http://controller.openremote.org/nothing/here");
+
     try
     {
       //if (!wifi.isWifiEnabled())
@@ -214,7 +223,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
       AppSettingsModel.setCurrentPanelIdentity(ctx, "something");
 
       HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, "http://controller.openremote.org/nothing/here"
+          ctx, publicControllerUrl
       );
 
       assertNotNull("Got null HTTP response, was expecting: " + HttpURLConnection.HTTP_NOT_FOUND,
@@ -234,35 +243,17 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
 
   /**
-   * Test behavior when controller URL has not been configured.
+   * Tests behavior with a controller URL containing a hostname that doesn't resolve.
    */
-  public void testVerifyControllerEmptyURL() throws IOException
+  public void testControllerAtUnknownHost() throws MalformedURLException
   {
-    //if (!wifi.isWifiEnabled())
-    //  fail(wifiRequired());
+    URL controllerUrlWithUnknownHost =
+        new URL("http://controller.openremotetest.org/test/controller");
 
-    try
-    {
-      ORNetworkCheck.verifyControllerURL(ctx, "");
-
-      fail ("should not get here");
-    }
-    catch (MalformedURLException e)
-    {
-      // this is expected...
-    }
-  }
-
-
-  /**
-   *
-   */
-  public void testControllerAtUnknownHost()
-  {
     try
     {
       ORNetworkCheck.verifyControllerURL(
-          ctx, "http://controller.openremotetest.org/test/controller"
+          ctx, controllerUrlWithUnknownHost
       );
 
       fail ("Should not get here...");

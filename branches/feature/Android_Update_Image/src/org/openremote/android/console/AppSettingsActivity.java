@@ -21,6 +21,8 @@ package org.openremote.android.console;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +84,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
  */
 
 public class AppSettingsActivity extends GenericActivity implements ORConnectionDelegate {
+  public static final String TAG = Constants.LOG_CATEGORY + "AppSettingsActivity";
 
   /** The app settings view contains auto discovery, auto servers, custom servers,
    * select panel identity, clear image cache and security configuration. 
@@ -109,6 +112,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   
   private ProgressDialog loadingPanelProgress;
   
+  private IPAutoDiscoveryServer autoDiscoveryServer;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -151,11 +156,17 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     progressLayout = (LinearLayout) findViewById(R.id.choose_controller_progress);
   }
   
+  /**
+   * Switches what gets displayed in the controller selection frame layout to auto-discovered controllers.
+   */
   private void switchToAutoServersView() {
     autoServersListView.setVisibility(View.VISIBLE);
     customServersLayout.setVisibility(View.GONE);
   }
   
+  /**
+   * Switches what gets display in the controller selection frame layout to manually specified controllers.
+   */
   private void switchToCustomServersView() {
     autoServersListView.setVisibility(View.GONE);
     customServersLayout.setVisibility(View.VISIBLE);
@@ -346,6 +357,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
           startControllerAutoDiscovery();
         } else {
           IPAutoDiscoveryServer.isInterrupted = true;
+          stopControllerAutoDiscovery();
           switchToCustomServersView();
         }
         AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
@@ -356,7 +368,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   }
 
   /**
-   * Inits the custom servers from customServers.xml.
+   * Loads the custom server URL from customServers.xml, setting the current controller
+   * URL to the last entry that began with a plus sign if such an entry was found.
    *
    * @param customServers the custom servers
    */
@@ -371,7 +384,16 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         } else {
           currentCustomServerIndex = i;
           customServers.add(data[i].substring(1));
-          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, data[i].substring(1));
+          try {
+            URL controllerURL = new URL(data[i].substring(1));
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
+          } catch (MalformedURLException e) {
+            Log.e(TAG, "incorrect URL syntax in customServers.xml: \"" + data[i].substring(1) +
+                "\"");
+            Toast toast = Toast.makeText(getApplicationContext(),
+                getString(R.string.incorrect_url_syntax_from_saved_configuration), 1);
+            toast.show();
+          }
         }
       }
     }
@@ -408,7 +430,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
           customListView.setItemChecked(checkedPosition, false);
           ((ArrayAdapter<String>) customListView.getAdapter()).remove(customListView.getItemAtPosition(checkedPosition).toString());
           currentServer = "";
-          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, null);
           writeCustomServerToFile();
         }
       }
@@ -427,8 +449,17 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     }
     customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-          currentServer = (String)parent.getItemAtPosition(position);
-          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+          String selectedController = (String) parent.getItemAtPosition(position);
+          try {
+            URL url = new URL(selectedController);
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, url);
+            currentServer = selectedController;
+          } catch (MalformedURLException e) {
+            Log.e(TAG, "incorrect URL syntax: \"" + selectedController + "\"");
+            Toast toast = Toast.makeText(getApplicationContext(),
+                getString(R.string.incorrect_url_syntax) + ": " + selectedController, 1);
+            toast.show();
+          }
           writeCustomServerToFile();
           requestPanelList();
        }
@@ -450,11 +481,21 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       String result = data.getDataString();
       if (Constants.REQUEST_CODE == requestCode && !TextUtils.isEmpty(result)) {
         if (Constants.RESULT_CONTROLLER_URL == resultCode) {
-          currentServer = "http://" + result;
+          String proposedServer = "http://" + result;
+
           ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customListView.getAdapter();
-          customeListAdapter.add(currentServer);
+          customeListAdapter.add(proposedServer);
           customListView.setItemChecked(customeListAdapter.getCount() - 1, true);
-          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+          try {
+            URL url = new URL(proposedServer);
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, url);
+            currentServer = proposedServer;
+          } catch (MalformedURLException e) {
+            Log.e(TAG, "incorrect URL syntax in onActivityResult(): " + proposedServer);
+            Toast toast = Toast.makeText(getApplicationContext(),
+                getString(R.string.incorrect_url_syntax) + ": " + proposedServer, 1);
+            toast.show();
+          }
           writeCustomServerToFile();
           requestPanelList();
         }
@@ -475,8 +516,19 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     autoServersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        currentServer = (String)parent.getItemAtPosition(position);
-        AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
+        String proposedServer = (String) parent.getItemAtPosition(position);
+        try {
+          URL controllerURL = new URL(proposedServer);
+          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
+          currentServer = proposedServer;
+        } catch (MalformedURLException e) {
+          Log.e(TAG, "invalid URL syntax in selected auto-discovered controller URL: \"" +
+              proposedServer + "\"");
+          Toast toast = Toast.makeText(getApplicationContext(),
+              getString(R.string.incorrect_url_syntax) + ": \"" + proposedServer + "\"", 1);
+          toast.show();
+          return;
+        }
         requestPanelList();
       }
     });
@@ -496,7 +548,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private void startControllerAutoDiscovery() {
     autoServerListAdapter.clear();
     
-    new IPAutoDiscoveryServer() {
+    autoDiscoveryServer = new IPAutoDiscoveryServer() {
       @Override
       protected void onProgressUpdate(Void... values) {
         if (progressLayout != null) {
@@ -506,21 +558,40 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 
       @Override
       protected void onPostExecute(List<String> result) {
+        if (progressLayout != null) {
+          progressLayout.setVisibility(View.INVISIBLE);
+        }
+
         int length = result.size();
         for (int i = 0; i < length; i++) {
           autoServerListAdapter.add(result.get(i));
         }
         if (length > 0) {
           autoServersListView.setItemChecked(0, true);
-          currentServer = autoServerListAdapter.getItem(0);
-          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, currentServer);
-        }
-        if (progressLayout != null) {
-          progressLayout.setVisibility(View.INVISIBLE);
+          String proposedServer = autoServerListAdapter.getItem(0);
+          try {
+            URL controllerURL = new URL(proposedServer);
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
+            currentServer = proposedServer;
+          } catch (MalformedURLException e) {
+            Log.e(TAG, "first auto-discovered URL had incorrect syntax: \"" + proposedServer + "\"");
+            Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.incorrect_url_syntax) + ": \"" +
+                proposedServer + "\"", 1);
+            toast.show();
+            return;
+          }
         }
         requestPanelList();
       }
-    }.execute((Void) null);
+    };
+
+    autoDiscoveryServer.execute((Void) null);
+  }
+
+  public void stopControllerAutoDiscovery() {
+    if (autoDiscoveryServer != null) {
+      autoDiscoveryServer.cancel(true);
+    }
   }
   
   /**
