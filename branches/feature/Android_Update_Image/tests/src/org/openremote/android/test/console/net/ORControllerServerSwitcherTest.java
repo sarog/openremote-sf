@@ -21,12 +21,8 @@
 package org.openremote.android.test.console.net;
 
 import org.openremote.android.console.AppSettingsActivity;
-import org.openremote.android.console.model.AppSettingsModel;
-import org.openremote.android.console.net.ORControllerServerSwitcher;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.util.Log;
 
 /**
  * 
