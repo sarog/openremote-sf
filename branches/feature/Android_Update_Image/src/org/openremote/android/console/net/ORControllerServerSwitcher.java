@@ -97,13 +97,6 @@ public class ORControllerServerSwitcher
     String url = AppSettingsModel.getSecuredServer(context);
     HttpGet httpGet = new HttpGet(url + "/rest/servers");
 
-    if (httpGet == null)
-    {
-      Log.e(LOG_CATEGORY, "Create HttpRequest fail.");
-
-      return false;
-    }
-
     SecurityUtil.addCredentialToHttpRequest(context, httpGet);
 
 
