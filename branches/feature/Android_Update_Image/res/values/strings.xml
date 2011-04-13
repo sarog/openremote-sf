@@ -26,4 +26,6 @@
     <string name="ssl">SSL:</string>
     <string name="ssl_port">Port:</string>
     <string name="default_loading_text">Loading resources...</string>
+    <string name="incorrect_url_syntax_from_saved_configuration">Incorrect controller URL syntax from saved configuration</string>
+    <string name="incorrect_url_syntax">Incorrect controller URL syntax</string>
 </resources>

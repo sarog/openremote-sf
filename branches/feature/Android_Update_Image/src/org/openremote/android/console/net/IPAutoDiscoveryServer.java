@@ -41,6 +41,7 @@ import android.util.Log;
  *
  */
 public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
+  public static final String TAG = Constants.LOG_CATEGORY + "IPAutoDiscoveryServer";
 
   /** Interrupted the current discovery. */
   public static boolean isInterrupted;
@@ -55,13 +56,13 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
       srvr = new ServerSocket(Constants.LOCAL_SERVER_PORT);
       new IPAutoDiscoveryClient().run();
       autoServers.clear();
-      srvr.setSoTimeout(1000);
+      srvr.setSoTimeout(Constants.LOCAL_DISCOVERY_SERVER_TIMEOUT);
     } catch (BindException e) {
-      Log.e("OpenRemote-AUTO DISCOVER", "auto discovery server setup failed, the address is already in use");
+      Log.e(TAG, "auto discovery server setup failed, the address is already in use");
       autoServers.clear();
       return autoServers;
     } catch (IOException e) {
-      Log.e("OpenRemote-AUTO DISCOVER", "auto discovery server setup failed", e);
+      Log.e(TAG, "auto discovery server setup failed", e);
       autoServers.clear();
       return autoServers;
     }
@@ -74,20 +75,23 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
           autoServers.add(line);
         }
         connectionSocket.close();
-        Log.i("OpenRemote-AUTO DISCOVER", "auto discovery result: " + autoServers);
+        Log.i(TAG, "auto discovery result: " + autoServers);
         Thread.sleep(3);
       } catch (SocketTimeoutException e) {
+        Log.i(TAG, "SocketTimeoutException in doInBackground()");
         moreQuotes = false;
       } catch (InterruptedException e) {
+        Log.i(TAG, "InterruptedException in doInBackground(): ", e);
         moreQuotes = false;
       } catch (IOException e) {
+        Log.i(TAG, "IOException in doInBackground: ", e);
         moreQuotes = false;
       }
     }
     try {
       srvr.close();
     } catch (IOException e) {
-      Log.e("OpenRemote-AUTO DISCOVER", "auto discovery ServerSocket close failed " , e);
+      Log.e(TAG, "auto discovery ServerSocket close failed " , e);
       return autoServers;
     }
     return autoServers;

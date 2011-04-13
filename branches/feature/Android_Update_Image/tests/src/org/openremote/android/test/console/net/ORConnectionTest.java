@@ -21,6 +21,7 @@
 package org.openremote.android.test.console.net;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.net.MalformedURLException;
 import java.io.IOException;
@@ -182,7 +183,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testURLConnectionBasicGET() throws IOException
   {
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
-        activity, ORHttpMethod.GET, TEST_CONTROLLER_URL, NO_HTTP_AUTH
+        activity, ORHttpMethod.GET, new URL(TEST_CONTROLLER_URL), NO_HTTP_AUTH
     );
 
     assertHttpResponse(response, TEST_CONTROLLER_URL, HttpURLConnection.HTTP_OK, TEXTHTML_MIME_TYPE);
@@ -201,7 +202,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     try
     {
       ORConnection.checkURLWithHTTPProtocol(
-          activity, ORHttpMethod.GET, NOHOST_TESTURL, NO_HTTP_AUTH
+          activity, ORHttpMethod.GET, new URL(NOHOST_TESTURL), NO_HTTP_AUTH
       );
 
       fail ("Should not get here...");
@@ -220,7 +221,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testURLConnectionWithNullArg() throws IOException
   {
-    final String TESTURL = null;
+    final URL TESTURL = null;
 
     try
     {
@@ -230,104 +231,9 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
       fail ("Should not get here...");
     }
-    catch (MalformedURLException e)
+    catch (NullPointerException e)
     {
-      // expected malformed URL exception...
-    }
-  }
-
-
-  /**
-   * Test empty string arg behavior...
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testURLConnectionWithEmptyArg() throws IOException
-  {
-    final String TESTURL = "";
-
-    try
-    {
-      ORConnection.checkURLWithHTTPProtocol(
-          activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-      );
-
-      fail ("Should not get here...");
-    }
-    catch (MalformedURLException e)
-    {
-      // expected malformed URL exception...
-    }
-  }
-
-  /**
-   * Test invalid URL arg behavior...
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testURLConnectionWithRandomString() throws IOException
-  {
-    final String TESTURL = "random";
-
-    try
-    {
-      ORConnection.checkURLWithHTTPProtocol(
-          activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
-      );
-
-      fail ("Should not get here...");
-    }
-    catch (MalformedURLException e)
-    {
-      // expected malformed URL exception...
-    }
-  }
-
-
-  /**
-   * Test malformed URL arg behavior...
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testURLConnectionWithMissingProtocol() throws IOException
-  {
-    final String NO_PROTOCOL_SCHEME_TESTURL = "controller.openremote.org/test/controller";
-
-    try
-    {
-      ORConnection.checkURLWithHTTPProtocol(
-          activity, ORHttpMethod.GET, NO_PROTOCOL_SCHEME_TESTURL, NO_HTTP_AUTH
-      );
-
-      fail ("Should not get here...");
-    }
-    catch (MalformedURLException e)
-    {
-      // expected malformed URL exception...
-    }
-  }
-
-
-  /**
-   * Test malformed URL arg behavior...
-   *
-   * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
-   */
-  public void testURLConnectionWithUnknownProtocol() throws IOException
-  {
-    final String INVALID_PROTOCOL_TESTURL = "foo://controller.openremote.org/test/controller";
-
-    try
-    {
-      ORConnection.checkURLWithHTTPProtocol(
-          activity, ORHttpMethod.GET, INVALID_PROTOCOL_TESTURL, NO_HTTP_AUTH
-      );
-
-      fail ("Should not get here...");
-    }
-    catch (MalformedURLException e)
-    {
-      // expected malformed URL exception...
+      // expected null pointer exception...
     }
   }
 
@@ -339,15 +245,15 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testURLConnectionWithWrongURLPath() throws IOException
   {
-    final String NOT_EXIST_TESTURL = "http://controller.openremote.org/test/controller/does/not/exist";
+    final URL NOT_EXIST_TESTURL = new URL("http://controller.openremote.org/test/controller/does/not/exist");
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, NOT_EXIST_TESTURL, NO_HTTP_AUTH
     );
 
-    assertNotNullResponse(response, NOT_EXIST_TESTURL);
+    assertNotNullResponse(response, NOT_EXIST_TESTURL.toString());
 
-    assertHttpReturnCode(response, NOT_EXIST_TESTURL, HttpURLConnection.HTTP_NOT_FOUND);
+    assertHttpReturnCode(response, NOT_EXIST_TESTURL.toString(), HttpURLConnection.HTTP_NOT_FOUND);
   }
 
 
@@ -388,14 +294,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testControllerGETRestPanelXML() throws IOException, ParserConfigurationException, SAXException
   {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_PANEL_URI;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_PANEL_URI);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
 
     Document doc = getDOMDocument(response);
 
@@ -448,13 +354,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testControllerGETRestFullPanelXML() throws IOException, ParserConfigurationException, SAXException
   {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "SimpleName";
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "SimpleName");
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
 
     Document doc = getDOMDocument(response);
 
@@ -628,15 +534,15 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testControllerGETRestPanelXML_EmptyController() throws Exception
   {
-    final String TESTURL = TEST_EMPTY_CONTROLLER_URL + RESTAPI_PANEL_URI;
+    final URL TESTURL = new URL(TEST_EMPTY_CONTROLLER_URL + RESTAPI_PANEL_URI);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
 
-    assertMimeType(response, TESTURL, APPLICATIONXML_MIME_TYPE);
-    assertUTF8Encoding(response, TESTURL);
+    assertMimeType(response, TESTURL.toString(), APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL.toString());
     assertErrorElement(getDOMDocument(response), 426);
 
 
@@ -663,7 +569,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     //     </error>
     //   </openremote>
 
-    assertHttpResponse(response, TESTURL, 426);
+    assertHttpResponse(response, TESTURL.toString(), 426);
   }
 
 
@@ -676,24 +582,24 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testControllerGETRestPanelXML_BrokenPanelXML() throws Exception
   {
-    final String TESTURL = TEST_BROKEN_CONTROLLER_URL + RESTAPI_PANEL_URI;
+    final URL TESTURL = new URL(TEST_BROKEN_CONTROLLER_URL + RESTAPI_PANEL_URI);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
 
-    assertMimeType(response, TESTURL, APPLICATIONXML_MIME_TYPE);
-    assertUTF8Encoding(response, TESTURL);
+    assertMimeType(response, TESTURL.toString(), APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL.toString());
     assertErrorElement(getDOMDocument(response), 424);
 
     // TODO :
     //
     //   This test currently fails due to a HTTP response code that does not match the actual
     //   error code indicated -- HTTP response is 200 (OK) with a body content that indicates
-    //   that an error occured (424, as expected).
+    //   that an error occurred (424, as expected).
     //
-    //   Correct behavior would be to returh HTTP response 424 *with* the document body that
+    //   Correct behavior would be to return HTTP response 424 *with* the document body that
     //   has additional error details.
     //
     //   HOWEVER, when fixing this issue in the controller, care must be taken that the JSONP
@@ -710,7 +616,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     //     </error>
     //   </openremote>
 
-    assertHttpResponse(response, TESTURL, 424);
+    assertHttpResponse(response, TESTURL.toString(), 424);
 
   }
 
@@ -725,14 +631,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    */
   public void testControllerGETRestFullPanelXML_NotExist() throws IOException, ParserConfigurationException, SAXException
   {
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "DoesNotExist";
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_FULLPANEL_URI + "DoesNotExist");
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 428, APPLICATIONXML_MIME_TYPE);
-    assertUTF8Encoding(response, TESTURL);
+    assertHttpResponse(response, TESTURL.toString(), 428, APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL.toString());
     assertErrorElement(getDOMDocument(response), 428);
   }
 
@@ -748,16 +654,16 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String BUTTON_ID = "22";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertMimeType(response, TESTURL, APPLICATIONXML_MIME_TYPE);
-    assertUTF8Encoding(response, TESTURL);
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
+    assertMimeType(response, TESTURL.toString(), APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, TESTURL.toString());
+    assertHttpResponse(response, TESTURL.toString(), HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
   }
 
 
@@ -773,13 +679,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String BROKEN_BUTTON_ID = "999";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BROKEN_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BROKEN_BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 418);
+    assertHttpResponse(response, TESTURL.toString(), 418);
   }
 
   /**
@@ -796,14 +702,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String BUTTON_ID = "999";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 418);
+    assertHttpResponse(response, TESTURL.toString(), 418);
 
     try
     {
@@ -841,14 +747,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String BUTTON_ID = "999";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 418, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), 418, APPLICATIONXML_MIME_TYPE);
   }
 
 
@@ -863,13 +769,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String INVALID_BUTTON_ID = "must-be-integer";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 400);
+    assertHttpResponse(response, TESTURL.toString(), 400);
   }
   
 
@@ -887,14 +793,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String INVALID_BUTTON_ID = "must-be-integer";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 400);
+    assertHttpResponse(response, TESTURL.toString(), 400);
 
     try
     {
@@ -934,13 +840,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String INVALID_BUTTON_ID = "must-be-integer";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 400, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), 400, APPLICATIONXML_MIME_TYPE);
   }
 
 
@@ -957,11 +863,11 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
     final String BUTTON_COMMAND_PARAM = "/click";
 
-    final String LIGHTON_BUTTON_URL =
-        TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + LIGHTON_BUTTON_ID + BUTTON_COMMAND_PARAM;
+    final URL LIGHTON_BUTTON_URL =
+        new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + LIGHTON_BUTTON_ID + BUTTON_COMMAND_PARAM);
 
-    final String LIGHTOFF_BUTTON_URL =
-        TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + LIGHTOFF_BUTTON_ID + BUTTON_COMMAND_PARAM;
+    final URL LIGHTOFF_BUTTON_URL =
+        new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + LIGHTOFF_BUTTON_ID + BUTTON_COMMAND_PARAM);
 
 
     Random rand = new Random(System.currentTimeMillis());
@@ -970,7 +876,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     {
       int option = rand.nextInt(2);
 
-      String url = "<undefined>";
+      URL url = null;
 
       switch (option)
       {
@@ -987,7 +893,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
           activity, ORHttpMethod.POST, url, NO_HTTP_AUTH
       );
 
-      assertHttpResponse(response, url, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
+      assertHttpResponse(response, url.toString(), HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
     }
 
   }
@@ -1006,13 +912,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String UNKNOWN_BUTTON_ID = "22222";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 419, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), 419, APPLICATIONXML_MIME_TYPE);
 
     assertErrorElement(getDOMDocument(response), 419);
   }
@@ -1029,13 +935,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 420);
+    assertHttpResponse(response, TESTURL.toString(), 420);
   }
 
 
@@ -1053,14 +959,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 420);
+    assertHttpResponse(response, TESTURL.toString(), 420);
 
     try
     {
@@ -1099,14 +1005,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 420, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), 420, APPLICATIONXML_MIME_TYPE);
 
   }
 
@@ -1124,13 +1030,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String BUTTON_ID = "444";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_EMPTY_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_EMPTY_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 422, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), 422, APPLICATIONXML_MIME_TYPE);
 
     assertErrorElement(getDOMDocument(response), 422);
   }
@@ -1149,14 +1055,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String UNPARSEABLE_BUTTON_ID = "444";
     final String COMMAND_PARAM = "/CLICK";
 
-    final String TESTURL = TEST_BROKEN_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNPARSEABLE_BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_BROKEN_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNPARSEABLE_BUTTON_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, 424, APPLICATIONXML_MIME_TYPE);
+    assertHttpResponse(response, TESTURL.toString(), 424, APPLICATIONXML_MIME_TYPE);
 
     assertErrorElement(getDOMDocument(response), 424);
   }
@@ -1172,13 +1078,13 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String BUTTON_ID = "24";
     final String COMMAND_PARAM = "/CLICK        ";
 
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
+    assertHttpResponse(response, TESTURL.toString(), HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
   }
 
 
@@ -1197,15 +1103,15 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String COMMAND_PARAM_OFF = "/off";
 
 
-    final String TESTURL_ON = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM_ON;
-    final String TESTURL_OFF = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM_OFF;
+    final URL TESTURL_ON = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM_ON);
+    final URL TESTURL_OFF = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM_OFF);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.POST, TESTURL_ON, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL_ON, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
+    assertHttpResponse(response, TESTURL_ON.toString(), HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
 
 
 
@@ -1213,7 +1119,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
         activity, ORHttpMethod.POST, TESTURL_OFF, NO_HTTP_AUTH
     );
 
-    assertHttpResponse(response, TESTURL_OFF, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
+    assertHttpResponse(response, TESTURL_OFF.toString(), HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
   }
 
 
@@ -1221,7 +1127,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    *  TODO:
    *
    *    improvement for the current Controller REST/XML API implementation -- when passing an
-   *    unknown command paratemer to component, the HTTP return response is OK (200), should
+   *    unknown command parameter to component, the HTTP return response is OK (200), should
    *    indicate incorrect API use instead.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
@@ -1231,7 +1137,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String COMPONENT_ID = "28";
     final String COMMAND_PARAM = "/click";
 
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
@@ -1265,7 +1171,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String COMPONENT_ID = "22";
     final String COMMAND_PARAM = "/on";
 
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
@@ -1289,7 +1195,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    *  TODO:
    *
    *    improvement for the current Controller REST/XML API implementation -- when passing an
-   *    unknown command paratemer to component, the HTTP return response is OK (200), should
+   *    unknown command parameter to component, the HTTP return response is OK (200), should
    *    indicate incorrect API use instead.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
@@ -1299,7 +1205,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String COMPONENT_ID = "24";
     final String COMMAND_PARAM = "/off";
 
-    final String TESTURL = TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM;
+    final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
@@ -1322,7 +1228,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
   /**
    * Small stress test on a switch to ensure the switch state is returned correctly after
-   * consequtive calls with random order of 'on' and 'off' commands.  <p>
+   * consecutive calls with random order of 'on' and 'off' commands.  <p>
    *
    * Note that the system is asynchronous due to polling implementation on devices -- this
    * means that the correct state might not be immediately available in state cache after
@@ -1343,14 +1249,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String COMMAND_OFF_PARAM = "/off";
 
 
-    final String SWITCH_ON_URL =
-        TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + SWITCH_ID + COMMAND_ON_PARAM;
+    final URL SWITCH_ON_URL =
+        new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + SWITCH_ID + COMMAND_ON_PARAM);
 
-    final String SWITCH_OFF_URL =
-        TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + SWITCH_ID + COMMAND_OFF_PARAM;
+    final URL SWITCH_OFF_URL =
+        new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + SWITCH_ID + COMMAND_OFF_PARAM);
 
-    final String READ_SENSOR_URL =
-        TEST_CONTROLLER_URL + RESTAPI_STATUS_URI + SENSOR_ID;
+    final URL READ_SENSOR_URL =
+        new URL(TEST_CONTROLLER_URL + RESTAPI_STATUS_URI + SENSOR_ID);
 
 
     Random rand = new Random(System.currentTimeMillis());
@@ -1359,7 +1265,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     {
       int option = rand.nextInt(2);
 
-      String url = "<undefined>";
+      URL url = null;
 
       switch (option)
       {
@@ -1376,7 +1282,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
           activity, ORHttpMethod.POST, url, NO_HTTP_AUTH
       );
 
-      assertHttpResponse(response, url, HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
+      assertHttpResponse(response, url.toString(), HttpURLConnection.HTTP_OK, NO_HTTP_BODY);
 
 
       final int MAX_ATTEMPTS = 5;
@@ -1387,7 +1293,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
             activity, ORHttpMethod.GET, READ_SENSOR_URL, NO_HTTP_AUTH
         );
 
-        assertHttpResponse(response, READ_SENSOR_URL, HttpURLConnection.HTTP_OK);
+        assertHttpResponse(response, READ_SENSOR_URL.toString(), HttpURLConnection.HTTP_OK);
 
 
 
@@ -1453,17 +1359,17 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   {
     final String SENSOR_ID = "29";
 
-    final String READ_SENSOR_URL =
-        TEST_CONTROLLER_URL + RESTAPI_STATUS_URI + SENSOR_ID;
+    final URL READ_SENSOR_URL =
+        new URL(TEST_CONTROLLER_URL + RESTAPI_STATUS_URI + SENSOR_ID);
 
 
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
         activity, ORHttpMethod.GET, READ_SENSOR_URL, NO_HTTP_AUTH
     );
 
-    assertMimeType(response, READ_SENSOR_URL, APPLICATIONXML_MIME_TYPE);
-    assertUTF8Encoding(response, READ_SENSOR_URL);
-    assertHttpResponse(response, READ_SENSOR_URL, HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
+    assertMimeType(response, READ_SENSOR_URL.toString(), APPLICATIONXML_MIME_TYPE);
+    assertUTF8Encoding(response, READ_SENSOR_URL.toString());
+    assertHttpResponse(response, READ_SENSOR_URL.toString(), HttpURLConnection.HTTP_OK, APPLICATIONXML_MIME_TYPE);
 
 
     Document doc = getDOMDocument(response);

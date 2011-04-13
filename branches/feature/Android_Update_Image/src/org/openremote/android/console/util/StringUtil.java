@@ -27,14 +27,20 @@ package org.openremote.android.console.util;
  */
 public class StringUtil {
 	
-	/** Marks the specified controllerServerURL selected. */
+	/** Marks the specified controllerServerURL selected by prepending a plus sign. */
 	public static String markControllerServerURLSelected(String controllerServerURL) {
 		return "+" + controllerServerURL;
 	}
 	
-	/** Removes the specified url selected. */
+	/** Removes mark of selection for a string, by removing an initial plus sign. */
 	public static String removeControllerServerURLSelected(String url) {
-		return url.replaceAll("+", "");
+	  if (url == null) {
+	    return null;
+	  } else if (url.length() >= 1 && url.charAt(0) == '+') {
+	    return url.substring(1);
+	  } else {
+	    return url;
+	  }
 	}
 	
 }
