@@ -25,7 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.InflateException;
-import android.view.View;
 
 /**
  * Image Utility class.
