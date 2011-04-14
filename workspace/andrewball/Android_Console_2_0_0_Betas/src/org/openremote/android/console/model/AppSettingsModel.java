@@ -128,8 +128,7 @@ public class AppSettingsModel implements Serializable
     } catch (MalformedURLException e) {
       Log.e(LOG_CATEGORY,
           "invalid URL syntax retrieved from preferences file in getCurrentServer(): \"" +
-          currentServer + "\"");
-      // TODO send an intent so that a GUI notification can be made for this error or throw exception
+          currentServer + "\"", e);
       return null;
     }
   }
@@ -211,8 +210,8 @@ public class AppSettingsModel implements Serializable
       Log.d(LOG_CATEGORY, realURL.toString());
       return realURL;
     } catch (MalformedURLException e) {
-      Log.wtf(LOG_CATEGORY, "Failed to create realURL object in getSecuredServer() even though I had a valid URL object to start from");
-      // TODO : should propagate malformed URL up to user, so they know they messed up, requires API modification
+      Log.e(LOG_CATEGORY, "Failed to create realURL object in getSecuredServer() even though I" +
+          " had a valid URL object to start from", e);
       return null;
     }
   }
