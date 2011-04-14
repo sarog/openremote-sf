@@ -453,7 +453,9 @@ abstract class KNXCommand implements Command {
       /* Bit for requesting an ACK (L_Data.req only) for the frame in the first control field. */
       /*
        * 2011-04-14 OG : We force this bit to 0 (ACK not requested). If set to 1, the KNX/IP interface from Jung (IPS
-       * 100 REG) and the Hager as well don't transmit telegrams to the KNX bus, for some unknown reason.
+       * 100 REG) and the Hager as well don't transmit telegrams to the KNX bus, for some unknown reason. Not requesting
+       * the ACK is not a big deal as the GroupValue_Write.con telegram sent by the the server acts as an applicative
+       * ACK.
        */
       final int REQUEST_ACK = 0x00 << 1;
 
