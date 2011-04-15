@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,8 +32,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.openremote.android.console.Constants;
@@ -55,27 +52,17 @@ public class AddServerActivity extends GenericActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         Log.d(LOG_CATEGORY, "onCreate()");
         
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setLayoutParams(new LinearLayout.LayoutParams(320, 480));
+        setContentView(R.layout.add_server);
 
-        TextView tv = new TextView(this);
-        tv.setText(R.string.enter_device_url);
-        tv.setTypeface(Typeface.DEFAULT_BOLD);
-        tv.setTextSize(18);
-        tv.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.FILL_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-        EditText et = new EditText(this);
-        et.setTag(Constants.URL);
-        Button b = new Button(this);
-        b.setText(R.string.save);
-        b.setOnClickListener(new View.OnClickListener() {
+        final EditText controllerUrlEditText = (EditText) findViewById(R.id.add_server_controller_url_edit_text); 
+
+        Button saveButton = (Button) findViewById(R.id.add_server_save_button);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                String noProtocolUrl = ((EditText) ((View) v.getParent())
-                        .findViewWithTag(Constants.URL)).getText().toString();
+                String noProtocolUrl = controllerUrlEditText.getText().toString();
                 if (noProtocolUrl == null) {
                    return;
                 }
@@ -92,10 +79,6 @@ public class AddServerActivity extends GenericActivity {
                }
             }
         });
-        layout.addView(tv);
-        layout.addView(et);
-        layout.addView(b);
-        this.setContentView(layout);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
