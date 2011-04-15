@@ -86,19 +86,20 @@ public class AppSettingsModel implements Serializable
   private static final String AUTO_MODE = "autoMode";
 
   /**
-   * Stores the current panel ID this application is rendering (controller may store several
-   * panel designs)
+   * Name of preference which stores the current panel ID this application is rendering (controller
+   * may store several panel designs)
    */
   private static final String CURRENT_PANEL_IDENTITY = "currentPanelIdentity";
 
   /**
-   * Indicates whether encrypted HTTP communication is used between this application
-   * and controller.
+   * Name of preference which indicates whether encrypted HTTP communication is used between this
+   * application and controller.
    */
   private static final String USE_SSL = "useSSL";
 
   /**
-   * The port number to connect to if encrypted SSL communication is used.
+   * Name of preference which stores the port number to connect to if encrypted SSL communication
+   * is used.
    */
   private static final String SSL_PORT = "sslPort";
 
