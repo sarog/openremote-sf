@@ -37,6 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.openremote.android.console.Constants;
+
 /**
  * This is the add custom server screen. Mainly it configures the URL of 
  * your device (which is assumed to be the root of controller.xml.
@@ -46,10 +48,12 @@ import android.widget.Toast;
 public class AddServerActivity extends GenericActivity {
     public static final String OPEN_REMOTE_PREFS = "openRemoteConfig";
 
+    public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "AddServerActivity";
+
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        Log.d("OpenRemote-" + this.toString(), "onCreate for configure activity");
+        Log.d(LOG_CATEGORY, "onCreate()");
         
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
