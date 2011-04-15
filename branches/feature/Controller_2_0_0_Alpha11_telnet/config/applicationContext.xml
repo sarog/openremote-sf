@@ -136,6 +136,7 @@
            	<prop key = "socket">tcpSocketCommandBuilder</prop>
            	<prop key = "telnet">telnetCommandBuilder</prop>
            	<prop key = "http">httpGetCommandBuilder</prop>
+           	<prop key = "udp">udpSocketCommandBuilder</prop>
             <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
             <prop key = "virtual">virtualCommandBuilder</prop>
             <prop key = "mockup">mockupCommandBuilder</prop>
@@ -161,7 +162,11 @@
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
 	      scope = "prototype"/>
-	
+
+	<!-- UDP Socket Command Builder for IP enabled devices -->
+	<bean id = "udpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPSocketCommandBuilder"
+	      scope = "prototype"/>
+	      
 	<!-- X10 Command Builder -->
 	<bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
 	
