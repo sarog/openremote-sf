@@ -67,6 +67,7 @@
 }
 
 - (void)updateTabItems {
+	[self.view setFrame:[groupController getFullFrame]];
 	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
 	int i = 0;
 	int selected = i;
