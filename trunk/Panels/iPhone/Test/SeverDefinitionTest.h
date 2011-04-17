@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
+ * Copyright 2008-2010, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -19,22 +19,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#define USE_APPLICATION_UNIT_TEST 0
+
+#import <SenTestingKit/SenTestingKit.h>
 #import <UIKit/UIKit.h>
-#import "LoadingHUDView.h"
+//#import "application_headers" as required
 
-#define MINIMUM_GESTURE_LENGTH      80
-#define MAXIMUM_VARIANCE            40
 
-/**
- * GestureWindow is mainly for receiving the gesture of users in screen.
- */
-@interface GestureWindow : UIWindow <UIAccelerometerDelegate> {
-	CGPoint previousTouchLocation;
-	UIInterfaceOrientation orientation;
-	id theDelegate;
-	LoadingHUDView *loading;
+@interface SeverDefinitionTest : SenTestCase {
+
 }
 
-- (id)initWithDelegate:(id)delegate;
+#if USE_APPLICATION_UNIT_TEST
+- (void) testAppDelegate;       // simple test on application
+#else
+
+#endif
 
 @end

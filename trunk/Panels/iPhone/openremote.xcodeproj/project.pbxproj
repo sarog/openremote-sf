@@ -10,7 +10,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		331A591710AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		3322883110BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
 		3322883210BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
@@ -18,6 +17,9 @@
 		33267E7210E47C5B00E3AE42 /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
 		33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
 		33267ED510E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
+		3335C188129E656B0007E6FC /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
+		3335C189129E65800007E6FC /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33959D7012797D1300A8F0FA /* GetPanelsController.m */; };
+		3335C18E129E66FF0007E6FC /* AppSettingsDefinitionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3335C18D129E66FF0007E6FC /* AppSettingsDefinitionTest.m */; };
 		3338CDB710C5036C0067C94D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB410C5036C0067C94D /* ImageView.m */; };
 		3338CDB810C5036C0067C94D /* LabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB610C5036C0067C94D /* LabelView.m */; };
 		3338CDB910C5036C0067C94D /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB410C5036C0067C94D /* ImageView.m */; };
@@ -27,6 +29,7 @@
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		33959D7112797D1300A8F0FA /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33959D7012797D1300A8F0FA /* GetPanelsController.m */; };
+		3396954412A8E88200455A79 /* SeverDefinitionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3396954312A8E88200455A79 /* SeverDefinitionTest.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
@@ -42,7 +45,6 @@
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C09289B11B63D1900674C4F /* ErrorViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */; };
 		8C09289C11B63D1900674C4F /* InitViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */; };
-		8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		8C3DE3091163492C00DD4EE7 /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -263,6 +265,8 @@
 		33267E7010E47C5B00E3AE42 /* NSDateHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDateHelper.m; sourceTree = "<group>"; };
 		33267ED210E4895E00E3AE42 /* RoundRobinException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundRobinException.h; sourceTree = "<group>"; };
 		33267ED310E4895E00E3AE42 /* RoundRobinException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoundRobinException.m; sourceTree = "<group>"; };
+		3335C18C129E66DD0007E6FC /* AppSettingsDefinitionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppSettingsDefinitionTest.h; path = Test/AppSettingsDefinitionTest.h; sourceTree = "<group>"; };
+		3335C18D129E66FF0007E6FC /* AppSettingsDefinitionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppSettingsDefinitionTest.m; path = Test/AppSettingsDefinitionTest.m; sourceTree = "<group>"; };
 		3338CDB310C5036C0067C94D /* ImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
 		3338CDB410C5036C0067C94D /* ImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageView.m; sourceTree = "<group>"; };
 		3338CDB510C5036C0067C94D /* LabelView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelView.h; sourceTree = "<group>"; };
@@ -273,6 +277,8 @@
 		338D306B10D8DD000043BFE9 /* UIViewUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewUtil.m; sourceTree = "<group>"; };
 		33959D6F12797D1300A8F0FA /* GetPanelsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetPanelsController.h; sourceTree = "<group>"; };
 		33959D7012797D1300A8F0FA /* GetPanelsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPanelsController.m; sourceTree = "<group>"; };
+		3396954212A8E88200455A79 /* SeverDefinitionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SeverDefinitionTest.h; path = Test/SeverDefinitionTest.h; sourceTree = "<group>"; };
+		3396954312A8E88200455A79 /* SeverDefinitionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SeverDefinitionTest.m; path = Test/SeverDefinitionTest.m; sourceTree = "<group>"; };
 		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
 		33981B1010B103260076DB59 /* DataBaseService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseService.m; sourceTree = "<group>"; };
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -291,8 +297,6 @@
 		8C09289911B63D1900674C4F /* ErrorViewController~iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ErrorViewController~iPhone.xib"; sourceTree = "<group>"; };
 		8C09289A11B63D1900674C4F /* InitViewController~iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "InitViewController~iPhone.xib"; sourceTree = "<group>"; };
 		8C09E76210BA838800A475D8 /* ControllerException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerException.h; sourceTree = "<group>"; };
-		8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zUIAccelerometer.h; sourceTree = "<group>"; };
-		8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zUIAccelerometer.m; sourceTree = "<group>"; };
 		8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		8C3DE3001163492C00DD4EE7 /* btn_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = btn_green.png; path = image/btn_green.png; sourceTree = "<group>"; };
 		8C3DE3011163492C00DD4EE7 /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button.png; path = image/button.png; sourceTree = "<group>"; };
@@ -496,7 +500,6 @@
 				8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */,
 				33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -623,6 +626,17 @@
 			name = db;
 			sourceTree = "<group>";
 		};
+		3335C18B129E66860007E6FC /* config */ = {
+			isa = PBXGroup;
+			children = (
+				3396954212A8E88200455A79 /* SeverDefinitionTest.h */,
+				3396954312A8E88200455A79 /* SeverDefinitionTest.m */,
+				3335C18D129E66FF0007E6FC /* AppSettingsDefinitionTest.m */,
+				3335C18C129E66DD0007E6FC /* AppSettingsDefinitionTest.h */,
+			);
+			name = config;
+			sourceTree = "<group>";
+		};
 		338C3CD210D60F3F0029D62B /* view */ = {
 			isa = PBXGroup;
 			children = (
@@ -683,6 +697,7 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				3335C18B129E66860007E6FC /* config */,
 				8CEFDA5011BF323E00CEDC24 /* util */,
 				338C3CD210D60F3F0029D62B /* view */,
 				8CEB4E7810B27F3700A67721 /* panelxml */,
@@ -776,8 +791,6 @@
 			children = (
 				8CEFDA6E11BF34DC00CEDC24 /* LoadingHUDView.h */,
 				8CEFDA6F11BF34DC00CEDC24 /* LoadingHUDView.m */,
-				8C1F03C7117416A700A9DA83 /* zUIAccelerometer.h */,
-				8C1F03C8117416A700A9DA83 /* zUIAccelerometer.m */,
 				8CF6A27C0FBD3782006ED733 /* AsyncSocket.h */,
 				8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */,
 				8CF6A27E0FBD3782006ED733 /* AsyncUdpSocket.h */,
@@ -974,7 +987,6 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -1022,6 +1034,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3335C188129E656B0007E6FC /* appSettings.plist in Resources */,
 				8CECF3E210E9DD1400C0E1BB /* database.db in Resources */,
 				8C3DE3101163492C00DD4EE7 /* btn_green.png in Resources */,
 				8C3DE3111163492C00DD4EE7 /* button.png in Resources */,
@@ -1166,7 +1179,6 @@
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
 				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
-				8C1F03C9117416A700A9DA83 /* zUIAccelerometer.m in Sources */,
 				8CEFDA7111BF34DD00CEDC24 /* LoadingHUDView.m in Sources */,
 				33959D7112797D1300A8F0FA /* GetPanelsController.m in Sources */,
 			);
@@ -1176,6 +1188,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3335C189129E65800007E6FC /* GetPanelsController.m in Sources */,
 				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
@@ -1262,6 +1275,8 @@
 				8C57970A116B9DFE00ED63EA /* DataBaseServiceTest.m in Sources */,
 				8CEFDA5711BF32E200CEDC24 /* StringUtilsTest.m in Sources */,
 				8CEFDA7011BF34DD00CEDC24 /* LoadingHUDView.m in Sources */,
+				3335C18E129E66FF0007E6FC /* AppSettingsDefinitionTest.m in Sources */,
+				3396954412A8E88200455A79 /* SeverDefinitionTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

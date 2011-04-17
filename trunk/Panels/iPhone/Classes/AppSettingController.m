@@ -386,7 +386,11 @@
 // Persist SSL info of port into appSettings.plist .
 - (void)saveSslPort:(id)sender {
 	UITextField *t = (UITextField *)sender;
-	[AppSettingsDefinition setSslPort:[t.text intValue]];
+	int sslPort = [t.text intValue];
+	if (sslPort == 0) {
+		sslPort = DEFAULT_TOMCAT_SSL_PORT;
+	}
+	[AppSettingsDefinition setSslPort:sslPort];
 	[AppSettingsDefinition writeToFile];
 }
 
