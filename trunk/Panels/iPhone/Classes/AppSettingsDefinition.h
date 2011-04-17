@@ -28,6 +28,10 @@
 #define PANEL_IDENTITY_INDEX        3 // Selected panel indentity is stored in the 4th item of appSettings.plist .
 #define SECURITY_INDEX              5 // Security settings are stored in the 6th item of appSettings.plist .
 
+#define DEFAULT_SSL_PORT			-1   // Default ssl port like "https://org.openremote/conroller"
+#define DEFAULT_TOMCAT_SSL_PORT		8443 // Default tomcat ssl port, the current default configuration use it.
+#define DEFAULT_HTTPD_SSL_PORT		443  // Default ssl port for HTTPD.
+
 /**
  * All setting infomations about current panel are accessed(read and write) by current class. 
  * Note: All setting infomations are stored into appSettings.plist .
@@ -40,6 +44,7 @@
  */
 + (void)reloadData;
 
++ (void)reloadDataForTest;
 /**
  * Get all the setting information about current panel .
  */
