@@ -10,7 +10,6 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		331A591710AD6D21001AB869 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 331A591510AD6D21001AB869 /* SenTestingKit.framework */; };
 		3322883110BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
 		3322883210BFC03F00D94163 /* SliderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3322883010BFC03F00D94163 /* SliderView.m */; };
@@ -26,6 +25,7 @@
 		338D2ED710D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		338D306D10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
+		3393C89812B5F59F00469EA9 /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33CCF02B128A36FB001686C5 /* GetPanelsController.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B1210B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
@@ -502,7 +502,6 @@
 				8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				331A591610AD6D21001AB869 /* SenTestingKit.framework in Frameworks */,
 				33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1196,6 +1195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3393C89812B5F59F00469EA9 /* GetPanelsController.m in Sources */,
 				8C650624109882F2006FC19F /* GridCellView.m in Sources */,
 				8C460F9E109566F900C7A686 /* main.m in Sources */,
 				8C460F9F109566F900C7A686 /* URLConnectionHelper.m in Sources */,
@@ -1294,8 +1294,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "Don't Code Sign";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Don't Code Sign";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1309,41 +1309,15 @@
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = OpenRemote;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator3.2;
-				TARGETED_DEVICE_FAMILY = 2;
-			};
-			name = "Simulator 3.2";
-		};
-		1D6058950D05DD3E006BFB54 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
-				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ryan Cai (695MJVJYMM)";
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
-				);
-				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1.3;
-				PRODUCT_NAME = openremote;
-				PROVISIONING_PROFILE = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "070098F3-3531-4915-8499-9C7896FA6CAB";
-				SDKROOT = iphoneos3.2;
+				PROVISIONING_PROFILE = "BD1F5417-6D91-4C49-9D01-CD78F48C82EF";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "BD1F5417-6D91-4C49-9D01-CD78F48C82EF";
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Release;
+			name = "Simulator 3.2";
 		};
 		8C460E4C109552C900C7A686 /* Simulator 3.2 */ = {
 			isa = XCBuildConfiguration;
@@ -1406,38 +1380,6 @@
 			};
 			name = "Ad-Hoc Distribution";
 		};
-		8C460E4E109552C900C7A686 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
-					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
-				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				INFOPLIST_FILE = "UnitTest-Info.plist";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					SenTestingKit,
-					"-framework",
-					UIKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = UnitTest;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				WRAPPER_EXTENSION = octest;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		8C599D660F7156E5001833AD /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1485,6 +1427,82 @@
 			};
 			name = "Ad-Hoc Distribution";
 		};
+		97B43FA012A6DF610068EF03 /* App Store Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = "App Store Release";
+		};
+		97B43FA112A6DF610068EF03 /* App Store Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = NO;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				PRODUCT_NAME = OpenRemote;
+				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = "App Store Release";
+		};
+		97B43FA212A6DF610068EF03 /* App Store Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = "UnitTest-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					SenTestingKit,
+					"-framework",
+					UIKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = UnitTest;
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = "App Store Release";
+		};
 		C01FCF4F08A954540054247B /* Simulator 3.2 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1499,26 +1517,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = "Simulator 3.2";
-		};
-		C01FCF5008A954540054247B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.0;
-			};
-			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1528,7 +1530,7 @@
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Simulator 3.2 */,
 				8C599D670F7156E5001833AD /* Ad-Hoc Distribution */,
-				1D6058950D05DD3E006BFB54 /* Release */,
+				97B43FA112A6DF610068EF03 /* App Store Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator 3.2";
@@ -1538,7 +1540,7 @@
 			buildConfigurations = (
 				8C460E4C109552C900C7A686 /* Simulator 3.2 */,
 				8C460E4D109552C900C7A686 /* Ad-Hoc Distribution */,
-				8C460E4E109552C900C7A686 /* Release */,
+				97B43FA212A6DF610068EF03 /* App Store Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator 3.2";
@@ -1548,7 +1550,7 @@
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Simulator 3.2 */,
 				8C599D660F7156E5001833AD /* Ad-Hoc Distribution */,
-				C01FCF5008A954540054247B /* Release */,
+				97B43FA012A6DF610068EF03 /* App Store Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator 3.2";

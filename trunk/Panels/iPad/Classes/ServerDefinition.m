@@ -34,12 +34,27 @@
 
 //use HTTPS, SSL port
 + (NSString *)applyHttpsAndSslPort:(NSString *)serverUrl {
-	NSString * url = [serverUrl copy];
-	url = [url stringByReplacingOccurrencesOfString:@"http" withString:@"https"];
+	//NSString * url = [serverUrl copy];
+	if (![AppSettingsDefinition useSSL]) {
+		NSString *urlStr = [serverUrl copy];
+		return urlStr;
+	}
 	
-	NSString *port = [StringUtils parsePortFromServerUrl:url];
-	NSString *securedPort = [NSString stringWithFormat:@"%d", [AppSettingsDefinition sslPort]];
-	return [url stringByReplacingOccurrencesOfString:port withString:securedPort];
+	NSURL *url = [NSURL URLWithString:serverUrl];
+
+	if ([url scheme] == nil) {
+		// TODO: should propagate malformed URL up to user, requires API modification.
+		return nil;
+	}
+	
+	NSString *host = [url host];
+	NSString *path = [url path];
+
+	NSString *securePort = [NSString stringWithFormat:@":%d",[AppSettingsDefinition sslPort]];
+	
+	[url initWithScheme:@"https" host:[host stringByAppendingString:securePort] path:path];
+
+	return [url absoluteString];
 }
 
 + (NSString *)securedServerUrl {
