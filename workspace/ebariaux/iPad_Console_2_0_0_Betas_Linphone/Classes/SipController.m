@@ -75,30 +75,22 @@ extern void libmsamr_init();
 -(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
 	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
 	NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:@"Unknown";
-//	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
-//	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
+	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
+	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
 	
 	switch (new_state) {
 			
-		case LinphoneCallIncomingReceived: 
-            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"ring" forKey:@"RING"];
-//			[((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:[[notification userInfo] objectForKey:@"CallID"] forKey:@"CallID"];
-
-//			[callDelegate	displayIncomingCallNotigicationFromUI:mCurrentViewController
-//														forUser:lUserName 
-//												withDisplayName:lDisplayName];
+		case LinphoneCallIncomingReceived:
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Incoming" forKey:@"SIP_CallStatus"];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:lUserName forKey:@"SIP_UserName"];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:lDisplayName forKey:@"SIP_DisplayName"];
 			break;
 			
 		case LinphoneCallOutgoingInit: 
-//			[callDelegate		displayCallInProgressFromUI:mCurrentViewController
-//											   forUser:lUserName 
-//									   withDisplayName:lDisplayName];
 			break;
 			
 		case LinphoneCallConnected:
-//			[callDelegate	displayIncallFromUI:mCurrentViewController
-//									  forUser:lUserName 
-//							  withDisplayName:lDisplayName];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Connected" forKey:@"SIP_CallStatus"];
 			break;
 			
 		case LinphoneCallError: { 
@@ -129,16 +121,17 @@ extern void libmsamr_init();
 												  cancelButtonTitle:@"Dismiss" 
 												  otherButtonTitles:nil];
 			[error show];
-//			[callDelegate	displayDialerFromUI:mCurrentViewController
-//									  forUser:@"" 
-//							  withDisplayName:@""];
+            
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Error" forKey:@"SIP_CallStatus"];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_UserName"];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_DisplayName"];
+
 			break;
 		}
-		case LinphoneCallEnd: 
-//			[callDelegate	displayDialerFromUI:mCurrentViewController
-//									  forUser:@"" 
-//							  withDisplayName:@""];
-			[((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"" forKey:@"RING"];
+		case LinphoneCallEnd:
+			[((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"End" forKey:@"SIP_CallStatus"];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_UserName"];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_DisplayName"];
 			break;
 		default:
 			break;
@@ -195,120 +188,17 @@ extern void libmsamr_init();
 	
 }
 
-/* */
-- (BOOL)sipStartup
-{
-    /*
-	if (_app_config.pool)
-		return YES;
-	
-//	self.networkActivityIndicatorVisible = YES;
-	
-	if (sip_startup(&_app_config) != PJ_SUCCESS)
-	{
-//		self.networkActivityIndicatorVisible = NO;
-		return NO;
-	}
-//	self.networkActivityIndicatorVisible = NO;
-     */
-	
-	/** Call management **/
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//											 selector:@selector(processCallState:)
-//												 name: kSIPCallState object:nil];
-	
-	/** Registration management */
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//											 selector:@selector(processRegState:)
-//												 name: kSIPRegState object:nil];
-
-	
-	return YES;
-}
-
-/* */
-- (BOOL)sipDisconnect
-{
-//	if ((_sip_acc_id != PJSUA_INVALID_ID) &&
-//		(sip_disconnect(&_sip_acc_id) != PJ_SUCCESS))
-//	{
-//		return FALSE;
-//	}
-//	
-//	_sip_acc_id = PJSUA_INVALID_ID;
-//	
-//	//	isConnected = FALSE;
-//	
-	return TRUE;
-}
-
-
-/* */
-- (void)sipCleanup
-{
-	//[[NSNotificationCenter defaultCenter] removeObserver:self];
-//	[[NSNotificationCenter defaultCenter] removeObserver:self
-//													name: kSIPRegState
-//												  object:nil];
-//	[[NSNotificationCenter defaultCenter] removeObserver:self 
-//													name:kSIPCallState 
-//												  object:nil];
-//	[self sipDisconnect];
-//	
-//	if (_app_config.pool != NULL)
-//	{
-//		sip_cleanup(&_app_config);
-//	}
-}
-
-/* */
-- (BOOL)sipConnect
-{
-//	pj_status_t status;
-//	
-//	if (![self sipStartup])
-//		return FALSE;
-//	
-////	if ([self wakeUpNetwork] == NO)
-////		return NO;
-//	
-//	if (_sip_acc_id == PJSUA_INVALID_ID)
-//	{
-////		self.networkActivityIndicatorVisible = YES;
-//		if ((status = sip_connect(_app_config.pool, &_sip_acc_id)) != PJ_SUCCESS)
-//		{
-////			self.networkActivityIndicatorVisible = NO;
-//			return FALSE;
-//		}
-//	}
-	
-	return TRUE;
-}
-
-//- (app_config_t *)pjsipConfig
-//{
-//	return &_app_config;
-//}
-//
-
 + (NSString *)getRingSensorValue:(NSMutableDictionary *)context {
-	NSString *retValue = [context valueForKey:@"RING"];
-	return (retValue)?retValue:@"";
+	return ([@"Incoming" isEqualToString:[context valueForKey:@"SIP_CallStatus"]])?@"Ring":@"";
 }
 
 + (void)answerCall:(NSMutableDictionary *)context {
 	NSLog(@"Answer call");
     linphone_core_accept_call([SipController getLc],linphone_core_get_current_call([SipController getLc]));	
-
-//	pjsua_call_id call_id = [[context objectForKey:@"CallID"] intValue];
-//	sip_answer(&call_id);
 }
 
 + (void)hangupCall:(NSMutableDictionary *)context {
     linphone_core_terminate_call ([SipController getLc],linphone_core_get_current_call([SipController getLc]));
-//	pjsua_call_id call_id = [[context objectForKey:@"CallID"] intValue];
-//	sip_hangup(&call_id);
-	[context removeObjectForKey:@"CallID"];
 }
 
 #pragma mark LinphoneManager methods
