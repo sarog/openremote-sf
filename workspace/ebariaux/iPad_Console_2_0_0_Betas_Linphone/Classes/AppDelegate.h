@@ -32,7 +32,9 @@
 #import "UpdateController.h"
 #import "DefaultViewController.h"
 
+#ifdef INCLUDE_SIP_SUPPORT
 @class SipController;
+#endif
 
 /*
  * This is the entrypoint of the application.
@@ -44,11 +46,12 @@
 	DefaultViewController *defaultViewController;
 	UpdateController *updateController;
 
+#ifdef INCLUDE_SIP_SUPPORT
 	SipController *sipController;
+#endif
 	NSMutableDictionary *localContext;
 }
 
-@property (readonly) SipController *sipController;
 @property (readonly) NSMutableDictionary *localContext;
 
 @end
