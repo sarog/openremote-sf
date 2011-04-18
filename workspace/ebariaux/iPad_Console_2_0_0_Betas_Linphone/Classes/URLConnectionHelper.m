@@ -189,7 +189,7 @@ static BOOL isWifiActive = NO;
 
 @implementation URLConnectionHelper 
 
-@synthesize delegate, connection, errorMsg, autoDiscoverController, getAutoServersTimer;
+@synthesize delegate, connection, errorMsg, getAutoServersTimer;
 
 
 #pragma mark WIFI activity flag getter/setter
@@ -408,17 +408,6 @@ static BOOL isWifiActive = NO;
 	}
 }
 
-
-#pragma mark Delegate method of ServerAutoDiscoveryController
-- (void)onFindServer:(NSString *)serverUrl {
-	//TODO: donothing
-}
-
-- (void)onFindServerFail:(NSString *)errorMessage {
-	NSLog(@"Find Server Error in class URLConnectionHelper. %@", errorMessage);
-	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];
-}
-
 #pragma mark Delegate method of UpdateController
 - (void)didUpdate {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
@@ -435,7 +424,6 @@ static BOOL isWifiActive = NO;
 - (void)dealloc {
 	[receivedData release];
 	[connection release];
-	[autoDiscoverController release];
 	[getAutoServersTimer release];
 	[super dealloc];
 }

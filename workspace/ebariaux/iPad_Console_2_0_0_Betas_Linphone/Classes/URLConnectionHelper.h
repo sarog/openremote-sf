@@ -22,7 +22,6 @@
 
 #import <UIKit/UIKit.h>
 #import "ViewHelper.h"
-#import "ServerAutoDiscoveryController.h"
 
 //Define a protocol for delegate implementation
 @protocol URLConnectionHelperDelegate <NSObject>
@@ -49,7 +48,6 @@
 	NSMutableData *receivedData;
 	NSURLConnection *connection;
 	NSError *errorMsg;
-	ServerAutoDiscoveryController *autoDiscoverController;
 	NSTimer *getAutoServersTimer;
 }
 
@@ -68,7 +66,6 @@
 @property(nonatomic,retain) id <URLConnectionHelperDelegate> delegate;
 @property(nonatomic,retain) NSURLConnection *connection;
 @property(nonatomic,retain) NSError *errorMsg;
-@property(nonatomic,retain) ServerAutoDiscoveryController *autoDiscoverController;
 @property(nonatomic,retain) NSTimer *getAutoServersTimer;
 
 @end

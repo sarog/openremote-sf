@@ -24,23 +24,27 @@
 #import "AsyncSocket.h"
 #import "AsyncUdpSocket.h"
 
+@protocol ServerAutoDiscoveryControllerDelagate <NSObject>
+
+- (void)onFindServer:(NSString *)serverUrl;
+- (void)onFindServerFail:(NSString *)errorMessage;
+
+@end
+
 /**
  * It's responsible for controller server  discovery automatically.
  */
 @interface ServerAutoDiscoveryController : NSObject {
-	id theDelegate;
+	id <ServerAutoDiscoveryControllerDelagate>theDelegate;
 	AsyncUdpSocket *udpSocket;
 	AsyncSocket *tcpSever; 
 	NSMutableArray *clients;
 	BOOL isReceiveServerUrl;
 	NSTimer	 *tcpTimer;
 }
-- (void)setDelegate:(id)delegate;
+
+- (id)initWithDelegate:(id <ServerAutoDiscoveryControllerDelagate>)aDelegate;
+- (void)setDelegate:(id <ServerAutoDiscoveryControllerDelagate>)delegate;
 - (void)reTry;
-
-
-#pragma mark delegate method
-- (void)onFindServer:(NSString *)serverUrl;
-- (void)onFindServerFail:(NSString *)errorMessage;
 
 @end

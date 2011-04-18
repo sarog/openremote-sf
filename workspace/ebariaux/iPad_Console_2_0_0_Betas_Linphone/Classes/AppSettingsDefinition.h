@@ -20,7 +20,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ServerAutoDiscoveryController.h"
 
 #define AUTO_DISCOVERY_SWITCH_INDEX 0 // Auto discovery boolean value is stored in the first item of appSettings.plist .
 #define AUTO_DISCOVERY_URLS_INDEX   1 // Auto discovery urls are stored in the second item of appSettings.plist .

@@ -26,7 +26,7 @@
 /**
  * It's responsible for checking network, download panel.xml, parse panel.xml and notify DefaultViewController to refresh views.
  */
-@interface UpdateController : NSObject <NSXMLParserDelegate> {
+@interface UpdateController : NSObject <NSXMLParserDelegate, ServerAutoDiscoveryControllerDelagate> {
 	id theDelegate;
 	ServerAutoDiscoveryController *serverAutoDiscoveryController;
 	int retryTimes;
