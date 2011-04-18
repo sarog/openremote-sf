@@ -7,19 +7,39 @@
 //
 
 #import <Foundation/Foundation.h>
+#include "linphonecore.h"
 
-#include "call.h"
+typedef enum _Connectivity {
+	wifi,
+	wwan
+	,none
+} Connectivity;
 
 @interface SipController : NSObject {
+@private
+	CFReadStreamRef mReadStream;
+	NSTimer* mIterateTimer;
+	bool isbackgroundModeEnabled;
 
-	app_config_t _app_config; // pointer ???
-	pjsua_acc_id  _sip_acc_id;
+//	id<LinphoneUICallDelegate> callDelegate;
+//	id<LinphoneUIRegistrationDelegate> registrationDelegate;
+	
+	UIViewController* mCurrentViewController;
+	Connectivity connectivity;
 	
 }
++(LinphoneCore*) getLc;
 
-- (BOOL)sipConnect;
-- (BOOL)sipDisconnect;
+-(void) startLibLinphone;
+-(void) destroyLibLinphone;
 
-- (app_config_t *)pjsipConfig;
+-(void) enterBackgroundMode;
+-(void) becomeActive;
+//-(void) kickOffNetworkConnection;
+
+//@property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
+//@property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
+
+@property Connectivity connectivity;
 
 @end
