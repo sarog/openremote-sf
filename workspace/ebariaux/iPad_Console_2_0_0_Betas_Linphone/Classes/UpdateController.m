@@ -27,7 +27,6 @@
   * - (void)didUpdateFail:(NSString *)errorMessage;
   */
 #import "UpdateController.h"
-#import "ServerAutoDiscoveryController.h"
 #import "AppSettingsDefinition.h"
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"

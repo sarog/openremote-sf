@@ -404,7 +404,6 @@
 	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];	
 }
 
-
 #pragma mark Delegate method of UpdateController
 - (void)didUpdate {
 	[self dismissModalViewControllerAnimated:YES];

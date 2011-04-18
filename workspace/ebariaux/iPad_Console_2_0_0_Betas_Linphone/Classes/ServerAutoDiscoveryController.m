@@ -69,21 +69,16 @@
 	return self;
 }
 
-
-
-
-- (void)reTry {
-	
+- (void)reTry {	
 }
 
-- (id)initWithDelegate:(id)d {
-	if(d) {
-		[d retain];
+- (id)initWithDelegate:(id)aDelegate {
+	if(aDelegate) {
+		[aDelegate retain];
 	}
-	theDelegate = d;
+	theDelegate = aDelegate;
 	return [self init];
 }
-
 
 - (void)setDelegate:(id)delegate {
 	if (delegate != nil) {
@@ -148,7 +143,7 @@
 - (void)onFindServerFail:(NSString *)errorMessage{
 	[tcpTimer invalidate];
 	// Call the delegate method delegate implemented
-	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServerFail:)]) {
+	if (theDelegate && [theDelegate respondsToSelector:@selector(onFindServerFail:)]) {
 		NSLog(@"performSelector onFindServerFail");
 		[theDelegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
 	}
@@ -156,13 +151,12 @@
 		
 #pragma mark UdpSocket delegate method
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-	NSLog(@"%@", [NSString stringWithFormat:@"onUdpSocket didSendData."]); 
-	[sock close];	
+	NSLog(@"onUdpSocket didSendData."); 
+	[sock close];
 }
 
 //Called after AsyncUdpSocket did not send data 
-- (void)onUdpSocket:(AsyncUdpSocket *)sock
-didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
+- (void)onUdpSocket:(AsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error {
 	NSLog(@"DidNotSend: %@", error);
 	[self onFindServerFail:[error localizedDescription]];
 } 
@@ -172,7 +166,7 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	
 	NSLog(@"receive data from server");
 	NSString *serverUrl = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSLog(@"read server url from controller %@",serverUrl);	
+	NSLog(@"read server url from controller %@", serverUrl);	
 	[serverUrl autorelease];
 	[self onFindServer:serverUrl];
 	
@@ -185,8 +179,8 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 	[newSocket readDataWithTimeout:10 tag:0];
 }
 
-- (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port{
-	NSLog(@"receive socket host %@ port %d",host,port);
+- (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port {
+	NSLog(@"receive socket host %@ port %d", host, port);
 }
 
 - (void)dealloc {
@@ -194,10 +188,8 @@ didNotSendDataWithTag:(long)tag dueToError:(NSError *)error{
 		[tcpTimer invalidate];
 		[tcpTimer release];
 	}
-	NSLog(@"clients count is %d",[clients count]);
-	for(int i = 0; i < [clients count]; i++)
-	{
-		
+	NSLog(@"clients count is %d", [clients count]);
+	for(int i = 0; i < [clients count]; i++) {
 		[[clients objectAtIndex:i] disconnect];
 		[clients removeObjectAtIndex:i];
 	}
