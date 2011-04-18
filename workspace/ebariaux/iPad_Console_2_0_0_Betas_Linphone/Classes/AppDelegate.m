@@ -27,7 +27,9 @@
 #import "AppDelegate.h"
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
-#import "SipController.h"
+#ifdef INCLUDE_SIP_SUPPORT
+    #import "SipController.h"
+#endif
 
 //Private method declare
 @interface AppDelegate (Private)
@@ -42,7 +44,7 @@
 
 @implementation AppDelegate
 
-@synthesize sipController, localContext;
+@synthesize localContext;
 
 //Entry point method
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
@@ -66,8 +68,9 @@
     // - (void)didUpdateFail:(NSString *)errorMessage;
 	updateController = [[UpdateController alloc] initWithDelegate:self];
 	
-	sipController = [[SipController alloc] init];
-//	[sipController sipConnect];
+    #ifdef INCLUDE_SIP_SUPPORT
+        sipController = [[SipController alloc] init];
+    #endif
 	
 	[self checkConfigAndUpdate];
 }
@@ -143,7 +146,10 @@
 	[updateController release];
 	[defaultViewController release];	
 	[window release];
-	[sipController release];
+
+    #ifdef INCLUDE_SIP_SUPPORT
+        [sipController release];
+    #endif
 	[localContext release];
 	[super dealloc];
 }
