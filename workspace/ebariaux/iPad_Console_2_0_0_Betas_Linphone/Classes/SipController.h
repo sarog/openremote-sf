@@ -21,9 +21,6 @@ typedef enum _Connectivity {
 	NSTimer* mIterateTimer;
 	bool isbackgroundModeEnabled;
 
-//	id<LinphoneUICallDelegate> callDelegate;
-//	id<LinphoneUIRegistrationDelegate> registrationDelegate;
-	
 	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
 	
@@ -36,9 +33,6 @@ typedef enum _Connectivity {
 -(void) enterBackgroundMode;
 -(void) becomeActive;
 //-(void) kickOffNetworkConnection;
-
-//@property (nonatomic, retain) id<LinphoneUICallDelegate> callDelegate;
-//@property (nonatomic, retain) id<LinphoneUIRegistrationDelegate> registrationDelegate;
 
 @property Connectivity connectivity;
 
