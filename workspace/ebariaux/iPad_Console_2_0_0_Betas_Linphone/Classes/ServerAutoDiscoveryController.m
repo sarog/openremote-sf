@@ -91,14 +91,6 @@
 	}
 }
 
-//check where find server time out.
-- (void)checkFindServerFail {
-	if (!isReceiveServerUrl) {
-		[self onFindServerFail:@"No Controller detected."];
-	}
-	isReceiveServerUrl = NO;	
-}
-
 //after find server		
 - (void)onFindServer:(NSString *)serverUrl {
 	isReceiveServerUrl = YES;
@@ -148,8 +140,17 @@
 		[theDelegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
 	}
 }
-		
+
+//check where find server time out.
+- (void)checkFindServerFail {
+	if (!isReceiveServerUrl) {
+		[self onFindServerFail:@"No Controller detected."];
+	}
+	isReceiveServerUrl = NO;	
+}
+
 #pragma mark UdpSocket delegate method
+
 - (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
 	NSLog(@"onUdpSocket didSendData."); 
 	[sock close];
@@ -161,7 +162,8 @@
 	[self onFindServerFail:[error localizedDescription]];
 } 
 
-#pragma mark TCPSocket delegate method		
+#pragma mark TCPSocket delegate method
+
 - (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
 	
 	NSLog(@"receive data from server");
