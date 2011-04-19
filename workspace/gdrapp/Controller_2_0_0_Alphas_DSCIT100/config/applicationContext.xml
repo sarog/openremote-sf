@@ -151,7 +151,8 @@
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "dscit100">dscit100CommandBuilder</prop> 
 		    </props>
 		</property>
 	</bean>
@@ -205,7 +206,9 @@
 	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
 		<property name="gateway" ref="lutronHomeWorksGateway"></property>
 	</bean>
-	      
+	
+	<bean id = "dscit100CommandBuilder" class = "org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilder" />
+	
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
 		<property name = "componentBuilders">
 		    <props>

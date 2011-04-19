@@ -49,7 +49,8 @@ import org.openremote.controller.spring.SpringContext;
    RESTTests.class,
    KNXTests.class,
    VirtualProtocolTests.class,
-   PanelTest.class
+   PanelTest.class,
+   DSCIT100Tests.class
 
 })
 
