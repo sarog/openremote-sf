@@ -66,6 +66,21 @@
 }
 
 
+- (void)dealloc {
+	[groupControllers release];
+	[groupViewMap release];
+	[tabBarControllers release];
+    [tabBarControllerViewMap release];
+	[navigationHistory release];
+    
+    // TODO: recheck release of those, what about on view unload in case of low memory condition
+	[errorViewController release];
+	[globalTabBarController release];
+	[updateController release];
+	
+	[super dealloc];
+}
+
 
 - (void)loadView {
 	// Create a default view that won't be overlapped by status bar.
@@ -315,7 +330,7 @@
 		//by default portrait view and landscape view have the same origin.
 		self.view.frame = CGRectMake((w-h)/2.0, (h-w)/2.0, h, w);
 		
-		self.view.transform = CGAffineTransformMakeRotation(degreesToRadian(90));
+		self.view.transform = CGAffineTransformMakeRotation(degreesToRadian(([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeLeft)?-90:90));
 	} else {
 		NSLog(@"view did transform to portrait");
 		[currentGroupController transformToOrientation:UIInterfaceOrientationPortrait];
@@ -412,6 +427,13 @@
 	
 	//if screenId is specified, jump to that screen
 	if (screenId > 0) {
+        
+        // First check if we have a screen more appropriate for the current device orientation orientation
+        Screen *screen = [currentGroupController.group findScreenByScreenId:screenId];
+        if (screen) {
+            screenId = [screen screenIdForOrientation:[[UIDevice currentDevice] orientation]];
+        }
+        
 		//if navigate to opposite orientation, need to transform view +/- 90 degrees.
 		if (isLastOrientationLandscape != [currentGroupController isOrientationLandscapeWithScreenId:screenId]) {
 			[self transformToOppositeOrientation];
@@ -422,7 +444,12 @@
 	//If only group is specified, then by definition we show the first screen of that group.
 	else if (screenId == 0) {
 		Screen *screen = [currentGroupController.group.screens objectAtIndex:0];
-		//if navigate to opposite orientation, need to transform view +/- 90 degrees.
+        // First check if we have a screen more appropriate for the current device orientation orientation
+        if (screen) {
+            screenId = [screen screenIdForOrientation:[[UIDevice currentDevice] orientation]];
+        }
+
+        //if navigate to opposite orientation, need to transform view +/- 90 degrees.
 		if (screen && (isLastOrientationLandscape != screen.landscape)) {
 			[self transformToOppositeOrientation];
 			[self rerenderTabbarWithNewOrientation];
@@ -572,18 +599,6 @@
 	if (event.type == UIEventSubtypeMotionShake && [self isLoadingViewGone]) {
 		[self populateSettingsView:nil];
 	}
-}
-
-- (void)dealloc {
-	[groupViewMap release];
-	[navigationHistory release];
-	[errorViewController release];
-	[globalTabBarController release];
-	[tabBarControllers release];
-	[groupControllers release];
-	[updateController release];
-	
-	[super dealloc];
 }
 
 

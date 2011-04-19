@@ -62,6 +62,16 @@
  */
 - (Gesture *)getGestureIdByGestureSwipeType:(GestureSwipeType)type;
 
+/**
+ * Returns the id of the screen appriopriate for the provided orientation.
+ * If no specific screen exists for the provided orientation, the id of the receiver is returned.
+ *
+ * @param orientation The orientation for which we're requesting the screen
+ *
+ * @return int id of the screen to use for the provided orientation.
+ */
+- (int)screenIdForOrientation:(UIInterfaceOrientation)orientation;
+
 @property (nonatomic,readonly) int screenId;
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) Background *background;
