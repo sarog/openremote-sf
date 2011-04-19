@@ -63,6 +63,13 @@
 	return ids;
 }
 
+- (int)screenIdForOrientation:(UIInterfaceOrientation)orientation {
+    if (inverseScreenId == 0) {
+        return screenId;
+    }
+    return (self.landscape == UIInterfaceOrientationIsLandscape(orientation))?screenId:inverseScreenId;
+}
+
 #pragma mark deleget method of NSXMLParser
 
 //Parse sub element in screen 
