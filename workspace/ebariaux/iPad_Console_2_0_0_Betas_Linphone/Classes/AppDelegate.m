@@ -47,12 +47,13 @@
 
 @synthesize localContext;
 
-//Entry point method
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	
+    // EBR : This is currently used as a shared "memory" for local logic
+    //       Must be reviewed in the future when deciding on how logic on the console side is implemented
 	localContext = [[NSMutableDictionary alloc] init];
 	
-	// Load logined iphone user last time.
+	// Load last logged-in user
 	[[DataBaseService sharedDataBaseService] initLastLoginUser];
 	
 	defaultViewController = [[DefaultViewController alloc] initWithDelegate:self];

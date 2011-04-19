@@ -28,13 +28,11 @@
 + (NSString *)cacheFolder {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 	return [paths objectAtIndex:0];
-		
 }
 
 // Get image cache folder. It bases on cache folder of handset.
 + (NSString *)imageCacheFolder{
 	return [[self cacheFolder] stringByAppendingPathComponent:@"image"];
-	
 }
 
 // Get xml cache folder. It bases on cache folder of handset.
@@ -50,23 +48,17 @@
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	NSString *documentsDirectory = [paths objectAtIndex:0];
 	NSString *pathToUserCopyOfPlist = [documentsDirectory stringByAppendingPathComponent:@"appSettings.plist"];
-	NSLog(@"%@", pathToUserCopyOfPlist);
+	NSLog(@"Path to appSettings.plist %@", pathToUserCopyOfPlist);
 	if ([fileManager fileExistsAtPath:pathToUserCopyOfPlist] == NO) {
-		NSLog(@"don't found the app settings");
+		NSLog(@"appSettings.plist file not found");
 		NSString *pathToDefaultPlist = [[NSBundle mainBundle] pathForResource:@"appSettings" ofType:@"plist"];
-		NSLog(@"pathToDefaultPlist");
+		NSLog(@"pathToDefaultPlist %@", pathToDefaultPlist);
 		if ([fileManager copyItemAtPath:pathToDefaultPlist toPath:pathToUserCopyOfPlist error:&error] == NO) {
 			NSAssert1(0, @"Failed to copy data with error message '%@'.", [error localizedDescription]);
-			NSLog(@"can't find it");
+			NSLog(@"Error creating appSettings.plist from template");
 		}
 	}
 	return pathToUserCopyOfPlist;
-}
-
-// Get directory of file info.plist .
-+ (NSString *)infoFilePath {
-	NSString *pathToDefaultPlist = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
-	return pathToDefaultPlist;
 }
 
 @end
