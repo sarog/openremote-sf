@@ -30,7 +30,7 @@
 #import "Definition.h"
 
 
-@interface PanelXMLParsingTests : SenTestCase {
+@interface PanelXMLParsingTests : SenTestCase <NSXMLParserDelegate> {
 	
 	Definition *definition;
 
