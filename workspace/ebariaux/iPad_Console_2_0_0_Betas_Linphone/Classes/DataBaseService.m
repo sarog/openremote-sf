@@ -32,8 +32,6 @@ static DataBaseService *myInstance = nil;
 
 @implementation DataBaseService
 
-@synthesize openDatabase;
-
 // Init DatabaseService with database file path.
 - (id) initWithDatabasePath:(NSString *)databasePath {
 	if (myInstance != nil) {
@@ -83,94 +81,10 @@ static DataBaseService *myInstance = nil;
 	return myInstance;
 }
 
-// Find the loast logined user from user table.
-- (User *) findLastLoginUser {	
-	NSMutableArray *users = [[NSMutableArray alloc] init];
-	const char *sqlStatement = "select * from users";
-	sqlite3_stmt *compiledStatement;
-	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
-		while (sqlite3_step(compiledStatement) == SQLITE_ROW) {
-			User *user;
-			const unsigned char *usernameC = sqlite3_column_text(compiledStatement, 0);
-			const unsigned char *passwordC = sqlite3_column_text(compiledStatement, 1);
-			if (usernameC == NULL || passwordC == NULL) {
-				user = [[User alloc] initWithUsernameAndPassword:nil password:nil];
-			} else {
-				NSString *usernameResult = [NSString stringWithUTF8String:(char *)usernameC];
-				NSString *passwordResult = [NSString stringWithUTF8String:(char *)passwordC];
-				user = [[User alloc] initWithUsernameAndPassword:usernameResult password:passwordResult];
-			}
-			[users addObject:user];				
-			[user release];
-		}
-	} else {
-		NSLog(0, @"Prepare sqlStatement error: %@", sqlite3_errmsg(openDatabase));
-	}
-	sqlite3_reset(compiledStatement);
-	sqlite3_finalize(compiledStatement);
-	if ([users count] >= 1) {
-		return [users objectAtIndex:0];
-	} else {
-		return nil;
-	}
-	
-	
-}
-
-// Find a user with the primary key username from Users table.
-- (User *) findUserByUsername:(NSString *)username {
-	User *user;
-	const char *sqlStatement = "select username, password from users where username =@username";
-	sqlite3_stmt *compiledStatement;
-	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
-		sqlite3_bind_text(compiledStatement, 1, [username UTF8String], -1, SQLITE_TRANSIENT);
-		if (sqlite3_step(compiledStatement) == SQLITE_ROW) {
-			NSString *usernameResult = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 0)];
-			NSString *passwordResult = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 1)];
-			NSLog(@"username: %@, password: %@", usernameResult, passwordResult);
-			user = [[User alloc] initWithUsernameAndPassword:usernameResult password:passwordResult];
-		} else {
-			user = nil;
-			NSLog(0, @"Error while findUserByUsername. '%s'", sqlite3_errmsg(openDatabase));
-		}
-		sqlite3_reset(compiledStatement);
-		sqlite3_finalize(compiledStatement);
-	}
-	return user;
-}
-
-// Insert a new user into users table.
-- (void) insertUser:(User*)user {
-	const char *sqlStatement = "insert into users values(@username,@password)";
-	sqlite3_stmt *compiledStatement;
-	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
-		sqlite3_bind_text(compiledStatement, 1, [user.username UTF8String], -1, SQLITE_TRANSIENT);
-		sqlite3_bind_text(compiledStatement, 2, [user.password UTF8String], -1, SQLITE_TRANSIENT);
-		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
-			NSLog(0, @"Error while inserting user. '%s'", sqlite3_errmsg(openDatabase));
-		} else {
-			//SQLite provides a method to get the last primary key inserted by using sqlite3_last_insert_rowid
-			//NSString *lastPrimayKeyInUsersTable = sqlite3_last_insert_rowid(openDatabase);
-			//NSLog(@"Last primary key is : %@", lastPrimayKeyInUsersTable);
-		}
-		sqlite3_reset(compiledStatement);
-	}
-	sqlite3_finalize(compiledStatement);
-}
-
 // Clean the Users table data.
 - (void) deleteAllUsers {
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	[userDefaults setObject:nil	forKey:@"password"];
-//	const char *sqlStatement = "delete from users";
-//	sqlite3_stmt *compiledStatement;
-//	if(sqlite3_prepare_v2(openDatabase, sqlStatement, -1, &compiledStatement, NULL) ==SQLITE_OK) {
-//		if(SQLITE_DONE != sqlite3_step(compiledStatement)) {
-//			//NSLog(@"Error while deleteAllUsers. '%s'", sqlite3_errmsg(openDatabase));
-//		}
-//	}
-//	sqlite3_reset(compiledStatement);
-//	sqlite3_finalize(compiledStatement);
 }
 
 - (void) saveCurrentUser{

@@ -27,6 +27,7 @@
 #import "AppDelegate.h"
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
+#import "DataBaseService.h"
 #ifdef INCLUDE_SIP_SUPPORT
     #import "SipController.h"
 #endif

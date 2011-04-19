@@ -43,15 +43,6 @@
 // Class method for get singleton instance in unit test environment.
 + (DataBaseService *)sharedDataBaseServiceForTest;
 
-// Find the loast logined user from user table.
-- (User *) findLastLoginUser;
-
-// Find a user with the primary key username from Users table.
-- (User *) findUserByUsername:(NSString *)username;
-
-// Insert a new user into user table.
-- (void) insertUser:(User*)user;
-
 // Clean the Users table data.
 - (void) deleteAllUsers;
 
@@ -59,12 +50,11 @@
 
 - (void) initLastLoginUser;
 
+
 - (void) insertGroupMember:(GroupMember *)groupMember;
 
 - (NSMutableArray *) findAllGroupMembers;
 
 - (void) deleteAllGroupMembers;
-
-@property (nonatomic, readwrite) sqlite3 *openDatabase;
 
 @end
