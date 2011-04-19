@@ -28,7 +28,6 @@
 #import "ServerDefinition.h"
 #import "CredentialUtil.h"
 #import "ControllerException.h"
-#import "DataBaseService.h"
 
 @interface ScreenViewController (Private)
 

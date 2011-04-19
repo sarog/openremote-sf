@@ -26,7 +26,6 @@
 #import "NotificationConstant.h"
 #import	"LoginViewController.h"
 #import "AppSettingController.h"
-#import "DataBaseService.h"
 #import "LogoutHelper.h"
 #import "Gesture.h"
 #import "TabBarItem.h"

@@ -18,21 +18,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-#define USE_APPLICATION_UNIT_TEST 0
 
 #import <SenTestingKit/SenTestingKit.h>
-#import <UIKit/UIKit.h>
-#import "DataBaseService.h"
 
+@class DataBaseService;
 
 @interface DataBaseTest : SenTestCase {
 	DataBaseService *dbService;
 }
-
-#if USE_APPLICATION_UNIT_TEST
-- (void) testAppDelegate;       // simple test on application
-#else
-
-#endif
 
 @end

@@ -29,7 +29,6 @@
 #import "UpdateController.h"
 #import "NotificationConstant.h"
 #import "ChoosePanelViewController.h"
-#import "DataBaseService.h"
 #import "NotificationConstant.h"
 
 @interface AppSettingController (Private)
