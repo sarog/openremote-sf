@@ -189,10 +189,9 @@
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serversXmlRESTUrl]]; 
-	NSLog(@"serversXmlRESTUrl %@", [ServerDefinition serversXmlRESTUrl]);
+	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	NSData *data = [[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&resp error:&error];
-	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
 	[request release];
 	if (error ) {
 		NSLog(@"getRoundRobinGroupMembers failed %@",[error localizedDescription]);
@@ -202,6 +201,8 @@
 		NSLog(@"getRoundRobinGroupMembers statusCode %d",[resp statusCode] );
 		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" message:[RoundRobinException exceptionMessageOfCode:[resp statusCode]]];
 	}
+    
+    // Parses the XML reply and fill-in the GroupMembers cache
 	[[DataBaseService sharedDataBaseService] deleteAllGroupMembers];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	[xmlParser setDelegate:self];

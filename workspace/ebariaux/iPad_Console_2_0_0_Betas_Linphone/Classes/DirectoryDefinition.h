@@ -50,9 +50,4 @@
  */
 + (NSString *)appSettingsFilePath;
 
-/**
- * Get the directory of info.plist .
- */
-+ (NSString *)infoFilePath;
-
 @end

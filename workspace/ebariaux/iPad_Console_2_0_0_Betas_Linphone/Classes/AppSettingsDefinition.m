@@ -42,7 +42,7 @@ static NSString *unsavedChosenServerUrl = nil;
 // Read appSettings infomation from file appSettings.plist in array.
 + (NSMutableArray *)getAppSettings {
 	if (!settingsData) {
-			settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
+        settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
 	}
 	return settingsData;
 }
@@ -51,7 +51,6 @@ static NSString *unsavedChosenServerUrl = nil;
 + (void)reloadData {
 	if (settingsData) {
 		[settingsData release];
-		settingsData = nil;
 	}
 	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
 }
