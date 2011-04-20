@@ -37,40 +37,20 @@
 #import "Tabbar.h"
 #import "TabbarItem.h"
 #import "SensorState.h"
+#import "Definition.h"
 
 @implementation PanelXMLParsingTests
 
-#if USE_APPLICATION_UNIT_TEST     // all code under test is in the iPhone Application
-
-- (void) testAppDelegate {
-    
-    id yourApplicationDelegate = [[UIApplication sharedApplication] delegate];
-    STAssertNotNil(yourApplicationDelegate, @"UIApplication failed to find the AppDelegate");
-    
-}
-
-#else                           // all code under test must be linked into the Unit Test bundle
-@synthesize definition;
-
-- (NSData *) readFile:(NSString *) fileName {
-	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
-	NSString *filePath = [thisBundle pathForResource:fileName ofType:@"xml"];
-	NSData *data = [[NSData alloc] initWithContentsOfFile:filePath];
-	NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	NSLog(@"%@", content);
-	[content release];
-	return data;
+- (NSString *)pathForXMLFile:(NSString *)filename {
+ 	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
+	return [thisBundle pathForResource:filename ofType:@"xml"];
 }
 
 // panel_grid_button.xml test
 - (void) testParsePanelGridButtonXML {
-	[[Definition sharedDefinition] clearPanelXMLData];
 	NSLog(@"testParsePanelGridButtonXML ");
-	NSData *xml = [self readFile:@"panel_grid_button"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_grid_button"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int image_index = 0;
@@ -170,20 +150,14 @@
 	STAssertTrue(((Button *)[buts objectAtIndex:9]).navigate.isLogin == YES,@"expected %d",YES);
 	STAssertTrue(((Button *)[buts objectAtIndex:10]).navigate.isLogout == YES,@"expected %d",YES);
 	
-	[xmlParser release];
-	[xml release];
 	[cells release];
 }
 
 // panel_grid_switch.xml test
 - (void) testParsePanelGridSwitchXML {
-	[[Definition sharedDefinition] clearPanelXMLData];
 	NSLog(@"testParsePanelGridSwitchXML ");
-	NSData *xml = [self readFile:@"panel_grid_switch"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_grid_switch"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int state_index = 0;
@@ -266,20 +240,14 @@
 	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
 	STAssertTrue([@"59,60,61,62" isEqualToString:ids],@"expected 59,60,61,62, but %@",ids);
 	
-	[xmlParser release];
-	[xml release];
 	[cells release];
 }
 
 // panel_absolute_switch.xml test
 - (void) testParsePanelAbsoluteSwitchXML {
-	[[Definition sharedDefinition] clearPanelXMLData];
 	NSLog(@"testParsePanelAbsoluteSwitchXML ");
-	NSData *xml = [self readFile:@"panel_absolute_switch"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_absolute_switch"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int state_index = 0;
@@ -348,22 +316,14 @@
 	}
 	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
 	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
-	STAssertTrue([@"59,60" isEqualToString:ids],@"expected 59,60 but %@",ids);
-	
-	[xmlParser release];
-	[xml release];
-
+	STAssertTrue([@"59,60" isEqualToString:ids],@"expected 59,60 but %@",ids);	
 }
 
 // panel_grid_slider.xml test
 - (void) testParsePanelGridSliderXML {
 	NSLog(@"Begin testParsePanelGridSliderXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_slider"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_grid_slider"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int slider_index = 0;
@@ -449,8 +409,6 @@
 	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
 	STAssertTrue([@"59,60,61,62" isEqualToString:ids],@"expected 59,60,61,62, but %@",ids);
 	
-	[xmlParser release];
-	[xml release];
 	[cells release];
 	NSLog(@"End testParsePanelGridSliderXML");
 }
@@ -458,12 +416,8 @@
 // panel_absolute_slider.xml test
 - (void) testParsePanelAbsoluteSliderXML {
 	NSLog(@"Begin testParsePanelAbsoluteSliderXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_slider"];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_absolute_slider"]];
+
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int slider_index = 0;
@@ -538,20 +492,14 @@
 	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
 	STAssertTrue([@"59,60" isEqualToString:ids],@"expected 59,60 but %@",ids);
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelAbsoluteSliderXML");
 }
 
 // panel_grid_label.xml test
 - (void) testParsePanelGridLabelXML {
 	NSLog(@"Begin testParsePanelGridLabelXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_label"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_grid_label"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int label_index = 0;
@@ -637,8 +585,6 @@
 	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d",1);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 2,@"expected %d",2);
 	
-	[xmlParser release];
-	[xml release];
 	[cells release];
 	NSLog(@"End testParsePanelGridLabelXML");
 }
@@ -646,12 +592,8 @@
 // panel_absolute_label.xml test
 - (void) testParsePanelAbsoluteLabelXML {
 	NSLog(@"Begin testParsePanelAbsoluteLabelXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_label"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_absolute_label"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int label_index = 0;
@@ -724,22 +666,14 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelAbsoluteLabelXML");
 }
 
 // panel_grid_image.xml test
 - (void) testParsePanelGridImageXML {
 	NSLog(@"Begin testParsePanelGridImageXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_grid_image"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_grid_image"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	for (int i = 1; i <= 2; i++) {
-		[xmlParser parse];
-	}
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int image_index = 0;
@@ -849,8 +783,6 @@
 	STAssertTrue(((GridCell *)[cells objectAtIndex:3]).colspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:3]).colspan);
 	STAssertTrue(((GridCell *)[cells objectAtIndex:4]).colspan == 1,@"expected %d, but %d",1, ((GridCell *)[cells objectAtIndex:4]).colspan);
 	
-	[xmlParser release];
-	[xml release];
 	[cells release];
 	NSLog(@"End testParsePanelGridImageXML");
 }
@@ -858,14 +790,8 @@
 // panel_absolute_image.xml test
 - (void) testParsePanelAbsoluteImageXML {
 	NSLog(@"Begin testParsePanelAbsoluteImageXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_image"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_absolute_image"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	for (int i = 1; i <= 2; i++) {
-		[xmlParser parse];
-	}
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int image_index = 0;
@@ -961,20 +887,14 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelAbsoluteImageXML");
 }
 
 // panel_absolute_screen_backgroundimage.xml test
 - (void) testParsePanelAbsoluteScreenBackgroundimageXML {
 	NSLog(@"Begin testParsePanelAbsoluteScreenBackgroundimageXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_absolute_screen_backgroundimage"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_absolute_screen_backgroundimage"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int background_index = 1;
@@ -1053,20 +973,14 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelAbsoluteScreenBackgroundimageXML");
 }
 
 // panel_relative_screen_backgroundimage.xml test
 - (void) testParsePanelRelativeScreenBackgroundimageXML {
 	NSLog(@"Begin testParsePanelRelativeScreenBackgroundimageXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_relative_screen_backgroundimage"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_relative_screen_backgroundimage"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int background_index = 1;
@@ -1101,7 +1015,7 @@
 			NSString *backgroundImageSrc = [[[screen background] backgroundImage] src];
 			NSString *expectedBackgroundImageSrc = [[NSString alloc] initWithFormat:@"basement%d.png", background_index];
 			STAssertTrue([expectedBackgroundImageSrc isEqualToString:backgroundImageSrc], @"expected %@, but %@", expectedBackgroundImageSrc, backgroundImageSrc);
-			NSLog(@"background image src is ", backgroundImageSrc);
+			NSLog(@"background image src is %@ ", backgroundImageSrc);
 			
 			background_index++;
 			
@@ -1146,20 +1060,14 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelRelativeScreenBackgroundimageXML");
 }
 
 // panel_absolute_slider_gesture.xml test
 - (void) testParsePanelAbsoluteSliderGestureXML {
 	NSLog(@"Begin testParsePanelAbsoluteSliderGestureXML ");
-	[[Definition sharedDefinition] clearPanelXMLData];	
-	NSData *xml = [self readFile:@"panel_absolute_slider_gesture"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_absolute_slider_gesture"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 	int slider_index = 0;
@@ -1238,20 +1146,12 @@
 	Screen *screen1 = (Screen *)[screens objectAtIndex:0];
 	NSString *ids = [[screen1 pollingComponentsIds] componentsJoinedByString:@","];
 	STAssertTrue([@"59,60" isEqualToString:ids],@"expected 59,60 but %@",ids);
-	
-	[xmlParser release];
-	[xml release];
 }
 
 // panel_global_tabbar.xml test
 - (void) testParsePanelGlobalTabbarXML {
 	NSLog(@"Begin testParsePanelTabbarXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_global_tabbar"];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_global_tabbar"]];
 	
 	// Begin assert tabbar.
 	TabBar *tabBar = [[Definition sharedDefinition] tabBar];
@@ -1382,20 +1282,13 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelTabbarXML");
 }
 
 // panel_local_tabbar.xml test
 - (void) testParsePanelLocalTabbarXML {
 	NSLog(@"Begin testParsePanelTabbarXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_local_tabbar"];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_local_tabbar"]];
 	
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
@@ -1526,8 +1419,6 @@
 		STAssertTrue(i+1 == [[groups objectAtIndex:i] groupId],@"expected %d, but %d",i+1,[[groups objectAtIndex:i] groupId]);
 	}
 	
-	[xmlParser release];
-	[xml release];
 	NSLog(@"End testParsePanelTabbarXML");
 }
 
@@ -1535,12 +1426,8 @@
 // panel_portrait_landscape.xml test
 - (void) testParsePanelPortraitLandscapeXML {
 	NSLog(@"Begin testParsePanelPortraitLandscapeXML");
-	[[Definition sharedDefinition] clearPanelXMLData];
-	NSData *xml = [self readFile:@"panel_portrait_landscape"];
+	[[Definition sharedDefinition] parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_portrait_landscape"]];
 	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xml];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
 	NSMutableArray *groups = [[Definition sharedDefinition] groups];
 	NSMutableArray *screens = [[Definition sharedDefinition] screens];
 
@@ -1571,47 +1458,6 @@
 	NSLog(@"groups count = %d",[groups count]);
 	NSLog(@"screens count = %d",[screens count]);
 	NSLog(@"xml parse done");
-	
-	[xmlParser release];
-	[xml release];
 }
-
-
-
-#pragma mark delegate method of NSXMLParser
-//Delegate method when find a element start
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	
-	if ([elementName isEqualToString:@"screen"]) {
-		NSLog(@"start at screen");
-		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[[Definition sharedDefinition] addScreen:screen];
-		[screen release];
-	} else if ([elementName isEqualToString:@"group"]) {
-		NSLog(@"start at group");
-		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[[Definition sharedDefinition] addGroup:group];
-		[group release];
-	} else if ([elementName isEqualToString:@"tab"]) {
-		NSLog(@"start at tab");
-		TabBar *tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[Definition sharedDefinition].tabBar = tabBar;
-		[tabBar release];
-	}
-}
-
-/**
- * When we find an openremote end element, restore the original XML parser delegate.
- */
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-	if ([elementName isEqualToString:@"openremote"]) {
-		NSLog(@"End parse openremote");
-		//		[parser setDelegate:nil];
-		// 		[parser setDelegate:xmlParserParentDelegate];
-		
-	}
-}
-#endif
-
 
 @end

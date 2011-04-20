@@ -242,33 +242,36 @@ static Definition *myInstance = nil;
 	[imageName release];
 }
 
-- (void)parseXml {
+- (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath {
 	NSLog(@"start parse xml");
 	
 	[self clearPanelXMLData];
 	
 	for(int i = 1; i <= TWICE; i++) {
-		NSData *data = [[NSData alloc] initWithContentsOfFile:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
+		NSData *data = [[NSData alloc] initWithContentsOfFile:configurationFilePath];
 		NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 		NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		NSLog(@"%@",dataStr);
+		NSLog(@"%@", dataStr);
 		[dataStr release];
 		
 		//Set delegate to self in order to parse next elements by itself
 		[xmlParser setDelegate:self];
 		
-		
 		//Calls parse method to start parse xml
 		[xmlParser parse];
-		
 
-		NSLog(@"groups count = %d",[groups count]);
-		NSLog(@"screens count = %d",[screens count]);
+		NSLog(@"groups count = %d", [groups count]);
+		NSLog(@"screens count = %d", [screens count]);
 		NSLog(@"xml parse done");
 		[data release];
 		[xmlParser release];
 	}
 }
+
+- (void)parseXml {
+    [self parsePanelConfigurationFileAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
+}
+    
 //Parses xml
 - (void)parseXMLData {	
 	
