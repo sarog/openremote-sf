@@ -56,7 +56,6 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
     try {
       srvr = new ServerSocket(Constants.LOCAL_SERVER_PORT);
       new IPAutoDiscoveryClient().run();
-      autoServers.clear();
       srvr.setSoTimeout(Constants.LOCAL_DISCOVERY_SERVER_TIMEOUT);
     } catch (BindException e) {
       Log.e(TAG, "auto discovery server setup failed, the address is already in use");
