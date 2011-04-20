@@ -74,12 +74,8 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
         }
         connectionSocket.close();
         Log.i(TAG, "auto discovery result: " + autoServers);
-        Thread.sleep(3);
       } catch (SocketTimeoutException e) {
         Log.i(TAG, "SocketTimeoutException in doInBackground()");
-        break;
-      } catch (InterruptedException e) {
-        Log.i(TAG, "InterruptedException in doInBackground(): ", e);
         break;
       } catch (IOException e) {
         Log.i(TAG, "IOException in doInBackground: ", e);
