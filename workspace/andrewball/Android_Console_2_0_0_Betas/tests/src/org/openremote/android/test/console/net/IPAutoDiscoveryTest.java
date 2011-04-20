@@ -33,8 +33,6 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
 
-import android.content.Context;
-import android.telephony.TelephonyManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
