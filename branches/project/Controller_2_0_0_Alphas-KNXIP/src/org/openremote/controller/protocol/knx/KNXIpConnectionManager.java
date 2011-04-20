@@ -444,13 +444,16 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
       @Override
       public synchronized ApplicationProtocolDataUnit read(GroupValueRead command) {
-         this.service(command);
+         // Send a GroupValue_Read command only if the device status has not been synchronized yet.
+         if(command.needBusRead()) {
+           this.service(command);
 
-         // Wait for response after having received a confirmation
-         try {
-            this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
-         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+           // Wait for response after having received a confirmation
+           try {
+              this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
+           } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+           }
          }
          ApplicationProtocolDataUnit.ResponseAPDU response = this.internalState.get(command.getAddress());
 
