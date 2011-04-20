@@ -19,30 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
-
-
-
-#define USE_APPLICATION_UNIT_TEST 0
-
 #import <SenTestingKit/SenTestingKit.h>
 #import <UIKit/UIKit.h>
-#import "Definition.h"
 
-
-@interface PanelXMLParsingTests : SenTestCase <NSXMLParserDelegate> {
-	
-	Definition *definition;
-
+@interface PanelXMLParsingTests : SenTestCase {
 }
-
-#if USE_APPLICATION_UNIT_TEST
-- (void) testAppDelegate;       // simple test on application
-#else 
-
-#endif
-
-@property (nonatomic, readonly) Definition *definition;
-
 
 @end
