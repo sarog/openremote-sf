@@ -50,7 +50,6 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
   protected List<String> doInBackground(Void... params) {
     publishProgress((Void) null);
     ArrayList<String> autoServers = new ArrayList<String>();
-    boolean moreQuotes = true;
     ServerSocket srvr = null;
 
     try {
@@ -65,7 +64,7 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
       return autoServers;
     }
 
-    while (moreQuotes && !isInterrupted) {
+    while (!isInterrupted) {
       try {
         Socket connectionSocket = srvr.accept();
         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -78,13 +77,13 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
         Thread.sleep(3);
       } catch (SocketTimeoutException e) {
         Log.i(TAG, "SocketTimeoutException in doInBackground()");
-        moreQuotes = false;
+        break;
       } catch (InterruptedException e) {
         Log.i(TAG, "InterruptedException in doInBackground(): ", e);
-        moreQuotes = false;
+        break;
       } catch (IOException e) {
         Log.i(TAG, "IOException in doInBackground: ", e);
-        moreQuotes = false;
+        break;
       }
     }
 
