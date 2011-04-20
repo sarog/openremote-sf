@@ -59,11 +59,9 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
       srvr.setSoTimeout(Constants.LOCAL_DISCOVERY_SERVER_TIMEOUT);
     } catch (BindException e) {
       Log.e(TAG, "auto discovery server setup failed, the address is already in use");
-      autoServers.clear();
       return autoServers;
     } catch (IOException e) {
       Log.e(TAG, "auto discovery server setup failed", e);
-      autoServers.clear();
       return autoServers;
     }
 
