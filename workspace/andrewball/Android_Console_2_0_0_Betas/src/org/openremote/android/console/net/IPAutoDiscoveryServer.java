@@ -95,7 +95,6 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
       srvr.close();
     } catch (IOException e) {
       Log.e(TAG, "auto discovery ServerSocket close failed " , e);
-      return autoServers;
     }
 
     return autoServers;
