@@ -692,11 +692,8 @@
 // After select a controller URL, get panel list from the controller.
 // If only one panel is available, automatically choose it.
 - (void)onGetPanels:(NSMutableArray*)panels {
-	NSArray *newArray = nil;
-	newArray = panels;
-
-	if (newArray.count == 1) {
-		[[AppSettingsDefinition getPanelIdentityDic] setObject:[newArray objectAtIndex:0] forKey:@"identity"];
+	if (panels.count == 1) {
+		[[AppSettingsDefinition getPanelIdentityDic] setObject:[panels objectAtIndex:0] forKey:@"identity"];
 	} else {
 		[[AppSettingsDefinition getPanelIdentityDic] setObject:@"None" forKey:@"identity"];
 	}	
