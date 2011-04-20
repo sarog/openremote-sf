@@ -56,6 +56,11 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
     IPAutoDiscoveryClient.isNetworkTypeWIFI = false;
   }
 
+  /**
+   * Stops auto-discovery and then tries it after having initialized three mock controllers.
+   *
+   * @throws InterruptedException if interrupted while sleeping
+   */
   public void testAutoDiscoveryServers() throws InterruptedException {
     getActivity().stopControllerAutoDiscovery();
     // wait for the auto-discovery process that was started when the activity
@@ -65,8 +70,14 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
     // Initialize the IPAutoDiscoveryServer.
     final IPAutoDiscoveryServer autoDiscoveryServer = new IPAutoDiscoveryServer();
 
-    // Start the mock controller.
-    new Thread(new IPAutoDiscoveryControllerServer()).start();
+    String mockControllerUrls [] = {"http://nobodywouldhavethishostnameright:8080/controller1",
+        "http://nobodywouldhavethishostnameright:8080/controller2",
+        "http://nobodywouldhavethishostnameright:8080/controller3"};
+
+    // Start the mock controllers
+    new Thread(new IPAutoDiscoveryControllerServer(mockControllerUrls[0])).start();
+    new Thread(new IPAutoDiscoveryControllerServer(mockControllerUrls[1])).start();
+    new Thread(new IPAutoDiscoveryControllerServer(mockControllerUrls[2])).start();
 
     // Run the IPAutoDiscoveryServer in a UI thread.
     getActivity().runOnUiThread(new Runnable() {
@@ -81,14 +92,13 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
       // Get the auto discovered servers.
       List<String> servers = autoDiscoveryServer.get();
 
-      assertTrue("we should at least have one response", servers.size() >= 1);
-      boolean foundExpectedServer = false;
-      for (String server : servers) {
-        if (server.equals(IPResponseTCPClient.response)) {
-          foundExpectedServer = true;
-        }
+      assertTrue("we should have at least " + mockControllerUrls.length + " responses",
+          servers.size() >= mockControllerUrls.length);
+
+      for (int i = 0; i < mockControllerUrls.length; i++) {
+        assertTrue("expected to see " + mockControllerUrls[i] + " in responses",
+            servers.contains(mockControllerUrls[i]));
       }
-      assertTrue("we expected to see " + IPResponseTCPClient.response + " in the responses", foundExpectedServer);
     } catch (InterruptedException e) {
       fail("Can't auto discover servers -- InterruptedException!");
     } catch (ExecutionException e) {
@@ -104,6 +114,14 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
  * The class to mock the controller server.
  */
 class IPAutoDiscoveryControllerServer implements Runnable {
+
+  /** URL to send as a response to auto-discovery requests */
+  private String mockControllerUrl;
+
+  public IPAutoDiscoveryControllerServer(String mockControllerUrl) {
+    super();
+    this.mockControllerUrl = mockControllerUrl;
+  }
 
   public void run() {
     final int MULTICAST_PORT = Constants.MULTICAST_PORT;
@@ -144,19 +162,17 @@ class IPAutoDiscoveryControllerServer implements Runnable {
    * @param packet the packet received via multicast (used to determine the IP address of the TCP server)
    */
   private void sendLocalIPBack(DatagramPacket packet) {
-    new Thread(new IPResponseTCPClient(packet.getAddress())).start();
+    new Thread(new IPResponseTCPClient(packet.getAddress(), mockControllerUrl)).start();
   }
 }
 
 /**
  * Sends a mock controller URL to the TCP server listening after the auto discovery process has
  * been initiated.
- *
- * Please don't use a real controller with hostname "nobodywouldhavethishostnameright". 8-)
  */
 class IPResponseTCPClient implements Runnable {
-  /** the data to send to the TCP server with a fake server name */
-  public static final String response = "http://nobodywouldhavethishostnameright:8080/controller";
+  /** mock controller URL to send to the TCP server */
+  private String mockControllerUrl;
 
   /** IP address of the TCP server that will receive our response */
   private InetAddress targetIP;
@@ -166,9 +182,10 @@ class IPResponseTCPClient implements Runnable {
    *
    * @param targetIP the target ip
    */
-  public IPResponseTCPClient(InetAddress targetIP) {
+  public IPResponseTCPClient(InetAddress targetIP, String mockControllerUrl) {
     super();
     this.targetIP = targetIP;
+    this.mockControllerUrl = mockControllerUrl;
   }
 
   @Override
@@ -181,7 +198,7 @@ class IPResponseTCPClient implements Runnable {
    */
   public void sendTcp() {
     String targetIPStr = targetIP.getHostAddress();
-    Log.i("OpenRemote/IPResponseTCPClient", "Sending server IP '" + response + "' to " + targetIPStr);
+    Log.i("OpenRemote/IPResponseTCPClient", "Sending server IP '" + mockControllerUrl + "' to " + targetIPStr);
     Socket skt = null;
     PrintWriter out = null;
     try {
@@ -190,7 +207,7 @@ class IPResponseTCPClient implements Runnable {
     } catch (IOException e) {
       Log.e("OpenRemote/IPResponseTCPClient", "Response failed! Can't create TCP socket on " + targetIPStr);
     } finally {
-      out.print(response);
+      out.print(mockControllerUrl);
       out.close();
       try {
         skt.close();
