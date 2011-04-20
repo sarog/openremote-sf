@@ -52,6 +52,7 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
     ArrayList<String> autoServers = new ArrayList<String>();
     boolean moreQuotes = true;
     ServerSocket srvr = null;
+
     try {
       srvr = new ServerSocket(Constants.LOCAL_SERVER_PORT);
       new IPAutoDiscoveryClient().run();
@@ -66,6 +67,7 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
       autoServers.clear();
       return autoServers;
     }
+
     while (moreQuotes && !isInterrupted) {
       try {
         Socket connectionSocket = srvr.accept();
@@ -88,12 +90,14 @@ public class IPAutoDiscoveryServer extends AsyncTask<Void, Void, List<String>> {
         moreQuotes = false;
       }
     }
+
     try {
       srvr.close();
     } catch (IOException e) {
       Log.e(TAG, "auto discovery ServerSocket close failed " , e);
       return autoServers;
     }
+
     return autoServers;
   }
 
