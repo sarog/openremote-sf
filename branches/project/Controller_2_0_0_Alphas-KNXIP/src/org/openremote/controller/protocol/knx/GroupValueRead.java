@@ -93,6 +93,8 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     
     return new GroupValueRead(mgr, address, apdu, dpt);
   }
+  
+  private boolean needBusRead;
 
 
 
@@ -111,6 +113,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
                          ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     super(connectionManager, groupAddress, apdu, dpt);
+    this.needBusRead = true;
   }
 
 
@@ -138,6 +141,8 @@ class GroupValueRead extends KNXCommand implements StatusCommand
 
     DataPointType dpt = getAPDU().getDataPointType();
     DataType datatype = getAPDU().getDataType();
+    // We have received something from the bus, is is useless now to send regularly read commands on the bus.
+    this.needBusRead = false;
 
     if (sensorType == EnumSensorType.SWITCH)
     {
@@ -230,4 +235,11 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     }
   }
 
+  /**
+   * Return the need for sending GroupValue_read requests.
+   * @return Requested <code>boolean</code> value.
+   */
+  public boolean needBusRead() {
+    return this.needBusRead;
+  }
 }
