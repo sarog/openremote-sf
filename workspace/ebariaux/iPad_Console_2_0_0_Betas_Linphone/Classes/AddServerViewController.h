@@ -30,12 +30,10 @@
 	NSMutableDictionary *editingItem;
 	TextFieldCell *serverUrlFieldCell;
 	NSMutableArray *servers;
-	BOOL newItem;
-	UIView *headerView;
-	UIView *footerView;
-	
+	BOOL newItem;	
 }
 
 @property (nonatomic,retain) NSMutableDictionary *editingItem;
 @property (nonatomic,retain) NSMutableArray *servers;
+
 @end

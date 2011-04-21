@@ -27,13 +27,17 @@
 
 @implementation AddServerViewController
 
-@synthesize editingItem,servers;
+@synthesize editingItem, servers;
 
 - (id)init {
-	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
-		
-	}
+	self = [super initWithStyle:UITableViewStyleGrouped];
 	return self;
+}
+
+- (void)dealloc {
+	[editingItem release];
+	[serverUrlFieldCell release];
+    [super dealloc];
 }
 
 // Customize view of users input custom controller server.
@@ -51,7 +55,6 @@
 	}
 	serverUrlFieldCell.textField.text = [editingItem valueForKey:@"url"];
 	[serverUrlFieldCell.textField becomeFirstResponder];
-	
 }
 
 // Delegate method of UITextFieldDelegate and is called when 'return' key pressed. return NO to ignore.
@@ -81,14 +84,8 @@
 	[serverUrlFieldCell.textField resignFirstResponder];
 }
 
-
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[aTableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
-    // Release anything that's not essential, such as cached data
 }
 
 #pragma mark Table view methods
@@ -97,14 +94,10 @@
     return 1;
 }
 
-
-// Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return 1;
 }
 
-
-// Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return serverUrlFieldCell;
  }
@@ -124,16 +117,6 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
 	return YES;
 }
-
-
-- (void)dealloc {
-	[editingItem release];
-	[serverUrlFieldCell release];
-	[headerView release];
-	[footerView release];
-    [super dealloc];
-}
-
 
 @end
 
