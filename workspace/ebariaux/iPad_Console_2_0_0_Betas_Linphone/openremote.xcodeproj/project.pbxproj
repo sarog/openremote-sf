@@ -79,6 +79,8 @@
 		60A61A871355FD1E00A7C87E /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A861355FD1E00A7C87E /* linphonerc */; };
 		60A85C85131F965500C7918A /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
 		60A85C96131F972000C7918A /* ORWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C95131F972000C7918A /* ORWebView.m */; };
+		60C2F958135F3748000824A5 /* ScreenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C2F957135F3748000824A5 /* ScreenTest.m */; };
+		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
 		60EB56A2135C4E4100B29CED /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		60EB56A3135C4E4100B29CED /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
 		60EB56A4135C4E4100B29CED /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
@@ -693,6 +695,9 @@
 		60A85C84131F965500C7918A /* Web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Web.m; sourceTree = "<group>"; };
 		60A85C94131F972000C7918A /* ORWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORWebView.h; sourceTree = "<group>"; };
 		60A85C95131F972000C7918A /* ORWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORWebView.m; sourceTree = "<group>"; };
+		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
+		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
+		60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_screenIdForOrientation.xml; sourceTree = "<group>"; };
 		60EB573A135C4E4100B29CED /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = URLConnectionHelper.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1551,6 +1556,7 @@
 		8CEB4E7810B27F3700A67721 /* panelxml */ = {
 			isa = PBXGroup;
 			children = (
+				60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */,
 				8C5796E6116B9DD000ED63EA /* panel_absolute_image.xml */,
 				8C5796E7116B9DD000ED63EA /* panel_absolute_label.xml */,
 				8C5796E8116B9DD000ED63EA /* panel_absolute_screen_backgroundimage.xml */,
@@ -1569,6 +1575,8 @@
 				8C5796F5116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml */,
 				8C5796E3116B9DC100ED63EA /* PanelXMLParsingTests.h */,
 				8C5796E4116B9DC100ED63EA /* PanelXMLParsingTests.m */,
+				60C2F956135F3748000824A5 /* ScreenTest.h */,
+				60C2F957135F3748000824A5 /* ScreenTest.m */,
 			);
 			name = panelxml;
 			sourceTree = "<group>";
@@ -1902,6 +1910,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */,
 				8CECF3E210E9DD1400C0E1BB /* database.db in Resources */,
 				8C3DE3101163492C00DD4EE7 /* btn_green.png in Resources */,
 				8C3DE3111163492C00DD4EE7 /* button.png in Resources */,
@@ -2253,6 +2262,7 @@
 				8CEFDAF711BF446B00CEDC24 /* StringUtilsTest.m in Sources */,
 				60A6195C1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */,
 				60A619621354A92600A7C87E /* NSString+ORAdditionsTest.m in Sources */,
+				60C2F958135F3748000824A5 /* ScreenTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
