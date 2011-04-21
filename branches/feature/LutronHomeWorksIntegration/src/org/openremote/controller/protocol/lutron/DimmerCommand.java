@@ -49,10 +49,10 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
       throw new NoSuchCommandException("Address is required for any dimmer command");
     }
 
-    if (!address.isValidDimmerAddress()) {
-      throw new NoSuchCommandException("Address must be one of a dimmer");
+    if (!address.isValidDimmerAddress() && !address.isValidGrafikEyeSingleZoneAddress()) {
+      throw new NoSuchCommandException("Address must be one of a dimmer or of a GRAFIK Eye zone");
     }
-    
+
     if ("FADE".equalsIgnoreCase(name) && level == null) {
       throw new NoSuchCommandException("Level is required for a scene Fade command");
     }
@@ -86,15 +86,19 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
    * {@inheritDoc}
    */
   public void send() {
-    Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
-    if ("RAISE".equals(name)) {
-      dimmer.raise();
-    } else if ("LOWER".equals(name)) {
-      dimmer.lower();
-    } else if ("STOP".equals(name)) {
-      dimmer.stop();
-    } else if ("FADE".equals(name)) {
-      dimmer.fade(level);
+    try {
+      Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
+      if ("RAISE".equals(name)) {
+        dimmer.raise();
+      } else if ("LOWER".equals(name)) {
+        dimmer.lower();
+      } else if ("STOP".equals(name)) {
+        dimmer.stop();
+      } else if ("FADE".equals(name)) {
+        dimmer.fade(level);
+      }
+    } catch (LutronHomeWorksDeviceException e) {
+      log.error("Impossible to get device", e);
     }
   }
 
@@ -102,25 +106,32 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
 
   @Override
   public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
-    Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
-    if (dimmer == null) {
-      // This should never happen as above command is supposed to create device
-      log.warn("Gateway could not create a Dimmer we're receiving feedback for (" + address + ")");
-      return "";
+    try {
+      Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
+      if (dimmer == null) {
+        // This should never happen as above command is supposed to create device
+        log.warn("Gateway could not create a Dimmer we're receiving feedback for (" + address + ")");
+        return "";
+      }
+      if (dimmer.getLevel() == null) {
+        // We don't have any information about the state yet, ask Lutron processor about it
+        dimmer.queryLevel();
+        return "";
+      }
+      if (sensorType == EnumSensorType.SWITCH) {
+        return (dimmer.getLevel().intValue() != 0) ? "on" : "off";
+      } else if (sensorType == EnumSensorType.RANGE) {
+        return Integer.toString(dimmer.getLevel());
+      } else if (sensorType == EnumSensorType.LEVEL) {
+        return Integer.toString(dimmer.getLevel());
+      } else {
+        log.warn("Query dimmer status for incompatible sensor type " + sensorType);
+        return "";
+      }
+    } catch (LutronHomeWorksDeviceException e) {
+      log.error("Impossible to get device", e);
     }
-    if (dimmer.getLevel() == null) {
-      // We don't have any information about the state yet, ask Lutron processor about it
-      dimmer.queryLevel();
-      return "";
-    }
-    if (sensorType == EnumSensorType.SWITCH) {
-      return (dimmer.getLevel().intValue() != 0) ? "on" : "off";
-    } else if (sensorType == EnumSensorType.RANGE) {
-      return Integer.toString(dimmer.getLevel());
-    } else {
-      log.warn("Query dimmer status for incompatible sensor type " + sensorType);
-      return "";
-    }
+    return "";
   }
 
 }
