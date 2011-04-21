@@ -24,30 +24,33 @@
 
 
 @implementation TextFieldCell
+
 @synthesize textField;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-			textField = [[UITextField alloc] initWithFrame:CGRectZero];
-			textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-			textField.font = [UIFont systemFontOfSize:22];
-			textField.keyboardType = UIKeyboardTypeURL;
-			textField.adjustsFontSizeToFitWidth = YES;
-			//textField.clearButtonMode = UITextFieldViewModeWhileEditing;// has a clear 'x' button to the right
-			textField.autocapitalizationType = UITextAutocapitalizationTypeNone;// no auto capitalization support
-			textField.autocorrectionType = UITextAutocorrectionTypeNo;// no auto correction support
-			textField.textColor = [UIColor darkGrayColor];
-			textField.returnKeyType = UIReturnKeyDone;
-			self.selectionStyle = UITableViewCellSelectionStyleNone;
-			[self addSubview:textField];
+        textField = [[UITextField alloc] initWithFrame:CGRectZero];
+        textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        textField.font = [UIFont systemFontOfSize:22];
+        textField.keyboardType = UIKeyboardTypeURL;
+        textField.adjustsFontSizeToFitWidth = YES;
+        //textField.clearButtonMode = UITextFieldViewModeWhileEditing;// has a clear 'x' button to the right
+        textField.autocapitalizationType = UITextAutocapitalizationTypeNone;// no auto capitalization support
+        textField.autocorrectionType = UITextAutocorrectionTypeNo;// no auto correction support
+        textField.textColor = [UIColor darkGrayColor];
+        textField.returnKeyType = UIReturnKeyDone;
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        [self addSubview:textField];
+        [textField release];
     }
     return self;
 }
 
 // Override method of UIView.
 - (void)layoutSubviews {
-	// Place the subviews appropriately.
-	textField.frame = CGRectInset(self.contentView.bounds, 10, 0);
+    [super layoutSubviews];
+    // Place textfield appropriatly in cell
+	textField.frame = CGRectInset(self.contentView.frame, 10, 0);
 }
 
 // Handler of TextFieldCell is selected.
@@ -60,11 +63,5 @@
 		textField.textColor = [UIColor darkGrayColor];
 	}
 }
-
-- (void)dealloc {
-	[textField release];
-	[super dealloc];
-}
-
 
 @end
