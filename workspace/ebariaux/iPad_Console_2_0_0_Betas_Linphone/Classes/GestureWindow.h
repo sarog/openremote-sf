@@ -30,7 +30,6 @@
  */
 @interface GestureWindow : UIWindow <UIAccelerometerDelegate> {
 	CGPoint previousTouchLocation;
-	UIInterfaceOrientation orientation;
 	id theDelegate;
 	LoadingHUDView *loading;
 }

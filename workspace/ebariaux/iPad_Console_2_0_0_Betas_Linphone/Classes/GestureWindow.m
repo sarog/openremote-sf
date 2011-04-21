@@ -55,14 +55,17 @@
 		loading.center = self.center;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showLoading) name:NotificationShowLoading object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideLoading) name:NotificationHideLoading object:nil];
-		UIAccelerometer *accelerometer = [UIAccelerometer sharedAccelerometer];
-		accelerometer.delegate = self; 
-		accelerometer.updateInterval = 1.0f/60.0f; 
-		
-
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	}
 	
 	return self;
+}
+
+- (void)dealloc {
+    [loading release];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    [super dealloc];
 }
 
 //To detect gestures, intercept touch events
@@ -84,12 +87,12 @@
 				//evaluate gesture
 				if (previousTouchLocation.x < location.x) {
 					//left to right -->
-					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeLeftToRight orientation:orientation];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeLeftToRight orientation:[[UIDevice currentDevice] orientation]];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
                     [g release];
 				} else if (previousTouchLocation.x > location.x) {
 					//right to left <--
-					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeRightToLeft orientation:orientation];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeRightToLeft orientation:[[UIDevice currentDevice] orientation]];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
                     [g release];
 				}
@@ -100,13 +103,13 @@
 				if (location.y > previousTouchLocation.y) {
 					//           |
 					//up to down V
-					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeTopToBottom orientation:orientation];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeTopToBottom orientation:[[UIDevice currentDevice] orientation]];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
                     [g release];
 				} else if (previousTouchLocation.y > location.y) {
 					//donw to up ^
 					//           |
-					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeBottomToTop orientation:orientation];
+					Gesture *g = [[Gesture alloc] initWithGestureSwipeType:GestureSwipeTypeBottomToTop orientation:[[UIDevice currentDevice] orientation]];
 					[theDelegate performSelector:@selector(performGesture:) withObject:g];
                     [g release];
 				}
@@ -124,22 +127,6 @@
 	}
 	[super sendEvent:event];
 }
-
-
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration { 
-	if (acceleration.y <= -0.5f) {
-		orientation = UIInterfaceOrientationPortrait;
-	} else if (acceleration.x >= 0.5f) {
-		orientation = UIInterfaceOrientationLandscapeRight;
-	} else if (acceleration.y >= 0.5f) {
-		orientation = UIInterfaceOrientationPortraitUpsideDown;
-	} else if (acceleration.x <= -0.5f) {
-		orientation = UIInterfaceOrientationLandscapeLeft;
-	} else {
-		orientation = UIInterfaceOrientationPortrait;
-	}
-}
-
 
 - (void)showLoading {
 	if (loading.superview != self) {

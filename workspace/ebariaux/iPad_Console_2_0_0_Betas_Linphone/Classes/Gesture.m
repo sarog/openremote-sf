@@ -47,10 +47,10 @@
 				swipeType = type;
 				break;
 			case UIInterfaceOrientationLandscapeLeft:
-				swipeType = (type - 1 + 4)  % 4;
+				swipeType = (type + 1) % 4;
 				break;
 			case UIInterfaceOrientationLandscapeRight:
-				swipeType = (type + 1) % 4;
+				swipeType = (type - 1 + 4)  % 4;
 				break;
 			case UIInterfaceOrientationPortraitUpsideDown:
 				swipeType = (type + 2) % 4;
@@ -58,8 +58,7 @@
 			default:
 				swipeType = type;
 				break;
-		}
-		
+		}		
 	}
 	return self;
 }
