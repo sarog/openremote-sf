@@ -230,8 +230,9 @@
 		return;
 	}
 	// Get the keyboard size
-	CGRect keyboardBounds;
-	[[note.userInfo valueForKey:UIKeyboardBoundsUserInfoKey] getValue: &keyboardBounds];
+	CGRect keyboardFrame;
+	[[note.userInfo valueForKey:UIKeyboardFrameBeginUserInfoKey] getValue: &keyboardFrame];
+    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
 	
 	CGRect frame = self.tableView.frame;
 	
@@ -241,7 +242,7 @@
 	[UIView setAnimationDuration:0.3f];
 	
 	// Reduce size of the Table view 
-	frame.size.height -= keyboardBounds.size.height;
+	frame.size.height -= keyboardFrame.size.height;
 	
 	// Apply new size of table view
 	self.tableView.frame = frame;
@@ -258,18 +259,18 @@
 //remove the space for scroll
 -(void) keyboardWillHide:(NSNotification *)note {
 	// Get the keyboard size
-	CGRect keyboardBounds;
-	[[note.userInfo valueForKey:UIKeyboardBoundsUserInfoKey] getValue: &keyboardBounds];
+	CGRect keyboardFrame;
+	[[note.userInfo valueForKey:UIKeyboardFrameBeginUserInfoKey] getValue: &keyboardFrame];
+    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
 	
-	// Detect orientation
 	CGRect frame = self.tableView.frame;
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationBeginsFromCurrentState:YES];
 	[UIView setAnimationDuration:0.3f];
 	
-	// Reduce size of the Table view 
-	frame.size.height += keyboardBounds.size.height;
+	// Restore size of the Table view 
+	frame.size.height += keyboardFrame.size.height;
 	
 	// Apply new size of table view
 	self.tableView.frame = frame;
