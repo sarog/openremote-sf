@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.openremote.controller.protocol.dscit100.DSCIT100CommandBuilderTest;
 import org.openremote.controller.protocol.dscit100.DSCIT100CommandTest;
 import org.openremote.controller.protocol.dscit100.PacketTest;
+import org.openremote.controller.protocol.dscit100.PanelStateTest;
 import org.openremote.controller.protocol.dscit100.StateDefinitionTest;
 
 /**
@@ -18,7 +19,8 @@ import org.openremote.controller.protocol.dscit100.StateDefinitionTest;
      PacketTest.class,
      DSCIT100CommandTest.class,
      DSCIT100CommandBuilderTest.class,
-     StateDefinitionTest.class
+     StateDefinitionTest.class,
+     PanelStateTest.class
    }
 )
 

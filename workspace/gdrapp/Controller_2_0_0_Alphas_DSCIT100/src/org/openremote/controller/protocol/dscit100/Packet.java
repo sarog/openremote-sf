@@ -34,7 +34,7 @@ public class Packet
 
   public Packet(String command, String data, PacketCallback callback)
   {
-    this(command,data);
+    this(command, data);
     this.callback = callback;
   }
 

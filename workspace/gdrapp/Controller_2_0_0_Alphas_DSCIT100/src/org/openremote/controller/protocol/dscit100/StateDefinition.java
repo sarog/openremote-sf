@@ -10,12 +10,12 @@ package org.openremote.controller.protocol.dscit100;
 public class StateDefinition
 {
   private PanelState.StateType type;
-  private String item;
+  private String target;
 
-  public StateDefinition(PanelState.StateType type, String item)
+  public StateDefinition(PanelState.StateType type, String target)
   {
     this.type = type;
-    this.item = item;
+    this.target = target;
   }
 
   public PanelState.StateType getType()
@@ -23,14 +23,14 @@ public class StateDefinition
     return type;
   }
 
-  public String getItem()
+  public String getTarget()
   {
-    return item;
+    return target;
   }
 
   @Override
   public String toString()
   {
-    return "[StateDefinition: type=" + type + ", item=" + item + "]";
+    return "[StateDefinition: type=" + type + ", target=" + target + "]";
   }
 }

@@ -17,9 +17,10 @@ public class StateDefinitionTest
   @Test
   public void testDSCIT100StateDefinition()
   {
-    StateDefinition sd = new StateDefinition(StateType.PARTITION,"1");
-    
+    StateDefinition sd = new StateDefinition(StateType.PARTITION, "1");
+
+    assertTrue(sd instanceof StateDefinition);
     assertEquals(StateType.PARTITION, sd.getType());
-    assertEquals("1", sd.getItem());
+    assertEquals("1", sd.getTarget());
   }
 }

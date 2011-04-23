@@ -31,8 +31,8 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * String constant for parsing DSCIT100 protocol XML entries from
    * controller.xml file.
    * 
-   * This constant is the expected property name value for DSCIT100 addresses
-   * (<code>{@value}</code>):
+   * This constant is the expected property name value for DSCIT100 addresses (
+   * <code>{@value}</code>):
    * 
    * <pre>
    * {@code
@@ -165,11 +165,12 @@ public class DSCIT100CommandBuilder implements CommandBuilder
     String command = null;
     String code = null;
     String target = null;
-    
+
     // Get the list of properties from XML...
 
     @SuppressWarnings("unchecked")
-    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
+    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY,
+        element.getNamespace());
 
     for (Element el : propertyElements)
     {
@@ -213,9 +214,10 @@ public class DSCIT100CommandBuilder implements CommandBuilder
       throw new NoSuchCommandException("DSCIT100 command must have a '"
           + DSCIT100_XMLPROPERTY_COMMAND + "' property.");
     }
-    
-    Command cmd = DSCIT100Command.createCommand(command, address, code, target, connectionManager);
-      
+
+    Command cmd = DSCIT100Command.createCommand(command, address, code, target,
+        connectionManager);
+
     log.info("Created DSCIT100 Command " + cmd);
 
     return cmd;

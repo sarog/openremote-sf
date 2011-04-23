@@ -21,7 +21,7 @@ public class PanelState
   // --------------------------------------------------------------------------------
 
   /**
-   * DSCIT100 logger. Uses a common category for all KNX related logging.
+   * DSCIT100 logger. Uses a common category for all DSCIT100 related logging.
    */
   private final static Logger log = Logger
       .getLogger(DSCIT100CommandBuilder.DSCIT100_LOG_CATEGORY);
@@ -35,7 +35,7 @@ public class PanelState
 
   public enum StateType
   {
-    ZONE, ZONE_ALARM, PARTITION
+    ZONE, ZONE_ALARM, PARTITION, LABEL
   }
 
   public enum ZoneState implements State
@@ -51,6 +51,21 @@ public class PanelState
   public enum PartitionState implements State
   {
     READY, NOTREADY, ARMED_AWAY, ARMED_STAY, ARMED_AWAY_NODELAY, ARMED_STAY_NODELAY, ALARM, DISARMED, EXITDELAY, ENTRYDELAY, FAILTOARM, BUSY
+  }
+
+  public class Label implements State
+  {
+    private String label;
+
+    public Label(String label)
+    {
+      this.label = label;
+    }
+
+    public String toString()
+    {
+      return label;
+    }
   }
 
   private Map<StateType, Map<String, State>> internalState;
@@ -93,7 +108,15 @@ public class PanelState
 
   public synchronized void processPacket(Packet packet)
   {
-    if (packet.getCommand().equals("601"))
+    if (packet.getCommand().equals("570"))
+    { // Broadcast Labels
+      String num = packet.getData().substring(0, 3);
+      num = trimLeadingZeros(num);
+      String label = packet.getData().substring(3).trim();
+      log.debug("Broadcast label [number=" + num + ",label=" + label + "]");
+      updateInternalState(StateType.LABEL, num, new Label(label));
+    }
+    else if (packet.getCommand().equals("601"))
     { // Zone Alarm
       String partition = packet.getData().substring(0, 1);
       String zone = packet.getData().substring(1, 4);
@@ -222,13 +245,13 @@ public class PanelState
     Map<String, State> members = this.internalState.get(stateDefinition
         .getType());
 
-    if (members == null || (!members.containsKey(stateDefinition.getItem())))
+    if (members == null || (!members.containsKey(stateDefinition.getTarget())))
     {
       log.warn("Cannot find state item information for " + stateDefinition);
       return null;
     }
 
-    return members.get(stateDefinition.getItem());
+    return members.get(stateDefinition.getTarget());
   }
 
   public synchronized ZoneState getZoneState(Integer zone)
