@@ -43,7 +43,7 @@ public class DSCIT100ConnectionManager
   private final static int IP_CONNECT_TIMEOUT = 5000;
 
   /**
-   * Default TCP port if non is provided in command definition
+   * Default TCP port if none is provided in command definition
    */
   private final static int DEFAULT_TCP_PORT = 5000;
 
@@ -328,6 +328,8 @@ public class DSCIT100ConnectionManager
 
         // Send IT100 state discovery packet to get current system state
         sendInternal(new Packet("001", ""));
+        // Send IT100 labels request packet to get system labels
+        sendInternal(new Packet("002", ""));
 
         boolean isConnected = true;
 

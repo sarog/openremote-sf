@@ -28,6 +28,7 @@ public class PacketTest
   {
     Packet packet = new Packet("001", "1234");
 
+    assertTrue(packet instanceof Packet);
     assertEquals("001", packet.getCommand());
     assertEquals("1234", packet.getData());
   }
@@ -48,6 +49,7 @@ public class PacketTest
       }
     });
 
+    assertTrue(packet instanceof Packet);
     assertEquals("001", packet.getCommand());
     assertEquals("1234", packet.getData());
     assertTrue(packet.getCallback() instanceof PacketCallback);
@@ -70,6 +72,7 @@ public class PacketTest
     {
     }
 
+    assertTrue(packet instanceof Packet);
     assertEquals("500", packet.getCommand());
     assertEquals("001", packet.getData());
   }

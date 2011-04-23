@@ -53,18 +53,21 @@ public abstract class DSCIT100Command implements Command
    * 
    * @return new DSCIT100 command instance
    */
-  public static DSCIT100Command createCommand(String name, String address, String code, String target, DSCIT100ConnectionManager mgr)
+  public static DSCIT100Command createCommand(String name, String address,
+      String code, String target, DSCIT100ConnectionManager mgr)
   {
     name = name.trim().toUpperCase();
 
-    ExecuteCommand execCommand = ExecuteCommand.createCommand(name, address, code, target, mgr);
+    ExecuteCommand execCommand = ExecuteCommand.createCommand(name, address,
+        code, target, mgr);
     if (execCommand != null)
       return execCommand;
 
-    ReadCommand readCommand = ReadCommand.createCommand(name, address, target, mgr);
+    ReadCommand readCommand = ReadCommand.createCommand(name, address, target,
+        mgr);
     if (readCommand != null)
       return readCommand;
-    
+
     throw new NoSuchCommandException("Unknown command '" + name + "'.");
   }
 
@@ -90,11 +93,14 @@ public abstract class DSCIT100Command implements Command
   // ---------------------------------------------------------------------------------
 
   /**
-   * @param address IT100 address
-   * @param target Target partition or zone
+   * @param address
+   *          IT100 address
+   * @param target
+   *          Target partition or zone
    * @param connectionManager
    */
-  public DSCIT100Command(String address, String target, DSCIT100ConnectionManager connectionManager)
+  public DSCIT100Command(String address, String target,
+      DSCIT100ConnectionManager connectionManager)
   {
     this.address = address;
     this.target = target;
@@ -109,7 +115,7 @@ public abstract class DSCIT100Command implements Command
     try
     {
       DSCIT100Connection connection = connectionManager.getConnection(address);
-      if (connection != null) 
+      if (connection != null)
         connection.send(command);
     }
     catch (Exception e)
@@ -120,15 +126,16 @@ public abstract class DSCIT100Command implements Command
 
   /**
    * Read the internal state map of the associated connection.
-   *
+   * 
    * TODO : call semantics on return value
-   *
-   * @param command   DSCIT100 read command
-   *
-   * @return  Returns a State object
-   *
-   *          NOTE: may return <code>null</code> in case there's a connection exception or the
-   *          state map is not populated.
+   * 
+   * @param command
+   *          DSCIT100 read command
+   * 
+   * @return Returns a State object
+   * 
+   *         NOTE: may return <code>null</code> in case there's a connection
+   *         exception or the state map is not populated.
    */
   protected PanelState.State read(ReadCommand command)
   {
@@ -139,7 +146,7 @@ public abstract class DSCIT100Command implements Command
         return connection.getState(command.getStateDefinition());
       else
       {
-        log.error("Could not get connection instance for address : "+address);
+        log.error("Could not get connection instance for address : " + address);
         return null;
       }
     }
@@ -149,5 +156,5 @@ public abstract class DSCIT100Command implements Command
     }
     return null;
   }
-  
+
 }
