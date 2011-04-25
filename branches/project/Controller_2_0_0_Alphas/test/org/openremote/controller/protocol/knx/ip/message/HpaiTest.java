@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.knx.ip.tunnel.message;
+package org.openremote.controller.protocol.knx.ip.message;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openremote.controller.protocol.knx.ip.message.Hpai;
 
 public class HpaiTest {
 
