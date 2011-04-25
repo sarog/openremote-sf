@@ -3,12 +3,12 @@ package org.openremote.controller.protocol.knx.ip.tunnel.message;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class IpDisconnectAck extends IpMessage {
+public class IpDisconnectResp extends IpMessage {
   public static final int STI = 0x20A;
   private int             channelId;
   private int             status;
 
-  public IpDisconnectAck(InputStream is, int length) throws IOException {
+  public IpDisconnectResp(InputStream is, int length) throws IOException {
     super(STI, length);
     this.channelId = is.read();
     this.status = is.read();
@@ -24,6 +24,6 @@ public class IpDisconnectAck extends IpMessage {
 
   @Override
   public Primitive getPrimitive() {
-    return Primitive.ACK;
+    return Primitive.RESP;
   }
 }

@@ -1,52 +1,58 @@
 package org.openremote.controller.protocol.knx.ip.tunnel;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.security.InvalidParameterException;
 
 import org.openremote.controller.protocol.knx.ip.tunnel.message.Hpai;
+import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverReq;
+import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage;
 
-public class IpDiscoverer {
+public class IpDiscoverer implements IpProcessorListener {
    private IpProcessor processor;
    private MulticastSocket multicastSocket;
-   private InetSocketAddress groupAddr;
    private DiscoveryListener discoveryListener;
 
    public IpDiscoverer(InetAddress srcAddr, DiscoveryListener discoveryListener) {
-      try {
-         this.groupAddr = new InetSocketAddress(InetAddress.getByName("224.0.23.12"), 3671);
-      } catch (UnknownHostException e) {
-         // Ignore
-      }
-      if (!(srcAddr instanceof Inet4Address)) {
-         throw new InvalidParameterException("Only IPV4 addresses are supported");
-      }
       this.discoveryListener = discoveryListener;
-      this.processor = new IpProcessor(srcAddr);
+      this.processor = new IpProcessor(srcAddr, this);
    }
 
    public void start() throws KnxIpException, IOException, InterruptedException {
       this.multicastSocket = new MulticastSocket();
-      this.multicastSocket.joinGroup(this.groupAddr.getAddress());
+      try {
+         InetSocketAddress groupAddr = new InetSocketAddress(InetAddress.getByName("224.0.23.12"), 3671);
+         this.multicastSocket.joinGroup(groupAddr.getAddress());
 
-      this.processor.setDiscoverer(this);
-      this.processor.start();
+         this.processor.start();
 
-      // Start discovery process
-      this.processor.send(this.multicastSocket, new IpDiscoverReq(new Hpai(this.processor.getSrcAddr())),
-            this.groupAddr);
+         // Start discovery process
+         // TODO send regularly requests until a response is received
+         this.processor.send(new IpDiscoverReq(new Hpai(this.processor.getSrcAddr())), groupAddr, this.multicastSocket);
+      } catch (UnknownHostException e) {
+         throw new KnxIpException(e.getMessage());
+      }
    }
 
-   public void stop() throws KnxIpException, InterruptedException, IOException {
+   public void stop() throws InterruptedException {
       this.multicastSocket.close();
+
+      this.processor.stop();
    }
 
-   void notifyDiscovery() {
-      this.discoveryListener.notifyDiscovery(this, new IpClientImpl(this.processor));
+   @Override
+   public void notifyMessage(IpMessage message) {
+      // Handle discovery responses only
+      if (message instanceof IpDiscoverResp) {
+         this.discoveryListener.notifyDiscovery(this, ((IpDiscoverResp) message).getControlEndpoint().getAddress());
+      }
    }
+
+   public InetAddress getSrcAddr() {
+      return this.processor.getSrcAddr().getAddress();
+   }
+
 }

@@ -1,6 +1,7 @@
 package org.openremote.controller.protocol.knx;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.junit.Assert;
@@ -44,8 +45,8 @@ public class KNXIpConnectionManagerTest {
    @Test
    public void testConnect() throws ConnectionException, ConversionException, KnxIpException, IOException,
          InterruptedException {
-      KNXIpConnectionManager mgr = new KNXIpConnectionManager(new InetSocketAddress("127.0.0.1", 0),
-            new InetSocketAddress("127.0.0.1", DummyServer.PORT));
+      KNXIpConnectionManager mgr = new KNXIpConnectionManager(InetAddress.getByName("127.0.0.1"), new InetSocketAddress(
+            "127.0.0.1", DummyServer.PORT));
       mgr.start();
       KNXConnection c = mgr.getConnection();
       c.send(GroupValueWrite.createCommand("on", DataPointType.BINARY_VALUE, mgr, new GroupAddress((byte) 0x80,

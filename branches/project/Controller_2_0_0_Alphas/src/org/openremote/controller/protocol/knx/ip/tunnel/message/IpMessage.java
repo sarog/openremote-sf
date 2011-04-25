@@ -10,7 +10,7 @@ public abstract class IpMessage {
   private int                 variableLength;
 
   public static enum Primitive {
-    REQ, ACK
+    REQ, RESP
   };
 
   public abstract Primitive getPrimitive();

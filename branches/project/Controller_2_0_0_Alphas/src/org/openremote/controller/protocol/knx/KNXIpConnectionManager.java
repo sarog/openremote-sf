@@ -13,16 +13,16 @@ import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.openremote.controller.util.Logger;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.tunnel.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.tunnel.IpClient;
-import org.openremote.controller.protocol.knx.ip.tunnel.IpClientImpl;
 import org.openremote.controller.protocol.knx.ip.tunnel.IpDiscoverer;
 import org.openremote.controller.protocol.knx.ip.tunnel.IpMessageListener;
 import org.openremote.controller.protocol.knx.ip.tunnel.KnxIpException;
@@ -56,36 +56,35 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    // Instance Fields ------------------------------------------------------------------------------
 
    private KNXConnectionImpl connection;
-   private Map<IpDiscoverer, IpClient> discoverers;
+   private Map<IpDiscoverer, InetSocketAddress> discoverers;
 
    // Constructors ---------------------------------------------------------------------------------
 
    public KNXIpConnectionManager() {
       this.connection = null;
-      this.discoverers = new HashMap<IpDiscoverer, IpClient>();
+      this.discoverers = new HashMap<IpDiscoverer, InetSocketAddress>();
    }
 
-   public KNXIpConnectionManager(InetSocketAddress srcAddr, InetSocketAddress destAddr) throws KnxIpException,
+   public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) throws KnxIpException,
          IOException, InterruptedException {
       this();
-      this.connection = new KNXConnectionImpl(new IpClientImpl(srcAddr, destAddr));
+      this.connection = new KNXConnectionImpl(new IpClient(srcAddr, destControlEndpointAddr));
    }
 
    // Implements DiscoveryListener -----------------------------------------------------------------
 
    @Override
-   public void notifyDiscovery(IpDiscoverer discoverer, IpClient client) {
+   public void notifyDiscovery(IpDiscoverer discoverer, InetSocketAddress destControlEndpointAddr) {
       synchronized (this.discoverers) {
-         this.discoverers.put(discoverer, client);
-
-         // The first interface found we be used for the connection
-         // TODO free unused interfaces
-         if (this.connection == null) {
-            this.connection = new KNXConnectionImpl(client);
-         }
+         this.discoverers.put(discoverer, destControlEndpointAddr);
          this.discoverers.notify();
 
-         // TODO stop all discoverers
+         // The first interface found we be used for the connection
+         if (this.connection == null) {
+            this.connection = new KNXConnectionImpl(new IpClient(discoverer.getSrcAddr(), destControlEndpointAddr));
+
+            // TODO asynchronously stop discovery process on other NICs
+         }
       }
    }
 
@@ -119,7 +118,8 @@ public class KNXIpConnectionManager implements DiscoveryListener {
       }
    }
 
-   protected void stop() {
+   protected void stop() throws InterruptedException {
+      this.stopDiscovery();
       if (this.connection != null) {
          this.connection.stop();
          this.connection = null;
@@ -385,6 +385,13 @@ public class KNXIpConnectionManager implements DiscoveryListener {
       }
 
       return true;
+   }
+
+   private void stopDiscovery() throws InterruptedException {
+      for (Iterator<IpDiscoverer> i = this.discoverers.keySet().iterator(); i.hasNext();) {
+         ((IpDiscoverer) i.next()).stop();
+         i.remove();
+      }
    }
 
    // Inner Classes --------------------------------------------------------------------------------
