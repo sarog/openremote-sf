@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.knx.ip.tunnel.message;
+package org.openremote.controller.protocol.knx.ip.message;
 
 import java.io.IOException;
 import java.io.OutputStream;

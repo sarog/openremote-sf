@@ -1,19 +1,19 @@
-package org.openremote.controller.protocol.knx.ip.tunnel;
+package org.openremote.controller.protocol.knx.ip;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import org.openremote.controller.protocol.knx.ip.tunnel.message.Hpai;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpConnectResp;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpConnectReq;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDisconnectResp;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDisconnectReq;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingAck;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingReq;
+import org.openremote.controller.protocol.knx.ip.message.Hpai;
+import org.openremote.controller.protocol.knx.ip.message.IpConnectReq;
+import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
+import org.openremote.controller.protocol.knx.ip.message.IpDisconnectReq;
+import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
+import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
 
-public class IpClient implements IpProcessorListener {
+public class IpTunnelClient implements IpProcessorListener {
    private int channelId;
    private int seqCounter;
    private IpMessageListener messageListener;
@@ -21,7 +21,7 @@ public class IpClient implements IpProcessorListener {
    private InetSocketAddress destControlEndpointAddr;
    private InetSocketAddress destDataEndpointAddr;
 
-   public IpClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
+   public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
       this.destControlEndpointAddr = destControlEndpointAddr;
       this.processor = new IpProcessor(srcAddr, this);
       this.destDataEndpointAddr = null;
@@ -35,16 +35,17 @@ public class IpClient implements IpProcessorListener {
       this.messageListener = null;
    }
 
-   public synchronized void send(byte[] message) throws KnxIpException, InterruptedException, IOException {
+   public synchronized void service(byte[] message) throws KnxIpException, InterruptedException, IOException {
       if (this.destDataEndpointAddr == null) this.connect();
 
-      IpMessage resp = this.processor.unicastSyncSend(new IpTunnelingReq(this.channelId, this.seqCounter, message),
+      IpMessage resp = this.processor.service(new IpTunnelingReq(this.channelId, this.seqCounter, message),
             this.destDataEndpointAddr);
 
       // Check response
       if (resp == null) {
          throw new KnxIpException("No response");
       } else {
+         // Handle tunnel ACK, ignore other responses
          if (resp instanceof IpTunnelingAck) {
             IpTunnelingAck cr = (IpTunnelingAck) resp;
             if (cr.getChannelId() == this.channelId) {
@@ -72,7 +73,7 @@ public class IpClient implements IpProcessorListener {
       if (this.destDataEndpointAddr != null) throw new KnxIpException("Already connected");
       this.processor.start();
       Hpai ep = new Hpai(this.processor.getSrcAddr());
-      IpMessage resp = this.processor.unicastSyncSend(new IpConnectReq(ep, ep), this.destControlEndpointAddr);
+      IpMessage resp = this.processor.service(new IpConnectReq(ep, ep), this.destControlEndpointAddr);
 
       // Check response
       if (resp instanceof IpConnectResp) {
@@ -94,7 +95,7 @@ public class IpClient implements IpProcessorListener {
 
    public synchronized void disconnect() throws KnxIpException, InterruptedException, IOException {
       if (this.destDataEndpointAddr == null) throw new KnxIpException("Not connected");
-      IpMessage resp = this.processor.unicastSyncSend(
+      IpMessage resp = this.processor.service(
             new IpDisconnectReq(this.channelId, new Hpai(this.processor.getSrcAddr())), this.destDataEndpointAddr);
 
       // Check response
@@ -125,16 +126,22 @@ public class IpClient implements IpProcessorListener {
          if (req.getChannelId() == this.channelId) {
             int seqCounter = req.getSeqCounter();
             // TODO check seq counter
-            IpMessageListener l = this.messageListener;
-            if (l != null) {
-               l.receive(req.getcEmiFrame());
-            }
+            
+            // Send ACK
             try {
                this.processor.send(new IpTunnelingAck(this.channelId, seqCounter, IpTunnelingAck.OK),
                      this.destDataEndpointAddr);
             } catch (IOException e) {
                // ACK not sent, ignore
             }
+            
+            // Notify listener
+            IpMessageListener l = this.messageListener;
+            if (l != null) {
+               l.receive(req.getcEmiFrame());
+            }
+         } else {
+            // TODO send NACK?
          }
       }
    }
