@@ -23,6 +23,7 @@
 	<classpathentry kind="lib" path="lib/test/jtidy/jtidy-r918.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xml-apis.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/test/dbunit/dbunit-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-util-6.1.22.jar"/>
