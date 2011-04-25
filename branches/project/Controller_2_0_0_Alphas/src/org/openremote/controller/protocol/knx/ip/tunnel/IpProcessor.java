@@ -6,34 +6,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.security.InvalidParameterException;
 
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpConnectAck;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDisconnectAck;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverAck;
+import org.openremote.controller.protocol.knx.ip.tunnel.message.IpConnectResp;
+import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDisconnectResp;
+import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage;
 import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage.Primitive;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingReq;
 import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingAck;
+import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingReq;
 
-public class IpProcessor {
+/**
+ * IP message processor, able to :
+ * <ul>
+ * <li>send requests,</li>
+ * <li>synchronize requests and responses,</li>
+ * <li>handle incoming requests.</li>
+ * </ul>
+ */
+class IpProcessor {
    private DatagramSocket socket;
    private Object syncLock;
    private IpMessage con;
-   private IpListener listener;
+   private IpSocketListener socketListener;
    private InetSocketAddress srcAddr;
-   private InetSocketAddress destControlEndpointAddr;
-   private InetSocketAddress destDataEndpointAddr;
-   private IpDiscoverer discoverer;
-   private IpClientImpl client;
+   private IpProcessorListener listener;
 
-   public class IpListener extends Thread {
+   private class IpSocketListener extends Thread {
       private byte[] buffer;
 
-      public IpListener() {
+      public IpSocketListener() {
          super("IpListener for " + IpProcessor.this.srcAddr);
          this.buffer = new byte[1024];
       }
@@ -53,15 +56,11 @@ public class IpProcessor {
                IpMessage m = IpProcessor.this.create(new ByteArrayInputStream(p.getData()));
 
                // Handle Discovery responses specifically
-               if (m instanceof IpDiscoverAck) {
-                  IpProcessor.this.destControlEndpointAddr = ((IpDiscoverAck) m).getControlEndpoint().getAddress();
-                  IpDiscoverer d = IpProcessor.this.discoverer;
-                  if (d != null) {
-                     d.notifyDiscovery();
-                  }
+               if (m instanceof IpDiscoverResp) {
+                  IpProcessor.this.listener.notifyMessage(m);
                } else {
                   // Handle other messages
-                  if (m.getPrimitive() == Primitive.ACK) {
+                  if (m.getPrimitive() == Primitive.RESP) {
 
                      // Handle ACKs
                      synchronized (IpProcessor.this.syncLock) {
@@ -69,12 +68,7 @@ public class IpProcessor {
                         IpProcessor.this.syncLock.notify();
                      }
                   } else {
-                     // Handle requests
-                     if (m instanceof IpTunnelingReq) {
-                        IpProcessor.this.receive((IpTunnelingReq) m);
-                     } else {
-                        // Ignore others
-                     }
+                     IpProcessor.this.listener.notifyMessage(m);
                   }
                }
             } catch (IOException x) {
@@ -89,100 +83,61 @@ public class IpProcessor {
       }
    }
 
-   private IpProcessor() {
+   IpProcessor(InetAddress srcAddr, IpProcessorListener listener) {
       this.syncLock = new Object();
-   }
-
-   IpProcessor(InetAddress srcAddr) {
-      this();
-      if (!(srcAddr instanceof Inet4Address)) {
-         throw new InvalidParameterException("Only IPV4 addresses are supported");
-      }
+      this.listener = listener;
       this.srcAddr = new InetSocketAddress(srcAddr, 0);
-      this.destControlEndpointAddr = null;
-      this.destDataEndpointAddr = null;
    }
 
-   public IpProcessor(InetSocketAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
-      this();
-      this.srcAddr = srcAddr;
-      this.destControlEndpointAddr = destControlEndpointAddr;
-   }
-
-   public void start() throws KnxIpException, IOException, InterruptedException {
+   void start() throws KnxIpException, IOException, InterruptedException {
       this.socket = new DatagramSocket();
       this.srcAddr = new InetSocketAddress(this.srcAddr.getAddress(), this.socket.getLocalPort());
-      this.listener = new IpListener();
-      synchronized (this.listener) {
-         this.listener.start();
-         this.listener.wait();
+      this.socketListener = new IpSocketListener();
+      synchronized (this.socketListener) {
+         this.socketListener.start();
+         this.socketListener.wait();
       }
    }
 
-   public void stop() throws KnxIpException, InterruptedException, IOException {
+   void stop() throws InterruptedException {
       // Close socket
       this.socket.close();
 
       // Stop IpListener
-      this.listener.interrupt();
-      this.listener.join();
+      this.socketListener.interrupt();
+      this.socketListener.join();
    }
 
-   public InetSocketAddress getSrcAddr() {
+   InetSocketAddress getSrcAddr() {
       return this.srcAddr;
    }
 
-   public InetSocketAddress getDestControlEndpointAddr() {
-      return this.destControlEndpointAddr;
-   }
-
-   public IpMessage unicastSyncSend(IpMessage m) throws InterruptedException, IOException, KnxIpException {
+   synchronized IpMessage unicastSyncSend(IpMessage message, InetSocketAddress destAddr) throws InterruptedException,
+         IOException, KnxIpException {
       IpMessage out = null;
       synchronized (this.syncLock) {
          this.con = null;
-         if (m instanceof IpTunnelingReq) {
-            this.dataEndpointSend(m);
-         } else {
-            this.controlEndpointSend(m);
-         }
+         this.send(message, destAddr);
          long dt = 0;
-         while (out == null && dt < m.getSyncSendTimeout()) {
+         while (out == null && dt < message.getSyncSendTimeout()) {
             long st = System.currentTimeMillis();
-            this.syncLock.wait(m.getSyncSendTimeout() - dt);
+            this.syncLock.wait(message.getSyncSendTimeout() - dt);
             dt += System.currentTimeMillis() - st;
-            if (this.con != null && !(con instanceof IpDiscoverAck)) out = this.con;
+            if (this.con != null && !(con instanceof IpDiscoverResp)) out = this.con;
          }
       }
       return out;
    }
 
-   public void controlEndpointSend(IpMessage m) throws IOException, KnxIpException {
-      if (this.destControlEndpointAddr == null) throw new KnxIpException("No KNX control endpoint configured");
-      this.send(this.socket, m, this.destControlEndpointAddr);
+   void send(IpMessage message, InetSocketAddress destAddr) throws IOException {
+      this.send(message, destAddr, this.socket);
    }
 
-   public void dataEndpointSend(IpMessage m) throws IOException, KnxIpException {
-      if (this.destDataEndpointAddr == null) throw new KnxIpException("No KNX data endpoint configured");
-      this.send(this.socket, m, this.destDataEndpointAddr);
-   }
-
-   void send(DatagramSocket s, IpMessage m, InetSocketAddress address) throws IOException {
+   void send(IpMessage message, InetSocketAddress destAddr, DatagramSocket socket) throws IOException {
       ByteArrayOutputStream os = new ByteArrayOutputStream();
-      m.write(os);
+      message.write(os);
       byte[] b = os.toByteArray();
-      s.send(new DatagramPacket(b, b.length, address));
-   }
-
-   void setDiscoverer(IpDiscoverer discoverer) {
-      this.discoverer = discoverer;
-   }
-
-   void setClient(IpClientImpl client) {
-      this.client = client;
-   }
-   
-   void setDestDataEndpointAddr(InetSocketAddress destDataEndpointAddr) {
-      this.destDataEndpointAddr = destDataEndpointAddr;
+      socket.send(new DatagramPacket(b, b.length, destAddr));
    }
 
    private IpMessage create(InputStream is) throws IOException, KnxIpException {
@@ -199,14 +154,14 @@ public class IpProcessor {
 
       // Instantiate message
       switch (sti) {
-      case IpConnectAck.STI:
-         out = new IpConnectAck(is, l);
+      case IpConnectResp.STI:
+         out = new IpConnectResp(is, l);
          break;
-      case IpDisconnectAck.STI:
-         out = new IpDisconnectAck(is, l);
+      case IpDisconnectResp.STI:
+         out = new IpDisconnectResp(is, l);
          break;
-      case IpDiscoverAck.STI:
-         out = new IpDiscoverAck(is, l);
+      case IpDiscoverResp.STI:
+         out = new IpDiscoverResp(is, l);
          break;
       case IpTunnelingAck.STI:
          out = new IpTunnelingAck(is, l);
@@ -218,14 +173,5 @@ public class IpProcessor {
          throw new KnxIpException("Unexpected message service type");
       }
       return out;
-   }
-
-   private void receive(IpTunnelingReq req) throws KnxIpException, IOException {
-      IpClientImpl client = this.client;
-      IpTunnelingAck ack = null;
-      if (client != null) {
-         ack = client.receive(req);
-      }
-      if (ack != null) this.dataEndpointSend(ack);
    }
 }
