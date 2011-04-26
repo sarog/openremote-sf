@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+
+  <protocol displayName="DSC IT-100" tagName="dscit100">
+
+    <attr name="address" label="IT-100 Address">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+
+    <attr name="command" label="Command Name">
+      <validations>
+        <allowBlank>false</allowBlank>
+      </validations>
+    </attr>
+
+    <attr name="target" label="Command Target (Zone/Partition)">
+      <validations>
+        <allowBlank>false</allowBlank>
+    	<maxLength>3</maxLength>
+        <regex message="Only numbers allowed">[0-9]{1,3}</regex>      
+      </validations>
+    </attr>
+
+    <attr name="code" label="Security Code">
+      <validations>
+        <allowBlank>true</allowBlank>
+      </validations>
+    </attr>
+
+  </protocol>
+</openremote>
+
