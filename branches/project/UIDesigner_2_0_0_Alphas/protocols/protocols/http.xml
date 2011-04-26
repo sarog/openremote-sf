@@ -50,33 +50,33 @@
         </regex>
       </validations>
     </attr>
-     
+    
     <!--
      | Optional username parameter for HTTP URLs that expect HTTP Basic authentication header.
      |
      | (Since R3518)
      +-->
-    <attr name = "username" label = "Username">               
+    <attr name = "username" label = "Username">
       <validations>
-        <allowBlank>true</allowBlank>        
+        <allowBlank>true</allowBlank>
         <maxLength>254</maxLength>
         <regex
             message = "Only needed for URLs that require authentication credentials. Can be left empty otherwise." >.*</regex>
       </validations>
     </attr>
-
+    
     <!--
      | Optional password parameter for HTTP URLs that expect HTTP Basic authentication header.
      |
      | (Since R3518)
      +-->
-    <attr name = "password" label = "Password">            
+    <attr name = "password" label = "Password">
       <validations>
-        <allowBlank>true</allowBlank>      
+        <allowBlank>true</allowBlank>
         <maxLength>254</maxLength>
         <regex
-            message = "Only needed for URLs that require authentication credentials. Can be left empty otherwise.">.*</regex>                    
-      </validations>                   
+            message = "Only needed for URLs that require authentication credentials. Can be left empty otherwise.">.*</regex>
+      </validations>
     </attr>
     
   </protocol>
