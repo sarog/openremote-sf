@@ -30,8 +30,6 @@ import org.openremote.controller.exception.NoSuchCommandException;
  * @see ExecuteCommand
  * @see ReadCommand
  * 
- * @author Greg Rapp
- * 
  */
 public abstract class DSCIT100Command implements Command
 {
@@ -67,7 +65,7 @@ public abstract class DSCIT100Command implements Command
    *          DSCIT100 destination address.
    * 
    * @throws NoSuchCommandException
-   *           if command cannot be created by its lookup name
+   *           If command cannot be created by its lookup name
    * 
    * @return new DSCIT100 command instance
    */
@@ -111,6 +109,8 @@ public abstract class DSCIT100Command implements Command
   // ---------------------------------------------------------------------------------
 
   /**
+   * Constructor 
+   * 
    * @param address
    *          IT100 address
    * @param target
@@ -128,6 +128,14 @@ public abstract class DSCIT100Command implements Command
   // Package-Private Instance Methods
   // -------------------------------------------------------------
 
+  
+  /**
+   * Send a command instance out a DSCIT100Connection
+   * 
+   * @param command An instance of ExecuteCommand
+   * 
+   * @return void
+   */
   protected void write(ExecuteCommand command)
   {
     try
@@ -145,10 +153,8 @@ public abstract class DSCIT100Command implements Command
   /**
    * Read the internal state map of the associated connection.
    * 
-   * TODO : call semantics on return value
-   * 
    * @param command
-   *          DSCIT100 read command
+   *          DSCIT100 ReadCommand instance
    * 
    * @return Returns a State object
    * 

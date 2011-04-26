@@ -62,8 +62,9 @@ public class Packet
    * Parse raw data from host into an instance of Packet
    * 
    * @param raw
-   *          raw data from host
+   *          Raw data from host
    * @throws IOException
+   *           Error parsing raw data
    */
   public Packet(String raw) throws IOException
   {
@@ -116,11 +117,21 @@ public class Packet
         + "]";
   }
 
+  /**
+   * Return the data to be sent to the IT-100
+   * 
+   * @return String Packet data
+   */
   public String toPacket()
   {
     return command + data + checksum + EOP;
   }
 
+  /**
+   * Calculate the packet's checksum
+   * 
+   * @return String Packet checksum
+   */
   private String checksum()
   {
     int i;

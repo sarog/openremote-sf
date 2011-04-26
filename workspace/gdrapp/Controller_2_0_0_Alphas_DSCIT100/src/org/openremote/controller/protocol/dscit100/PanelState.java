@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
- * @author Greg Rapp
+ * Class to store the security panel's current state in memory
  * 
  */
 public class PanelState
@@ -70,6 +70,10 @@ public class PanelState
     READY, NOTREADY, ARMED_AWAY, ARMED_STAY, ARMED_AWAY_NODELAY, ARMED_STAY_NODELAY, ALARM, DISARMED, EXITDELAY, ENTRYDELAY, FAILTOARM, BUSY
   }
 
+  /**
+   * A security system label (i.e. Back Door, Basement Motion Detector)
+   * 
+   */
   public class Label implements State
   {
     private String label;
@@ -85,6 +89,10 @@ public class PanelState
     }
   }
 
+  /**
+   * <code>Map</code> containing Maps of State objects. Outside key is the state
+   * type, inside key is state target (zone number, partition number)
+   */
   private Map<StateType, Map<String, State>> internalState;
 
   // Constructors
@@ -98,23 +106,36 @@ public class PanelState
   // Private Instance Methods
   // -------------------------------------------------------------
 
-  private void updateInternalState(StateType type, String item, State state)
+  /**
+   * Update the internal <code>State</code <code>Map</code>
+   * 
+   * @param type
+   *          State type
+   * @param target
+   *          Zone or partition to which this <code>State</code> applies
+   * @param state
+   *          Target state
+   */
+  private void updateInternalState(StateType type, String target, State state)
   {
     Map<String, State> tmp;
 
     if (internalState.containsKey(type) && internalState.get(type) != null)
     {
       tmp = internalState.get(type);
-      tmp.put(item, state);
+      tmp.put(target, state);
     }
     else
     {
       tmp = new HashMap<String, State>();
-      tmp.put(item, state);
+      tmp.put(target, state);
     }
     internalState.put(type, tmp);
   }
 
+  /**
+   * Remote leading zeros from passed in String
+   */
   private String trimLeadingZeros(String str)
   {
     return str.replaceFirst("^0+(?!$)", "");
@@ -123,6 +144,12 @@ public class PanelState
   // Public Instance Methods
   // -------------------------------------------------------------
 
+  /**
+   * Called by a connection listener to process incoming data
+   * 
+   * @param packet
+   *          Incoming <code>Packet</code>
+   */
   public synchronized void processPacket(Packet packet)
   {
     if (packet.getCommand().equals("570"))
@@ -264,7 +291,7 @@ public class PanelState
 
     if (members == null || (!members.containsKey(stateDefinition.getTarget())))
     {
-      log.warn("Cannot find state item information for " + stateDefinition);
+      log.warn("Cannot find state information for " + stateDefinition);
       return null;
     }
 

@@ -26,10 +26,6 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 
-/**
- * @author Greg Rapp
- * 
- */
 public class ReadCommand extends DSCIT100Command implements StatusCommand
 {
 
@@ -169,8 +165,22 @@ public class ReadCommand extends DSCIT100Command implements StatusCommand
   // Nested Classes
   // -------------------------------------------------------------------------------
 
+  /**
+   * Simple helper class to lookup user configured command names and match them
+   * to Java instances.
+   */
   private static class Lookup
   {
+    /**
+     * Lookup from user defined command strings in the designer (from which they
+     * end up into controller.xml) to type safe StateDefinitions.
+     * 
+     * @param name
+     *          Command name
+     * @param target
+     *          Command target
+     * @return StateDefinition
+     */
     private static StateDefinition get(String name, String target)
     {
       if (name.equals("PARTITION_STATE"))
