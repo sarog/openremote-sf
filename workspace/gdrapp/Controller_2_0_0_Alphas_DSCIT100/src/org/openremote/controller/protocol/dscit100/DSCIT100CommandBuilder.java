@@ -28,10 +28,6 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 
-/**
- * @author Greg Rapp
- * 
- */
 public class DSCIT100CommandBuilder implements CommandBuilder
 {
 
@@ -128,7 +124,7 @@ public class DSCIT100CommandBuilder implements CommandBuilder
   // --------------------------------------------------------------------------------
 
   /**
-   * Logging. Use common DSCIT100 log category for all KNX related classes.
+   * Logging. Use common DSCIT100 log category for all DSCIT100 related classes.
    */
   private static Logger log = Logger.getLogger(DSCIT100_LOG_CATEGORY);
 
@@ -165,7 +161,7 @@ public class DSCIT100CommandBuilder implements CommandBuilder
    * 
    * Additional properties not listed here are ignored.
    * 
-   * @see ExecuteCommand
+   * @see DSCIT100Command
    * 
    * @throws NoSuchCommandException
    *           if the DSCIT100 command instance cannot be constructed from the

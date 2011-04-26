@@ -38,10 +38,6 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.dscit100.Packet.PacketCallback;
 import org.openremote.controller.protocol.dscit100.PanelState.State;
 
-/**
- * @author Greg Rapp
- * 
- */
 public class DSCIT100ConnectionManager
 {
 
@@ -67,6 +63,10 @@ public class DSCIT100ConnectionManager
   // Instance Fields
   // ------------------------------------------------------------------------------
 
+  /**
+   * Map containing all DSCIT100Connection objects using the connection address
+   * as the key
+   */
   public Map<String, DSCIT100Connection> connections;
 
   // Constructors
@@ -92,6 +92,9 @@ public class DSCIT100ConnectionManager
         && connections.get(address).isConnected())
       return connections.get(address);
 
+    // TODO: Parse the address to determine if it's an IP or a
+    // serial port and call the buildXXX method accordingly
+
     // Couldn't find an exiting connection, so try to build one
     buildIPConnection(address);
 
@@ -106,6 +109,21 @@ public class DSCIT100ConnectionManager
   // Private Instance Methods
   // ---------------------------------------------------------------------
 
+  /**
+   * Build an IP connection to a DSC IT-100 and adds a connection object to the
+   * connections <code>Map</code>
+   * 
+   * @param address
+   *          IT-100 IP address and TCP port (x.x.x.x:xxxx)
+   * @throws NumberFormatException
+   *           Address or port cannot be parsed
+   * @throws UnknownHostException
+   *           Host is not found
+   * @throws SocketTimeoutException
+   *           Timeout connecting to host
+   * @throws IOException
+   *           General socket I/O error
+   */
   private synchronized void buildIPConnection(String address) throws Exception
   {
     String[] arrAddress = address.split(":", 2);
@@ -203,6 +221,10 @@ public class DSCIT100ConnectionManager
   // Inner Classes
   // --------------------------------------------------------------------------------
 
+  /**
+   * Implements a DSCIT100Connection over IP
+   *
+   */
   private class IpConnection implements DSCIT100Connection
   {
 
@@ -212,7 +234,7 @@ public class DSCIT100ConnectionManager
     protected PacketCallback packetCallback;
 
     /**
-     * @param socket
+     * @param socket An IP socket
      */
     public IpConnection(Socket socket)
     {
@@ -307,6 +329,10 @@ public class DSCIT100ConnectionManager
       }
     }
 
+    /**
+     * A listener <code>Thread</code> for an <code>IpConnection</code>
+     *
+     */
     private class IpListener implements Runnable
     {
       private Thread thread;
@@ -402,8 +428,6 @@ public class DSCIT100ConnectionManager
           if (connection != null)
           {
             String connectionName = connection.getAddress();
-
-            // format the message...
 
             StringBuilder builder = new StringBuilder(256)
                 .append("Closing connection (name = ").append(connectionName)

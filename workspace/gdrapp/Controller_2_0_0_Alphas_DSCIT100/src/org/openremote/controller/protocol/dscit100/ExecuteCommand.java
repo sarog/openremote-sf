@@ -49,7 +49,7 @@ public class ExecuteCommand extends DSCIT100Command implements
    *          in configuration and tools. Note that multiple lookup names can be
    *          used to return Java equal() (but not same instance) commands.
    * @param address
-   *          DSCIT100 destination address.
+   *          DSCIT100 address.
    * @param code
    *          Security code.
    * @param target

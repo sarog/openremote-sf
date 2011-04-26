@@ -20,10 +20,6 @@
  */
 package org.openremote.controller.protocol.dscit100;
 
-/**
- * @author Greg Rapp
- * 
- */
 public interface DSCIT100Connection
 {
 

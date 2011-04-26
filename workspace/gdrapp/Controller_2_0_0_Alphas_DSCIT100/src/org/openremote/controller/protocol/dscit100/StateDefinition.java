@@ -21,7 +21,7 @@
 package org.openremote.controller.protocol.dscit100;
 
 /**
- * @author Greg Rapp
+ * Defines a state to read from a <code>PanelState</code> instance
  * 
  */
 public class StateDefinition
@@ -29,6 +29,12 @@ public class StateDefinition
   private PanelState.StateType type;
   private String target;
 
+  /**
+   * @param type
+   *          State type
+   * @param target
+   *          State target (zone number, partition number)
+   */
   public StateDefinition(PanelState.StateType type, String target)
   {
     this.type = type;
