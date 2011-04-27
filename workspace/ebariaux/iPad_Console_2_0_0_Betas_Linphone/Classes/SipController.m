@@ -188,8 +188,36 @@ extern void libmsamr_init();
 	
 }
 
++ (BOOL)isMuted {
+    @try {
+        return linphone_core_is_mic_muted([SipController getLc]);
+    } @catch(NSException* e) {
+		//not ready yet
+		return NO;
+	}
+}
+
++ (void)muteOn:(NSMutableDictionary *)context
+{
+    linphone_core_mute_mic([SipController getLc], true);
+}
+
++ (void)muteOff:(NSMutableDictionary *)context
+{
+	linphone_core_mute_mic([SipController getLc], false);
+}
+
++ (void)muteToggle:(NSMutableDictionary *)context
+{
+    [self isMuted]?[self muteOff:context]:[self muteOn:context];
+}
+
 + (NSString *)getRingSensorValue:(NSMutableDictionary *)context {
 	return ([@"Incoming" isEqualToString:[context valueForKey:@"SIP_CallStatus"]])?@"Ring":@"";
+}
+
++ (NSString *)getMuteSensorValue:(NSMutableDictionary *)context {
+    return [self isMuted]?@"On":@"Off";
 }
 
 + (void)answerCall:(NSMutableDictionary *)context {
