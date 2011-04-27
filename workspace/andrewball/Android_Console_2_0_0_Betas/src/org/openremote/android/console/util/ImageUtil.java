@@ -20,6 +20,8 @@
 package org.openremote.android.console.util;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -54,14 +56,15 @@ public class ImageUtil {
    }
    
    public static BitmapDrawable createClipedDrawableFromPath(String pathName, int width, int height) {
-      Drawable d = createFromPathQuietly(pathName);
-      if (d != null) {
-         BitmapDrawable bd = (BitmapDrawable)d;
-         bd.setBounds(0, 0, width, height);
-         bd.setGravity(Gravity.LEFT|Gravity.TOP);
-         return bd;
-      }
-      return null;
+     BitmapDrawable croppedBitmap = null;
+     try {
+       Bitmap decodedBitmap = BitmapFactory.decodeFile(pathName);
+       croppedBitmap = new BitmapDrawable(decodedBitmap);
+       croppedBitmap.setBounds(0, 0, width, height);
+     } catch (OutOfMemoryError e) {
+       Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
+     }
+     return croppedBitmap;
    }
    /**
     * Calls native Activity.setContentView(int layoutResID), but catch OutOfMemoryError and do nothing.
