@@ -239,7 +239,7 @@ public class ExecuteCommand extends DSCIT100Command implements
       {
         return new Packet("060", "2");
       }
-      else if (name.equals("PANIC_POLICE"))
+      else if (name.equals("PANIC"))
       {
         return new Packet("060", "3");
       }
