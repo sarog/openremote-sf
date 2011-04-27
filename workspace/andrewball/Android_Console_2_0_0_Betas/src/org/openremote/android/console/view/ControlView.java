@@ -45,10 +45,9 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
 
    /** The repeat send command timer. */
    private Timer timer;
-   private Context context;
+
    protected ControlView(Context context) {
       super(context);
-      this.context = context;
    }
 
    public static ControlView buildWithControl(Context context, Component control) {

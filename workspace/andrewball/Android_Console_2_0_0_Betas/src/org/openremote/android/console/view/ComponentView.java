@@ -32,10 +32,12 @@ import android.widget.LinearLayout;
  */
 public class ComponentView extends LinearLayout {
 
+   protected Context context;
    private Component component;
    
    protected ComponentView(Context context) {
       super(context);
+      this.context = context;
    }
    
    /**

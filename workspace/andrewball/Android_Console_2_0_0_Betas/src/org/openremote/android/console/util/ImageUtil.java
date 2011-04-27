@@ -20,10 +20,10 @@
 package org.openremote.android.console.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.InflateException;
@@ -45,22 +45,23 @@ public class ImageUtil {
     *           path name
     * @return Drawable instance
     */
-   public static Drawable createFromPathQuietly(String pathName) {
-      Drawable d = null;
+   public static BitmapDrawable createFromPathQuietly(Context ctx, String pathName) {
+      BitmapDrawable ret = null;
       try {
-         d = Drawable.createFromPath(pathName);
+         Bitmap decodedBitmap = BitmapFactory.decodeFile(pathName);
+         ret = new BitmapDrawable(ctx.getResources(), decodedBitmap);
       } catch (OutOfMemoryError e) {
          Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
       }
-      return d;
+      return ret;
    }
    
-   public static BitmapDrawable createClipedDrawableFromPath(String pathName, int width, int height) {
+   public static BitmapDrawable createClipedDrawableFromPath(Context ctx, String pathName, int width, int height) {
      BitmapDrawable croppedBitmap = null;
      try {
-       Bitmap decodedBitmap = BitmapFactory.decodeFile(pathName);
-       croppedBitmap = new BitmapDrawable(decodedBitmap);
+       croppedBitmap = createFromPathQuietly(ctx, pathName);
        croppedBitmap.setBounds(0, 0, width, height);
+       croppedBitmap.setGravity(Gravity.LEFT|Gravity.TOP);
      } catch (OutOfMemoryError e) {
        Log.e("OpenRemote-OutOfMemoryError", pathName + ": bitmap size exceeds VM budget");
      }

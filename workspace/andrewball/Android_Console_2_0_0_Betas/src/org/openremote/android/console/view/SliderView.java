@@ -115,11 +115,11 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
       Drawable minTrackDrawable = null;
       boolean clipImage = false;
       if (slider.getMaxTrackImage() != null) {
-         maxTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         maxTrackDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMaxTrackImage().getSrc());
       }
       if (slider.getMinTrackImage() != null) {
-         minTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         minTrackDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMinTrackImage().getSrc());
       }
       if (maxTrackDrawable != null || minTrackDrawable != null) {
@@ -175,13 +175,13 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
       // slider.getFrameHeight() means the height of vertical seekbar no minValueImage and maxValueImage
       verticalSeekBar.setLayoutParams(new TableRow.LayoutParams(SEEK_BAR_MIN_WIDTH, slider.getFrameHeight()));
       if (slider.getThumbImage() != null) {
-         Drawable thumbDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         Drawable thumbDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getThumbImage().getSrc());
          verticalSeekBar.setThumb(thumbDrawable);
       }
       
       if (slider.getMinImage() != null) {
-         Drawable minValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         Drawable minValueDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMinImage().getSrc());
          ImageView minValueImageView = (ImageView) seekBarRootView.findViewById(R.id.vertical_seekbar_minvalue_image);
          minValueImageView.setImageDrawable(minValueDrawable);
@@ -197,7 +197,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
       }
 
       if (slider.getMaxImage() != null) {
-         Drawable maxValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         Drawable maxValueDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMaxImage().getSrc());
          
          ImageView maxValueImageView = (ImageView) seekBarRootView.findViewById(R.id.vertical_seekbar_maxvalue_image);
@@ -232,11 +232,11 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
       Drawable maxTrackDrawable = null;
       Drawable minTrackDrawable = null;
       if (slider.getMaxTrackImage() != null) {
-         maxTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         maxTrackDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMaxTrackImage().getSrc());
       }
       if (slider.getMinTrackImage() != null) {
-         minTrackDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         minTrackDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMinTrackImage().getSrc());
       }
       if (maxTrackDrawable != null || minTrackDrawable != null) {
@@ -289,13 +289,13 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
 
       horizontalSeekBar.setLayoutParams(new TableRow.LayoutParams(slider.getFrameWidth(), SEEK_BAR_MIN_HEIGHT));
       if (slider.getThumbImage() != null) {
-         Drawable thumbDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         Drawable thumbDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getThumbImage().getSrc());
          horizontalSeekBar.setThumb(thumbDrawable);
       }
       
       if (slider.getMinImage() != null) {
-         Drawable minValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         Drawable minValueDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMinImage().getSrc());
          
          ImageView minValueImageView = (ImageView) seekBarRootView.findViewById(R.id.horizontal_seekbar_minvalue_image);
@@ -308,7 +308,7 @@ public class SliderView extends SensoryControlView implements ORSeekBar.OnSeekBa
       }
 
       if (slider.getMaxImage() != null) {
-         Drawable maxValueDrawable = ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+         Drawable maxValueDrawable = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH
                + slider.getMaxImage().getSrc());
          
          ImageView maxValueImageView = (ImageView) seekBarRootView.findViewById(R.id.horizontal_seekbar_maxvalue_image);
