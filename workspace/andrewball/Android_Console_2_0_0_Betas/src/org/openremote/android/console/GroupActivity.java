@@ -457,7 +457,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          for (int i = 0; i < itemSize; i++) {
             MenuItem menuItem = menu.add(0, i, i, items.get(i).getName());
             if (items.get(i).getImage() != null) {
-               menuItem.setIcon(ImageUtil.createFromPathQuietly(Constants.FILE_FOLDER_PATH
+               menuItem.setIcon(ImageUtil.createFromPathQuietly(this, Constants.FILE_FOLDER_PATH
                      + items.get(i).getImage().getSrc()));
             }
             final Navigate navigate = items.get(i).getNavigate();

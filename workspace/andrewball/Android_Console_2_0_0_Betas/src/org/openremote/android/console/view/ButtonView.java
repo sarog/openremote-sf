@@ -69,13 +69,13 @@ public class ButtonView extends ControlView {
       uiButton.setTextSize(Constants.DEFAULT_FONT_SIZE);
       uiButton.setLayoutParams(new FrameLayout.LayoutParams(width, height));
       if (button.getDefaultImage() != null) {
-         defaultImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc(), width, height);
+         defaultImage = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH + button.getDefaultImage().getSrc(), width, height);
          if (defaultImage != null) {
             uiButton.setBackgroundDrawable(defaultImage);
          }
       }
       if (button.getPressedImage() != null) {
-         pressedImage = ImageUtil.createClipedDrawableFromPath(Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc(), width, height);
+         pressedImage = ImageUtil.createClipedDrawableFromPath(context, Constants.FILE_FOLDER_PATH + button.getPressedImage().getSrc(), width, height);
       }
       View.OnTouchListener touchListener = new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
