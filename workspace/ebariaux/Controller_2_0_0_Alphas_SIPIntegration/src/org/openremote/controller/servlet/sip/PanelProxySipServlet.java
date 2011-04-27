@@ -21,7 +21,6 @@ package org.openremote.controller.servlet.sip;
 */
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +65,7 @@ public class PanelProxySipServlet extends SipServlet {
       }
       SipFactory sipFactory = (SipFactory)getServletContext().getAttribute(SIP_FACTORY);
       List<URI> contactAddresses  = new ArrayList<URI>();
+      @SuppressWarnings("unchecked")
       Set<String> addresses = (Set<String>) getServletContext().getAttribute("panelUsersMap");
       if (logger.isInfoEnabled()) {
         logger.info("Registered panel addresses : " + addresses);
@@ -90,6 +90,7 @@ public class PanelProxySipServlet extends SipServlet {
       }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void doRegister(SipServletRequest req) throws ServletException,
         IOException {
@@ -104,7 +105,8 @@ public class PanelProxySipServlet extends SipServlet {
         sipServletResponse.send();
       } else {
         logger.info("User " + ((SipURI)req.getFrom().getURI()).getUser());
-        if ("siphon".equals(((SipURI)req.getFrom().getURI()).getUser())) {
+        logger.info("Host " + ((SipURI)req.getFrom().getURI()).getHost());
+        if ("panel".equals(((SipURI)req.getFrom().getURI()).getUser())) {
           isPanelUser = true;
         }
       }
