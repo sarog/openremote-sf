@@ -93,6 +93,8 @@ extern NSString *const METHOD;
 extern NSString *const REFRESH_RATE;
 extern NSString *const FREQUENCY;
 
+extern NSString *const COLORPICKER;
+
 extern NSString *const COMMAND;
 extern NSString *const TASK;
 

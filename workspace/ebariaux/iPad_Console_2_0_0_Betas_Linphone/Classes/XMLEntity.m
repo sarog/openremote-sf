@@ -98,6 +98,8 @@ NSString *const NAVIGATE = @"navigate";
 
 NSString *const LOCALLOGIC = @"locallogic";
 
+NSString *const COLORPICKER = @"colorpicker";
+
 NSString *const CLASS = @"class";
 NSString *const METHOD = @"method";
 NSString *const REFRESH_RATE = @"refreshRate";
