@@ -35,7 +35,9 @@
 	} else if ([component isKindOfClass:[Switch class]]) {
 		sensorId = ((Switch *)component).sensor.sensorId;
 	}
-    // TODO - EBR: what about other types of sensors (labels and images), could test for SensorComponent class and cast to that
+    // EBR: what about other types of sensors (labels and images), could test for SensorComponent class and cast to that
+    // EBR: Labels and images are taken care of in SensoryView class
+    // TODO : anyway, avoid isKindOfClass: and implement correctly in each subclass
 	if (sensorId > 0 ) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 	}

@@ -43,7 +43,7 @@
 	}
 	newComponent = [newComponent initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
 
-	// Cache lables
+	// Cache labels
 	if ([newComponent isKindOfClass:[Label class]]) {
 		[[Definition sharedDefinition] addLabel:[(Label *)newComponent retain]];
 	}
