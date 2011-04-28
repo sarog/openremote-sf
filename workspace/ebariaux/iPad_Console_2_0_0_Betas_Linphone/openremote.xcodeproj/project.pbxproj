@@ -81,6 +81,12 @@
 		60A85C96131F972000C7918A /* ORWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C95131F972000C7918A /* ORWebView.m */; };
 		60C2F958135F3748000824A5 /* ScreenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C2F957135F3748000824A5 /* ScreenTest.m */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
+		60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
+		60E7A8EA13696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
+		60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
+		60E7A8EC13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
+		60E7A8ED13696C8B00EA107A /* ColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E813696C8B00EA107A /* ColorPickerView.m */; };
+		60E7A8EE13696C8B00EA107A /* ColorPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E813696C8B00EA107A /* ColorPickerView.m */; };
 		60EB56A2135C4E4100B29CED /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		60EB56A3135C4E4100B29CED /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
 		60EB56A4135C4E4100B29CED /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
@@ -698,6 +704,12 @@
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
 		60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_screenIdForOrientation.xml; sourceTree = "<group>"; };
+		60E7A8E313696C8B00EA107A /* ColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPicker.h; sourceTree = "<group>"; };
+		60E7A8E413696C8B00EA107A /* ColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPicker.m; sourceTree = "<group>"; };
+		60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerImageView.h; sourceTree = "<group>"; };
+		60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPickerImageView.m; sourceTree = "<group>"; };
+		60E7A8E713696C8B00EA107A /* ColorPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerView.h; sourceTree = "<group>"; };
+		60E7A8E813696C8B00EA107A /* ColorPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPickerView.m; sourceTree = "<group>"; };
 		60EB573A135C4E4100B29CED /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		799CC3CC0F4D4EEA006195BD /* URLConnectionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLConnectionHelper.h; sourceTree = "<group>"; };
 		799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = URLConnectionHelper.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1615,6 +1627,8 @@
 				8CECF85310EB6E3200C0E1BB /* Background.m */,
 				8CECF85410EB6E3200C0E1BB /* Button.h */,
 				8CECF85510EB6E3200C0E1BB /* Button.m */,
+				60E7A8E313696C8B00EA107A /* ColorPicker.h */,
+				60E7A8E413696C8B00EA107A /* ColorPicker.m */,
 				8CECF85610EB6E3200C0E1BB /* Component.h */,
 				8CECF85710EB6E3200C0E1BB /* Component.m */,
 				8CECF85810EB6E3200C0E1BB /* Control.h */,
@@ -1688,6 +1702,10 @@
 				8C460E8A1095563A00C7A686 /* AbsoluteLayoutContainerView.m */,
 				8C460E8B1095563A00C7A686 /* ButtonView.h */,
 				8C460E8C1095563A00C7A686 /* ButtonView.m */,
+				60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */,
+				60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */,
+				60E7A8E713696C8B00EA107A /* ColorPickerView.h */,
+				60E7A8E813696C8B00EA107A /* ColorPickerView.m */,
 				8C460E8F1095563A00C7A686 /* GridLayoutContainerView.h */,
 				8C460E901095563A00C7A686 /* GridLayoutContainerView.m */,
 				8C460E911095563A00C7A686 /* LayoutContainerView.h */,
@@ -2063,6 +2081,9 @@
 				608FBDDB132120DD00C9089F /* LocalTask.m in Sources */,
 				60A6195B1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */,
 				60A61A811355F85700A7C87E /* TimeManager.m in Sources */,
+				60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */,
+				60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */,
+				60E7A8ED13696C8B00EA107A /* ColorPickerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2161,6 +2182,9 @@
 				60EB5717135C4E4100B29CED /* LocalTask.m in Sources */,
 				60EB5718135C4E4100B29CED /* NSString+ORAdditions.m in Sources */,
 				60EB5719135C4E4100B29CED /* TimeManager.m in Sources */,
+				60E7A8EA13696C8B00EA107A /* ColorPicker.m in Sources */,
+				60E7A8EC13696C8B00EA107A /* ColorPickerImageView.m in Sources */,
+				60E7A8EE13696C8B00EA107A /* ColorPickerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
