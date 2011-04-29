@@ -657,8 +657,8 @@ public class ScalingTest
     assertTrue(cemi [1] == 0x00);
 
     assertTrue(
-        "Expecting control1 bits 0x86, got " + Strings.byteToUnsignedHexString(cemi[2]),
-        cemi [2] == (byte)(0x86 & 0xFF)
+        "Expecting control1 bits 0x84, got " + Strings.byteToUnsignedHexString(cemi[2]),
+        cemi [2] == (byte)(0x84 & 0xFF)
     );
 
     assertTrue(cemi [3] == (byte)(0xE0 & 0xFF));
