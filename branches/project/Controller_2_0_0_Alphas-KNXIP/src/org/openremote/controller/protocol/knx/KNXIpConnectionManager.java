@@ -11,7 +11,6 @@ import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -62,13 +61,15 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    // Instance Fields ------------------------------------------------------------------------------
 
    private KNXConnectionImpl connection;
-   private Map<IpDiscoverer, InetSocketAddress> discoverers;
+   private Set<IpDiscoverer> discoverers;
+   private Object connectionLock;
 
    // Constructors ---------------------------------------------------------------------------------
 
    public KNXIpConnectionManager() {
       this.connection = null;
-      this.discoverers = new HashMap<IpDiscoverer, InetSocketAddress>();
+      this.connectionLock = new Object();
+      this.discoverers = new HashSet<IpDiscoverer>();
    }
 
    public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) throws KnxIpException,
@@ -81,17 +82,12 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
    @Override
    public void notifyDiscovery(IpDiscoverer discoverer, InetSocketAddress destControlEndpointAddr) {
-      synchronized (this.discoverers) {
-         // If candidate discoverer has not been stopped already
-         if (this.discoverers.get(discoverer) != null) {
-            this.discoverers.put(discoverer, destControlEndpointAddr);
-            this.discoverers.notify();
-
-            // The first interface found we be used for the connection
-            if (this.connection == null) {
-               this.connection = new KNXConnectionImpl(new IpTunnelClient(discoverer.getSrcAddr(),
-                     destControlEndpointAddr));
-            }
+      synchronized (this.connectionLock) {
+         // The first interface found we be used for the connection
+         if (this.connection == null) {
+            this.connection = new KNXConnectionImpl(
+                  new IpTunnelClient(discoverer.getSrcAddr(), destControlEndpointAddr));
+            this.connectionLock.notify();
          }
       }
    }
@@ -117,7 +113,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
             IpDiscoverer discoverer = new IpDiscoverer(inet, this);
 
             try {
-               this.discoverers.put(discoverer, null);
+               this.discoverers.add(discoverer);
                discoverer.start();
             } catch (Exception e) {
                log.info("Failed to get network interface for address '" + inet + "'. Skipping...");
@@ -128,14 +124,21 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
    protected void stop() throws InterruptedException {
       this.stopDiscovery();
-      if (this.connection != null) {
-         this.connection.stop();
-         this.connection = null;
+
+      KNXConnectionImpl c = null;
+      synchronized (this.connectionLock) {
+         if (this.connection != null) {
+            c = this.connection;
+            this.connection = null;
+         }
+      }
+      if (c != null) {
+         c.stop();
       }
    }
-
+   
    /**
-    * TODO
+    * TODO 
     * 
     * @return
     * 
@@ -158,9 +161,9 @@ public class KNXIpConnectionManager implements DiscoveryListener {
       if (this.connection != null) return this.connection;
 
       // Wait for a connection
-      synchronized (this.discoverers) {
+      synchronized (this.connectionLock) {
          try {
-            this.discoverers.wait(CONNECT_TIMEOUT);
+            this.connectionLock.wait(CONNECT_TIMEOUT);
             if (this.connection != null) return this.connection;
          } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -409,12 +412,10 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    }
 
    private void stopDiscovery() throws InterruptedException {
-      for (Iterator<IpDiscoverer> i = this.discoverers.keySet().iterator(); i.hasNext();) {
+      for (Iterator<IpDiscoverer> i = this.discoverers.iterator(); i.hasNext();) {
          ((IpDiscoverer) i.next()).stop();
       }
-      synchronized (this.discoverers) {
-         this.discoverers.clear();
-      }
+      this.discoverers.clear();
    }
 
    // Inner Classes --------------------------------------------------------------------------------
@@ -466,7 +467,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
          return response.resolve(dpt);
       }
 
-      // Implements IpMessageListener -----------------------------------------------------------------
+      // Implements IpTunnelClientListener -----------------------------------------------------------------
 
       @Override
       public void receive(byte[] cEmiFrame) {
@@ -536,22 +537,22 @@ public class KNXIpConnectionManager implements DiscoveryListener {
             // TODO
          }
       }
-
+      
       // Private Instance Methods ---------------------------------------------------------------------
 
       private void stop() {
          try {
             this.client.disconnect();
          } catch (KnxIpException e) {
-            log.error(e.getMessage());
+            log.error("Disconnect failed", e);
          } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
          } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("Disconnect failed", e);
          }
       }
 
-      private synchronized byte[] service(KNXCommand command) {
+      private synchronized byte[] service(KNXCommand command) { 
          Byte[] f = command.getCEMIFrame();
          byte[] m = new byte[f.length];
          for (int i = 0; i < f.length; ++i) {
@@ -567,11 +568,13 @@ public class KNXIpConnectionManager implements DiscoveryListener {
             }
          } catch (KnxIpException e) {
             log.error(e.getMessage());
+            // TODO reconnect
          } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             // Ignore
+            Thread.currentThread().interrupt();
          } catch (IOException e) {
             log.error(e.getMessage());
+            // TODO reconnect
          }
          return null;
       }
