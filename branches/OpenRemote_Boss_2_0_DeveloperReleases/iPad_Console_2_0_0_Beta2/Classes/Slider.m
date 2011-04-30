@@ -45,7 +45,10 @@
 		Image *tempImg = [[Image alloc] init];
 		tempImg.src = [[attributeDict objectForKey:THUMB_IMAGE] copy];
 		thumbImage = tempImg;
-		xmlParserParentDelegate = [parent retain];		
+		// Set default values for bounds, in case they're not provided in panel.xml
+		minValue = 0.0;
+		maxValue = 100.0;
+		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
 	return self;

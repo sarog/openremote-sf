@@ -30,7 +30,7 @@
 #import "ControllerException.h"
 #import "URLConnectionHelper.h"
 
-#define TIMEOUT_INTERVAL 2
+#define TIMEOUT_INTERVAL 5
 
 @implementation CheckNetwork
 +(void)checkWhetherNetworkAvailable {
