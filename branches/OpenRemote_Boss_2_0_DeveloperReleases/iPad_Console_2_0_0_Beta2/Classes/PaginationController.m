@@ -159,6 +159,9 @@
 - (void)saveLastScreen {
 	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
+		if (lastScreenId == 0) {
+			return;
+		}
 		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 		[userDefaults setObject:[NSString stringWithFormat:@"%d",lastScreenId] forKey:@"lastScreenId"];
 	}
