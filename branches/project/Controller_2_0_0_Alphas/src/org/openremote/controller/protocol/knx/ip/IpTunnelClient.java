@@ -71,7 +71,7 @@ public class IpTunnelClient implements IpProcessorListener {
          }
       }
 
-      this.seqCounter++;
+      this.seqCounter = (this.seqCounter + 1 & 0xFF);
    }
 
    public synchronized void connect() throws KnxIpException, InterruptedException, IOException {
