@@ -28,6 +28,11 @@ import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
 
+/**
+ * Command sent from the console that should result in action to the Lutron processor (through the gateway).
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ */
 public class LutronHomeWorksCommand implements Command {
 
 	// Class Members --------------------------------------------------------------------------------
@@ -37,6 +42,7 @@ public class LutronHomeWorksCommand implements Command {
 	 */
 	private final static Logger log = Logger.getLogger(LutronHomeWorksCommandBuilder.LUTRON_LOG_CATEGORY);
 
+	// Keep a list of all the command strings we receive from OR Console and the associated command class to handle that command
 	private static HashMap<String, Class<? extends LutronHomeWorksCommand>> commandClasses = new HashMap<String, Class<? extends LutronHomeWorksCommand>>();
 
 	static {
@@ -51,37 +57,33 @@ public class LutronHomeWorksCommand implements Command {
 		commandClasses.put("RELEASE", KeypadCommand.class);
 		commandClasses.put("HOLD", KeypadCommand.class);
 		commandClasses.put("DOUBLE_TAP", KeypadCommand.class);
-		commandClasses.put("STATUS_KEYPADLED", null);
+		commandClasses.put("STATUS_KEYPADLED", KeypadCommand.class);
 	}
 
 	/**
 	 * Factory method for creating Lutron HomeWorks command instances based on a
 	 * human-readable configuration strings.
-	 * <p>
-	 * 
 	 * 
 	 * @return new Lutron HomeWorks command instance
 	 */
 	static LutronHomeWorksCommand createCommand(String name, LutronHomeWorksGateway gateway, LutronHomeWorksAddress address, Integer scene, Integer key, Integer level) {
+    log.debug("Received request to build command with name " + name);
+    
 		name = name.trim().toUpperCase();
-
-		System.out.println("in command builder");
-
 		Class<? extends LutronHomeWorksCommand> commandClass = commandClasses.get(name);
 
-		System.out.println("Command class for command " + name + " is " + commandClass);
+		log.debug("This command maps to the command class " + commandClass);
 
 		if (commandClass == null) {
 			throw new NoSuchCommandException("Unknown command '" + name + "'.");
 		}
 		LutronHomeWorksCommand cmd = null;
 		try {
-			System.out.println("Trying to get method");
 			Method method = commandClass.getMethod("createCommand", String.class, LutronHomeWorksGateway.class, LutronHomeWorksAddress.class, Integer.class, Integer.class, Integer.class);
-
-			System.out.println("Have creation method, will call it");
+			log.debug("Got the creation method " + method + ", will call it");
+			
 			cmd = (LutronHomeWorksCommand) method.invoke(null, name, gateway, address, scene, key, level);
-			System.out.println("Creation method returned " + cmd);
+			log.debug("Creation successfull, got command " + cmd);
 		} catch (SecurityException e) {
 			// TODO: should this be logged, check other source code
 			throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
@@ -95,8 +97,13 @@ public class LutronHomeWorksCommand implements Command {
 			// TODO: should this be logged, check other source code
 			throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
 		} catch (InvocationTargetException e) {
-			// TODO: should this be logged, check other source code
-			throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+		  if (e.getCause() instanceof NoSuchCommandException) {		  
+  		  // This means method threw an exception, re-throw it as is
+  		  throw (NoSuchCommandException)e.getCause();
+		  } else {
+		    throw new NoSuchCommandException("Impossible to create command '" + name + "'.");
+		  }
+      // TODO: should this be logged, check other source code
 		}
 		return cmd;
 	}
@@ -108,6 +115,9 @@ public class LutronHomeWorksCommand implements Command {
 	 */
 	protected LutronHomeWorksGateway gateway;
 
+	/**
+	 * Name of the command
+	 */
 	protected String name;
 	
 	// Constructors ---------------------------------------------------------------------------------
