@@ -618,6 +618,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
             apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
          }
+         log.info("@" + address + " = " + apdu);
          internalState.put(address, apdu);
       }
    }
