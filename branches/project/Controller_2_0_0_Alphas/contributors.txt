@@ -10,6 +10,7 @@ Eric Bariaux
 Paul Gardiner
 Fekete Kamosh
 Jaroslav Misura
+Richard Turner
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote each
