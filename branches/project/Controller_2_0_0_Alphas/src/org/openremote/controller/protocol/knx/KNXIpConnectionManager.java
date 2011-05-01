@@ -434,12 +434,12 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
       @Override
       public void send(GroupValueWrite command) {
-         this.runtimeService(command);
+         this.service(command);
       }
 
       @Override
       public synchronized ApplicationProtocolDataUnit read(GroupValueRead command) {
-         this.runtimeService(command);
+         this.service(command);
 
          // Wait for response after having received a confirmation
          try {
@@ -470,6 +470,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
             case MessageCode.DATA_CONFIRM_BYTE:
                synchronized (this.syncLock) {
                   this.con = cEmiFrame;
+                  this.syncLock.notify();
                }
                break;
 
@@ -542,7 +543,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
          }
       }
 
-      private synchronized byte[] runtimeService(KNXCommand command) {
+      private synchronized byte[] service(KNXCommand command) {
          Byte[] f = command.getCEMIFrame();
          byte[] m = new byte[f.length];
          for (int i = 0; i < f.length; ++i) {
