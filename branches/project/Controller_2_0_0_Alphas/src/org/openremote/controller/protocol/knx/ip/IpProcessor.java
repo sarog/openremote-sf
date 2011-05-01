@@ -10,12 +10,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
+import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
-import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 
 /**
  * IP message processor, able to :
@@ -169,6 +170,9 @@ class IpProcessor {
          break;
       case IpTunnelingReq.STI:
          out = new IpTunnelingReq(is, l);
+         break;
+      case IpConnectionStateResp.STI:
+         out = new IpConnectionStateResp(is, l);
          break;
       default:
          throw new KnxIpException("Unexpected message service type");
