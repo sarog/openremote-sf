@@ -170,13 +170,14 @@ class ApplicationProtocolDataUnit
     //  Byte 1 : bits xxxxxx00          - first six bits are part of TPCI
     //  Byte 2 : bits 01xxxxxx          - last six bits are either data (6 bit return values)
     //                                    or zero for larger than 6 bit return values
-
+    log.info("isGroupValueResponse = " + ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x40));
     return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x40);
   }
 
 
   static boolean isGroupValueWriteReq(byte[] apdu)
   {
+    log.info("isGroupValueWriteReq = " + ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x80));
     return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x80);
   }
 
