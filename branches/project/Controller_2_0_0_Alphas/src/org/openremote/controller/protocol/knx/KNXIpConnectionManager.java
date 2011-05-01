@@ -82,13 +82,16 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    @Override
    public void notifyDiscovery(IpDiscoverer discoverer, InetSocketAddress destControlEndpointAddr) {
       synchronized (this.discoverers) {
-         this.discoverers.put(discoverer, destControlEndpointAddr);
-         this.discoverers.notify();
+         // If candidate discoverer has not been stopped already
+         if (this.discoverers.get(discoverer) != null) {
+            this.discoverers.put(discoverer, destControlEndpointAddr);
+            this.discoverers.notify();
 
-         // The first interface found we be used for the connection
-         if (this.connection == null) {
-            this.connection = new KNXConnectionImpl(
-                  new IpTunnelClient(discoverer.getSrcAddr(), destControlEndpointAddr));
+            // The first interface found we be used for the connection
+            if (this.connection == null) {
+               this.connection = new KNXConnectionImpl(new IpTunnelClient(discoverer.getSrcAddr(),
+                     destControlEndpointAddr));
+            }
          }
       }
    }
@@ -114,8 +117,8 @@ public class KNXIpConnectionManager implements DiscoveryListener {
             IpDiscoverer discoverer = new IpDiscoverer(inet, this);
 
             try {
-               discoverer.start();
                this.discoverers.put(discoverer, null);
+               discoverer.start();
             } catch (Exception e) {
                log.info("Failed to get network interface for address '" + inet + "'. Skipping...");
             }
@@ -408,7 +411,9 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    private void stopDiscovery() throws InterruptedException {
       for (Iterator<IpDiscoverer> i = this.discoverers.keySet().iterator(); i.hasNext();) {
          ((IpDiscoverer) i.next()).stop();
-         i.remove();
+      }
+      synchronized (this.discoverers) {
+         this.discoverers.clear();
       }
    }
 
@@ -439,13 +444,16 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
       @Override
       public synchronized ApplicationProtocolDataUnit read(GroupValueRead command) {
-         this.service(command);
+         // Send a GroupValue_Read command only if the device status has not been synchronized yet.
+         if(command.needBusRead()) {
+           this.service(command);
 
-         // Wait for response after having received a confirmation
-         try {
-            this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
-         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+           // Wait for response after having received a confirmation
+           try {
+              this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
+           } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+           }
          }
          ApplicationProtocolDataUnit.ResponseAPDU response = this.internalState.get(command.getAddress());
 
