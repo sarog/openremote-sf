@@ -7,6 +7,7 @@ David Reines
 Phillip Lavender
 Andy Oliver
 Eric Bariaux
+Olivier Gandit
 Paul Gardiner
 Fekete Kamosh
 Jaroslav Misura
