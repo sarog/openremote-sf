@@ -23,13 +23,15 @@ package org.openremote.controller.protocol.knx;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Float2Byte;
+import org.openremote.controller.utils.Logger;
 
 
 /**
@@ -177,7 +179,9 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       if (dpt == DataPointType.Unsigned8BitValue.SCALING)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
+
         int resolution = valueDPT.resolve();
+
         return Integer.toString(resolution);
       }
 
@@ -221,6 +225,15 @@ class GroupValueRead extends KNXCommand implements StatusCommand
         return Integer.toString(valueDPT.resolve());
       }
 
+      else if (dpt instanceof DataPointType.Float2ByteValue)
+      {
+        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+
+        int resolution = (int)valueDPT.resolve();
+
+        return Integer.toString(resolution);
+      }
+
       else
       {
         throw new Error("Currently only Unsigned 8 bit datatype supported for RANGE sensor type.");
@@ -229,7 +242,19 @@ class GroupValueRead extends KNXCommand implements StatusCommand
 
     else if (sensorType == EnumSensorType.CUSTOM)
     {
-      throw new Error ("No mappings from custom state values to KNX datatypes implemented yet.");
+
+      if (dpt == DataPointType.Float2ByteValue.VALUE_TEMP)
+      {
+        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+
+        float resolution = valueDPT.resolve();
+        return Float.toString(resolution);
+      }
+
+      else
+      {
+        throw new Error("Unrecognized datapoint type " + dpt + " on CUSTOM sensor.");
+      }
     }
 
     else
