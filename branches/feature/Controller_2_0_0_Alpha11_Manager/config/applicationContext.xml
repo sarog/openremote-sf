@@ -239,12 +239,16 @@
 		<property name="protocolBuilders">
 		    <props>
            	<prop key="telnet">telnetProtocolBuilder</prop>
+            <prop key="http">httpProtocolBuilder</prop>
+            <prop key="udp">udpProtocolBuilder</prop>
 		    </props>
 		</property>
 	</bean>
 	   
-	<!-- Telnet Protocol Builder -->
-	<bean id="telnetProtocolBuilder" class="org.openremote.controller.gateway.protocol.telnet.TelnetProtocolBuilder" />	
+	<!-- Protocol Builders -->
+	<bean id="telnetProtocolBuilder" class="org.openremote.controller.gateway.protocol.telnet.TelnetProtocolBuilder" />
+	<bean id="httpProtocolBuilder" class="org.openremote.controller.gateway.protocol.http.HttpProtocolBuilder" />
+	<bean id="udpProtocolBuilder" class="org.openremote.controller.gateway.protocol.udp.UdpProtocolBuilder" />
 	
    <!-- ********************************* Gateway Manager Additions *********************************************** -->
    

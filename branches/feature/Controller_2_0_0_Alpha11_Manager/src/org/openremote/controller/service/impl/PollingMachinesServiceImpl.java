@@ -43,6 +43,7 @@ import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.service.GatewayManagerService;
+import org.openremote.controller.utils.GatewayCreatorUtil;
 
 /**
  * Polling status from devices by sensor status command. 
@@ -88,8 +89,7 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
             String protocolType = statusCommandElement.getAttributeValue("protocol");
             
             // Only build sensor if protocol not supported by gateway manager
-            if (!gatewayManagerService.isProtocolSupported(protocolType)) {
-            
+            if (!GatewayCreatorUtil.isProtocolSupported(protocolType)) {
                System.out.println("============ ADDING SENSOR ID " + sensorID);
                Sensor sensor = new Sensor(Integer.parseInt(sensorID), 
                      sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME), 
