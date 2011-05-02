@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.protocol.knx.DataLink.MessageCode;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
