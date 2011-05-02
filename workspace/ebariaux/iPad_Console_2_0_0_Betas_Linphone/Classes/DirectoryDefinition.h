@@ -28,6 +28,12 @@
 }
 
 /**
+ * Returns path to documents directory.
+ */
++ (NSString *)applicationDocumentsDirectory;
+
+
+/**
  * Get the directory of cache folder in handset.
  */
 + (NSString *)cacheFolder;

@@ -30,6 +30,10 @@
 	return [paths objectAtIndex:0];
 }
 
++ (NSString *)applicationDocumentsDirectory {
+	return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+}
+
 // Get image cache folder. It bases on cache folder of handset.
 + (NSString *)imageCacheFolder{
 	return [[self cacheFolder] stringByAppendingPathComponent:@"image"];

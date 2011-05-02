@@ -28,6 +28,9 @@
 #import "UpdateController.h"
 #import "NotificationConstant.h"
 
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+
 #pragma mark inner class NSURLConnectionDataCollector
 @interface _NSURLConnectionDataCollector : NSObject <NSURLProtocolClient>
 {
@@ -277,8 +280,11 @@ static BOOL isWifiActive = NO;
 
 // Swith to groupmember controller.
 - (void) swithToGroupMemberServer {
-	//[self removeBadCurrentServerURL];
+	[self removeBadCurrentServerURL];
+    
+    NSLog(@">>switchToGroupMemberServer");
 	NSString *aAvailableGroupMemberUrl = [self checkGroupMemberServers];
+    NSLog(@"available servers %@", aAvailableGroupMemberUrl);
 	
 	if (aAvailableGroupMemberUrl != nil && ![@"" isEqualToString:aAvailableGroupMemberUrl]) {
 		[self updateControllerWith:aAvailableGroupMemberUrl];
@@ -291,7 +297,7 @@ static BOOL isWifiActive = NO;
 
 - (void) removeBadCurrentServerURL {
 	NSString *tempCurrentServerUrl = [AppSettingsDefinition getCurrentServerUrl];
-	if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings]) {
 		NSMutableArray *autoServers = [AppSettingsDefinition getAutoServers];
 		for (int i=0; i < [autoServers count]; i++) {
 			[[autoServers objectAtIndex:i] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
@@ -312,9 +318,13 @@ static BOOL isWifiActive = NO;
 
 // Check whether the url of groupmember is available.
 - (NSString *) checkGroupMemberServers {
+    NSLog(@">>checkGroupMemberServers");
 	NSMutableArray *groupMembers = [[DataBaseService sharedDataBaseService] findAllGroupMembers];
+    NSLog(@">>allGroupMembers %@", groupMembers);
 	for (GroupMember *gm in groupMembers) {
 		@try {
+            NSLog(@"GroupMember %@", gm.url);
+            
 			[AppSettingsDefinition setCurrentServerUrl:gm.url];
 			[CheckNetwork checkAll];
 			
@@ -322,7 +332,7 @@ static BOOL isWifiActive = NO;
 			[groupMemberServer setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 			
 			BOOL hadSameUrlBefore = NO;
-			if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
+			if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings]) {
 				for (int i=0; i<[[AppSettingsDefinition getAutoServers] count]; i++) {
 					if ([gm.url isEqualToString:[[[AppSettingsDefinition getAutoServers] objectAtIndex:i] objectForKey:@"url"]]) {
 						[[[AppSettingsDefinition getAutoServers] objectAtIndex:i] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
@@ -378,11 +388,16 @@ static BOOL isWifiActive = NO;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	
 	if ([delegate respondsToSelector:@selector(definitionURLConnectionDidFailWithError:)]) {
+        
+        NSLog(@">>>>>>>>>>connection:didFailWithError:");
+        
 		[delegate definitionURLConnectionDidFailWithError:error];
 		self.errorMsg = error;
-		if ([URLConnectionHelper isWifiActive]) {
+        NSLog(@"isWifiActive %d", isWifiActive);
+// EBR : why this test ?
+//		if ([URLConnectionHelper isWifiActive]) {
 			[self swithToGroupMemberServer];
-		}
+//		}
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
