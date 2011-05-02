@@ -23,7 +23,6 @@ package org.openremote.android.test.console.bindings;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.TestCase;
 
+import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.Web;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,13 +39,14 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Tests the {@link org.openremote.android.console.bindings.Web} class.
+ * Tests the {@link org.openremote.android.console.bindings.Component} class.
  *
  * @author <a href="mailto:aball@osintegrators.com">Andrew Ball</a>
  */
-public class WebTest extends TestCase
+public class ComponentTest extends TestCase
 {
 
+  /** TODO put this somewhere else, it's copied from the WebTest class */
   private Element parseXml(String xmlText)
   {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -79,8 +80,8 @@ public class WebTest extends TestCase
     return doc.getDocumentElement();
   }
 
-  public void testConstructor()
-  {
+  /** Tests that we can construct a Web object from the buildFromXml() method */
+  public void testBuildFromXmlWeb() {
     final int id = 12;
     final String url = "http://muppets.com/videofeed";
     final String username = "fozzy";
@@ -88,46 +89,11 @@ public class WebTest extends TestCase
     final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' />";
 
     Node parsedXml = parseXml(xmlText);
-    Web web = new Web(parsedXml);
+    Web web = (Web) Component.buildWithXML(parsedXml);
 
     assertEquals(web.getSrc().toString(), url);
     assertEquals(web.getComponentId(), id);
     assertEquals(web.getUsername(), username);
     assertEquals(web.getPassword(), password);
   }
-
-  public void testBadUrl()
-  {
-    final int id = 12;
-    final String url = "badbadbad";
-    final String xmlText = "<web id='" + id + "' src='" + url + "' />";
-
-    Node parsedXml = parseXml(xmlText);
-
-    Web web = new Web(parsedXml);
-    assertNull(web.getSrc());
-
-    // TODO verify that log message was written about incorrect URL
-  }
-
-  /**
-   * Verifies that the username and password attributes are optional.
-   *
-   * @throws MalformedURLException
-   */
-  public void testNoUsernameAndPassword()
-  {
-    final int id = 12;
-    final String url = "http://muppets.com/videofeed";
-    final String xmlText = "<web id='" + id + "' src='" + url + "' />";
-
-    Node parsedXml = parseXml(xmlText);
-    Web web = new Web(parsedXml);
-
-    assertEquals(web.getSrc().toString(), url);
-    assertEquals(web.getComponentId(), id);
-    assertNull(web.getUsername());
-    assertNull(web.getPassword());
-  }
-
 }

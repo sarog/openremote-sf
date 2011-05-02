@@ -19,6 +19,9 @@
 */
 package org.openremote.android.console.bindings;
 
+import java.net.MalformedURLException;
+
+import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Node;
 
@@ -48,6 +51,8 @@ public class Component extends BusinessEntity {
          XMLEntityDataBase.labels.put(component.getComponentId(), (Label) component);
       } else if(IMAGE.equals(node.getNodeName())) {
          component = new Image(node);
+      } else if (WEB.equals(node.getNodeName())) {
+         component = new Web(node);
       } else {
          return Control.buildWithXML(node);
       }
