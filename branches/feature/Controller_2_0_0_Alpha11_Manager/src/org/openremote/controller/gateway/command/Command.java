@@ -116,18 +116,13 @@ public class Command
             EnumCommandActionType actionType = EnumCommandActionType.enumValueOf(property);
             if (actionType != null) {
                // Action arg format should be semi-colon separated param value pairs param=value;param=value;...
-               propertyValue = Pattern.compile(";\\s$").matcher(propertyValue).replaceAll("");
-               propertyValue = Pattern.compile("^\\s;").matcher(propertyValue).replaceAll("");
-               
-               List<String> valArgPairs = Arrays.asList(Pattern.compile("[^\\\\];").split(propertyValue));
+               List<String> valArgPairs = Arrays.asList(propertyValue.split("(?<!\\\\);"));
                
                for (String valArgPair : valArgPairs){
-                  valArgPair = Pattern.compile("\\;").matcher(valArgPair).replaceAll(";");
-                  String[] paramArray = valArgPair.split("=");
+                  valArgPair = Pattern.compile("\\\\;").matcher(valArgPair).replaceAll(";");
+                  String[] paramArray = Pattern.compile("=").split(valArgPair, 2);
                   if (paramArray.length == 2) {
                      args.put(paramArray[0].toLowerCase(), paramArray[1]);
-                  } else if (paramArray.length == 1 && valArgPairs.size() == 1) {
-                     args.put("command", paramArray[0]);
                   } else {
                      this.valid = false;
                      break;

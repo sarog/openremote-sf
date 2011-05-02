@@ -50,8 +50,6 @@ public interface GatewayManagerService {
 
    public String getPanelXMLFileContent();
    
-   public Boolean isProtocolSupported(String protocolType);
-   
    public void trigger(String controlId, String controlAction, List<Integer> controlCommands);
 
    public List<Integer> getComponentCommandIds(String controlId, String controlAction);

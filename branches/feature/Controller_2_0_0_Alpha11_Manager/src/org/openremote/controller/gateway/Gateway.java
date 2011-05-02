@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import org.jdom.Element;
-import java.util.Calendar;
 import org.apache.log4j.Logger;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.gateway.command.*;
@@ -36,7 +35,7 @@ import org.openremote.controller.gateway.exception.GatewayScriptException;
 import org.openremote.controller.gateway.exception.GatewayConnectionException;
 import org.openremote.controller.gateway.protocol.ProtocolFactory;
 import org.openremote.controller.gateway.protocol.Protocol;
-import java.io.IOException;
+
 /**
  * 
  * @author Rich Turner 2011-02-09
@@ -90,7 +89,7 @@ public class Gateway extends Thread
    /* This is the builder for creating the required protocol object */
    private Protocol protocol;
    
-   /* This determines when connection is estabished to the server */
+   /* This determines when connection is established to the server */
    private EnumGatewayConnectionType connectionType;
 
    /* This determines the method for updating sensor values */
@@ -101,9 +100,6 @@ public class Gateway extends Thread
    
    /* Gateway thread keep alive flag */
    private Boolean alive = true;
-   
-   /* Flag to indicate that gateway is valid and should be run */
-   private Boolean isValid = true;
    
    /* The commands associated with this gateway and their IDs */
    private List<Command> commands = new ArrayList<Command>();
@@ -138,14 +134,10 @@ public class Gateway extends Thread
       int gatewayId = Integer.parseInt(gatewayElement.getAttributeValue(ID_ATTRIBUTE_NAME));
       String connectionType = gatewayElement.getAttributeValue(CONNECTION_ATTRIBUTE_NAME);
       String pollingMethod = gatewayElement.getAttributeValue(POLLING_ATTRIBUTE_NAME);
-      protocolFactory = (ProtocolFactory)SpringContext.getInstance().getBean("protocolFactory");
-      Protocol protocol = getProtocol(gatewayElement);
-      List<Element> propertyEles = gatewayElement.getChildren("property", gatewayElement.getNamespace());
       
-      // Check no null parameters have been supplied
-      if (gatewayId <= 0 || "".equals(connectionType) || "".equals(pollingMethod) || protocol == null || commands == null || statusCacheService == null) {
-         throw new GatewayException("Cannot create gateway, at least one required parameter is null.");
-      }
+      protocolFactory = (ProtocolFactory)SpringContext.getInstance().getBean("protocolFactory");
+      
+      List<Element> propertyEles = gatewayElement.getChildren("property", gatewayElement.getNamespace());
       
       // Set gateway id 
       this.id = gatewayId;
@@ -160,13 +152,22 @@ public class Gateway extends Thread
       this.statusCacheService = statusCacheService;
       
       // Set protocol object info generated from gateway element
-      this.protocol = protocol;
+      try {
+    	  this.protocol = getProtocol(gatewayElement);
+      } catch (Exception e) {
+    	  throw new GatewayException("Cannot create gateway, invalid protocol settings. " + e.getMessage(), e);
+      }
       
       // Set commands
       this.commands = commands;
       
       // Set script manager using spring context
       this.scriptManager = (ScriptManager)SpringContext.getInstance().getBean("scriptManager");
+      
+      // Check no null parameters have been supplied
+      if (gatewayId <= 0 || "".equals(connectionType) || "".equals(pollingMethod) || protocol == null || commands == null || statusCacheService == null) {
+         throw new GatewayException("Cannot create gateway, at least one required parameter is null.");
+      }
       
       /**
        * Validate connection settings by sending them to the protocol
@@ -376,16 +377,15 @@ public class Gateway extends Thread
             }
          } catch (GatewayConnectionException e) {
             // Have to catch this hear or so we can disconnect, thread run loop will
-            // try to reconnect and enter sleep modei if necessary
+            // try to reconnect and enter sleep mode if necessary
+         	logger.error("Gateway failed to do command(" + commandId.toString() + "): " + e.getMessage(), e);
             protocolDisconnect();
          }
       }
    }
    
-   public void doPollingCommands() {
-      String tempBuffer = "";
-         
-      // Process polling commands if any queeud commands appear between
+   public void doPollingCommands() {         
+      // Process polling commands if any queued commands appear between
       // each polling command then give them priority
       Set<Map.Entry<Integer, Integer>> pollingMaps = this.pollingCommandMap.entrySet();
       
@@ -531,7 +531,7 @@ public class Gateway extends Thread
    
    /**
     * Execute a command and return the result string, used for polling
-    * and send commands as both can contain a mixture of send, read or sript actions
+    * and send commands as both can contain a mixture of send, read or script actions
     * send commands can push a dynamic value into the command as sensors, buttons and
     * other components need to push the value back to the appropriate gateway server
     */
@@ -604,9 +604,9 @@ public class Gateway extends Thread
       return commandResult;
    }
    
-   // Proocol Communication methods -------------------------------------------------------
+   // Protocol Communication methods -------------------------------------------------------
    /**
-    * Connect to server catch all excpetions as it's impossible to know
+    * Connect to server catch all exceptions as it's impossible to know
     * what code has been used inside the protocol implementation then throw
     * a gateway connection exception
     */
@@ -620,7 +620,7 @@ public class Gateway extends Thread
    	}
    }
    /**
-    * Dicconnect from server catch all excpetions as it's impossible to know
+    * Disconnect from server catch all exceptions as it's impossible to know
     * what code has been used inside the protocol implementation then throw
     * a gateway connection exception
     */
