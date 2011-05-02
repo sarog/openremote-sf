@@ -138,9 +138,13 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     {
         return "";      // TODO : check how caller handles invalid return values
     }
-
-    DataPointType dpt = getAPDU().getDataPointType();
+	
+    // Get the DataPointType from this object instead of from the APDU associated with 
+    // the KNX command name.This will be the right type (that entered by the user as dpt in
+    // the GUI.
+    DataPointType dpt = getDataPointType();
     DataType datatype = getAPDU().getDataType();
+
     // We have received something from the bus, is is useless now to send regularly read commands on the bus.
     this.needBusRead = false;
 
@@ -173,8 +177,8 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       if (dpt == DataPointType.Unsigned8BitValue.SCALING)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
-
-        return Integer.toString(valueDPT.resolve());
+        int resolution = valueDPT.resolve();
+        return Integer.toString(resolution);
       }
 
       else if (dpt == DataPointType.Unsigned8BitValue.ANGLE)
@@ -210,7 +214,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       //    need to merge the fixes that gives range min/max values so return values
       //    can be scaled accordingly
 
-      if (datatype instanceof Unsigned8Bit)
+      if (dpt instanceof DataPointType.Unsigned8BitValue)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
 
