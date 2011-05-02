@@ -121,7 +121,6 @@ public class KNXCommandBuilder implements CommandBuilder
    */
   public final static String KNX_LOG_CATEGORY  = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx";
 
-
   /**
    * String constant for parsing KNX protocol XML entries from controller.xml file.
    *
@@ -178,7 +177,7 @@ public class KNXCommandBuilder implements CommandBuilder
 
 
   // TODO : inject service dependency
-  private final KNXConnectionManager connectionManager = new KNXConnectionManager();
+  private final KNXIpConnectionManager connectionManager = new KNXIpConnectionManager();
 
 
   // Constructors ---------------------------------------------------------------------------------
