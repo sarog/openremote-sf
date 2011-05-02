@@ -21,7 +21,6 @@
 	<classpathentry kind="lib" path="lib/test/jtidy/jtidy-r918.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xml-apis.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/test/dbunit/dbunit-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-util-6.1.22.jar"/>
@@ -31,10 +30,6 @@
 	<classpathentry kind="lib" path="lib/core/spring/spring-security-core-2.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/core/apache/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/core/spring/quartz-1.7.3.jar"/>
-	<classpathentry kind="lib" path="lib/apache/commons-lang/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/rxtx/RXTXcomm-2.2-pre2.jar"/>
-	<classpathentry kind="lib" path="lib/apache/commons-beanutils-1.8.3/commons-beanutils-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/clink/clink170.jar"/>
-	<classpathentry kind="lib" path="/media/ntfs/ogandit/src/or-knx/lib/json/json-20110113.jar"/>
-	<classpathentry kind="output" path="web/WEB-INF/classes"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="build/classes"/>
 </classpath>
