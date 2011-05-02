@@ -23,15 +23,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.Namespace;
+import org.openremote.controller.utils.CommandCreatorUtil;
+import org.openremote.controller.utils.GatewayCreatorUtil;
 import org.openremote.controller.Constants;
 import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
@@ -40,9 +39,7 @@ import org.openremote.controller.service.GatewayManagerService;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
-import org.openremote.controller.utils.CommandUtil;
 import org.openremote.controller.gateway.Gateway;
-import org.openremote.controller.gateway.GatewayBuilder;
 import org.openremote.controller.gateway.exception.GatewayException;
 import org.openremote.controller.gateway.command.*;
 import org.openremote.controller.gateway.component.EnumComponentType;
@@ -61,12 +58,6 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
    private Logger logger = Logger.getLogger(GatewayManagerServiceImpl.class);
    private List<Gateway> gateways = new ArrayList<Gateway>();
    private Map<Integer, Integer> commandGatewayMap = new HashMap<Integer, Integer>();
-
-   /**
-    * A List of supported gateway Protocols, these protocols will be handled
-    * by the gateway manager whereas others will go through the standard controller route
-    */
-   public List<String> supportedProtocols = Arrays.asList("telnet");
    
    // Methods -------------------------------------------------------------------------
    /**
@@ -104,7 +95,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
             gatewayElements = remoteActionXMLParser.queryElementsFromXMLByName("gateway");
          }
          if (gatewayElements == null) {
-            gatewayElements = getGatewayElements(commandElements);
+            gatewayElements = GatewayCreatorUtil.getGatewayElements(commandElements);
             if (gatewayElements.size() == 0) {
                throw new GatewayException();
             }
@@ -112,7 +103,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       } catch (ControllerXMLNotFoundException e) {
          logger.warn("No commands, sensors and/or gateways to init, controller.xml not found.");
          return;
-      } catch (GatewayException e) {
+      } catch (Exception e) {
          logger.warn("Error retrieving gateway elements from controller.xml.", e);
          return;
       }
@@ -237,243 +228,11 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
          }
       }
    }
-   
-   /**
-    * *********************************
-    * GATEWAY ELEMENT BUILDER CODE START
-    * *********************************
-    */
-   
-   /**
-    * Create unique gateway elements from command elements, this is needed because
-    * the controller.xml doesn't explicitly define gateway elements at present
-    */
-   private List<Element> getGatewayElements(List<Element> commandElements) {
-      List<Element> gatewayElements = new ArrayList<Element>();
-      if (commandElements != null) {
-         for (Element commandElement : commandElements)
-         {
-            Element gatewayElement = getGatewayElement(commandElement);
-            if(gatewayElement != null) {
-               String gatewayConnStr = getGatewayConnectionString(gatewayElement);
-               int matchedId = -1;
-               int gatewayIndex = 0;
-               for (Element gatewayElem : gatewayElements) {
-                  if(gatewayConnStr.equals(getGatewayConnectionString(gatewayElem))) {
-                     matchedId = gatewayIndex;
-                     break;
-                  }
-                  gatewayIndex++;
-               }
-               if (matchedId < 0) {
-                  gatewayElements.add(gatewayElement);
-               }
-            }
-         }
-      }
-      return gatewayElements;
-   }
-   
-   /**
-    * Build Gateway Element from supplied Command Element, the property elements extracted
-    * from the command Element are protocol specific and are set here at present
-    */
-   private Element getGatewayElement(Element commandElement) {
-      Element gatewayElement = null;
-      String protocolType = commandElement.getAttributeValue("protocol");
-      if (isProtocolSupported(protocolType)) {
-         Map<String, Boolean> protocolProps = getProtocolProperties(protocolType);
-         if (protocolProps.size() > 0) {
-            gatewayElement = buildGatewayElement(commandElement, protocolType, protocolProps);
-         }
-      }
-      return gatewayElement;
-   }
-   
-   /**
-    * Get list of property names that the specified protocol uses, if protocol
-    * not supported then an empty map is returned. Compulsory properties are indicated
-    * by a true value for the keys value
-    */
-   private Map<String, Boolean> getProtocolProperties(String protocolType) {
-      Map<String, Boolean> props = new HashMap<String, Boolean>();
-      
-      if ("telnet".equals(protocolType)) {
-         props.put("ipaddress", true);
-         props.put("port", true);
-         props.put("sendterminator", false);
-      }
-      
-      // General properties applicable to all protocols
-      props.put("defaultpollinginterval", false);
-      props.put("connecttimeout", false);
-      props.put("readtimeout", false);
-      
-      return props;
-   }
-   
-   /**
-    * The connection string is a semi-colon separated list of protocol connection
-    * parameters that should be unique for each gateway. This is used to determine
-    * if a gateway Element is unique or not.
-    */
-   private String getGatewayConnectionString(Element gatewayElement) {
-      String connectionStr = "";
-      String protocolType = gatewayElement.getAttributeValue("protocol");
-      List<Element> propertyEles = gatewayElement.getChildren();
-      Map<String, Boolean> props = getProtocolProperties(protocolType);
-      
-      for(Element ele : propertyEles){
-         Boolean isCompulsory = props.get(ele.getAttributeValue("name").toLowerCase());
-         if (isCompulsory != null) { 
-            if(isCompulsory) {
-               connectionStr += ele.getAttributeValue("name") + "=" + ele.getAttributeValue("value") + ";";
-           }
-        }
-      }
-      if (connectionStr.length() > 0) {
-         connectionStr = connectionStr.substring(0, connectionStr.length() - 1);
-      }
-      return connectionStr;
-   }
-   
-   /**
-    * Does the actual gateway Element construction, extracting the requested properties from the
-    * command Element and sets the connectionType and pollingMethod to be used
-    */
-   private Element buildGatewayElement(Element element, String protocolType, Map<String, Boolean> props) {
-      List<Element> propertyEles = element.getChildren("property", element.getNamespace());
-      Element gatewayElement = new Element("gateway", element.getNamespace());
-      int gatewayId = this.gateways.size() + 1;
-      gatewayElement.setAttribute("protocol", protocolType);
-      //For testing set gateway connection type to permanent and sensor polling method to query
-      gatewayElement.setAttribute(Gateway.ID_ATTRIBUTE_NAME, Integer.toString(gatewayId));
-      gatewayElement.setAttribute(Gateway.CONNECTION_ATTRIBUTE_NAME, "permanent");
-      gatewayElement.setAttribute(Gateway.POLLING_ATTRIBUTE_NAME, "query");
-      gatewayElement.addContent("\n		");
-      for(Element ele : propertyEles){
-           if(props.containsKey(ele.getAttributeValue("name").toLowerCase())) {
-              gatewayElement.addContent((Element)ele.clone());
-              gatewayElement.addContent("\n		");
-           }
-      }
-      return gatewayElement;
-   }   
-   /**
-    * *********************************
-    * GATEWAY ELEMENT BUILDER CODE END
-    * *********************************
-    */
-    
-   /**
-    * *********************************
-    * COMMAND ELEMENT BUILDER CODE BEGIN
-    * *********************************
-    */
-   
-   // Convert property elements to new gateway format which is protocol independent
-   public Element convertCommandElement(Element commandElement) {
-      String protocolType = commandElement.getAttributeValue("protocol");
-      List<Element> propertyEles = commandElement.getChildren("property", commandElement.getNamespace());
-      String actionValue = "";
-      Boolean isNewFormat = false;
-      Element newCommandElement = (Element)commandElement.clone();
-               
-      List<String> props = getCommandProperties(protocolType);
-      
-      // Cycle through the properties and pick out the ones needed to build this protocol command
-      for(int i=0; i<propertyEles.size(); i++) {
-         Element element = propertyEles.get(i);
-         String propertyValue = element.getAttributeValue("value");
-         String property = element.getAttributeValue("name").toLowerCase();
-         
-         // Add new command format property elements automatically
-         EnumCommandActionType actionType = EnumCommandActionType.enumValueOf(property);
-         if (actionType == null) {
-            if (props.contains(property)) {
-               // Telnet protocol could have multiple send commands in one using the pipe as a seperator, check for this
-               if ("command".equals(property) && "telnet".equals(protocolType) && propertyValue.indexOf("|") >= 0) {
-                  StringTokenizer st = new StringTokenizer(propertyValue, "|");
-                  int count = 0;
-                  while (st.hasMoreElements()) {
-                     String cmd = (String) st.nextElement();
-                     if (count % 2 != 0) {
-                        actionValue = "command=" + cmd;
-                        commandElement.addContent(buildPropertyElement(actionValue, commandElement.getNamespace()));
-                        commandElement.addContent("\n		");
-                     }
-                     count++;
-                  }
-                  commandElement.removeContent(element);
-                  i--;
-                  actionValue = "";
-               } else {
-                  actionValue += property + "=" + propertyValue + ";";
-                  commandElement.removeContent(element);
-                  i--;
-               }
-            }
-         } else {
-            // Assume this is a new format command
-            isNewFormat = true;
-            break;
-         }
-      }
-      
-      if (actionValue.length() > 0 && !isNewFormat) {
-         commandElement.addContent(buildPropertyElement(actionValue, commandElement.getNamespace()));
-         commandElement.addContent("\n		");
-      }
-      
-      return commandElement;
-   }
-
-   /* Get list of properties that form a command for specified protocol in existing xml schema */
-   private List<String> getCommandProperties(String protocolType) {
-      List<String> props = new ArrayList<String>();
-      
-      if ("telnet".equals(protocolType)) {
-         props.add("command");
-      } else if ("http".equals(protocolType)) {
-         props.add("url");
-      } else if ("x10".equals(protocolType)) {
-         props.add("address");
-         props.add("command");
-      } else if ("onewire".equals(protocolType)) {
-         props.add("filename");
-         props.add("deviceaddress");
-      } else if ("knx".equals(protocolType)) {
-         props.add("groupaddress");
-         props.add("dpt");
-         props.add("command");
-      } else if ("socket".equals(protocolType)) {
-         props.add("command");
-      } else if ("udp".equals(protocolType)) {
-         props.add("command");
-      }
-      
-      return props;
-   }
-   
-   /* Build the new property Element */
-   private Element buildPropertyElement(String value, Namespace ns) {
-      Element propElement = new Element("property", ns);
-      propElement.setAttribute("name", "send");
-      propElement.setAttribute("value", value);
-      return propElement;
-   }
-        
-   /**
-    * *********************************
-    * COMMAND ELEMENT BUILDER CODE END
-    * *********************************
-    */
-    
-    
+       
    /* Instantiate the gateway objects and add to the gateway manager */
    private void createGateway(Element gatewayElement, List<Element> commandElements) {
       Gateway gateway = null;
-      List<Command> commands = getCommands(gatewayElement, commandElements);
+      List<Command> commands = GatewayCreatorUtil.getCommands(gatewayElement, commandElements);
       gateway = new Gateway(gatewayElement, commands, statusCacheService);
       
       if (gateway != null) {
@@ -484,51 +243,15 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
       }
       this.gateways.add(gateway);
    }
-
-   /*
-    * Return the commands that use the specified gateway Element, when controller xml supports gateways will be able to 
-    * just look at the gateway ref attribute of the commands, until then we manually deterine which commands
-    * belong to this gateway, adds prcessing but allows existing XML schema to be used.
-    */
-   private List<Command> getCommands(Element gatewayElement, List<Element> commandElements) {
-      List<Command> commands = new ArrayList<Command> ();
-      String gatewayConnStr = "";
-      
-      if (commandElements != null && gatewayElement != null) {
-         gatewayConnStr = getGatewayConnectionString(gatewayElement);
-         // Cycle through command Elements and find the ones that share the same gateway protocol settings
-         for (Element commandElement : commandElements)
-         {
-            Element tempGatewayElement = getGatewayElement(commandElement);
-            if(tempGatewayElement != null) {
-               if(gatewayConnStr.equalsIgnoreCase(getGatewayConnectionString(tempGatewayElement))) {
-                  Integer commandId = Integer.parseInt(commandElement.getAttributeValue("id"));
-                  Command command = new Command(commandId, commandElement);
-                  commands.add(command);
-               }
-            }
-         }
-      }
-      
-      if (commands.size() == 0) {
-         throw new GatewayException("No gateway commands found.");
-      }
-      return commands;
-   }
-   
-   /* Determines if specified protocol is supported by gateway manager */
-   public Boolean isProtocolSupported(String protocolType) {
-      return supportedProtocols.contains(protocolType);
-   }
    
    /* Filter command elements and return only supported protocol command elemets */
-   private List<Element> filterAndFormatSupportedCommands(List<Element> commandElements) {
+   private List<Element> filterAndFormatSupportedCommands(List<Element> commandElements) throws Exception {
       List<Element> supportedCommandElements = new ArrayList<Element> ();
       for (Element commandElement : commandElements)
       {
          String protocolType = commandElement.getAttributeValue("protocol");
-         if (isProtocolSupported(protocolType)) {
-            commandElement = convertCommandElement(commandElement);
+         if (GatewayCreatorUtil.isProtocolSupported(protocolType)) {
+            commandElement = CommandCreatorUtil.convertCommandElement(commandElement);
             supportedCommandElements.add(commandElement);  
          }
       }
@@ -645,7 +368,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
             Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandId.toString());
             if (commandElement != null) {
                String protocolType = commandElement.getAttributeValue("protocol");
-               if (isProtocolSupported(protocolType)) {
+               if (GatewayCreatorUtil.isProtocolSupported(protocolType)) {
                   commandIds.add(commandId);
                } else {
                   commandIds.clear();
@@ -662,7 +385,7 @@ public class GatewayManagerServiceImpl implements GatewayManagerService {
                   Element commandElement = remoteActionXMLParser.queryElementFromXMLById(commandId.toString());
                   if (commandElement != null) {
                      String protocolType = commandElement.getAttributeValue("protocol");
-                     if (isProtocolSupported(protocolType)) {                  
+                     if (GatewayCreatorUtil.isProtocolSupported(protocolType)) {                  
                         commandIds.add(commandId);
                      } else {
                         commandIds.clear();

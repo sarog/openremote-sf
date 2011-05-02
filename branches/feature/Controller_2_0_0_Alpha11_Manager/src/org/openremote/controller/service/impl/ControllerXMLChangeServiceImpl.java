@@ -42,6 +42,7 @@ import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.service.GatewayManagerService;
+import org.openremote.controller.utils.GatewayCreatorUtil;
 
 /**
  * Controller.xml monitoring service.
@@ -167,7 +168,7 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
          String protocolType = statusCommandElement.getAttributeValue("protocol");
          
          // Only build sensor if protocol not supported by gateway manager
-         if (!gatewayManagerService.isProtocolSupported(protocolType)) {
+         if (!GatewayCreatorUtil.isProtocolSupported(protocolType)) {
             Sensor sensor = new Sensor();
             sensor.setSensorID(Integer.parseInt(sensorElement.getAttributeValue(Constants.ID_ATTRIBUTE_NAME)));
             sensor.setSensorType(sensorElement.getAttributeValue(Constants.SENSOR_TYPE_ATTRIBUTE_NAME));
