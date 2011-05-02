@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
-import org.openremote.controller.gateway.Gateway;
 import org.openremote.controller.gateway.protocol.Protocol;
 import org.openremote.controller.gateway.protocol.ProtocolInterface;
 import org.openremote.controller.gateway.EnumGatewayConnectionType;
@@ -46,82 +45,73 @@ public class TelnetProtocol extends Protocol {
    // Common Protocol Properties --------------------------------------------------------
    /** The logger. */
    private static Logger logger = Logger.getLogger(TelnetProtocol.class.getName());
-
-   /** A name to identify event in controller.xml. */
-   private String name;
+   
+   /** A name to identify protocol in logs */
+   protected String name;
    
    /* Set supported connection Types */
-   List<EnumGatewayConnectionType> supportedConnectionTypes = Arrays.asList(EnumGatewayConnectionType.MANAGED, EnumGatewayConnectionType.PERMANENT, EnumGatewayConnectionType.TIMED);
+   protected static List<EnumGatewayConnectionType> allowedConnectionTypes = Arrays.asList(EnumGatewayConnectionType.MANAGED, EnumGatewayConnectionType.PERMANENT, EnumGatewayConnectionType.TIMED);
    
    /* Set supported polling methods */
-   List<EnumGatewayPollingMethod> supportedPollingMethods = Arrays.asList(EnumGatewayPollingMethod.QUERY, EnumGatewayPollingMethod.BROADCAST);
-   
-   private InputStream inputStream;
-   private OutputStream outputStream;
-   
-   /* This is the time in milliseconds before connection attempt stops */
-   private int connectTimeout = Gateway.CONNECT_TIMEOUT;
-
-   /* This is the time in milliseconds before read command attempt stops */
-   private int readTimeout = Gateway.READ_TIMEOUT;
+   protected static List<EnumGatewayPollingMethod> allowedPollingMethods = Arrays.asList(EnumGatewayPollingMethod.QUERY, EnumGatewayPollingMethod.BROADCAST);
    
    /* This is the string that marks the end of a command */
    private String sendTerminator = "\n";
    
+   private InputStream inputStream;
+   private OutputStream outputStream;
+   
    // Protocol Properties ----------------------------------------------------------------
    /** The IP to which the socket is opened */
-   private String ip;
+   private String host;
 
    /** The port that is opened */
    private int port;
    
+   /* The telnet client object */
    private TelnetClient telnetClient;
-
-   public TelnetProtocol() {
-      super.supportedConnectionTypes = this.supportedConnectionTypes;
-      super.supportedPollingMethods = this.supportedPollingMethods;
+   
+   // Protocol Get Set Methods -----------------------------------------------------------
+   public List<EnumGatewayConnectionType> getAllowedConnectionTypes() {
+      return allowedConnectionTypes;
+   }
+   
+   public List<EnumGatewayPollingMethod> getAllowedPollingMethods() {
+      return allowedPollingMethods;
    }
    
    /**
-    * Gets the name.
+    * Gets the send terminator
     * 
-    * @return the name
+    * @return the send terminator
     */
-   public String getName() {
-      String name;
-      if (this.name == null) {
-         name = "Telnet " + getIp() + ":" + getPort();
-      } else {
-         name = this.name;
-      }
-      return name;
+   public String getSendTerminator() {
+      return this.sendTerminator;
    }
 
    /**
-    * Sets the name.
-    * 
-    * @param name
-    *           the new name
+    * Sets the send terminator
+    * @param send terminator
     */
-   public void setName(String name) {
-      this.name = name;
+   public void setSendTerminator(String terminator) {
+      this.sendTerminator = terminator;
    }
 
    /**
-    * Gets the ip
+    * Gets the host
     * 
-    * @return the ip
+    * @return the host
     */
-   public String getIp() {
-      return this.ip;
+   public String getHost() {
+      return this.host;
    }
 
    /**
-    * Sets the ip
-    * @param ip the new ip
+    * Sets the host
+    * @param host the new host
     */
-   public void setIp(String ip) {
-      this.ip = ip;
+   public void setHost(String host) {
+      this.host = host;
    }
 
    /**
@@ -141,79 +131,19 @@ public class TelnetProtocol extends Protocol {
       this.port = Integer.parseInt(port);
    }
    
-   /**
-    * Gets the connect timeout
-    * 
-    * @return the connect timeout
-    */
-   public int getConnectTimeout() {
-      return this.connectTimeout;
-   }
-
-   /**
-    * Sets the read timeout
-    * @param connect timeout
-    */
-   public void setConnectTimeout(String timeout) {
-      try {
-         int num = Integer.parseInt(timeout);
-         if (num <= 60000) {
-            this.connectTimeout = num;
-         }
-      } catch (NumberFormatException e) {
-         logger.error("Invalid connect timeout parameter supplied to gateway");  
-      }
-   }
-
-   /**
-    * Gets the read timeout
-    * 
-    * @return the read timeout
-    */
-   public int getReadTimeout() {
-      return this.readTimeout;
-   }
-
-   /**
-    * Sets the read timeout
-    * @param read timeout
-    */
-   public void setReadTimeout(String timeout) {
-      try {
-         int num = Integer.parseInt(timeout);
-         if (num <= 5000) {
-            this.readTimeout = num;
-         }
-      } catch (NumberFormatException e) {
-         logger.error("Invalid read timeout parameter supplied to gateway");  
-      }
-   }
-
-   /**
-    * Gets the send terminator
-    * 
-    * @return the send terminator
-    */
-   public String getSendTerminator() {
-      return this.sendTerminator;
-   }
-
-   /**
-    * Sets the send terminator
-    * @param send terminator
-    */
-   public void setSendTerminator(String terminator) {
-      this.sendTerminator = terminator;
+   // Protocol Methods --------------------------------------------------------------------
+   public String buildNameString() {
+      return "telnet://" + getHost() + ":" + getPort() + "/";
    }
    
    /**
-    * Connects to the telnet server and establishes the input/output streams
+    * Connects to the server and establishes the communication objects
     * Exception handling is done by the Gateway class
     */
    public void connect() throws Exception {
       telnetClient = new TelnetClient();
-      this.telnetClient.setConnectTimeout(this.connectTimeout);
-      this.telnetClient.connect(getIp(), getPort());
+      this.telnetClient.setConnectTimeout(getConnectTimeout());
+      this.telnetClient.connect(getHost(), getPort());
       inputStream = this.telnetClient.getInputStream();
       outputStream = this.telnetClient.getOutputStream();
       
@@ -249,7 +179,10 @@ public class TelnetProtocol extends Protocol {
       Boolean result = true;
       return result;
    }
-   
+
+   /**
+    * Perform protocol action usually send and read actions
+    */
    public String doAction(Action commandAction) throws Exception {
       Map<String, String> args = commandAction.getArgs();
       EnumCommandActionType actionType = commandAction.getType();
@@ -257,6 +190,7 @@ public class TelnetProtocol extends Protocol {
       
       switch (actionType) {
          case SEND:
+            // Apply action specific parameters
             String sendTerminator = this.sendTerminator;
             if (args.containsKey("sendterminator")) {
                sendTerminator = args.get("sendterminator");  
@@ -265,8 +199,9 @@ public class TelnetProtocol extends Protocol {
             outputStream.flush();
             break;
          case READ:
+            // Apply action specific parameters
             Calendar endTime = Calendar.getInstance();
-            endTime.add(Calendar.MILLISECOND, this.readTimeout);
+            endTime.add(Calendar.MILLISECOND, getReadTimeout());
             while (Calendar.getInstance().before(endTime) && inputStream.available() == 0) {
                try {
                   Thread.sleep(50);
