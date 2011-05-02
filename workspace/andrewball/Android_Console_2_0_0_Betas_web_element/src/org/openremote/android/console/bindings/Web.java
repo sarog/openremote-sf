@@ -22,8 +22,11 @@ package org.openremote.android.console.bindings;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.openremote.android.console.Constants;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+
+import android.util.Log;
 
 /**
  * Represents a web element from a panel definition, which represents an area of the screen where a
@@ -32,6 +35,7 @@ import org.w3c.dom.Node;
 @SuppressWarnings("serial")
 public class Web extends Component
 {
+  public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "bindings/Web";
   /** the URL to view */
   private URL src;
   /** optional username to user for HTTP basic authentication */
@@ -44,11 +48,10 @@ public class Web extends Component
    *
    * @param node node representing the "web" element
    */
-  public Web(Node node) throws MalformedURLException
+  public Web(Node node)
   {
     NamedNodeMap attributes = node.getAttributes();
     setComponentId(Integer.valueOf(attributes.getNamedItem(ID).getNodeValue()));
-    this.src = new URL(attributes.getNamedItem(SRC).getNodeValue());
 
     Node usernameNode = attributes.getNamedItem(USERNAME);
     if (usernameNode != null)
@@ -60,6 +63,17 @@ public class Web extends Component
     if (passwordNode != null)
     {
       password = passwordNode.getNodeValue();
+    }
+
+    String srcFromXml = attributes.getNamedItem(SRC).getNodeValue();
+    try
+    {
+      this.src = new URL(srcFromXml);
+    }
+    catch (MalformedURLException e)
+    {
+      Log.e(LOG_CATEGORY, "invalid URL for web element with id " + getComponentId() + ": " +
+          srcFromXml);
     }
   }
 
