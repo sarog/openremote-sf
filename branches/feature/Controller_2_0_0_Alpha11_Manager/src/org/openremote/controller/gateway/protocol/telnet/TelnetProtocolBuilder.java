@@ -40,16 +40,20 @@ public class TelnetProtocolBuilder implements ProtocolBuilder {
       TelnetProtocol telnetEvent = new TelnetProtocol();
       List<Element> propertyEles = element.getChildren();
       for(Element ele : propertyEles){
+         // COMMON PROPERTIES SHOULD BE SUPPORTED BY ALL PROTOCOLS
          if("name".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setName(ele.getAttributeValue("value"));
-         } else if("port".equalsIgnoreCase(ele.getAttributeValue("name"))){
-            telnetEvent.setPort(ele.getAttributeValue("value"));
-         } else if("ipaddress".equalsIgnoreCase(ele.getAttributeValue("name"))){
-            telnetEvent.setIp(ele.getAttributeValue("value"));
          } else if("readtimeout".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setReadTimeout(ele.getAttributeValue("value"));
          } else if("connecttimeout".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setConnectTimeout(ele.getAttributeValue("value"));
+         }
+         
+         // PROTOCOL SPECIFIC PROPERTIES SHOULD BE AT LEAST ONE
+         else if("port".equalsIgnoreCase(ele.getAttributeValue("name"))){
+            telnetEvent.setPort(ele.getAttributeValue("value"));
+         } else if("host".equalsIgnoreCase(ele.getAttributeValue("name"))){
+            telnetEvent.setHost(ele.getAttributeValue("value"));
          } else if("sendterminator".equalsIgnoreCase(ele.getAttributeValue("name"))){
             telnetEvent.setSendTerminator(ele.getAttributeValue("value"));
          }
