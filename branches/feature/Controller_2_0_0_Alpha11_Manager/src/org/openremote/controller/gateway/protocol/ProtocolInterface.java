@@ -20,6 +20,7 @@
  */
 package org.openremote.controller.gateway.protocol;
 
+import java.util.List;
 import java.util.Map;
 import org.openremote.controller.gateway.command.Action;
 import org.openremote.controller.gateway.EnumGatewayConnectionType;
@@ -31,12 +32,18 @@ import org.openremote.controller.gateway.EnumGatewayPollingMethod;
  */
 public interface ProtocolInterface
 {
+   public List<EnumGatewayConnectionType> getAllowedConnectionTypes();
+   
+   public List<EnumGatewayPollingMethod> getAllowedPollingMethods();
+   
    /**
     * This is a method for getting a unique identifier string for the protocol
     * used for identification in log messages etc. If no name available then
     * one should be built from unique protocol parameters i.e. Telnet 192.168.1.1:0000
     */
    public String getName();
+   
+   public String buildNameString();
    
    /**
     * Opens connection to server and sets input and output streams

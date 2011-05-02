@@ -26,7 +26,8 @@ package org.openremote.controller.gateway;
  */
 public enum EnumGatewayPollingMethod {
    QUERY,
-   BROADCAST;
+   BROADCAST,
+   NONE;
    
    @Override
    public String toString() {

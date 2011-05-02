@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.openremote.controller.gateway.Gateway;
 import org.openremote.controller.gateway.EnumGatewayConnectionType;
 import org.openremote.controller.gateway.EnumGatewayPollingMethod;
 
@@ -33,10 +34,94 @@ import org.openremote.controller.gateway.EnumGatewayPollingMethod;
  * @author Rich Turner 2011-02-11
  */
 public abstract class Protocol implements ProtocolInterface
-{   
+{  
+   /** A name to identify event in controller.xml. */
+   private String name;
+   
+   /* This is the time in milliseconds before connection attempt stops */
+   protected int connectTimeout = Gateway.CONNECT_TIMEOUT;
+
+   /* This is the time in milliseconds before read command attempt stops */
+   protected int readTimeout = Gateway.READ_TIMEOUT;
+    
    protected List<EnumGatewayConnectionType> supportedConnectionTypes = new ArrayList<EnumGatewayConnectionType>();
    
-   protected List<EnumGatewayPollingMethod> supportedPollingMethods = new ArrayList<EnumGatewayPollingMethod>();
+   private List<EnumGatewayPollingMethod> supportedPollingMethods = new ArrayList<EnumGatewayPollingMethod>();
+   
+   public Protocol() {
+      supportedConnectionTypes.addAll(getAllowedConnectionTypes());
+      supportedPollingMethods.addAll(getAllowedPollingMethods());
+   }
+   
+   /**
+    * Gets the name.
+    * 
+    * @return the name
+    */
+   public String getName() {
+      String name;
+      if (this.name == null) {
+         name = buildNameString();
+      } else {
+         name = this.name;
+      }
+      return name;
+   }
+
+   /**
+    * Sets the name.
+    * 
+    * @param name
+    *           the new name
+    */
+   public void setName(String name) {
+      this.name = name;
+   }
+   
+   /**
+    * Gets the connect timeout
+    * 
+    * @return the connect timeout
+    */
+   public int getConnectTimeout() {
+      return this.connectTimeout;
+   }
+
+   /**
+    * Sets the read timeout
+    * @param connect timeout
+    */
+   public void setConnectTimeout(String timeout) {
+      try {
+         int num = Integer.parseInt(timeout);
+         if (num <= 60000) {
+            this.connectTimeout = num;
+         }
+      } catch (NumberFormatException e) {}
+   }
+
+   /**
+    * Gets the read timeout
+    * 
+    * @return the read timeout
+    */
+   public int getReadTimeout() {
+      return this.readTimeout;
+   }
+
+   /**
+    * Sets the read timeout
+    * @param read timeout
+    */
+   public void setReadTimeout(String timeout) {
+      try {
+         int num = Integer.parseInt(timeout);
+         if (num <= 5000) {
+            this.readTimeout = num;
+         }
+      } catch (NumberFormatException e) {}
+   }
+   
 
    /**
     *
@@ -50,21 +135,15 @@ public abstract class Protocol implements ProtocolInterface
    /**
     * This method deals with opening up communication with the server
     */
-   public void connect(int timeOut) throws Exception {
-      
-   }
+   public void connect() throws Exception {}
    
    /**
     * Cleans up and closes the connection to the server
     */
-   public void disconnect() throws Exception {
-
-   }
+   public void disconnect() throws Exception {}
    
    /* Clears server response buffer */
-   public void clearBuffer() throws Exception {
-      
-   }
+   public void clearBuffer() throws Exception {}
 
    public EnumGatewayPollingMethod checkSetPollingMethod(EnumGatewayPollingMethod pollingMethod) {
       EnumGatewayPollingMethod result = null;

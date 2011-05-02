@@ -28,7 +28,7 @@ public enum EnumGatewayConnectionType {
       MANAGED,
       PERMANENT,
       TIMED,
-      CONNECTIONLESS;
+      NONE;
    
    @Override
    public String toString() {
