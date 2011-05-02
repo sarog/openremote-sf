@@ -63,6 +63,8 @@ public class KNXIpConnectionManager implements DiscoveryListener {
    private KNXConnectionImpl connection;
    private Set<IpDiscoverer> discoverers;
    private Object connectionLock;
+   private String knxIpInterfaceHostname;
+   private int knxIpInterfacePort;
 
    // Constructors ---------------------------------------------------------------------------------
 
@@ -70,6 +72,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
       this.connection = null;
       this.connectionLock = new Object();
       this.discoverers = new HashSet<IpDiscoverer>();
+      this.knxIpInterfaceHostname = null;
    }
 
    public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) throws KnxIpException,
@@ -82,12 +85,16 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
    @Override
    public void notifyDiscovery(IpDiscoverer discoverer, InetSocketAddress destControlEndpointAddr) {
+      log.info("Found a KNX IP interface at " + destControlEndpointAddr);
       synchronized (this.connectionLock) {
          // The first interface found we be used for the connection
-         if (this.connection == null) {
+         if (this.connection == null
+               && (this.knxIpInterfaceHostname == null || destControlEndpointAddr.equals(new InetSocketAddress(
+                     this.knxIpInterfaceHostname, this.knxIpInterfacePort)))) {
             this.connection = new KNXConnectionImpl(
                   new IpTunnelClient(discoverer.getSrcAddr(), destControlEndpointAddr));
             this.connectionLock.notify();
+            log.info("Using KNX IP interface at " + destControlEndpointAddr);
          }
       }
    }
@@ -136,7 +143,20 @@ public class KNXIpConnectionManager implements DiscoveryListener {
          c.stop();
       }
    }
-   
+
+   protected void setKnxIpInterfaceHostname(String knxIpInterfaceHostname) {
+      if (knxIpInterfaceHostname != null && "".equals(knxIpInterfaceHostname.trim())) {
+         knxIpInterfaceHostname = null;
+      }
+      this.knxIpInterfaceHostname = knxIpInterfaceHostname;
+      log.info("KNX IP interface hostname set to '" + this.knxIpInterfaceHostname + "'");
+   }
+
+   protected void setKnxIpInterfacePort(int knxIpInterfacePort) {
+      this.knxIpInterfacePort = knxIpInterfacePort;
+      log.info("KNX IP interface port set to '" + this.knxIpInterfacePort + "'");
+   }
+
    /**
     * TODO 
     * 
