@@ -70,17 +70,6 @@
 + (NSMutableDictionary *)getAutoDiscoveryDic;
 
 /**
- * Check if the function of auto discovery is enabled.
- * So if this is enabled, panel client can discovery controller server automatically.
- */
-+ (BOOL)isAutoDiscoveryEnable;
-
-/**
- * Enable the function of auto discovery.
- */
-+ (void)setAutoDiscovery:(BOOL)on;
-
-/**
  * Get servers by auto discovery stored in panel client.
  */
 + (NSMutableArray *)getAutoServers;

@@ -28,6 +28,8 @@
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
 
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
 
 @interface AppSettingsDefinition (Private)
 
@@ -84,16 +86,6 @@ static NSString *unsavedChosenServerUrl = nil;
 // Get the map value of auto discovery boolean value.
 + (NSMutableDictionary *)getAutoDiscoveryDic {
 	return (NSMutableDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
-}
-
-// Check if function of auto discovery is enabled.
-+ (BOOL)isAutoDiscoveryEnable {
-	return [[[self getAutoDiscoveryDic] objectForKey:@"value"] boolValue];
-}
-
-// Enable or disable auto discovery function.
-+ (void)setAutoDiscovery:(BOOL)on {
-	[[self getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:on] forKey:@"value"];
 }
 
 // Get servers by auto discovery from appSettings.plist .
@@ -169,7 +161,7 @@ static NSString *unsavedChosenServerUrl = nil;
 	[self reloadData];
 	
 	NSString *serverUrl = nil;
-	if ([self isAutoDiscoveryEnable]) {
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery) {
 		NSLog(@"auto enable");
 		if ([self getAutoServers].count == 0) {
 			NSLog(@"auto 0");
@@ -197,7 +189,6 @@ static NSString *unsavedChosenServerUrl = nil;
 				break;
 			}
 		}
-        // TODO - EBR : breaks if array empty
 		serverUrl = (serverUrl?serverUrl: [[[self getCustomServers] objectAtIndex:0] valueForKey:@"url"]);
 	}
 	if (serverUrl) {

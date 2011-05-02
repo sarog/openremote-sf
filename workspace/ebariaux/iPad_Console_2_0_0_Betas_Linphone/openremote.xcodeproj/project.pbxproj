@@ -39,6 +39,8 @@
 		33CCF02C128A36FB001686C5 /* GetPanelsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33CCF02B128A36FB001686C5 /* GetPanelsController.m */; };
 		33DF56CE10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
+		6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
+		6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
 		608FBB77131FF90500C9089F /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
 		608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
 		608FBDD113211DED00C9089F /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
@@ -81,6 +83,16 @@
 		60A85C96131F972000C7918A /* ORWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C95131F972000C7918A /* ORWebView.m */; };
 		60C2F958135F3748000824A5 /* ScreenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C2F957135F3748000824A5 /* ScreenTest.m */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
+		60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
+		60C9D975136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
+		60C9D978136ADB31009EECA3 /* ORController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D977136ADB31009EECA3 /* ORController.m */; };
+		60C9D979136ADB31009EECA3 /* ORController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D977136ADB31009EECA3 /* ORController.m */; };
+		60C9D97C136ADB8A009EECA3 /* ORGroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */; };
+		60C9D97D136ADB8A009EECA3 /* ORGroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */; };
+		60C9D980136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */; };
+		60C9D981136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */; };
+		60C9D983136ADD31009EECA3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D982136ADD31009EECA3 /* CoreData.framework */; };
+		60C9D985136ADD38009EECA3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D984136ADD37009EECA3 /* CoreData.framework */; };
 		60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
 		60E7A8EA13696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
 		60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
@@ -461,6 +473,8 @@
 		33CCF02B128A36FB001686C5 /* GetPanelsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetPanelsController.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
+		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
+		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
 		608FBB75131FF90500C9089F /* SipController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SipController.h; sourceTree = "<group>"; };
 		608FBB76131FF90500C9089F /* SipController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SipController.m; sourceTree = "<group>"; };
 		608FBB9D131FF9C300C9089F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -704,6 +718,15 @@
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
 		60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_screenIdForOrientation.xml; sourceTree = "<group>"; };
+		60C9D973136AD43E009EECA3 /* ORConsoleSettings.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ORConsoleSettings.xcdatamodel; sourceTree = "<group>"; };
+		60C9D976136ADB31009EECA3 /* ORController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORController.h; sourceTree = "<group>"; };
+		60C9D977136ADB31009EECA3 /* ORController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORController.m; sourceTree = "<group>"; };
+		60C9D97A136ADB89009EECA3 /* ORGroupMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORGroupMember.h; sourceTree = "<group>"; };
+		60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORGroupMember.m; sourceTree = "<group>"; };
+		60C9D97E136ADB8A009EECA3 /* ORConsoleSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettings.h; sourceTree = "<group>"; };
+		60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettings.m; sourceTree = "<group>"; };
+		60C9D982136ADD31009EECA3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		60C9D984136ADD37009EECA3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60E7A8E313696C8B00EA107A /* ColorPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPicker.h; sourceTree = "<group>"; };
 		60E7A8E413696C8B00EA107A /* ColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPicker.m; sourceTree = "<group>"; };
 		60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerImageView.h; sourceTree = "<group>"; };
@@ -919,6 +942,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60C9D983136ADD31009EECA3 /* CoreData.framework in Frameworks */,
 				60A61A7E1355F15000A7C87E /* libresolv.dylib in Frameworks */,
 				60A61A7C1355F12400A7C87E /* AVFoundation.framework in Frameworks */,
 				60A61A7A1355F07E00A7C87E /* CoreAudio.framework in Frameworks */,
@@ -953,6 +977,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60C9D985136ADD38009EECA3 /* CoreData.framework in Frameworks */,
 				60EB571B135C4E4100B29CED /* libresolv.dylib in Frameworks */,
 				60EB571C135C4E4100B29CED /* AVFoundation.framework in Frameworks */,
 				60EB571D135C4E4100B29CED /* CoreAudio.framework in Frameworks */,
@@ -1023,6 +1048,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				60C9D984136ADD37009EECA3 /* CoreData.framework */,
+				60C9D982136ADD31009EECA3 /* CoreData.framework */,
 				60A61A7D1355F15000A7C87E /* libresolv.dylib */,
 				60A61A7B1355F12400A7C87E /* AVFoundation.framework */,
 				60A61A791355F07E00A7C87E /* CoreAudio.framework */,
@@ -1071,6 +1098,7 @@
 				8CFDB2760FBBBF4500D204CB /* appSettings.plist */,
 				8C49724011B20D660039A293 /* InitViewController~iPhone.xib */,
 				8C4974C111B24B020039A293 /* ErrorViewController~iPhone.xib */,
+				60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1764,12 +1792,20 @@
 		8CFEE2880F558C6700DF8759 /* config */ = {
 			isa = PBXGroup;
 			children = (
+				60C9D97E136ADB8A009EECA3 /* ORConsoleSettings.h */,
+				60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */,
+				60C9D97A136ADB89009EECA3 /* ORGroupMember.h */,
+				60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */,
+				60C9D976136ADB31009EECA3 /* ORController.h */,
+				60C9D977136ADB31009EECA3 /* ORController.m */,
 				8C460E711095555500C7A686 /* AppSettingsDefinition.h */,
 				8C460E721095555500C7A686 /* AppSettingsDefinition.m */,
 				8C460E731095555500C7A686 /* DirectoryDefinition.h */,
 				8C460E741095555500C7A686 /* DirectoryDefinition.m */,
 				8C460E751095555500C7A686 /* ServerDefinition.h */,
 				8C460E761095555500C7A686 /* ServerDefinition.m */,
+				6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */,
+				6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */,
 			);
 			name = config;
 			sourceTree = "<group>";
@@ -2084,6 +2120,11 @@
 				60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */,
 				60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */,
 				60E7A8ED13696C8B00EA107A /* ColorPickerView.m in Sources */,
+				60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */,
+				60C9D978136ADB31009EECA3 /* ORController.m in Sources */,
+				60C9D97C136ADB8A009EECA3 /* ORGroupMember.m in Sources */,
+				60C9D980136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */,
+				6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2185,6 +2226,11 @@
 				60E7A8EA13696C8B00EA107A /* ColorPicker.m in Sources */,
 				60E7A8EC13696C8B00EA107A /* ColorPickerImageView.m in Sources */,
 				60E7A8EE13696C8B00EA107A /* ColorPickerView.m in Sources */,
+				60C9D975136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */,
+				60C9D979136ADB31009EECA3 /* ORController.m in Sources */,
+				60C9D97D136ADB8A009EECA3 /* ORGroupMember.m in Sources */,
+				60C9D981136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */,
+				6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2689,6 +2735,19 @@
 			defaultConfigurationName = "Simulator 3.2";
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				60C9D973136AD43E009EECA3 /* ORConsoleSettings.xcdatamodel */,
+			);
+			currentVersion = 60C9D973136AD43E009EECA3 /* ORConsoleSettings.xcdatamodel */;
+			path = ORConsoleSettings.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }

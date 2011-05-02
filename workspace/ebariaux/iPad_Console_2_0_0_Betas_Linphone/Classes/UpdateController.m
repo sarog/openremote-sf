@@ -40,6 +40,9 @@
 #import "GroupMember.h"
 #import "URLConnectionHelper.h"
 
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
 #define TIMEOUT_INTERVAL 5
@@ -92,7 +95,7 @@
 		[self checkNetworkAndUpdate];
 	} else {
 		NSLog(@"readServerUrlFromFile fail.");
-		if ([AppSettingsDefinition isAutoDiscoveryEnable]) {
+		if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery) {
 			[self findServer];
 		} else {
 			[self updateFailOrUseLocalCache:@"Can't find server url configuration. You can turn on auto-discovery or specify a server url in settings."];
@@ -162,7 +165,7 @@
 - (void)useCustomDefaultUrl {
 	NSLog(@"useCustomDefaultUrl");
 	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
-		[AppSettingsDefinition setAutoDiscovery:NO];
+		[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery = NO;
 		// Begin: Reset all customized server to unchoose
 		for(NSMutableDictionary *toBeResetCustomServer in [AppSettingsDefinition getCustomServers]) {
 			[toBeResetCustomServer setValue:[NSNumber numberWithBool:NO] forKey:@"choose"]; 
@@ -172,6 +175,7 @@
 		[customServer setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
 		[AppSettingsDefinition setCurrentServerUrl:[customServer valueForKey:@"url"]];
 		[AppSettingsDefinition writeToFile];
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
 		@try {
 			[CheckNetwork checkAll];			
 			[self checkNetworkAndUpdate];
@@ -208,6 +212,10 @@
 	[xmlParser setDelegate:self];
 	[xmlParser parse];
 	[xmlParser release];
+    NSLog(@"RoundRobin group members are:");
+    for (GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
+        NSLog(@"%@", gm.url);
+    }
 }
 
 #pragma mark delegate method of NSXMLParser

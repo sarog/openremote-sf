@@ -31,6 +31,9 @@
 #import "ChoosePanelViewController.h"
 #import "NotificationConstant.h"
 
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+
 @interface AppSettingController (Private)
 -(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
 - (void)autoDiscoverChanged:(id)sender;
@@ -74,8 +77,8 @@
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
 		[self setTitle:@"Settings"];
 		isEditing = NO;
-		autoDiscovery = [AppSettingsDefinition isAutoDiscoveryEnable];
-		
+		autoDiscovery = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery;
+                         
 		done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
 		cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
 
@@ -365,8 +368,9 @@
 		done.enabled = NO;
 		cancel.enabled = NO;
 		
-		[[AppSettingsDefinition getAutoDiscoveryDic] setValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"value"];
-		[AppSettingsDefinition writeToFile];
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery = autoDiscovery;
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
+
 		if (updateController) {
 			[updateController release];
 			updateController = nil;
@@ -436,7 +440,7 @@
 	if (serverArray) {
 		[serverArray release];
 	}
-	serverArray = [[NSMutableArray alloc]init];
+	serverArray = [[NSMutableArray alloc] init];
 	if (autoDiscovery) {
 		[serverArray addObjectsFromArray:[AppSettingsDefinition getAutoServers]];
 	} else {
