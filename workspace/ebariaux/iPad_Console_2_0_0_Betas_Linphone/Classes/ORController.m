@@ -12,12 +12,18 @@
 @implementation ORController
 
 @dynamic primaryURL;
+@dynamic selectedPanelIdentity;
 @dynamic index;
 @dynamic groupMembers;
 @dynamic settingsForAutoDiscoveredControllers;
 @dynamic settingsForConfiguredControllers;
 @dynamic settingsForSelectedDiscoveredController;
 @dynamic settingsForSelectedConfiguredController;
+
+- (NSString *)selectedPanelIdentityDisplayString
+{
+    return self.selectedPanelIdentity?self.selectedPanelIdentity:@"None";    
+}
 
 - (void)addGroupMembersObject:(ORGroupMember *)value {    
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];

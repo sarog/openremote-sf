@@ -519,7 +519,7 @@
         
         
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		panelCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
+		panelCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity?settingsManager.consoleSettings.selectedController.selectedPanelIdentity:@"None";
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
@@ -646,7 +646,7 @@
 
 - (void)didAddServerURL:(NSString *)serverURL
 {
-    [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings] addConfiguredControllerForURL:serverURL];
+    [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -654,15 +654,14 @@
 // After select a controller URL, get panel list from the controller.
 // If only one panel is available, automatically choose it.
 - (void)onGetPanels:(NSMutableArray*)panels {
+	UITableViewCell *identityCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	if (panels.count == 1) {
-		[[AppSettingsDefinition getPanelIdentityDic] setObject:[panels objectAtIndex:0] forKey:@"identity"];
+        settingsManager.consoleSettings.selectedController.selectedPanelIdentity = [panels objectAtIndex:0];
+        identityCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity;
 	} else {
-		[[AppSettingsDefinition getPanelIdentityDic] setObject:@"None" forKey:@"identity"];
+		settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
+        identityCell.textLabel.text = @"None";
 	}	
-	
-	UITableView *tv = (UITableView *)self.view;
-	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
-	identityCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
 }
 
 - (void)dealloc {

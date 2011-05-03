@@ -28,6 +28,9 @@
 #import "Definition.h"
 #import "DataBaseService.h"
 #import "NotificationConstant.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface ChoosePanelViewController (Private)
 
@@ -43,7 +46,7 @@
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
 		[self setTitle:@"Panel List"];
 		panels = [[NSMutableArray alloc] init];
-		chosenPanel = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
+		chosenPanel = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentityDisplayString;
 		[self requestPanelList];
 	}
 	return self;
@@ -121,18 +124,23 @@
 	} 
 	if (cell.accessoryType == UITableViewCellAccessoryNone) {
 		cell.accessoryType = UITableViewCellAccessoryCheckmark;
-		[[AppSettingsDefinition getPanelIdentityDic] setObject:cell.textLabel.text forKey:@"identity"];
+        [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity = cell.textLabel.text;
 	} 
 	
+         
+    // TODO EBR : this should be handled by a delegate method of the parent controller
+         
+         
 	currentSelectedPanelIndex = indexPath;
 	
-	[AppSettingsDefinition writeToFile];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 // Show login dialog for users, if users didn't login remote controller server.
 - (void)showLoginAlert {
 	
+    // TODO EBR: check what's the deal with user/pwd required for login -> store in "same place"
+    
 	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Controller Login" 
 													 message:@"\n\n\n" // IMPORTANT
 													delegate:self 
