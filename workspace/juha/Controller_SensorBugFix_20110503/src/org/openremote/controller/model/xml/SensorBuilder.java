@@ -670,7 +670,7 @@ public class SensorBuilder
     }
 
     log.debug(
-        "A switch sensor (Name = ''{0}'', ID = {1}) with {3}.", sensorName, sensorIDValue, mapping
+        "Created switch sensor (Name = ''{0}'', ID = {1}) with {2}.", sensorName, sensorIDValue, mapping
     );
 
     return mapping;
