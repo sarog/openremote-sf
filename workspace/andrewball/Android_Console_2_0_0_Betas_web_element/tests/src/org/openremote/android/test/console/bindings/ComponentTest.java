@@ -21,22 +21,12 @@
 
 package org.openremote.android.test.console.bindings;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import junit.framework.TestCase;
 
 import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.Web;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.openremote.android.test.TestUtils;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Tests the {@link org.openremote.android.console.bindings.Component} class.
@@ -45,41 +35,6 @@ import org.xml.sax.SAXException;
  */
 public class ComponentTest extends TestCase
 {
-
-  /** TODO put this somewhere else, it's copied from the WebTest class */
-  private Element parseXml(String xmlText)
-  {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = null;
-    try
-    {
-      builder = factory.newDocumentBuilder();
-    }
-    catch (ParserConfigurationException e)
-    {
-      fail("failed to initialize XML parser");
-    }
-
-    InputSource in = new InputSource();
-    in.setCharacterStream(new StringReader(xmlText));
-
-    Document doc = null;
-    try
-    {
-      doc = builder.parse(in);
-    }
-    catch (SAXException e)
-    {
-      fail("parse error");
-    }
-    catch (IOException e)
-    {
-      fail("IOException while parsing XML");
-    }
-
-    return doc.getDocumentElement();
-  }
-
   /** Tests that we can construct a Web object from the buildFromXml() method */
   public void testBuildFromXmlWeb() {
     final int id = 12;
@@ -88,7 +43,7 @@ public class ComponentTest extends TestCase
     final String password = "bear";
     final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' />";
 
-    Node parsedXml = parseXml(xmlText);
+    Node parsedXml = TestUtils.parseXml(xmlText);
     Web web = (Web) Component.buildWithXML(parsedXml);
 
     assertEquals(web.getSrc().toString(), url);
