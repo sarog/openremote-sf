@@ -33,12 +33,12 @@ public class LayoutContainerView extends FrameLayout {
    }
 
    public static LayoutContainerView buildWithLayoutContainer(Context context, LayoutContainer layout) {
-      LayoutContainerView layoutConatinerView = null;
+      LayoutContainerView layoutContainerView = null;
       if (layout instanceof AbsoluteLayoutContainer) {
-         layoutConatinerView = new AbsoluteLayoutContainerView(context, (AbsoluteLayoutContainer)layout);
+         layoutContainerView = new AbsoluteLayoutContainerView(context, (AbsoluteLayoutContainer)layout);
       } else if(layout instanceof GridLayoutContainer) {
-         layoutConatinerView = new GridLayoutContainerView(context, (GridLayoutContainer)layout);
+         layoutContainerView = new GridLayoutContainerView(context, (GridLayoutContainer)layout);
       }
-      return layoutConatinerView;
+      return layoutContainerView;
    }
 }
