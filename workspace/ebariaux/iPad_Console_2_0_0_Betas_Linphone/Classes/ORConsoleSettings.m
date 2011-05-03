@@ -9,6 +9,18 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
+@interface ORConsoleSettings ()
+
+- (void)addUnorderedAutoDiscoveredControllersObject:(ORController *)value;
+- (void)removeUnorderedAutoDiscoveredControllersObject:(ORController *)value;
+- (void)addUnorderedAutoDiscoveredControllers:(NSSet *)value;
+- (void)removeUnorderedAutoDiscoveredControllers:(NSSet *)value;
+- (void)addUnorderedConfiguredControllersObject:(ORController *)value;
+- (void)removeUnorderedConfiguredControllersObject:(ORController *)value;
+- (void)addUnorderedConfiguredControllers:(NSSet *)value;
+- (void)removeUnorderedConfiguredControllers:(NSSet *)value;
+
+@end
 
 @implementation ORConsoleSettings
 
@@ -17,17 +29,42 @@
 @dynamic selectedDiscoveredController;
 @dynamic selectedConfiguredController;
 
-- (NSArray *)autoDiscoveredControllers
+- (void)awakeFromFetch
 {
-    return nil;
+	[super awakeFromFetch];
+	[self addObserver:self forKeyPath:@"unorderedConfiguredControllers" options:NSKeyValueObservingOptionNew context:nil];
+	[self addObserver:self forKeyPath:@"unorderedAutoDiscoveredControllers" options:NSKeyValueObservingOptionNew context:nil];
 }
 
-- (NSArray *)configuredControllers
+- (void)awakeFromInsert
 {
-    return nil;
+	[super awakeFromInsert];
+	[self addObserver:self forKeyPath:@"unorderedConfiguredControllers" options:NSKeyValueObservingOptionNew context:nil];
+	[self addObserver:self forKeyPath:@"unorderedAutoDiscoveredControllers" options:NSKeyValueObservingOptionNew context:nil];
 }
-   
-   
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"unorderedConfiguredControllers"]) {
+		[configuredController release];
+		configuredController = nil;
+	} else if ([keyPath isEqualToString:@"unorderedAutoDiscoveredControllers"]) {
+		[autoDiscoveredControllers release];
+		autoDiscoveredControllers = nil;
+	}
+
+}
+
+- (void)didTurnInfoFault
+{
+	[configuredController dealloc];
+	configuredController = nil;
+    [self removeObserver:nil forKeyPath:@"unorderedConfiguredControllers"];
+	[autoDiscoveredControllers dealloc];
+	autoDiscoveredControllers = nil;
+    [self removeObserver:nil forKeyPath:@"unorderedAutoDiscoveredControllers"];
+}
+
 - (BOOL)isAutoDiscovery
 {
     [self willAccessValueForKey:@"autoDiscovery"];
@@ -41,6 +78,96 @@
     [self willChangeValueForKey:@"autoDiscovery"];
     [self setPrimitiveValue:[NSNumber numberWithBool:autoDiscovery] forKey:@"autoDiscovery"];
     [self didChangeValueForKey:@"autoDiscovery"];
+}
+
+- (NSArray *)autoDiscoveredControllers
+{
+    if (autoDiscoveredControllers == nil) {
+        NSMutableArray *temp = [NSMutableArray arrayWithArray:[self.unorderedAutoDiscoveredControllers allObjects]];
+        NSSortDescriptor *indexSort = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
+		[temp sortUsingDescriptors:[NSArray arrayWithObject:indexSort]];
+		[indexSort release];
+        autoDiscoveredControllers = [[NSArray alloc] initWithArray:temp];
+    }
+    return autoDiscoveredControllers;
+}
+
+- (void)removeAllAutoDiscoveredControllers
+{
+    [self removeUnorderedAutoDiscoveredControllers:self.unorderedAutoDiscoveredControllers];
+    self.selectedDiscoveredController = nil;
+}
+
+- (NSArray *)configuredControllers
+{
+    if (configuredController == nil) {
+        NSMutableArray *temp = [NSMutableArray arrayWithArray:[self.unorderedConfiguredControllers allObjects]];
+        NSSortDescriptor *indexSort = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
+		[temp sortUsingDescriptors:[NSArray arrayWithObject:indexSort]];
+		[indexSort release];
+        configuredController = [[NSArray alloc] initWithArray:temp];
+    }
+    return configuredController;
+}
+
+- (void)addConfiguredController:(ORController *)controller
+{
+    controller.index = [NSNumber numberWithInt:[((ORController *)[self.configuredControllers lastObject]).index intValue] + 1];
+    [self addUnorderedConfiguredControllersObject:controller];
+}
+
+- (void)addConfiguredControllerForURL:(NSString *)url
+{
+    ORController *controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
+    controller.primaryURL = url;
+    [self addConfiguredController:controller];
+    if (!self.selectedConfiguredController) {
+        self.selectedConfiguredController = controller;
+    }
+}
+
+- (void)removeConfiguredControllerAtIndex:(NSUInteger)index
+{
+    ORController *controller = [self.configuredControllers objectAtIndex:index];
+    if (self.selectedConfiguredController == controller) {
+        self.selectedConfiguredController = nil;
+    }
+    [self removeUnorderedConfiguredControllersObject:controller];
+}
+
+- (void)addAutoDiscoveredController:(ORController *)controller
+{
+    controller.index = [NSNumber numberWithInt:[((ORController *)[self.autoDiscoveredControllers lastObject]).index intValue] + 1];
+    [self addUnorderedAutoDiscoveredControllersObject:controller];
+}
+
+- (void)addAutoDiscoveredControllerForURL:(NSString *)url
+{
+    ORController *controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
+    controller.primaryURL = url;
+    [self addAutoDiscoveredController:controller];
+    if (!self.selectedDiscoveredController) {
+        self.selectedDiscoveredController = controller;
+    }
+}
+
+- (NSArray *)controllers
+{
+    return (self.isAutoDiscovery)?self.autoDiscoveredControllers:self.configuredControllers;
+}
+
+- (ORController *)selectedController
+{
+    return (self.isAutoDiscovery)?self.selectedDiscoveredController:self.selectedConfiguredController;
+}
+
+- (void)setSelectedController:(ORController *)controller
+{
+    if (self.isAutoDiscovery) {
+        self.selectedDiscoveredController = controller;
+    } else {
+        self.selectedConfiguredController = controller;
+    }
 }
 
 - (void)addUnorderedAutoDiscoveredControllersObject:(ORController *)value

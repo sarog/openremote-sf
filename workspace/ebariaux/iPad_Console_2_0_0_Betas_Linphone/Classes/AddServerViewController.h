@@ -19,21 +19,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <UIKit/UIKit.h>
 #import "TextFieldCell.h"
+
+@protocol AddServerViewControllerDelegate <NSObject>
+
+- (void)didAddServerURL:(NSString *)serverURL;
+
+@end
 
 /**
  * Subclass of TableViewController for providing UI and functions of customizing controller server url.
  */
 @interface AddServerViewController : UITableViewController<UITableViewDelegate, UITableViewDataSource,UITextFieldDelegate> {
-	NSMutableDictionary *editingItem;
+	NSString *urlToEdit;
 	TextFieldCell *serverUrlFieldCell;
-	NSMutableArray *servers;
-	BOOL newItem;	
+    
+    NSObject <AddServerViewControllerDelegate> *delegate;
 }
 
-@property (nonatomic,retain) NSMutableDictionary *editingItem;
-@property (nonatomic,retain) NSMutableArray *servers;
+@property (nonatomic, retain) NSString *urlToEdit;
+
+@property (nonatomic, assign) NSObject <AddServerViewControllerDelegate> *delegate;
 
 @end

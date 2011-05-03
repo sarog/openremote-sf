@@ -17,6 +17,14 @@
     NSArray *configuredController;
 }
 
+- (void)addConfiguredController:(ORController *)controller;
+- (void)addConfiguredControllerForURL:(NSString *)url;
+- (void)removeConfiguredControllerAtIndex:(NSUInteger)index;
+
+- (void)removeAllAutoDiscoveredControllers;
+- (void)addAutoDiscoveredController:(ORController *)controller;
+- (void)addAutoDiscoveredControllerForURL:(NSString *)url;
+
 @property (nonatomic, assign, getter=isAutoDiscovery) BOOL autoDiscovery;
 @property (nonatomic, retain) NSSet *unorderedAutoDiscoveredControllers;
 @property (nonatomic, retain) NSSet *unorderedConfiguredControllers;
@@ -25,5 +33,8 @@
 
 @property (readonly) NSArray *autoDiscoveredControllers;
 @property (readonly) NSArray *configuredControllers;
+
+@property (readonly) NSArray *controllers;
+@property (nonatomic, assign) ORController *selectedController;
 
 @end

@@ -296,6 +296,9 @@ static BOOL isWifiActive = NO;
 }
 
 - (void) removeBadCurrentServerURL {
+    
+    // TODO: EBR re-implement
+    /*
 	NSString *tempCurrentServerUrl = [AppSettingsDefinition getCurrentServerUrl];
 	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings]) {
 		NSMutableArray *autoServers = [AppSettingsDefinition getAutoServers];
@@ -314,10 +317,14 @@ static BOOL isWifiActive = NO;
 			}
 		}
 	}
+     */
 }
 
 // Check whether the url of groupmember is available.
 - (NSString *) checkGroupMemberServers {
+    
+    // TODO: EBR re-implement
+    /*
     NSLog(@">>checkGroupMemberServers");
 	NSMutableArray *groupMembers = [[DataBaseService sharedDataBaseService] findAllGroupMembers];
     NSLog(@">>allGroupMembers %@", groupMembers);
@@ -360,6 +367,7 @@ static BOOL isWifiActive = NO;
 			continue;
 		}
 	}
+     */
 	return nil;
 }
 

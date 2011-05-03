@@ -42,17 +42,19 @@
 
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
+#import "ORController.h"
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
 #define TIMEOUT_INTERVAL 5
 
-@interface UpdateController (private)
+@interface UpdateController ()
+
 - (void)checkNetworkAndUpdate;
 - (void)findServer;
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
-- (void)useCustomDefaultUrl;
 - (void)getRoundRobinGroupMembers;
+
 @end
 
 
@@ -90,11 +92,12 @@
 	}
 	NSLog(@"check config");
 
-	if ([AppSettingsDefinition readServerUrlFromFile]) {
-		NSLog(@"readServerUrlFromFile success.");
+    
+    // TODO EBR review, must also try persisted auto discovered URL if selected
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedConfiguredController) {
 		[self checkNetworkAndUpdate];
 	} else {
-		NSLog(@"readServerUrlFromFile fail.");
+		NSLog(@"No selected controller found in configuration");
 		if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery) {
 			[self findServer];
 		} else {
@@ -156,35 +159,7 @@
 	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
 		[self didUseLocalCache:errorMessage];
 	} else {
-		//[self useCustomDefaultUrl];
 		[self didUpdateFail:errorMessage];
-	}
-}
-
-// Select the first customized servers as current server and then update if customized servers' length isn't zero.
-- (void)useCustomDefaultUrl {
-	NSLog(@"useCustomDefaultUrl");
-	if ([[AppSettingsDefinition getCustomServers] count] > 0) {
-		[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery = NO;
-		// Begin: Reset all customized server to unchoose
-		for(NSMutableDictionary *toBeResetCustomServer in [AppSettingsDefinition getCustomServers]) {
-			[toBeResetCustomServer setValue:[NSNumber numberWithBool:NO] forKey:@"choose"]; 
-		}
-		// End
-		NSMutableDictionary *customServer = [[AppSettingsDefinition getCustomServers] objectAtIndex:0];
-		[customServer setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-		[AppSettingsDefinition setCurrentServerUrl:[customServer valueForKey:@"url"]];
-		[AppSettingsDefinition writeToFile];
-        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
-		@try {
-			[CheckNetwork checkAll];			
-			[self checkNetworkAndUpdate];
-		}
-		@catch (CheckNetworkException *e) {
-			[self didUpdateFail:e.message];
-		}
-	} else {
-		[self didUpdateFail:@"There is no customized default Controller server."];
 	}
 }
 
@@ -254,8 +229,8 @@
 
 #pragma mark delegate method of ServerAutoDiscoveryController
 - (void)onFindServer:(NSString *)serverUrl {
-	NSLog(@"onFindServer %@",serverUrl);
-	NSLog(@"after find server, find auto server %d",[AppSettingsDefinition getAutoServers].count);
+	NSLog(@"onFindServer %@", serverUrl);
+	NSLog(@"after find server, find auto server %d",[[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.autoDiscoveredControllers count]);
 	[self checkNetworkAndUpdate];
 }
 

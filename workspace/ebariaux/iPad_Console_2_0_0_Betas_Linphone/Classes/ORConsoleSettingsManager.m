@@ -101,6 +101,11 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
     NSLog(@"out of save console settings");
 }
 
+- (void)cancelConsoleSettingsChanges
+{
+    [self.managedObjectContext rollback];
+}
+
 #pragma mark Core Data stack
 
 /**
