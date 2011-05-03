@@ -19,9 +19,6 @@
 */
 package org.openremote.android.console.bindings;
 
-import java.net.MalformedURLException;
-
-import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Node;
 
