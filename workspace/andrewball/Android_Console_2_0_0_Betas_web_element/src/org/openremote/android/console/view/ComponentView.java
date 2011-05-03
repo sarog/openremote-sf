@@ -22,6 +22,7 @@ package org.openremote.android.console.view;
 import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.Image;
 import org.openremote.android.console.bindings.Label;
+import org.openremote.android.console.bindings.Web;
 
 import android.content.Context;
 import android.widget.LinearLayout;
@@ -54,6 +55,8 @@ public class ComponentView extends LinearLayout {
          componentView = new LabelView(context, (Label)component);
       } else if (component instanceof Image) {
          componentView = new ORImageView(context, (Image)component);
+      } else if (component instanceof Web) {
+         componentView = new ORWebView(context, (Web) component);
       } else {
          componentView = ControlView.buildWithControl(context, component);
       }
