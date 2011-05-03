@@ -22,14 +22,14 @@
 #import "ServerDefinition.h"
 #import "AppSettingsDefinition.h"
 #import "NSString+ORAdditions.h"
-
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @implementation ServerDefinition
 
 + (NSString *)serverUrl {
-	static NSString *serverUrl;
-	serverUrl = [AppSettingsDefinition getCurrentServerUrl];
-	return  serverUrl;
+    return ((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController).primaryURL;
 }
 
 //use HTTPS, SSL port
@@ -58,7 +58,7 @@
 }
 
 + (NSString *)securedServerUrl {
-	return  [self applyHttpsAndSslPort:[AppSettingsDefinition getCurrentServerUrl]];
+	return  [self applyHttpsAndSslPort:((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController).primaryURL];
 }
 
 + (NSString *)panelXmlRESTUrl {
@@ -99,7 +99,7 @@
 }
 
 + (NSString *)panelsRESTUrl {
-	NSString *url = [AppSettingsDefinition getUnsavedChosenServerUrl];
+	NSString *url = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL;
 	url = [AppSettingsDefinition useSSL] ? [self applyHttpsAndSslPort:url] : url;
 	return [url stringByAppendingPathComponent:@"rest/panels"];
 }

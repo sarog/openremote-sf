@@ -23,7 +23,6 @@
 #import "AppSettingController.h"
 #import "DirectoryDefinition.h"
 #import "ServerAutoDiscoveryController.h"
-#import "AddServerViewController.h"
 #import "AppSettingsDefinition.h"
 #import "ViewHelper.h"
 #import "UpdateController.h"
@@ -33,9 +32,9 @@
 
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface AppSettingController (Private)
--(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b;
 - (void)autoDiscoverChanged:(id)sender;
 - (void)deleteAllRow;
 - (void)updateTableView;
@@ -46,7 +45,6 @@
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 - (void)cancelView:(id)sender;
--(NSString *)getUnsavedChosenServerUrl;
 @end
 
 // The section of table cell where autoDiscoverySwitch is in.
@@ -74,14 +72,15 @@
 
 
 - (id)init {
-	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
+    self = [super initWithStyle:UITableViewStyleGrouped];
+	if (self) {
+        settingsManager = [ORConsoleSettingsManager sharedORConsoleSettingsManager];
+        
 		[self setTitle:@"Settings"];
 		isEditing = NO;
-		autoDiscovery = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery;
                          
 		done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
 		cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
-
 	}
 	return self;
 }
@@ -100,32 +99,10 @@
 
 // Hide spinner
 - (void)forceHideSpinner:(BOOL)force {
-	if (spinner && serverArray.count > 0 || force) {
+	if (spinner && [settingsManager.consoleSettings.controllers count] > 0 || force) {
 		[spinner removeFromSuperview];
 		spinner = nil;
 	}	
-}
-
-// Get servers by auto discovery or customizing in appSettingDefinition depending on if auto discovery is enabled.
--(NSMutableArray *)getCurrentServersWithAutoDiscoveryEnable:(BOOL)b {
-	if (b) {
-		return [AppSettingsDefinition getAutoServers];
-	} else {
-		return [AppSettingsDefinition getCustomServers];
-	}
-}
-
-// Get the selected controller server url in controller server cell list of "Choose Controller" section.
--(NSString *)getUnsavedChosenServerUrl {
-	NSArray *shownServers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
-	NSString *url = nil;
-	for (int i=0; i < shownServers.count; i++) {
-		if ([[[shownServers objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
-			url = [[shownServers objectAtIndex:i] valueForKey:@"url"];
-			break;
-		} 
-	}
-	return url;
 }
 
 // Check if the section parameter indexPath specified is auto discovery section.
@@ -135,7 +112,7 @@
 
 // Check if the section parameter indexPath specified is servers section by auto discovery.
 - (BOOL)isAutoServerSection:(NSIndexPath *)indexPath {
-	if (autoDiscovery && indexPath.section == CONTROLLER_URLS_SECTION) {
+	if (settingsManager.consoleSettings.isAutoDiscovery && indexPath.section == CONTROLLER_URLS_SECTION) {
 		return YES;
 	}
 	return NO;
@@ -143,7 +120,7 @@
 
 // Check if the section parameter indexPath specified is servers section by customizing.
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
-	if (!autoDiscovery && indexPath.row < [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
+	if (!settingsManager.consoleSettings.autoDiscovery && indexPath.row < [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		if (indexPath.row == 0) {
 			return YES;
 		}
@@ -154,7 +131,7 @@
 
 // Check if the row parameter indexPath specified is the cell row of add customized controller server.
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath {
-	if (!autoDiscovery && indexPath.row >= [serverArray count] && indexPath.section == CONTROLLER_URLS_SECTION) {
+	if (!settingsManager.consoleSettings.autoDiscovery && indexPath.row >= [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION) {
 		return YES;
 	}
 	return NO;
@@ -162,36 +139,56 @@
 
 // The method will be called if auto discovery switch is triggered.
 - (void)autoDiscoverChanged:(id)sender {
-	UISwitch *s = (UISwitch *)sender;
-	autoDiscovery = s.on;
-	
-	[self deleteAllRow];
+    // Collect the rows that are present now and should get deleted
+    NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
+	for (int i = 0; i < [settingsManager.consoleSettings.controllers count]; i++){
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:CONTROLLER_URLS_SECTION]];
+	}
+	if (!settingsManager.consoleSettings.autoDiscovery) {
+		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] inSection:CONTROLLER_URLS_SECTION]];
+	}
+    
+    settingsManager.consoleSettings.autoDiscovery = ((UISwitch *)sender).on;
 
-	if (autoDiscovery) {
+    // Collect the rows that will be inserted
+	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
+	if (!settingsManager.consoleSettings.autoDiscovery) {
+        for (int i = 0; i < [settingsManager.consoleSettings.controllers count]; i++){
+            [insertIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:CONTROLLER_URLS_SECTION]];
+        }
+		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] inSection:CONTROLLER_URLS_SECTION]];
+    }
+
+	if (settingsManager.consoleSettings.autoDiscovery) {
+        [settingsManager.consoleSettings removeAllAutoDiscoveredControllers];
+    }    
+    
+    // Model is up to date, apply changes to GUI
+	[self.tableView beginUpdates];    
+	[self.tableView deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
+	
+	[deleteIndexPaths release];
+	[insertIndexPaths release];
+
+    if (autoDiscoverController) {
+        [autoDiscoverController setDelegate:nil];
+        [autoDiscoverController release];
+        autoDiscoverController = nil;
+    }
+	
+    if (settingsManager.consoleSettings.autoDiscovery) {
 		[self showSpinner];
-		[AppSettingsDefinition removeAllAutoServer];
-		[AppSettingsDefinition writeToFile];
 		self.navigationItem.leftBarButtonItem = nil;
-		if (autoDiscoverController) {
-			[autoDiscoverController setDelegate:nil];
-			[autoDiscoverController release];
-			autoDiscoverController = nil;
-		}
-		autoDiscoverController = [[ServerAutoDiscoveryController alloc]initWithDelegate:self];
+		autoDiscoverController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
 		getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:AUTO_DISCOVERY_TIMER_INTERVAL target:self selector:@selector(updateTableView) userInfo:nil repeats:NO] retain];
 		self.navigationItem.leftBarButtonItem = cancel;
 	} else {
-		if(getAutoServersTimer && [getAutoServersTimer isValid]){
+		if (getAutoServersTimer && [getAutoServersTimer isValid]) {
 			[getAutoServersTimer invalidate];
 		}
-		
-		if (autoDiscoverController) {
-			[autoDiscoverController setDelegate:nil];
-			[autoDiscoverController release];
-			autoDiscoverController = nil;
-		}
-		//self.navigationItem.leftBarButtonItem = edit;
-		[self updateTableView];
+        [self updatePanelIdentityView];
 	}
 		
 }
@@ -290,54 +287,20 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-// Delegate all table cells of servers while switching between auto discovery and customizing.
-- (void)deleteAllRow {
-	UITableView *tv = (UITableView *)self.view;
-	
-	[tv beginUpdates];
-	NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
-	for (int i=0;i <serverArray.count;i++){
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:CONTROLLER_URLS_SECTION]];
-	}
-	if (autoDiscovery) {
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[serverArray count] inSection:CONTROLLER_URLS_SECTION]];
-	}
-	[serverArray removeAllObjects];
-	[tv deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationFade];
-	
-	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
-	
-	if (!autoDiscovery) {
-		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:0 inSection:CONTROLLER_URLS_SECTION]];
-		[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
-	}
-	[tv endUpdates];
-	
-	[deleteIndexPaths release];
-	[insertIndexPaths release];
-	
-}
-
 // Updates controller server list in tableview, and updates panel identity view in tableview.
 - (void)updateTableView {
-	UITableView *tv = (UITableView *)self.view;
-	[tv beginUpdates];
-	
-	NSArray *newArray = nil;
-	newArray = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
-	
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
-	for (int j=0;j < newArray.count;j++){
+	for (int j = 0; j < [settingsManager.consoleSettings.controllers count]; j++) {
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:CONTROLLER_URLS_SECTION]];
 	}
-	[serverArray addObjectsFromArray:newArray];
 	
-	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
-	[tv endUpdates];
+	[self.tableView beginUpdates];
+	[self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+	[self.tableView endUpdates];
 	
 	[insertIndexPaths release];
-	
-	[self updatePanelIdentityView];	
+
+    [self updatePanelIdentityView];	
 	
 	[self forceHideSpinner:NO];
 }
@@ -348,7 +311,7 @@
 	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	identityCell.textLabel.text = @"None";
 	
-	[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
+//	[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
 	
 	GetPanelsController *getPanelsController = [[GetPanelsController alloc] initWithDelegate:self];
 	[getPanelsController release];
@@ -356,19 +319,19 @@
 
 // Cancle(Dismiss) appSettings view.
 - (void)cancelView:(id)sender {
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] cancelConsoleSettingsChanges];
 	[self dismissModalViewControllerAnimated:YES];
 }
 
 // Persists settings info into appSettings.plist .
 - (void)saveSettings {
-	if (serverArray.count == 0) {
+	if ([settingsManager.consoleSettings.controllers count] == 0) {
 		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 		done.enabled = NO;
 		cancel.enabled = NO;
 		
-        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery = autoDiscovery;
         [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
 
 		if (updateController) {
@@ -433,25 +396,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	
 	self.navigationItem.rightBarButtonItem = done;
 	self.navigationItem.leftBarButtonItem = cancel;
-	
-	if (serverArray) {
-		[serverArray release];
-	}
-	serverArray = [[NSMutableArray alloc] init];
-	if (autoDiscovery) {
-		[serverArray addObjectsFromArray:[AppSettingsDefinition getAutoServers]];
-	} else {
-		[serverArray addObjectsFromArray:[AppSettingsDefinition getCustomServers]];
-	}
-	
-	[self.tableView reloadData];
-	
+
+	[self.tableView reloadData];	
 }
 
 #pragma mark Table view methods
+
 // 'auto-discovery URLs' share one section with 'custom URLs', -1
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return [AppSettingsDefinition getAppSettings].count - 1;
@@ -459,16 +411,18 @@
 
 
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == CONTROLLER_URLS_SECTION){
-		return autoDiscovery ? serverArray.count : serverArray.count + 1;// custom URLs need extra cell 'Add url >'
-	} else if (section == SECURITY_SECTION){
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+	if (section == CONTROLLER_URLS_SECTION) {
+		return [settingsManager.consoleSettings.controllers count] + (settingsManager.consoleSettings.autoDiscovery?0:1); // custom URLs need extra cell 'Add url >'
+	} else if (section == SECURITY_SECTION) {
 		return 2;
 	}
 	return 1;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
 	if (section == [self numberOfSectionsInTableView:tableView] - 1) {
 		return [NSString stringWithFormat:@"Version %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 	} 
@@ -539,19 +493,21 @@
 	if ([self isAutoDiscoverySection:indexPath]) {
 		switchCell.textLabel.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
 		UISwitch *switchView = (UISwitch *)switchCell.accessoryView;
-		[switchView setOn:autoDiscovery];
+		[switchView setOn:settingsManager.consoleSettings.autoDiscovery];
 		[switchView addTarget:self action:@selector(autoDiscoverChanged:) forControlEvents:UIControlEventValueChanged];
 		return switchCell;
+        
+        
+        
 	} else if (indexPath.section == CONTROLLER_URLS_SECTION) {
 		if ([self isAddCustomServerRow:indexPath]) {
 			serverCell.textLabel.text = @"Add New Controller...";
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
-		}
-		else {
-			serverCell.textLabel.text = [[serverArray objectAtIndex:indexPath.row] objectForKey:@"url"];
+		} else {
+			serverCell.textLabel.text = ((ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row]).primaryURL;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
-			if ( [[[serverArray objectAtIndex:indexPath.row] objectForKey:@"choose"] boolValue]) {
+			if ([settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row] == settingsManager.consoleSettings.selectedController) {
 				currentSelectedServerIndex = indexPath;
 				serverCell.accessoryType = UITableViewCellAccessoryCheckmark;
 			} else {
@@ -559,6 +515,9 @@
 			}
 		}
 		return serverCell;
+        
+        
+        
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
 		panelCell.textLabel.text = [[AppSettingsDefinition getPanelIdentityDic] objectForKey:@"identity"];
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -596,20 +555,15 @@
 }
 
 - (void)tableView:(UITableView *)tv commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-	// If row is deleted, remove it from the list.
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		if ([tv cellForRowAtIndexPath:indexPath].accessoryType == UITableViewCellAccessoryCheckmark) {
-			currentSelectedServerIndex  = nil;
-		}
-		[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] removeObjectAtIndex:indexPath.row];
-		[serverArray removeObjectAtIndex:indexPath.row];
+        [settingsManager.consoleSettings removeConfiguredControllerAtIndex:indexPath.row];
 		[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
 	}
 }
 
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (autoDiscovery) {
+	if (settingsManager.consoleSettings.autoDiscovery) {
 		return NO;
 	}
 	if ([self isCustomServerSection:indexPath]) {
@@ -640,40 +594,35 @@
 	}
 	
 	if ([self isAddCustomServerRow:indexPath]) {
-		AddServerViewController *addServerViewController = [[AddServerViewController alloc]init];
-		addServerViewController.editingItem = nil;
-		addServerViewController.servers = [self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery];
+		AddServerViewController *addServerViewController = [[AddServerViewController alloc] init];
+		addServerViewController.urlToEdit = nil;
+        addServerViewController.delegate = self;
 		[[self navigationController] pushViewController:addServerViewController animated:YES];
 		[addServerViewController release];
 		return;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		if ([self getUnsavedChosenServerUrl] == nil) {
-			[ViewHelper showAlertViewWithTitle:@"Warning" 
-																 Message:@"No Controller. Please configure Controller URL manually."];
+		if (!settingsManager.consoleSettings.selectedController) {
+			[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"No Controller. Please configure Controller URL manually."];
 			cell.selected = NO;
 			return;
 		}
-		[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
+//		[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
 
-		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc]init];
+		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc] init];
 		[[self navigationController] pushViewController:choosePanelViewController animated:YES];
 		[choosePanelViewController release];
 		return;
 	}
 	
 	
-	if (indexPath.section == CONTROLLER_URLS_SECTION) {
+	if (indexPath.section == CONTROLLER_URLS_SECTION) {        
 		if (currentSelectedServerIndex) {
 			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
-			if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
-				[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:currentSelectedServerIndex.row] setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];		
-				oldCell.accessoryType = UITableViewCellAccessoryNone;
-			} 			
+			oldCell.accessoryType = UITableViewCellAccessoryNone;
 		} 
-		if (cell.accessoryType == UITableViewCellAccessoryNone) {
-			[[[self getCurrentServersWithAutoDiscoveryEnable:autoDiscovery] objectAtIndex:indexPath.row] setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-			cell.accessoryType = UITableViewCellAccessoryCheckmark;
-		} 
+		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
+        
 		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
 			[self updatePanelIdentityView];
 		}
@@ -691,6 +640,14 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
 	return YES;
+}
+
+#pragma mark AddServerViewControllerDelegate implementation
+
+- (void)didAddServerURL:(NSString *)serverURL
+{
+    [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings] addConfiguredControllerForURL:serverURL];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark Delegate method of GetPanelsDelegate
@@ -715,7 +672,6 @@
 	[updateController release];
 	[done release];
 	[cancel release];
-	[serverArray release];
 	[portField release];
 	
 	[super dealloc];

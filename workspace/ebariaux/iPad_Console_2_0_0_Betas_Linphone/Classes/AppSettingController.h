@@ -25,15 +25,19 @@
 #import "UpdateController.h"
 #import "FileUtils.h"
 #import "GetPanelsController.h"
+#import "AddServerViewController.h"
+
+@class ORConsoleSettingsManager;
 
 /**
  * Render the UI of AppSetting view and provide functions of setting about panel client.
  */
-@interface AppSettingController : UITableViewController <UITextFieldDelegate, GetPanelsDelegate, ServerAutoDiscoveryControllerDelagate> {
-	NSString *pathToUserCopyOfPlist;
-	BOOL autoDiscovery;
-	NSMutableArray *serverArray;
+@interface AppSettingController : UITableViewController <UITextFieldDelegate, GetPanelsDelegate, ServerAutoDiscoveryControllerDelagate, AddServerViewControllerDelegate> {
+    
+    ORConsoleSettingsManager *settingsManager;
+    
 	NSIndexPath *currentSelectedServerIndex;
+    
 	ServerAutoDiscoveryController *autoDiscoverController;
 	UIBarButtonItem *done;
 	UIBarButtonItem *cancel;
@@ -42,7 +46,7 @@
 	UpdateController *updateController;
 	NSTimer *getAutoServersTimer;
 	UIActivityIndicatorView *spinner;
-	UITextField *portField;
-	
+	UITextField *portField;	
 }
+
 @end

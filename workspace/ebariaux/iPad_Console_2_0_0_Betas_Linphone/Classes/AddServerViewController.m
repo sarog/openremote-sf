@@ -27,7 +27,7 @@
 
 @implementation AddServerViewController
 
-@synthesize editingItem, servers;
+@synthesize urlToEdit, delegate;
 
 - (id)init {
 	self = [super initWithStyle:UITableViewStyleGrouped];
@@ -35,25 +35,25 @@
 }
 
 - (void)dealloc {
-	[editingItem release];
+	[urlToEdit release];
 	[serverUrlFieldCell release];
     [super dealloc];
 }
 
 // Customize view of users input custom controller server.
 - (void)viewWillAppear:(BOOL)animated {
-	if (editingItem == nil) {
-		self.editingItem = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"",@"url",[NSNumber numberWithBool:NO],@"choose",nil];
-		newItem = YES;
+	if (urlToEdit == nil) {
 		self.title = @"Add a Server";
 	} else {
-		self.title = [NSString stringWithFormat:@"Editing %@",[[editingItem valueForKey:@"url"] stringValue]];
+		self.title = [NSString stringWithFormat:@"Editing %@", urlToEdit];
 	}
 	if (!serverUrlFieldCell) {
 		serverUrlFieldCell = [[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"serverUrlCell"];
 		[serverUrlFieldCell.textField setDelegate:self];
 	}
-	serverUrlFieldCell.textField.text = [editingItem valueForKey:@"url"];
+    if (urlToEdit) {
+        serverUrlFieldCell.textField.text = urlToEdit;
+    }
 	[serverUrlFieldCell.textField becomeFirstResponder];
 }
 
@@ -67,7 +67,11 @@
 		return NO;
 	}
 	NSLog(@"set url to %@",url);
-	[editingItem setValue:url forKey:@"url"];
+
+    [delegate didAddServerURL:url];
+	
+    /*
+    [editingItem setValue:url forKey:@"url"];
 	if (newItem) {
 		if (servers.count == 0) {
 			[editingItem setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
@@ -77,6 +81,8 @@
 	}
 	[AppSettingsDefinition writeToFile];
 	[self.navigationController popViewControllerAnimated:YES];
+    
+    */
 	return YES;
 }
 

@@ -30,6 +30,7 @@
 
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface AppSettingsDefinition (Private)
 
@@ -37,9 +38,8 @@
 
 @implementation AppSettingsDefinition
 
-static NSString *currentServerUrl = nil;
 static NSMutableArray *settingsData = nil;
-static NSString *unsavedChosenServerUrl = nil;
+
 
 // Read appSettings infomation from file appSettings.plist in array.
 + (NSMutableArray *)getAppSettings {
@@ -88,28 +88,6 @@ static NSString *unsavedChosenServerUrl = nil;
 	return (NSMutableDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
 }
 
-// Get servers by auto discovery from appSettings.plist .
-+ (NSMutableArray *)getAutoServers {
-	return (NSMutableArray *)[[self getSectionWithIndex:AUTO_DISCOVERY_URLS_INDEX] objectForKey:@"servers"];
-}
-
-// Get servers by user input from appSettings.plist .
-+ (NSMutableArray *)getCustomServers {
-	return (NSMutableArray *)[[self getSectionWithIndex:CUSOMIZED_URLS_INDEX] objectForKey:@"servers"];
-}
-
-// Add specified server into array of auto servers.
-+ (void)addAutoServer:(NSDictionary *)server {
-	[[self getAutoServers] addObject:server];
-}
-
-// Clear the auto servers from appSettings.plist .
-+ (void)removeAllAutoServer {
-	[[self getAutoServers] removeAllObjects];
-	[self writeToFile];
-	NSLog(@"remove all auto server ,now auto server count is %d",[self getAutoServers].count);
-}
-
 // chosen panel identity
 + (NSMutableDictionary *)getPanelIdentityDic {
 	return (NSMutableDictionary *)[[self getSectionWithIndex:PANEL_IDENTITY_INDEX] objectForKey:@"item"];
@@ -150,100 +128,12 @@ static NSString *unsavedChosenServerUrl = nil;
 
 // Save the appSettings infomation into appSettings.plist .
 + (void)writeToFile {
-	if ([settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO]) {	
-		[self readServerUrlFromFile];
-	}
-}
-
-// Read server url from file, if find it will set currentServerUrl value and return NO else return NO.
-// after read you can get all the details through AppSettingsDefinition api.
-+ (BOOL)readServerUrlFromFile {
-	[self reloadData];
-	
-	NSString *serverUrl = nil;
-	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].autoDiscovery) {
-		NSLog(@"auto enable");
-		if ([self getAutoServers].count == 0) {
-			NSLog(@"auto 0");
-			return NO;
-		} 
-		
-		NSLog(@"auto count = %d",[self getAutoServers].count);
-		
-		for (int i=0; i < [self getAutoServers].count; i++) {
-			if ([[[[self getAutoServers] objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
-				serverUrl =  [[[self getAutoServers] objectAtIndex:i] valueForKey:@"url"];
-				break;
-			} 
-		}		
-		serverUrl = (serverUrl?serverUrl: [[[self getAutoServers] objectAtIndex:0] valueForKey:@"url"]);
-	} else {
-        // No autodiscovery, check the list of custom defined server, return the one selected or the first one if none selected
-		if ([self getCustomServers].count == 0) {
-			return NO;
-		}
-		
-		for (int i=0; i < [self getCustomServers].count; i++) {
-			if ([[[[self getCustomServers] objectAtIndex:i] valueForKey:@"choose"] boolValue]) {
-				serverUrl =  [[[self getCustomServers] objectAtIndex:i] valueForKey:@"url"];
-				break;
-			}
-		}
-		serverUrl = (serverUrl?serverUrl: [[[self getCustomServers] objectAtIndex:0] valueForKey:@"url"]);
-	}
-	if (serverUrl) {
-		[self setCurrentServerUrl:serverUrl];
-		return YES;
-	} else {
-		currentServerUrl = nil;
-		return NO;
-	}
-}
-
-// Get current server url panel client use from appSettings.plist .
-+ (NSString *)getCurrentServerUrl {
-	if (currentServerUrl) {
-		return currentServerUrl;
-	} else {
-		if ( [AppSettingsDefinition readServerUrlFromFile]) {
-			return currentServerUrl;
-		} 
-	}
-	return nil;
-}
-
-// Change current server url panel client use to specified url .
-+ (void)setCurrentServerUrl:(NSString *)url {
-	if(url) {
-		[url retain];
-		[currentServerUrl release];
-		currentServerUrl = url;
-	} else {
-		[currentServerUrl release];
-		currentServerUrl = @"";
-	}
-	
+	[settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO];
 }
 
 // Get panel identity current panel client use from appSettings.plist .
 + (NSString *)getCurrentPanelIdentity {
 	return [[self getPanelIdentityDic] objectForKey:@"identity"];
-}
-
-// Get current conroller server url as unsavedChosenServerUrl
-// or return value method setUnsavedChosenServerUrl set.
-+ (NSString *)getUnsavedChosenServerUrl {
-	if (!unsavedChosenServerUrl) {
-		unsavedChosenServerUrl = [currentServerUrl copy];
-	}
-	return unsavedChosenServerUrl;
-}
-
-// Set server url as choosed controller server url but don't save into appSettings.plist .
-+ (void)setUnsavedChosenServerUrl:(NSString *)url {
-	[url retain];
-	[unsavedChosenServerUrl release];
-	unsavedChosenServerUrl = url;
 }
 
 @end

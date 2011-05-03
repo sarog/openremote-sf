@@ -37,24 +37,28 @@
 		
 		panels = [[NSMutableArray alloc] init];
 		NSString *location = [ServerDefinition panelsRESTUrl];
-		NSURL *url = [[NSURL alloc] initWithString:location];
-		NSLog(@"panels:%@", location);
-		
-		//assemble put request 
-		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-		[request setURL:url];
-		[request setHTTPMethod:@"GET"];
-		[CredentialUtil addCredentialToNSMutableURLRequest:request];
-		
-		URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
-		
-		// Cancel the connection after GET_PANELS_TIMER_INTERVAL
-		NSTimer *getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:GET_PANELS_TIMER_INTERVAL target:connection selector:@selector(cancelConnection) userInfo:nil repeats:NO] retain];
-		
-		[url release];
-		[request release];
-		[connection autorelease];
-		[getAutoServersTimer autorelease];
+        
+        if (location) {
+            // TODO EBR : re-check what to do / when this can happen
+            NSURL *url = [[NSURL alloc] initWithString:location];
+            NSLog(@"panels:%@", location);
+            
+            //assemble put request 
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+            [request setURL:url];
+            [request setHTTPMethod:@"GET"];
+            [CredentialUtil addCredentialToNSMutableURLRequest:request];
+            
+            URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
+            
+            // Cancel the connection after GET_PANELS_TIMER_INTERVAL
+            NSTimer *getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:GET_PANELS_TIMER_INTERVAL target:connection selector:@selector(cancelConnection) userInfo:nil repeats:NO] retain];
+            
+            [url release];
+            [request release];
+            [connection autorelease];
+            [getAutoServersTimer autorelease];
+        }
 	}
 	return self;
 }

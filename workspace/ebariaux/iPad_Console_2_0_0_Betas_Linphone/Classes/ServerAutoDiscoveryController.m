@@ -27,7 +27,8 @@
 #import "DirectoryDefinition.h"
 #import "NotificationConstant.h"
 #import "CheckNetwork.h"
-
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
 
 @interface ServerAutoDiscoveryController (Private)
 - (void)checkFindServerFail;
@@ -94,19 +95,18 @@
 //after find server		
 - (void)onFindServer:(NSString *)serverUrl {
 	isReceiveServerUrl = YES;
-	NSMutableDictionary *server = [NSMutableDictionary dictionaryWithObject:serverUrl forKey:@"url"];
-	if([AppSettingsDefinition getAutoServers].count ==0) {
-		[server setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-	} else {
-		[server setValue:[NSNumber numberWithBool:NO] forKey:@"choose"];
-	}
-	// Add finded auto server url 
-	[AppSettingsDefinition addAutoServer:server];
-	// Write the result into plist file
-	[AppSettingsDefinition writeToFile];
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addAutoDiscoveredControllerForURL:serverUrl];
+    
 	
-	NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
+    
+    
+    
+//	EBR NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
 
+    
+    
+    
+    
     //Disconnect all the tcp client received
 	for(int i = 0; i < [clients count]; i++)
 	{

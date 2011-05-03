@@ -8,7 +8,10 @@
 
 #import "SipController.h"
 #import "AppDelegate.h"
-#import "AppSettingsDefinition.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
+
 #include "linphonecore_utils.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -58,13 +61,15 @@ extern void libmsamr_init();
 
 - (void)definitionDidUpdate {
     // EBR: temp, need to review settings load mechanism
-    NSLog(@"====> Current server URL %@", [AppSettingsDefinition getCurrentServerUrl]);
-    NSLog(@"Host %@", [[NSURL URLWithString:[AppSettingsDefinition getCurrentServerUrl]] host]);
+    NSLog(@"====> Current server URL %@", [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL);
+    NSLog(@"Host %@", [[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]);
     
 //    [self sipDisconnect];
     // TODO: check that this does un-register in SIP servlet
     
-    [[NSUserDefaults standardUserDefaults] setObject:[[NSURL URLWithString:[AppSettingsDefinition getCurrentServerUrl]] host] forKey:@"proxy_preference"];
+    [[NSUserDefaults standardUserDefaults]
+            setObject:[[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]
+               forKey:@"proxy_preference"];
 
 //    [self doLinphoneConfiguration:nil]; // No need for this, update of the user defaults above triggers reconfig
     

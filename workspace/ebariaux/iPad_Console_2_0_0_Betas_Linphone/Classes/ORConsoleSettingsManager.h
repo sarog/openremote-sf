@@ -28,5 +28,6 @@
 
 - (ORConsoleSettings *)consoleSettings;
 - (void)saveConsoleSettings;
+- (void)cancelConsoleSettingsChanges;
 
 @end

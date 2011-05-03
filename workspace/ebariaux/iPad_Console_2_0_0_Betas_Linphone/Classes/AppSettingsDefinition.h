@@ -70,44 +70,9 @@
 + (NSMutableDictionary *)getAutoDiscoveryDic;
 
 /**
- * Get servers by auto discovery stored in panel client.
- */
-+ (NSMutableArray *)getAutoServers;
-
-/**
- * Get servers by users input stored in panel client.
- */
-+ (NSMutableArray *)getCustomServers;
-
-/**
- * Get current server's url panel client use.
- */
-+ (NSString *)getCurrentServerUrl;
-
-/**
- * This is for refresh current server controller's url to latest one.
- */
-+ (BOOL)readServerUrlFromFile;
-
-/**
- * Change the current server's url to the specified url.
- */
-+ (void)setCurrentServerUrl:(NSString *)url;
-
-/**
- * Add a server info into auto servers array.
- */
-+ (void)addAutoServer:(NSDictionary *)server;
-
-/**
  * Synchronizes settings data into appSettings.plist .
  */
 + (void)writeToFile;
-
-/**
- * Remove all auto servers from settings data .
- */
-+ (void)removeAllAutoServer;
 
 /**
  * Get panel identity section infomation from appSettings.plist .
@@ -118,16 +83,6 @@
  * Get panel identify current panel client use.
  */
 + (NSString *)getCurrentPanelIdentity;
-
-/**
- * Get the chosen server url user select but unsaved into appSettings.plist .
- */
-+ (NSString *)getUnsavedChosenServerUrl;
-
-/**
- * Set the speccified url as choosen url of user.
- */
-+ (void)setUnsavedChosenServerUrl:(NSString *)url;
 
 /**
  * Get the security setting infomation from appSettings.plist .
