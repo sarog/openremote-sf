@@ -75,16 +75,6 @@
 + (void)writeToFile;
 
 /**
- * Get panel identity section infomation from appSettings.plist .
- */
-+ (NSMutableDictionary *)getPanelIdentityDic;
-
-/**
- * Get panel identify current panel client use.
- */
-+ (NSString *)getCurrentPanelIdentity;
-
-/**
  * Get the security setting infomation from appSettings.plist .
  */
 + (NSMutableDictionary *)getSecurityDic;

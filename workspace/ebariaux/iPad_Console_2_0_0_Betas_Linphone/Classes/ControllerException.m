@@ -20,7 +20,9 @@
  */
 
 #import "ControllerException.h"
-#import "AppSettingsDefinition.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @implementation ControllerException
 
@@ -62,11 +64,11 @@
 				errorMessage = @"Invalid panel.xml.";
 				break;
 			case NO_SUCH_PANEL://428
-				if ([@"None" isEqualToString:[AppSettingsDefinition getCurrentPanelIdentity]]) {
+				if (![ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity) {
 					errorMessage = @"Welcome, please choose your own panel identity in Settings";
 				} else {
 					errorMessage = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please choose again in Settings.", 
-														[AppSettingsDefinition getCurrentPanelIdentity]];
+                                        [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity];
 				}				
 				break;
 			case INVALID_ELEMENT://429

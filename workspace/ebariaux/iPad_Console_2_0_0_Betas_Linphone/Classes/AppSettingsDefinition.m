@@ -88,11 +88,6 @@ static NSMutableArray *settingsData = nil;
 	return (NSMutableDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
 }
 
-// chosen panel identity
-+ (NSMutableDictionary *)getPanelIdentityDic {
-	return (NSMutableDictionary *)[[self getSectionWithIndex:PANEL_IDENTITY_INDEX] objectForKey:@"item"];
-}
-
 // Get security infomation from appSettings.plist .
 + (NSMutableDictionary *)getSecurityDic {
 	return (NSMutableDictionary *)[[self getSectionWithIndex:SECURITY_INDEX] objectForKey:@"item"];
@@ -129,11 +124,6 @@ static NSMutableArray *settingsData = nil;
 // Save the appSettings infomation into appSettings.plist .
 + (void)writeToFile {
 	[settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO];
-}
-
-// Get panel identity current panel client use from appSettings.plist .
-+ (NSString *)getCurrentPanelIdentity {
-	return [[self getPanelIdentityDic] objectForKey:@"identity"];
 }
 
 @end

@@ -62,7 +62,8 @@
 }
 
 + (NSString *)panelXmlRESTUrl {
-	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",[AppSettingsDefinition getCurrentPanelIdentity]];
+	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",
+                          [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity];
 	NSString *panelXmlUrl = [[self securedOrRawServerUrl] stringByAppendingPathComponent:panelUrl];
 	return panelXmlUrl;
 }
