@@ -1,3 +1,23 @@
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.controller.protocol.knx.ip;
 
 import java.io.IOException;
@@ -25,11 +45,13 @@ public class IpTunnelClient implements IpProcessorListener {
    private InetSocketAddress destControlEndpointAddr;
    private InetSocketAddress destDataEndpointAddr;
    private Timer heartBeat;
+   private Thread shutdownHook;
 
    public IpTunnelClient(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr) {
       this.destControlEndpointAddr = destControlEndpointAddr;
       this.processor = new IpProcessor(srcAddr, this);
       this.destDataEndpointAddr = null;
+      this.shutdownHook = new ShutdownHook();
    }
 
    public void register(IpMessageListener l) {
@@ -71,7 +93,7 @@ public class IpTunnelClient implements IpProcessorListener {
          }
       }
 
-      this.seqCounter++;
+      this.seqCounter = (this.seqCounter + 1 & 0xFF);
    }
 
    public synchronized void connect() throws KnxIpException, InterruptedException, IOException {
@@ -94,6 +116,9 @@ public class IpTunnelClient implements IpProcessorListener {
             // Start Heartbeat
             this.heartBeat = new Timer("KNX IP heartbeat");
             this.heartBeat.schedule(new HeartBeatTask(), 0, 60000);
+
+            // Register shutdown hook
+            Runtime.getRuntime().addShutdownHook(IpTunnelClient.this.shutdownHook);
          } else {
             throw new KnxIpException("Connect failed, response error : " + st);
          }
@@ -111,6 +136,9 @@ public class IpTunnelClient implements IpProcessorListener {
       if (resp instanceof IpDisconnectResp) {
          IpDisconnectResp cr = (IpDisconnectResp) resp;
          if (this.channelId == cr.getChannelId()) {
+            // Unregister shutdown hook
+            Runtime.getRuntime().removeShutdownHook(IpTunnelClient.this.shutdownHook);
+
             // Stop heartbeat
             this.heartBeat.cancel();
 
@@ -208,6 +236,21 @@ public class IpTunnelClient implements IpProcessorListener {
             }
          } else {
             throw new KnxIpException("Monitor failed, unexepected response");
+         }
+      }
+   }
+
+   private class ShutdownHook extends Thread {
+      @Override
+      public void run() {
+         try {
+            IpTunnelClient.this.disconnect();
+         } catch (KnxIpException e) {
+            // Ignore
+         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+         } catch (IOException e) {
+            // Ignore
          }
       }
    }

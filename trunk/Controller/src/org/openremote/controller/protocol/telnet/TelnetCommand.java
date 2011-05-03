@@ -25,7 +25,9 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.StringTokenizer;
-
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.PatternSyntaxException;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
@@ -36,6 +38,7 @@ import org.openremote.controller.component.EnumSensorType;
  * The Telnet Event.
  * 
  * @author Marcus 2009-4-26
+ * @modified by Rich Turner 2011-2-5
  */
 public class TelnetCommand implements ExecutableCommand, StatusCommand {
 
@@ -60,6 +63,21 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
    /** The port that is opened */
    private String port;
 
+   /** The response from read command */
+   private String response;
+
+   /** The response filter */
+   private String responseFilter;
+   
+   /** The response fliter group */
+   private Integer responseFilterGroup = 0;
+   
+   /** The status default response */
+   private String statusDefault;
+   
+   /** The wait timeout period in seconds */
+   private Integer timeOut = DEFAULT_TIMEOUT;
+   
    /**
     * Gets the command.
     * 
@@ -133,22 +151,129 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
    }
 
    /**
+    * Sets the response string 
+    * @param response the new response
+    */
+   public void setResponse(String response) {
+      this.response = response;
+   }
+
+   /**
+    * Gets the response 
+    * @return the response
+    */
+   public String getResponse() {
+      return response;
+   }
+
+   /**
+    * Sets the response filter
+    * @param responseFilter the new responseFilter
+    */   
+   public void setResponseFilter(String responseFilter) {
+      this.responseFilter = responseFilter;
+   }
+   
+   /**
+    * Gets the responseFilter
+    * @return the responseFilter
+    */
+   public String getResponseFilter() {
+      return responseFilter;  
+   }
+
+   /**
+    * Sets the timeOut
+    * @param timeOut the new timeOut
+    */   
+   public void setTimeOut(String timeOut) {
+      try {
+         Integer tempValue = Integer.parseInt(timeOut.trim());
+         if (tempValue > 0) {
+            this.timeOut = tempValue;
+         }
+      }
+      catch (NumberFormatException e) {
+         logger.error("time out property in controller.xml is not an integer", e);
+      }
+   }
+   
+   /**
+    * Gets the timeOut
+    * @return the timeOut
+    */
+   public Integer getTimeOut() {
+      return timeOut;  
+   }
+      
+   /**
+    * Sets the response filter group
+    * @param responseFilterGroup the new responseFilterGroup
+    */
+   public void setResponseFilterGroup(String responseFilterGroup) {
+      try {
+         this.responseFilterGroup = Integer.parseInt(responseFilterGroup.trim());
+      }
+      catch (NumberFormatException e) {
+         logger.error("filter group property in controller.xml is not an integer", e);
+      }
+   }
+
+   /**
+    * Gets the response filter group
+    * @return the response
+    */
+   public Integer getResponseFilterGroup() {
+      return responseFilterGroup;   
+   }
+
+   /**
+    * Sets the status default
+    * @param statusDefault the new statusDefault
+    */   
+   public void setStatusDefault(String statusDefault) {
+      this.statusDefault = statusDefault;  
+   }
+   
+   /**
+    * Gets the statusDefault
+    * @return the statusDefault
+    */
+   public String getStatusDefault() {
+      return statusDefault;
+   }
+   
+   /**
     * {@inheritDoc}
     */
    @Override
    public void send() {
+      send(false);
+   }
+
+   public void send(boolean readResponse) {
       TelnetClient tc = null;
+      if (readResponse) {
+         setResponse("");
+      }
       try {
          tc = new TelnetClient();
          tc.connect(getIp(), Integer.parseInt(getPort()));
          StringTokenizer st = new StringTokenizer(getCommand(), "|");
          int count = 0;
+         String waitFor = "";
          while (st.hasMoreElements()) {
             String cmd = (String) st.nextElement();
             if (count % 2 == 0) {
-               waitForString(cmd, tc);
+               waitFor = cmd;
+               if (!"null".equals(cmd)) {
+                  waitForString(cmd, tc);
+               }
             } else {
                sendString(cmd, tc);
+               if (readResponse) {
+                  readString(waitFor, tc);
+               }
             }
             count++;
          }
@@ -176,18 +301,18 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
       InputStream is = tc.getInputStream();
       StringBuffer sb = new StringBuffer();
       Calendar endTime = Calendar.getInstance();
-      endTime.add(Calendar.SECOND, DEFAULT_TIMEOUT);
+      endTime.add(Calendar.SECOND, getTimeOut());
       while (sb.toString().indexOf(s) == -1) {
          while (Calendar.getInstance().before(endTime) && is.available() == 0) {
             Thread.sleep(250);
          }
          if (is.available() == 0) {
-            logger.info("Read before running into timeout: " + sb.toString());
-            throw new Exception("Response timed-out waiting for \"" + s + "\"");
+            logger.info("WaitForString read before running into timeout: " + sb.toString());
+            throw new Exception("waitForString response timed-out waiting for \"" + s + "\"");
          }
          sb.append((char) is.read());
       }
-      logger.info("received: " + sb.toString());
+      logger.info("WaitForString received: " + sb.toString());
    }
 
    /**
@@ -203,10 +328,83 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
       os.flush();
    }
 
-   @Override
-   public String read(EnumSensorType sensoryType, Map<String, String> statusMap) {
-      // TODO Auto-generated method stub
-      return null;
+   private void readString(String s, TelnetClient tc) throws Exception {
+      InputStream is = tc.getInputStream();
+      StringBuffer sb = new StringBuffer();
+      Calendar endTime = Calendar.getInstance();
+      endTime.add(Calendar.SECOND, getTimeOut());
+      while (sb.toString().indexOf(s) == -1) {
+         while (Calendar.getInstance().before(endTime) && is.available() == 0) {
+            Thread.sleep(250);
+         }
+         if (is.available() == 0) {
+            if ("null".equals(s)) {
+               break;
+            }
+            logger.info("Read before running into timeout: " + sb.toString());
+            throw new Exception("Response timed-out waiting for \"" + s + "\"");
+         }
+         sb.append((char) is.read());
+      }
+      logger.info("received: " + sb.toString());
+      this.response += sb.toString() + "\n";
    }
 
+   @Override
+   public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
+	   String readResponse = statusDefault;
+	   String filteredResponse = "";
+	   send(true);
+	   
+	   try {
+   	   if ("".equals(getResponseFilter()) || getResponseFilter() == null) {
+      	   filteredResponse = getResponse();
+   	   } else {
+            Pattern p = Pattern.compile(getResponseFilter(), Pattern.CANON_EQ | Pattern.UNICODE_CASE);
+            Matcher m = p.matcher(getResponse());
+            boolean b = m.matches();
+            if (b) {
+               String matchedGroup = m.group(getResponseFilterGroup());
+               if (matchedGroup != null) {
+                  filteredResponse = matchedGroup;  
+               }
+            } else {
+               logger.error("Telnet Read Status: No Match using Regex: '" + getResponseFilter() + "' on response from command '" + getCommand() + "'");
+            } 
+         }            
+      }
+      catch (PatternSyntaxException e) {
+         System.out.println("Telnet Read Status: REGEX ERROR");
+         logger.error("Telnet Read Status: Invalid filter expression", e);
+      }
+      
+      if (!"".equals(filteredResponse)) {
+         switch (sensorType) {
+            // Switch: on or off response needed
+            case SWITCH:
+               filteredResponse.replaceAll("1|on", "true");
+               Boolean bool = Boolean.parseBoolean(filteredResponse);
+               if (bool) {
+                  readResponse = "on";
+               } else {
+                  readResponse = "off";  
+               }
+               break;
+            case LEVEL:
+            case RANGE:
+               try {
+                  Integer intVal = Integer.parseInt(filteredResponse);
+                  readResponse = filteredResponse;
+               }
+               catch (PatternSyntaxException e) {
+                  logger.info("Can't convert filteredResponse to type Integer: " + e);
+               }
+               break;
+            default:
+               readResponse = filteredResponse;  
+         }
+      }
+
+      return readResponse;
+   }
 }
