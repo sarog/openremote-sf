@@ -41,6 +41,7 @@
 
 @implementation ChoosePanelViewController
 
+@synthesize delegate;
 
 - (id)init {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
@@ -111,29 +112,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-	if (currentSelectedPanelIndex) {
-		UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedPanelIndex];
-		if (cell.accessoryType  == oldCell.accessoryType) {
-			return;
-		}
-		if (oldCell.accessoryType == UITableViewCellAccessoryCheckmark) {
-			oldCell.accessoryType = UITableViewCellAccessoryNone;
-		} 
-	} 
-	if (cell.accessoryType == UITableViewCellAccessoryNone) {
-		cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity = cell.textLabel.text;
-	} 
-	
-         
-    // TODO EBR : this should be handled by a delegate method of the parent controller
-         
-         
-	currentSelectedPanelIndex = indexPath;
-	
-	[self.navigationController popViewControllerAnimated:YES];
+	[self.delegate didSelectPanelIdentity:[tableView cellForRowAtIndexPath:indexPath].textLabel.text];
 }
 
 // Show login dialog for users, if users didn't login remote controller server.
@@ -201,21 +180,15 @@
 	} 
 }
 
-
 - (void)updateTableView {
-	UITableView *tv = (UITableView *)self.view;
-	[tv beginUpdates];
-	
-	NSArray *newArray = nil;
-	newArray = panels;
-	
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
-	for (int j = 0; j < newArray.count; j++){
+	for (int j = 0; j < [panels count]; j++) {
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:0]];
 	}
-	[tv insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
-	
-	[tv endUpdates];
+
+	[self.tableView beginUpdates];
+	[self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
+	[self.tableView endUpdates];
 	
 	[insertIndexPaths release];
 }
@@ -261,10 +234,8 @@
 	return YES;
 }
 
-
 - (void)dealloc {
 	[panels release];
-	[currentSelectedPanelIndex release];
 	[chosenPanel release];
 	
 	[super dealloc];

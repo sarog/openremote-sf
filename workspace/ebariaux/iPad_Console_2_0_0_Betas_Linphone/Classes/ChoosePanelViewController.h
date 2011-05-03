@@ -21,16 +21,26 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ChoosePanelViewControllerDelegate <NSObject>
+
+- (void)didSelectPanelIdentity:(NSString *)identity;
+
+@end
+
 /**
  * It's responsible for Controlling presentation of choosing panel view.
  */
 @interface ChoosePanelViewController : UITableViewController <NSXMLParserDelegate> {
 	
+    NSObject <ChoosePanelViewControllerDelegate> *delegate;
+    
 	NSMutableArray *panels;
-	NSIndexPath *currentSelectedPanelIndex;
 	NSString *chosenPanel;
+    
 	UITextField *textField;
 	UITextField *textField2;
 }
+
+@property (nonatomic, assign) NSObject <ChoosePanelViewControllerDelegate> *delegate;
 
 @end
