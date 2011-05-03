@@ -27,7 +27,6 @@
 #import "ViewHelper.h"
 #import "UpdateController.h"
 #import "NotificationConstant.h"
-#import "ChoosePanelViewController.h"
 #import "NotificationConstant.h"
 
 #import "ORConsoleSettingsManager.h"
@@ -606,9 +605,8 @@
 			cell.selected = NO;
 			return;
 		}
-//		[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
-
 		ChoosePanelViewController *choosePanelViewController = [[ChoosePanelViewController alloc] init];
+        choosePanelViewController.delegate = self;
 		[[self navigationController] pushViewController:choosePanelViewController animated:YES];
 		[choosePanelViewController release];
 		return;
@@ -649,6 +647,15 @@
     [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+#pragma mark ChoosePanelViewControllerDelegate implementation
+
+- (void)didSelectPanelIdentity:(NSString *)identity
+{
+    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity = identity;
+    [self.navigationController popViewControllerAnimated:YES];    
+}
+
 
 #pragma mark Delegate method of GetPanelsDelegate
 // After select a controller URL, get panel list from the controller.

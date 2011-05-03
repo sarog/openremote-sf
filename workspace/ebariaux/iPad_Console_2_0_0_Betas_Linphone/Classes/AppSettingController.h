@@ -26,13 +26,14 @@
 #import "FileUtils.h"
 #import "GetPanelsController.h"
 #import "AddServerViewController.h"
+#import "ChoosePanelViewController.h"
 
 @class ORConsoleSettingsManager;
 
 /**
  * Render the UI of AppSetting view and provide functions of setting about panel client.
  */
-@interface AppSettingController : UITableViewController <UITextFieldDelegate, GetPanelsDelegate, ServerAutoDiscoveryControllerDelagate, AddServerViewControllerDelegate> {
+@interface AppSettingController : UITableViewController <UITextFieldDelegate, GetPanelsDelegate, ServerAutoDiscoveryControllerDelagate, AddServerViewControllerDelegate, ChoosePanelViewControllerDelegate> {
     
     ORConsoleSettingsManager *settingsManager;
     
