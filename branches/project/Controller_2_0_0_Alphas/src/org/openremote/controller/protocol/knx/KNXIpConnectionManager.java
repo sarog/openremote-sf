@@ -93,7 +93,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
   private KNXConnectionImpl connection;
   private Set<IpDiscoverer> discoverers;
-  private Object connectionLock;
+  private final Object connectionLock;
   private String knxIpInterfaceHostname;
   private int knxIpInterfacePort;
 
@@ -593,7 +593,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   {
     for (Iterator<IpDiscoverer> i = this.discoverers.iterator(); i.hasNext();)
     {
-      ((IpDiscoverer) i.next()).stop();
+      i.next().stop();
     }
 
     this.discoverers.clear();
@@ -811,18 +811,18 @@ public class KNXIpConnectionManager implements DiscoveryListener
       return null;
     }
 
-    private void handleLDataInd(byte[] cEmiFrame)
+    private void handleLDataInd(byte[] cemiFrame)
     {
       // TODO : properly handle AdditionalInfo field when AddInfo is present (currently breaks this impl.)
 
       GroupAddress address = new GroupAddress(
-         cEmiFrame[KNXCommand.CEMI_DESTADDR_HIGH_OFFSET],
-         cEmiFrame[KNXCommand.CEMI_DESTADDR_LOW_OFFSET]
+          cemiFrame[KNXCommand.CEMI_DESTADDR_HIGH_OFFSET],
+          cemiFrame[KNXCommand.CEMI_DESTADDR_LOW_OFFSET]
       );
 
-      byte dataLen = cEmiFrame[KNXCommand.CEMI_DATALEN_OFFSET];
-      byte apciHi = cEmiFrame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
-      byte apciLoData = cEmiFrame[KNXCommand.CEMI_APCI_DATA_OFFSET];
+      byte dataLen =  cemiFrame[KNXCommand.CEMI_DATALEN_OFFSET];
+      byte apciHi =  cemiFrame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
+      byte apciLoData =  cemiFrame[KNXCommand.CEMI_APCI_DATA_OFFSET];
 
       // sanity checks -- is a response or a write request?
       byte[] a = new byte[] { apciHi, apciLoData };
@@ -850,7 +850,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.create8BitResponse(new byte[]
             {
                 apciHi, apciLoData,
-                cEmiFrame[KNXCommand.CEMI_DATA1_OFFSET]
+                cemiFrame[KNXCommand.CEMI_DATA1_OFFSET]
             }
         );
       }
@@ -860,8 +860,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.createTwoByteResponse(new byte[]
             {
                 apciHi, apciLoData,
-                KNXCommand.CEMI_DATA1_OFFSET,
-                KNXCommand.CEMI_DATA2_OFFSET
+                cemiFrame[KNXCommand.CEMI_DATA1_OFFSET],
+                cemiFrame[KNXCommand.CEMI_DATA2_OFFSET]
             }
         );
       }
@@ -871,9 +871,9 @@ public class KNXIpConnectionManager implements DiscoveryListener
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.createThreeByteResponse(new byte[]
             {
                 apciHi, apciLoData,
-                KNXCommand.CEMI_DATA1_OFFSET,
-                KNXCommand.CEMI_DATA2_OFFSET,
-                KNXCommand.CEMI_DATA3_OFFSET
+                cemiFrame[KNXCommand.CEMI_DATA1_OFFSET],
+                cemiFrame[KNXCommand.CEMI_DATA2_OFFSET],
+                cemiFrame[KNXCommand.CEMI_DATA3_OFFSET]
             }
         );
       }
@@ -883,10 +883,10 @@ public class KNXIpConnectionManager implements DiscoveryListener
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.createFourByteResponse(new byte[]
             {
                 apciHi, apciLoData,
-                KNXCommand.CEMI_DATA1_OFFSET,
-                KNXCommand.CEMI_DATA2_OFFSET,
-                KNXCommand.CEMI_DATA3_OFFSET,
-                KNXCommand.CEMI_DATA4_OFFSET
+                cemiFrame[KNXCommand.CEMI_DATA1_OFFSET],
+                cemiFrame[KNXCommand.CEMI_DATA2_OFFSET],
+                cemiFrame[KNXCommand.CEMI_DATA3_OFFSET],
+                cemiFrame[KNXCommand.CEMI_DATA4_OFFSET]
             }
         );
       }
@@ -894,7 +894,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
       else
       {
         byte[] data = new byte[dataLen];
-        System.arraycopy(cEmiFrame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
+
+        System.arraycopy( cemiFrame, KNXCommand.CEMI_DATA1_OFFSET, data, 0, data.length);
 
         apdu = ApplicationProtocolDataUnit.ResponseAPDU.createStringResponse(data);
       }
