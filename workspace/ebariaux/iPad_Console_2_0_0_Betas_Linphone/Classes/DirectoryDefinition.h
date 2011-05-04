@@ -50,10 +50,5 @@
  */
 + (NSString *)xmlCacheFolder;
 
-/**
- * Get the directory of appSettings.plist in handset.
- * It's in the directory of document directory in handset.
- */
-+ (NSString *)appSettingsFilePath;
-
++ (NSString *)settingsDefinitionFilePath;
 @end

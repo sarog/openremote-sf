@@ -25,6 +25,8 @@
 #import "AppSettingsDefinition.h"
 #import "ViewHelper.h"
 
+// TODO: customize keyboard with keys such as http://, https://, /controller, 8080,  and other std ports to help text entry
+
 @implementation AddServerViewController
 
 @synthesize urlToEdit, delegate;
@@ -63,7 +65,7 @@
 	NSLog(@"text field is %@", textField.text);
     
     NSString *url = nil;
-    if ([textField.text hasPrefix:@"http://"] || ![textField.text hasPrefix:@"https://"]) {
+    if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
         url = textField.text;
     } else {
         url = [NSString stringWithFormat:@"http://%@", textField.text];

@@ -44,25 +44,9 @@
 	return [[self cacheFolder] stringByAppendingPathComponent:@"xml"];
 }
 
-// Get directory of appSettings.plist .
-+ (NSString *)appSettingsFilePath{
-	// Check for data in Documents directory. Copy default appData.plist to Documents if not found.
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSError *error;
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
-	NSString *pathToUserCopyOfPlist = [documentsDirectory stringByAppendingPathComponent:@"appSettings.plist"];
-	NSLog(@"Path to appSettings.plist %@", pathToUserCopyOfPlist);
-	if ([fileManager fileExistsAtPath:pathToUserCopyOfPlist] == NO) {
-		NSLog(@"appSettings.plist file not found");
-		NSString *pathToDefaultPlist = [[NSBundle mainBundle] pathForResource:@"appSettings" ofType:@"plist"];
-		NSLog(@"pathToDefaultPlist %@", pathToDefaultPlist);
-		if ([fileManager copyItemAtPath:pathToDefaultPlist toPath:pathToUserCopyOfPlist error:&error] == NO) {
-			NSAssert1(0, @"Failed to copy data with error message '%@'.", [error localizedDescription]);
-			NSLog(@"Error creating appSettings.plist from template");
-		}
-	}
-	return pathToUserCopyOfPlist;
++ (NSString *)settingsDefinitionFilePath
+{
+    return [[NSBundle mainBundle] pathForResource:@"appSettings" ofType:@"plist"];
 }
 
 @end

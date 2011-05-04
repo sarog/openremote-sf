@@ -83,6 +83,10 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
         if (!consoleSettings) {
             NSLog(@"Console settings non existant in DB, creating one");
             consoleSettings = [[NSEntityDescription insertNewObjectForEntityForName:@"ORConsoleSettings" inManagedObjectContext:self.managedObjectContext] retain];
+            
+            
+            // TODO: should have http://controller.openremote.org/ipad/controller as default server
+            
             [self saveConsoleSettings];
         }
     }

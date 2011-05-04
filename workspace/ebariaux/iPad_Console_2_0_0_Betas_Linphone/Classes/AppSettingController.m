@@ -310,8 +310,6 @@
 	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	identityCell.textLabel.text = @"None";
 	
-//	[AppSettingsDefinition setUnsavedChosenServerUrl:[self getUnsavedChosenServerUrl]];
-	
 	GetPanelsController *getPanelsController = [[GetPanelsController alloc] initWithDelegate:self];
 	[getPanelsController release];
 }
@@ -340,24 +338,6 @@
 		updateController = [[UpdateController alloc] initWithDelegate:self];
 		[updateController checkConfigAndUpdate];
 	}	
-}
-
-// Persist SSL info of enable status into appSettings.plist .
-- (void)saveUseSSL:(id)sender {
-	UISwitch *s = (UISwitch *)sender;
-	[AppSettingsDefinition setUseSSL:s.on];
-	[AppSettingsDefinition writeToFile];
-}
-
-// Persist SSL info of port into appSettings.plist .
-- (void)saveSslPort:(id)sender {
-	UITextField *t = (UITextField *)sender;
-	int sslPort = [t.text intValue];
-	if (sslPort == 0) {
-		sslPort = DEFAULT_TOMCAT_SSL_PORT;
-	}
-	[AppSettingsDefinition setSslPort:sslPort];
-	[AppSettingsDefinition writeToFile];
 }
 
 #pragma mark Delegate method of ServerAutoDiscoveryController
@@ -403,9 +383,8 @@
 
 #pragma mark Table view methods
 
-// 'auto-discovery URLs' share one section with 'custom URLs', -1
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return [AppSettingsDefinition getAppSettings].count - 1;
+	return [[AppSettingsDefinition sharedAppSettingsDefinition].settingsDefinition count] - 1;
 }
 
 
@@ -425,7 +404,7 @@
 	if (section == [self numberOfSectionsInTableView:tableView] - 1) {
 		return [NSString stringWithFormat:@"Version %@",[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 	} 
-	return [AppSettingsDefinition getSectionFooterWithIndex:section];
+	return [[AppSettingsDefinition sharedAppSettingsDefinition] getSectionFooterWithIndex:section];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -433,7 +412,7 @@
 	if(section >= PANEL_IDENTITY_SECTION) {
 		section++;
 	} 
-	return [AppSettingsDefinition getSectionHeaderWithIndex:section];
+	return [[AppSettingsDefinition sharedAppSettingsDefinition] getSectionHeaderWithIndex:section];
 }
 
 // Customize the appearance of table view cells.
@@ -490,7 +469,7 @@
 	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {
-		switchCell.textLabel.text = [[AppSettingsDefinition getAutoDiscoveryDic] objectForKey:@"name"];
+		switchCell.textLabel.text = [[[AppSettingsDefinition sharedAppSettingsDefinition] getAutoDiscoveryDic] objectForKey:@"name"];
 		UISwitch *switchView = (UISwitch *)switchCell.accessoryView;
 		[switchView setOn:settingsManager.consoleSettings.autoDiscovery];
 		[switchView addTarget:self action:@selector(autoDiscoverChanged:) forControlEvents:UIControlEventValueChanged];
@@ -522,21 +501,6 @@
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
-	} else if (indexPath.section == SECURITY_SECTION) {
-		if (indexPath.row == 0) {
-			switchCell.textLabel.text = @"Use SSL";
-			UISwitch *switchView = (UISwitch *)switchCell.accessoryView;
-			[switchView setOn:[AppSettingsDefinition useSSL]];
-			[switchView addTarget:self action:@selector(saveUseSSL:) forControlEvents:UIControlEventValueChanged];
-			return switchCell;
-		} else {
-			inputCell.textLabel.text = @"SSL Port";
-			portField.text = [NSString stringWithFormat:@"%d", [AppSettingsDefinition sslPort]];
-			portField.placeholder = [NSString stringWithFormat:@"%d", SECURITY_PORT];
-			[portField addTarget:self action:@selector(saveSslPort:) forControlEvents:UIControlEventEditingDidEnd];
-			return inputCell;
-		}
-		
 	} else if (indexPath.section == CLEAR_CACHE_SECTION) {
 		buttonCell.textLabel.text = @"Clear Image Cache";
 		buttonCell.textLabel.textAlignment = UITextAlignmentCenter;
