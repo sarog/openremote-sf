@@ -93,7 +93,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
   private KNXConnectionImpl connection;
   private Set<IpDiscoverer> discoverers;
-  private Object connectionLock;
+  private final Object connectionLock;
   private String knxIpInterfaceHostname;
   private int knxIpInterfacePort;
 
@@ -593,7 +593,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   {
     for (Iterator<IpDiscoverer> i = this.discoverers.iterator(); i.hasNext();)
     {
-      ((IpDiscoverer) i.next()).stop();
+      i.next().stop();
     }
 
     this.discoverers.clear();
