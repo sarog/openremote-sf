@@ -59,8 +59,15 @@
 
 // Delegate method of UITextFieldDelegate and is called when 'return' key pressed. return NO to ignore.
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	NSLog(@"text field is %@",serverUrlFieldCell.textField.text);
-	NSString *url = [NSString stringWithFormat:@"http://%@",serverUrlFieldCell.textField.text];
+    
+	NSLog(@"text field is %@", textField.text);
+    
+    NSString *url = nil;
+    if ([textField.text hasPrefix:@"http://"] || ![textField.text hasPrefix:@"https://"]) {
+        url = textField.text;
+    } else {
+        url = [NSString stringWithFormat:@"http://%@", textField.text];
+    }
 	NSURL *nsUrl = [NSURL URLWithString:url];
 	if ([nsUrl scheme] == nil) {
 		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
@@ -69,20 +76,6 @@
 	NSLog(@"set url to %@",url);
 
     [delegate didAddServerURL:url];
-	
-    /*
-    [editingItem setValue:url forKey:@"url"];
-	if (newItem) {
-		if (servers.count == 0) {
-			[editingItem setValue:[NSNumber numberWithBool:YES] forKey:@"choose"];
-		}
-		[servers addObject:editingItem];
-		newItem = NO;
-	}
-	[AppSettingsDefinition writeToFile];
-	[self.navigationController popViewControllerAnimated:YES];
-    
-    */
 	return YES;
 }
 
