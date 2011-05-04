@@ -22,7 +22,6 @@
 #import <Foundation/Foundation.h>
 #import	"User.h"
 #import "sqlite3.h"
-#import "GroupMember.h"
 
 /*
  Local database service.
@@ -49,12 +48,5 @@
 - (void) saveCurrentUser;
 
 - (void) initLastLoginUser;
-
-
-- (void) insertGroupMember:(GroupMember *)groupMember;
-
-- (NSMutableArray *) findAllGroupMembers;
-
-- (void) deleteAllGroupMembers;
 
 @end

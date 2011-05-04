@@ -190,7 +190,6 @@
 		60EB56FA135C4E4100B29CED /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
 		60EB56FB135C4E4100B29CED /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
 		60EB56FC135C4E4100B29CED /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
-		60EB56FD135C4E4100B29CED /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86510EB6E3300C0E1BB /* GroupMember.m */; };
 		60EB56FE135C4E4100B29CED /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
 		60EB56FF135C4E4100B29CED /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
 		60EB5700135C4E4100B29CED /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
@@ -339,7 +338,6 @@
 		8C579703116B9DD000ED63EA /* panel_local_tabbar.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5796F3116B9DD000ED63EA /* panel_local_tabbar.xml */; };
 		8C579704116B9DD000ED63EA /* panel_portrait_landscape.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5796F4116B9DD000ED63EA /* panel_portrait_landscape.xml */; };
 		8C579705116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8C5796F5116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml */; };
-		8C57970A116B9DFE00ED63EA /* DataBaseServiceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C579709116B9DFE00ED63EA /* DataBaseServiceTest.m */; };
 		8C6502E2109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C6502E3109809EC006FC19F /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		8C650568109870D2006FC19F /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
@@ -386,7 +384,6 @@
 		8CECF89110EB6E3300C0E1BB /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
 		8CECF89210EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
 		8CECF89310EB6E3300C0E1BB /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
-		8CECF89410EB6E3300C0E1BB /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86510EB6E3300C0E1BB /* GroupMember.m */; };
 		8CECF89510EB6E3300C0E1BB /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
 		8CECF89610EB6E3300C0E1BB /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
 		8CECF89710EB6E3300C0E1BB /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
@@ -411,7 +408,6 @@
 		8CECF8AE10EB6E3300C0E1BB /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
 		8CECF8AF10EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
 		8CECF8B010EB6E3300C0E1BB /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
-		8CECF8B110EB6E3300C0E1BB /* GroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86510EB6E3300C0E1BB /* GroupMember.m */; };
 		8CECF8B210EB6E3300C0E1BB /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
 		8CECF8B310EB6E3300C0E1BB /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
 		8CECF8B410EB6E3300C0E1BB /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
@@ -836,8 +832,6 @@
 		8C5796F3116B9DD000ED63EA /* panel_local_tabbar.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = panel_local_tabbar.xml; path = Test/fixture/xml/panel_local_tabbar.xml; sourceTree = "<group>"; };
 		8C5796F4116B9DD000ED63EA /* panel_portrait_landscape.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = panel_portrait_landscape.xml; path = Test/fixture/xml/panel_portrait_landscape.xml; sourceTree = "<group>"; };
 		8C5796F5116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = panel_relative_screen_backgroundimage.xml; path = Test/fixture/xml/panel_relative_screen_backgroundimage.xml; sourceTree = "<group>"; };
-		8C579708116B9DFE00ED63EA /* DataBaseServiceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataBaseServiceTest.h; path = Test/DataBaseServiceTest.h; sourceTree = "<group>"; };
-		8C579709116B9DFE00ED63EA /* DataBaseServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DataBaseServiceTest.m; path = Test/DataBaseServiceTest.m; sourceTree = "<group>"; };
 		8C6502E0109809EC006FC19F /* PollingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PollingHelper.h; sourceTree = "<group>"; };
 		8C6502E1109809EC006FC19F /* PollingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PollingHelper.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		8C650566109870D2006FC19F /* GridCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCellView.h; sourceTree = "<group>"; };
@@ -897,8 +891,6 @@
 		8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayoutContainer.m; sourceTree = "<group>"; };
 		8CECF86210EB6E3300C0E1BB /* Group.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Group.h; sourceTree = "<group>"; };
 		8CECF86310EB6E3300C0E1BB /* Group.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Group.m; sourceTree = "<group>"; };
-		8CECF86410EB6E3300C0E1BB /* GroupMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupMember.h; sourceTree = "<group>"; };
-		8CECF86510EB6E3300C0E1BB /* GroupMember.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupMember.m; sourceTree = "<group>"; };
 		8CECF86610EB6E3300C0E1BB /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
 		8CECF86710EB6E3300C0E1BB /* Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Image.m; sourceTree = "<group>"; };
 		8CECF86810EB6E3300C0E1BB /* Label.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Label.h; sourceTree = "<group>"; };
@@ -1142,15 +1134,6 @@
 				608FBB9D131FF9C300C9089F /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		331A58E410AD6A22001AB869 /* db */ = {
-			isa = PBXGroup;
-			children = (
-				8C579708116B9DFE00ED63EA /* DataBaseServiceTest.h */,
-				8C579709116B9DFE00ED63EA /* DataBaseServiceTest.m */,
-			);
-			name = db;
 			sourceTree = "<group>";
 		};
 		338C3CD210D60F3F0029D62B /* view */ = {
@@ -1544,7 +1527,6 @@
 				8CEFDAEF11BF444100CEDC24 /* util */,
 				338C3CD210D60F3F0029D62B /* view */,
 				8CEB4E7810B27F3700A67721 /* panelxml */,
-				331A58E410AD6A22001AB869 /* db */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -1691,8 +1673,6 @@
 				8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */,
 				8CECF86210EB6E3300C0E1BB /* Group.h */,
 				8CECF86310EB6E3300C0E1BB /* Group.m */,
-				8CECF86410EB6E3300C0E1BB /* GroupMember.h */,
-				8CECF86510EB6E3300C0E1BB /* GroupMember.m */,
 				8CECF86610EB6E3300C0E1BB /* Image.h */,
 				8CECF86710EB6E3300C0E1BB /* Image.m */,
 				8CECF86810EB6E3300C0E1BB /* Label.h */,
@@ -2108,7 +2088,6 @@
 				8CECF8AE10EB6E3300C0E1BB /* GridCell.m in Sources */,
 				8CECF8AF10EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */,
 				8CECF8B010EB6E3300C0E1BB /* Group.m in Sources */,
-				8CECF8B110EB6E3300C0E1BB /* GroupMember.m in Sources */,
 				8CECF8B210EB6E3300C0E1BB /* Image.m in Sources */,
 				8CECF8B310EB6E3300C0E1BB /* Label.m in Sources */,
 				8CECF8B410EB6E3300C0E1BB /* LayoutContainer.m in Sources */,
@@ -2217,7 +2196,6 @@
 				60EB56FA135C4E4100B29CED /* GridCell.m in Sources */,
 				60EB56FB135C4E4100B29CED /* GridLayoutContainer.m in Sources */,
 				60EB56FC135C4E4100B29CED /* Group.m in Sources */,
-				60EB56FD135C4E4100B29CED /* GroupMember.m in Sources */,
 				60EB56FE135C4E4100B29CED /* Image.m in Sources */,
 				60EB56FF135C4E4100B29CED /* Label.m in Sources */,
 				60EB5700135C4E4100B29CED /* LayoutContainer.m in Sources */,
@@ -2331,7 +2309,6 @@
 				8CECF89110EB6E3300C0E1BB /* GridCell.m in Sources */,
 				8CECF89210EB6E3300C0E1BB /* GridLayoutContainer.m in Sources */,
 				8CECF89310EB6E3300C0E1BB /* Group.m in Sources */,
-				8CECF89410EB6E3300C0E1BB /* GroupMember.m in Sources */,
 				8CECF89510EB6E3300C0E1BB /* Image.m in Sources */,
 				8CECF89610EB6E3300C0E1BB /* Label.m in Sources */,
 				8CECF89710EB6E3300C0E1BB /* LayoutContainer.m in Sources */,
@@ -2351,7 +2328,6 @@
 				33C3A49510FE32E3001C520E /* ColorUtil.m in Sources */,
 				8C5796CF116B9D7200ED63EA /* ClippedUIImageViewTest.m in Sources */,
 				8C5796E5116B9DC100ED63EA /* PanelXMLParsingTests.m in Sources */,
-				8C57970A116B9DFE00ED63EA /* DataBaseServiceTest.m in Sources */,
 				8CEFDA8D11BF35EE00CEDC24 /* LoadingHUDView.m in Sources */,
 				8CEFDAF711BF446B00CEDC24 /* StringUtilsTest.m in Sources */,
 				60A6195C1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */,
