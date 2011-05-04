@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -22,14 +22,24 @@
 #import <Foundation/Foundation.h>
 #import "URLConnectionHelper.h"
 
-/**
- * Define delegate methods of Controls should implement.
- */
-@protocol ControlDelegate <NSObject>
+@class Component;
 
-/**
- * Delegate method of sending control command with command value.
- */
-- (void)sendCommandRequest:(NSString *)commandType;
+@protocol ORControllerCommandSenderDelegate <NSObject>
+
+- (void)commandSendFailed;
+
+@end
+
+@interface ORControllerCommandSender : NSObject <URLConnectionHelperDelegate> {
+    NSString *command;
+    Component *component;
+    
+    NSObject <ORControllerCommandSenderDelegate> *delegate;
+}
+
+@property (nonatomic, assign) NSObject <ORControllerCommandSenderDelegate> *delegate;
+
+- (id)initWithCommand:(NSString *)aCommand component:(Component *)aComponent;
+- (void)send;
 
 @end

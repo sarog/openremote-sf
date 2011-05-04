@@ -37,6 +37,8 @@
 #import "AppDelegate.h"
 #import "ColorPicker.h"
 #import "ColorPickerView.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORControllerProxy.h"
 
 @interface ControlView (Private)
 
@@ -69,8 +71,10 @@
 
 #pragma mark instance methods
 
-- (id)initWithControl:(Control *)c frame:(CGRect)frame{
-	if (self = [super initWithFrame:frame]) {
+- (id)initWithControl:(Control *)c frame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+	if (self) {
 		component = c;
 		isError = NO;
 		//transparent background 
@@ -79,21 +83,6 @@
 	}
 
 	return self;
-}
-
-- (void)handleServerResponseWithStatusCode:(int) statusCode {
-	if (statusCode != 200) {
-		if (statusCode == UNAUTHORIZED) {
-			[Definition sharedDefinition].password = nil;
-			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		} else {
-			[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
-		}
-
-		[self cancelTimer];
-		isError = YES;
-			
-	}
 }
 
 - (void)cancelTimer {
@@ -111,40 +100,17 @@
 		Class clazz = NSClassFromString(localCommand.className);
 		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);
 		[clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
-	} else {	
-		NSString *location = [[ServerDefinition controlRESTUrl] stringByAppendingFormat:@"/%d/%@", component.componentId, commandType];
-        NSURL *url = [[NSURL alloc] initWithString:location];
-		NSLog(@"%@", location);
-		
-		//assemble put request 
-		NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-		[request setURL:url];
-		[request setHTTPMethod:@"POST"];
-		
-		[CredentialUtil addCredentialToNSMutableURLRequest:request];
-		
-		URLConnectionHelper *connection = [[URLConnectionHelper alloc]initWithRequest:request  delegate:self];
-		
-		[url release];
-		[request release];
-		[connection autorelease];
+	} else {
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:component delegate:self];
 	}
 }
 
 #pragma mark delegate methods of NSURLConnection abstract into Protocol URLConnectionHelperDelegate.
 
-- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-	[self cancelTimer];
-}
-
-- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-}
-
-- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
-	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	NSLog(@"control[%d]statusCode is %d",component.componentId, [httpResp statusCode]);
-	
-	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
+- (void)commandSendFailed
+{
+    [self cancelTimer];
+    isError = YES;
 }
 
 #pragma mark dealloc

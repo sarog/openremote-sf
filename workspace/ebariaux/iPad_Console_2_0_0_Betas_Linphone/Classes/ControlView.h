@@ -24,11 +24,12 @@
 #import "URLConnectionHelper.h"
 #import "ComponentView.h"
 #import "ControlDelegate.h"
+#import "ORControllerCommandSender.h"
 
 /**
  * It's super class of all control views in screen view.
  */
-@interface ControlView : ComponentView <ControlDelegate>{
+@interface ControlView : ComponentView <ControlDelegate, ORControllerCommandSenderDelegate> {
 	NSTimer *controlTimer;
 	BOOL isError;
 }
@@ -44,13 +45,10 @@
 - (id)initWithControl:(Control *)c frame:(CGRect)frame;
 
 /**
- * Handle the server response which are from controller server with status code.
- */
-- (void)handleServerResponseWithStatusCode:(int) statusCode;
-
-/**
  * Cancel timer of repeated sending control command.
  */
 - (void)cancelTimer;
+
+- (void)commandSendFailed;
 
 @end

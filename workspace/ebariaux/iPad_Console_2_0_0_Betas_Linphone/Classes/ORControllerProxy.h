@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2009, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -18,18 +18,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 #import <Foundation/Foundation.h>
-#import "URLConnectionHelper.h"
+#import "ORControllerCommandSender.h"
+
+@class Component;
 
 /**
- * Define delegate methods of Controls should implement.
+ * Represents a proxy to an ORController, acts as the communication channel with it.
  */
-@protocol ControlDelegate <NSObject>
+@interface ORControllerProxy : NSObject {
+}
 
-/**
- * Delegate method of sending control command with command value.
- */
-- (void)sendCommandRequest:(NSString *)commandType;
+- (ORControllerCommandSender *)sendCommand:(NSString *)command forComponent:(Component *)component delegate:(NSObject <ORControllerCommandSenderDelegate> *)delegate;
 
 @end
