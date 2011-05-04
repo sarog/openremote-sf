@@ -324,6 +324,9 @@ static BOOL isWifiActive = NO;
 - (NSString *) checkGroupMemberServers {
     
     // TODO: EBR re-implement
+    
+    //    This is the only place in code going over group members
+    
     /*
     NSLog(@">>checkGroupMemberServers");
 	NSMutableArray *groupMembers = [[DataBaseService sharedDataBaseService] findAllGroupMembers];

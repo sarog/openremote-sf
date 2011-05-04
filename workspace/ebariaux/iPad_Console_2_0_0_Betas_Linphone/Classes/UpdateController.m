@@ -36,13 +36,12 @@
 #import "ServerDefinition.h"
 #import "DirectoryDefinition.h"
 #import "RoundRobinException.h"
-#import "DataBaseService.h"
-#import "GroupMember.h"
 #import "URLConnectionHelper.h"
 
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
+#import "ORGroupMember.h"
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
@@ -60,16 +59,20 @@
 
 @implementation UpdateController
 
-- (id)init {
-	if (self = [super init]) {
+- (id)init
+{
+    self = [super init];
+	if (self) {
 		// Set retryTime to 1
 		retryTimes = 1;
 	}
 	return self;
 }
 
-- (id)initWithDelegate:(id)delegate {
-	if (self = [self init]) {
+- (id)initWithDelegate:(id)delegate
+{
+    self = [super init];
+	if (self) {
 		[self setDelegate:delegate];
 	}
 	return self;
@@ -185,14 +188,17 @@
 		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" message:[RoundRobinException exceptionMessageOfCode:[resp statusCode]]];
 	}
     
-    // Parses the XML reply and fill-in the GroupMembers cache
-	[[DataBaseService sharedDataBaseService] deleteAllGroupMembers];
+    // Parses the XML reply and fill-in the GroupMembers cache for this controller
+    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers = [NSSet set];
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	[xmlParser setDelegate:self];
 	[xmlParser parse];
 	[xmlParser release];
+    
+    // TODO: persist list ! be carefull : can this occur while on settings screen and other changes pending ?
+
     NSLog(@"RoundRobin group members are:");
-    for (GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
+    for (ORGroupMember *gm in [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers) {
         NSLog(@"%@", gm.url);
     }
     
@@ -201,10 +207,10 @@
 
 #pragma mark delegate method of NSXMLParser
 //when find a servers, gets their *url* attribute.
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
+- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
+{
 	if ([elementName isEqualToString:@"server"]) {
-		GroupMember *groupMember = [[GroupMember alloc] initWithUrl:[attributeDict valueForKey:@"url"]];
-		[[DataBaseService sharedDataBaseService] insertGroupMember:groupMember];
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController addGroupMemberForURL:[attributeDict valueForKey:@"url"]];
 	}
 }
 

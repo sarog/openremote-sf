@@ -22,6 +22,15 @@
 #import "ORController.h"
 #import "ORGroupMember.h"
 
+@interface ORController ()
+
+- (void)addGroupMembersObject:(ORGroupMember *)value;
+- (void)removeGroupMembersObject:(ORGroupMember *)value;
+- (void)addGroupMembers:(NSSet *)value;
+- (void)removeGroupMembers:(NSSet *)value;
+
+@end
+
 @implementation ORController
 
 @dynamic primaryURL;
@@ -36,6 +45,13 @@
 - (NSString *)selectedPanelIdentityDisplayString
 {
     return self.selectedPanelIdentity?self.selectedPanelIdentity:@"None";    
+}
+
+- (void)addGroupMemberForURL:(NSString *)url
+{
+    ORGroupMember *groupMember = [NSEntityDescription insertNewObjectForEntityForName:@"ORGroupMember" inManagedObjectContext:self.managedObjectContext];
+    groupMember.url = url;
+    [self addGroupMembersObject:groupMember];
 }
 
 - (void)addGroupMembersObject:(ORGroupMember *)value {    

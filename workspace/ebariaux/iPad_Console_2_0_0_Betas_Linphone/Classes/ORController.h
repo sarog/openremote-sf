@@ -39,4 +39,6 @@
 
 @property (nonatomic, readonly) NSString *selectedPanelIdentityDisplayString;
 
+- (void)addGroupMemberForURL:(NSString *)url;
+
 @end
