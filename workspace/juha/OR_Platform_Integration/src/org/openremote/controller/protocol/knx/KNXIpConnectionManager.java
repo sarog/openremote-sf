@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.protocol.knx.DataLink.MessageCode;
+import org.openremote.controller.protocol.knx.DataLink.MessageCode;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
@@ -440,6 +441,8 @@ public class KNXIpConnectionManager implements DiscoveryListener {
       @Override
       public synchronized ApplicationProtocolDataUnit read(GroupValueRead command) {
          this.service(command);
+
+         // Wait for response after having received a confirmation
 
          // Wait for response after having received a confirmation
          try {
