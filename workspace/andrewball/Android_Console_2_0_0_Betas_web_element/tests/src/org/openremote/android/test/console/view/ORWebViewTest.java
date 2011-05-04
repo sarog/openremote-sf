@@ -64,6 +64,10 @@ public class ORWebViewTest extends AndroidTestCase
     ViewGroup.LayoutParams layoutParams = webView.getLayoutParams();
     assertEquals(width, layoutParams.width);
     assertEquals(height, layoutParams.height);
+    assertEquals(true, webView.getSettings().getJavaScriptEnabled());
+
+    assertEquals(1, orWebView.getChildCount());
+    assertEquals(webView, (WebView) orWebView.getChildAt(0));
   }
 
 }
