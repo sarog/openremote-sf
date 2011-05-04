@@ -24,6 +24,7 @@ package org.openremote.android.test.console.view;
 import junitx.util.PrivateAccessor;
 
 import org.openremote.android.console.bindings.Web;
+import org.openremote.android.console.view.ComponentView;
 import org.openremote.android.console.view.ORWebView;
 import org.openremote.android.test.TestUtils;
 
@@ -32,15 +33,18 @@ import android.webkit.WebView;
 import android.test.AndroidTestCase;
 
 /**
- * Tests the {@link org.openremote.android.console.view.ORWebView} class.
+ * Tests the {@link org.openremote.android.console.view.ComponentView} class.
  *
  * @author <a href="mailto:aball@osintegrators.com">Andrew Ball</a>
  */
-public class ORWebViewTest extends AndroidTestCase
+public class ComponentViewTest extends AndroidTestCase
 {
 
-  /** Tests constructing an ORWebView from a Web binding object. */
-  public void testConstructor() throws NoSuchFieldException
+  /**
+   * Tests constructing a ComponentView from an ORWebView via its
+   * buildWithComponent() method.
+   */
+  public void testBuildWithComponentWithORWebView() throws NoSuchFieldException
   {
     final int id = 12;
     final String url = "http://google.com/";
@@ -57,7 +61,7 @@ public class ORWebViewTest extends AndroidTestCase
     Web web = new Web(TestUtils.parseXml(xmlText));
     web.setFrameWidth(width);
     web.setFrameHeight(height);
-    ORWebView orWebView = new ORWebView(getContext(), web);
+    ORWebView orWebView = (ORWebView) ComponentView.buildWithComponent(getContext(), web);
     assertEquals(web, (Web) orWebView.getComponent());
     WebView webView = (WebView) PrivateAccessor.getField(orWebView, "webView");
     assertNotNull(webView);
