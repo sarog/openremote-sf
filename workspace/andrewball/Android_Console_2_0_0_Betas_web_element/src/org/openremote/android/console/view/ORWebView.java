@@ -53,6 +53,18 @@ public class ORWebView extends ComponentView
     }
   }
 
+  /**
+   * Initialize the standard Android WebView here and add it as a child of this Layout (this
+   * is a subclass of LinearLayout).
+   *
+   * JavaScript is enabled on the WebView.
+   *
+   * Additionally, the WebView is configured to handle links, so that the system web
+   * browser isn't launched when a user clicks on one.
+   *
+   * @param context the Android context to use for this widget
+   * @param web the binding object with information about the Web element from XML
+   */
   public ORWebView(Context context, Web web)
   {
     super(context);
