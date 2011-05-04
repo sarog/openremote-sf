@@ -67,6 +67,7 @@ public class ORWebView extends ComponentView
       if (url != null) {
         webView.loadUrl(url.toString());
       }
+      addView(webView);
     }
   }
 }
