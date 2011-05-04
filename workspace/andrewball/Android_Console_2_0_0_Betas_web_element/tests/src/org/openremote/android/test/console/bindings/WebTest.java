@@ -21,8 +21,6 @@
 
 package org.openremote.android.test.console.bindings;
 
-import java.net.MalformedURLException;
-
 import junit.framework.TestCase;
 
 import org.openremote.android.console.bindings.Web;

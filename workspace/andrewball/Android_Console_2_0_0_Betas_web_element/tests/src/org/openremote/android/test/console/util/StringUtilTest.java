@@ -21,7 +21,6 @@
 
 package org.openremote.android.test.console.util;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.openremote.android.console.util.StringUtil;
