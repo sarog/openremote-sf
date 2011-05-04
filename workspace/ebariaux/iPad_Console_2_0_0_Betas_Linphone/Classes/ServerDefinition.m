@@ -32,35 +32,6 @@
     return ((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController).primaryURL;
 }
 
-//use HTTPS, SSL port
-+ (NSString *)applyHttpsAndSslPort:(NSString *)serverUrl {
-	//NSString * url = [serverUrl copy];
-	if (![AppSettingsDefinition useSSL]) {
-		NSString *urlStr = [serverUrl copy];
-		return urlStr;
-	}
-	
-	NSURL *url = [NSURL URLWithString:serverUrl];
-
-	if ([url scheme] == nil) {
-		// TODO: should propagate malformed URL up to user, requires API modification.
-		return nil;
-	}
-	
-	NSString *host = [url host];
-	NSString *path = [url path];
-
-	NSString *securePort = [NSString stringWithFormat:@":%d",[AppSettingsDefinition sslPort]];
-	
-	[url initWithScheme:@"https" host:[host stringByAppendingString:securePort] path:path];
-
-	return [url absoluteString];
-}
-
-+ (NSString *)securedServerUrl {
-	return  [self applyHttpsAndSslPort:((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController).primaryURL];
-}
-
 + (NSString *)panelXmlRESTUrl {
 	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",
                           [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity];
@@ -84,7 +55,7 @@
 
 //returns serverUrl, if SSL is enabled, use secured server url.
 + (NSString *)securedOrRawServerUrl {
-	return [AppSettingsDefinition useSSL] ? [self securedServerUrl] : [self serverUrl];
+	return [self serverUrl];
 }
 
 + (NSString *)statusRESTUrl {
@@ -101,7 +72,6 @@
 
 + (NSString *)panelsRESTUrl {
 	NSString *url = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL;
-	url = [AppSettingsDefinition useSSL] ? [self applyHttpsAndSslPort:url] : url;
 	return [url stringByAppendingPathComponent:@"rest/panels"];
 }
 

@@ -32,98 +32,79 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
-@interface AppSettingsDefinition (Private)
-
-@end
+static AppSettingsDefinition *sharedAppSettingsDefinition = nil;
 
 @implementation AppSettingsDefinition
 
-static NSMutableArray *settingsData = nil;
-
-
-// Read appSettings infomation from file appSettings.plist in array.
-+ (NSMutableArray *)getAppSettings {
-	if (!settingsData) {
-        settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
-	}
-	return settingsData;
++ (AppSettingsDefinition *)sharedAppSettingsDefinition
+{
+    if (sharedAppSettingsDefinition == nil) {
+        sharedAppSettingsDefinition = [[super allocWithZone:NULL] init];
+    }
+    return sharedAppSettingsDefinition;
 }
 
-// Refresh settingsData from appSettings.plist .
-+ (void)reloadData {
-	if (settingsData) {
-		[settingsData release];
-	}
-	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:[DirectoryDefinition appSettingsFilePath]];
++ (id)allocWithZone:(NSZone *)zone
+{
+    return [[self sharedAppSettingsDefinition] retain];
 }
 
-// Reload settingsData from appSettings.plist for the test.
-+ (void)reloadDataForTest {
-	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
-	NSString *settingFilePath = [thisBundle pathForResource:@"appSettings" ofType:@"plist"];
-	if (settingsData) {
-		[settingsData release];
-		settingsData = nil;
-	}
-	settingsData = [[NSMutableArray alloc] initWithContentsOfFile:settingFilePath];
+- (id)copyWithZone:(NSZone *)zone
+{
+    return self;
+}
+
+- (id)retain
+{
+    return self;
+}
+
+- (NSUInteger)retainCount
+{
+    return NSUIntegerMax;  //denotes an object that cannot be released
+}
+
+- (void)release
+{
+    //do nothing
+}
+
+- (id)autorelease
+{
+    return self;
+}
+
+- (void)dealloc
+{
+    [super dealloc];
+}
+
+- (NSArray *)settingsDefinition
+{
+    if (!settingsDefinition) {
+        settingsDefinition = [[NSArray alloc] initWithContentsOfFile:[DirectoryDefinition settingsDefinitionFilePath]];
+    }
+    return settingsDefinition;
 }
 
 // Get the specified section with index from appSettings.plist .
-+(NSMutableDictionary *)getSectionWithIndex:(int)index {
-	return [[self getAppSettings] objectAtIndex:index];
+- (NSDictionary *)getSectionWithIndex:(int)index {
+	return [self.settingsDefinition objectAtIndex:index];
 }
 
 // Get the specified section's header with index from appSettings.plist .
-+ (NSString *)getSectionHeaderWithIndex:(int)index{
-	return [[[self getAppSettings] objectAtIndex:index] valueForKey:@"header"];
+- (NSString *)getSectionHeaderWithIndex:(int)index{
+	return [[self.settingsDefinition objectAtIndex:index] valueForKey:@"header"];
 }
 
 // Get the specified section's footer with index from appSettings.plist .
-+ (NSString *)getSectionFooterWithIndex:(int)index{
-	return [[[self getAppSettings] objectAtIndex:index] valueForKey:@"footer"];
+- (NSString *)getSectionFooterWithIndex:(int)index{
+	return [[self.settingsDefinition objectAtIndex:index] valueForKey:@"footer"];
 }
 
 // Get the map value of auto discovery boolean value.
-+ (NSMutableDictionary *)getAutoDiscoveryDic {
-	return (NSMutableDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
-}
-
-// Get security infomation from appSettings.plist .
-+ (NSMutableDictionary *)getSecurityDic {
-	return (NSMutableDictionary *)[[self getSectionWithIndex:SECURITY_INDEX] objectForKey:@"item"];
-}
-
-// use SSL or not
-+ (BOOL)useSSL {
-	return [[[self getSecurityDic] objectForKey:@"useSSL"] boolValue];
-}
-
-// Set use SSL or not
-+ (void)setUseSSL:(BOOL)on {
-	[[self getSecurityDic] setValue:[NSNumber numberWithBool:on] forKey:@"useSSL"];
-}
-
-// SSL port
-+ (int)sslPort {
-	return [[[self getSecurityDic] objectForKey:@"port"] intValue];
-}
-
-// Set SSL port
-+ (void)setSslPort:(int)port {
-	if (port <0 && port != DEFAULT_SSL_PORT){
-		NSLog(@"negative port number");
-		return;
-	}
-	if (port > 65535) {
-		NSLog(@"port number too large");
-		return;
-	}
-	[[self getSecurityDic] setValue:[NSNumber numberWithInt:port] forKey:@"port"];
-}
-
-// Save the appSettings infomation into appSettings.plist .
-+ (void)writeToFile {
-	[settingsData writeToFile:[DirectoryDefinition appSettingsFilePath] atomically:NO];
+- (NSDictionary *)getAutoDiscoveryDic {
+	return (NSDictionary *)[[self getSectionWithIndex:AUTO_DISCOVERY_SWITCH_INDEX] objectForKey:@"item"];
 }
 
 @end

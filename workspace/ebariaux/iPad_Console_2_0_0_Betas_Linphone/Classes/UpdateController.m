@@ -167,8 +167,12 @@
 - (void)getRoundRobinGroupMembers {
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;
-	NSURL *url = [NSURL URLWithString:[ServerDefinition serversXmlRESTUrl]]; 
+	NSURL *url = [NSURL URLWithString:[ServerDefinition serversXmlRESTUrl]];
+    
 	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
+    
+    
+    
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	NSData *data = [[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&resp error:&error];
 	[request release];
@@ -191,6 +195,8 @@
     for (GroupMember *gm in [[DataBaseService sharedDataBaseService] findAllGroupMembers]) {
         NSLog(@"%@", gm.url);
     }
+    
+    
 }
 
 #pragma mark delegate method of NSXMLParser

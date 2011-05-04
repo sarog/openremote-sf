@@ -58,14 +58,6 @@
 + (NSString *)serverUrl;
 
 /**
- * Transform normal qualified url into secured qualified url 
- * with replacing http protocol with https protocol and port 8080 with port user specified in appSettings.
- * For exaple, tranform "http://192.168.100.100:8080/controller/..." into "https://192.168.100.100:8443/controller/...",
- * assume the port user specified in appSettings is 8443.
- */
-+ (NSString *)securedServerUrl;
-
-/**
  * Get the qualified url of logout action, such as "http://192.168.100.100:8080/controller/logout"
  * or "https://192.168.100.100:8443/controller/logout" if the secured port user specified is 8443 and SSL is enabled.
  */
