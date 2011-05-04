@@ -43,9 +43,11 @@ public class ORWebView extends ComponentView
    *
    * Adapted from http://developer.android.com/resources/tutorials/views/hello-webview.html
    */
-  private class ORWebViewClient extends WebViewClient {
+  private class ORWebViewClient extends WebViewClient
+  {
     @Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+    public boolean shouldOverrideUrlLoading(WebView view, String url)
+    {
       view.loadUrl(url);
       return true;
     }
