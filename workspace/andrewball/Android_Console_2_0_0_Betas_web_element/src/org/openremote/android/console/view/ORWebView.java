@@ -133,7 +133,7 @@ public class ORWebView extends ComponentView
         "\n\n<body>" +
         "\n    <p><b>%s</b></p>" +
         "\n</body>" +
-        "\n</html>", errorMessage);
+        "\n</html>", errorMessage, errorMessage);
   }
 
   /**
