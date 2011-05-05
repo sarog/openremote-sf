@@ -85,6 +85,8 @@
 		60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
 		60AFCED6137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
+		60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
+		60AFCEEA13729AA500A811D4 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
 		60C2F958135F3748000824A5 /* ScreenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C2F957135F3748000824A5 /* ScreenTest.m */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
 		60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
@@ -719,6 +721,8 @@
 		60AFCECF1371787300A811D4 /* ORControllerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerProxy.m; sourceTree = "<group>"; };
 		60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerCommandSender.h; sourceTree = "<group>"; };
 		60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerCommandSender.m; sourceTree = "<group>"; };
+		60AFCEE713729AA400A811D4 /* ControllerRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ControllerRequest.h; sourceTree = "<group>"; };
+		60AFCEE813729AA400A811D4 /* ControllerRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerRequest.m; sourceTree = "<group>"; };
 		60C2F956135F3748000824A5 /* ScreenTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenTest.h; sourceTree = "<group>"; };
 		60C2F957135F3748000824A5 /* ScreenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenTest.m; sourceTree = "<group>"; };
 		60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = panel_screenIdForOrientation.xml; sourceTree = "<group>"; };
@@ -1504,6 +1508,8 @@
 				60AFCECF1371787300A811D4 /* ORControllerProxy.m */,
 				60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */,
 				60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */,
+				60AFCEE713729AA400A811D4 /* ControllerRequest.h */,
+				60AFCEE813729AA400A811D4 /* ControllerRequest.m */,
 			);
 			name = "Controller communication";
 			sourceTree = "<group>";
@@ -2126,6 +2132,7 @@
 				6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */,
 				60AFCED01371787400A811D4 /* ORControllerProxy.m in Sources */,
 				60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */,
+				60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2233,6 +2240,7 @@
 				6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */,
 				60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */,
 				60AFCED6137180E400A811D4 /* ORControllerCommandSender.m in Sources */,
+				60AFCEEA13729AA500A811D4 /* ControllerRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,6 +26,8 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
+NSString *const kControllerControlPath = @"rest/control";
+
 @implementation ServerDefinition
 
 + (NSString *)serverUrl {
@@ -50,7 +52,7 @@
 }
 
 + (NSString *)controlRESTUrl {
-	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/control"];
+	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:kControllerControlPath];
 }
 
 //returns serverUrl, if SSL is enabled, use secured server url.
