@@ -75,6 +75,11 @@ public class Constants
    */
   public final static String AGENT_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".agent";
 
+  /**
+   * Specific log category for sensor values.
+   */
+  public final static String SENSOR_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".sensor";
+
   public final static String LIRCD_CONF = "lircd.conf";
 
   public final static String CONTROLLER_XSD_PATH = "/controller-2.0-M7.xsd";
