@@ -20,13 +20,12 @@
  */
 
 #import "ORControllerCommandSender.h"
-#import "ServerDefinition.h"
-#import "CredentialUtil.h"
 #import "Component.h"
 #import "Definition.h"
 #import "ViewHelper.h"
 #import "ControllerException.h"
 #import "NotificationConstant.h"
+#import "ServerDefinition.h"
 
 @implementation ORControllerCommandSender
 
@@ -46,27 +45,22 @@
 {
     [command release];
     [component release];
+    [controllerRequest release];
     [super dealloc];
 }
 
 - (void)send
-{
-    NSString *location = [[ServerDefinition controlRESTUrl] stringByAppendingFormat:@"/%d/%@", component.componentId, command];
-    NSURL *url = [[NSURL alloc] initWithString:location];
-    NSLog(@"%@", location);
+{  
+    // Request already sent, do nothing
+    if (controllerRequest) {
+        return;
+    }
+    // TODO EBR review that, what's the correct behaviour ? Throw exception ? Reset current request ?
     
-    //assemble put request 
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:url];
-    [request setHTTPMethod:@"POST"];
-    
-    [CredentialUtil addCredentialToNSMutableURLRequest:request];
-    
-    URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
-    
-    [url release];
-    [request release];
-    [connection autorelease];
+    NSString *commandURLPath = [kControllerControlPath stringByAppendingFormat:@"/%d/%@", component.componentId, command];
+    controllerRequest = [[ControllerRequest alloc] init];
+    controllerRequest.delegate = self;
+    [controllerRequest postRequestWithPath:commandURLPath];
 }
 
 - (void)handleServerResponseWithStatusCode:(int) statusCode {
@@ -85,21 +79,22 @@
 	}
 }
 
-#pragma mark URLConnectionHelperDelegate implementation
+#pragma mark ControllerRequestDelegate implementation
 
-- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-    if ([delegate respondsToSelector:@selector(commandSendFailed)]) {
-        [delegate commandSendFailed];
-    }
+- (void)controllerRequestDidFinishLoading:(NSData *)data
+{
 }
 
-- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-}
-
-- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
+- (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response {
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
     NSLog(@"control[%d]statusCode is %d", component.componentId, [httpResp statusCode]);
 	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
+}
+
+- (void) controllerRequestDidFailWithError:(NSError *)error {
+    if ([delegate respondsToSelector:@selector(commandSendFailed)]) {
+        [delegate commandSendFailed];
+    }
 }
 
 @end

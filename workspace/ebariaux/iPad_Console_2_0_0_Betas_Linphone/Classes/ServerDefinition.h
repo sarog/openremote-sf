@@ -21,6 +21,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const kControllerControlPath;
+
 /**
  * Infomations about controller server panel client use.
  */

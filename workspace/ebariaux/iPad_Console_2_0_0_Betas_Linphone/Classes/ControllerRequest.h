@@ -20,27 +20,30 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ControllerRequest.h"
 
-@class Component;
+@protocol ControllerRequestDelegate <NSObject>
 
-@protocol ORControllerCommandSenderDelegate <NSObject>
+- (void)controllerRequestDidFinishLoading:(NSData *)data;
 
-- (void)commandSendFailed;
+@optional
+- (void)controllerRequestDidFailWithError:(NSError *)error;
+- (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response;
+
+// TODO EBR : do we really want to pass URL classes back to our delegate ? this should be hidden
 
 @end
 
-@interface ORControllerCommandSender : NSObject <ControllerRequestDelegate> {
-    NSString *command;
-    Component *component;
-    ControllerRequest *controllerRequest;
-    
-    NSObject <ORControllerCommandSenderDelegate> *delegate;
+@interface ControllerRequest : NSObject {
+
+    NSString *requestPath;
+    NSMutableData *receivedData;
+	NSURLConnection *connection;
+
+    NSObject <ControllerRequestDelegate> *delegate;
 }
 
-@property (nonatomic, assign) NSObject <ORControllerCommandSenderDelegate> *delegate;
+@property (nonatomic, retain) NSObject <ControllerRequestDelegate> *delegate;
 
-- (id)initWithCommand:(NSString *)aCommand component:(Component *)aComponent;
-- (void)send;
+- (void)postRequestWithPath:(NSString *)path;
 
 @end
