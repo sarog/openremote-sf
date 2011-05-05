@@ -1,0 +1,14 @@
+
+
+,,Ruleset,My CSV Rules Examples
+,,Import,org.openremote.controller.protocol.Event
+
+
+,,RuleTable,Fire Alarm
+,,CONDITION,CONDITION,ACTION
+,,Event,Event,System.out
+,(descriptions),source,value >= $1 && <= $2,"println(""$param"");"
+,Case,Event Source,"Temperature Range (min, max)",Log
+,Fire Alarm,temperature,"35, 1000",House is Burning
+,Ice Age,temperature,"-1000, 15",We are freezing!!!!
+,Comfort,temperature,"16, 34",It's good.
