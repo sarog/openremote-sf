@@ -65,15 +65,19 @@ public class Web extends Component
       password = passwordNode.getNodeValue();
     }
 
-    String srcFromXml = attributes.getNamedItem(SRC).getNodeValue();
-    try
+    Node srcAttribute = attributes.getNamedItem(SRC);
+    if (srcAttribute != null)
     {
-      this.src = new URL(srcFromXml);
-    }
-    catch (MalformedURLException e)
-    {
-      Log.e(LOG_CATEGORY, "invalid URL for web element with id " + getComponentId() + ": " +
-          srcFromXml);
+      String urlText = srcAttribute.getNodeValue();
+      try
+      {
+        this.src = new URL(urlText);
+      }
+      catch (MalformedURLException e)
+      {
+        Log.e(LOG_CATEGORY, "invalid URL for web element with id " + getComponentId() + ": " +
+            urlText);
+      }
     }
   }
 
