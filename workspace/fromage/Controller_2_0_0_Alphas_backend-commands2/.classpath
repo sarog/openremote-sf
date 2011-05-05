@@ -21,6 +21,10 @@
 	<classpathentry kind="lib" path="lib/test/jtidy/jtidy-r918.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/test/xerces-2.9.1/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib/json/json-20110113.jar"/>
+	<classpathentry kind="lib" path="lib/drools/drools-api-5.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/onewire/org.owfs.jowfsclient_0.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/compile/sipservlet-1_1-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/test/dbunit/dbunit-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/test/jetty/jetty-6.1.22.jar"/>
@@ -35,6 +39,5 @@
 	<classpathentry kind="lib" path="lib/rxtx/RXTXcomm-2.2-pre2.jar"/>
 	<classpathentry kind="lib" path="lib/apache/commons-beanutils-1.8.3/commons-beanutils-1.8.3.jar"/>
 	<classpathentry kind="lib" path="lib/clink/clink170.jar"/>
-	<classpathentry kind="lib" path="/media/ntfs/ogandit/src/or-knx/lib/json/json-20110113.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
