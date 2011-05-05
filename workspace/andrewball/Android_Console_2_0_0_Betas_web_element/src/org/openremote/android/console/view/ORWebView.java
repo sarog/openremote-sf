@@ -74,7 +74,8 @@ public class ORWebView extends ComponentView
       // initialize the standard view here
       webView = new WebView(context);
       webView.setWebViewClient(new ORWebViewClient());
-      ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(web.getFrameWidth(), web.getFrameHeight());
+      ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(web.getFrameWidth(),
+          web.getFrameHeight());
       webView.setLayoutParams(layoutParams);
       webView.getSettings().setJavaScriptEnabled(true);
       URL url = web.getSrc();
