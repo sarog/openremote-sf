@@ -95,7 +95,15 @@ public class Constants
    */
   public final static String DEPLOYER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".deployer";
 
-  
+  /**
+   * Specific log category for the agent.
+   */
+  public final static String AGENT_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".agent";
+
+  /**
+   * Specific log category for sensor values.
+   */
+  public final static String SENSOR_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".sensor";
 
   public final static String LIRCD_CONF = "lircd.conf";
 
