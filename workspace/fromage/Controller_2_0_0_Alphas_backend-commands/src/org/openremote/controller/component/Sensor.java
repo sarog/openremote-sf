@@ -22,6 +22,9 @@ package org.openremote.controller.component;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.NoStatusCommand;
 import org.openremote.controller.command.StatusCommand;
 
@@ -33,6 +36,14 @@ import org.openremote.controller.command.StatusCommand;
  */
 public class Sensor {
 
+   /** The logger for sensor values */
+   private Logger valueLogger = Logger.getLogger(Constants.SENSOR_LOG_CATEGORY);
+   
+   /**
+    * Stores the previous value of this sensor
+    */
+   private String previousValue;
+   
    /**
     * key name used in state map to store range min state.
     */
@@ -128,8 +139,22 @@ public class Sensor {
     * @return status
     */
    public String readStatus() {
-      return statusCommand.read(sensorType, stateMap);
+      String newValue = statusCommand.read(sensorType, stateMap);
+      logValue(newValue);
+      return newValue; 
    }
+   
+   /**
+    * Logs the new value for this sensor if it is different from the previous value
+    */
+   private void logValue(String val) {
+      if(!StringUtils.isEmpty(val)
+            && !val.equals(previousValue)){
+         valueLogger.info(sensorID+": "+val);
+         previousValue = val;
+      }
+   }
+
    /**
     * Only available when sensor type is RANGE or LEVEL.
     *
