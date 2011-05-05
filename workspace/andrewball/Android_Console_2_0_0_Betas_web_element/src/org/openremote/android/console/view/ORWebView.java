@@ -155,7 +155,8 @@ public class ORWebView extends ComponentView
       webView.setLayoutParams(layoutParams);
       webView.getSettings().setJavaScriptEnabled(true);
       URL url = web.getSrc();
-      if (url != null) {
+      if (url != null)
+      {
         webView.loadUrl(url.toString());
       }
       addView(webView);
