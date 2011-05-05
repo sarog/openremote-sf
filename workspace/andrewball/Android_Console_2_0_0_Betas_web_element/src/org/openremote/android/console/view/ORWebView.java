@@ -166,6 +166,12 @@ public class ORWebView extends ComponentView
       {
         webView.loadUrl(url.toString());
       }
+      else
+      {
+        webView.loadData(composeHtmlErrorPage(
+            context.getResources().getString(R.string.web_element_invalid_or_missing_src_url) +
+            " " + web.getComponentId()), "text/html", "utf-8");
+      }
       addView(webView);
     }
   }
