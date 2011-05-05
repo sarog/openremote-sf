@@ -115,18 +115,25 @@ public class ORWebView extends ComponentView
         webView.loadData(composeHtmlErrorPage(errorMessage), "text/html", "utf-8");
       }
     }
+  }
 
-    private String composeHtmlErrorPage(String errorMessage)
-    {
-      return String.format("<html>" +
-          "\n<head>" +
-          "\n<title>%s</title>" +
-          "\n</head>" +
-          "\n\n<body>" +
-          "\n    <p><b>%s</b></p>" +
-          "\n</body>" +
-          "\n</html>", errorMessage);
-    }
+  /**
+   * Write a very simple HTML page with the title and main content taken from
+   * an error message.
+   *
+   * @param errorMessage the error message to write the page around
+   * @return a String containing the HTML markup of the error page
+   */
+  private static String composeHtmlErrorPage(String errorMessage)
+  {
+    return String.format("<html>" +
+        "\n<head>" +
+        "\n<title>%s</title>" +
+        "\n</head>" +
+        "\n\n<body>" +
+        "\n    <p><b>%s</b></p>" +
+        "\n</body>" +
+        "\n</html>", errorMessage);
   }
 
   /**
