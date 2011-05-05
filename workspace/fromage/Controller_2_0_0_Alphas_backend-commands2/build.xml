@@ -37,14 +37,17 @@
   <property name = "src.dir" value = "src"/>
   <property name = "test.dir" value = "test"/>
   <property name = "lib.dir" value = "lib"/>
+  <property name = "bin.dir" value = "bin"/>
   <property name = "build.dir" value = "build"/>
   <property name = "output.dir" value = "output"/>
   <property name = "javadoc.dir" value = "doc"/>
   <property name = "javadoc.locale" value = "en_US"/>
   <property name = "build-config.dir" value = "build_config"/>
   <property name = "config.dir" value = "config"/>
+  <property name = "agent.config.dir" value = "agent-config"/>
   <property name = "classes.dir" value = "build/classes"/>
   <property name = "webapp.classes.dir" value = "web/WEB-INF/classes"/>
+  <property name = "agent.dir" value = "build/agent"/>
   <property name = "instrumented.dir" value = "build/instrumented"/>
   <property name = "junit.reports.dir" location = "build/junit_report"/>
   <property name = "checkstyle.reports.dir" location = "build/checkstyle_report"/>
@@ -489,4 +492,41 @@
           style = "${checkstyle.report.style}" />
   </target>
 
+    <!--
+      | AGENT-DIST:
+      |
+      | Builds the agent distribution.
+      +-->
+  <target name="agent-dist" depends="compile" description = "--> builds the agent distribution.">
+    <delete dir="${agent.dir}"/>
+    <mkdir dir="${agent.dir}"/>
+    <mkdir dir="${agent.dir}/lib"/>
+    <mkdir dir="${agent.dir}/run"/>
+    <mkdir dir="${agent.dir}/bin"/>
+    <mkdir dir="${agent.dir}/logs"/>
+    <copy file="${bin.dir}/agent.sh" todir="${agent.dir}/bin" />
+    <chmod file="${agent.dir}/bin/agent.sh" perm="+x"/>
+    <copy todir="${agent.dir}/lib" flatten="true">
+      <fileset dir="${lib.dir}">
+        <include name="compile/javax.servlet.jar"/>
+        <include name="apache/commons-lang/*.jar"/>
+        <include name="core/apache/commons-io*.jar"/>
+        <include name="core/apache/commons-codec*.jar"/>
+        <include name="core/log4j/*.jar"/>
+        <include name="json/*.jar"/>
+      </fileset>
+      <fileset dir="${agent.config.dir}">
+        <include name="*.properties"/>
+      </fileset>
+    </copy>
+    <jar destfile="${agent.dir}/lib/agent.jar">
+      <fileset dir="${classes.dir}">
+        <include name="org/openremote/controller/agent/*.class"/>
+        <include name="org/openremote/controller/bootstrap/Startup*.class"/>
+        <include name="org/openremote/controller/exception/*.class"/>
+        <include name="org/openremote/controller/utils/*.class"/>
+        <include name="org/openremote/controller/Constants.class"/>
+      </fileset>
+    </jar>
+  </target>
 </project>

@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.agent.AgentTest;
 import org.openremote.controller.model.PanelTest;
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.Constants;
@@ -68,7 +69,9 @@ import org.jdom.input.DOMBuilder;
    ExceptionTests.class,
    ComponentTests.class,
    SensorTests.class,
-   ProtocolTests.class
+   ProtocolTests.class,
+   
+   AgentTest.class
 
 })
 

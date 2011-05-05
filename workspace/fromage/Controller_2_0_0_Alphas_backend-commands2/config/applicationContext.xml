@@ -236,7 +236,10 @@
    +-->
   <bean id = "eventProcessorChain" class = "org.openremote.controller.statuscache.EventProcessorChain">
     <property name = "eventProcessors">
-      <bean class = "org.openremote.controller.statuscache.rules.DroolsEventProcessor" />
+      <list>
+        <bean class = "org.openremote.controller.statuscache.rules.DroolsEventProcessor" />
+        <bean class = "org.openremote.controller.statuscache.log.LoggingEventProcessor" />
+      </list>
     </property>
   </bean>
 
