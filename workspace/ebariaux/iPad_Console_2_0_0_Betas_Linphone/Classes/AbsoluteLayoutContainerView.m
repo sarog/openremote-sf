@@ -21,14 +21,14 @@
 
 #import "AbsoluteLayoutContainerView.h"
 #import "AbsoluteLayoutContainer.h"
-#import "LayoutContainer.h"
+#import "ComponentView.h"
 
 @implementation AbsoluteLayoutContainerView
 
 @synthesize componentView;
 
-
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
 	AbsoluteLayoutContainer *abso = (AbsoluteLayoutContainer *)layout;
 	if (abso.component) {
 		//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
@@ -37,15 +37,12 @@
 	}
 
 	[self addSubview:componentView];
-
 }
 
-
-- (void)dealloc {
-	[componentView release];
-  
+- (void)dealloc
+{
+	[componentView release];  
 	[super dealloc];
 }
-
 
 @end
