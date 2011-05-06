@@ -90,7 +90,7 @@
 		}
 		//screenBackgroundImageViewHeight -= IPHONE_SCREEN_BOTTOM_PAGE_CONTROL_HEIGHT;
 
-		UIImageView *backgroundImageView = [[UIImageView alloc] init];
+		UIImageView *backgroundImageView = [[[UIImageView alloc] init] autorelease];
 		// fillscreen is false
 		if (![[screen background] fillScreen]) {
 			NSLog(@"BackgroundImage isn't fillScreen");
@@ -134,7 +134,6 @@
 		}
 		NSLog(@"Added width: %d, height: %d backgroundImageView", screenBackgroundImageViewWidth, screenBackgroundImageViewHeight);
 		[self addSubview:backgroundImageView];
-		[backgroundImageView release];
 		[backgroundImage release];
 	}
 }
