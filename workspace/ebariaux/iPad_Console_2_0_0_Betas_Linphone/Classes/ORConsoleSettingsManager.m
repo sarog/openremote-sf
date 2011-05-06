@@ -96,6 +96,7 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
         fetchRequest.entity = [NSEntityDescription entityForName:@"ORConsoleSettings" inManagedObjectContext:self.managedObjectContext];
         NSError *error = nil;
         consoleSettings = [[[self.managedObjectContext executeFetchRequest:fetchRequest error:&error] lastObject] retain];
+        [fetchRequest release];
         if (error) {
             NSLog(@"Error reading %@", error);
             // TODO: handle error

@@ -271,6 +271,7 @@ static BOOL isWifiActive = NO;
 		[loop runMode: NSDefaultRunLoopMode beforeDate: limit];
 		[limit release];
 	}
+    [conn release];
 	data = [[collector _data] retain];
   return [data autorelease];
 }
