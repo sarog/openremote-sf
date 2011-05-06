@@ -179,7 +179,7 @@ abstract class KNXCommand implements Command
    *
    * @return  new KNX command instance
    */
-  static KNXCommand createCommand(String name, DataPointType dpt, KNXConnectionManager mgr,
+  static KNXCommand createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                   GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -220,7 +220,7 @@ abstract class KNXCommand implements Command
   /**
    * Connection manager to be used to transmit this command.
    */
-  private KNXConnectionManager connectionManager;
+  private KNXIpConnectionManager connectionManager;
 
 
 
@@ -235,7 +235,7 @@ abstract class KNXCommand implements Command
    * @param apdu              command payload
    * @param dpt               KNX datapoint type associated with this command
    */
-  KNXCommand(KNXConnectionManager connectionManager, GroupAddress address,
+  KNXCommand(KNXIpConnectionManager connectionManager, GroupAddress address,
              ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     this.address = address;
