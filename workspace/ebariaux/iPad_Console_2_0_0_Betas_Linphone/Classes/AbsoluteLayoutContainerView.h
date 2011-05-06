@@ -20,7 +20,8 @@
  */
 
 #import "LayoutContainerView.h"
-#import "ComponentView.h"
+
+@class ComponentView;
 
 /**
  * This view is for layouting component views with absolute position in screen view.
@@ -29,6 +30,6 @@
 	ComponentView *componentView;
 }
 
-@property (nonatomic, readonly)ComponentView *componentView;
+@property (nonatomic, readonly) ComponentView *componentView;
 
 @end
