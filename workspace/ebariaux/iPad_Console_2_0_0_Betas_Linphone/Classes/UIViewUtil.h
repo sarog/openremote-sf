@@ -31,6 +31,6 @@
 /**
  * Clip image depending on image's container view, align pattern and fill pattern.
  */
-+ (UIImageView *) clippedUIImageViewWith:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView uiImageAlignToUIViewPattern:(NSString *)align isUIImageFillUIView:(BOOL)imageFillView;
++ (UIImageView *)clippedUIImageViewWith:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView uiImageAlignToUIViewPattern:(NSString *)align isUIImageFillUIView:(BOOL)imageFillView;
 
 @end

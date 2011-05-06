@@ -42,7 +42,7 @@
 		return nil;
 	}
 
-	return [newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
+	return [[newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent] autorelease];
 }
 	
 	

@@ -28,16 +28,18 @@
 /**
  * Clip image depending on image's container view, align pattern and fill pattern.
  */
-+ (UIImageView *) clippedUIImageViewWith:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView uiImageAlignToUIViewPattern:(NSString *)align isUIImageFillUIView:(BOOL)imageFillView {
++ (UIImageView *)clippedUIImageViewWith:(UIImage *)uiImage dependingOnUIView:(UIView *)uiView uiImageAlignToUIViewPattern:(NSString *)align isUIImageFillUIView:(BOOL)imageFillView
+{
 	if (uiImage && uiView) {
 		ClippedUIImage *clippedUIImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:uiView imageAlignToView:align];
 		UIImageView *uiImageView = [[UIImageView alloc] initWithFrame:uiView.frame];
 		[uiImageView setImage:clippedUIImage];
+        [clippedUIImage release];
 		if (imageFillView) {
 			[uiImageView sizeToFit];
 		}
 		[uiImageView setContentMode:uiView.contentMode];
-		return uiImageView;
+		return [uiImageView autorelease];
 	} else {
 		return nil;
 	}
