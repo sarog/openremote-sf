@@ -7,6 +7,11 @@
 		<string>Turn off auto-discovery to input controller URL manually.</string>
 		<key>header</key>
 		<string></string>
+		<key>item</key>
+        <dict>
+			<key>name</key>
+			<string>Auto Discovery</string>
+        </dict>
 	</dict>
 	<dict>
 		<key>footer</key>
