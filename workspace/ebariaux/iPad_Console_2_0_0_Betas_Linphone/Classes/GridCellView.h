@@ -20,8 +20,9 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "GridCell.h"
-#import "ComponentView.h"
+
+@class GridCell;
+@class ComponentView;
 
 /**
  * GridCellView is mainly for layout component views.
@@ -36,7 +37,7 @@
  */
 - (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame;
 
-@property (nonatomic, readonly)ComponentView *componentView;
-@property (nonatomic, readonly)GridCell *cell;
+@property (nonatomic, readonly) ComponentView *componentView;
+@property (nonatomic, readonly) GridCell *cell;
 
 @end

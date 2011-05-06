@@ -21,13 +21,16 @@
 
 #import "GridCellView.h"
 #import "GridCell.h"
+#import "ComponentView.h"
 
 @implementation GridCellView
 
 @synthesize componentView, cell;
 
-- (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
+- (id)initWithGridCell:(GridCell *)gridCell frame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
 			cell = gridCell;
 			//transparent background 
 			[self setBackgroundColor:[UIColor clearColor]]; 
@@ -36,24 +39,20 @@
 }
 
 // Override metho of UIView and be called automatically.
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
 	if (cell.component) {
 		//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 		//Otherwise, UI widget inside will not work in nested UIViews
-		componentView = [ComponentView buildWithComponent:cell.component frame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+		componentView = [[ComponentView componentViewWithComponent:cell.component frame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)] retain];
 	}
 	
 	[self addSubview:componentView];
-	
-	
 }
 
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-
-
-- (void)dealloc {
+- (void)dealloc
+{
+    [componentView release];
     [super dealloc];
 }
 

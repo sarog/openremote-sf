@@ -61,9 +61,8 @@
 - (void)createLayout {
 	[self layoutBackground];
 	
-	for (LayoutContainer *layout in screen.layouts) { 
-		LayoutContainerView *layoutView = [LayoutContainerView buildWithLayoutContainer:layout];
-		[self addSubview:layoutView];
+	for (LayoutContainer *layout in screen.layouts) {
+		[self addSubview:[LayoutContainerView layoutContainerViewWithLayoutContainer:layout]];
 	}
 
 }

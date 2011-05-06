@@ -46,8 +46,10 @@
 @implementation DefaultViewController
 
 
-- (id)initWithDelegate:(id)delegate {
-    if (self = [super init]) {	
+- (id)initWithDelegate:(id)delegate
+{
+    self = [super init];
+    if (self) {	
 			theDelegate = delegate;
 			groupControllers = [[NSMutableArray alloc] init]; 
 			groupViewMap = [[NSMutableDictionary alloc] init];
@@ -74,6 +76,8 @@
 	[navigationHistory release];
     
     // TODO: recheck release of those, what about on view unload in case of low memory condition
+    [currentGroupController release];
+    
 	[errorViewController release];
 	[globalTabBarController release];
 	[updateController release];
@@ -151,7 +155,7 @@
 	} else {
 		gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
 	}
-	return gc;
+	return [gc autorelease];
 }
 
 - (void)initGroups {
@@ -389,7 +393,10 @@
 
 	[self.view addSubview:v];
 
-	currentGroupController = targetGroupController;
+    if (currentGroupController) {
+        [currentGroupController release];
+    }
+	currentGroupController = [targetGroupController retain];
 }
 
 
@@ -523,8 +530,9 @@
 	
 	if (currentGroupController) {
 		[currentGroupController stopPolling];
+        [currentGroupController release];
+        currentGroupController = nil;
 	}
-	currentGroupController = nil;
 	
 	[self initGroups];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];

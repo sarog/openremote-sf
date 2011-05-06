@@ -37,7 +37,7 @@
 /**
  * Build controls with control model data and frame of its layout container.
  */
-+ (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame;
++ (ControlView *)controlViewWithControl:(Control *)control frame:(CGRect)frame;
 
 /**
  * Construct controlView instance with control model data and frame of its layout container.

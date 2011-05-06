@@ -78,7 +78,9 @@
 		itemController.tabBarItem.title = tabBarItem.tabBarItemName;
 		UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:tabBarItem.tabBarItemImage.src]];
 		itemController.tabBarItem.image = image;
+        [image release];
 		[viewControllers addObject:itemController];
+        [itemController release];
 		
 		if (tabBarItem.navigate && groupController.group.groupId == tabBarItem.navigate.toGroup) {
 			if (selectedIndexFound == NO && tabBarItem.navigate.toScreen == [groupController currentScreenId]) {

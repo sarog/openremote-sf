@@ -30,7 +30,7 @@
 
 @synthesize layout;
 
-+ (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer
++ (LayoutContainerView *)layoutContainerViewWithLayoutContainer:(LayoutContainer *)layoutContainer
 {
 	LayoutContainerView* layoutView = nil;
 	if ([layoutContainer isKindOfClass:[AbsoluteLayoutContainer class]]) {
@@ -43,7 +43,7 @@
 
 	//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 	//Otherwise, UI widget inside will not work in nested UIViews
-	return [layoutView initWithLayoutContainer:layoutContainer frame:CGRectMake(layoutContainer.left, layoutContainer.top, layoutContainer.width, layoutContainer.height)];
+	return [[layoutView initWithLayoutContainer:layoutContainer frame:CGRectMake(layoutContainer.left, layoutContainer.top, layoutContainer.width, layoutContainer.height)] autorelease];
 }
 
 
@@ -68,7 +68,6 @@
 	}
 	return self;
 }
-
 
 - (void)dealloc
 {

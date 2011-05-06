@@ -27,18 +27,19 @@
 
 @synthesize onImage, offImage;
 
-
 //get element name, must be overriden in subclass
-- (NSString *) elementName {
+- (NSString *) elementName
+{
 	return SWITCH;
 }
-
 
 #pragma mark Delegate methods of NSXMLParser  
 
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
+- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent
+{
+    self = [super init];
+	if (self) {
 		componentId = [[attributeDict objectForKey:ID] intValue];
 		
 		xmlParserParentDelegate = [parent retain];
@@ -50,18 +51,19 @@
 /**
  * Fill the switch on/off state images .
  */
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
+- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
+{
 	if ([elementName isEqualToString:[self elementName]]) {	
 		
 		for (SensorState *state in sensor.states) {
 			Image *img = [[Image alloc] init];
 			img.src = [state.value copy];
 			if ([[state.name lowercaseString] isEqualToString:ON]) {
-				onImage = img;
+				onImage = [img retain];
 			} else if ([[state.name lowercaseString] isEqualToString:OFF]) {
-				offImage = img;
+				offImage = [img retain];
 			}
-			
+			[img release];
 		}
 				
  		[parser setDelegate:xmlParserParentDelegate];
@@ -70,10 +72,11 @@
 	}
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 	[onImage release];
 	[offImage release];
-	
+	[xmlParserParentDelegate release];
 	[super dealloc];
 }
 

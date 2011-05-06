@@ -21,35 +21,24 @@
 #import "GridLayoutContainerView.h"
 #import "GridLayoutContainer.h"
 #import "GridCellView.h"
+#import "GridCell.h"
 
 @implementation GridLayoutContainerView
 
-@synthesize cellViews;
-
 // Override method of UIView and be called automatically.
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
 	GridLayoutContainer *grid = (GridLayoutContainer *)layout;
-	int h = self.bounds.size.height/grid.rows;				
-	int w = self.bounds.size.width/grid.cols;
+	int h = self.bounds.size.height / grid.rows;				
+	int w = self.bounds.size.width / grid.cols;
 	
 	if (grid) {
 		for (GridCell *cell in grid.cells){
-			GridCellView *cellView = [[GridCellView alloc] initWithGridCell:cell frame:CGRectMake(cell.x*w, cell.y*h, w*cell.colspan, h*cell.rowspan)];
-			[cellViews addObject:cellView];
+			GridCellView *cellView = [[GridCellView alloc] initWithGridCell:cell frame:CGRectMake(cell.x * w, cell.y * h, w * cell.colspan, h * cell.rowspan)];
 			[self addSubview:cellView];
+            [cellView release];
 		}
 	}
 }
-
-
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end
