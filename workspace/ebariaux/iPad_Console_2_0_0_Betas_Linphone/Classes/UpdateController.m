@@ -190,6 +190,7 @@
     
     // Parses the XML reply and fill-in the GroupMembers cache for this controller
     [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers = [NSSet set];
+    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember = nil;
 	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
 	[xmlParser setDelegate:self];
 	[xmlParser parse];

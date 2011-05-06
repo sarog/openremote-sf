@@ -26,7 +26,6 @@
 @implementation ORGroupMember
 @dynamic url;
 @dynamic lastFailureDate;
-@dynamic failuresCount;
 @dynamic controller;
 
 

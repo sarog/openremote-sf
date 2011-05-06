@@ -75,6 +75,8 @@
 - (void)detectDeviceOrientation {
 	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	currentOrientation = [[UIDevice currentDevice] orientation];
+    
+    NSLog(@"GroupController.detectDeviceOrientation, detected %d", currentOrientation);
 	
 	if (currentOrientation == UIDeviceOrientationUnknown) {
 		currentOrientation = UIInterfaceOrientationPortrait;

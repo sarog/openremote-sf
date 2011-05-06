@@ -33,6 +33,8 @@
 
 @implementation ORController
 
+@synthesize activeGroupMember;
+
 @dynamic primaryURL;
 @dynamic selectedPanelIdentity;
 @dynamic index;
@@ -41,6 +43,9 @@
 @dynamic settingsForConfiguredControllers;
 @dynamic settingsForSelectedDiscoveredController;
 @dynamic settingsForSelectedConfiguredController;
+
+
+// TODO EBR watch groupMembers change and reset activeGroupMember if required
 
 - (NSString *)selectedPanelIdentityDisplayString
 {

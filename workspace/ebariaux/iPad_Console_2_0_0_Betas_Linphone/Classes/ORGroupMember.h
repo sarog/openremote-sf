@@ -30,7 +30,7 @@
 
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSDate * lastFailureDate;
-@property (nonatomic, retain) NSNumber * failuresCount;
 @property (nonatomic, retain) ORController * controller;
+
 
 @end

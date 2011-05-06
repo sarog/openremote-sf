@@ -23,9 +23,11 @@
 #import <CoreData/CoreData.h>
 
 @class ORConsoleSettings;
+@class ORGroupMember;
 
 @interface ORController : NSManagedObject {
 @private
+    ORGroupMember *activeGroupMemnber;
 }
 
 @property (nonatomic, retain) NSString * primaryURL;
@@ -38,6 +40,8 @@
 @property (nonatomic, retain) ORConsoleSettings * settingsForSelectedConfiguredController;
 
 @property (nonatomic, readonly) NSString *selectedPanelIdentityDisplayString;
+
+@property (nonatomic, assign) ORGroupMember *activeGroupMember;
 
 - (void)addGroupMemberForURL:(NSString *)url;
 

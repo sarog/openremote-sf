@@ -33,11 +33,17 @@
 
 @end
 
+/**
+ * This classes uses the same pattern as NSURLConnection for memory management of delegate.
+ * It is retained and released when the connection is finished (after NSURLConnection sent
+ * connectionDidFinishLoading: or connection:didFailWithError:
+ */
 @interface ControllerRequest : NSObject {
 
     NSString *requestPath;
     NSMutableData *receivedData;
 	NSURLConnection *connection;
+    NSError* lastError;
 
     NSObject <ControllerRequestDelegate> *delegate;
 }
