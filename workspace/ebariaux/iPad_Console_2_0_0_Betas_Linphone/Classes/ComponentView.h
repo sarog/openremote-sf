@@ -34,7 +34,7 @@
 /**
  * Build componentViews with component model data and frame of its layout container.
  */
-+ (ComponentView *)buildWithComponent:(Component *)component frame:(CGRect)frame;
++ (ComponentView *)componentViewWithComponent:(Component *)component frame:(CGRect)frame;
 
 /**
  * Construct a component view instance with component data and frame of its layout container.

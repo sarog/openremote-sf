@@ -250,6 +250,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	tipText.textAlignment = UITextAlignmentCenter;
 	tipText.text = [NSString stringWithFormat:@"%d",(int)[sender value]];
 	[tip addSubview:tipText];
+    [tipText release];
 }
 
 -(void) clearSliderTipSubviews:(UIImageView *)sliderTipParam {

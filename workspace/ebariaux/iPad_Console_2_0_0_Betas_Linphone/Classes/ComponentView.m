@@ -37,7 +37,7 @@
 
 //NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
 //Otherwise, UI widget will not work in nested UIViews
-+ (ComponentView *)buildWithComponent:(Component *)component frame:(CGRect)frame {
++ (ComponentView *)componentViewWithComponent:(Component *)component frame:(CGRect)frame {
 	ComponentView *componentView = nil;
 
 	if ([component isKindOfClass:[Label class]]) {
@@ -47,7 +47,7 @@
 	} else if ([component isKindOfClass:[Web class]]) {
 		componentView = [ORWebView alloc];
 	} else {
-		return [ControlView buildWithControl:(Control *)component frame:frame];
+		return [ControlView controlViewWithControl:(Control *)component frame:frame];
 	}
 	
 	return [componentView initWithComponent:component frame:frame];

@@ -38,7 +38,7 @@
 /**
  * Build layout view with layout model data.
  */
-+ (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer;
++ (LayoutContainerView *)layoutContainerViewWithLayoutContainer:(LayoutContainer *)layoutContainer;
 
 @property (nonatomic, readonly) LayoutContainer *layout;
 

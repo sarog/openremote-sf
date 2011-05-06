@@ -33,7 +33,7 @@
 	if (abso.component) {
 		//NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 		//Otherwise, UI widget inside will not work in nested UIViews
-		componentView = [ComponentView buildWithComponent:abso.component frame:CGRectMake(0, 0, abso.width, abso.height)];
+		componentView = [[ComponentView componentViewWithComponent:abso.component frame:CGRectMake(0, 0, abso.width, abso.height)] retain];
 	}
 
 	[self addSubview:componentView];

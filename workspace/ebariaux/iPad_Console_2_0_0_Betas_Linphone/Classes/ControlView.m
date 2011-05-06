@@ -50,7 +50,7 @@
 
 //NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
 //Otherwise, UI widget will not work in nested UIViews
-+ (ControlView *)buildWithControl:(Control *)control frame:(CGRect)frame{
++ (ControlView *)controlViewWithControl:(Control *)control frame:(CGRect)frame{
 	ControlView *controlView = nil;
 	if ([control isKindOfClass:[Switch class]]) {
 		controlView = [SwitchView alloc];
@@ -64,9 +64,7 @@
 		return nil;
 	}
 
-
-	
-	return [controlView initWithControl:control frame:frame];
+	return [[controlView initWithControl:control frame:frame] autorelease];
 }
 
 #pragma mark instance methods
