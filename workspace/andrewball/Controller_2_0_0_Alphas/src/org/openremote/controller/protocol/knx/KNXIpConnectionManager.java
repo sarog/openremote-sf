@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openremote.controller.utils.Logger;
+import org.openremote.controller.protocol.knx.DataLink.MessageCode;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
@@ -30,9 +31,14 @@ import org.openremote.controller.protocol.knx.ip.KnxIpException;
 public class KNXIpConnectionManager implements DiscoveryListener {
    // Class Members --------------------------------------------------------------------------------
    /**
+    * cEMI service timeout
+    */
+   private static final int RUNTIME_SERVICE_TIMEOUT = 3000;
+
+   /**
     * GroupValueRead timeout TODO check value
     */
-   private static int READ_TIMEOUT = 3000;
+   private static final int READ_RESPONSE_TIMEOUT = 3000;
 
    /**
     * A system property name ("knx.bind.address") that can be set to a specific IPv4 address on the system to force KNX
@@ -428,14 +434,16 @@ public class KNXIpConnectionManager implements DiscoveryListener {
 
       @Override
       public void send(GroupValueWrite command) {
-         this.runtimeService(command);
+         this.service(command);
       }
 
       @Override
       public synchronized ApplicationProtocolDataUnit read(GroupValueRead command) {
-         this.runtimeService(command);
+         this.service(command);
+
+         // Wait for response after having received a confirmation
          try {
-            this.wait(KNXIpConnectionManager.READ_TIMEOUT);
+            this.wait(KNXIpConnectionManager.READ_RESPONSE_TIMEOUT);
          } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
          }
@@ -458,17 +466,16 @@ public class KNXIpConnectionManager implements DiscoveryListener {
             // Check cEMI message code
             switch (cEmiFrame[KNXCommand.CEMI_MESSAGECODE_OFFSET]) {
 
-            // Property write confirmation
-            case Cemi.M_PROPWRITE_CON:
-               // Runtime frame confirmation
-            case Cemi.L_DATA_CON:
+            // Runtime confirmation telegram
+            case MessageCode.DATA_CONFIRM_BYTE:
                synchronized (this.syncLock) {
                   this.con = cEmiFrame;
+                  this.syncLock.notify();
                }
                break;
 
-            // Incoming runtime frame
-            case Cemi.L_DATA_IND:
+            // Incoming runtime telegram
+            case MessageCode.DATA_INDICATE_BYTE:
                this.handleLDataInd(cEmiFrame);
                break;
             default:
@@ -536,7 +543,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
          }
       }
 
-      private synchronized byte[] runtimeService(KNXCommand command) {
+      private synchronized byte[] service(KNXCommand command) {
          Byte[] f = command.getCEMIFrame();
          byte[] m = new byte[f.length];
          for (int i = 0; i < f.length; ++i) {
@@ -547,7 +554,7 @@ public class KNXIpConnectionManager implements DiscoveryListener {
                this.client.service(m);
 
                // Wait for server confirmation and check it
-               this.syncLock.wait(Cemi.RUNTIME_SERVICE_TIMEOUT);
+               this.syncLock.wait(RUNTIME_SERVICE_TIMEOUT);
                return this.con;
             }
          } catch (KnxIpException e) {
@@ -570,13 +577,11 @@ public class KNXIpConnectionManager implements DiscoveryListener {
          byte apciHi = cEmiFrame[KNXCommand.CEMI_TPCI_APCI_OFFSET];
          byte apciLoData = cEmiFrame[KNXCommand.CEMI_APCI_DATA_OFFSET];
 
-         // sanity checks -- is a response?
-
-         if (!ApplicationProtocolDataUnit.isGroupValueResponse(new byte[] { apciHi, apciLoData })) {
-            log.debug("Ignoring frame");
-
-            // TODO : should handle write requests coming to gateway, e.g. motion sensors
-
+         // sanity checks -- is a response or a write request?
+         byte[] a = new byte[] { apciHi, apciLoData };
+         if (!ApplicationProtocolDataUnit.isGroupValueResponse(a)
+               && !ApplicationProtocolDataUnit.isGroupValueWriteReq(a)) {
+            log.debug("Ignoring frame other telegrams than GroupValue_Response and GroupValue_Write");
             return;
          }
 
