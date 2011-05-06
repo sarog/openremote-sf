@@ -20,10 +20,11 @@
  */
 
 #import <UIKit/UIKit.h>
-#import "LayoutContainer.h"
+
+@class LayoutContainer;
 
 /**
- * Super class of all layout views(Such as AbsoluteLayoutContainerView and GridLayoutContainerView).
+ * Super class of all layout views (such as AbsoluteLayoutContainerView and GridLayoutContainerView).
  */
 @interface LayoutContainerView : UIView {
 	LayoutContainer *layout;
@@ -40,7 +41,6 @@
 + (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer;
 
 @property (nonatomic, readonly) LayoutContainer *layout;
-
 
 @end
 
