@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.knx.ip.tunnel;
+package org.openremote.controller.protocol.knx.ip;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,13 +9,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpConnectResp;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDisconnectResp;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpDiscoverResp;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpMessage.Primitive;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingAck;
-import org.openremote.controller.protocol.knx.ip.tunnel.message.IpTunnelingReq;
+import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
+import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
+import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
+import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 
 /**
  * IP message processor, able to :
@@ -62,12 +62,13 @@ class IpProcessor {
                   // Handle other messages
                   if (m.getPrimitive() == Primitive.RESP) {
 
-                     // Handle ACKs
+                     // Handle responses
                      synchronized (IpProcessor.this.syncLock) {
                         IpProcessor.this.con = m;
                         IpProcessor.this.syncLock.notify();
                      }
                   } else {
+                     // Handle requests
                      IpProcessor.this.listener.notifyMessage(m);
                   }
                }
@@ -112,7 +113,7 @@ class IpProcessor {
       return this.srcAddr;
    }
 
-   synchronized IpMessage unicastSyncSend(IpMessage message, InetSocketAddress destAddr) throws InterruptedException,
+   synchronized IpMessage service(IpMessage message, InetSocketAddress destAddr) throws InterruptedException,
          IOException, KnxIpException {
       IpMessage out = null;
       synchronized (this.syncLock) {

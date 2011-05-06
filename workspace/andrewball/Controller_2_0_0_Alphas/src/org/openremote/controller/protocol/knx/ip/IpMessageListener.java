@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.knx.ip.tunnel;
+package org.openremote.controller.protocol.knx.ip;
 
 public interface IpMessageListener {
 
