@@ -231,17 +231,16 @@
 }
 
 - (void)navigateToWithHistory:(Navigate *)navi {
-	Navigate *historyNavigate = [[Navigate alloc] init];
-	if (currentGroupController.group) {
-		historyNavigate.fromGroup = currentGroupController.group.groupId;
-		historyNavigate.fromScreen = [currentGroupController currentScreenId];
-	} else {
-		return;
-	}
+	if (!currentGroupController.group) {
+        return;
+    }
 	
 	if ([self navigateTo:navi]) {
+        Navigate *historyNavigate = [[Navigate alloc] init];
+		historyNavigate.fromGroup = currentGroupController.group.groupId;
+		historyNavigate.fromScreen = [currentGroupController currentScreenId];
 		[self saveLastGroupIdAndScreenId];
-		NSLog(@"navigte from group %d, screen %d", historyNavigate.fromGroup, historyNavigate.fromScreen);
+		NSLog(@"navigate from group %d, screen %d", historyNavigate.fromGroup, historyNavigate.fromScreen);
 		[navigationHistory addObject:historyNavigate];
 		[historyNavigate release];
 	}

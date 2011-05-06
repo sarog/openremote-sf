@@ -42,9 +42,8 @@
 		vertical = verticalStr ? [[verticalStr lowercaseString] isEqualToString:@"true"] ? YES : NO : NO;
 		NSString *passiveStr = [attributeDict objectForKey:PASSIVE];
 		passive = passiveStr ? [[passiveStr lowercaseString] isEqualToString:@"true"] ? YES : NO : NO;
-		Image *tempImg = [[Image alloc] init];
-		tempImg.src = [[attributeDict objectForKey:THUMB_IMAGE] copy];
-		thumbImage = tempImg;
+		thumbImage = [[Image alloc] init];
+		thumbImage.src = [[attributeDict objectForKey:THUMB_IMAGE] copy];
 		// Set default values for bounds, in case they're not provided in panel.xml
 		minValue = 0.0;
 		maxValue = 100.0;
@@ -65,18 +64,25 @@
 	
 	if ([elementName isEqualToString:MIN_VALUE]) {
 		minValue = [[attributeDict objectForKey:VALUE] floatValue];				
-		minImage = img;		
-		minTrackImage = trackImg;
+		minImage = [img retain];
+		minTrackImage = [trackImg retain];
 	} else if ([elementName isEqualToString:MAX_VALUE]) {
 		maxValue = [[attributeDict objectForKey:VALUE] floatValue];
-		maxImage = img;		
-		maxTrackImage = trackImg;
-	} 
+		maxImage = [img retain];
+		maxTrackImage = [trackImg retain];
+	}
+    [img release];
+    [trackImg release];
 	
 	[super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 }
 
 - (void)dealloc {
+    [thumbImage release];
+    [minImage release];
+    [minTrackImage release];
+    [maxImage release];
+    [maxTrackImage release];
 	[super dealloc];
 }
 

@@ -63,11 +63,11 @@
 // parse all kinds of controls
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	if ([elementName isEqualToString:@"cell"]) {
-		[cells addObject:[[GridCell alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self]];
+        GridCell *cell = [[GridCell alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+		[cells addObject:cell];
+        [cell release];
 	}
 }
-
-
 
 - (void)dealloc {
 	[cells release];
@@ -79,7 +79,5 @@
 - (NSString *) elementName {
 	return @"grid";
 }
-
-
 
 @end

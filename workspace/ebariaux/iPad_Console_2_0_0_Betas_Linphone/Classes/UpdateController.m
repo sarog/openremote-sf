@@ -177,8 +177,10 @@
     
     
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
-	NSData *data = [[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&resp error:&error];
+    URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
+	NSData *data = [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	[request release];
+    [connectionHelper release];
 	if (error ) {
 		NSLog(@"getRoundRobinGroupMembers failed %@",[error localizedDescription]);
 		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" 
