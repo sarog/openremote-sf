@@ -19,6 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
+#import <UIKit/UIKit.h>
 #import "ControllerRequest.h"
 #import "CredentialUtil.h"
 #import "ORConsoleSettingsManager.h"

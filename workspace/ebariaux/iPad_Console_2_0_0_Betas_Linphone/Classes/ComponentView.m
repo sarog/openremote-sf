@@ -50,7 +50,7 @@
 		return [ControlView controlViewWithControl:(Control *)component frame:frame];
 	}
 	
-	return [componentView initWithComponent:component frame:frame];
+	return [[componentView initWithComponent:component frame:frame] autorelease];
 }
 
 

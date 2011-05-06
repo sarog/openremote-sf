@@ -131,7 +131,6 @@ static Definition *myInstance = nil;
 		}
 	}
 	[self.labels addObject:label];
-	[label release];
 }
 
 - (Label *)findLabelById:(int)labelId {

@@ -63,7 +63,7 @@
 
 // parse all kinds of controls
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	component = [Component buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
+	component = [[Component buildWithXMLParser:elementName parser:parser elementName:elementName attributes:attributeDict parentDelegate:self] retain];
 	/**
 	 * The returned component instance must be nil, if method [Component buildWithXMLParser] doesn't immediately support latest direct subElements of absolute element 
 	 * and wrong direct subElememnts appear in panel.xml.

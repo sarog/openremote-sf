@@ -30,7 +30,8 @@
 
 @synthesize componentId;
 
-+ (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
++ (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent
+{
 	Component *newComponent;
 	if ([componentType isEqualToString:LABEL]) {
 		newComponent = [Label alloc];
@@ -45,10 +46,10 @@
 
 	// Cache labels
 	if ([newComponent isKindOfClass:[Label class]]) {
-		[[Definition sharedDefinition] addLabel:[(Label *)newComponent retain]];
+		[[Definition sharedDefinition] addLabel:(Label *)newComponent];
 	}
 	
-	return newComponent;
+	return [newComponent autorelease];
 }
 
 @end
