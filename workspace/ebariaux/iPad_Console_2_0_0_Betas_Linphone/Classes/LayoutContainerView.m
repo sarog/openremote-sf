@@ -26,12 +26,12 @@
 #import "GridLayoutContainer.h"
 #import	"GridLayoutContainerView.h"
 
-
 @implementation LayoutContainerView
 
 @synthesize layout;
 
-+ (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer {
++ (LayoutContainerView *)buildWithLayoutContainer:(LayoutContainer *)layoutContainer
+{
 	LayoutContainerView* layoutView = nil;
 	if ([layoutContainer isKindOfClass:[AbsoluteLayoutContainer class]]) {
 		layoutView = [AbsoluteLayoutContainerView alloc];
@@ -49,12 +49,14 @@
 
 //NOTE:You should init all nested views with *initWithFrame* and you should pass in valid frame rects.
 //Otherwise, UI widget inside will not work in nested UIViews
-- (id)initWithLayoutContainer:(LayoutContainer *)layoutContainer frame:(CGRect)frame{
-	if (self = [super initWithFrame:frame]) {
-		layout = layoutContainer;	
-		//transparent background 
-		[self setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]]; 
-		//[self setBackgroundColor:[UIColor whiteColor]];
+- (id)initWithLayoutContainer:(LayoutContainer *)layoutContainer frame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+	if (self) {
+		layout = [layoutContainer retain];
+        
+		// Transparent background
+        self.backgroundColor = [UIColor clearColor];
 		
 		/* If you need to create a rectangle that is either larger or smaller than an existing rectangle, 
 		 * centered on the same point, try CGRectInset: (use negative values for a larger rectangle or
@@ -68,7 +70,8 @@
 }
 
 
-- (void)dealloc {
+- (void)dealloc
+{
 	[layout release];
 	[super dealloc];
 }
