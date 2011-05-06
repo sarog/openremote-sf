@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.openremote.controller.util.Logger;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.tunnel.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.tunnel.IpClient;
