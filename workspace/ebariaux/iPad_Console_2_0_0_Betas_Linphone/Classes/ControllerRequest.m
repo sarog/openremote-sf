@@ -24,6 +24,7 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
+#import "ORGroupMember.h"
 
 @implementation ControllerRequest
 
@@ -37,12 +38,26 @@
     [super dealloc];
 }
 
+- (void)selectNextGroupMemberToTry
+{
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    NSDate *now = [NSDate date];
+    
+    ORGroupMember *nextGroupMemberToTry = nil;
+    for (ORGroupMember *gm in activeController.groupMembers) {
+        if (!gm.lastFailureDate || ([now timeIntervalSinceDate:gm.lastFailureDate] > 5.0)) {
+            nextGroupMemberToTry = gm;
+            break;
+        }
+    }
+    activeController.activeGroupMember = nextGroupMemberToTry;
+}
 
 - (void)send
 {
-    // TODO use fallback URLs
-    NSString *location = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL stringByAppendingFormat:@"/%@", requestPath];
-    NSLog(@"%@", location);
+    ORGroupMember *groupMember = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember;
+    NSString *location = [groupMember.url stringByAppendingFormat:@"/%@", requestPath];
+    NSLog(@"Trying to send command to %@", location);
     
     NSURL *url = [[NSURL alloc] initWithString:location];
     
@@ -52,18 +67,19 @@
     [request setHTTPMethod:@"POST"];
     
     [CredentialUtil addCredentialToNSMutableURLRequest:request];
-    
 
     if (receivedData) {
         [receivedData release];
     }
     receivedData = [[NSMutableData alloc] init];
-    connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     
+    if (connection) {
+        [connection release];
+    }
+    connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     
     [url release];
     [request release];
-
 }
 
 - (void)postRequestWithPath:(NSString *)path
@@ -72,6 +88,20 @@
         [requestPath release];
     }
     requestPath = [path copy];
+    
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    // No active group member, try to select one
+    if (!activeController.activeGroupMember) {
+        [self selectNextGroupMemberToTry];
+    }
+    if (!activeController.activeGroupMember) {
+        // None available, report as error
+        if ([delegate respondsToSelector:@selector(controllerRequestDidFailWithError:)]) {            
+            [delegate controllerRequestDidFailWithError:nil];
+        }
+        // TODO EBR should we call delegate or handle error differently
+        return;
+    }
     [self send];
 }
 
@@ -85,6 +115,7 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
+    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember.lastFailureDate = nil;
 	[delegate controllerRequestDidFinishLoading:receivedData];
     [delegate release];
     delegate = nil;
@@ -93,20 +124,28 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     // Connection error, check if failover URLs available
-	
-	if ([delegate respondsToSelector:@selector(controllerRequestDidFailWithError:)]) {
-        
-        NSLog(@">>>>>>>>>>connection:didFailWithError:");
-        
-		[delegate controllerRequestDidFailWithError:error];
-        
-	} else {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-		[alert show];
-		[alert release];
-	}
-    [delegate release];
-    delegate = nil;
+    lastError = error;
+    
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    activeController.activeGroupMember.lastFailureDate = [NSDate date];
+    
+    [self selectNextGroupMemberToTry];
+    if (activeController.activeGroupMember) {
+        [self send];
+    } else {
+        if ([delegate respondsToSelector:@selector(controllerRequestDidFailWithError:)]) {
+            NSLog(@">>>>>>>>>>connection:didFailWithError:");
+            
+            [delegate controllerRequestDidFailWithError:error];
+            
+        } else {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alert show];
+            [alert release];
+        }
+        [delegate release];
+        delegate = nil;
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
