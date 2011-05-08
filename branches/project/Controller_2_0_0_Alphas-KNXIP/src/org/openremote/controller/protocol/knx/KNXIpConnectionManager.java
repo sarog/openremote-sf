@@ -793,7 +793,6 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (KnxIpException e)
       {
         log.error(e.getMessage());
-        // TODO reconnect
       }
 
       catch (InterruptedException e)
@@ -805,7 +804,6 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (IOException e)
       {
         log.error(e.getMessage());
-        // TODO reconnect
       }
 
       return null;
