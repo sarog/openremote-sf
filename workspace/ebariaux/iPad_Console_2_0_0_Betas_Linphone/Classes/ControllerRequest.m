@@ -27,15 +27,22 @@
 #import "ORController.h"
 #import "ORGroupMember.h"
 
+@interface ControllerRequest ()
+
+@property (nonatomic, retain) ORGroupMember *usedGroupMember;
+
+@end
+
 @implementation ControllerRequest
 
-@synthesize delegate;
+@synthesize delegate, usedGroupMember;
 
 - (void)dealloc
 {
     [requestPath release];
     [receivedData release];
     [connection release];
+    [usedGroupMember release];
     [super dealloc];
 }
 
@@ -56,8 +63,10 @@
 
 - (void)send
 {
-    ORGroupMember *groupMember = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember;
-    NSString *location = [groupMember.url stringByAppendingFormat:@"/%@", requestPath];
+    // Remember the member used for sending
+    self.usedGroupMember = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember;
+    
+    NSString *location = [usedGroupMember.url stringByAppendingFormat:@"/%@", requestPath];
     NSLog(@"Trying to send command to %@", location);
     
     NSURL *url = [[NSURL alloc] initWithString:location];
@@ -128,7 +137,7 @@
     lastError = error;
     
     ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    activeController.activeGroupMember.lastFailureDate = [NSDate date];
+    self.usedGroupMember.lastFailureDate = [NSDate date];
     
     [self selectNextGroupMemberToTry];
     if (activeController.activeGroupMember) {
