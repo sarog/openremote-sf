@@ -48,6 +48,7 @@
 		UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageModel.src]];
 		defaultImageView = [[UIImageView alloc] initWithFrame:self.bounds];
 		defaultImageView.image = uiImage;
+        [uiImage release];
 		//defaultImageView = [UIViewUtil clippedUIImageViewWith:uiImage dependingOnUIView:self uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:NO];
 		[defaultImageView setContentMode:UIViewContentModeTopLeft];
 		[self addSubview:defaultImageView];
