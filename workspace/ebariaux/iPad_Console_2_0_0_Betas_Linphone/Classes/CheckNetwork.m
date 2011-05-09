@@ -105,10 +105,11 @@
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
 	[CredentialUtil addCredentialToNSMutableURLRequest:request];
 
-	[[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&resp error:&error];
-
+	URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
+    [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	[request release];
-
+    [connectionHelper release];
+    
 	if ([resp statusCode] != 200 ){
 		NSLog(@"CheckNetworkException statusCode=%d, errorCode=%d, %@, %@", [resp statusCode], [error code], url,[error localizedDescription]);
 		
