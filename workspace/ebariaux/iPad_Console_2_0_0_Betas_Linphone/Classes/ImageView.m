@@ -84,6 +84,7 @@
 			UIImage *uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:sensorState.value]];
 			//uiImage = [[ClippedUIImage alloc] initWithUIImage:uiImage dependingOnUIView:self imageAlignToView:IMAGE_ABSOLUTE_ALIGN_TO_VIEW];
 			defaultImageView.image = uiImage;
+            [uiImage release];
 			changeView = YES;
 			break;
 		}
