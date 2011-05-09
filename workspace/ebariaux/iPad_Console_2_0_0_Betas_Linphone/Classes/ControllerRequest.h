@@ -21,6 +21,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class ORGroupMember;
+
 @protocol ControllerRequestDelegate <NSObject>
 
 - (void)controllerRequestDidFinishLoading:(NSData *)data;
@@ -45,6 +47,8 @@
 	NSURLConnection *connection;
     NSError* lastError;
 
+    ORGroupMember *usedGroupMember;
+    
     NSObject <ControllerRequestDelegate> *delegate;
 }
 
