@@ -79,9 +79,9 @@ extern void libmsamr_init();
 
 -(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
 	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
-	NSString* lUserName = lUserNameChars?[[NSString alloc] initWithCString:lUserNameChars]:@"Unknown";
+	NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithCString:lUserNameChars] autorelease]:@"Unknown";
 	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
-	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithCString:lDisplayNameChars]:@"";
+	NSString* lDisplayName = lDisplayNameChars?[[[NSString alloc] initWithCString:lDisplayNameChars] autorelease]:@"";
 	
 	switch (new_state) {
 			
@@ -126,7 +126,7 @@ extern void libmsamr_init();
 												  cancelButtonTitle:@"Dismiss" 
 												  otherButtonTitles:nil];
 			[error show];
-            
+            [error release];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext setObject:@"Error" forKey:@"SIP_CallStatus"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_UserName"];
             [((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext removeObjectForKey:@"SIP_DisplayName"];
@@ -187,6 +187,7 @@ extern void libmsamr_init();
 												  cancelButtonTitle:@"Continue" 
 												  otherButtonTitles:nil ,nil];
 			[error show];
+            [error release];
 		}
 		
 	}
@@ -246,7 +247,8 @@ extern void libmsamr_init();
 //generic log handler for debug version
 static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
-	NSLogv(format,args);
+    NSLogv(format,args);
+    [format release];
 }
 
 //Error/warning log handler 
@@ -431,6 +433,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 												  cancelButtonTitle:@"Continue"
 												  otherButtonTitles:@"Never remind",nil];
 			[error show];
+            [error release];
 		}
 	}		
 	
@@ -645,6 +648,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 											  cancelButtonTitle:@"Ok" 
 											  otherButtonTitles:nil ,nil];
 		[error show];
+        [error release];
 	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);

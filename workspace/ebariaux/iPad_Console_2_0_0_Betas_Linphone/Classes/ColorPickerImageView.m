@@ -70,7 +70,7 @@
 	}
 	
 	// When finished, release the context
-	CGContextRelease(cgctx); 
+	CGContextRelease(cgctx);
 	// Free image data memory for the context
 	if (data) { free(data); }
 	
