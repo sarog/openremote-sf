@@ -91,6 +91,7 @@
 }
 
 #pragma mark delegate methods of Protocol ControlDelegate.
+
 - (void)sendCommandRequest:(NSString *)commandType {
 	// Check for local command first
 	LocalCommand *localCommand = [[Definition sharedDefinition].localLogic commandForId:component.componentId];
@@ -103,7 +104,7 @@
 	}
 }
 
-#pragma mark delegate methods of NSURLConnection abstract into Protocol URLConnectionHelperDelegate.
+#pragma mark ORControllerCommandSenderDelegate implementation
 
 - (void)commandSendFailed
 {
