@@ -21,7 +21,6 @@ typedef enum _Connectivity {
 	NSTimer* mIterateTimer;
 	bool isbackgroundModeEnabled;
 
-	UIViewController* mCurrentViewController;
 	Connectivity connectivity;
 	
 }

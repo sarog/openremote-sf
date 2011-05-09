@@ -27,7 +27,7 @@
 
 @interface ORController : NSManagedObject {
 @private
-    ORGroupMember *activeGroupMemnber;
+    ORGroupMember *activeGroupMember;
 }
 
 @property (nonatomic, retain) NSString * primaryURL;
