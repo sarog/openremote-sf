@@ -140,6 +140,7 @@
 #pragma mark dealloc
 
 - (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 	[defaultImageView release];
 	[super dealloc];
 }
