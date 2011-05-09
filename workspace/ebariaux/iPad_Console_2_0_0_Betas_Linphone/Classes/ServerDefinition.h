@@ -36,12 +36,6 @@ extern NSString *const kControllerControlPath;
 + (NSString *)imageUrl;
 
 /**
- * Get the qualified RESTful url of control request, such as "http://192.168.100.100:8080/controller/rest/control" 
- * or "https://192.168.100.100:8443/controller/rest/control" if the secured port user specified is 8443 and SSL is enabled.
- */
-+ (NSString *)controlRESTUrl;
-
-/**
  * Get the qualified RESTful url of status request, such as "http://192.168.100.100:8080/controller/rest/status"
  * or "https://192.168.100.100:8443/controller/rest/status" if the secured port user specified is 8443 and SSL is enabled.
  */

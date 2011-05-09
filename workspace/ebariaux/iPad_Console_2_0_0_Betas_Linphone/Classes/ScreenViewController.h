@@ -24,11 +24,12 @@
 #import "Screen.h"
 #import "PollingHelper.h"
 #import "Gesture.h"
+#import "ORControllerCommandSender.h"
 
 /**
  * It's responsible for control render of screenView with screen model data.
  */
-@interface ScreenViewController : UIViewController {
+@interface ScreenViewController : UIViewController<ORControllerCommandSenderDelegate> {
 	Screen *screen;
 	PollingHelper *polling;
 	CGPoint    gestureStartPoint;

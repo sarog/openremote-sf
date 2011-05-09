@@ -28,15 +28,16 @@
 #import "ServerDefinition.h"
 #import "CredentialUtil.h"
 #import "ControllerException.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORControllerProxy.h"
 
 @interface ScreenViewController (Private)
 
-- (void)sendCommandRequest:(int)componentId;
+- (void)sendCommandRequest:(Component *)component;
 - (void)doNavigate:(Navigate *)navi;
 
 @end
-
-
 
 @implementation ScreenViewController
 
@@ -62,7 +63,7 @@
 	Gesture * g = [screen getGestureIdByGestureSwipeType:gesture.swipeType];
 	if (g) {
 		if (g.hasControlCommand) {
-			[self sendCommandRequest:g.componentId];
+			[self sendCommandRequest:g];
 		} else if (g.navigate) {
 			[self doNavigate:g.navigate];
 		}
@@ -90,58 +91,10 @@
 }
 
 // Send control command for gesture actions.
-- (void)sendCommandRequest:(int)componentId {
-	
-//	if ([[Definition sharedDefinition] password] == nil) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-//		return;
-//	}
-	
-	NSString *location = [[ServerDefinition controlRESTUrl] stringByAppendingFormat:@"/%d/swipe", componentId];
-	NSURL *url = [[NSURL alloc] initWithString:location];
-	NSLog(@"%@", location);
-	
-	
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"POST"];
-	
-	[CredentialUtil addCredentialToNSMutableURLRequest:request];
-	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
-	
-	[url release];
-	[request release];
-	[connection autorelease];	
+- (void)sendCommandRequest:(Component *)component
+{
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:@"swipe" forComponent:component delegate:self];
 }
-
-// Handle the server errors which are from controller server with status code.
-- (void)handleServerResponseWithStatusCode:(int) statusCode {
-	if (statusCode != 200) {
-		if (statusCode == UNAUTHORIZED) {
-			[Definition sharedDefinition].password = nil;
-			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		} else {
-			[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
-		}
-	}
-}
-
-#pragma mark delegate method of NSURLConnection
-- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-}
-
-
-- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-}
-
-- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
-	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	
-	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
-}
-
 
 - (void)doNavigate:(Navigate *)navi {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:navi];
@@ -152,6 +105,12 @@
 	//[screen release];
 	
 	[super dealloc];
+}
+
+#pragma mark ORControllerCommandSenderDelegate implementation
+
+- (void)commandSendFailed
+{
 }
 
 @end

@@ -51,10 +51,6 @@ NSString *const kControllerControlPath = @"rest/control";
 	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"resources"];
 }
 
-+ (NSString *)controlRESTUrl {
-	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:kControllerControlPath];
-}
-
 //returns serverUrl, if SSL is enabled, use secured server url.
 + (NSString *)securedOrRawServerUrl {
 	return [self serverUrl];
