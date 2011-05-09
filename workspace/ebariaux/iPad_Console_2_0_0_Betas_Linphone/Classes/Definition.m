@@ -82,7 +82,7 @@ static Definition *myInstance = nil;
 - (Group *)findGroupById:(int)groupId {
 	for (Group *g in groups) {
 		if (g.groupId == groupId) {
-			return [g retain];			
+			return g;			
 		}
 	}
 	return nil;
@@ -92,7 +92,7 @@ static Definition *myInstance = nil;
 	for (Screen *tempScreen in self.screens) {
 		if (tempScreen.screenId == screenId) {
 			NSLog(@"find screen screenId %d", screenId);
-			return [tempScreen retain];
+			return tempScreen;
 		}
 	}
 	return nil;
@@ -106,8 +106,7 @@ static Definition *myInstance = nil;
 			return;
 		}
 	}
-	[self.groups addObject:[group retain]];
-	[group release];
+	[self.groups addObject:group];
 }
 
 - (void)addScreen:(Screen *)screen {
@@ -118,8 +117,7 @@ static Definition *myInstance = nil;
 			return;
 		}
 	}
-	[self.screens addObject:[screen retain]];
-	[screen release];
+	[self.screens addObject:screen];
 }
 
 - (void) addLabel:(Label *)label {
@@ -246,6 +244,8 @@ static Definition *myInstance = nil;
 	
 	[self clearPanelXMLData];
 	
+    // TODO EBR : try figure out why parsing is done twice
+
 	for(int i = 1; i <= TWICE; i++) {
 		NSData *data = [[NSData alloc] initWithContentsOfFile:configurationFilePath];
 		NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
@@ -263,7 +263,7 @@ static Definition *myInstance = nil;
 		NSLog(@"screens count = %d", [screens count]);
 		NSLog(@"xml parse done");
 		[data release];
-		[xmlParser release];
+		[xmlParser release];        
 	}
 }
 
@@ -290,20 +290,20 @@ static Definition *myInstance = nil;
 	if ([elementName isEqualToString:@"screen"]) {
 		NSLog(@"start at screen");
 		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-//		[screens addObject:[screen retain]];
-//		[screen release];
 		[self addScreen:screen];
+        [screen release];
 	} else if ([elementName isEqualToString:@"group"]) {
 		NSLog(@"start at group");
 		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-//		[groups addObject:group];
-//		[group release];
 		[self addGroup:group];
+        [group release];
 	} else if ([elementName isEqualToString:@"tabbar"]) {
 		NSLog(@"start at tabbar");
+        [tabBar release];
 		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	} else if ([elementName isEqualToString:@"locallogic"]) {
 		NSLog(@"start at locallogic");
+        [localLogic release];
 		localLogic = [[LocalLogic alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
 	}
 }
@@ -313,10 +313,7 @@ static Definition *myInstance = nil;
  */
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
 	if ([elementName isEqualToString:@"openremote"]) {
-		NSLog(@"End parse openremote");
-		//		[parser setDelegate:nil];
-		// 		[parser setDelegate:xmlParserParentDelegate];
-		
+		NSLog(@"End parse openremote");	
 	}
 }
 
