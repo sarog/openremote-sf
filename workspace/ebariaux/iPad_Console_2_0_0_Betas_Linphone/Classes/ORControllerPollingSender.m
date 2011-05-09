@@ -31,6 +31,7 @@
 - (void)dealloc
 {
     [ids release];
+    [controllerRequest release];
     [super dealloc];
 }
 
