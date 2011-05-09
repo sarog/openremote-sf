@@ -27,6 +27,8 @@
 #import "ORController.h"
 
 NSString *const kControllerControlPath = @"rest/control";
+NSString *const kControllerStatusPath = @"rest/status";
+NSString *const kControllerPollingPath = @"rest/polling";
 
 @implementation ServerDefinition
 
@@ -54,14 +56,6 @@ NSString *const kControllerControlPath = @"rest/control";
 //returns serverUrl, if SSL is enabled, use secured server url.
 + (NSString *)securedOrRawServerUrl {
 	return [self serverUrl];
-}
-
-+ (NSString *)statusRESTUrl {
-	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/status"];	
-}
-
-+ (NSString *)pollingRESTUrl {
-	return [[self securedOrRawServerUrl] stringByAppendingPathComponent:@"rest/polling"];
 }
 
 + (NSString *)logoutUrl {

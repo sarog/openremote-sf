@@ -20,6 +20,7 @@
  */
 #import <Foundation/Foundation.h>
 #import "ORControllerCommandSender.h"
+#import "ORControllerPollingSender.h"
 
 @class Component;
 
@@ -30,5 +31,7 @@
 }
 
 - (ORControllerCommandSender *)sendCommand:(NSString *)command forComponent:(Component *)component delegate:(NSObject <ORControllerCommandSenderDelegate> *)delegate;
+- (ORControllerPollingSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;
+- (ORControllerPollingSender *)requestPollingForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate;
 
 @end

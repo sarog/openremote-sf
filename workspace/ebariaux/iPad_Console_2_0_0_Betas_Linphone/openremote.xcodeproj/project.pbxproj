@@ -88,6 +88,8 @@
 		608FBDD5132120D200C9089F /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		608FBDD8132120D700C9089F /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
 		608FBDDB132120DD00C9089F /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
+		6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
+		6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
 		609C57DC137430F60093C03A /* StringUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */; };
 		609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */; };
@@ -458,6 +460,8 @@
 		608FBDD7132120D700C9089F /* LocalCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommand.m; sourceTree = "<group>"; };
 		608FBDD9132120DD00C9089F /* LocalTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalTask.h; sourceTree = "<group>"; };
 		608FBDDA132120DD00C9089F /* LocalTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalTask.m; sourceTree = "<group>"; };
+		6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerPollingSender.h; sourceTree = "<group>"; };
+		6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollingSender.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60A619591354A24900A7C87E /* NSString+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+ORAdditions.h"; sourceTree = "<group>"; };
 		60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+ORAdditions.m"; sourceTree = "<group>"; };
@@ -1487,6 +1491,8 @@
 				60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */,
 				60AFCEE713729AA400A811D4 /* ControllerRequest.h */,
 				60AFCEE813729AA400A811D4 /* ControllerRequest.m */,
+				6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */,
+				6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */,
 			);
 			name = "Controller communication";
 			sourceTree = "<group>";
@@ -2110,6 +2116,7 @@
 				60AFCED01371787400A811D4 /* ORControllerProxy.m in Sources */,
 				60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */,
 				60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */,
+				6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2218,6 +2225,7 @@
 				60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */,
 				60AFCED6137180E400A811D4 /* ORControllerCommandSender.m in Sources */,
 				60AFCEEA13729AA500A811D4 /* ControllerRequest.m in Sources */,
+				6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

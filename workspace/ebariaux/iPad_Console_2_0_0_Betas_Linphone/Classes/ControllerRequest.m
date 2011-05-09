@@ -74,7 +74,7 @@
     //assemble put request 
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:url];
-    [request setHTTPMethod:@"POST"];
+    [request setHTTPMethod:method];
     
     [CredentialUtil addCredentialToNSMutableURLRequest:request];
 
@@ -92,7 +92,7 @@
     [request release];
 }
 
-- (void)postRequestWithPath:(NSString *)path
+- (void)requestWithPath:(NSString *)path
 {
     if (requestPath) {
         [requestPath release];
@@ -112,7 +112,26 @@
         // TODO EBR should we call delegate or handle error differently
         return;
     }
-    [self send];
+    [self send];    
+}
+
+- (void)postRequestWithPath:(NSString *)path
+{
+    method = @"POST";
+    [self requestWithPath:path];
+}
+
+- (void)getRequestWithPath:(NSString *)path
+{
+    method = @"GET";
+    [self requestWithPath:path];
+}
+
+- (void)cancel
+{
+    [connection cancel];
+    [delegate release];
+    delegate = nil;
 }
 
 #pragma mark delegate method of NSURLConnection

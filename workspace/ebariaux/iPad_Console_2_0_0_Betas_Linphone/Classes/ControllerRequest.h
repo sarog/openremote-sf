@@ -43,6 +43,7 @@
 @interface ControllerRequest : NSObject {
 
     NSString *requestPath;
+    NSString *method;
     NSMutableData *receivedData;
 	NSURLConnection *connection;
     NSError* lastError;
@@ -55,5 +56,7 @@
 @property (nonatomic, retain) NSObject <ControllerRequestDelegate> *delegate;
 
 - (void)postRequestWithPath:(NSString *)path;
+- (void)getRequestWithPath:(NSString *)path;
+- (void)cancel;
 
 @end
