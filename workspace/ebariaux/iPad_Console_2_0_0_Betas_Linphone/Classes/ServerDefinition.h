@@ -22,6 +22,8 @@
 #import <UIKit/UIKit.h>
 
 extern NSString *const kControllerControlPath;
+extern NSString *const kControllerStatusPath;
+extern NSString *const kControllerPollingPath;
 
 /**
  * Infomations about controller server panel client use.
@@ -34,18 +36,6 @@ extern NSString *const kControllerControlPath;
  * or "https://192.168.100.100:8443/controller/resources" if the secured port user specified is 8443 and SSL is enabled.
  */
 + (NSString *)imageUrl;
-
-/**
- * Get the qualified RESTful url of status request, such as "http://192.168.100.100:8080/controller/rest/status"
- * or "https://192.168.100.100:8443/controller/rest/status" if the secured port user specified is 8443 and SSL is enabled.
- */
-+ (NSString *)statusRESTUrl;
-
-/**
- * Get the qualified RESTful url of polling request, such as "http://192.168.100.100:8080/controller/rest/polling"
- * or "https://192.168.100.100:8443/controller/rest/polling" if the secured port user specified is 8443 and SSL is enabled.
- */
-+ (NSString *)pollingRESTUrl;
 
 /**
  * Get the qualified url of controller server, such as "http://192.169.100.100:8080/controller"

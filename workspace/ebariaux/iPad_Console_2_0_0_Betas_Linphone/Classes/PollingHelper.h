@@ -20,23 +20,22 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "URLConnectionHelper.h"
-#import "UpdateController.h"
+#import "ORControllerPollingSender.h"
 
 /**
  * Setup a polling connection to detect the component status changes and 
  * notificate the new status to component on screen.
  */
 
-@interface PollingHelper : NSObject <URLConnectionHelperDelegate> {
+@interface PollingHelper : NSObject <ORControllerPollingSenderDelegate> {
 	
 	NSString *pollingStatusIds;
 	NSArray *localSensors;
 	NSMutableDictionary *localSensorTimers;
 	BOOL isPolling;
 	BOOL isError;
-	URLConnectionHelper *connection;
-	UpdateController *updateController;
+    
+    ORControllerPollingSender *pollingSender;
 }
 
 /**
@@ -57,7 +56,5 @@
 @property(nonatomic,readonly) BOOL isPolling;
 @property(nonatomic,readonly) BOOL isError;
 @property(nonatomic,readonly) NSString *pollingStatusIds;
-@property(nonatomic,readonly) URLConnectionHelper *connection;
-
 
 @end
