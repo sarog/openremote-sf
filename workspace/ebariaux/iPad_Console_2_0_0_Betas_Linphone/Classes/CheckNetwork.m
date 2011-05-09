@@ -77,9 +77,11 @@
 	NSHTTPURLResponse *resp = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serverUrl]]; 
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
-	[[[URLConnectionHelper alloc] init] sendSynchronousRequest:request returningResponse:&resp error:&error];
+    URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
+	[connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	NSLog(@"%@", [ServerDefinition serverUrl]);
 	[request release];
+    [connectionHelper release];
 	if (error ) {
 		NSLog(@"checkControllerAvailable failed %@",[error localizedDescription]);
 		@throw [CheckNetworkException exceptionWithTitle:@"Controller Not Started" 
