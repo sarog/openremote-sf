@@ -236,7 +236,6 @@ static Definition *myInstance = nil;
 		[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName] path:[DirectoryDefinition imageCacheFolder]];
 		[msg release];
 	}
-	[imageName release];
 }
 
 - (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath {

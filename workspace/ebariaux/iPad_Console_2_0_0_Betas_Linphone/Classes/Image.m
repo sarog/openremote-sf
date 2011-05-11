@@ -46,9 +46,12 @@
 	return self;
 }
 
-- (void)setSrc:(NSString *)ImgSrc {
-	src = ImgSrc;
-	[[Definition sharedDefinition] addImageName:src];
+- (void)setSrc:(NSString *)imgSrc {
+    if (imgSrc != src) {
+        [src release];
+        src = [imgSrc retain];
+        [[Definition sharedDefinition] addImageName:src];
+    }
 }
 
 /**
