@@ -24,6 +24,9 @@ typedef enum _Connectivity {
 	Connectivity connectivity;
 	
 }
+
+@property Connectivity connectivity;
+
 +(LinphoneCore*) getLc;
 
 -(void) startLibLinphone;
@@ -32,7 +35,5 @@ typedef enum _Connectivity {
 -(void) enterBackgroundMode;
 -(void) becomeActive;
 //-(void) kickOffNetworkConnection;
-
-@property Connectivity connectivity;
 
 @end

@@ -8,10 +8,10 @@
 
 #import "TimeManager.h"
 
-
 @implementation TimeManager
 
-+ (NSString *)getDateTime:(NSMutableDictionary *)context {
++ (NSString *)getDateTime:(NSMutableDictionary *)context
+{
 	NSDateFormatter *df = [[NSDateFormatter alloc] init];
 	[df setTimeStyle:NSDateFormatterMediumStyle];
 	[df setDateStyle:NSDateFormatterShortStyle];
