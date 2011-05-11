@@ -25,7 +25,6 @@
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
 #import "DataBaseService.h"
-#import "UpdateController.h"
 #import "NotificationConstant.h"
 
 #import "ORConsoleSettingsManager.h"
@@ -206,7 +205,8 @@ static BOOL isWifiActive = NO;
 
 #pragma mark init
 - (id)initWithURL:(NSURL *)url delegate:(id <URLConnectionHelperDelegate>)d  {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		[self setDelegate:d];
 		
 		receivedData = [[NSMutableData alloc] init];
@@ -221,11 +221,11 @@ static BOOL isWifiActive = NO;
 }
 
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id <URLConnectionHelperDelegate>)d  {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		[self setDelegate:d];
 		
 		receivedData = [[NSMutableData alloc] init];
-		
 		connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	}
 	return self;
@@ -239,7 +239,6 @@ static BOOL isWifiActive = NO;
 			[connection release];
 			connection = nil;
 		}
-		
 	}
 }
 
@@ -446,6 +445,10 @@ static BOOL isWifiActive = NO;
 	} else {
 		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
 	}
+}
+
+- (void)didUpdateFail:(NSString *)errorMessage
+{
 }
 
 - (void)dealloc {

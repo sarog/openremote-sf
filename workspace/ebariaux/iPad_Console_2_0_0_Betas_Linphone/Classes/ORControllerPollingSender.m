@@ -13,7 +13,6 @@
 #import "NotificationConstant.h"
 #import "ServerDefinition.h"
 #import "PollingStatusParserDelegate.h"
-#import "UpdateController.h"
 
 @implementation ORControllerPollingSender
 

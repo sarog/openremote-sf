@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ControllerRequest.h"
+#import "UpdateController.h"
 
 @protocol ORControllerPollingSenderDelegate <NSObject>
 
@@ -19,7 +20,7 @@
 
 @end
 
-@interface ORControllerPollingSender : NSObject <ControllerRequestDelegate> {
+@interface ORControllerPollingSender : NSObject <ControllerRequestDelegate, UpdateControllerDelegate> {
     NSString *ids;
     ControllerRequest *controllerRequest;
     

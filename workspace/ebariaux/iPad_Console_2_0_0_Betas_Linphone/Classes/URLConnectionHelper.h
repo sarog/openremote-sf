@@ -22,6 +22,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ViewHelper.h"
+#import "UpdateController.h"
 
 //Define a protocol for delegate implementation
 @protocol URLConnectionHelperDelegate <NSObject>
@@ -42,7 +43,7 @@
 - (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response;
 @end
 
-@interface URLConnectionHelper : NSObject {
+@interface URLConnectionHelper : NSObject <UpdateControllerDelegate> {
 	//this object must implement this protocal like a interface in java.So we can ensure to call the mehod in deleget instance.
 	id <URLConnectionHelperDelegate> delegate;
 	NSMutableData *receivedData;
