@@ -134,7 +134,7 @@
     delegate = nil;
 }
 
-#pragma mark delegate method of NSURLConnection
+#pragma mark NSURLConnection delegate implementation
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
