@@ -83,15 +83,18 @@
 
 - (void)controllerRequestDidFinishLoading:(NSData *)data
 {
+    // This method is intentionally left empty
 }
 
-- (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response {
+- (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response
+{
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-    NSLog(@"control[%d]statusCode is %d", component.componentId, [httpResp statusCode]);
+    NSLog(@"Command response for component %d, statusCode is %d", component.componentId, [httpResp statusCode]);
 	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
-- (void) controllerRequestDidFailWithError:(NSError *)error {
+- (void) controllerRequestDidFailWithError:(NSError *)error
+{
     if ([delegate respondsToSelector:@selector(commandSendFailed)]) {
         [delegate commandSendFailed];
     }

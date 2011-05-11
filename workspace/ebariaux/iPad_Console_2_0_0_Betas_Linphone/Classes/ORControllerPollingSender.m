@@ -68,7 +68,8 @@
     [controllerRequest cancel];
 }
 
-- (void)handleServerResponseWithStatusCode:(int)statusCode {
+- (void)handleServerResponseWithStatusCode:(int)statusCode
+{
 	if (statusCode != 200) {
         if ([delegate respondsToSelector:@selector(pollingDidReceiveErrorResponse)]) {
             [delegate pollingDidReceiveErrorResponse];
@@ -113,31 +114,32 @@
 	[parserDelegate release];
 }
 
-- (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response {
+- (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response
+{
 	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
 	NSLog(@"polling[%@]statusCode is %d", ids, [httpResp statusCode]);
 	
 	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
-- (void) controllerRequestDidFailWithError:(NSError *)error {
+- (void) controllerRequestDidFailWithError:(NSError *)error
+{
 	if ([delegate respondsToSelector:@selector(pollingDidFailWithError:)]) {
         [delegate pollingDidFailWithError:error];
     }
 }
 
-
-
-
 // TODO EBR : this should be moved to another class
 
 #pragma mark Delegate method of UpdateController
 
-- (void)didUpdate {
+- (void)didUpdate
+{
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
 }
 
-- (void)didUseLocalCache:(NSString *)errorMessage {
+- (void)didUseLocalCache:(NSString *)errorMessage
+{
 	if ([errorMessage isEqualToString:@"401"]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
 	} else {
@@ -145,7 +147,8 @@
 	}
 }
 
-- (void)didUpdateFail:(NSString *)errorMessage {
+- (void)didUpdateFail:(NSString *)errorMessage
+{
 	if ([errorMessage isEqualToString:@"401"]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
 	} else {
