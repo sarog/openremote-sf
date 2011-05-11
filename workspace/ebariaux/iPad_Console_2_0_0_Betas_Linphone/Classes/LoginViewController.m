@@ -93,7 +93,6 @@
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
 	}
-		
 }
 
 

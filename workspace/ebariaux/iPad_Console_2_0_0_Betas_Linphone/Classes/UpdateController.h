@@ -19,30 +19,42 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-
 #import <Foundation/Foundation.h>
 #import "ServerAutoDiscoveryController.h"
+
+@protocol UpdateControllerDelegate <NSObject>
+
+/**
+ * This method will be called after update did finished.
+ */
+- (void)didUpdate;
+
+/**
+ * This method will be called after application choose to use local cache.
+ */
+- (void)didUseLocalCache:(NSString *)errorMessage;
+
+/**
+ * This method will be called after update failed and application can't use local cache.
+ */
+- (void)didUpdateFail:(NSString *)errorMessage;
+
+@end
 
 /**
  * It's responsible for checking network, download panel.xml, parse panel.xml and notify DefaultViewController to refresh views.
  */
 @interface UpdateController : NSObject <NSXMLParserDelegate, ServerAutoDiscoveryControllerDelagate> {
-	id theDelegate;
+	NSObject <UpdateControllerDelegate> *delegate;
 	ServerAutoDiscoveryController *serverAutoDiscoveryController;
 	int retryTimes;
 }
 
-- (id)initWithDelegate:(id)delegate;
-- (void)setDelegate:(id)delegate;
+// TODO EBR : should this be assign instead of retain
+@property (nonatomic, retain) NSObject <UpdateControllerDelegate> *delegate;
+
+- (id)initWithDelegate:(NSObject <UpdateControllerDelegate> *)aDelegate;
 
 - (void)checkConfigAndUpdate;
-
-#pragma mark delegate method
-// This method will be called after update did finished.
-- (void)didUpdate;
-// This method will be called after application choose to use local cache.
-- (void)didUseLocalCache:(NSString *)errorMessage;
-// This method will be called after update failed and application can't use local cache.
-- (void)didUpdateFail:(NSString *)errorMessage;
 
 @end

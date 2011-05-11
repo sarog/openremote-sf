@@ -33,7 +33,7 @@
 /**
  * Render the UI of AppSetting view and provide functions of setting about panel client.
  */
-@interface AppSettingController : UITableViewController <UITextFieldDelegate, GetPanelsDelegate, ServerAutoDiscoveryControllerDelagate, AddServerViewControllerDelegate, ChoosePanelViewControllerDelegate> {
+@interface AppSettingController : UITableViewController <UITextFieldDelegate, GetPanelsDelegate, ServerAutoDiscoveryControllerDelagate, AddServerViewControllerDelegate, ChoosePanelViewControllerDelegate, UpdateControllerDelegate> {
     
     ORConsoleSettingsManager *settingsManager;
     

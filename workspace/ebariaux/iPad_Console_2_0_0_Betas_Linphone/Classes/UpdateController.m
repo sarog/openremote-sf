@@ -53,11 +53,15 @@
 - (void)findServer;
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
 - (void)getRoundRobinGroupMembers;
+- (void)didUseLocalCache:(NSString *)errorMessage;
+- (void)didUpdateFail:(NSString *)errorMessage;
 
 @end
 
 
 @implementation UpdateController
+
+@synthesize delegate;
 
 - (id)init
 {
@@ -69,19 +73,13 @@
 	return self;
 }
 
-- (id)initWithDelegate:(id)delegate
+- (id)initWithDelegate:(id)aDelegate
 {
     self = [super init];
 	if (self) {
-		[self setDelegate:delegate];
+		self.delegate = aDelegate;
 	}
 	return self;
-}
-
-- (void)setDelegate:(id)delegate {
-	[delegate retain];
-	[theDelegate release];
-	theDelegate = delegate;
 }
 
 
@@ -221,23 +219,23 @@
 - (void)didUpdate {
     NSLog(@">>UpdateController.didUpdate");
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:DefinitionUpdateDidFinishNotification object:nil];
-    NSLog(@"theDelegate %@", theDelegate);
-	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpdate)]) {
-		[theDelegate performSelector:@selector(didUpdate)];
+    NSLog(@"theDelegate %@", delegate);
+	if (delegate && [delegate respondsToSelector:@selector(didUpdate)]) {
+		[delegate performSelector:@selector(didUpdate)];
 	}
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
 	[[Definition sharedDefinition] useLocalCacheDirectly];
-	if (theDelegate && [theDelegate respondsToSelector:@selector(didUseLocalCache:)]) {
-		[theDelegate performSelector:@selector(didUseLocalCache:) withObject:errorMessage];
+	if (delegate && [delegate respondsToSelector:@selector(didUseLocalCache:)]) {
+		[delegate performSelector:@selector(didUseLocalCache:) withObject:errorMessage];
 	}
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
 	NSLog(@"didUpdateFail");
-	if (theDelegate && [theDelegate respondsToSelector:@selector(didUpdateFail:)]) {
-		[theDelegate performSelector:@selector(didUpdateFail:) withObject:errorMessage];
+	if (delegate && [delegate respondsToSelector:@selector(didUpdateFail:)]) {
+		[delegate performSelector:@selector(didUpdateFail:) withObject:errorMessage];
 	}
 }
 
@@ -254,8 +252,9 @@
 		[self findServer];
 }
 
--(void)dealloc {
-	[theDelegate release];
+-(void)dealloc
+{
+	[delegate release];
 	[serverAutoDiscoveryController release];
 	[super dealloc];
 }
