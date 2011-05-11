@@ -30,8 +30,10 @@ extern void libmsamr_init();
 
 @synthesize connectivity;
 
-- (id)init {
-	if (self = [super init]) {
+- (id)init
+{
+    self = [super init];
+	if (self) {
 		[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
 																 @"panel", @"username_preference",
                                                                  
@@ -54,12 +56,14 @@ extern void libmsamr_init();
 	return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
 }
 
-- (void)definitionDidUpdate {
+- (void)definitionDidUpdate
+{
     // EBR: temp, need to review settings load mechanism
     NSLog(@"====> Current server URL %@", [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL);
     NSLog(@"Host %@", [[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]);
@@ -77,7 +81,8 @@ extern void libmsamr_init();
 //    [self sipConnect];
 }
 
--(void) onCall:(LinphoneCall*) currentCall StateChanged: (LinphoneCallState) new_state withMessage: (const char *)  message {
+-(void) onCall:(LinphoneCall *)currentCall stateChanged:(LinphoneCallState)new_state withMessage:(const char *)message
+{
 	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
 	NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithCString:lUserNameChars] autorelease]:@"Unknown";
 	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
@@ -144,7 +149,8 @@ extern void libmsamr_init();
 	
 }
 
--(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message {
+-(void) onRegister:(LinphoneCore *)lc cfg:(LinphoneProxyConfig*) cfg state:(LinphoneRegistrationState) state message:(const char*) message
+{
 //	LinphoneAddress* lAddress = linphone_address_new(linphone_proxy_config_get_identity(cfg));
 //	NSString* lUserName = linphone_address_get_username(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_username(lAddress) ]:@"";
 //	NSString* lDisplayName = linphone_address_get_display_name(lAddress)? [[NSString alloc] initWithCString:linphone_address_get_display_name(lAddress) ]:@"";
@@ -189,12 +195,11 @@ extern void libmsamr_init();
 			[error show];
             [error release];
 		}
-		
 	}
-	
 }
 
-+ (BOOL)isMuted {
++ (BOOL)isMuted
+{
     @try {
         return linphone_core_is_mic_muted([SipController getLc]);
     } @catch(NSException* e) {
@@ -218,26 +223,31 @@ extern void libmsamr_init();
     [self isMuted]?[self muteOff:context]:[self muteOn:context];
 }
 
-+ (NSString *)getRingSensorValue:(NSMutableDictionary *)context {
++ (NSString *)getRingSensorValue:(NSMutableDictionary *)context
+{
 	return ([@"Incoming" isEqualToString:[context valueForKey:@"SIP_CallStatus"]])?@"Ring":@"";
 }
 
-+ (NSString *)getMuteSensorValue:(NSMutableDictionary *)context {
++ (NSString *)getMuteSensorValue:(NSMutableDictionary *)context
+{
     return [self isMuted]?@"On":@"Off";
 }
 
-+ (void)answerCall:(NSMutableDictionary *)context {
++ (void)answerCall:(NSMutableDictionary *)context
+{
 	NSLog(@"Answer call");
     linphone_core_accept_call([SipController getLc],linphone_core_get_current_call([SipController getLc]));	
 }
 
-+ (void)hangupCall:(NSMutableDictionary *)context {
++ (void)hangupCall:(NSMutableDictionary *)context
+{
     linphone_core_terminate_call ([SipController getLc],linphone_core_get_current_call([SipController getLc]));
 }
 
 #pragma mark LinphoneManager methods
 
-+(LinphoneCore*) getLc {
++ (LinphoneCore *)getLc
+{
 	if (theLinphoneCore==nil) {
 		@throw([NSException exceptionWithName:@"LinphoneCoreException" reason:@"Linphone core not initialized yet" userInfo:nil]);
 	}
@@ -245,23 +255,28 @@ extern void libmsamr_init();
 }
 
 //generic log handler for debug version
-static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
+static void linphone_iphone_log_handler(int lev, const char *fmt, va_list args)
+{
 	NSString* format = [[NSString alloc] initWithCString:fmt encoding:[NSString defaultCStringEncoding]];
     NSLogv(format,args);
     [format release];
 }
 
 //Error/warning log handler 
-static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
+static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
+{
 	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]]; 
 	NSLog(log,NULL);
 }
+
 //status 
-static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message) {
+static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char * message)
+{
 //	[(LinphoneManager*)linphone_core_get_user_data(lc)  displayStatus:[[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]]];
 }
 
-static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message) {
+static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, LinphoneCallState state,const char* message)
+{
 	/*LinphoneCallIdle,
 	 LinphoneCallIncomingReceived,
 	 LinphoneCallOutgoingInit,
@@ -278,12 +293,14 @@ static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall* call, Lin
 	 LinphoneCallEnd,
 	 LinphoneCallPausedByRemote
 	 */
-	[(SipController*)linphone_core_get_user_data(lc) onCall:call StateChanged: state withMessage:  message];
+	[(SipController*)linphone_core_get_user_data(lc) onCall:call stateChanged:state withMessage:message];
 }
 
-static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message) {
+static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig* cfg, LinphoneRegistrationState state,const char* message)
+{
 	[(SipController*)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
+
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
 	.call_state_changed =(LinphoneCallStateCb)linphone_iphone_call_state,
@@ -299,7 +316,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.dtmf_received=NULL
 };
 
--(void) configurePayloadType:(const char*) type fromPrefKey: (NSString*)key withRate:(int)rate  {
+- (void)configurePayloadType:(const char *)type fromPrefKey:(NSString *)key withRate:(int)rate
+{
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) { 		
 		PayloadType* pt;
 		if((pt = linphone_core_find_payload_type(theLinphoneCore,type,rate))) {
@@ -308,7 +326,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	} 
 }
 
--(void) doLinphoneConfiguration:(NSNotification *)notification {
+- (void)doLinphoneConfiguration:(NSNotification *)notification
+{
 	ms_message("Configuring Linphone");
 	if (theLinphoneCore==nil) {
 		ms_warning("cannot configure linphone beacause not initialized yet");
@@ -322,8 +341,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 		linphone_core_disable_logs();
 	}
 	NSString* transport = [[NSUserDefaults standardUserDefaults] stringForKey:@"transport_preference"];
-	
-    
 	
 	LCSipTransports transportValue;
 	if (transport!=nil) {
@@ -344,9 +361,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 		}
 	}
 	
-	
-	
-	
 	// Set audio assets
 	NSBundle* myBundle = [NSBundle mainBundle];
 	const char*  lRing = [[myBundle pathForResource:@"oldphone-mono"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -354,34 +368,22 @@ static LinphoneCoreVTable linphonec_vtable = {
 	const char*  lRingBack = [[myBundle pathForResource:@"ringback"ofType:@"wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
  	
-	
-	
-	
+
 	//configure sip account
 	
 	//madatory parameters
-	
 	NSString* username = [[NSUserDefaults standardUserDefaults] stringForKey:@"username_preference"];
-    
-    
-    
 	NSString* domain = [[NSUserDefaults standardUserDefaults] stringForKey:@"domain_preference"];
-    
-    
-    
 	NSString* accountPassword = [[NSUserDefaults standardUserDefaults] stringForKey:@"password_preference"];
 	bool configCheckDisable = [[NSUserDefaults standardUserDefaults] boolForKey:@"check_config_disable_preference"];
 	bool isOutboundProxy= [[NSUserDefaults standardUserDefaults] boolForKey:@"outbound_proxy_preference"];
-	
-	
+		
 	//clear auth info list
 	linphone_core_clear_all_auth_info(theLinphoneCore);
 	//clear existing proxy config
 	linphone_core_clear_proxy_config(theLinphoneCore);
 
 	if (username && [username length] >0 && domain && [domain length]>0) {
-		
-		
 		const char* identity = [[NSString stringWithFormat:@"sip:%@@%@",username,domain] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		const char* password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		
@@ -423,8 +425,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		
 		linphone_core_add_proxy_config(theLinphoneCore,proxyCfg);
 		//set to default proxy
-		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);
-		
+		linphone_core_set_default_proxy(theLinphoneCore,proxyCfg);		
 	} else {
 		if (configCheckDisable == false ) {
 			UIAlertView* error = [[UIAlertView alloc]	initWithTitle:@"Warning"
@@ -468,21 +469,20 @@ static LinphoneCoreVTable linphonec_vtable = {
 	} else {
 		isbackgroundModeEnabled=false;
 	}
-	
 }
 
--(void) destroyLibLinphone {
+- (void)destroyLibLinphone
+{
 	[mIterateTimer invalidate]; 
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;        
-    }
-    
+    }    
 }
 
 //**********************BG mode management*************************///////////
--(void) enterBackgroundMode {
-	
+- (void)enterBackgroundMode
+{	
 	struct addrinfo hints;
 	struct addrinfo *res=NULL;
 	int err;
@@ -495,7 +495,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	if (isbackgroundModeEnabled && proxyCfg) {
 		//For registration register
 		linphone_core_refresh_registers(theLinphoneCore);
-		
 		
 		//wait for registration answer
 		int i=0;
@@ -517,8 +516,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 															   linphone_core_iterate(theLinphoneCore);
 														   }
 			 ]) {
-			
-			
 			ms_warning("keepalive handler succesfully registered"); 
 		} else {
 			ms_warning("keepalive handler cannot be registered");
@@ -565,25 +562,21 @@ static LinphoneCoreVTable linphonec_vtable = {
 	else {
 		ms_warning("Entering lite bg mode");
 		[self destroyLibLinphone];
-	}
-	
+	}	
 }
 
 
 //scheduling loop
--(void) iterate {
+-(void) iterate
+{
 	linphone_core_iterate(theLinphoneCore);
 }
-
-
-
-
 
 /*************
  *lib linphone init method
  */
--(void)startLibLinphone  {
-	
+- (void)startLibLinphone
+{	
 	//get default config from bundle
 	NSBundle* myBundle = [NSBundle mainBundle];
 	NSString* factoryConfig = [myBundle pathForResource:@"linphonerc"ofType:nil] ;
@@ -592,9 +585,7 @@ static LinphoneCoreVTable linphonec_vtable = {
     
     // TODO: handle connectivity correctly
 	connectivity=wifi;
-    
-    
-    
+
 	signal(SIGPIPE, SIG_IGN);
 	//log management	
 	
@@ -652,19 +643,17 @@ static LinphoneCoreVTable linphonec_vtable = {
 	}
 	/*IOS specific*/
 	linphone_core_start_dtmf_stream(theLinphoneCore);
-	
-	
 }
--(void) becomeActive {
+
+- (void)becomeActive
+{
 	if (theLinphoneCore == nil) {
 		//back from standby and background mode is disabled
-		[self	startLibLinphone];
-		
+		[self	startLibLinphone];		
 	} else {
 		ms_message("becoming active, make sure we are registered");
 		linphone_core_start_dtmf_stream(theLinphoneCore);
 		linphone_core_refresh_registers(theLinphoneCore);//just to make sure REGISTRATION is up to date
-		
 	}
 	
 	LCSipTransports transportValue;
