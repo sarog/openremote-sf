@@ -36,11 +36,7 @@
 
 - (void)requestStatus
 {
-    // Request already sent, do nothing
-    if (controllerRequest) {
-        return;
-    }
-    // TODO EBR review that, what's the correct behaviour ? Throw exception ? Reset current request ?
+    NSAssert(!controllerRequest, @"ORControllerPollingSender can only be used to send a request once");
 
     NSString *urlPath = [kControllerStatusPath stringByAppendingFormat:@"/%@", ids];
     controllerRequest = [[ControllerRequest alloc] init];
@@ -50,11 +46,7 @@
 
 - (void)poll
 {
-    // Request already sent, do nothing
-    if (controllerRequest) {
-        return;
-    }
-    // TODO EBR review that, what's the correct behaviour ? Throw exception ? Reset current request ?
+    NSAssert(!controllerRequest, @"ORControllerPollingSender can only be used to send a request once");
     
     NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
     NSString *urlPath = [kControllerPollingPath stringByAppendingFormat:@"/%@/%@", deviceId, ids];
