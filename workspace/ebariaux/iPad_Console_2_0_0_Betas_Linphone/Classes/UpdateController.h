@@ -57,4 +57,6 @@
 
 - (void)checkConfigAndUpdate;
 
+- (void)getRoundRobinGroupMembers;
+
 @end

@@ -20,6 +20,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "ORControllerPanelsFetcher.h"
 
 @protocol ChoosePanelViewControllerDelegate <NSObject>
 
@@ -30,11 +31,10 @@
 /**
  * It's responsible for Controlling presentation of choosing panel view.
  */
-@interface ChoosePanelViewController : UITableViewController <NSXMLParserDelegate> {
+@interface ChoosePanelViewController : UITableViewController <ORControllerPanelsFetcherDelegate> {
 	
     NSObject <ChoosePanelViewControllerDelegate> *delegate;
     
-	NSMutableArray *panels;
 	NSString *chosenPanel;
     
 	UITextField *textField;

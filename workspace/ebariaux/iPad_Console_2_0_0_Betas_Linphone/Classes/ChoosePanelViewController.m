@@ -31,46 +31,49 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
+#import "ORControllerProxy.h"
 
-@interface ChoosePanelViewController (Private)
+@interface ChoosePanelViewController ()
+
+@property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
+@property (nonatomic, retain) NSArray *panels;
 
 - (void)requestPanelList;
 
 @end
 
-
 @implementation ChoosePanelViewController
 
 @synthesize delegate;
+@synthesize panelsFetcher;
+@synthesize panels;
 
-- (id)init {
-	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
+- (id)init
+{
+    self = [super initWithStyle:UITableViewStyleGrouped];
+	if (self) {
 		[self setTitle:@"Panel List"];
-		panels = [[NSMutableArray alloc] init];
 		chosenPanel = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentityDisplayString;
 		[self requestPanelList];
 	}
 	return self;
 }
 
+- (void)dealloc
+{
+	[chosenPanel release];
+    self.panels = nil;
+    self.panelsFetcher = nil;
+	
+	[super dealloc];
+}
+
 // Load panel list from remote controller server.
 - (void)requestPanelList {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
-	NSString *location = [ServerDefinition panelsRESTUrl];
-	NSURL *url = [[NSURL alloc] initWithString:location];
-	NSLog(@"panels:%@", location);
-	
-	//assemble put request 
-	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-	[request setURL:url];
-	[request setHTTPMethod:@"GET"];
-	[CredentialUtil addCredentialToNSMutableURLRequest:request];
-	
-	URLConnectionHelper *connection = [[URLConnectionHelper alloc] initWithRequest:request delegate:self];
-	
-	[url	 release];
-	[request release];
-	[connection autorelease];	
+    self.panelsFetcher = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController fetchPanelsWithDelegate:self];
+    
+    // TODO EBR : cancel fetch when user going back
 }
 
 #pragma mark Table view methods
@@ -86,7 +89,6 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
 }
-
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -114,6 +116,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[self.delegate didSelectPanelIdentity:[tableView cellForRowAtIndexPath:indexPath].textLabel.text];
 }
+
+
+
+
+
+// TODO EBR : this whole login thing is not active anymore, see code in ORControllerPanelsFetcher
 
 // Show login dialog for users, if users didn't login remote controller server.
 - (void)showLoginAlert {
@@ -169,17 +177,6 @@
 	} 
 }
 
-// Handle the server errors which are from controller server with status code.
-- (void)handleServerResponseWithStatusCode:(int) statusCode {
-	if (statusCode != 200) {
-		if (statusCode == UNAUTHORIZED) {
-			[self showLoginAlert];
-		} else {
-			[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
-		}
-	} 
-}
-
 - (void)updateTableView {
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
 	for (int j = 0; j < [panels count]; j++) {
@@ -193,54 +190,27 @@
 	[insertIndexPaths release];
 }
 
-
-#pragma mark delegate method of NSURLConnection
-- (void) definitionURLConnectionDidFailWithError:(NSError *)error {
-	
-}
-
-
-- (void)definitionURLConnectionDidFinishLoading:(NSData *)data {
-	NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-	[self updateTableView];
-	[xmlParser release];
-	[result release];
-}
-
-- (void)definitionURLConnectionDidReceiveResponse:(NSURLResponse *)response {
-	NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
-	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-}
-
-#pragma mark delegate method of NSXMLParser
-//when find a panel start we get its *name* attribute as logical identity
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:@"panel"]) {
-		NSLog(@"panel logical id : %@",[attributeDict valueForKey:@"name"]);
-		[panels addObject:[attributeDict valueForKey:@"name"]]; 
-	}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
 	return YES;
 }
 
-- (void)dealloc {
-	[panels release];
-	[chosenPanel release];
-	
-	[super dealloc];
+#pragma mark ORControllerPanelsFetcherDelegate implementation
+
+- (void)fetchPanelsDidSucceedWithPanels:(NSArray *)thePanels
+{
+    self.panels = thePanels;
+    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+    [self updateTableView];
 }
 
+- (void)fetchPanelsDidFailWithError:(NSError *)error
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+    [ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[error localizedDescription]];
+}
 
 @end
-

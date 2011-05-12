@@ -50,6 +50,9 @@
 
 // Override method of sensory view.
 - (void)setPollingStatus:(NSNotification *)notification {
+    
+    // TODO EBR : check / test, it seems this method is called multiple times for a single sensor update
+    
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Label *)component).sensor.sensorId;
 	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];

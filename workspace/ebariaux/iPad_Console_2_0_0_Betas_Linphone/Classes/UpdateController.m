@@ -52,7 +52,6 @@
 - (void)checkNetworkAndUpdate;
 - (void)findServer;
 - (void)updateFailOrUseLocalCache:(NSString *)errorMessage;
-- (void)getRoundRobinGroupMembers;
 - (void)didUseLocalCache:(NSString *)errorMessage;
 - (void)didUpdateFail:(NSString *)errorMessage;
 
@@ -173,7 +172,7 @@
 	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
     
     
-    
+    // TODO: doing this with a 5 sec timeout is short if done from carrier data network
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
     URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
 	NSData *data = [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
