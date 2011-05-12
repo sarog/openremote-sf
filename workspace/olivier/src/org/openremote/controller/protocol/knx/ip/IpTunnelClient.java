@@ -1,22 +1,18 @@
 /*
- * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2011, OpenRemote Inc.
- *
- * See the contributors.txt file in the distribution for a
- * full listing of individual contributors.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * OpenRemote, the Home of the Digital Home. Copyright 2008-2011, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a full listing of individual contributors.
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package org.openremote.controller.protocol.knx.ip;
 
@@ -26,6 +22,8 @@ import java.net.InetSocketAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.openremote.controller.Constants;
+import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener.Status;
 import org.openremote.controller.protocol.knx.ip.message.Hpai;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectReq;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
@@ -36,11 +34,22 @@ import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
+import org.openremote.controller.utils.Logger;
 
 public class IpTunnelClient implements IpProcessorListener {
+   /**
+    * A common log category name intended to be used across all classes related to KNX implementation.
+    */
+   public final static String KNXIP_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx.ip";
+
+   /**
+    * KNX logger. Uses a common category for all KNX related logging.
+    */
+   private final static Logger log = Logger.getLogger(KNXIP_LOG_CATEGORY);
+
    private int channelId;
    private int seqCounter;
-   private IpMessageListener messageListener;
+   private IpTunnelClientListener messageListener;
    private IpProcessor processor;
    private InetSocketAddress destControlEndpointAddr;
    private InetSocketAddress destDataEndpointAddr;
@@ -54,7 +63,7 @@ public class IpTunnelClient implements IpProcessorListener {
       this.shutdownHook = new ShutdownHook();
    }
 
-   public void register(IpMessageListener l) {
+   public void register(IpTunnelClientListener l) {
       this.messageListener = l;
    }
 
@@ -112,6 +121,9 @@ public class IpTunnelClient implements IpProcessorListener {
 
             // set destDataEndpointAddr with response HPAI value
             this.destDataEndpointAddr = cr.getDataEndpoint().getAddress();
+            
+            // notify connection OK
+            this.messageListener.notifyInterfaceStatus(Status.connected);
 
             // Start Heartbeat
             this.heartBeat = new Timer("KNX IP heartbeat");
@@ -136,6 +148,9 @@ public class IpTunnelClient implements IpProcessorListener {
       if (resp instanceof IpDisconnectResp) {
          IpDisconnectResp cr = (IpDisconnectResp) resp;
          if (this.channelId == cr.getChannelId()) {
+            // notify connection OK
+            this.messageListener.notifyInterfaceStatus(Status.disconnected);
+            
             // Unregister shutdown hook
             Runtime.getRuntime().removeShutdownHook(IpTunnelClient.this.shutdownHook);
 
@@ -178,7 +193,7 @@ public class IpTunnelClient implements IpProcessorListener {
             }
 
             // Notify listener
-            IpMessageListener l = this.messageListener;
+            IpTunnelClientListener l = this.messageListener;
             if (l != null) {
                l.receive(req.getcEmiFrame());
             }
@@ -198,22 +213,23 @@ public class IpTunnelClient implements IpProcessorListener {
                this.monitor();
                return;
             } catch (KnxIpException e) {
-               // TODO log?
+               log.warn("KNX IP heartbeat request failed", e);
             } catch (InterruptedException e) {
                Thread.currentThread().interrupt();
             } catch (IOException e) {
-               // TODO log?
+               log.warn("KNX IP heartbeat request failed", e);
             }
             nbErrs++;
          }
+         IpTunnelClient.this.messageListener.notifyInterfaceStatus(Status.disconnected);
          try {
             IpTunnelClient.this.disconnect();
          } catch (KnxIpException e) {
-            // TODO log?
+            log.warn("KNX IP heartbeat disconnect request failed", e);
          } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
          } catch (IOException e) {
-            // TODO log?
+            log.warn("KNX IP heartbeat disconnect request failed", e);
          }
       }
 

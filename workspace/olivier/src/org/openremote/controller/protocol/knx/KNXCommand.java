@@ -183,6 +183,10 @@ abstract class KNXCommand implements Command
                                   GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
+    
+    IpInterfaceMonitor monitorCmd = IpInterfaceMonitor.createCommand(name, mgr, address, dpt);
+    if(monitorCmd != null)
+       return monitorCmd;
 
     GroupValueWrite writeCmd = GroupValueWrite.createCommand(name, dpt, mgr, address, parameter);
 
