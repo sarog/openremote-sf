@@ -43,7 +43,7 @@ import org.openremote.controller.protocol.knx.DataLink.MessageCode;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
-import org.openremote.controller.protocol.knx.ip.IpMessageListener;
+import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
 import org.openremote.controller.protocol.knx.ip.KnxIpException;
 
@@ -603,11 +603,12 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
    // Inner Classes --------------------------------------------------------------------------------
 
-  private class KNXConnectionImpl implements KNXConnection, IpMessageListener
+  private class KNXConnectionImpl implements KNXConnection, IpTunnelClientListener
   {
     private IpTunnelClient client;
     private Map<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU> internalState =
         new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU>(1000);
+    private Status interfaceStatus;
 
     /**
      * Set to <code>true</code> when Common EMI server is correctly initialized
@@ -620,6 +621,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
        this.client = client;
        this.syncLock = new Object();
        this.client.register(this);
+       this.interfaceStatus = Status.unknown;
     }
 
     // Implements KNXConnection -----------------------------------------------------------------
@@ -661,11 +663,15 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
       return response.resolve(dpt);
     }
-
+    
+    @Override
+    public Status getInterfaceStatus() {
+       return this.interfaceStatus;
+    }
 
     // Implements IpTunnelClientListener --------------------------------------------------------
 
-    @Override public void receive(byte[] cEmiFrame)
+   @Override public void receive(byte[] cEmiFrame)
     {
       try
       {
@@ -742,6 +748,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
     //
     //  System.out.println(buffer);
     //
+    
+    @Override
+    public void notifyInterfaceStatus(Status status) {
+       this.interfaceStatus = status;
+    }
 
     // Private Instance Methods ---------------------------------------------------------------------
 
@@ -768,7 +779,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
       }
     }
 
-    private synchronized byte[] service(KNXCommand command)
+   private synchronized byte[] service(KNXCommand command)
     {
       Byte[] f = command.getCEMIFrame();
       byte[] m = new byte[f.length];
