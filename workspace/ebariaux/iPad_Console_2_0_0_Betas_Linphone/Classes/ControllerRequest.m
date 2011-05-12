@@ -69,6 +69,8 @@
     NSString *location = [usedGroupMember.url stringByAppendingFormat:@"/%@", requestPath];
     NSLog(@"Trying to send command to %@", location);
     
+    
+    // TODO EBR : sometimes location is nil, check how this happens
     NSURL *url = [[NSURL alloc] initWithString:location];
     
     //assemble put request 

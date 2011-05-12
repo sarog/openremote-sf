@@ -232,8 +232,9 @@ static BOOL isWifiActive = NO;
 }
 
 - (void)cancelConnection {
+    NSLog(@"Asked to cancel connection %@", connection);
 	if (connection) {
-		NSLog(@"cancel url connection");
+		NSLog(@"Connection exists, will cancel it");
 		[connection cancel];
 		if (connection) {
 			[connection release];

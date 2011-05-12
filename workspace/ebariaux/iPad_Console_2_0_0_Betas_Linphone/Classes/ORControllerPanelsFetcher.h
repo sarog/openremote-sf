@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- *  * Copyright 2008-2011, OpenRemote Inc-2009, OpenRemote Inc.
+ *  * Copyright 2008-2011, OpenRemote Inc-2011, OpenRemote Inc.
  * 
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,22 +20,26 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "ControllerRequest.h"
 
-//Define a protocol for delegate implementation
-@protocol GetPanelsDelegate <NSObject>
+@protocol ORControllerPanelsFetcherDelegate
 
-/**
- * This method will be called after panels have loaded.
- */
-- (void) onGetPanels:(NSMutableArray*)panels;
+- (void)fetchPanelsDidSucceedWithPanels:(NSArray *)thePanels;
+
+@optional
+- (void)fetchPanelsDidFailWithError:(NSError *)error;
 
 @end
 
-
-@interface GetPanelsController : NSObject <NSXMLParserDelegate> {
-	NSMutableArray *panels;
-	
-	id<GetPanelsDelegate> _delegate;
+@interface ORControllerPanelsFetcher : NSObject <ControllerRequestDelegate, NSXMLParserDelegate> {
+    ControllerRequest *controllerRequest;
+    NSMutableArray *panels;
+    
+    NSObject <ORControllerPanelsFetcherDelegate> *delegate;
 }
+
+@property (nonatomic, assign) NSObject <ORControllerPanelsFetcherDelegate> *delegate;
+
+- (void)fetch;
 
 @end

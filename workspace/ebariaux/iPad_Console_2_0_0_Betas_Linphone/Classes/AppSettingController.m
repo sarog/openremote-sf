@@ -27,15 +27,19 @@
 #import "ViewHelper.h"
 #import "UpdateController.h"
 #import "NotificationConstant.h"
-#import "NotificationConstant.h"
-
+#import "CheckNetworkException.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
+#import "ORControllerProxy.h"
 
-@interface AppSettingController (Private)
+@interface AppSettingController ()
+
+@property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
+
+
+
 - (void)autoDiscoverChanged:(id)sender;
-- (void)deleteAllRow;
 - (void)updateTableView;
 - (void)saveSettings;
 - (void)updatePanelIdentityView;
@@ -44,6 +48,7 @@
 - (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 - (void)cancelView:(id)sender;
+
 @end
 
 // The section of table cell where autoDiscoverySwitch is in.
@@ -69,8 +74,10 @@
 
 @implementation AppSettingController
 
+@synthesize panelsFetcher;
 
-- (id)init {
+- (id)init
+{
     self = [super initWithStyle:UITableViewStyleGrouped];
 	if (self) {
         settingsManager = [ORConsoleSettingsManager sharedORConsoleSettingsManager];
@@ -82,6 +89,20 @@
 		cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
 	}
 	return self;
+}
+
+- (void)dealloc
+{
+	if (autoDiscoverController) {
+		[autoDiscoverController release];
+	}
+	[updateController release];
+	[done release];
+	[cancel release];
+	[portField release];
+    self.panelsFetcher = nil;
+	
+	[super dealloc];
 }
 
 // Show spinner after title of "Choose Controller" while auto discovery running.
@@ -309,9 +330,10 @@
 	UITableView *tv = (UITableView *)self.view;
 	UITableViewCell *identityCell = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	identityCell.textLabel.text = @"None";
-	
-	GetPanelsController *getPanelsController = [[GetPanelsController alloc] initWithDelegate:self];
-	[getPanelsController release];
+
+    self.panelsFetcher = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController fetchPanelsWithDelegate:self];
+    
+    // TODO EBR : this might need to be cancelled some time
 }
 
 // Cancle(Dismiss) appSettings view.
@@ -585,6 +607,20 @@
 		cell.accessoryType = UITableViewCellAccessoryCheckmark;
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
         
+        
+        // TODO EBR at this stage, group members should be fetched in the background, then panel identity
+        // for now, it is done syncrhonously
+        UpdateController *uc = [[UpdateController alloc] init];
+        @try {
+            [uc getRoundRobinGroupMembers];            
+        }
+        @catch (CheckNetworkException *exception) {
+            [ViewHelper showAlertViewWithTitle:@"Error" Message:exception.message];
+        }
+        @finally {
+            [uc release];
+        }
+        
 		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
 			[self updatePanelIdentityView];
 		}
@@ -621,10 +657,12 @@
 }
 
 
-#pragma mark Delegate method of GetPanelsDelegate
-// After select a controller URL, get panel list from the controller.
-// If only one panel is available, automatically choose it.
-- (void)onGetPanels:(NSMutableArray*)panels {
+#pragma mark ORControllerPanelsFetcherDelegate implementation
+
+- (void)fetchPanelsDidSucceedWithPanels:(NSArray *)panels
+{
+    // When a controller gets selected, the list of available panels is fetched.
+    // If there is only one panel available, it is automatically selected.
 	UITableViewCell *identityCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	if (panels.count == 1) {
         settingsManager.consoleSettings.selectedController.selectedPanelIdentity = [panels objectAtIndex:0];
@@ -632,21 +670,7 @@
 	} else {
 		settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
         identityCell.textLabel.text = @"None";
-	}	
-}
-
-- (void)dealloc {
-	if (autoDiscoverController) {
-		[autoDiscoverController release];
 	}
-	[updateController release];
-	[done release];
-	[cancel release];
-	[portField release];
-	
-	[super dealloc];
 }
-
 
 @end
-

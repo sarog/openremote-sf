@@ -59,6 +59,8 @@
     [controllerRequest postRequestWithPath:commandURLPath];
 }
 
+// TODO EBR : things like UNAUTHORIZED should be moved down to ControllerRequest code, not handled in each command -> test this authorization stuff
+
 - (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {

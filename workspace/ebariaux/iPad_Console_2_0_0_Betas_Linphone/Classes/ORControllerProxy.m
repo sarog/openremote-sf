@@ -48,4 +48,12 @@
     return [pollingSender autorelease];
 }
 
+- (ORControllerPanelsFetcher *)fetchPanelsWithDelegate:(NSObject <ORControllerPanelsFetcherDelegate> *)delegate
+{
+    ORControllerPanelsFetcher *panelsFetcher = [[ORControllerPanelsFetcher alloc] init];
+    panelsFetcher.delegate = delegate;
+    [panelsFetcher fetch];
+    return [panelsFetcher autorelease];
+}
+
 @end
