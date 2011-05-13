@@ -43,32 +43,41 @@
     [receivedData release];
     [connection release];
     [usedGroupMember release];
+    [potentialGroupMembers release];
     [super dealloc];
 }
 
-- (void)selectNextGroupMemberToTry
+/**
+ * Returns NO if none can be selected
+ */
+- (BOOL)selectNextGroupMemberToTry
 {
     ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    NSDate *now = [NSDate date];
     
-    ORGroupMember *nextGroupMemberToTry = nil;
-    for (ORGroupMember *gm in activeController.groupMembers) {
-        if (!gm.lastFailureDate || ([now timeIntervalSinceDate:gm.lastFailureDate] > 5.0)) {
-            nextGroupMemberToTry = gm;
-            break;
+    if (!self.usedGroupMember) {
+        self.usedGroupMember = activeController.activeGroupMember;
+        if (self.usedGroupMember) {
+            return YES;
         }
     }
-    activeController.activeGroupMember = nextGroupMemberToTry;
+    
+    if (!potentialGroupMembers) {
+        if ([activeController.groupMembers count] == 0) {
+            return NO;
+        }
+        potentialGroupMembers = [activeController.groupMembers mutableCopy];
+    }
+    if (self.usedGroupMember) {
+        [potentialGroupMembers removeObject:self.usedGroupMember];
+    }
+    self.usedGroupMember = [potentialGroupMembers anyObject];
+    return (self.usedGroupMember != nil);
 }
 
 - (void)send
 {
-    // Remember the member used for sending
-    self.usedGroupMember = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember;
-    
     NSString *location = [usedGroupMember.url stringByAppendingFormat:@"/%@", requestPath];
     NSLog(@"Trying to send command to %@", location);
-    
     
     // TODO EBR : sometimes location is nil, check how this happens
     NSURL *url = [[NSURL alloc] initWithString:location];
@@ -101,13 +110,8 @@
     }
     requestPath = [path copy];
     
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    // No active group member, try to select one
-    if (!activeController.activeGroupMember) {
-        [self selectNextGroupMemberToTry];
-    }
-    if (!activeController.activeGroupMember) {
-        // None available, report as error
+    if (![self selectNextGroupMemberToTry]) {
+        // No group member available, report as error
         if ([delegate respondsToSelector:@selector(controllerRequestDidFailWithError:)]) {            
             [delegate controllerRequestDidFailWithError:nil];
         }
@@ -146,7 +150,7 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember.lastFailureDate = nil;
+    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember = self.usedGroupMember;
 	[delegate controllerRequestDidFinishLoading:receivedData];
     [delegate release];
     delegate = nil;
@@ -157,11 +161,7 @@
     // Connection error, check if failover URLs available
     lastError = error;
     
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    self.usedGroupMember.lastFailureDate = [NSDate date];
-    
-    [self selectNextGroupMemberToTry];
-    if (activeController.activeGroupMember) {
+    if ([self selectNextGroupMemberToTry]) {
         [self send];
     } else {
         if ([delegate respondsToSelector:@selector(controllerRequestDidFailWithError:)]) {

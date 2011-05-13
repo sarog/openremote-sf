@@ -49,6 +49,7 @@
     NSError* lastError;
 
     ORGroupMember *usedGroupMember;
+    NSMutableSet *potentialGroupMembers;
     
     NSObject <ControllerRequestDelegate> *delegate;
 }

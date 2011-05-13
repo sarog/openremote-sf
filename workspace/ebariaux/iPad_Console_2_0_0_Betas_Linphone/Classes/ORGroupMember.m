@@ -22,11 +22,9 @@
 #import "ORGroupMember.h"
 #import "ORController.h"
 
-
 @implementation ORGroupMember
-@dynamic url;
-@dynamic lastFailureDate;
-@dynamic controller;
 
+@dynamic url;
+@dynamic controller;
 
 @end

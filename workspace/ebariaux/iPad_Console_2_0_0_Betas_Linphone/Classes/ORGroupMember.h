@@ -29,7 +29,6 @@
 }
 
 @property (nonatomic, retain) NSString * url;
-@property (nonatomic, retain) NSDate * lastFailureDate;
 @property (nonatomic, retain) ORController * controller;
 
 
