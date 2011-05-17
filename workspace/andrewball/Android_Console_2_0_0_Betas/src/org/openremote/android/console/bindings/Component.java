@@ -48,6 +48,8 @@ public class Component extends BusinessEntity {
          XMLEntityDataBase.labels.put(component.getComponentId(), (Label) component);
       } else if(IMAGE.equals(node.getNodeName())) {
          component = new Image(node);
+      } else if (WEB.equals(node.getNodeName())) {
+         component = new Web(node);
       } else {
          return Control.buildWithXML(node);
       }

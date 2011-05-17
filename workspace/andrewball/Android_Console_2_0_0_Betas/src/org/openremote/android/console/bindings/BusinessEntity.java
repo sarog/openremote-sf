@@ -82,4 +82,8 @@ public class BusinessEntity implements Serializable {
    public static final String BG_IMAGE_RELATIVE_POSITION_TOP_RIGHT = "TOP_RIGHT";
    public static final String BG_IMAGE_RELATIVE_POSITION_BOTTOM_RIGHT = "BOTTOM_RIGHT";
    public static final String BG_IMAGE_RELATIVE_POSITION_CENTER = "CENTER";
+
+   public static final String WEB = "web";
+   public static final String USERNAME = "username";
+   public static final String PASSWORD = "password";
 }
