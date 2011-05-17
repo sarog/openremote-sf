@@ -99,7 +99,6 @@
 	[updateController release];
 	[done release];
 	[cancel release];
-	[portField release];
     self.panelsFetcher = nil;
 	
 	[super dealloc];
