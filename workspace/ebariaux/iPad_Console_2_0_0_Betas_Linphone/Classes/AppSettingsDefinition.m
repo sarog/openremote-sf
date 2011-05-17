@@ -23,7 +23,6 @@
 #import "DirectoryDefinition.h"
 #import "Definition.h"
 #import "ViewHelper.h"
-#import "AppSettingController.h"
 #import "NotificationConstant.h"
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
