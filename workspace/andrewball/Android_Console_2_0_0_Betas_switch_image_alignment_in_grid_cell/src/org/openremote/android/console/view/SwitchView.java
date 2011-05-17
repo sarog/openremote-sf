@@ -34,8 +34,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 /**
  * This class is responsible for rendering the switch in screen with the switch data.
@@ -60,28 +62,35 @@ public class SwitchView extends SensoryControlView {
             addPollingSensoryListener();
          }
       }
-      setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+      setLayoutParams(new ViewGroup.LayoutParams(switchComponent.getFrameWidth(),
+            switchComponent.getFrameHeight()));
    }
 
    /**
     * Sets switch's on/off state(image or text).
     * Sets touch listener on the switch view for change switch state and send command.
     * 
+    * If images are used, have the size of the Button match the image currently
+    * displayed and center it within the RelativeLayout.  Otherwise, make
+    * the button's dimensions the same as the RelativeLayout.
+    *
     * @param switchComponent the switch component
     */
    private void initSwitch(Switch switchComponent) {
       int width = switchComponent.getFrameWidth();
       int height = switchComponent.getFrameHeight();
-      button.setLayoutParams(new FrameLayout.LayoutParams(width, height));
-      if (switchComponent.getOnImage() != null) {
-         onImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + switchComponent.getOnImage().getSrc());
-         button.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-      }
-      if (switchComponent.getOffImage() != null) {
-         offImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH + switchComponent.getOffImage().getSrc());
-      }
-      if (onImage != null && offImage != null) {
+
+      RelativeLayout.LayoutParams buttonLayoutParams = null;
+      if (switchComponent.getOnImage() != null && switchComponent.getOffImage() != null) {
          canUseImage = true;
+         onImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH +
+               switchComponent.getOnImage().getSrc());
+         offImage = ImageUtil.createFromPathQuietly(context, Constants.FILE_FOLDER_PATH +
+               switchComponent.getOffImage().getSrc());
+
+         buttonLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+               LayoutParams.WRAP_CONTENT);
+
          button.setText(null);
          if (isOn) {
             button.setBackgroundDrawable(onImage);
@@ -89,12 +98,17 @@ public class SwitchView extends SensoryControlView {
             button.setBackgroundDrawable(offImage);
          }
       } else {
+         buttonLayoutParams = new RelativeLayout.LayoutParams(width, height);
+
          if (isOn) {
             button.setText("ON");
          } else {
             button.setText("OFF");
          }
       }
+      buttonLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+      button.setLayoutParams(buttonLayoutParams);
+
       button.setOnTouchListener(new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
