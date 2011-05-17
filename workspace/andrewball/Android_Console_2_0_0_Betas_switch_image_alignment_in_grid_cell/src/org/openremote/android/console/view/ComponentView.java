@@ -25,13 +25,13 @@ import org.openremote.android.console.bindings.Label;
 import org.openremote.android.console.bindings.Web;
 
 import android.content.Context;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 /**
  * The super class of all component view.
  * Extends LinearLayout can specify a location for a child.
  */
-public class ComponentView extends LinearLayout {
+public class ComponentView extends RelativeLayout {
 
    protected Context context;
    private Component component;
