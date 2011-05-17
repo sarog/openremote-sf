@@ -92,9 +92,8 @@
 	}
 	NSLog(@"check config");
 
-    
-    // TODO EBR review, must also try persisted auto discovered URL if selected
-	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedConfiguredController) {
+    // If there is a selected controller (auto-discovered or configured), try to use it
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController) {
 		[self checkNetworkAndUpdate];
 	} else {
 		NSLog(@"No selected controller found in configuration");
@@ -110,6 +109,10 @@
 - (void)findServer {
 	NSLog(@"findServer");
 	NSLog(@"retry time %d <= %d", retryTimes, MAX_RETRY_TIMES);
+    
+    // Start auto-discovery from a clean slate
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings removeAllAutoDiscoveredControllers];
+    
 	if (retryTimes <= MAX_RETRY_TIMES) {		
 		retryTimes++;
 		if (serverAutoDiscoveryController) {

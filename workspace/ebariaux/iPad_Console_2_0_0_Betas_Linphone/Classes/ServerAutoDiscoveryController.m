@@ -30,18 +30,24 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 
-@interface ServerAutoDiscoveryController (Private)
-- (void)checkFindServerFail;
-@end
+@interface ServerAutoDiscoveryController ()
 
+- (void)checkFindServerFail;
+
+@end
 
 @implementation ServerAutoDiscoveryController
 
+@synthesize delegate;
+
 //Setup autodiscovery and start. 
 // Needn't call annother method to send upd and start tcp server.
-- (id)init {			
-	if (self = [super init]) {
-		
+- (id)initWithDelegate:(id)aDelegate
+{
+    self = [super init];
+	if (self) {
+        self.delegate = aDelegate;
+
 		isReceiveServerUrl = NO;
 		//Store the received TcpClient sockets.
 		clients = [[NSMutableArray alloc] initWithCapacity:1];
@@ -64,48 +70,39 @@
 		[tcpSever acceptOnPort:serverPort error:NULL];
 		
 		//Set a timer with 3 interval.
-		tcpTimer = [[NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO] retain];
-		
+		tcpTimer = [[NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(checkFindServerFail) userInfo:nil repeats:NO] retain];		
 	}
 	return self;
 }
 
-- (void)reTry {	
+- (id)init
+{
+    return [self initWithDelegate:nil];
 }
 
-- (id)initWithDelegate:(id)aDelegate {
-	if(aDelegate) {
-		[aDelegate retain];
+- (void)dealloc
+{
+	if (tcpTimer && [tcpTimer isValid])  {
+		[tcpTimer invalidate];
+		[tcpTimer release];
 	}
-	theDelegate = aDelegate;
-	return [self init];
-}
 
-- (void)setDelegate:(id)delegate {
-	if (delegate != nil) {
-		[delegate retain];
-		[theDelegate release];
-		theDelegate = delegate;
-	} else {
-		[theDelegate release];
-		theDelegate = nil;
-	}
+	NSLog(@"clients count is %d", [clients count]);    
+    [clients makeObjectsPerformSelector:@selector(disconnect)];
+    [clients release];
+	
+	[tcpSever release];
+	[udpSocket release];
+	[delegate release];
+    
+	[super dealloc];	
 }
 
 //after find server		
-- (void)onFindServer:(NSString *)serverUrl {
+- (void)onFindServer:(NSString *)serverUrl
+{
 	isReceiveServerUrl = YES;
     [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addAutoDiscoveredControllerForURL:serverUrl];
-    
-	
-    
-    
-    
-//	EBR NSLog(@"current url at receive socket %@",[AppSettingsDefinition getCurrentServerUrl]);
-
-    
-    
-    
     
     //Disconnect all the tcp client received
 	for(int i = 0; i < [clients count]; i++)
@@ -119,30 +116,28 @@
 	[clients release];
 	clients = nil;
 	
-	
 	[tcpSever disconnectAfterReading];
 	[tcpTimer invalidate];
-	
 			
 	// Call the delegate method delegate implemented
-//	if (theDelegate && [theDelegate  respondsToSelector:@selector(onFindServer:)]) {
-//		NSLog(@"performSelector onFindServer");
-//		[theDelegate performSelector:@selector(onFindServer:) withObject:serverUrl];
-//	}
+	if (self.delegate && [self.delegate  respondsToSelector:@selector(onFindServer:)]) {
+		[self.delegate performSelector:@selector(onFindServer:) withObject:serverUrl];
+	}
 }
 		
 //after find server fail
-- (void)onFindServerFail:(NSString *)errorMessage{
+- (void)onFindServerFail:(NSString *)errorMessage
+{
 	[tcpTimer invalidate];
-	// Call the delegate method delegate implemented
-	if (theDelegate && [theDelegate respondsToSelector:@selector(onFindServerFail:)]) {
-		NSLog(@"performSelector onFindServerFail");
-		[theDelegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
+
+	if (self.delegate && [self.delegate respondsToSelector:@selector(onFindServerFail:)]) {
+		[self.delegate performSelector:@selector(onFindServerFail:) withObject:errorMessage];
 	}
 }
 
 //check where find server time out.
-- (void)checkFindServerFail {
+- (void)checkFindServerFail
+{
 	if (!isReceiveServerUrl) {
 		[self onFindServerFail:@"No Controller detected."];
 	}
@@ -151,61 +146,41 @@
 
 #pragma mark UdpSocket delegate method
 
-- (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
+- (void)onUdpSocket:(AsyncUdpSocket *)sock didSendDataWithTag:(long)tag
+{
 	NSLog(@"onUdpSocket didSendData."); 
 	[sock close];
 }
 
 //Called after AsyncUdpSocket did not send data 
-- (void)onUdpSocket:(AsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error {
+- (void)onUdpSocket:(AsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error
+{
 	NSLog(@"DidNotSend: %@", error);
 	[self onFindServerFail:[error localizedDescription]];
 } 
 
 #pragma mark TCPSocket delegate method
 
-- (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
-	
+- (void)onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
+{	
 	NSLog(@"receive data from server");
 	NSString *serverUrl = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSLog(@"read server url from controller %@", serverUrl);	
 	[serverUrl autorelease];
 	[self onFindServer:serverUrl];
-	
 }
 
-- (void)onSocket:(AsyncSocket *)sock didAcceptNewSocket:(AsyncSocket *)newSocket {
+- (void)onSocket:(AsyncSocket *)sock didAcceptNewSocket:(AsyncSocket *)newSocket
+{
 	NSLog(@"receive new socket");
 	[clients addObject:newSocket];
 	[newSocket setDelegate:self];
 	[newSocket readDataWithTimeout:10 tag:0];
 }
 
-- (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port {
+- (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port
+{
 	NSLog(@"receive socket host %@ port %d", host, port);
 }
 
-- (void)dealloc {
-	if (tcpTimer && [tcpTimer isValid])  {
-		[tcpTimer invalidate];
-		[tcpTimer release];
-	}
-	NSLog(@"clients count is %d", [clients count]);
-	for(int i = 0; i < [clients count]; i++) {
-		[[clients objectAtIndex:i] disconnect];
-		[clients removeObjectAtIndex:i];
-	}
-	[clients release];
-	
-	[tcpSever release];
-	[udpSocket release];
-	
-	if (theDelegate) {
-		[theDelegate release];
-		theDelegate = nil;
-	}
-	
-	[super dealloc];
-	
-}
 @end

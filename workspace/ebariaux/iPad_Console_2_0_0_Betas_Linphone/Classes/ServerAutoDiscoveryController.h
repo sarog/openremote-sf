@@ -35,7 +35,8 @@
  * It's responsible for controller server  discovery automatically.
  */
 @interface ServerAutoDiscoveryController : NSObject {
-	id <ServerAutoDiscoveryControllerDelagate>theDelegate;
+	id <ServerAutoDiscoveryControllerDelagate>delegate;
+    
 	AsyncUdpSocket *udpSocket;
 	AsyncSocket *tcpSever; 
 	NSMutableArray *clients;
@@ -44,7 +45,8 @@
 }
 
 - (id)initWithDelegate:(id <ServerAutoDiscoveryControllerDelagate>)aDelegate;
-- (void)setDelegate:(id <ServerAutoDiscoveryControllerDelagate>)delegate;
-- (void)reTry;
+
+// TODO EBR : is it OK to have this delegate assign instead of retain ?
+@property (nonatomic, retain) id <ServerAutoDiscoveryControllerDelagate>delegate;
 
 @end
