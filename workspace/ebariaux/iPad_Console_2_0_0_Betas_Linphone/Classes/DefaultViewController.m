@@ -224,6 +224,7 @@
 			[self rerenderTabbarWithNewOrientation];
 			[currentGroupController switchToScreen:screen.screenId];
 		}
+        // EBR : if the orientation is matching, correct screen is already displayed, no need to navigate
 	}
 }
 
