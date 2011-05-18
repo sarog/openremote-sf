@@ -45,7 +45,6 @@
 	BOOL isEditing;
 	UIActivityIndicatorView *loadingView;
 	UpdateController *updateController;
-	NSTimer *getAutoServersTimer;
 	UIActivityIndicatorView *spinner;
 	UITextField *portField;	
 }
