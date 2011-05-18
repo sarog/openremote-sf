@@ -66,9 +66,6 @@
 // The section of table cell where security table cells is in.
 #define SECURITY_SECTION 4
 
-// Interval of auto discovery timer.
-#define AUTO_DISCOVERY_TIMER_INTERVAL 1
-
 // Default security port.
 #define SECURITY_PORT 8443
 
@@ -201,12 +198,8 @@
 		[self showSpinner];
 		self.navigationItem.leftBarButtonItem = nil;
 		autoDiscoverController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
-		getAutoServersTimer = [[NSTimer scheduledTimerWithTimeInterval:AUTO_DISCOVERY_TIMER_INTERVAL target:self selector:@selector(updateTableView) userInfo:nil repeats:NO] retain];
 		self.navigationItem.leftBarButtonItem = cancel;
 	} else {
-		if (getAutoServersTimer && [getAutoServersTimer isValid]) {
-			[getAutoServersTimer invalidate];
-		}
         [self updatePanelIdentityView];
 	}
 		
