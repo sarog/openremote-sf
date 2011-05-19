@@ -133,7 +133,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE, etc.
+       * TODO : add unit tests for RANGE, etc.
        *
        * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.)
        * 
