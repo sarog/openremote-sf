@@ -26,6 +26,8 @@
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
 		6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
+		605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
+		605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
 		6068DE6B13744BC8007746F1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6A13744BC8007746F1 /* QuartzCore.framework */; };
 		6068DE6D13744BF5007746F1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6C13744BF5007746F1 /* CoreGraphics.framework */; };
 		6068DE6E13744C11007746F1 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
@@ -442,6 +444,8 @@
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
+		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
+		605393F71383FF0A00F3F5FC /* EnvironmentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnvironmentManager.m; sourceTree = "<group>"; };
 		6068DE6A13744BC8007746F1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		6068DE6C13744BF5007746F1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6068DE9713744E36007746F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -992,9 +996,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				605393F51383FED200F3F5FC /* Local logic */,
 				60AFCED2137180AC00A811D4 /* Controller communication */,
-				60A61A7F1355F85500A7C87E /* TimeManager.h */,
-				60A61A801355F85600A7C87E /* TimeManager.m */,
 				608FBB74131FF8F900C9089F /* SIP */,
 				8CC6364210BD35E2009C25C9 /* delegate */,
 				33981AFD10B0F1240076DB59 /* service */,
@@ -1163,6 +1166,17 @@
 				33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */,
 			);
 			name = viewbase;
+			sourceTree = "<group>";
+		};
+		605393F51383FED200F3F5FC /* Local logic */ = {
+			isa = PBXGroup;
+			children = (
+				605393F61383FF0A00F3F5FC /* EnvironmentManager.h */,
+				605393F71383FF0A00F3F5FC /* EnvironmentManager.m */,
+				60A61A7F1355F85500A7C87E /* TimeManager.h */,
+				60A61A801355F85600A7C87E /* TimeManager.m */,
+			);
+			name = "Local logic";
 			sourceTree = "<group>";
 		};
 		608FBB74131FF8F900C9089F /* SIP */ = {
@@ -2117,6 +2131,7 @@
 				60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */,
 				6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 				60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
+				605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2226,6 +2241,7 @@
 				60AFCEEA13729AA500A811D4 /* ControllerRequest.m in Sources */,
 				6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 				60C81D9E137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
+				605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
