@@ -43,6 +43,8 @@
 		sensorId = ((Web *)component).sensor.sensorId;
     }
 	if (sensorId > 0 ) {
+        // EBR : remove ourself first as with current code this method might be called multiple times and we only need to process event once
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 	}
 }
@@ -60,8 +62,8 @@
 
 // This method is abstract method of indirect superclass UIView's.
 - (void)layoutSubviews {
-	[self initView];
-	[self addPollingNotificationObserver];
+	[self initView]; // TODO EBR : we should not create views in layoutSubviews !!!
+	[self addPollingNotificationObserver]; // TODO EBR : we should not do this in layout subviews, might be called "at any time"
 }
 
 - (void)dealloc
