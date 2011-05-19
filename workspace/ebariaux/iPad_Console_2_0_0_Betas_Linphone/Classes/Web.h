@@ -20,9 +20,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "Component.h"
+#import "SensorComponent.h"
 
-@interface Web : Component <NSXMLParserDelegate> {
+@interface Web : SensorComponent <NSXMLParserDelegate> {
 
 	NSString *src;
 	NSString *username;

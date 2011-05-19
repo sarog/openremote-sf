@@ -22,17 +22,43 @@
 #import "ORWebView.h"
 #import "Web.h"
 #import "NSStringAdditions.h"
+#import "PollingStatusParserDelegate.h"
+#import "Web.h"
+
+@interface ORWebView ()
+
+@property (nonatomic, retain) NSString *oldStatus;
+
+- (void)loadRequestForURL:(NSString *)url;
+
+@end
 
 @implementation ORWebView
 
 @synthesize defaultWebView;
+@synthesize oldStatus;
 
-- (void) initView {
-	Web *webModel = (Web *)component;
+- (void) initView
+{
+	Web *webModel = (Web *)self.component;
 
 	defaultWebView = [[UIWebView alloc] initWithFrame:self.bounds];
 	
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:webModel.src]];
+    [self loadRequestForURL:webModel.src];
+	[self addSubview:defaultWebView];
+}
+
+- (void)dealloc
+{
+    [defaultWebView release];
+    self.oldStatus = nil;
+    [super dealloc];
+}
+
+- (void)loadRequestForURL:(NSString *)url
+{
+	Web *webModel = (Web *)self.component;
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
 	
 	// If a username if provided in the config, use that for authentication
 	if (webModel.username != nil && ![@"" isEqualToString:webModel.username]) {
@@ -42,8 +68,21 @@
 		[request setValue:authString forHTTPHeaderField:@"Authorization"];
 	}
 	
-	[defaultWebView loadRequest:request];
-	[self addSubview:defaultWebView];
+	[defaultWebView loadRequest:request];    
+}
+
+- (void)setPollingStatus:(NSNotification *)notification
+{    
+    // TODO EBR : check / test, it seems this method is called multiple times for a single sensor update
+    
+	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
+	int sensorId = ((Web *)self.component).sensor.sensorId;
+	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
+	NSLog(@"new status is : %@", newStatus);
+    if (![self.oldStatus isEqualToString:newStatus]) {
+        self.oldStatus = newStatus;
+        [self loadRequestForURL:newStatus];
+    }
 }
 
 @end

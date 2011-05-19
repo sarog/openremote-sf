@@ -20,9 +20,9 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "ComponentView.h"
+#import "SensoryView.h"
 
-@interface ORWebView : ComponentView {
+@interface ORWebView : SensoryView {
 
 	UIWebView *defaultWebView;
 }
