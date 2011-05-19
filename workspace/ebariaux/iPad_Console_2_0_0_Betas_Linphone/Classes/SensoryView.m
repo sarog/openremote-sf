@@ -23,6 +23,7 @@
 #import "NotificationConstant.h"
 #import "Label.h"
 #import "Image.h"
+#import "Web.h"
 
 @implementation SensoryView
 
@@ -38,7 +39,9 @@
 		if (sensorId <= 0) {
 			sensorId = ((Image *)component).label.sensor.sensorId;
 		}
-	}
+	} else if ([component isKindOfClass:[Web class]]) {
+		sensorId = ((Web *)component).sensor.sensorId;
+    }
 	if (sensorId > 0 ) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat,sensorId] object:nil];
 	}
