@@ -112,10 +112,11 @@
 	SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", sensor.methodName]);
 	NSString *retValue = [clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
 
-	PollingStatusParserDelegate *delegate = [[PollingStatusParserDelegate alloc] init];
-	[delegate publishNewValue:retValue forSensorId:[NSString stringWithFormat:@"%d", sensor.componentId]];
-	[delegate release];
-	
+    if (retValue) {
+        PollingStatusParserDelegate *delegate = [[PollingStatusParserDelegate alloc] init];
+        [delegate publishNewValue:retValue forSensorId:[NSString stringWithFormat:@"%d", sensor.componentId]];
+        [delegate release];
+    }	
 }
 
 #pragma mark ORControllerPollingSenderDelegate implementation
