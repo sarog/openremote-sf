@@ -189,6 +189,23 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         }
       }
 
+      else if (name.equals("RANGE"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing value parameter for RANGE command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createRange(parameter);
+        }
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
       else
       {
         return null;                    // according to javadoc

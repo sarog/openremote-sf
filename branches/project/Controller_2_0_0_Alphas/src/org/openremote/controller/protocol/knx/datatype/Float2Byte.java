@@ -112,7 +112,9 @@ public class Float2Byte implements DataType
       // false for Positive sign and true for negative sign
       boolean sign = (value[0] & 0x80)== 0x80;
       byte exponent = (byte) ((value[0] & 0x78)>>3);
-      int mantisse = (int) ((value[0]&0x07)<<8)+value[1];
+      int unsigned = (int)(value[1] & 0xFF);
+
+      int mantisse = (int) ((value[0]&0x07)<<8)+unsigned;
 
       for (byte i=0; i<exponent; i++) 
     	mantisse = mantisse*2;
