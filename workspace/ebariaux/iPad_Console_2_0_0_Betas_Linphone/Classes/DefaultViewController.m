@@ -51,7 +51,6 @@
     self = [super init];
     if (self) {	
 			theDelegate = delegate;
-			groupViewMap = [[NSMutableDictionary alloc] init];
 			tabBarControllers = [[NSMutableArray alloc] init];
 			tabBarControllerViewMap = [[NSMutableDictionary alloc] init];
 			navigationHistory = [[NSMutableArray alloc] init];
@@ -68,7 +67,6 @@
 
 
 - (void)dealloc {
-	[groupViewMap release];
 	[tabBarControllers release];
     [tabBarControllerViewMap release];
 	[navigationHistory release];
@@ -167,7 +165,6 @@
 		
 		GroupController *gc = [self recoverLastOrCreateGroup];
 		
-		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
 		currentGroupController = [gc retain];
 		
 		TabBar *localTabBar = currentGroupController.group.tabBar;
@@ -344,12 +341,9 @@
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 	}
 
-	for (UIView *vi in self.view.subviews) {
-		[vi retain];//cache it, or it will be release after removeFromSuperview.
-		[vi removeFromSuperview];
-	}
+    [self.view.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 	
-	UIView *v = [groupViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
+	UIView *v = targetGroupController.view;
 
 	//if local tabbar exists
 	if (targetGroupController.group.tabBar) {
@@ -401,7 +395,6 @@
 			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
 			if (group) {
 				targetGroupController = [[[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]] autorelease];
-				[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
 			} else {
 				return NO;
 			}
@@ -501,7 +494,6 @@
 	for (UIView *view in self.view.subviews) {
 		[view removeFromSuperview];
 	}
-	[groupViewMap removeAllObjects];
 	[tabBarControllers removeAllObjects];
 	[tabBarControllerViewMap removeAllObjects];
 	globalTabBarController = nil;
