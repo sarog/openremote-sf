@@ -38,13 +38,11 @@
  * It's responsible for controlling rendering of all views related to client.
  * Its view is the root view container of all views related to client.
  */
-@interface DefaultViewController : UIViewController {
-	
+@interface DefaultViewController : UIViewController {	
 	id theDelegate;
 	
 	InitViewController *initViewController;
 	GroupController *currentGroupController;
-	NSMutableDictionary *groupViewMap;
 	NSMutableArray *navigationHistory;
 	ErrorViewController* errorViewController;
 	TabBarController *globalTabBarController;
