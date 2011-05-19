@@ -50,7 +50,6 @@
 	ErrorViewController* errorViewController;
 	TabBarController *globalTabBarController;
 	TabBarController *localTabBarController;
-	UIView *lastSubView;
 	NSMutableArray *tabBarControllers;
 	NSMutableDictionary *tabBarControllerViewMap;
 	UpdateController *updateController;
