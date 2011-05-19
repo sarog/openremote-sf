@@ -43,7 +43,6 @@
 	id theDelegate;
 	
 	InitViewController *initViewController;
-	NSMutableArray *groupControllers;
 	GroupController *currentGroupController;
 	NSMutableDictionary *groupViewMap;
 	NSMutableArray *navigationHistory;
@@ -53,7 +52,6 @@
 	NSMutableArray *tabBarControllers;
 	NSMutableDictionary *tabBarControllerViewMap;
 	UpdateController *updateController;
-
 }
 
 /**
