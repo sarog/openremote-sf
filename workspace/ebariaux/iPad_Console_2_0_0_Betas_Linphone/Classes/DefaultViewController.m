@@ -178,7 +178,6 @@
 		if (localTabBar) {
 			localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
 			[self.view addSubview:localTabBarController.view];
-			lastSubView = localTabBarController.view;
 			
 			[tabBarControllers addObject:localTabBarController];
 			[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
@@ -187,10 +186,8 @@
 		else if ([[Definition sharedDefinition] tabBar]) {
 			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
 			[self.view addSubview:globalTabBarController.view];
-			lastSubView = globalTabBarController.view;
 		} else {
 			[self.view addSubview:currentGroupController.view];
-			lastSubView = currentGroupController.view;
 		}
 		
 		//if last screen orientation is not current device orientation, transform to that orientation.
@@ -316,8 +313,8 @@
 }
 
 //transform view +/- 90 degrees
-- (void)transformToOppositeOrientation {
-	
+- (void)transformToOppositeOrientation
+{
 	[UIView beginAnimations:@"View transform" context:nil];
 	[UIView setAnimationDuration:0.5f];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
@@ -341,20 +338,15 @@
 		//by default it's portart, needn't to specify -90 degrees.
 		self.view.frame = CGRectMake(0, 0, h, w);
 	}
-	
-	[UIView commitAnimations];
-	
+	[UIView commitAnimations];	
 }
 
-- (void)updateGlobalOrLocalTabbarViewToGroupController:(GroupController *)targetGroupController withGroupId:(int)groupId {
-	
+- (void)updateGlobalOrLocalTabbarViewToGroupController:(GroupController *)targetGroupController withGroupId:(int)groupId
+{	
 	if ([targetGroupController getCurrentOrientation] != [currentGroupController getCurrentOrientation]) {
 		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
 	}
-	
 
-//	[lastSubView removeFromSuperview];
-	
 	for (UIView *vi in self.view.subviews) {
 		[vi retain];//cache it, or it will be release after removeFromSuperview.
 		[vi removeFromSuperview];
@@ -390,7 +382,6 @@
 		}
 		v = globalTabBarController.view;
 	}
-	//lastSubView = v;
 
 	[self.view addSubview:v];
 
