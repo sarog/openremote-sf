@@ -51,7 +51,6 @@
     self = [super init];
     if (self) {	
 			theDelegate = delegate;
-			groupControllers = [[NSMutableArray alloc] init]; 
 			groupViewMap = [[NSMutableDictionary alloc] init];
 			tabBarControllers = [[NSMutableArray alloc] init];
 			tabBarControllerViewMap = [[NSMutableDictionary alloc] init];
@@ -69,7 +68,6 @@
 
 
 - (void)dealloc {
-	[groupControllers release];
 	[groupViewMap release];
 	[tabBarControllers release];
     [tabBarControllerViewMap release];
@@ -169,7 +167,6 @@
 		
 		GroupController *gc = [self recoverLastOrCreateGroup];
 		
-		[groupControllers addObject:gc];
 		[groupViewMap setObject:gc.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];	
 		currentGroupController = [gc retain];
 		
@@ -400,27 +397,18 @@
 	
 	//if screenId is specified, and is not in current group, jump to that group
 	if (groupId > 0 && isAnotherGroup) {
-		//should find in cache first, but this cached GroupController may cause view bug, so don't use cache for now.
-//		for (GroupController *gc in groupControllers) {
-//			if ([gc groupId] == groupId) {
-//				targetGroupController = gc;
-//				break;
-//			}
-//		}
-		//if not found in cache, create one
 		if (targetGroupController == nil) {
 			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
 			if (group) {
-				targetGroupController = [[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]];
-				[groupControllers addObject:targetGroupController];
+				targetGroupController = [[[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]] autorelease];
 				[groupViewMap setObject:targetGroupController.view forKey:[NSString stringWithFormat:@"%d", group.groupId]];
 			} else {
 				return NO;
 			}
 		}
 		
+        [currentGroupController stopPolling];
 		[self updateGlobalOrLocalTabbarViewToGroupController:targetGroupController withGroupId:groupId];
-		
 	}
 	
 	//if screenId is specified, jump to that screen
@@ -513,7 +501,6 @@
 	for (UIView *view in self.view.subviews) {
 		[view removeFromSuperview];
 	}
-	[groupControllers removeAllObjects];
 	[groupViewMap removeAllObjects];
 	[tabBarControllers removeAllObjects];
 	[tabBarControllerViewMap removeAllObjects];
@@ -535,7 +522,7 @@
 }
 
 - (BOOL)isLoadingViewGone {
-	return groupControllers.count > 0;
+	return currentGroupController != nil;
 }
 
 #pragma mark delegate method of LoginViewController
