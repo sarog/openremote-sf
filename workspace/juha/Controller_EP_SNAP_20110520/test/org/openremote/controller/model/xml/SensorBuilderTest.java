@@ -234,10 +234,15 @@ public class SensorBuilderTest
     Sensor s = getSensorByID(717);
     Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
     Assert.assertTrue(s.getName().equals("se"));
+    Assert.assertTrue(s.getSensorID() == 717);
 
     // switch sensor states should not show up as properties, even if mapped...
 
     Assert.assertTrue(s.getProperties().size() == 0);
+
+
+    Assert.assertTrue(s.read().equals("off"));
+    Assert.assertTrue(s.read().equals("on"));
 
     Assert.assertTrue(s instanceof SwitchSensor);
 
@@ -248,6 +253,52 @@ public class SensorBuilderTest
     Assert.assertTrue(state.processEvent("on").equals("on"));
     Assert.assertTrue(state.processEvent("off").equals("off"));
     Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+
+
+
+  }
+
+
+  /**
+   * Same as {@link #testSwitchStateMappingWithNoValue} above, just uses
+   * an event listener instead of polling sensor command.
+   *
+   * See http://jira.openremote.org/browse/ORCJAVA-73
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testSwitchStateMappingWithNoValueAndListener() throws Exception
+  {
+    Sensor s = getSensorByID(727);
+    Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
+    Assert.assertTrue(s.getName().equals("se2"));
+    Assert.assertTrue(s.getSensorID() == 727);
+
+    // switch sensor states should not show up as properties, even if mapped...
+
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+
+    // should get either one depending what the state of the listener is
+
+    Assert.assertTrue(s.read().equals("off") || s.read().equals("on"));
+    
+
+    Assert.assertTrue(s instanceof SwitchSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    // check that states are in place despite funky XML model...
+
+    Assert.assertTrue(state.processEvent("on").equals("on"));
+    Assert.assertTrue(state.processEvent("off").equals("off"));
+    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+
+    String status = ServiceContext.getDeviceStateCache().queryStatus(727);
+
+    // should have something since its a listener...
+
+    Assert.assertFalse(status.equals(Sensor.UNKNOWN_STATUS));
   }
 
 
