@@ -246,6 +246,14 @@ public class StateSensor extends Sensor
 
 
 
+    // Object Overrides ---------------------------------------------------------------------------
+
+    @Override public String toString()
+    {
+      return "Sensor's Distinct States: " + states.toString();
+    }
+
+
     // Private Instance Methods -------------------------------------------------------------------
 
 
