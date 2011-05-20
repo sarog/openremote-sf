@@ -28,18 +28,18 @@ import org.jdom.Element;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
-import org.openremote.controller.Constants;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.component.LevelSensor;
-import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
 /**
- * Sensor Builder Test.
+ * TODO: Sensor Builder Test.
  *
  * fixture: org/openremote/controller/fixture/controller.xml
  * 
@@ -66,7 +66,7 @@ public class SensorBuilderTest
       AllTests.deleteControllerXML();
       AllTests.restoreControllerXML();
 
-      AllTests.replaceControllerXML(Constants.CONTROLLER_XML);
+      AllTests.replaceControllerXML("SensorBuilderTests.xml");
     }
 
     catch (Throwable t)
@@ -98,7 +98,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateRangeSensor() throws Exception
   {
-    RangeSensor s = (RangeSensor)getSensor(EnumSensorType.RANGE);
+    RangeSensor s = (RangeSensor)getSensor(SensorType.RANGE);
     Assert.assertEquals(EnumSensorType.RANGE, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(-20, s.getMinValue());
@@ -123,7 +123,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateSwitchSensor() throws Exception
   {
-    Sensor s = getSensor(EnumSensorType.SWITCH);
+    Sensor s = getSensor(SensorType.SWITCH);
     Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
     Assert.assertTrue(s.getName().equals("lampA power sensor"));
     Assert.assertTrue(s.getProperties().size() == 0);
@@ -146,7 +146,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateLevelSensor() throws Exception
   {
-    LevelSensor s = (LevelSensor)getSensor(EnumSensorType.LEVEL);
+    LevelSensor s = (LevelSensor)getSensor(SensorType.LEVEL);
     Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
@@ -156,22 +156,27 @@ public class SensorBuilderTest
 
 
   /**
-   * Parse the following sensor when deployed through a complete controller.xml document.
+   * Parse the following sensor configuration:
    *
    * <pre>{@code
-   * <sensor id="1009" name="Door power sensor" type="custom">
-   *   <include type="command" ref="98" />
-   *   <state name="open" value="on" />
-   *   <state name="close" value="off" />
-   * </sensor>
    *
+   * Two-state CUSTOM sensor configuration.
+   *
+   * Read command return value 'on' is mapped to 'open'
+   * Read command return value 'off' is mapped to 'close'
+   *
+   * <sensor id = "1009" name = "Door power sensor" type = "custom">
+   *   <include type = "command" ref = "98" />
+   *   <state name = "open" value = "on" />
+   *   <state name = "close" value = "off" />
+   * </sensor>
    * }</pre>
    *
    * @throws Exception if test fails
    */
   @Test public void testCreateCustomSensor() throws Exception
   {
-    Sensor s = getSensor(EnumSensorType.CUSTOM);
+    Sensor s = getSensor(SensorType.CUSTOM);
     Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
     Assert.assertTrue(s.getName().equals("Door power sensor"));
     Assert.assertTrue(s.getProperties().size() == 2);
@@ -179,30 +184,125 @@ public class SensorBuilderTest
     Assert.assertTrue(s.getProperties().keySet().contains("state-2"));
     Assert.assertTrue(s.getProperties().values().contains("on"));
     Assert.assertTrue(s.getProperties().values().contains("off"));
+
+    Assert.assertTrue(s instanceof StateSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    Assert.assertTrue(state.processEvent("on").equals("open"));
+    Assert.assertTrue(state.processEvent("off").equals("close"));
+    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
   }
 
 
   @Test public void testInvalidConfigs()
   {
+    // TODO : ORCJAVA-72
+    //
     // need more tests to make sure different configuration variants are initialized correctly
     // and also test some error handling...
     
-    Assert.fail("Not Yet Implemented.");
+    Assert.fail("Not Yet Implemented (see ORCJAVA-72)");
   }
 
 
-  @Test public void testSwitchStateMappingWithNoValue()
+  /**
+   * Test against what could be qualified as a bug that has now become a feature and we need to
+   * make sure we don't regress on it unintentionally should we try to fix the bug again. <p>
+   *
+   * Current tooling generates a style of switch sensors in XML that makes very little sense:
+   *
+   * <pre>{@code
+   *
+   * <sensor id = "717" name = "se" type = "switch">
+   *   <include type = "command" ref = "96" />
+   *   <state name = "on" />
+   *   <state name = "off" />
+   * </sensor>
+   * }</pre>
+   *
+   * It makes no sense because switch can only ever return on/off as states and no mapping is
+   * provided, making the state declarations redundant. But because tooling does generate this,
+   * we need to make sure we correctly parse it. <p>
+   *
+   * See http://jira.openremote.org/browse/ORCJAVA-73
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testSwitchStateMappingWithNoValue() throws Exception
   {
-    // there's a NPE if 'switch' sensor has an incomplete <state> element with no value
-    // i.e. <state name = "on"/> instead of <state name = "blah" value = "on"/>
+    Sensor s = getSensorByID(717);
+    Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
+    Assert.assertTrue(s.getName().equals("se"));
+    Assert.assertTrue(s.getSensorID() == 717);
 
-    Assert.fail("Not Yet Implemented.");
+    // switch sensor states should not show up as properties, even if mapped...
+
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+
+    Assert.assertTrue(s.read().equals("off"));
+    Assert.assertTrue(s.read().equals("on"));
+
+    Assert.assertTrue(s instanceof SwitchSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    // check that states are in place despite funky XML model...
+
+    Assert.assertTrue(state.processEvent("on").equals("on"));
+    Assert.assertTrue(state.processEvent("off").equals("off"));
+    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+
+  }
+
+
+  /**
+   * Same as {@link #testSwitchStateMappingWithNoValue} above, just uses
+   * an event listener instead of polling sensor command.
+   *
+   * See http://jira.openremote.org/browse/ORCJAVA-73
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testSwitchStateMappingWithNoValueAndListener() throws Exception
+  {
+    Sensor s = getSensorByID(727);
+    Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
+    Assert.assertTrue(s.getName().equals("se2"));
+    Assert.assertTrue(s.getSensorID() == 727);
+
+    // switch sensor states should not show up as properties, even if mapped...
+
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+
+    // should get either one depending what the state of the listener is
+
+    Assert.assertTrue(s.read().equals("off") || s.read().equals("on"));
+    
+
+    Assert.assertTrue(s instanceof SwitchSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    // check that states are in place despite funky XML model...
+
+    Assert.assertTrue(state.processEvent("on").equals("on"));
+    Assert.assertTrue(state.processEvent("off").equals("off"));
+    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+
+    String status = ServiceContext.getDeviceStateCache().queryStatus(727);
+
+    // should have something since its a listener...
+
+    Assert.assertFalse(status.equals(Sensor.UNKNOWN_STATUS));
   }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Sensor getSensor(EnumSensorType type) throws Exception
+  private Sensor getSensor(SensorType type) throws Exception
   {
 
 
@@ -232,5 +332,16 @@ public class SensorBuilderTest
     
     return sensorBuilder.build(ele);
   }
+
+
+  private Sensor getSensorByID(int id) throws Exception
+  {
+    Element el = controllerXMLParser.queryElementFromXMLById(Integer.toString(id));
+
+    return sensorBuilder.build(el);
+  }
+
+
+  enum SensorType { RANGE, LEVEL, SWITCH, CUSTOM }
 
 }
