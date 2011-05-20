@@ -28,33 +28,70 @@ package org.openremote.controller.protocol;
 public abstract class Event<T>
 {
 
-  private int sourceID;
-  private String sourceName;
+  /**
+   * The ID of the originating sensor.
+   */
+  private int sourceSensorID;
+
+  /**
+   * The name of the originating sensor.
+   */
+  private String sourceSensorName;
 
 
 
-  public Event(int sourceID, String sourceName)
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * Constructs a new event with a given sensor ID and sensor name. Both sensor ID and name
+   * are defined in the controller.xml model for sensors.
+   *
+   * @param sourceSensorID    integer ID of the sensor that originated this event
+   * @param sourceSensorName  human-readable name of the sensor that originated this event
+   */
+  public Event(int sourceSensorID, String sourceSensorName)
   {
-    this.sourceID = sourceID;
+    this.sourceSensorID = sourceSensorID;
 
-    this.sourceName = sourceName;
+    this.sourceSensorName = sourceSensorName;
   }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
 
+  /**
+   * TODO
+   *
+   * @return
+   */
   public int getSourceID()
   {
-    return sourceID;
+    return sourceSensorID;
   }
 
+  /**
+   * TODO
+   *
+   * @return
+   */
   public String getSource()
   {
-    return sourceName;
+    return sourceSensorName;
   }
 
+
+  /**
+   * Returns the value of this event.
+   *
+   * @return  event value
+   */
   public abstract T getValue();
 
+  /**
+   * TODO
+   *
+   * @return
+   */
   public abstract String serialize();
 }
 
