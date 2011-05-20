@@ -68,6 +68,7 @@ import org.jdom.input.DOMBuilder;
    ExceptionTests.class,
    ComponentTests.class,
    SensorTests.class,
+   EventTests.class,
    ProtocolTests.class
 
 })

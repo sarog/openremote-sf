@@ -643,13 +643,16 @@ public class SensorBuilder
           //   - this is really an error, declaring the states for switch sensor without mapping
           //     is completely redundant (as they're always 'on' and 'off'), however the tooling
           //     in its current state practices this redundancy in the XML documents it creates
-          //     so treating it as a debug statement rather than a schema error.
+          //     so generating model that redundantly maps <state name = 'on' value = 'on'>
+          //     and <state name = 'off' value = 'off'>
 
           log.debug(
             "A switch sensor (Name = ''{0}'', ID = {1}) has an incomplete <state> element mapping, " +
             "the 'value' attribute is missing in <state name = {2}/>.",
             sensorName, sensorIDValue, nameAttr
           );
+
+          mapping.addStateMapping(nameAttr, nameAttr);
 
           continue;
         }
@@ -665,6 +668,10 @@ public class SensorBuilder
         }
       }
     }
+
+    log.debug(
+        "Created switch sensor (Name = ''{0}'', ID = {1}) with {2}.", sensorName, sensorIDValue, mapping
+    );
 
     return mapping;
   }

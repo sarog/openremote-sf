@@ -33,6 +33,8 @@ import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.event.Switch;
 import org.openremote.controller.model.event.Range;
+import org.openremote.controller.model.event.CustomState;
+import org.openremote.controller.model.event.Level;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
@@ -332,6 +334,7 @@ public abstract class Sensor
     //   - should update with an event instance
     //   - *must* match sensor's type on return of processEvent
     //   - the check on enumSensorType is a temp hack, needs to go through the concrete sensor impl.
+    //   - thread dispatcher
 
     String value = processEvent(state);
 
@@ -353,9 +356,45 @@ public abstract class Sensor
 
     else if (getSensorType() == EnumSensorType.RANGE)
     {
-      Event evt = new Range(getSensorID(), getName(), Integer.parseInt(state));
+      try
+      {
+        Event evt = new Range(getSensorID(), getName(), Integer.parseInt(value));
+
+        ServiceContext.getDeviceStateCache().update(evt);
+      }
+
+      catch (NumberFormatException exception)
+      {
+        log.warn(
+            "Sensor ''{0}'' (ID = {1}) is LEVEL type but produced a value that is not " +
+            " an integer : ''{2}''", getName(), getSensorID(), value
+        );
+      }
+    }
+
+    else if (getSensorType() == EnumSensorType.CUSTOM)
+    {
+      Event evt = new CustomState(getSensorID(), getName(), value);
 
       ServiceContext.getDeviceStateCache().update(evt);
+    }
+
+    else if (getSensorType() == EnumSensorType.LEVEL)
+    {
+      try
+      {
+        Event evt = new Level(getSensorID(), getName(), Integer.parseInt(value));
+
+        ServiceContext.getDeviceStateCache().update(evt);
+      }
+
+      catch (NumberFormatException exception)
+      {
+        log.warn(
+            "Sensor ''{0}'' (ID = {1}) is LEVEL type but produced a value that is not " +
+            " an integer : ''{2}''", getName(), getSensorID(), value
+        );
+      }
     }
   }
 
