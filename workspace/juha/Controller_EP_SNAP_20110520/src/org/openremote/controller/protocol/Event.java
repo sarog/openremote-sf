@@ -90,7 +90,14 @@ public abstract class Event<T>
   /**
    * TODO
    *
-   * @return
+   * This is an intermediate migration API -- at the end of the event processing chain
+   * events are stored into the device state cache which panels consume. The API there is
+   * still string-based.
+   *
+   * This method implementation should return an appropriate string representation of the
+   * event value.
+   *
+   * @return    string representation of event value
    */
   public abstract String serialize();
 }
