@@ -89,6 +89,7 @@ public class ORWebView extends ComponentView
     public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler,
         String host, String realm)
     {
+      Log.d(LOG_CATEGORY, "onRecievedHttpAuthRequest(): entry");
       if (!handler.useHttpAuthUsernamePassword())
       {
         Log.e(LOG_CATEGORY, "onReceivedHttpAuthRequest(): HTTP authentication failed, " +
@@ -103,6 +104,7 @@ public class ORWebView extends ComponentView
       String password = web.getPassword();
       if (username != null && password != null)
       {
+        Log.i(LOG_CATEGORY, "onReceivedHttpAuthRequest(): supplying username and password for HTTP authentication");
         handler.proceed(username, password);
       }
       else
