@@ -33,13 +33,12 @@ import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.component.LevelSensor;
-import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
 /**
- * Sensor Builder Test.
+ * TODO: Sensor Builder Test.
  *
  * fixture: org/openremote/controller/fixture/controller.xml
  * 
@@ -98,7 +97,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateRangeSensor() throws Exception
   {
-    RangeSensor s = (RangeSensor)getSensor(EnumSensorType.RANGE);
+    RangeSensor s = (RangeSensor)getSensor(SensorType.RANGE);
     Assert.assertEquals(EnumSensorType.RANGE, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(-20, s.getMinValue());
@@ -123,7 +122,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateSwitchSensor() throws Exception
   {
-    Sensor s = getSensor(EnumSensorType.SWITCH);
+    Sensor s = getSensor(SensorType.SWITCH);
     Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
     Assert.assertTrue(s.getName().equals("lampA power sensor"));
     Assert.assertTrue(s.getProperties().size() == 0);
@@ -146,7 +145,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateLevelSensor() throws Exception
   {
-    LevelSensor s = (LevelSensor)getSensor(EnumSensorType.LEVEL);
+    LevelSensor s = (LevelSensor)getSensor(SensorType.LEVEL);
     Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
@@ -171,7 +170,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateCustomSensor() throws Exception
   {
-    Sensor s = getSensor(EnumSensorType.CUSTOM);
+    Sensor s = getSensor(SensorType.CUSTOM);
     Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
     Assert.assertTrue(s.getName().equals("Door power sensor"));
     Assert.assertTrue(s.getProperties().size() == 2);
@@ -184,10 +183,12 @@ public class SensorBuilderTest
 
   @Test public void testInvalidConfigs()
   {
+    // TODO : ORCJAVA-72
+    //
     // need more tests to make sure different configuration variants are initialized correctly
     // and also test some error handling...
     
-    Assert.fail("Not Yet Implemented.");
+    Assert.fail("Not Yet Implemented (see ORCJAVA-72)");
   }
 
 
@@ -195,6 +196,9 @@ public class SensorBuilderTest
   {
     // there's a NPE if 'switch' sensor has an incomplete <state> element with no value
     // i.e. <state name = "on"/> instead of <state name = "blah" value = "on"/>
+    //
+    // -- think the NPE is gone now, need to validate the behavior with a test though.
+    //    (ORCJAVA-73)
 
     Sensor s = getSensorByID(717);
   }
@@ -202,7 +206,7 @@ public class SensorBuilderTest
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Sensor getSensor(EnumSensorType type) throws Exception
+  private Sensor getSensor(SensorType type) throws Exception
   {
 
     Element ele = null;
@@ -270,4 +274,8 @@ public class SensorBuilderTest
     
     return sensorBuilder.build(el);
   }
+
+
+  enum SensorType { RANGE, LEVEL, SWITCH, CUSTOM }
+
 }
