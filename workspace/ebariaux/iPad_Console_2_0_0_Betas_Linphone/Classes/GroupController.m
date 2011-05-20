@@ -42,7 +42,8 @@
 @synthesize group;
 
 - (id)initWithGroup:(Group *)newGroup {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		if (newGroup) {
 			group = [newGroup retain];// must retain newGroup here!!!
 		}
@@ -52,7 +53,8 @@
 }
 
 - (id)initWithGroup:(Group *)newGroup orientation:(UIInterfaceOrientation)thatOrientation {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		if (newGroup) {
 			group = [newGroup retain];// must retain newGroup here!!!
 		}
@@ -73,11 +75,20 @@
 
 // Detect the current orientation of handset.
 - (void)detectDeviceOrientation {
+
 	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	currentOrientation = [[UIDevice currentDevice] orientation];
     
     NSLog(@"GroupController.detectDeviceOrientation, detected %d", currentOrientation);
-	
+    [self printOrientation:currentOrientation];
+    
+    
+    // EBR calling seld.interfaceOrientation at this stage is incorrect, because this method is called from init, before view loading / creation finished
+//	NSLog(@"VC.interfaceOrientation %d", self.interfaceOrientation);
+    
+    
+    
+//    [self printOrientation:self.interfaceOrientation];
 	if (currentOrientation == UIDeviceOrientationUnknown) {
 		currentOrientation = UIInterfaceOrientationPortrait;
 		NSLog(@"it's using simulator, set portrait by default");
@@ -88,6 +99,10 @@
 		currentOrientation = UIInterfaceOrientationPortrait;
 		NSLog(@"it's facing up/down, set portrait by default");
 	}
+
+    // TODO EBR : recheck all this orientation thing but asking the VC is the way to go
+    // when using following line and lauching in landscape -> black screen, check why
+//    currentOrientation = self.interfaceOrientation;
 }
 
 - (UIInterfaceOrientation)getCurrentOrientation {
@@ -136,7 +151,7 @@
 		[viewControllers addObject:viewController];
 		[viewController release];
 	}
-	return viewControllers;
+	return [viewControllers autorelease];
 }
 
 // Get the paginationController of groupController.
@@ -158,7 +173,6 @@
 			landscapePaginationController = [[PaginationController alloc] init];
 			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
 			[landscapePaginationController setViewControllers:viewControllers isLandscape:isLandscape];
-			[viewControllers release];
 		}
 		[self setView:landscapePaginationController.view];
 		[[portraitPaginationController currentScreenViewController] stopPolling];
@@ -168,7 +182,6 @@
 			portraitPaginationController = [[PaginationController alloc] init];
 			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
 			[portraitPaginationController setViewControllers:viewControllers isLandscape:isLandscape];
-			[viewControllers release];
 		}
 		[self setView:portraitPaginationController.view];
 		[[landscapePaginationController currentScreenViewController] stopPolling];
