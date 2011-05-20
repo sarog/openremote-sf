@@ -24,7 +24,9 @@ import org.junit.Test;
 import org.junit.Assert;
 
 /**
- * TODO -- See ORCJAVA-84 http://jira.openremote.org/browse/ORCJAVA-84
+ * Basic tests for {@link org.openremote.controller.model.event.CustomState}
+ *
+ * (ORCJAVA-82 http://jira.openremote.org/browse/ORCJAVA-82)
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -32,12 +34,23 @@ public class CustomStateTest
 {
 
 
-  @Test public void noTestsImplemented()
+  /**
+   * Basic constructor and validation.
+   */
+  @Test public void basicConstruction()
   {
-    Assert.fail(
-        "Not Yet Implemented (See ORCJAVA-84 - http://jira.openremote.org/browse/ORCJAVA-84)"
-    );
+    CustomState cs = new CustomState(0, "name", "foo");
+
+    Assert.assertTrue(cs.getValue().equals("foo"));
+    Assert.assertTrue(cs.getSource().equals("name"));
+    Assert.assertTrue(cs.getSourceID() == 0);
+
+    Assert.assertTrue(cs.serialize().equals("foo"));
+
+    Assert.assertTrue(cs.toString() != null);
+    Assert.assertFalse(cs.toString().equals(""));
   }
 
+  
 }
 
