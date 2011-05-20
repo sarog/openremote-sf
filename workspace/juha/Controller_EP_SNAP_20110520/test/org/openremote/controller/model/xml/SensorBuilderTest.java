@@ -28,10 +28,11 @@ import org.jdom.Element;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
-import org.openremote.controller.Constants;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.suite.AllTests;
@@ -155,15 +156,20 @@ public class SensorBuilderTest
 
 
   /**
-   * Parse the following sensor when deployed through a complete controller.xml document.
+   * Parse the following sensor configuration:
    *
    * <pre>{@code
-   * <sensor id="1009" name="Door power sensor" type="custom">
-   *   <include type="command" ref="98" />
-   *   <state name="open" value="on" />
-   *   <state name="close" value="off" />
-   * </sensor>
    *
+   * Two-state CUSTOM sensor configuration.
+   *
+   * Read command return value 'on' is mapped to 'open'
+   * Read command return value 'off' is mapped to 'close'
+   *
+   * <sensor id = "1009" name = "Door power sensor" type = "custom">
+   *   <include type = "command" ref = "98" />
+   *   <state name = "open" value = "on" />
+   *   <state name = "close" value = "off" />
+   * </sensor>
    * }</pre>
    *
    * @throws Exception if test fails
@@ -178,6 +184,14 @@ public class SensorBuilderTest
     Assert.assertTrue(s.getProperties().keySet().contains("state-2"));
     Assert.assertTrue(s.getProperties().values().contains("on"));
     Assert.assertTrue(s.getProperties().values().contains("off"));
+
+    Assert.assertTrue(s instanceof StateSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    Assert.assertTrue(state.processEvent("on").equals("open"));
+    Assert.assertTrue(state.processEvent("off").equals("close"));
+    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
   }
 
 
@@ -192,15 +206,48 @@ public class SensorBuilderTest
   }
 
 
+  /**
+   * Test against what could be qualified as a bug that has now become a feature and we need to
+   * make sure we don't regress on it unintentionally should we try to fix the bug again. <p>
+   *
+   * Current tooling generates a style of switch sensors in XML that makes very little sense:
+   *
+   * <pre>{@code
+   *
+   * <sensor id = "717" name = "se" type = "switch">
+   *   <include type = "command" ref = "96" />
+   *   <state name = "on" />
+   *   <state name = "off" />
+   * </sensor>
+   * }</pre>
+   *
+   * It makes no sense because switch can only ever return on/off as states and no mapping is
+   * provided, making the state declarations redundant. But because tooling does generate this,
+   * we need to make sure we correctly parse it. <p>
+   *
+   * See http://jira.openremote.org/browse/ORCJAVA-73
+   *
+   * @throws Exception if test fails
+   */
   @Test public void testSwitchStateMappingWithNoValue() throws Exception
   {
-    // there's a NPE if 'switch' sensor has an incomplete <state> element with no value
-    // i.e. <state name = "on"/> instead of <state name = "blah" value = "on"/>
-    //
-    // -- think the NPE is gone now, need to validate the behavior with a test though.
-    //    (ORCJAVA-73)
-
     Sensor s = getSensorByID(717);
+    Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
+    Assert.assertTrue(s.getName().equals("se"));
+
+    // switch sensor states should not show up as properties, even if mapped...
+
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s instanceof SwitchSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    // check that states are in place despite funky XML model...
+
+    Assert.assertTrue(state.processEvent("on").equals("on"));
+    Assert.assertTrue(state.processEvent("off").equals("off"));
+    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
   }
 
 
@@ -241,37 +288,6 @@ public class SensorBuilderTest
   {
     Element el = controllerXMLParser.queryElementFromXMLById(Integer.toString(id));
 
-    return sensorBuilder.build(el);
-  }
-
-  private Sensor getSensorRedundantXML() throws Exception
-  {
-//    <sensor id="71" name="se" type="switch">
-//      <include type="command" ref="74" />
-//      <state name="on" />
-//      <state name="off" />
-//    </sensor>
-
-    Element el = new Element("sensor");
-    el.setAttribute("id", "71");
-    el.setAttribute("name", "se");
-    el.setAttribute("type", "switch");
-
-    Element include = new Element("include");
-    include.setAttribute("type", "command");
-    include.setAttribute("ref", "74");
-
-    Element on = new Element("state");
-    on.setAttribute("name", "on");
-
-    Element off = new Element("state");
-    off.setAttribute("name", "off");
-
-    el.addContent(include);
-    el.addContent(on);
-    el.addContent(off);
-
-    
     return sensorBuilder.build(el);
   }
 
