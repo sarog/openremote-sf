@@ -175,6 +175,14 @@ public class VirtualCommandBuilder implements CommandBuilder
       cmd = new ThermometerListener();
     }
 
+
+    if (command.equalsIgnoreCase("BlinkLight") ||
+        command.equalsIgnoreCase("BlinkLights") )
+    {
+      cmd = new BlinkLightListener();
+    }
+
+
     else if (commandParam == null || commandParam.equals(""))
     {
       cmd = new VirtualCommand(address, command);
@@ -188,6 +196,54 @@ public class VirtualCommandBuilder implements CommandBuilder
 
 
     return cmd;
+  }
+
+
+
+  static class BlinkLightListener implements EventListener, Runnable
+  {
+
+    private Sensor sensor;
+
+    @Override public void setSensor(Sensor sensor)
+    {
+      this.sensor = sensor;
+
+      sensor.update("off");
+
+      Thread t = new Thread(this);
+      t.start();
+    }
+
+    @Override public void run()
+    {
+      boolean running = true;
+      boolean setOn = true;
+
+      while (running)
+      {
+        try
+        {
+          Thread.sleep(500);
+
+          if (setOn)
+          {
+            sensor.update("on");
+
+            setOn = false;
+          }
+
+          else
+          {
+            sensor.update("off");
+          }
+        }
+        catch (InterruptedException e)
+        {
+          running = false;
+        }
+      }
+    }
   }
 
 

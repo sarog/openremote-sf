@@ -111,6 +111,15 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   {
     String state = virtualDevices.get(address);
 
+    if (command.equalsIgnoreCase("ReadAndSet-Switch"))
+    {
+      if (state == null || state.trim().equalsIgnoreCase("off"))
+        virtualDevices.put(address, "on");
+      else
+        virtualDevices.put(address, "off");
+    }
+    
+
     switch (sensorType)
     {
 
