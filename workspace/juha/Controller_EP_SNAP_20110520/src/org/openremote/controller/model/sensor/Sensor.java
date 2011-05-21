@@ -488,7 +488,9 @@ public abstract class Sensor
   {
     // TODO :
     //    register the sensor with state cache -- the cache should control the
-    //    sensor start/stop lifecycle...
+    //    sensor start/stop lifecycle.
+    //
+    //    (ORCJAVA-101 - http://jira.openremote.org/browse/ORCJAVA-101)
 
     if (isEventListener())
     {
