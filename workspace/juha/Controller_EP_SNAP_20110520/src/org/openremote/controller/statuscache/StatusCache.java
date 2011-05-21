@@ -69,37 +69,44 @@ public class StatusCache
   // Public Instance Methods ----------------------------------------------------------------------
 
 
-   /**
-    * This method is used to let the cache to store the status for all the device.
-    * @param componentID
-    * @param status
-    */
-   public synchronized void saveOrUpdateStatus(Integer componentID, String status) {
-      String oldStatus = sensorStatus.get(componentID);
-      if (status == null || "".equals(status)) {
-         logger.info("Status is null or \"\" while calling saveOrUpdateStatus in statusCache.");
-         return;
-      }
+  /**
+   * This method is used to let the cache to store the status for all the device.
+   * 
+   * @param componentID
+   * @param status
+   *
+   * @deprecated See ORCJAVA-102 -- http://jira.openremote.org/browse/ORCJAVA-102
+   */
+  @Deprecated public synchronized void saveOrUpdateStatus(Integer componentID, String status)
+  {
 
 
-     // TODO : fix the logic below, it makes little sense  [JPL]
+    String oldStatus = sensorStatus.get(componentID);
+    if (status == null || "".equals(status)) {
+       logger.info("Status is null or \"\" while calling saveOrUpdateStatus in statusCache.");
+       return;
+    }
 
-      boolean needNotify = false;
-      sensorStatus.put(componentID, status);
-      if (oldStatus== null || "".equals(oldStatus) || !oldStatus.equals(status)) {
-         needNotify = true;
-      }
-      
-      if (needNotify) {
-         updateChangedStatusTable(componentID);
-      }
-   }
+
+   // TODO : fix the logic below, it makes little sense  [JPL]
+
+    boolean needNotify = false;
+    sensorStatus.put(componentID, status);
+    if (oldStatus== null || "".equals(oldStatus) || !oldStatus.equals(status)) {
+       needNotify = true;
+    }
+
+    if (needNotify) {
+       updateChangedStatusTable(componentID);
+    }
+  }
 
   /**
    * TODO :
    *   - using method level synchronization to ensure we're at same concurrency control mechanism
    *     with the collection we are tweaking compared to the original method above
    *
+   *     See ORCJAVA-102 -- http://jira.openremote.org/browse/ORCJAVA-102
    */
   public synchronized void update(Event event)
   {
