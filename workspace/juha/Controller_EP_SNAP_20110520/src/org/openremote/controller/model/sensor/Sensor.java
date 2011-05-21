@@ -375,8 +375,8 @@ public abstract class Sensor
       else
       {
         log.warn(
-            "Sensor ''{0}'' (ID = {1}) is LEVEL type but produced a value that is not " +
-            " an integer : ''{2}''", getName(), getSensorID(), value
+            "Sensor ''{0}'' (ID = {1}) is SWITCH type but produced a value that is not " +
+            " on/off : ''{2}''", getName(), getSensorID(), value
         );
 
         return;
@@ -399,7 +399,7 @@ public abstract class Sensor
       catch (NumberFormatException exception)
       {
         log.warn(
-            "Sensor ''{0}'' (ID = {1}) is LEVEL type but produced a value that is not " +
+            "Sensor ''{0}'' (ID = {1}) is RANGE type but produced a value that is not " +
             " an integer : ''{2}''", getName(), getSensorID(), value
         );
       }
