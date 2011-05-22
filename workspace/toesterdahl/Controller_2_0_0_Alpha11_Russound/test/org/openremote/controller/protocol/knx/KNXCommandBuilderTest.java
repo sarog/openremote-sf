@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -47,7 +47,7 @@ public class KNXCommandBuilderTest
   private KNXCommandBuilder builder = null;
 
   @Before public void setUp() {
-    builder = new KNXCommandBuilder();
+    builder = new KNXCommandBuilder("127.0.0.1", 9999);
   }
 
 

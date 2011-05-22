@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,7 +28,7 @@ import org.jdom.Element;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.RemoteActionXMLParser;
 
 
@@ -47,7 +47,7 @@ public class RemoteActionXMLParserTest {
    @Before
    public void setup() {
       String controllerXMLPath = this.getClass().getClassLoader().getResource(
-            TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
+            AllTests.FIXTURE_DIR + "controller.xml").getFile();
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
    }
    

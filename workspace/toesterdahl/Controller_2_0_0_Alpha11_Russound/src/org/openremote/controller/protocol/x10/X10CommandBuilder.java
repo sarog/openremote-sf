@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -39,14 +39,14 @@ import java.util.regex.Matcher;
  *
  * <pre>{@code
  * <command protocol = "x10" >
- *   <property name = "command" value = "ON|OFF|ALL_OFF"/>
+ *   <property name = "command" value = "ON|OFF|ALL_OFF|DIM|BRIGHT|LIGHTS ON"/>
  *   <property name = "address" value = "[A..P][1..16]"/>
  * </command>
  * }</pre>
  *
  * The protocol identifier is "x10" as is shown in the command element's protocol attribute. <p>
  *
- * Nested are a number of properties to be included with the KNX command. Properties named
+ * Nested are a number of properties to be included with the X10 command. Properties named
  * {@link #X10_XMLPROPERTY_COMMAND} and {@link #X10_XMLPROPERTY_ADDRESS} are mandatory. <p>
  *
  * Valid X10 addresses range from A1..A16 to P1..P16. The valid values for command
@@ -58,6 +58,7 @@ import java.util.regex.Matcher;
  * @author Jerome Velociter
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  * @author Dan 2009-4-30
+ * @author Fekete Kamosh
  */
 public class X10CommandBuilder implements CommandBuilder
 {
@@ -170,7 +171,7 @@ public class X10CommandBuilder implements CommandBuilder
       else
       {
         log.warn(
-            "Unknown KNX property '<" + XML_ELEMENT_PROPERTY + " " +
+            "Unknown X10 property '<" + XML_ELEMENT_PROPERTY + " " +
             XML_ATTRIBUTENAME_NAME + " = \"" + x10CommandPropertyName + "\" " +
             XML_ATTRIBUTENAME_VALUE + " = \"" + x10CommandPropertyValue + "\"/>'."
         );
@@ -210,6 +211,18 @@ public class X10CommandBuilder implements CommandBuilder
     {
       commandType = X10CommandType.SWITCH_OFF;
     }
+    else if (X10CommandType.DIM.isEqual(commandAsString)) 
+    {
+    	commandType = X10CommandType.DIM;
+    }
+    else if (X10CommandType.BRIGHT.isEqual(commandAsString))
+    {
+    	commandType = X10CommandType.BRIGHT;
+    }
+    else if (X10CommandType.ALL_LIGHTS_ON.isEqual(commandAsString))
+    {
+      commandType = X10CommandType.ALL_LIGHTS_ON;
+    }
     else
     {
       throw new NoSuchCommandException("X10 command '" + commandAsString + "' is not recognized.");
@@ -220,7 +233,14 @@ public class X10CommandBuilder implements CommandBuilder
     String houseCodes = "[A-Pa-p]";           // characters A to P
     String deviceCodes = "([1-9]|(1[0-6]))";  // single digit 0-9 or double digit 10-16
 
-    Pattern regex = Pattern.compile(houseCodes + "" + deviceCodes);
+    // Some commands do not require device code
+    if (!commandType.requiresDeviceCode())
+    {
+    	deviceCodes += "?"; 
+    }
+    
+    String pattern = houseCodes + "" + deviceCodes;
+    Pattern regex = Pattern.compile(pattern);
     Matcher match = regex.matcher(address);
 
     if (!match.matches())

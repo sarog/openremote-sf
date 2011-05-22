@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,7 +32,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
@@ -48,7 +48,7 @@ public class RemoteActionXMLParser {
    
    private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
    
-   private Configuration configuration;
+   private ControllerConfiguration configuration;
    
    /**
     * Query element from default controller.xml by Id.
@@ -187,7 +187,7 @@ public class RemoteActionXMLParser {
       return null;
    }
    
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
 

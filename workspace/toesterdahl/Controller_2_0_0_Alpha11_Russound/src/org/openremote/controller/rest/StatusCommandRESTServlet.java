@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -30,7 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControllerException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.StatusCommandService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -74,26 +76,39 @@ public class StatusCommandRESTServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
+      // Set response MIME type and character encoding...
+
+        response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+        response.setContentType(Constants.MIME_APPLICATION_XML);
+
+
+      // Get the 'accept' header from client -- this will indicate whether we will send
+      // application/xml or application/json response...
+
+      String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+
         String url = request.getRequestURL().toString();
         String regexp = "rest\\/status\\/(.*)";
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(url);
         String unParsedSensorIDs = null;
 
+        PrintWriter printWriter = response.getWriter();
         if (matcher.find()) {
             unParsedSensorIDs = matcher.group(1);
             try {
                 if (unParsedSensorIDs != null && !"".equals(unParsedSensorIDs)) {
-                    PrintWriter printWriter = response.getWriter();
-                    printWriter.write(statusCommandService.readFromCache(unParsedSensorIDs));
+                    printWriter.write(JSONTranslator.translateXMLToJSON(acceptHeader, response, statusCommandService.readFromCache(unParsedSensorIDs)));
                 }
             } catch (ControllerException e) {
                 logger.error("CommandException occurs", e);
-                response.sendError(e.getErrorCode(), e.getMessage());
+                printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
             }
         } else {
-            response.sendError(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...");
+            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTAPI.composeXMLErrorDocument(400, "Bad REST Request, should be /rest/status/{sensor_id},{sensor_id}...")));
         }
+        printWriter.flush();
     }
 }

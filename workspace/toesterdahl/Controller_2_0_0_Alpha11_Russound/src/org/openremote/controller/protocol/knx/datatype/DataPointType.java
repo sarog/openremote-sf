@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -115,6 +115,7 @@ public abstract class DataPointType
   public final static Unsigned8BitValue RELPOS_VALVE = new Unsigned8BitValue(5, 4);
   public final static Unsigned8BitValue VALUE_1_UCOUNT = new Unsigned8BitValue(5, 10);
 
+  public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
 
   public static DataPointType lookup(String dptID)
   {
@@ -270,10 +271,20 @@ public abstract class DataPointType
   public static class Unsigned8BitValue extends DataPointType
   {
 
-
     private Unsigned8BitValue(int main, int sub)
     {
       super(main, sub, false);
     }
   }
+
+  public static class Float2ByteValue extends DataPointType
+  {
+// VALUE_TEMP
+     
+    private Float2ByteValue(int main, int sub)
+    {
+      super(main, sub, false);
+    }
+  }
+
 }

@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -23,13 +23,15 @@ package org.openremote.controller.protocol.knx;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Float2Byte;
+import org.openremote.controller.utils.Logger;
 
 
 /**
@@ -81,7 +83,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
    * @return          a new KNX read command instance, or <code>null</code> if the lookup name
    *                  could not be matched to any command
    */
-  static GroupValueRead createCommand(String name, KNXConnectionManager mgr,
+  static GroupValueRead createCommand(String name, KNXIpConnectionManager mgr,
                                       GroupAddress address, DataPointType dpt)
   {
     name = name.trim().toUpperCase();
@@ -93,6 +95,8 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     
     return new GroupValueRead(mgr, address, apdu, dpt);
   }
+  
+  private boolean needBusRead;
 
 
 
@@ -107,10 +111,11 @@ class GroupValueRead extends KNXCommand implements StatusCommand
    * @param apdu                APDU payload for this command
    * @param dpt                 KNX datapoint type associated with this command
    */
-  private GroupValueRead(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueRead(KNXIpConnectionManager connectionManager, GroupAddress groupAddress,
                          ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     super(connectionManager, groupAddress, apdu, dpt);
+    this.needBusRead = true;
   }
 
 
@@ -135,9 +140,15 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     {
         return "";      // TODO : check how caller handles invalid return values
     }
-
-    DataPointType dpt = getAPDU().getDataPointType();
+	
+    // Get the DataPointType from this object instead of from the APDU associated with 
+    // the KNX command name.This will be the right type (that entered by the user as dpt in
+    // the GUI.
+    DataPointType dpt = getDataPointType();
     DataType datatype = getAPDU().getDataType();
+
+    // We have received something from the bus, is is useless now to send regularly read commands on the bus.
+    this.needBusRead = false;
 
     if (sensorType == EnumSensorType.SWITCH)
     {
@@ -169,7 +180,9 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
 
-        return Integer.toString(valueDPT.resolve());
+        int resolution = valueDPT.resolve();
+
+        return Integer.toString(resolution);
       }
 
       else if (dpt == DataPointType.Unsigned8BitValue.ANGLE)
@@ -205,11 +218,20 @@ class GroupValueRead extends KNXCommand implements StatusCommand
       //    need to merge the fixes that gives range min/max values so return values
       //    can be scaled accordingly
 
-      if (datatype instanceof Unsigned8Bit)
+      if (dpt instanceof DataPointType.Unsigned8BitValue)
       {
         Unsigned8Bit valueDPT = (Unsigned8Bit)responseAPDU.getDataType();
 
         return Integer.toString(valueDPT.resolve());
+      }
+
+      else if (dpt instanceof DataPointType.Float2ByteValue)
+      {
+        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+
+        int resolution = (int)valueDPT.resolve();
+
+        return Integer.toString(resolution);
       }
 
       else
@@ -220,7 +242,19 @@ class GroupValueRead extends KNXCommand implements StatusCommand
 
     else if (sensorType == EnumSensorType.CUSTOM)
     {
-      throw new Error ("No mappings from custom state values to KNX datatypes implemented yet.");
+
+      if (dpt == DataPointType.Float2ByteValue.VALUE_TEMP)
+      {
+        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+
+        float resolution = valueDPT.resolve();
+        return Float.toString(resolution);
+      }
+
+      else
+      {
+        throw new Error("Unrecognized datapoint type " + dpt + " on CUSTOM sensor.");
+      }
     }
 
     else
@@ -230,4 +264,11 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     }
   }
 
+  /**
+   * Return the need for sending GroupValue_read requests.
+   * @return Requested <code>boolean</code> value.
+   */
+  public boolean needBusRead() {
+    return this.needBusRead;
+  }
 }

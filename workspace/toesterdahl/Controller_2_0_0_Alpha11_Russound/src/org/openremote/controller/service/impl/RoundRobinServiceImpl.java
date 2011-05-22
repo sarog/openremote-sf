@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,7 +21,7 @@ package org.openremote.controller.service.impl;
 
 import java.util.Set;
 
-import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.net.RoundRobinClient;
 import org.openremote.controller.service.RoundRobinService;
 
@@ -32,7 +32,7 @@ import org.openremote.controller.service.RoundRobinService;
  */
 public class RoundRobinServiceImpl implements RoundRobinService {
    
-  private RoundRobinConfig roundRobinConfig;
+  private RoundRobinConfiguration roundRobinConfig;
    
    private static final String XML_HEADER_ELEMENT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
    
@@ -81,7 +81,7 @@ public class RoundRobinServiceImpl implements RoundRobinService {
       return xml.toString();
    }
 
-   public void setRoundRobinConfig(RoundRobinConfig roundRobinConfig) {
+   public void setRoundRobinConfig(RoundRobinConfiguration roundRobinConfig) {
       this.roundRobinConfig = roundRobinConfig;
    }
 

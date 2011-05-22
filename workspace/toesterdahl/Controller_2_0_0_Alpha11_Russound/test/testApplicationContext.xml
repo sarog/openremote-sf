@@ -19,7 +19,7 @@
     </bean>
     
     <!-- configuration variables -->
-    <bean id="configuration" class="org.openremote.controller.Configuration">
+    <bean id="configuration" class="org.openremote.controller.ControllerConfiguration">
         <property name="irsendPath" value="${irsend.path}" />
         <property name="lircdconfPath" value="${lircd.conf.path}" />
         <property name="copyLircdconf" value="${copy.lircd.conf.on}" />
@@ -68,6 +68,8 @@
     <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
     	<property name="cache" ref="statusCache"></property>
     </bean>
+    
+	<bean id="sensorBuilder" class="org.openremote.controller.component.SensorBuilder" />
 	
 	<!-- controller.xml change service -->
     <bean id="controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />	

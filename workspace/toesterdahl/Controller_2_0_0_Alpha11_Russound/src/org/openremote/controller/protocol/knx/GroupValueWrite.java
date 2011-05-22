@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -61,7 +61,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
    *          be matched to any command
    */
-  static GroupValueWrite createCommand(String name, DataPointType dpt, KNXConnectionManager mgr,
+  static GroupValueWrite createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                        GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -87,7 +87,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    * @param apdu                APDU payload for this command
    * @param dpt                 KNX datapoint type associated with this command
    */
-  private GroupValueWrite(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueWrite(KNXIpConnectionManager connectionManager, GroupAddress groupAddress,
                           ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     super(connectionManager, groupAddress, apdu, dpt);
@@ -133,11 +133,14 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE, etc.
+       * TODO : add unit tests for RANGE (ORJAVA-69)
        *
-       * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.)
+       * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.) (ORCJAVA-70)
        * 
-       * TODO : simple buttons should also allow parameterization so DIM_INCREASE|DECREASE can have different step values
+       * TODO :
+       *        some commands (DIM_INCREASE|DECREASE, RANGE, etc) should also allow
+       *        parameterization so can have pre-fixed values (use additional command property?)
+       *        (ORCJAVA-71)
        */
       name = name.toUpperCase().trim();
 
@@ -182,6 +185,23 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         try
         {
           return ApplicationProtocolDataUnit.createScaling(parameter);
+        }
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("RANGE"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing value parameter for RANGE command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createRange(parameter);
         }
         catch (ConversionException e)
         {

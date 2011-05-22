@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -36,6 +36,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
 import org.openremote.controller.spring.SpringContext;
@@ -75,6 +76,18 @@ public class StatusPollingRESTServlet extends HttpServlet {
    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
+      // Set response MIME type and character encoding...
+
+      response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+      response.setContentType(Constants.MIME_APPLICATION_XML);
+      
+
+     // Get the 'accept' header from client -- this will indicate whether we will send
+     // application/xml or application/json response...
+
+     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
@@ -82,31 +95,32 @@ public class StatusPollingRESTServlet extends HttpServlet {
       String unParsedSensorIDs = null;
       String deviceID = null;
       
+      PrintWriter printWriter = response.getWriter();
       if (matcher.find()) {
          deviceID = matcher.group(1);
          if (deviceID == null || "".equals(deviceID)) {
             throw new NullPointerException("Device id was null");
          }
          unParsedSensorIDs = matcher.group(2);
-         PrintWriter printWriter = response.getWriter();
          try {
             checkSensorId(unParsedSensorIDs);
             String pollingResults = statusPollingService.queryChangedState(deviceID, unParsedSensorIDs);
             if (pollingResults != null && !"".equals(pollingResults)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(pollingResults)) {
-                  response.sendError(504, "Time out!");
+                  printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 504, RESTAPI.composeXMLErrorDocument(504, "Time out")));
                } else {
                   logger.info("Return the polling status.");
-                  printWriter.write(pollingResults);
+                  printWriter.write(JSONTranslator.translateXMLToJSON(acceptHeader, response, pollingResults));
                }
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (ControllerException e) {
-            response.sendError(e.getErrorCode(), e.getMessage());
-         } 
+            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
+         }
       } else {
-         response.sendError(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
+         printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, ControlCommandException.INVALID_POLLING_URL, RESTAPI.composeXMLErrorDocument(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url)));
       }
+      printWriter.flush();
    }
    
    /**

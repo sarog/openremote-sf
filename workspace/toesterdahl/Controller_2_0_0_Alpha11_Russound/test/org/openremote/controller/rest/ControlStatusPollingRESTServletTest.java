@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.utils.SecurityUtil;
 import org.xml.sax.SAXException;
 
@@ -65,7 +65,7 @@ public class ControlStatusPollingRESTServletTest {
    @Test
    public void testDoPostWithAppServerNotStartup() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
+      WebRequest request = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
       try {
          WebResponse wr = wc.getResponse(request);
          System.out.println(wr.getText());
@@ -90,7 +90,7 @@ public class ControlStatusPollingRESTServletTest {
       WebConversation wc = new WebConversation();
       WebResponse pollingResponse;
       WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc,
-            "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
+            "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
       try {
          pollingResponse = wc.getResponse(pollingGetMethodRequest);
          System.out.println(pollingResponse.getText());
@@ -113,7 +113,7 @@ public class ControlStatusPollingRESTServletTest {
             @Override
             public void run() {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
+                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
                try {
                   WebResponse pollingResponse = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(pollingResponse.getText());
@@ -144,7 +144,7 @@ public class ControlStatusPollingRESTServletTest {
    @Test
    public void testDoPostWithoutTimeOutSingleRequest() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          System.out.println(wr.getText());
@@ -167,7 +167,7 @@ public class ControlStatusPollingRESTServletTest {
             @Override
             public void run() {
                   WebConversation wc = new WebConversation();
-                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
+                  WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001,1002");
                try {
                   WebResponse wr = wc.getResponse(pollingGetMethodRequest);
                   System.out.println(wr.getText());

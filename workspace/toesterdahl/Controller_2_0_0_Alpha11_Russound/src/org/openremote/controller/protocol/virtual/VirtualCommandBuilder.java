@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -47,7 +47,7 @@ public class VirtualCommandBuilder implements CommandBuilder
    * A common log category name intended to be used across all classes related to
    * OpenRemote virtual protocol implementation.
    */
-  public final static String X10_LOG_CATEGORY = "virtual";
+  public final static String LOG_CATEGORY = "virtual";
 
   /**
    * String constant for parsing virtual protocol XML entries from controller.xml file.
@@ -83,9 +83,9 @@ public class VirtualCommandBuilder implements CommandBuilder
   // Class Members --------------------------------------------------------------------------------
 
   /**
-   * Logging. Use common X10 log category for all X10 related classes.
+   * Logging. Use common log category for all related classes.
    */
-  private static Logger log = Logger.getLogger(X10_LOG_CATEGORY);
+  private static Logger log = Logger.getLogger(LOG_CATEGORY);
 
 
 
@@ -162,15 +162,20 @@ public class VirtualCommandBuilder implements CommandBuilder
       );
     }
 
+    String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
+    VirtualCommand cmd;
 
-    // TODO : integrate ${param} handling
-    //        CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")
-    String commandParam = null;
-
+    if (commandParam == null || commandParam.equals(""))
+    {
+      cmd = new VirtualCommand(address, command);
+    }
+    else
+    {
+      cmd = new VirtualCommand(address, command, commandParam);
+    }
 
     // Done!
 
-    VirtualCommand cmd = new VirtualCommand(address, command/*, commandParam*/);
 
     return cmd;
   }

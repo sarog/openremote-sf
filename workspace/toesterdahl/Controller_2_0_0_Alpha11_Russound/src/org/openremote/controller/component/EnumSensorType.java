@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -20,18 +20,19 @@
 package org.openremote.controller.component;
 
 /**
- * This class corresponds to the value of <b>TYPE</b> property of <b>SENSOR</b> element in controller.xml .
+ * 
+ * Sensor Type is used to define the sensor data type comes back with 'rest/status' or 'rest/polling' API.
  * 
  * @author Handy.Wang 2010-03-19
  *
  */
 public enum EnumSensorType {
    
-   SWITCH,
-   LEVEL,
-   RANGE,
-   COLOR,
-   CUSTOM;
+   SWITCH,  //sensor data is either 'on' or 'off' as a string.
+   LEVEL,   //sensor data is a percent number, it expects an integer value as a string in the range of [0-100]
+   RANGE,   //sensor data is a float number between min value and max value, it expects a float value as a string in the range of [min-max]
+   COLOR,   //sensor data is color string.
+   CUSTOM;  //sensor data is custom enumeration string.
    
    @Override
    public String toString() {

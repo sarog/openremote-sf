@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -40,7 +40,8 @@ public interface StatusCommand extends Command {
     * @param sensorType
     *           sensor type
     * @param stateMap
-    *           state map, key is state name, value is the returned raw string related to the state.
+    *           state map, key is state name, value is the returned raw string related to the state. 
+    *           NOTE: if sensor type is RANGE, this map only contains min/max states.
     * @return parsed status string
     */
    public String read(EnumSensorType sensorType, Map<String, String> stateMap);
