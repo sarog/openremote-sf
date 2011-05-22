@@ -185,8 +185,10 @@ public class KNXCommandBuilder implements CommandBuilder
   /**
    * TODO
    */
-  public KNXCommandBuilder()
+  public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort)
   {
+    this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
+    this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
     try
     {
       // TODO : this should be a container lifecycle method
