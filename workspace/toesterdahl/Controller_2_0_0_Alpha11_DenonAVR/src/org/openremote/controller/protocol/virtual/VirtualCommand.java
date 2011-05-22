@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -26,14 +26,13 @@ import java.util.HashMap;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.apache.log4j.Logger;
 
 /**
  * OpenRemote virtual command implementation.  <p>
  *
- * Maintains a virtual-machine-wide state for each address. Default implementation maintains
- * a simple on/off status.  <p>
+ * Maintains a virtual-machine-wide state for each address. TODO <p>
  *
- * Other types of virtual decices may be added later.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -42,7 +41,16 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * Map of address to state.
+   */
   private final static Map<String, String>virtualDevices = new HashMap<String, String>(20);
+
+  /**
+   * Logging. Use common log category for all related classes.
+   */
+  private final static Logger log = Logger.getLogger(VirtualCommandBuilder.LOG_CATEGORY);
+
 
 
 
@@ -59,6 +67,9 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   private String command = null;
 
 
+  private String commandParam = null;
+
+
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -68,13 +79,28 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
     this.command = command;
   }
 
+  public VirtualCommand(String address, String command, String commandParam)
+  {
+    this(address, command);
+
+    this.commandParam = commandParam;
+  }
 
 
   // Implements ExecutableCommand -----------------------------------------------------------------
 
   public void send()
   {
-    virtualDevices.put(address, command);  
+    if (commandParam == null)
+    {
+      virtualDevices.put(address, command);
+    }
+
+    else
+    {
+      virtualDevices.put(address, commandParam);
+    }
+
   }
 
 
@@ -85,24 +111,91 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   {
     String state = virtualDevices.get(address);
 
-    if (state == null)
+    switch (sensorType)
     {
-      return "off";
-    }
 
-    else if (state.equalsIgnoreCase("on"))
-    {
-      return "on";
-    }
+      case SWITCH:
 
-    else if (state.equalsIgnoreCase("off"))
-    {
-      return "off";
-    }
+        if (state == null)
+        {
+          return "off";
+        }
 
-    else
-    {
-      return "off";
+        else if (state.trim().equalsIgnoreCase("on"))
+        {
+          return "on";
+        }
+
+        else if (state.trim().equalsIgnoreCase("off"))
+        {
+          return "off";
+        }
+
+        else
+        {
+          log.warn("Was expecting either 'on' or 'off' for 'switch' type sensor, got " + state);
+
+          return "off";
+        }
+
+
+      case LEVEL:
+
+        if (state == null)
+        {
+          return "0";
+        }
+
+        else
+        {
+          try
+          {
+            int value = Integer.parseInt(state.trim());
+
+            if (value > 100)
+              return "100";
+
+            if (value < 0)
+              return "0";
+
+            return "" + value;
+          }
+          catch (NumberFormatException e)
+          {
+            log.warn("Can't parse LEVEL sensor value into a valid number: " + e.getMessage(), e);
+
+            return "0";
+          }
+        }
+
+
+      case RANGE:
+
+        if (state == null)
+        {
+          return "0";
+        }
+
+        else
+        {
+          try
+          {
+            int value = Integer.parseInt(state.trim());
+
+            return "" + value;
+          }
+          catch (NumberFormatException e)
+          {
+            log.warn("Can't parse RANGE sensor value into a valid number: " + e.getMessage(), e);
+
+            return "0";
+          }
+        }
+
+
+      default:
+
+        return "";
     }
   }
 }

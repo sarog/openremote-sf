@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,17 +28,16 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.protocol.socket.TCPSocketCommand;
 import org.openremote.controller.protocol.socket.TCPSocketCommandBuilder;
 /**
- * TCPSocketCommandBuilder Test
+ * TCPSocketCommandBuilder Test.
  * 
  * @author Javen
  *
  */
 public class TCPSocketCommandBuilderTest {
-   private TCPSocketCommandBuilder builder = null;
+   private TCPSocketCommandBuilder builder = new TCPSocketCommandBuilder();;
 
    @Before
    public void setUp() {
-      builder = new TCPSocketCommandBuilder();
    }
 
    @Test
@@ -51,6 +50,10 @@ public class TCPSocketCommandBuilderTest {
       Assert.assertEquals(cmd.getName(), "testName");
    }
    
+   
+   /**
+    * Test ${param}
+    */
    @Test
    public void testSocketCommandWithParam() {
       TCPSocketCommand cmd = getCommand("192.168.0.1", "9090", "light1_${param}");

@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.utils.SpringTestContext;
 
 public class ProfileServiceTest {
@@ -16,8 +16,8 @@ public class ProfileServiceTest {
    @Before
    public void setUp() throws Exception {
       service = (ProfileService) SpringTestContext.getInstance().getBean("profileService");
-      xmlPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "panel.xml").getFile();
-      panelNameXmlPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "panelName.xml").getFile();
+      xmlPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "panel.xml").getFile();
+      panelNameXmlPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "panelName.xml").getFile();
    }
 
    public String generateXMLByPanelID(String panelID) {

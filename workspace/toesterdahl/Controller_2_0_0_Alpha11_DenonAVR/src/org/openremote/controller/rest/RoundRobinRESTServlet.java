@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -33,7 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.Constants;
 import org.openremote.controller.exception.roundrobin.RoundRobinException;
+import org.openremote.controller.rest.support.json.JSONTranslator;
 import org.openremote.controller.service.RoundRobinService;
 import org.openremote.controller.spring.SpringContext;
 
@@ -60,23 +62,35 @@ public class RoundRobinRESTServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	   logger.info("Start RoundRobin group member REST service. at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
+    // Set response MIME type and character encoding...
+
+    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+    response.setContentType(Constants.MIME_APPLICATION_XML);
+	   
+    // Get the 'accept' header from client -- this will indicate whether we will send
+    // application/xml or application/json response...
+
+    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/servers";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
+      PrintWriter printWriter = response.getWriter();
       if (matcher.find()) {
-         PrintWriter printWriter = response.getWriter();
          try {
             Set<String> groupMemberControllerAppURLSet = roundRobinService.discoverGroupMembersAppURL();
             String serversXML = roundRobinService.constructServersXML(groupMemberControllerAppURLSet);
-            printWriter.println(serversXML);
+            printWriter.println(JSONTranslator.translateXMLToJSON(acceptHeader, response, serversXML));
             logger.info("Finished RoundRobin group member REST service.  at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (RoundRobinException e) {
-            response.sendError(e.getErrorCode(), e.getMessage());
-         } 
+            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
+         }
       } else {
-         response.sendError(RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url);
+         printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, RoundRobinException.INVALID_ROUND_ROBIN_URL, RESTAPI.composeXMLErrorDocument(RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url)));
       }
+      printWriter.flush();
 	}
 
 }

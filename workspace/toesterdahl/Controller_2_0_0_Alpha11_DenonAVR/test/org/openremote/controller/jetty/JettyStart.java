@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -28,8 +28,15 @@ import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 
+/**
+ * Starts Jetty embedded servlet test server, using 'web' folder of this project as war, so that we can test our REST
+ * API.
+ * 
+ * @author Dan Cong
+ * 
+ */
 public class JettyStart {
 
    private static Server server;
@@ -37,7 +44,7 @@ public class JettyStart {
    public static void main(String[] args) throws Exception {
       server = new Server();
       SocketConnector connector = new SocketConnector();
-      connector.setPort(TestConstraint.WEBAPP_PORT);
+      connector.setPort(AllTests.WEBAPP_PORT);
       server.setConnectors(new Connector[] { connector });
       WebAppContext context = new WebAppContext();
       context.setServer(server);
