@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -175,6 +175,12 @@ class ApplicationProtocolDataUnit
   }
 
 
+  static boolean isGroupValueWriteReq(byte[] apdu)
+  {
+    return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x80);
+  }
+
+  
   /**
    * Constructs an APDU corresponding to a Group Value Write service for a device expecting
    * a 3-bit dim control data point type (DPT 3.007). <p>

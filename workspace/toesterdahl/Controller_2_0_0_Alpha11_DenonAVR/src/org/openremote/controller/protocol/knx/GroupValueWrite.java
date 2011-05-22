@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -61,7 +61,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    * @return  a new KNX write command instance, or <code>null</code> if the lookup name could not
    *          be matched to any command
    */
-  static GroupValueWrite createCommand(String name, DataPointType dpt, KNXConnectionManager mgr,
+  static GroupValueWrite createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                        GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -87,7 +87,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
    * @param apdu                APDU payload for this command
    * @param dpt                 KNX datapoint type associated with this command
    */
-  private GroupValueWrite(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueWrite(KNXIpConnectionManager connectionManager, GroupAddress groupAddress,
                           ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     super(connectionManager, groupAddress, apdu, dpt);

@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -20,10 +20,16 @@
 package org.openremote.controller.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.openremote.controller.rest.support.json.JSONTranslator;
+import org.openremote.controller.rest.RESTAPI;
+import org.openremote.controller.Constants;
 
 /**
  * This servlet is used to let the panels (such as iPhone, Android) logout the controller. 
@@ -31,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
  * 'logout' resource which will always return "401 Unauthorized", after that the panels will reset the user's credentials
  * and therefore stop sending them.
  * 
- * @author Javen
+ * @author Javen, Handy
  * 
  */
 @SuppressWarnings("serial")
@@ -44,7 +50,17 @@ public class LogoutServlet extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   response.sendError(LOGOUT_ERROR_CODE);
+
+    // Get the 'accept' header from client -- this will indicate whether we will send
+    // application/xml or application/json response...
+
+    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+
+
+	   response.setHeader("WWW-Authenticate", "Basic realm=\"OPENREMOTE_Controller\"");
+	   PrintWriter printWriter = response.getWriter();
+	   printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, LOGOUT_ERROR_CODE, RESTAPI.composeXMLErrorDocument(LOGOUT_ERROR_CODE, "Logout successfully   ")));
+	   response.setStatus(LOGOUT_ERROR_CODE);
 	}
 
 }

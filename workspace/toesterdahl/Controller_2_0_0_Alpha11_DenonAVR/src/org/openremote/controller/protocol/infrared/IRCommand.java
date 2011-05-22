@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,9 +22,8 @@ package org.openremote.controller.protocol.infrared;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * The Infrared Event.
@@ -43,7 +42,7 @@ public class IRCommand implements ExecutableCommand {
    private String command;
    
    /** The configuration. */
-   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
    /**
     * {@inheritDoc}
@@ -95,7 +94,7 @@ public class IRCommand implements ExecutableCommand {
     * 
     * @param configuration the new configuration
     */
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
    

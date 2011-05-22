@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -21,7 +21,7 @@ package org.openremote.controller.statuscache;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.utils.SecurityUtil;
 
 import com.meterware.httpunit.HttpException;
@@ -53,7 +53,7 @@ public class StatusCacheTest {
    @Test
    public void testCase1() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1001");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -81,7 +81,7 @@ public class StatusCacheTest {
    @Test
    public void testCase2() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1002");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1002");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -109,7 +109,7 @@ public class StatusCacheTest {
    @Test
    public void testCase3() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1003");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());
@@ -135,7 +135,7 @@ public class StatusCacheTest {
    //@Test
    public void testCase4() throws Exception {
       WebConversation wc = new WebConversation();
-      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + TestConstraint.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1004");
+      WebRequest pollingGetMethodRequest = SecurityUtil.getSecuredRequest(wc, "http://127.0.0.1:" + AllTests.WEBAPP_PORT + "/controller/rest/polling/96e79218965eb72c92a549dd5a330112/1004");
       try {
          WebResponse wr = wc.getResponse(pollingGetMethodRequest);
          logger.info("The result was : \n" + wr.getText());

@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.exception.roundrobin.TCPServerStartFailException;
 import org.openremote.controller.spring.SpringContext;
-import org.openremote.controller.utils.ConfigFactory;
 
 /**
  * RoundRobin TCP Server.<br / ><br / >
@@ -26,7 +25,7 @@ public class RoundRobinTCPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.getCustomRoundRobinConfigFromDefaultControllerXML();
+   private RoundRobinConfiguration roundRobinConfig = RoundRobinConfiguration.readXML();
    
    private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    

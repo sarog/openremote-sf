@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -33,7 +33,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
+import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.BeehiveNotAvailableException;
 import org.openremote.controller.exception.ForbiddenException;
@@ -55,7 +55,7 @@ public class FileServiceImpl implements FileService {
    private static final Logger logger = Logger.getLogger(FileServiceImpl.class);
    
    /** The configuration. */
-   private Configuration configuration;
+   private ControllerConfiguration configuration;
    
    /**
     * {@inheritDoc}
@@ -111,7 +111,7 @@ public class FileServiceImpl implements FileService {
          if (!ZipUtil.unzip(zip, resourcePath)) {
             return false;
          }
-         logger.info("unzip " + zip.getAbsolutePath() + "success.");
+         logger.info("unzip " + zip.getAbsolutePath() + " success.");
          FileUtils.forceDeleteOnExit(zip);
       } catch (IOException e) {
          logger.error("Can't write openremote.zip to " + resourcePath, e);
@@ -163,7 +163,7 @@ public class FileServiceImpl implements FileService {
       HttpGet httpGet = new HttpGet(PathUtil.addSlashSuffix(configuration.getBeehiveRESTRootUrl()) + "user/" + username
             + "/openremote.zip");
       
-      httpGet.setHeader(Constants.HTTP_BASIC_AUTH_HEADER_NAME, Constants.HTTP_BASIC_AUTH_HEADER_VALUE_PREFIX
+      httpGet.setHeader(Constants.HTTP_AUTHORIZATION_HEADER, Constants.HTTP_BASIC_AUTHORIZATION
             + encode(username, password));
       InputStream inputStream = null;
       try {
@@ -204,7 +204,7 @@ public class FileServiceImpl implements FileService {
       return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
    }
 
-   public void setConfiguration(Configuration configuration) {
+   public void setConfiguration(ControllerConfiguration configuration) {
       this.configuration = configuration;
    }
 

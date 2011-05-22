@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
-OpenRemote, the Home of the Digital Home.
-Copyright 2008-2010, OpenRemote Inc.
+  OpenRemote, the Home of the Digital Home.
+  Copyright 2008-2011, OpenRemote Inc.
 
-See the contributors.txt file in the distribution for a
-full listing of individual contributors.
+  See the contributors.txt file in the distribution for a
+  full listing of individual contributors.
 
-This is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3.0 of
-the License, or (at your option) any later version.
+  This is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 3.0 of
+  the License, or (at your option) any later version.
 
-This software is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This software is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-You should have received a copy of the GNU General Public
-License along with this software; if not, write to the Free
-Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  You should have received a copy of the GNU General Public
+  License along with this software; if not, write to the Free
+  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
 <!--
@@ -27,8 +28,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  |  Author: Dan Cong
  |  Author: Juha Lindfors
  |  Author: Jerome Velociter
- |
- |  $Id: $
  +-->
 <project name = "controller" default = "run-test" basedir = ".">
   <property file = "build.properties"/>
@@ -58,11 +57,12 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   <path id = "compile.path.id">
     <fileset dir = "${lib.dir}/compile"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/calimero"/>
     <fileset dir = "${lib.dir}/rxtx"/>
     <fileset dir = "${lib.dir}/apache/commons-net"/>
     <fileset dir = "${lib.dir}/apache/commons-lang"/>
     <fileset dir = "${lib.dir}/clink"/>
+  	<fileset dir = "${lib.dir}/json"/>
+    <fileset dir = "${lib.dir}/onewire"/>
     <path location = "${classes.dir}"/>
   </path>
   
@@ -70,12 +70,28 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     <fileset dir = "${lib.dir}/compile"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
-    <fileset dir = "${lib.dir}/calimero" includes = "*.jar"/>
+    <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
+  	<fileset dir = "${lib.dir}/json" includes = "*.jar"/>
+    <path location = "${classes.dir}"/>
+    <path location = "${test.dir}"/>
+    <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
+    <path location = "${config.dir}"/>
+    <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/onewire"/>
+  </path>
+
+  <path id = "container.libs">
+    <path location = "${test.dir}"/>
+    <fileset dir = "${lib.dir}/compile"/>
+    <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
     <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
     <path location = "${classes.dir}"/>
     <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
     <path location = "${config.dir}"/>
+    <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
   </path>
+
 
   <path id = "cobertura.path.id">
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
@@ -83,10 +99,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   </path>
 
   <!-- defined task for tomcat deploy -->
-  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" />
+<!--  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" /> -->
 	
   <!-- defined task for tomcat undeploy -->
-  <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" />
+<!--  <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" /> -->
 
   <!-- defind task for cobertura -->
   <taskdef classpathref = "cobertura.path.id" resource = "tasks.properties"/>
@@ -120,14 +136,17 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
       <fileset dir = "${lib.dir}/core">
         <include name = "**/*.jar"/>
       </fileset>
-      <fileset dir = "${lib.dir}/calimero">
-        <include name = "**/*.jar"/>
-      </fileset>
       <fileset dir = "${lib.dir}/apache">
         <include name = "**/*.jar"/>
       </fileset>
       <fileset dir = "${lib.dir}/rxtx">
         <include name = "**/*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/json">
+    	<include name = "*.jar"/>
+      </fileset>
+      <fileset dir = "${lib.dir}/onewire">
+        <include name = "*.jar"/>
       </fileset>
     </copy>
     <copy todir = "${build.dir}/lib/native" flatten = "true">
@@ -290,6 +309,28 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  		</parallel>
  	</target>
 
+
+
+
+  <!--
+   |
+   |
+   | .
+   +-->
+  <target name = "run"  description = "--> .">
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = " Starting Container..." />
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = "" />
+    <property name = "test.targetclasspath" value = "${classes.dir}" />
+    <parallel>
+     <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "container.libs" fork = "true" />
+    </parallel>
+  </target>
+
+
+
+
   <!--
     | RUN-TEST:
     |
@@ -396,13 +437,14 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 	    |
 	    | Deploy the project to tomcat using tomcat manager webapp.
 	    +-->
+<!--
   <target name="deploy-tomcat" depends="war" description="Deploy the project to tomcat using tomcat manager webapp">
-    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = "===================================================================="/>
     <echo message = " Deploy the project to tomcat using tomcat manager webapp..."/>
     <echo message = " "/>
     <echo message = " Precondition 1: The 'admin' user exists in the tomcat realm"/>
     <echo message = " Precondition 2: The admin user password is passed in using the tomcat.manager.password property (-Dtomcat.manager.password=XXX)"/>
-    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = "===================================================================="/>
     <echo message = "" />
     <echo message = " Undeploying project..."/>
     <echo message = "" />
@@ -422,6 +464,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 		path="/${project.name}"
 		war="${output.dir}/${project.name}.war" />
   </target>
+-->
 
   <!--
     | COBERTURA_INSTRUMENT:

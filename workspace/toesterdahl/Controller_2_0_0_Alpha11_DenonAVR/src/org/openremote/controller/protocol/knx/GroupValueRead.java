@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -81,7 +81,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
    * @return          a new KNX read command instance, or <code>null</code> if the lookup name
    *                  could not be matched to any command
    */
-  static GroupValueRead createCommand(String name, KNXConnectionManager mgr,
+  static GroupValueRead createCommand(String name, KNXIpConnectionManager mgr,
                                       GroupAddress address, DataPointType dpt)
   {
     name = name.trim().toUpperCase();
@@ -107,7 +107,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
    * @param apdu                APDU payload for this command
    * @param dpt                 KNX datapoint type associated with this command
    */
-  private GroupValueRead(KNXConnectionManager connectionManager, GroupAddress groupAddress,
+  private GroupValueRead(KNXIpConnectionManager connectionManager, GroupAddress groupAddress,
                          ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     super(connectionManager, groupAddress, apdu, dpt);

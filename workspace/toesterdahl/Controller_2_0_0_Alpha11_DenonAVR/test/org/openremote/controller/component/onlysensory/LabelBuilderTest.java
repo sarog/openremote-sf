@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -33,7 +33,7 @@ import org.jdom.xpath.XPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.TestConstraint;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.onlysensory.Label;
 import org.openremote.controller.component.onlysensory.LabelBuilder;
 import org.openremote.controller.exception.NoSuchComponentException;
@@ -49,7 +49,7 @@ public class LabelBuilderTest {
    private LabelBuilder builder = (LabelBuilder) SpringTestContext.getInstance().getBean("labelBuilder");
    @Before
    public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(TestConstraint.FIXTURE_DIR + "controller.xml").getFile();
+      controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "controller.xml").getFile();
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(controllerXMLPath);
    }

@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,6 +20,8 @@
  */
 package org.openremote.controller.statuscache;
 
+import org.apache.log4j.Logger;
+import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.Sensor;
 import org.openremote.controller.service.StatusCacheService;
 
@@ -32,8 +34,10 @@ public class PollingMachineThread extends Thread
 
   private Sensor sensor;
 	private StatusCacheService statusCacheService;
+	private String lastStatus = StatusCommand.UNKNOWN_STATUS;
 	private static final long INTERVAL = 500;
 	private boolean alive = true;
+	private static Logger logger = Logger.getLogger(PollingMachineThread.class);
 	
 	/** milliseconds */
 	private long pollingMachineInterval;
@@ -58,15 +62,18 @@ System.out.println(" -------- Started thread for sensor " + sensor);
 
 		while (alive)
     {
-			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), sensor.readStatus());
+		   lastStatus = sensor.readStatus();
+			statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
 
 			try
       {
 				Thread.sleep(pollingMachineInterval);
+
+        // TODO : must be fixed to interrupt correctly
 			}
       catch (InterruptedException e)
       {
-				e.printStackTrace();
+			   logger.error("PollingMachineThread is interrupted", e);
 
         // TODO : must be fixed to interrupt correctly
 			}
@@ -78,4 +85,12 @@ System.out.println(" -------- Started thread for sensor " + sensor);
 	   this.alive = false;
 	}
 
+   public String getLastStatus() {
+      return lastStatus;
+   }
+
+   public Sensor getSensor() {
+      return sensor;
+   }
+	
 }
