@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -27,11 +27,10 @@ import java.net.MulticastSocket;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.Configuration;
-import org.openremote.controller.RoundRobinConfig;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.exception.roundrobin.TCPClientEstablishException;
 import org.openremote.controller.exception.roundrobin.UDPServerStartFailException;
-import org.openremote.controller.utils.ConfigFactory;
 import org.openremote.controller.utils.NetworkUtil;
 
 /**
@@ -46,9 +45,9 @@ public class RoundRobinUDPServer implements Runnable {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
-   private Configuration configuration = ConfigFactory.getCustomBasicConfigFromDefaultControllerXML();
+   private ControllerConfiguration configuration = ControllerConfiguration.readXML();
    
-   private RoundRobinConfig roundRobinConfig = ConfigFactory.getCustomRoundRobinConfigFromDefaultControllerXML();
+   private RoundRobinConfiguration roundRobinConfig = RoundRobinConfiguration.readXML();
    
    private static final String SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME = RoundRobinClient.SEPARATOR_BETWEEN_MSG_KEY_AND_GROUP_NAME;
    

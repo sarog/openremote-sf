@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -32,6 +32,7 @@ import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 
 /**
+ * A mockup command via HTTP.
  * 
  * @author handy.wang 2010-03-18
  *
@@ -88,7 +89,7 @@ public class MockupCommand implements ExecutableCommand, StatusCommand {
 
    @SuppressWarnings("finally")
    @Override
-   public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
+   public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
       BufferedReader in = null;
       StringBuffer result = new StringBuffer();
       try {

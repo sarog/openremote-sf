@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2010, OpenRemote Inc.
+* Copyright 2008-2011, OpenRemote Inc.
 *
 * See the contributors.txt file in the distribution for a
 * full listing of individual contributors.
@@ -22,13 +22,13 @@ package org.openremote.controller.protocol.telnet;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.utils.CommandUtil;
 
 
 /**
- * The Class TelnetEventBuilder.
+ * The Class TelnetCommandBuilder.
  *
  * @author Marcus 2009-4-26
  */
@@ -38,7 +38,7 @@ public class TelnetCommandBuilder implements CommandBuilder {
     * {@inheritDoc}
     */
    @SuppressWarnings("unchecked")
-   public ExecutableCommand build(Element element) {
+   public Command build(Element element) {
       TelnetCommand telnetEvent = new TelnetCommand();
       List<Element> propertyEles = element.getChildren("property", element.getNamespace());
       for(Element ele : propertyEles){
@@ -50,6 +50,14 @@ public class TelnetCommandBuilder implements CommandBuilder {
             telnetEvent.setIp(ele.getAttributeValue("value"));
          } else if("command".equals(ele.getAttributeValue("name"))){
             telnetEvent.setCommand(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("timeout".equals(ele.getAttributeValue("timeout"))){
+            telnetEvent.setTimeOut(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("statusFilter".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setResponseFilter(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("statusFilterGroup".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setResponseFilterGroup(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
+         } else if("statusDefault".equals(ele.getAttributeValue("name"))){
+            telnetEvent.setStatusDefault(CommandUtil.parseStringWithParam(element, ele.getAttributeValue("value")));
          }
       }
       return telnetEvent;

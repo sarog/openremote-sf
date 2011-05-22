@@ -1,5 +1,5 @@
 /* OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -30,6 +30,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.protocol.infrared.IRCommand;
 import org.openremote.controller.protocol.x10.X10Command;
 import org.openremote.controller.protocol.http.HttpGetCommand;
+import org.openremote.controller.protocol.virtual.VirtualCommand;
 
 
 /**
@@ -46,7 +47,7 @@ public class MacrosIrDelayUtilTest {
          add(new IRCommand());
          add(new DelayCommand());
          add(new IRCommand());
-         add(new HttpGetCommand());
+         add(new VirtualCommand("address", "command"));
       }
    };
 

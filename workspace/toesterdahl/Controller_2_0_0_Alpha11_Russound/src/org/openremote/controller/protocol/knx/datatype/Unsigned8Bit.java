@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -63,10 +63,25 @@ public class Unsigned8Bit implements DataType
 
   public Unsigned8Bit(DataPointType.Unsigned8BitValue dpt, int value)
   {
-    if (value < 0 || value > 255)
+    // We are getting the value as a signed integer... this is java, after all.
+    // Thus, the range we are ready to accept as representable within a byte is as follows.
+	  
+    if (value < -128 || value > 255) 
+    {
       throw new Error("Unsigned 8-bit value range is [0-255], got " + value);
+    }
+	  
+    // Given that we passed the above test, we undo the 2-s complement interpretation
+    // of the signed value.
+    if (value < 0 ) 
+    {
+      this.value = value + 256;
+    }
+    else 
+    {
+      this.value = value;
+    }
 
-    this.value = value;
     this.dpt = dpt;
   }
 

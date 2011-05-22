@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -179,7 +179,7 @@ abstract class KNXCommand implements Command
    *
    * @return  new KNX command instance
    */
-  static KNXCommand createCommand(String name, DataPointType dpt, KNXConnectionManager mgr,
+  static KNXCommand createCommand(String name, DataPointType dpt, KNXIpConnectionManager mgr,
                                   GroupAddress address, CommandParameter parameter)
   {
     name = name.trim().toUpperCase();
@@ -220,7 +220,7 @@ abstract class KNXCommand implements Command
   /**
    * Connection manager to be used to transmit this command.
    */
-  private KNXConnectionManager connectionManager;
+  private KNXIpConnectionManager connectionManager;
 
 
 
@@ -235,7 +235,7 @@ abstract class KNXCommand implements Command
    * @param apdu              command payload
    * @param dpt               KNX datapoint type associated with this command
    */
-  KNXCommand(KNXConnectionManager connectionManager, GroupAddress address,
+  KNXCommand(KNXIpConnectionManager connectionManager, GroupAddress address,
              ApplicationProtocolDataUnit apdu, DataPointType dpt)
   {
     this.address = address;
@@ -473,7 +473,13 @@ abstract class KNXCommand implements Command
     final int NORMAL_PRIORITY = 0x01 << 2;
 
     /* Bit for requesting an ACK (L_Data.req only) for the frame in the first control field. */
-    final int REQUEST_ACK = 0x01 << 1;
+    /*
+     * 2011-04-14 OG : We force this bit to 0 (ACK not requested). If set to 1, the KNX/IP interface from Jung (IPS
+     * 100 REG) and the Hager as well don't transmit telegrams to the KNX bus, for some unknown reason. Not requesting
+     * the ACK is not a big deal as the GroupValue_Write.con telegram sent by the the server acts as an applicative
+     * ACK.
+     */
+    final int REQUEST_ACK = 0x00 << 1;
 
 
     //   Control Field 2

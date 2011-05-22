@@ -1,6 +1,6 @@
 /*
  * OpenRemote, the Home of the Digital Home.
- * Copyright 2008-2010, OpenRemote Inc.
+ * Copyright 2008-2011, OpenRemote Inc.
  *
  * See the contributors.txt file in the distribution for a
  * full listing of individual contributors.
@@ -20,13 +20,15 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.apache.log4j.Logger;
+
 import org.openremote.controller.utils.Strings;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.datatype.DataType;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
+import org.openremote.controller.protocol.knx.datatype.Float2Byte;
 import org.openremote.controller.exception.ConversionException;
 import org.openremote.controller.command.CommandParameter;
 
@@ -170,11 +172,16 @@ class ApplicationProtocolDataUnit
     //  Byte 1 : bits xxxxxx00          - first six bits are part of TPCI
     //  Byte 2 : bits 01xxxxxx          - last six bits are either data (6 bit return values)
     //                                    or zero for larger than 6 bit return values
-
     return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x40);
   }
 
 
+  static boolean isGroupValueWriteReq(byte[] apdu)
+  {
+    return ((apdu[0] & 0x3) == 0x00 && (apdu[1] & 0xC0) == 0x80);
+  }
+
+  
   /**
    * Constructs an APDU corresponding to a Group Value Write service for a device expecting
    * a 3-bit dim control data point type (DPT 3.007). <p>
@@ -248,6 +255,40 @@ class ApplicationProtocolDataUnit
         new Unsigned8Bit(
             DataPointType.Unsigned8BitValue.SCALING,
             value)
+    );
+  }
+
+
+  /**
+  * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+  * 8-bit unsigned counter value (DPT 5.010).
+  * <p>
+  *
+  * Valid parameter value range is [0-255].
+  *
+  * @param parameter
+  *           counter value for range
+  *
+  * @return APDU instance for a 8-bit unsigned counter value
+  *
+  * @throws ConversionException
+  *            if the value is not in a given range
+  */
+  static ApplicationProtocolDataUnit createRange(CommandParameter parameter)
+     throws ConversionException
+  {
+    int value = parameter.getValue();
+
+    if (value < 0 || value > 255)
+    {
+      throw new ConversionException("Expected value is in range [0-255] , received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new Unsigned8Bit(
+          DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
+          value)
     );
   }
 
@@ -651,6 +692,16 @@ class ApplicationProtocolDataUnit
         );
       }
 
+      else if (dpt instanceof DataPointType.Float2ByteValue)
+      {
+        DataPointType.Float2ByteValue value = (DataPointType.Float2ByteValue) dpt;
+
+        return new ApplicationProtocolDataUnit(
+            getApplicationLayerService(),
+            resolveToFloat2ByteValue(value, getDataType().getData()));
+      }
+
+
       else
       {
         throw new Error("Unrecognized datapoint type " + dpt);
@@ -670,6 +721,18 @@ class ApplicationProtocolDataUnit
       return new Unsigned8Bit(dpt, value);
     }
 
+
+    /**
+     * TODO
+     *
+     * @param dpt
+     * @param value
+     * @return
+     */
+    private Float2Byte resolveToFloat2ByteValue(DataPointType.Float2ByteValue dpt, byte[] value)
+    {
+      return new Float2Byte(dpt, value);
+    }
 
     /**
      * TODO
