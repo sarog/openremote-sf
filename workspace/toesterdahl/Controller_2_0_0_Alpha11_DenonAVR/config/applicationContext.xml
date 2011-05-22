@@ -176,7 +176,10 @@
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
 	
 	<!-- KNX Command Builder -->
-	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder"/>
+	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
+		<constructor-arg index="0" value="${knx.ip.interface.hostname}" />
+		<constructor-arg index="1" value="${knx.ip.interface.port}" type="int" />
+	</bean>
 	
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
