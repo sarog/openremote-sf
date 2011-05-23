@@ -163,9 +163,20 @@ public class ORWebView extends ComponentView
           web.getFrameHeight());
       webView.setLayoutParams(layoutParams);
       webView.getSettings().setJavaScriptEnabled(true);
+
       URL url = web.getSrc();
       if (url != null)
       {
+        String hostname = url.getHost();
+        String realm = web.getRealm();
+        String username = web.getUsername();
+        String password = web.getPassword();
+        if (realm != null && username != null && password != null)
+        {
+          Log.i(LOG_CATEGORY, "setting authentication credentials ahead of time for host " +
+              hostname + " realm " + realm + " hostname " + hostname + " username " + username);
+          webView.setHttpAuthUsernamePassword(hostname, realm, username, password);
+        }
         webView.loadUrl(url.toString());
       }
       else
