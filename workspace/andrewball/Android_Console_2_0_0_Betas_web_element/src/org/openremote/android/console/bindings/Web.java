@@ -38,6 +38,8 @@ public class Web extends Component
   public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "bindings/Web";
   /** the URL to view */
   private URL src;
+  /** optional realm for HTTP basic authentication */
+  private String realm;
   /** optional username to user for HTTP basic authentication */
   private String username;
   /** optional password to use for HTTP basic authentication */
@@ -52,6 +54,12 @@ public class Web extends Component
   {
     NamedNodeMap attributes = node.getAttributes();
     setComponentId(Integer.valueOf(attributes.getNamedItem(ID).getNodeValue()));
+
+    Node realmNode = attributes.getNamedItem(REALM);
+    if (realmNode != null)
+    {
+      realm = realmNode.getNodeValue();
+    }
 
     Node usernameNode = attributes.getNamedItem(USERNAME);
     if (usernameNode != null)
@@ -85,6 +93,12 @@ public class Web extends Component
   public URL getSrc()
   {
     return src;
+  }
+
+  /** Returns the realm specified for HTTP basic authentication (or null if none set) */
+  public String getRealm()
+  {
+    return realm;
   }
 
   /** Returns the username specified for HTTP basic authentication (or null if none set) */
