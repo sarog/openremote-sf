@@ -24,7 +24,7 @@
 @implementation Button
 
 @synthesize defaultImage, pressedImage, name, navigate, subElememntNameOfBackground;
-@synthesize repeat, repeatDelay, hasPressCommand, hasShortReleaseCommand, hasLongPressCommand, hasLongReleaseCommand, longPressDelay, hasDoubleTapCommand;
+@synthesize repeat, repeatDelay, hasPressCommand, hasShortReleaseCommand, hasLongPressCommand, hasLongReleaseCommand, longPressDelay;
 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent
 {
@@ -65,8 +65,6 @@
         if (longPressDelay < 250) {
             longPressDelay = 250;
         }
-        
-        hasDoubleTapCommand = [@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasDoubleTapCommand"] uppercaseString]];
 
 		if (hasLongPressCommand || hasLongReleaseCommand) {
             repeat = NO;
