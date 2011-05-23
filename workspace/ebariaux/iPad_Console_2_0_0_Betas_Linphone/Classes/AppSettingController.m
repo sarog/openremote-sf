@@ -37,7 +37,7 @@
 
 @property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
 
-
+- (void)fetchGroupMembers;
 
 - (void)autoDiscoverChanged:(id)sender;
 - (void)updateTableView;
@@ -328,6 +328,22 @@
     // TODO EBR : this might need to be cancelled some time
 }
 
+- (void)fetchGroupMembers
+{
+    // TODO EBR at this stage, group members should be fetched in the background, then panel identity
+    // for now, it is done syncrhonously
+    UpdateController *uc = [[UpdateController alloc] init];
+    @try {
+        [uc getRoundRobinGroupMembers];            
+    }
+    @catch (CheckNetworkException *exception) {
+        [ViewHelper showAlertViewWithTitle:@"Error" Message:exception.message];
+    }
+    @finally {
+        [uc release];
+    }
+}
+
 // Cancle(Dismiss) appSettings view.
 - (void)cancelView:(id)sender {
     [[ORConsoleSettingsManager sharedORConsoleSettingsManager] cancelConsoleSettingsChanges];
@@ -356,6 +372,7 @@
 
 #pragma mark Delegate method of ServerAutoDiscoveryController
 - (void)onFindServer:(NSString *)serverUrl {
+    [self fetchGroupMembers];
 	[self updateTableView];
 }
 
@@ -599,19 +616,7 @@
 		cell.accessoryType = UITableViewCellAccessoryCheckmark;
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
         
-        
-        // TODO EBR at this stage, group members should be fetched in the background, then panel identity
-        // for now, it is done syncrhonously
-        UpdateController *uc = [[UpdateController alloc] init];
-        @try {
-            [uc getRoundRobinGroupMembers];            
-        }
-        @catch (CheckNetworkException *exception) {
-            [ViewHelper showAlertViewWithTitle:@"Error" Message:exception.message];
-        }
-        @finally {
-            [uc release];
-        }
+        [self fetchGroupMembers];
         
 		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
 			[self updatePanelIdentityView];
@@ -638,6 +643,7 @@
 {
     [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
+    [self fetchGroupMembers];
 }
 
 #pragma mark ChoosePanelViewControllerDelegate implementation
