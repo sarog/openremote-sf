@@ -82,7 +82,7 @@
 	if (button.hasPressCommand == YES) {
 		[self sendPressCommand:nil];
 	 	if (button.repeat == YES ) {			
-			controlTimer = [NSTimer scheduledTimerWithTimeInterval:button.repeatDelay / 1000.0	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
+			buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:button.repeatDelay / 1000.0	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
 		}
 	}
     if (button.hasLongPressCommand || button.hasLongReleaseCommand) {
@@ -97,10 +97,10 @@
 }
 
 - (void)cancelTimer {
-	if (controlTimer) {
-		[controlTimer invalidate];
+	if (buttonRepeatTimer) {
+		[buttonRepeatTimer invalidate];
 	}
-	controlTimer = nil;
+	buttonRepeatTimer = nil;
 }
 
 #pragma mark Override the methods of superclass(ComponentView)
@@ -142,7 +142,7 @@
 	[uiImagePressed release];
 	[uiButton release];
 	
-    [controlTimer release];
+    [buttonRepeatTimer release];
 
     [super dealloc];
 }
