@@ -47,7 +47,7 @@ public class Switch extends Event<Switch.State>
 
   public String serialize()
   {
-    return eventState.toString();
+    return eventState.toString().toLowerCase();
   }
 }
 
