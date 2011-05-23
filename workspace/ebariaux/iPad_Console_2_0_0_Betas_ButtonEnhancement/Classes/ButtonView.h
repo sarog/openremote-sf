@@ -33,7 +33,7 @@
 	UIImage *uiImage;
 	UIImage *uiImagePressed;
 
-    NSTimer *controlTimer;
+    NSTimer *buttonRepeatTimer;
 }
 
 @property (nonatomic, readonly) UIButton *uiButton;
