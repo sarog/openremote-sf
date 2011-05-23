@@ -27,14 +27,12 @@
 #import "NotificationConstant.h"
 #import "ClippedUIImage.h"
 
-//defines the interval (seconds) of command when pressing a repeat button
-#define REPEAT_CMD_INTERVAL 0.3
+@interface ButtonView ()
 
-@interface ButtonView (Private) 
 - (void)createButton;
 - (void)controlButtonUp:(id)sender;
 - (void)controlButtonDown:(id)sender;
-- (void)sendCommand:(id)sender;
+- (void)sendPressCommand:(id)sender;
 
 @end
 
@@ -53,17 +51,24 @@
 	uiButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 	
 	[uiButton addTarget:self action:@selector(controlButtonDown:) forControlEvents:UIControlEventTouchDown];	
-	//[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
+	[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpOutside];	
 	[uiButton addTarget:self action:@selector(controlButtonUp:) forControlEvents:UIControlEventTouchUpInside];
 
 	[self addSubview:uiButton];
-	
 }
 
 // Event handler for button up.
 - (void) controlButtonUp:(id)sender {
 	[self cancelTimer];
 	Button *button = (Button *)component;
+    
+    
+    
+    if (button.hasShortReleaseCommand) {
+    }
+
+    
+    
 	if (button.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:button.navigate];
 	}
@@ -74,18 +79,28 @@
 	[self cancelTimer];
 	
 	Button *button = (Button *)component;
-	if (button.hasCommand == YES) {
-		[self sendCommand:nil];
+	if (button.hasPressCommand == YES) {
+		[self sendPressCommand:nil];
 	 	if (button.repeat == YES ) {			
-			controlTimer = [NSTimer scheduledTimerWithTimeInterval:REPEAT_CMD_INTERVAL	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
-		} 
+			controlTimer = [NSTimer scheduledTimerWithTimeInterval:button.repeatDelay / 1000.0	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
+		}
 	}
+    if (button.hasLongPressCommand || button.hasLongReleaseCommand) {
+        // Set-up timer to detect when this becomes a long press
+    }
 
 }
 
 // Send control command to remote controller server.
-- (void) sendCommand:(id)sender {
+- (void) sendPressCommand:(id)sender {
 	[self	sendCommandRequest:@"click"];
+}
+
+- (void)cancelTimer {
+	if (controlTimer) {
+		[controlTimer invalidate];
+	}
+	controlTimer = nil;
 }
 
 #pragma mark Override the methods of superclass(ComponentView)
@@ -117,8 +132,7 @@
 	uiButton.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
 	//[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
 	//uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
-	[uiButton setTitle:button.name forState:UIControlStateNormal];
-	
+	[uiButton setTitle:button.name forState:UIControlStateNormal];	
 }
 
 #pragma mark dealloc
@@ -128,7 +142,17 @@
 	[uiImagePressed release];
 	[uiButton release];
 	
-  [super dealloc];
+    [controlTimer release];
+
+    [super dealloc];
+}
+
+#pragma mark ORControllerCommandSenderDelegate implementation
+
+- (void)commandSendFailed
+{
+    [super commandSendFailed];
+    [self cancelTimer];
 }
 
 

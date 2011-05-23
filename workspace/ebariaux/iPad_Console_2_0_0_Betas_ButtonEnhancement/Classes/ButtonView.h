@@ -32,11 +32,18 @@
 	UIButton *uiButton;
 	UIImage *uiImage;
 	UIImage *uiImagePressed;
-	
+
+    NSTimer *controlTimer;
 }
 
 @property (nonatomic, readonly) UIButton *uiButton;
 @property (nonatomic, readonly) UIImage *uiImage;
 @property (nonatomic, readonly) UIImage *uiImagePressed;
+
+/**
+ * Cancel timer of repeated sending control command.
+ */
+- (void)cancelTimer;
+
 
 @end
