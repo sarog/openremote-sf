@@ -40,11 +40,6 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORControllerProxy.h"
 
-@interface ControlView (Private)
-
-@end
-
-
 @implementation ControlView
 
 
@@ -83,13 +78,6 @@
 	return self;
 }
 
-- (void)cancelTimer {
-	if (controlTimer) {
-		[controlTimer invalidate];
-	}
-	controlTimer = nil;
-}
-
 #pragma mark delegate methods of Protocol ControlDelegate.
 
 - (void)sendCommandRequest:(NSString *)commandType {
@@ -108,16 +96,7 @@
 
 - (void)commandSendFailed
 {
-    [self cancelTimer];
     isError = YES;
 }
-
-#pragma mark dealloc
-
-- (void)dealloc {
-	[controlTimer release];
-	[super dealloc];
-}
-
 
 @end
