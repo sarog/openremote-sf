@@ -29,16 +29,28 @@
 
 @interface ButtonView ()
 
+@property (nonatomic, retain) NSTimer *buttonRepeatTimer;
+@property (nonatomic, retain) NSTimer *longPressTimer;
+@property (nonatomic, getter=isLongPress, setter=setLongPress:) BOOL longPress;
+
+- (void)cancelTimers;
+
 - (void)createButton;
 - (void)controlButtonUp:(id)sender;
 - (void)controlButtonDown:(id)sender;
+- (void)longPress:(NSTimer *)timer;
+
 - (void)sendPressCommand:(id)sender;
+- (void)sendShortReleaseCommand:(id)sender;
+- (void)sendLongPressCommand:(id)sender;
+- (void)sendLongReleaseCommand:(id)sender;
 
 @end
 
 @implementation ButtonView
 
 @synthesize uiButton, uiImage, uiImagePressed;
+@synthesize buttonRepeatTimer, longPressTimer, longPress;
 
 #pragma mark Private methods
 
@@ -58,16 +70,16 @@
 }
 
 // Event handler for button up.
-- (void) controlButtonUp:(id)sender {
-	[self cancelTimer];
-	Button *button = (Button *)component;
+- (void)controlButtonUp:(id)sender {
+	[self cancelTimers];
+	Button *button = (Button *)self.component;
     
-    
-    
-    if (button.hasShortReleaseCommand) {
+    if (button.hasShortReleaseCommand && !self.isLongPress) {
+        [self sendShortReleaseCommand:nil];
     }
-
-    
+    if (button.hasLongReleaseCommand && self.isLongPress) {
+        [self sendLongReleaseCommand:nil];        
+    }
     
 	if (button.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:button.navigate];
@@ -75,40 +87,62 @@
 }
 
 // Event handler for button down.
-- (void) controlButtonDown:(id)sender {
-	[self cancelTimer];
-	
-	Button *button = (Button *)component;
+- (void)controlButtonDown:(id)sender {
+	[self cancelTimers];
+	self.longPress = NO;
+    
+	Button *button = (Button *)self.component;
 	if (button.hasPressCommand == YES) {
 		[self sendPressCommand:nil];
 	 	if (button.repeat == YES ) {			
-			buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:button.repeatDelay / 1000.0	target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
+			self.buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:(button.repeatDelay / 1000.0) target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
 		}
 	}
     if (button.hasLongPressCommand || button.hasLongReleaseCommand) {
         // Set-up timer to detect when this becomes a long press
+        self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:(button.longPressDelay / 1000.0) target:self selector:@selector(longPress:) userInfo:nil repeats:NO];
     }
-
 }
 
-// Send control command to remote controller server.
-- (void) sendPressCommand:(id)sender {
-	[self	sendCommandRequest:@"click"];
+- (void)longPress:(NSTimer *)timer
+{
+    self.longPress = YES;
+    [self sendLongPressCommand:nil];
 }
 
-- (void)cancelTimer {
-	if (buttonRepeatTimer) {
-		[buttonRepeatTimer invalidate];
+- (void)sendPressCommand:(id)sender {
+	[self sendCommandRequest:@"press"];
+}
+
+- (void)sendShortReleaseCommand:(id)sender {
+    [self sendCommandRequest:@"shortRelease"];
+}
+
+- (void)sendLongPressCommand:(id)sender {
+    [self sendCommandRequest:@"longPress"];
+}
+
+- (void)sendLongReleaseCommand:(id)sender {
+    [self sendCommandRequest:@"longRelease"];
+}
+
+- (void)cancelTimers {
+	if (self.buttonRepeatTimer) {
+		[self.buttonRepeatTimer invalidate];
 	}
-	buttonRepeatTimer = nil;
+	self.buttonRepeatTimer = nil;
+	if (self.longPressTimer) {
+		[self.longPressTimer invalidate];
+	}
+	self.longPressTimer = nil;
 }
 
 #pragma mark Override the methods of superclass(ComponentView)
 
-- (void)initView {	
+- (void)initView {
 	[self createButton];
 	
-	Button *button = (Button *)component;
+	Button *button = (Button *)self.component;
 	if (button.defaultImage) {
 		uiImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.defaultImage.src]];
 		uiImagePressed = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:button.pressedImage.src]];	
@@ -141,8 +175,7 @@
 	[uiImage  release];
 	[uiImagePressed release];
 	[uiButton release];
-	
-    [buttonRepeatTimer release];
+    [self cancelTimers];
 
     [super dealloc];
 }
@@ -152,8 +185,7 @@
 - (void)commandSendFailed
 {
     [super commandSendFailed];
-    [self cancelTimer];
+    [self cancelTimers];
 }
-
 
 @end
