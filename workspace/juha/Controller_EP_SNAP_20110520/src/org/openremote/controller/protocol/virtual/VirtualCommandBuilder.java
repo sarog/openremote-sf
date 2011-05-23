@@ -236,6 +236,8 @@ public class VirtualCommandBuilder implements CommandBuilder
           else
           {
             sensor.update("off");
+
+            setOn = true;
           }
         }
         catch (InterruptedException e)
