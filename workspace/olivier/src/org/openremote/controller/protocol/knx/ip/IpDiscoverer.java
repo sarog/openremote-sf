@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
+import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.protocol.knx.ip.message.Hpai;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverReq;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
@@ -47,13 +48,13 @@ public class IpDiscoverer implements IpProcessorListener {
          InetSocketAddress groupAddr = new InetSocketAddress(InetAddress.getByName("224.0.23.12"), 3671);
          this.multicastSocket.joinGroup(groupAddr.getAddress());
 
-         this.processor.start();
+         this.processor.start("discovery");
 
          // Start discovery process
          // TODO send regularly requests until a response is received
          this.processor.send(new IpDiscoverReq(new Hpai(this.processor.getSrcAddr())), groupAddr, this.multicastSocket);
       } catch (UnknownHostException e) {
-         throw new KnxIpException(e.getMessage());
+         throw new KnxIpException(Code.unknownHost, e.getMessage());
       }
    }
 

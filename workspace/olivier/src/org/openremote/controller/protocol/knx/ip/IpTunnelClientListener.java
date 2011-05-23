@@ -39,7 +39,6 @@ public interface IpTunnelClientListener {
    void notifyInterfaceStatus(Status status);
    
    static enum Status {
-      unknown,
       connected,
       disconnected;
    }

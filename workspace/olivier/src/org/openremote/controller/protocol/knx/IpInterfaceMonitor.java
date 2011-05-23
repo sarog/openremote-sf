@@ -19,18 +19,16 @@ public class IpInterfaceMonitor extends KNXCommand implements StatusCommand {
 
    @Override
    public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
-      IpTunnelClientListener.Status o = Status.unknown;
-      try {
-         o = this.connectionManager.getConnection().getInterfaceStatus();
-      } catch (ConnectionException e) {
+      Status o = Status.disconnected;
+      KNXConnection c = this.connectionManager.getCurrentConnection();
+      if(c != null) {
+         o = c.getInterfaceStatus();
       }
       switch (o) {
       case connected:
          return "OK";
-      case disconnected:
-         return "NOK";
       default:
-         return "UNKNOWN";
+         return "NOK";
       }
    }
 
