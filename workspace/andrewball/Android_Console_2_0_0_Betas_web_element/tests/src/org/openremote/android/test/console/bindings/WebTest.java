@@ -42,17 +42,15 @@ public class WebTest extends TestCase
     final String url = "http://muppets.com/videofeed";
     final String username = "fozzy";
     final String password = "bear";
-    final String realm = "Merry Olde England";
-    final String xmlText = "<web id='" + id + "' src='" + url + "' realm='" + realm + "'username='" + username + "' password='" + password + "' />";
+    final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' />";
 
     Node parsedXml = TestUtils.parseXml(xmlText);
     Web web = new Web(parsedXml);
 
-    assertEquals(url, web.getSrc().toString());
-    assertEquals(id, web.getComponentId());
-    assertEquals(realm, web.getRealm());
-    assertEquals(username, web.getUsername());
-    assertEquals(password, web.getPassword());
+    assertEquals(web.getSrc().toString(), url);
+    assertEquals(web.getComponentId(), id);
+    assertEquals(web.getUsername(), username);
+    assertEquals(web.getPassword(), password);
   }
 
   /** Tests constructing a Web object with an invalid URL */
@@ -88,24 +86,4 @@ public class WebTest extends TestCase
     assertNull(web.getPassword());
   }
 
-  /**
-   * Tests constructing a Web object with username and password but no realm.
-   */
-  public void testNoRealm()
-  {
-    final int id = 12;
-    final String url = "http://muppets.com/videofeed";
-    final String username = "fozzy";
-    final String password = "bear";
-    final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' />";
-
-    Node parsedXml = TestUtils.parseXml(xmlText);
-    Web web = new Web(parsedXml);
-
-    assertEquals(url, web.getSrc().toString());
-    assertEquals(id, web.getComponentId());
-    assertNull(web.getRealm());
-    assertEquals(username, web.getUsername());
-    assertEquals(password, web.getPassword());
-  }
 }
