@@ -36,6 +36,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.openremote.controller.utils.Logger;
@@ -46,10 +48,11 @@ import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
 import org.openremote.controller.protocol.knx.ip.KnxIpException;
+import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 
 
 /**
- * TODO
+ * KNX-IP interface connection manager.
  */
 public class KNXIpConnectionManager implements DiscoveryListener
 {
@@ -96,7 +99,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private final Object connectionLock;
   private String knxIpInterfaceHostname;
   private int knxIpInterfacePort;
-
+  private Timer reconnector;
+  private Object reconnectLock;
 
   // Constructors --------------------------------------------------------------------------------
 
@@ -106,6 +110,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
     this.connectionLock = new Object();
     this.discoverers = new HashSet<IpDiscoverer>();
     this.knxIpInterfaceHostname = null;
+    this.reconnector = null;
+    this.reconnectLock = new Object();
   }
 
   public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
@@ -119,14 +125,14 @@ public class KNXIpConnectionManager implements DiscoveryListener
   // Implements DiscoveryListener -----------------------------------------------------------------
 
   @Override public void notifyDiscovery(IpDiscoverer discoverer,
-                                       InetSocketAddress destControlEndpointAddr)
+                                        InetSocketAddress destControlEndpointAddr)
   {
     log.info("Found a KNX IP interface at " + destControlEndpointAddr);
 
     synchronized (this.connectionLock)
     {
-      // The first interface found we be used for the connection
-
+      // The first interface found will be used for the connection
+      // unless a specific interface address is configured
       if (this.connection == null &&
             (this.knxIpInterfaceHostname == null || destControlEndpointAddr.equals(new InetSocketAddress(
                 this.knxIpInterfaceHostname,
@@ -135,8 +141,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
           )
       {
         this.connection = new KNXConnectionImpl(new IpTunnelClient(
-            discoverer.getSrcAddr(),
-            destControlEndpointAddr)
+          discoverer.getSrcAddr(),
+          destControlEndpointAddr)
         );
 
         this.connectionLock.notify();
@@ -259,6 +265,10 @@ public class KNXIpConnectionManager implements DiscoveryListener
     }
 
     throw new ConnectionException("KNX IP Gateway not found.");
+  }
+  
+  protected KNXConnection getCurrentConnection() {
+     return this.connection;
   }
 
   /**
@@ -598,8 +608,18 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
     this.discoverers.clear();
   }
-
-
+  
+  /**
+   * Schedule a reconnect task every 10s, starting now.
+   */
+  private void scheduleReconnectTask() {
+    synchronized(this.reconnectLock) {
+      if(this.reconnector == null) {
+        this.reconnector = new Timer("KNX IP reconnector");
+        this.reconnector.schedule(new ReconnectTask(), 10000, 10000);
+      }
+    }
+  }
 
    // Inner Classes --------------------------------------------------------------------------------
 
@@ -609,6 +629,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
     private Map<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU> internalState =
         new ConcurrentHashMap<GroupAddress, ApplicationProtocolDataUnit.ResponseAPDU>(1000);
     private Status interfaceStatus;
+    private Timer connector;
 
     /**
      * Set to <code>true</code> when Common EMI server is correctly initialized
@@ -621,7 +642,9 @@ public class KNXIpConnectionManager implements DiscoveryListener
        this.client = client;
        this.syncLock = new Object();
        this.client.register(this);
-       this.interfaceStatus = Status.unknown;
+       this.interfaceStatus = Status.disconnected;
+       this.connector = new Timer("KNX IP connector");
+       this.connector.schedule(new ConnectTask(client), 0);
     }
 
     // Implements KNXConnection -----------------------------------------------------------------
@@ -751,6 +774,13 @@ public class KNXIpConnectionManager implements DiscoveryListener
     
     @Override
     public void notifyInterfaceStatus(Status status) {
+       // If a disconnection is detected, launch a reconnect task
+       if(this.interfaceStatus == Status.connected && status == Status.disconnected) {
+          // Unreference connection as it is considered as disconnected
+          KNXIpConnectionManager.this.connection = null;
+          KNXIpConnectionManager.this.scheduleReconnectTask();
+       }
+
        this.interfaceStatus = status;
     }
 
@@ -803,20 +833,19 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
       catch (KnxIpException e)
       {
-        log.error(e.getMessage());
-        // TODO reconnect
+        log.error("Service failed", e);
+        KNXIpConnectionManager.this.scheduleReconnectTask();
       }
 
       catch (InterruptedException e)
       {
-        // Ignore
         Thread.currentThread().interrupt();
       }
 
       catch (IOException e)
       {
-        log.error(e.getMessage());
-        // TODO reconnect
+        log.error("Service failed", e);
+        KNXIpConnectionManager.this.scheduleReconnectTask();
       }
 
       return null;
@@ -912,6 +941,68 @@ public class KNXIpConnectionManager implements DiscoveryListener
       }
 
       internalState.put(address, apdu);
+    }
+  }
+  
+  private class ReconnectTask extends TimerTask {
+
+    @Override
+    public void run() {       
+      // Launch new discovery
+      try {
+        KNXIpConnectionManager.this.start();
+        synchronized(KNXIpConnectionManager.this.reconnectLock) {
+          if(KNXIpConnectionManager.this.getConnection() != null) {
+             KNXIpConnectionManager.this.reconnector.cancel();
+             KNXIpConnectionManager.this.reconnector = null;
+             return;
+          }
+        }
+      } catch (ConnectionException e) {
+        log.warn("Could not reconnect", e);
+      }
+      this.cancelConnection();
+    }
+    
+    private void cancelConnection() {
+      if(KNXIpConnectionManager.this.connection != null) {
+        try {
+          KNXIpConnectionManager.this.stop();
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }  
+      }
+    }
+  }
+  
+  private class ConnectTask extends TimerTask {
+     private IpTunnelClient client;
+     
+     ConnectTask(IpTunnelClient client) {
+      this.client = client;  
+     }
+     
+
+    @Override
+    public void run() {
+      try {
+        this.client.connect();
+      } catch (KnxIpException e) {
+         log.error("Connect failed", e);
+         // Do nothing if already connected
+         if(e.getCode() != Code.alreadyConnected) {
+           KNXIpConnectionManager.this.scheduleReconnectTask();
+         }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (IOException e) {
+        log.error("Connect failed", e);
+        KNXIpConnectionManager.this.scheduleReconnectTask();
+      } catch(Throwable t) {
+        log.error("Connect failed", t);
+        KNXIpConnectionManager.this.scheduleReconnectTask();
+      }
+      KNXIpConnectionManager.this.connection.connector.cancel();
     }
   }
 }
