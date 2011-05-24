@@ -132,6 +132,8 @@ public class IpTunnelClient implements IpProcessorListener {
 
             // Register shutdown hook
             Runtime.getRuntime().addShutdownHook(IpTunnelClient.this.shutdownHook);
+            
+            log.info("Connected to KNX-IP interface " + this.destControlEndpointAddr);
          } else {
             this.processor.stop();
             throw new KnxIpException(Code.responseError, "Connect failed : " + st);
@@ -158,6 +160,8 @@ public class IpTunnelClient implements IpProcessorListener {
             if (st != IpDisconnectResp.OK) {
                throw new KnxIpException(Code.responseError, "Disconnect failed : " + st);
             }
+            
+            log.info("Disconnected gracefully from " + this.destControlEndpointAddr);
          } else {
             this.terminateConnection();
             throw new KnxIpException(Code.wrongChannelId, "Disconnect failed");
