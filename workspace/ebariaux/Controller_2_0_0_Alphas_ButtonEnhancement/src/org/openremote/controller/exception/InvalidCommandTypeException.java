@@ -31,7 +31,7 @@ public class InvalidCommandTypeException extends ControlCommandException {
     * Instantiates a new invalid command type exception.
     */
    public InvalidCommandTypeException() {
-      super("Invalid button command type (should be one of click, press and release)");
+      super("Invalid button command type (should be one of press, shortRelease, longPress, longRelease)");
       setErrorCode(ControlCommandException.INVALID_COMMAND_TYPE);
    }
 
@@ -42,7 +42,7 @@ public class InvalidCommandTypeException extends ControlCommandException {
     * @param cause the cause
     */
    public InvalidCommandTypeException(String message, Throwable cause) {
-      super("Invalid button command type : " + message+" (should be one of click, press and release)" , cause);
+      super("Invalid button command type : " + message+" (should be one of press, shortRelease, longPress, longRelease)" , cause);
       setErrorCode(ControlCommandException.INVALID_COMMAND_TYPE);
    }
 
@@ -52,7 +52,7 @@ public class InvalidCommandTypeException extends ControlCommandException {
     * @param message the message
     */
    public InvalidCommandTypeException(String message) {
-      super("Invalid button command type : " + message+" (should be one of click, press and release)");
+      super("Invalid button command type : " + message+" (should be one of press, shortRelease, longPress, longRelease)");
       setErrorCode(ControlCommandException.INVALID_COMMAND_TYPE);
    }
    
