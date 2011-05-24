@@ -47,16 +47,21 @@ public class ButtonBuilder extends ComponentBuilder {
     public Component build(Element componentElement, String commandParam) {
        Button button = new Button();
        if (button.isValidActionWith(commandParam)) {
-          List<Element> commandRefElements = componentElement.getChildren();
-          for (Element commandRefElement : commandRefElements) {
-              if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
+         List<Element> macroElements = componentElement.getChildren();
+         for (Element macroElement : macroElements) {
+           if (commandParam.equalsIgnoreCase(macroElement.getAttribute("commandParam").getValue())) {
+              List<Element> commandRefElements = macroElement.getChildren();
+              for (Element commandRefElement : commandRefElements) {
+                if (Control.DELAY_ELEMENT_NAME.equalsIgnoreCase(commandRefElement.getName())) {
                   button.addExecutableCommand(new DelayCommand(commandRefElement.getTextTrim()));
                   continue;
+                }
+                String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+                Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
+                ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
+                button.addExecutableCommand(command);
               }
-              String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
-              Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
-              ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
-              button.addExecutableCommand(command);
+            }
           }
        }
        return button;
