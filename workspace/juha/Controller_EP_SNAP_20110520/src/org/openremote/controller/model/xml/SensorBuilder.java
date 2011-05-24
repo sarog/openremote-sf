@@ -669,9 +669,21 @@ public class SensorBuilder
       }
     }
 
-    log.debug(
-        "Created switch sensor (Name = ''{0}'', ID = {1}) with {2}.", sensorName, sensorIDValue, mapping
-    );
+    // Check if states have been filled in by explicit XML settings. If not, create them
+    // for our object model. Thus we ensure 'switch' will always have on/off states in our
+    // internal model.
+ 
+    if (!mapping.hasState("on"))
+    {
+      mapping.addState("on");
+    }
+
+    if (!mapping.hasState("off"))
+    {
+      mapping.addState("off");
+    }
+
+    // Done!
 
     return mapping;
   }
