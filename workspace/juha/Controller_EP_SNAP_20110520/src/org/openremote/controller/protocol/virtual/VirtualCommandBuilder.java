@@ -176,7 +176,7 @@ public class VirtualCommandBuilder implements CommandBuilder
     }
 
 
-    if (command.equalsIgnoreCase("BlinkLight") ||
+    else if (command.equalsIgnoreCase("BlinkLight") ||
         command.equalsIgnoreCase("BlinkLights") )
     {
       cmd = new BlinkLightListener();
