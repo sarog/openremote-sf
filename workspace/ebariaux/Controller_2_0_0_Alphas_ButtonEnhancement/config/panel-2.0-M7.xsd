@@ -327,7 +327,12 @@
 			<xsd:attribute name="id" type="idType" use="required" />
 			<xsd:attribute name="name" type="xsd:string" use="required" />
 			<xsd:attribute name="repeat" type="xsd:boolean" use="optional"/>
-			<xsd:attribute name="hasControlCommand" type="xsd:boolean" use="optional"/>
+                        <xsd:attribute name="repeatDelay" type="xsd:integer" minInclusive="100" use="optional"/>
+                        <xsd:attribute name="hasPressCommand" type="xsd:boolean" use="optional"/>
+                        <xsd:attribute name="hasShortReleaseCommand" type="xsd:boolean" use="optional"/>
+                        <xsd:attribute name="hasLongPressCommand" type="xsd:boolean" use="optional"/>
+                        <xsd:attribute name="hasLongReleaseCommand" type="xsd:boolean" use="optional"/>
+                        <xsd:attribute name="longPressDelay" type="xsd:integer" minInclusive="250" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	
