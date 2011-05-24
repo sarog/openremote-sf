@@ -40,15 +40,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.openremote.controller.utils.Logger;
 import org.openremote.controller.protocol.knx.DataLink.MessageCode;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
 import org.openremote.controller.protocol.knx.ip.DiscoveryListener;
 import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
-import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
+import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.KnxIpException;
-import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
+import org.openremote.controller.utils.Logger;
 
 
 /**
@@ -650,8 +649,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
     @Override public synchronized ApplicationProtocolDataUnit read(GroupValueRead command)
     {
       // Send a GroupValue_Read command only if the device status has not been synchronized yet.
-
-      if(command.needBusRead())
+      if(this.internalState.get(command.getAddress()) == null)
       {
         this.service(command);
 
@@ -767,8 +765,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
     
     @Override
     public void notifyInterfaceStatus(Status status) {
+       log.info("Interface new status = " + status);
+
        // If a disconnection is detected, launch a reconnect task
        if(this.interfaceStatus == Status.connected && status == Status.disconnected) {
+          
           // Unreference connection as it is considered as disconnected
           KNXIpConnectionManager.this.connection = null;
           KNXIpConnectionManager.this.scheduleReconnectTask();
@@ -946,24 +947,24 @@ public class KNXIpConnectionManager implements DiscoveryListener
         KNXIpConnectionManager.this.start();
         KNXConnectionImpl c = (KNXConnectionImpl) KNXIpConnectionManager.this.getConnection(); 
         if(c != null) {
-          try {
-            c.client.connect();
-            this.cancelTask();
-            return;
-          } catch (KnxIpException e) {
-            log.error("Connect failed", e);
-            // Do nothing if already connected
-            if(e.getCode() == Code.alreadyConnected) {
+//          try {
+//            c.client.connect();
+//            this.cancelTask();
+//            return;
+//          } catch (KnxIpException e) {
+//            log.error("Connect failed", e);
+//            // Do nothing if already connected
+//            if(e.getCode() == Code.alreadyConnected) {
               this.cancelTask();
               return;
-            }
-          } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-          } catch (IOException e) {
-            log.error("Connect failed", e);
-          } catch(Throwable t) {
-            log.error("Connect failed", t);
-          }
+//            }
+//          } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//          } catch (IOException e) {
+//            log.error("Connect failed", e);
+//          } catch(Throwable t) {
+//            log.error("Connect failed", t);
+//          }
         }
       } catch (ConnectionException e) {
         log.warn("Could not reconnect", e);
