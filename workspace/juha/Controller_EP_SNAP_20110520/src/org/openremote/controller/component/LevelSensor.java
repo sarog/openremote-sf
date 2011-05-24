@@ -23,16 +23,40 @@ package org.openremote.controller.component;
 import org.openremote.controller.protocol.EventProducer;
 
 /**
- * TODO
+ * TODO : ORCJAVA-104
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class LevelSensor extends RangeSensor
 {
 
+  /**
+   * TODO
+   *
+   * @param name
+   * @param sensorID
+   * @param producer
+   */
   public LevelSensor(String name, int sensorID, EventProducer producer)
   {
     super(name, sensorID, EnumSensorType.LEVEL, producer, 0, 100, false);
   }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * String representation of a range sensor. Returns sensor's name, ID, and range minimum and
+   * maximum values.
+   *
+   * @return  this sensor as a string
+   */
+  @Override public String toString()
+  {
+    return
+        "Level Sensor (Name = '" + getName() + "', ID = '" + getSensorID() +
+        "', Min: " + getMinValue() + ", Max: " + getMaxValue() +")";
+  }
+
 }
 
