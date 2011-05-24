@@ -85,10 +85,10 @@
         <image src="lightbackground1274950957643.png" />
       </background>
       <absolute left="43" top="108" width="86" height="52">
-        <button id="6" name="turn on" hasControlCommand="true" />
+        <button id="6" name="turn on" hasPressCommand="true" />
       </absolute>
       <absolute left="175" top="108" width="95" height="52">
-        <button id="8" name="turn off" hasControlCommand="true" />
+        <button id="8" name="turn off" hasPressCommand="true" />
       </absolute>
       <absolute left="127" top="174" width="185" height="54">
         <label id="10" fontSize="14" color="#0000FF" text="light status">
@@ -200,28 +200,28 @@
       </absolute>
       <grid left="52" top="61" width="210" height="200" rows="4" cols="3">
         <cell x="0" y="0" rowspan="1" colspan="1">
-          <button id="74" name="On" hasControlCommand="true" />
+          <button id="74" name="On" hasPressCommand="true" />
         </cell>
         <cell x="2" y="0" rowspan="1" colspan="1">
-          <button id="76" name="Off" hasControlCommand="true" />
+          <button id="76" name="Off" hasPressCommand="true" />
         </cell>
         <cell x="1" y="0" rowspan="1" colspan="1">
-          <button id="78" name="Mute" hasControlCommand="true" />
+          <button id="78" name="Mute" hasPressCommand="true" />
         </cell>
         <cell x="0" y="2" rowspan="1" colspan="1">
-          <button id="80" name="Vol-" hasControlCommand="true" />
+          <button id="80" name="Vol-" hasPressCommand="true" />
         </cell>
         <cell x="2" y="2" rowspan="1" colspan="1">
-          <button id="82" name="Vol+" hasControlCommand="true" repeat="true" />
+          <button id="82" name="Vol+" hasPressCommand="true" repeat="true" />
         </cell>
         <cell x="1" y="1" rowspan="1" colspan="1">
-          <button id="84" name="Ch+" hasControlCommand="true" />
+          <button id="84" name="Ch+" hasPressCommand="true" />
         </cell>
         <cell x="1" y="3" rowspan="1" colspan="1">
-          <button id="86" name="Ch-" hasControlCommand="true" />
+          <button id="86" name="Ch-" hasPressCommand="true" />
         </cell>
         <cell x="1" y="2" rowspan="1" colspan="1">
-          <button id="88" name="Menu" hasControlCommand="true" />
+          <button id="88" name="Menu" hasPressCommand="true" />
         </cell>
       </grid>
     </screen>
@@ -404,10 +404,10 @@
         <image src="lightbackground1274950957643.png" />
       </background>
       <absolute left="43" top="108" width="86" height="52">
-        <button id="212" name="turn on" hasControlCommand="true" />
+        <button id="212" name="turn on" hasPressCommand="true" />
       </absolute>
       <absolute left="175" top="108" width="95" height="52">
-        <button id="213" name="turn off" hasControlCommand="true" />
+        <button id="213" name="turn off" hasPressCommand="true" />
       </absolute>
       <absolute left="127" top="174" width="185" height="54">
         <label id="214" fontSize="14" color="#0000FF" text="light status">
@@ -566,10 +566,10 @@
         <image src="lightbackground1274950957643.png" />
       </background>
       <absolute left="43" top="108" width="86" height="52">
-        <button id="269" name="turn on" hasControlCommand="true" />
+        <button id="269" name="turn on" hasPressCommand="true" />
       </absolute>
       <absolute left="175" top="108" width="95" height="52">
-        <button id="270" name="turn off" hasControlCommand="true" />
+        <button id="270" name="turn off" hasPressCommand="true" />
       </absolute>
       <absolute left="68" top="24" width="185" height="54">
         <label id="271" fontSize="14" color="#0000FF" text="light status">
@@ -719,10 +719,10 @@
         <image src="dreamyworld1275038854819.jpg" />
       </background>
       <absolute left="43" top="166" width="86" height="52">
-        <button id="433" name="Turn on" hasControlCommand="true" />
+        <button id="433" name="Turn on" hasPressCommand="true" />
       </absolute>
       <absolute left="198" top="167" width="101" height="52">
-        <button id="435" name="Turn off" hasControlCommand="true" />
+        <button id="435" name="Turn off" hasPressCommand="true" />
       </absolute>
       <absolute left="120" top="64" width="87" height="85">
         <image id="437" src="OpenRemote.Logo.30x32.png">
@@ -819,19 +819,19 @@
       </absolute>
       <grid left="64" top="132" width="210" height="150" rows="3" cols="3">
         <cell x="1" y="0" rowspan="1" colspan="1">
-          <button id="476" name="Ch+" hasControlCommand="true" />
+          <button id="476" name="Ch+" hasPressCommand="true" />
         </cell>
         <cell x="1" y="2" rowspan="1" colspan="1">
-          <button id="478" name="Ch-" hasControlCommand="true" />
+          <button id="478" name="Ch-" hasPressCommand="true" />
         </cell>
         <cell x="0" y="1" rowspan="1" colspan="1">
-          <button id="480" name="Vol-" hasControlCommand="true" />
+          <button id="480" name="Vol-" hasPressCommand="true" />
         </cell>
         <cell x="2" y="1" rowspan="1" colspan="1">
-          <button id="482" name="Vol+" hasControlCommand="true" repeat="true" />
+          <button id="482" name="Vol+" hasPressCommand="true" repeat="true" />
         </cell>
         <cell x="1" y="1" rowspan="1" colspan="1">
-          <button id="484" name="Menu" hasControlCommand="true" />
+          <button id="484" name="Menu" hasPressCommand="true" />
         </cell>
       </grid>
     </screen>
