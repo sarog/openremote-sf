@@ -27,7 +27,7 @@ import org.openremote.controller.protocol.EventProducer;
 import org.openremote.controller.model.sensor.Sensor;
 
 /**
- * TODO
+ * TODO : ORCJAVA-105
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -99,11 +99,32 @@ public class RangeSensor extends Sensor
   }
 
 
+  // Sensor Implementation ------------------------------------------------------------------------
+
   @Override public String processEvent(String value)
   {
     // TODO
 
     return value;
   }
+
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * String representation of a range sensor. Returns sensor's name, ID, and range minimum and
+   * maximum values.
+   *
+   * @return  this sensor as a string
+   */
+  @Override public String toString()
+  {
+    return
+        "Range Sensor (Name = '" + getName() + "', ID = '" + getSensorID() +
+        "', Min: " + getMinValue() + ", Max: " + getMaxValue() +")";
+  }
+
+
 }
 
