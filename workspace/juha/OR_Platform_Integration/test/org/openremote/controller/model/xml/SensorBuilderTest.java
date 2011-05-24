@@ -202,7 +202,7 @@ public class SensorBuilderTest
     // need more tests to make sure different configuration variants are initialized correctly
     // and also test some error handling...
     
-    Assert.fail("Not Yet Implemented (see ORCJAVA-72)");
+    Assert.fail("Not Yet Implemented (see ORCJAVA-72 -- http://jira.openremote.org/browse/ORCJAVA-72)");
   }
 
 
@@ -232,6 +232,7 @@ public class SensorBuilderTest
   @Test public void testSwitchStateMappingWithNoValue() throws Exception
   {
     Sensor s = getSensorByID(717);
+
     Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
     Assert.assertTrue(s.getName().equals("se"));
     Assert.assertTrue(s.getSensorID() == 717);
@@ -254,6 +255,8 @@ public class SensorBuilderTest
     Assert.assertTrue(state.processEvent("off").equals("off"));
     Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
 
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
   }
 
 
@@ -268,6 +271,9 @@ public class SensorBuilderTest
   @Test public void testSwitchStateMappingWithNoValueAndListener() throws Exception
   {
     Sensor s = getSensorByID(727);
+
+    s.start();
+    
     Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
     Assert.assertTrue(s.getName().equals("se2"));
     Assert.assertTrue(s.getSensorID() == 727);
@@ -297,8 +303,16 @@ public class SensorBuilderTest
     // should have something since its a listener...
 
     Assert.assertFalse(status.equals(Sensor.UNKNOWN_STATUS));
+
+    Assert.assertTrue(s.isEventListener());
+    Assert.assertFalse(s.isPolling());
   }
 
+
+  // TODO : test Sensor.update
+  // TODO : test Sensor.start
+
+  
 
   // Helpers --------------------------------------------------------------------------------------
 
