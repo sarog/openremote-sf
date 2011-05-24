@@ -69,7 +69,6 @@
 	[self addSubview:uiButton];
 }
 
-// Event handler for button up.
 - (void)controlButtonUp:(id)sender {
 	[self cancelTimers];
 	Button *button = (Button *)self.component;
@@ -86,7 +85,6 @@
 	}
 }
 
-// Event handler for button down.
 - (void)controlButtonDown:(id)sender {
 	[self cancelTimers];
 	self.longPress = NO;
@@ -95,7 +93,7 @@
 	if (button.hasPressCommand == YES) {
 		[self sendPressCommand:nil];
 	 	if (button.repeat == YES ) {			
-			self.buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:(button.repeatDelay / 1000.0) target:self selector:@selector(sendCommand:) userInfo:nil repeats:YES];			
+			self.buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:(button.repeatDelay / 1000.0) target:self selector:@selector(sendPressCommand:) userInfo:nil repeats:YES];			
 		}
 	}
     if (button.hasLongPressCommand || button.hasLongReleaseCommand) {
@@ -164,8 +162,6 @@
 	
 	uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:13];
 	uiButton.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
-	//[uiButton setTitleShadowColor:[UIColor grayColor] forState:UIControlStateNormal];
-	//uiButton.titleLabel.shadowOffset = CGSizeMake(0, -2);
 	[uiButton setTitle:button.name forState:UIControlStateNormal];	
 }
 
