@@ -20,8 +20,6 @@
  */
 
 #import "PanelXMLParsingTests.h"
-#import "Group.h"
-#import "Screen.h"
 #import "Control.h"
 #import "LayoutContainer.h"
 #import "AbsoluteLayoutContainer.h"
@@ -34,7 +32,6 @@
 #import "Image.h"
 #import "Gesture.h"
 #import "XMLEntity.h"
-#import "Tabbar.h"
 #import "TabbarItem.h"
 #import "SensorState.h"
 #import "Definition.h"
@@ -132,18 +129,18 @@
 	
 	STAssertTrue(buts.count== 11,@"expected %d, but %d",11,buts.count);
 	STAssertTrue(((Button *)[buts objectAtIndex:0]).navigate.toScreen == 19,@"expected %d",19);
-	STAssertTrue(((Button *)[buts objectAtIndex:0]).hasCommand == NO,@"expected NO");
-	STAssertTrue(((Button *)[buts objectAtIndex:1]).hasCommand == YES,@"expected YES");
+	STAssertTrue(((Button *)[buts objectAtIndex:0]).hasPressCommand == NO,@"expected NO");
+	STAssertTrue(((Button *)[buts objectAtIndex:1]).hasPressCommand == YES,@"expected YES");
 	STAssertTrue(((Button *)[buts objectAtIndex:1]).navigate == nil,@"expected nil");
-	STAssertTrue(((Button *)[buts objectAtIndex:2]).hasCommand == NO,@"expected NO");
+	STAssertTrue(((Button *)[buts objectAtIndex:2]).hasPressCommand == NO,@"expected NO");
 	STAssertTrue(((Button *)[buts objectAtIndex:2]).navigate.toScreen == 29,@"expected %d",29);
-	STAssertTrue(((Button *)[buts objectAtIndex:3]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:3]).hasPressCommand == NO,@"expected %d",NO);
 	STAssertTrue(((Button *)[buts objectAtIndex:3]).navigate.toGroup == 9,@"expected %d",9);
-	STAssertTrue(((Button *)[buts objectAtIndex:4]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:4]).hasPressCommand == NO,@"expected %d",NO);
 	STAssertTrue(((Button *)[buts objectAtIndex:4]).navigate.toGroup == 9,@"expected %d",9);
-	STAssertTrue(((Button *)[buts objectAtIndex:5]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:5]).hasPressCommand == NO,@"expected %d",NO);
 	STAssertTrue(((Button *)[buts objectAtIndex:5]).navigate.isPreviousScreen == YES,@"expected %d",YES);
-	STAssertTrue(((Button *)[buts objectAtIndex:6]).hasCommand == NO,@"expected %d",NO);
+	STAssertTrue(((Button *)[buts objectAtIndex:6]).hasPressCommand == NO,@"expected %d",NO);
 	STAssertTrue(((Button *)[buts objectAtIndex:6]).navigate.isNextScreen == YES,@"expected %d",YES);
 	STAssertTrue(((Button *)[buts objectAtIndex:7]).navigate.isSetting == YES,@"expected %d",YES);
 	STAssertTrue(((Button *)[buts objectAtIndex:8]).navigate.isBack == YES,@"expected %d",YES);
