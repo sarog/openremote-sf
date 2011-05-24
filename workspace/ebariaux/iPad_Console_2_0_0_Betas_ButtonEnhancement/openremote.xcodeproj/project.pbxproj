@@ -24,6 +24,11 @@
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
+		6026CD77138BD9170062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
+		6026CD79138BD9240062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
+		6026CD7A138BD9590062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
+		6026CD81138BE1A60062477F /* panel_button.xml in Resources */ = {isa = PBXBuildFile; fileRef = 6026CD80138BE1A60062477F /* panel_button.xml */; };
+		6026CD84138BE1D00062477F /* ButtonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6026CD83138BE1D00062477F /* ButtonTest.m */; };
 		6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
 		6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
 		605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
@@ -442,6 +447,9 @@
 		33C3A49310FE32E3001C520E /* ColorUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtil.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
+		6026CD80138BE1A60062477F /* panel_button.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = panel_button.xml; path = Test/fixture/xml/panel_button.xml; sourceTree = "<group>"; };
+		6026CD82138BE1D00062477F /* ButtonTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ButtonTest.h; path = Test/ButtonTest.h; sourceTree = "<group>"; };
+		6026CD83138BE1D00062477F /* ButtonTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ButtonTest.m; path = Test/ButtonTest.m; sourceTree = "<group>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
 		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
@@ -1529,6 +1537,8 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				6026CD82138BE1D00062477F /* ButtonTest.h */,
+				6026CD83138BE1D00062477F /* ButtonTest.m */,
 				8CEFDAEF11BF444100CEDC24 /* util */,
 				338C3CD210D60F3F0029D62B /* view */,
 				8CEB4E7810B27F3700A67721 /* panelxml */,
@@ -1603,6 +1613,7 @@
 		8CEB4E7810B27F3700A67721 /* panelxml */ = {
 			isa = PBXGroup;
 			children = (
+				6026CD80138BE1A60062477F /* panel_button.xml */,
 				60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */,
 				8C5796E6116B9DD000ED63EA /* panel_absolute_image.xml */,
 				8C5796E7116B9DD000ED63EA /* panel_absolute_label.xml */,
@@ -2002,6 +2013,7 @@
 				8C579703116B9DD000ED63EA /* panel_local_tabbar.xml in Resources */,
 				8C579704116B9DD000ED63EA /* panel_portrait_landscape.xml in Resources */,
 				8C579705116B9DD000ED63EA /* panel_relative_screen_backgroundimage.xml in Resources */,
+				6026CD81138BE1A60062477F /* panel_button.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2249,6 +2261,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6026CD7A138BD9590062477F /* PollingStatusParserDelegate.m in Sources */,
+				6026CD79138BD9240062477F /* ORControllerPanelsFetcher.m in Sources */,
+				6026CD77138BD9170062477F /* ORControllerPollingSender.m in Sources */,
 				6068DEA313744EC7007746F1 /* ControllerRequest.m in Sources */,
 				6068DE9F13744E9F007746F1 /* AsyncSocket.m in Sources */,
 				6068DEA013744E9F007746F1 /* AsyncUdpSocket.m in Sources */,
@@ -2307,6 +2322,7 @@
 				609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */,
 				609C57DE137430F60093C03A /* PanelXMLParsingTests.m in Sources */,
 				609C57DF137430F60093C03A /* ScreenTest.m in Sources */,
+				6026CD84138BE1D00062477F /* ButtonTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
