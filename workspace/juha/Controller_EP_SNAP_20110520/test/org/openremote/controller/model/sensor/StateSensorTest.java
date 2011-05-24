@@ -241,9 +241,10 @@ public class StateSensorTest
 
   @Test public void testConstructorArgs()
   {
-    // test null args, etc
+    // TODO : test null args, etc
+    // TODO : make sure no NPE's on object methods (such as toString) because of null field values
 
-    Assert.fail("Not Yet Implemented.");
+    Assert.fail("Not Yet Implemented. See ORCJAVA-106 -- http://jira.openremote.org/browse/ORCJAVA-106");
   }
 
 
@@ -272,7 +273,6 @@ public class StateSensorTest
     Assert.assertTrue(s1.getProperties().values().contains("0"));
     Assert.assertTrue(s1.getProperties().values().contains("1"));
     Assert.assertTrue(s1.getProperties().values().contains("2"));
-
   }
 
 
@@ -280,18 +280,56 @@ public class StateSensorTest
 
   @Test public void testMixedStateMapping()
   {
-    // test state mappings where only some of the states are mapped to other values..
+    // TODO : test state mappings where only some of the states are mapped to other values..
 
 
-    Assert.fail("Not Yet Implemented.");
+    Assert.fail("Not Yet Implemented. See ORCJAVA-107 -- http://jira.openremote.org/browse/ORCJAVA-107");
   }
 
   @Test public void testMappingToNull()
   {
 
-    // test cases where some map to nulls or empty strings...
+    // TODO : test cases where some map to nulls or empty strings...
 
-    Assert.fail("Not Yet Implemented.");
+    Assert.fail("Not Yet Implemented. See ORCJAVA-108 -- http://jira.openremote.org/browse/ORCJAVA-108");
+  }
+
+
+  @Test public void testArbitraryStringPassThrough()
+  {
+    // TODO :
+    //   - Some panel behavior depends on 'CUSTOM' type sensor passing through arbitrary strings
+    //     unfiltered. Make sure we're not too aggressive with validating custom state sensor
+    //     output to restrict this usage and allow arbitrary strings to pass through if no state
+    //     mappings are defined.
+
+    Assert.fail("Not Yet Implemented. See ORCJAVA-109 -- http://jira.openremote.org/browse/ORCJAVA-109");
+  }
+
+
+  @Test public void testToString()
+  {
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addState("foo");
+
+    StateSensor s1 = new StateSensor("single", 1, new StateReadCommand("foo"), states);
+
+    Assert.assertTrue(s1.toString().contains("single"));
+    Assert.assertTrue(s1.toString().contains("foo"));
+
+
+    states = new StateSensor.DistinctStates();
+    states.addState("foo");
+    states.addState("bar");
+
+    s1 = new StateSensor("twostate", 2, new StateReadCommand("foo", "bar"), states);
+
+    Assert.assertTrue(s1.toString().contains("twostate"));
+    Assert.assertTrue(s1.toString().contains("foo"));
+    Assert.assertTrue(s1.toString().contains("bar"));
+
+
+    // TODO : test behavior if null fields in the object are allowed
   }
 
 
