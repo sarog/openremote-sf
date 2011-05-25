@@ -36,6 +36,7 @@
        xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire = "byName">
+       
   <bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
@@ -43,13 +44,14 @@
             <value>classpath:config.properties</value>
             <value>classpath:roundrobin.properties</value>
             <value>classpath:lutron_homeworks.properties</value>
+            <value>classpath:russound.properties</value>
           </list>
       </property>
   </bean>
 
-  <bean id="russoundConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+  <bean id="russoundCommands" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 	<property name="location">
-		<value>classpath:russound.properties</value>
+		<value>classpath:russoundCommands.properties</value>
 	</property>
   </bean>
 
@@ -96,6 +98,13 @@
   
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
+  <bean id="russoundConfiguration" class="org.openremote.controller.RussoundConfiguration">
+  	<property name="connectionType" value="${russound.connectionType}" />
+  	<property name="comPort" value="${russound.comPort}" />
+  	<property name="udpIp" value="${russound.udpIp}" />
+  	<property name="udpPort" value="${russound.udpPort}" />
+  </bean>
+  
     <!-- service for control command from panel -->
     <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
     
