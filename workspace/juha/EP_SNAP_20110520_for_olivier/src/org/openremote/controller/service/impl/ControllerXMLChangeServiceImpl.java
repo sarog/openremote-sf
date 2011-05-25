@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
@@ -40,8 +39,11 @@ import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.utils.Logger;
 
 /**
+ * TODO : this needs a complete refactoring, see ORCJAVA-115
+ * 
  * Controller.xml monitoring service.
  * 
  * @author handy.wang 2010-03-19
@@ -217,8 +219,12 @@ public class ControllerXMLChangeServiceImpl implements ControllerXMLChangeServic
         Element sensorElement = sensorElementIterator.next();
         Sensor sensor = sensorBuilder.build(sensorElement);
 
-//System.out.println("\n\n\n\n ------------------- Adding sensor at runtime: " + sensor.getSensorID());
-        
+        // Pull out a specific log category just to log the creation of sensor objects
+        // in this method (happens at startup or soft restart)...
+
+        Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
+            .info("Created sensor : {0}", sensor.toString());
+
         controllerXMLListenSharingData.addSensor(sensor);
       }
 

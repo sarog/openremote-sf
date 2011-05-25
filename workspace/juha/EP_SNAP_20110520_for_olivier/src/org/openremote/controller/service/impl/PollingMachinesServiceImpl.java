@@ -43,13 +43,28 @@ import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.Logger;
 
 /**
- * TODO : Polling status from devices by sensor status command.
- * 
+ * TODO :
+ *
+ *   Polling status from devices by sensor status command.
+ *
+ *   Deprecated and to be removed by ORCJAVA-101, ORCJAVA-115 and ORCJAVA-116
+ *
+ *   See ORCJAVA-117 -- http://jira.openremote.org/browse/ORCJAVA-117
+ *
+ *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Handy.Wang 2010-03-17
  *
+ * @deprecated This class has no clear purpose, it is a mix of controller initialization,
+ *             runtime deployment, and thread management. A typical ball-of-mud spaghetti
+ *             monster from China.
+ *
+ *             For the parts related to deployment and initialization, see ORCJAVA-115
+ *
+ *             For the parts related to sensor thread management, see ORCJAVA-116, ORCJAVA-101
+ *
  */
-public class PollingMachinesServiceImpl implements PollingMachinesService {
+@Deprecated public class PollingMachinesServiceImpl implements PollingMachinesService {
 
 
   // Class Members --------------------------------------------------------------------------------
@@ -117,8 +132,12 @@ public class PollingMachinesServiceImpl implements PollingMachinesService {
         {
           Sensor sensor = sensorBuilder.build(sensorElement);
 
-//System.out.println(" --------------- Add Sensor: " + sensor.getSensorID());
+          // Pull out a specific log category just to log the creation of sensor objects
+          // in this method (happens at startup or soft restart)...
 
+          Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
+              .info("Created sensor : {0}", sensor.toString());
+          
           controllerXMLListenSharingData.addSensor(sensor);
 
           statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), StatusCommand.UNKNOWN_STATUS);
