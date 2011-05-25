@@ -172,7 +172,7 @@ public class IpTunnelClient implements IpProcessorListener {
       }
    }
    
-   private void terminateConnection() throws InterruptedException {
+   public void terminateConnection() throws InterruptedException {
       // notify connection OK
       this.messageListener.notifyInterfaceStatus(Status.disconnected);
       

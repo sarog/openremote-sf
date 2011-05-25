@@ -129,7 +129,7 @@ class GroupValueRead extends KNXCommand implements StatusCommand
   public String read(EnumSensorType sensorType, Map<String, String> statusMap)
   {
 
-//    log.debug("Polling device status for " + this);
+    log.debug("Polling device status for " + this);
 
     ApplicationProtocolDataUnit responseAPDU = super.read(this);
 

@@ -47,6 +47,7 @@ import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.KnxIpException;
+import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.utils.Logger;
 
 
@@ -99,6 +100,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private String knxIpInterfaceHostname;
   private int knxIpInterfacePort;
   private Timer reconnector;
+  private Object reconnectorLock;
 
   // Constructors --------------------------------------------------------------------------------
 
@@ -109,6 +111,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
     this.discoverers = new HashSet<IpDiscoverer>();
     this.knxIpInterfaceHostname = null;
     this.reconnector = null;
+    this.reconnectorLock = new Object();
   }
 
   public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
@@ -144,7 +147,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
         this.connectionLock.notify();
 
-        log.info("Using KNX IP interface at " + destControlEndpointAddr);
+        log.info("Connection created for KNX IP interface at " + destControlEndpointAddr);
       }
     }
   }
@@ -164,25 +167,22 @@ public class KNXIpConnectionManager implements DiscoveryListener
    */
   protected void start() throws ConnectionException
   {
-    if (this.connection == null)
+    // Start KNX multicast discovery...
+    Set<InetAddress> nics = resolveLocalAddresses();
+
+    for (InetAddress inet : nics)
     {
-      // Start KNX multicast discovery...
-      Set<InetAddress> nics = resolveLocalAddresses();
+      IpDiscoverer discoverer = new IpDiscoverer(inet, this);
 
-      for (InetAddress inet : nics)
+      try
       {
-        IpDiscoverer discoverer = new IpDiscoverer(inet, this);
+        this.discoverers.add(discoverer);
+        discoverer.start();
+      }
 
-        try
-        {
-          this.discoverers.add(discoverer);
-          discoverer.start();
-        }
-
-        catch (Exception e)
-        {
-          log.info("Failed to get network interface for address '" + inet + "'. Skipping...");
-        }
+      catch (Exception e)
+      {
+        log.info("Failed to get network interface for address '" + inet + "'. Skipping...");
       }
     }
   }
@@ -237,9 +237,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
   private KNXConnectionImpl waitForConnection() throws ConnectionException
   {
-    if (this.connection != null)
-    {
-      return this.connection;
+    synchronized(this.connectionLock) {
+      if (this.connection != null)
+      {
+        return this.connection;
+      }
     }
 
     // Wait for a connection
@@ -610,9 +612,12 @@ public class KNXIpConnectionManager implements DiscoveryListener
    * Schedule a reconnect task every 10s, starting now.
    */
   private void scheduleReconnectTask() {
-    if(this.reconnector == null) {
-      this.reconnector = new Timer("KNX IP reconnector");
-      this.reconnector.schedule(new ReconnectTask(), 10000, 10000);
+    synchronized(this.reconnectorLock) {
+      if(this.reconnector == null) {
+        this.reconnector = new Timer("KNX IP reconnector");
+        this.reconnector.schedule(new ReconnectTask(), 1, 10000);
+        log.info("Scheduled reconnection task");
+      }
     }
   }
 
@@ -765,13 +770,10 @@ public class KNXIpConnectionManager implements DiscoveryListener
     
     @Override
     public void notifyInterfaceStatus(Status status) {
-       log.info("Interface new status = " + status);
+       log.info("Notified with KNX interface status = " + status);
 
-       // If a disconnection is detected, launch a reconnect task
-       if(this.interfaceStatus == Status.connected && status == Status.disconnected) {
-          
-          // Unreference connection as it is considered as disconnected
-          KNXIpConnectionManager.this.connection = null;
+       // If status is disconnected, launch a reconnect task
+       if(status == Status.disconnected) {
           KNXIpConnectionManager.this.scheduleReconnectTask();
        }
 
@@ -828,7 +830,13 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (KnxIpException e)
       {
         log.error("Service failed", e);
-        KNXIpConnectionManager.this.scheduleReconnectTask();
+        if(e.getCode() != Code.alreadyConnected) {
+          try {
+            this.client.terminateConnection();
+          } catch (InterruptedException e1) {
+             Thread.currentThread().interrupt();
+          }
+        }
       }
 
       catch (InterruptedException e)
@@ -839,7 +847,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (IOException e)
       {
         log.error("Service failed", e);
-        KNXIpConnectionManager.this.scheduleReconnectTask();
+        try {
+           this.client.terminateConnection();
+         } catch (InterruptedException e1) {
+            Thread.currentThread().interrupt();
+         }
       }
 
       return null;
@@ -944,47 +956,34 @@ public class KNXIpConnectionManager implements DiscoveryListener
     public void run() {       
       // Launch new discovery
       try {
+        log.info("Trying to reconnect");
+        this.removeConnection();
         KNXIpConnectionManager.this.start();
-        KNXConnectionImpl c = (KNXConnectionImpl) KNXIpConnectionManager.this.getConnection(); 
+        KNXConnectionImpl c = (KNXConnectionImpl) KNXIpConnectionManager.this.getConnection();
         if(c != null) {
-//          try {
-//            c.client.connect();
-//            this.cancelTask();
-//            return;
-//          } catch (KnxIpException e) {
-//            log.error("Connect failed", e);
-//            // Do nothing if already connected
-//            if(e.getCode() == Code.alreadyConnected) {
-              this.cancelTask();
-              return;
-//            }
-//          } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//          } catch (IOException e) {
-//            log.error("Connect failed", e);
-//          } catch(Throwable t) {
-//            log.error("Connect failed", t);
-//          }
+          this.cancelTask();
+          return;
         }
       } catch (ConnectionException e) {
         log.warn("Could not reconnect", e);
       }
-      this.cancelConnection();
     }
     
-    private void cancelConnection() {
-      if(KNXIpConnectionManager.this.connection != null) {
-        try {
-          KNXIpConnectionManager.this.stop();
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }  
-      }
+    private void removeConnection() {
+      log.info("Cancelling reconnection");
+      try {
+        KNXIpConnectionManager.this.stop();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }  
     }
     
     private void cancelTask() {
-      KNXIpConnectionManager.this.reconnector.cancel();
-      KNXIpConnectionManager.this.reconnector = null;
+      log.info("Stopping reconnect task");
+      synchronized(KNXIpConnectionManager.this.reconnectorLock) {
+        KNXIpConnectionManager.this.reconnector.cancel();
+        KNXIpConnectionManager.this.reconnector = null;
+      }
     }
   }
 }
