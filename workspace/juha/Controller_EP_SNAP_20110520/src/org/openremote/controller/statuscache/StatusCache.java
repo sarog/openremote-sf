@@ -111,17 +111,18 @@ public class StatusCache
   public synchronized void update(Event event)
   {
     eventProcessorChain.push(event);
-     
 
+    String eventValue = event.serialize();
+    
     String oldStatus = sensorStatus.get(event.getSourceID());
-    sensorStatus.put(event.getSourceID(), event.serialize());
+    sensorStatus.put(event.getSourceID(), eventValue);
 
     logger.trace(
         "Updated cache with Sensor ID = {0} (''{1}'') with value ''{2}''.",
         event.getSourceID(), event.getSource(), eventValue
     );
 
-    if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(event.getValue()))
+    if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(eventValue))
     {
       changedStatusTable.updateStatusChangedIDs(event.getSourceID());
 
