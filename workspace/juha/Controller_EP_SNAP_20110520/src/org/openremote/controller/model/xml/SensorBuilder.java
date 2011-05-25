@@ -188,7 +188,7 @@ public class SensorBuilder
   /**
    * Common log category for all XML parsing related activities.
    */
-  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+  private final static Logger log = Logger.getLogger(Constants.SENSOR_XML_PARSER_LOG_CATEGORY);
 
 
   // Private Instance Fields ----------------------------------------------------------------------
@@ -200,74 +200,6 @@ public class SensorBuilder
   // Public Instance Methods ----------------------------------------------------------------------
 
 
-  /**
-   * Constructs a sensor instance from a given document and JDOM XML element pointing to a
-   * <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt> element
-   * in the controller.xml file.
-   *
-   * @param document        TODO specified JDOM document of controller.xml, use default
-   *                        controller.xml if it's null.
-   * @param sensorElement   JDOM element for sensor
-   *
-   * @throws InitializationException    if the sensor model cannot be built from the given XML
-   *                                    element
-   *
-   * @return initialized sensor instance
-   */
-  public Sensor build(Document document, Element sensorElement) throws InitializationException
-  {
-    String sensorIDValue = sensorElement.getAttributeValue("id");
-    String sensorName = sensorElement.getAttributeValue("name");
-
-    EnumSensorType type = parseSensorType(sensorElement);
-
-    try
-    {
-      int sensorID = Integer.parseInt(sensorIDValue);
-      EventProducer ep = parseSensorEventProducer(document, sensorElement);
-
-      switch (type)
-      {
-        case RANGE:
-
-          int min = getMinProperty(sensorElement);
-          int max = getMaxProperty(sensorElement);
-
-          return new RangeSensor(sensorName, sensorID, ep, min, max);
-
-        case LEVEL:
-
-          return new LevelSensor(sensorName, sensorID, ep);
-
-        case SWITCH:
-
-          StateSensor.DistinctStates states = getSwitchStateMapping(sensorElement);
-
-          return new SwitchSensor(sensorName, sensorID, ep, states);
-
-        case CUSTOM:
-
-          StateSensor.DistinctStates stateMapping = getDistinctStateMapping(sensorElement);
-
-          return new StateSensor(sensorName, sensorID, ep, stateMapping);
-
-        default:
-
-          throw new InitializationException(
-              "Using an unknown sensor type {0} -- SensorBuilder implementation must be " +
-              "updated to handle this new type.", type
-          );
-      }
-    }
-
-    catch (NumberFormatException e)
-    {
-        throw new XMLParsingException(
-            "Currently only integer values are accepted as unique sensor ids. " +
-            "Could not parse {0} to integer.", sensorIDValue
-        );
-    }
-  }
 
   /**
    * Constructs a sensor instance from controller's controller.xml document using a JDOM XML
@@ -335,7 +267,15 @@ public class SensorBuilder
 
       Element sensorElement = controllerXMLParser.queryElementById(document, sensorID);
 
-      return this.build(document, sensorElement);
+      Sensor sensor = this.build(document, sensorElement);
+
+      // Pull out a specific log category just to log the creation of sensor objects
+      // in this method (happens at startup or soft restart)...
+
+      Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
+          .info("BUG ORCJAVA-118 -- Create sensor : {0}", sensor.toString());
+
+      return sensor;
     }
 
     catch (NumberFormatException e)
@@ -364,6 +304,77 @@ public class SensorBuilder
 
 
   // Private Instance Methods ---------------------------------------------------------------------
+
+
+  /**
+   * Constructs a sensor instance from a given document and JDOM XML element pointing to a
+   * <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt> element
+   * in the controller.xml file.
+   *
+   * @param document        TODO specified JDOM document of controller.xml, use default
+   *                        controller.xml if it's null.
+   * @param sensorElement   JDOM element for sensor
+   *
+   * @throws InitializationException    if the sensor model cannot be built from the given XML
+   *                                    element
+   *
+   * @return initialized sensor instance
+   */
+  private Sensor build(Document document, Element sensorElement) throws InitializationException
+  {
+    String sensorIDValue = sensorElement.getAttributeValue("id");
+    String sensorName = sensorElement.getAttributeValue("name");
+
+    EnumSensorType type = parseSensorType(sensorElement);
+
+    try
+    {
+      int sensorID = Integer.parseInt(sensorIDValue);
+      EventProducer ep = parseSensorEventProducer(document, sensorElement);
+
+      switch (type)
+      {
+        case RANGE:
+
+          int min = getMinProperty(sensorElement);
+          int max = getMaxProperty(sensorElement);
+
+          return new RangeSensor(sensorName, sensorID, ep, min, max);
+
+        case LEVEL:
+
+          return new LevelSensor(sensorName, sensorID, ep);
+
+        case SWITCH:
+
+          StateSensor.DistinctStates states = getSwitchStateMapping(sensorElement);
+
+          return new SwitchSensor(sensorName, sensorID, ep, states);
+
+        case CUSTOM:
+
+          StateSensor.DistinctStates stateMapping = getDistinctStateMapping(sensorElement);
+
+          return new StateSensor(sensorName, sensorID, ep, stateMapping);
+
+        default:
+
+          throw new InitializationException(
+              "Using an unknown sensor type {0} -- SensorBuilder implementation must be " +
+              "updated to handle this new type.", type
+          );
+      }
+    }
+
+    catch (NumberFormatException e)
+    {
+        throw new XMLParsingException(
+            "Currently only integer values are accepted as unique sensor ids. " +
+            "Could not parse {0} to integer.", sensorIDValue
+        );
+    }
+  }
+
 
   private EnumSensorType parseSensorType(Element sensorElement) throws XMLParsingException
   {
@@ -672,7 +683,7 @@ public class SensorBuilder
     // Check if states have been filled in by explicit XML settings. If not, create them
     // for our object model. Thus we ensure 'switch' will always have on/off states in our
     // internal model.
- 
+
     if (!mapping.hasState("on"))
     {
       mapping.addState("on");
