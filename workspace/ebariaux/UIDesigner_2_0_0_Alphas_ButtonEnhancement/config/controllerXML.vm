@@ -53,8 +53,8 @@
   ##<------------------------------------------------------------------------UIButton------------------------------------------------------------------
   #foreach($button in $buttons)
 	  <button id="${button.getOid()}">
-		#if(${button.getUiCommand()})
-			#set($uiCmd=${button.getUiCommand()})
+		#if(${button.getPressCommand()})
+			#set($uiCmd=${button.getPressCommand()})
 			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
 				#if($cmd.getDelay().equals(""))
 					<include type="command" ref="${cmd.getId()}"/>

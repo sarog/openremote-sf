@@ -483,12 +483,12 @@ public void testScreenHasGesture() {
       UIButton absBtn = new UIButton();
       absBtn.setOid(IDUtil.nextID());
       absBtn.setName("abs_btn1");
-      absBtn.setUiCommand(cmdRef);
+      absBtn.setPressCommand(cmdRef);
       
       UIButton gridBtn = new UIButton();
       gridBtn.setOid(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
-      gridBtn.setUiCommand(cmdRef);
+      gridBtn.setPressCommand(cmdRef);
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
@@ -583,12 +583,12 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       UIButton absBtn = new UIButton();
       absBtn.setOid(IDUtil.nextID());
       absBtn.setName("abs_btn1");
-      absBtn.setUiCommand(cmdRef);
+      absBtn.setPressCommand(cmdRef);
       
       UIButton gridBtn = new UIButton();
       gridBtn.setOid(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
-      gridBtn.setUiCommand(cmdRef);
+      gridBtn.setPressCommand(cmdRef);
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
@@ -728,12 +728,12 @@ public void testGetControllerXMLWithGestureHaveDeviceCommand() {
       UIButton absBtn = new UIButton();
       absBtn.setOid(IDUtil.nextID());
       absBtn.setName("abs_btn1");
-      absBtn.setUiCommand(macroRef);
+      absBtn.setPressCommand(macroRef);
       
       UIButton gridBtn = new UIButton();
       gridBtn.setOid(IDUtil.nextID());
       gridBtn.setName("grid_btn1");
-      gridBtn.setUiCommand(macroRef);
+      gridBtn.setPressCommand(macroRef);
       
       UISwitch absSwitch = new UISwitch();
       absSwitch.setOid(IDUtil.nextID());
