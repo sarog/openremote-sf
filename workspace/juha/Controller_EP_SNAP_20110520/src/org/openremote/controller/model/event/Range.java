@@ -23,7 +23,7 @@ package org.openremote.controller.model.event;
 import org.openremote.controller.protocol.Event;
 
 /**
- * TODO
+ * TODO : min/max values
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
