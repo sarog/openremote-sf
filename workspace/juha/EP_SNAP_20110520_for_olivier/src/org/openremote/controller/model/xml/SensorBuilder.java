@@ -201,98 +201,6 @@ public class SensorBuilder
 
 
   /**
-   * Constructs a sensor instance from a given document and JDOM XML element pointing to a
-   * <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt> element
-   * in the controller.xml file.
-   *
-   * @param document        TODO specified JDOM document of controller.xml, use default
-   *                        controller.xml if it's null.
-   * @param sensorElement   JDOM element for sensor
-   *
-   * @throws InitializationException    if the sensor model cannot be built from the given XML
-   *                                    element
-   *
-   * @return initialized sensor instance
-   */
-  public Sensor build(Document document, Element sensorElement) throws InitializationException
-  {
-    // TODO : log creation higher up
-    // TODO : this method can be converted to private
-    
-    // Pull out a specific log category just to log the creation of sensor objects
-    // in this method (happens at startup or soft restart)...
-
-    final Logger initLog = Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY);
-
-    String sensorIDValue = sensorElement.getAttributeValue("id");
-    String sensorName = sensorElement.getAttributeValue("name");
-
-    EnumSensorType type = parseSensorType(sensorElement);
-
-    Sensor sensor = null;
-
-    try
-    {
-      int sensorID = Integer.parseInt(sensorIDValue);
-      EventProducer ep = parseSensorEventProducer(document, sensorElement);
-
-      switch (type)
-      {
-        case RANGE:
-
-          int min = getMinProperty(sensorElement);
-          int max = getMaxProperty(sensorElement);
-
-          sensor = new RangeSensor(sensorName, sensorID, ep, min, max);
-
-          break;
-
-        case LEVEL:
-
-          sensor =  new LevelSensor(sensorName, sensorID, ep);
-
-          break;
-
-        case SWITCH:
-
-          StateSensor.DistinctStates states = getSwitchStateMapping(sensorElement);
-
-          sensor = new SwitchSensor(sensorName, sensorID, ep, states);
-
-          break;
-
-        case CUSTOM:
-
-          StateSensor.DistinctStates stateMapping = getDistinctStateMapping(sensorElement);
-
-          sensor = new StateSensor(sensorName, sensorID, ep, stateMapping);
-
-          break;
-
-        default:
-
-          throw new InitializationException(
-              "Using an unknown sensor type {0} -- SensorBuilder implementation must be " +
-              "updated to handle this new type.", type
-          );
-      }
-    }
-
-    catch (NumberFormatException e)
-    {
-        throw new XMLParsingException(
-            "Currently only integer values are accepted as unique sensor ids. " +
-            "Could not parse {0} to integer.", sensorIDValue
-        );
-    }
-
-
-    initLog.info("Created sensor : {0}", sensor.toString());
-
-    return sensor;
-  }
-
-  /**
    * Constructs a sensor instance from controller's controller.xml document using a JDOM XML
    * element pointing to <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt>
    * entry. The JDOM element must belong to the controller's controller.xml document.
@@ -358,7 +266,15 @@ public class SensorBuilder
 
       Element sensorElement = controllerXMLParser.queryElementById(document, sensorID);
 
-      return this.build(document, sensorElement);
+      Sensor sensor = this.build(document, sensorElement);
+
+      // Pull out a specific log category just to log the creation of sensor objects
+      // in this method (happens at startup or soft restart)...
+
+      Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
+          .info("BUG ORCJAVA-118 -- Create sensor : {0}", sensor.toString());
+
+      return sensor;
     }
 
     catch (NumberFormatException e)
@@ -387,6 +303,77 @@ public class SensorBuilder
 
 
   // Private Instance Methods ---------------------------------------------------------------------
+
+
+  /**
+   * Constructs a sensor instance from a given document and JDOM XML element pointing to a
+   * <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt> element
+   * in the controller.xml file.
+   *
+   * @param document        TODO specified JDOM document of controller.xml, use default
+   *                        controller.xml if it's null.
+   * @param sensorElement   JDOM element for sensor
+   *
+   * @throws InitializationException    if the sensor model cannot be built from the given XML
+   *                                    element
+   *
+   * @return initialized sensor instance
+   */
+  private Sensor build(Document document, Element sensorElement) throws InitializationException
+  {
+    String sensorIDValue = sensorElement.getAttributeValue("id");
+    String sensorName = sensorElement.getAttributeValue("name");
+
+    EnumSensorType type = parseSensorType(sensorElement);
+
+    try
+    {
+      int sensorID = Integer.parseInt(sensorIDValue);
+      EventProducer ep = parseSensorEventProducer(document, sensorElement);
+
+      switch (type)
+      {
+        case RANGE:
+
+          int min = getMinProperty(sensorElement);
+          int max = getMaxProperty(sensorElement);
+
+          return new RangeSensor(sensorName, sensorID, ep, min, max);
+
+        case LEVEL:
+
+          return new LevelSensor(sensorName, sensorID, ep);
+
+        case SWITCH:
+
+          StateSensor.DistinctStates states = getSwitchStateMapping(sensorElement);
+
+          return new SwitchSensor(sensorName, sensorID, ep, states);
+
+        case CUSTOM:
+
+          StateSensor.DistinctStates stateMapping = getDistinctStateMapping(sensorElement);
+
+          return new StateSensor(sensorName, sensorID, ep, stateMapping);
+
+        default:
+
+          throw new InitializationException(
+              "Using an unknown sensor type {0} -- SensorBuilder implementation must be " +
+              "updated to handle this new type.", type
+          );
+      }
+    }
+
+    catch (NumberFormatException e)
+    {
+        throw new XMLParsingException(
+            "Currently only integer values are accepted as unique sensor ids. " +
+            "Could not parse {0} to integer.", sensorIDValue
+        );
+    }
+  }
+
 
   private EnumSensorType parseSensorType(Element sensorElement) throws XMLParsingException
   {
