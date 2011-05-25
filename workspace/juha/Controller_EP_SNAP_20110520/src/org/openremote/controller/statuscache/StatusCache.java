@@ -116,9 +116,18 @@ public class StatusCache
     String oldStatus = sensorStatus.get(event.getSourceID());
     sensorStatus.put(event.getSourceID(), event.serialize());
 
+    logger.trace(
+        "Updated cache with Sensor ID = {0} (''{1}'') with value ''{2}''.",
+        event.getSourceID(), event.getSource(), eventValue
+    );
+
     if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(event.getValue()))
     {
       changedStatusTable.updateStatusChangedIDs(event.getSourceID());
+
+      logger.trace(
+          "Marked Sensor ID = {0} (''{1}'') changed.", event.getSourceID(), event.getSource()
+      );
     }
   }
 
@@ -133,6 +142,9 @@ public class StatusCache
       if (sensorIDs == null || sensorIDs.size() == 0) {
          return null;
       }
+
+      logger.trace("Query status for sensor IDs : {0}", sensorIDs);
+
       Map<Integer, String> statuses = new HashMap<Integer, String>();
       for (Integer sensorId : sensorIDs) {
          if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId))) {
@@ -141,6 +153,9 @@ public class StatusCache
             statuses.put(sensorId, this.sensorStatus.get(sensorId));
          }
       }
+
+      logger.trace("Returning sensor status map (ID, Value) : {0}", statuses);
+
       return statuses;
    }
    
