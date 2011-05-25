@@ -78,7 +78,7 @@ public class TemplateServiceTest {
 
       UIButton btn = new UIButton();
       btn.setOid(IDUtil.nextID());
-      btn.setUiCommand(new UICommand());
+      btn.setPressCommand(new UICommand());
       UISwitch uiSwitch = new UISwitch();
       uiSwitch.setOid(IDUtil.nextID());
       uiSwitch.setSwitchCommand(new Switch());
@@ -123,7 +123,7 @@ public class TemplateServiceTest {
 
       UIButton btn = new UIButton();
       btn.setOid(IDUtil.nextID());
-      btn.setUiCommand(new UICommand());
+      btn.setPressCommand(new UICommand());
       UISwitch uiSwitch = new UISwitch();
       uiSwitch.setOid(IDUtil.nextID());
       uiSwitch.setSwitchCommand(new Switch());

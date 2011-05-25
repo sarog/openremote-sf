@@ -54,7 +54,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    private Navigate navigate = new Navigate();
 
    /** If click the button, send the uicommand. */
-   private UICommand uiCommand;
+   private UICommand pressCommand;
 
    /**
     * Instantiates a new uI button.
@@ -69,7 +69,7 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       this.image = btn.image;
       this.navigate = btn.navigate;
       this.pressImage = btn.pressImage;
-      this.uiCommand = btn.uiCommand;
+      this.pressCommand = btn.pressCommand;
    }
    /**
     * Instantiates a new uI button.
@@ -81,22 +81,23 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    }
 
    /**
-    * Gets the ui command.
+    * Gets the press command.
     * 
     * @return the ui command
     */
-   public UICommand getUiCommand() {
-      return uiCommand;
+   public UICommand getPressCommand() {
+      return pressCommand;
    }
 
    /**
-    * Sets the ui command.
+    * Sets the press command.
     * 
-    * @param uiCommand the new ui command
+    * @param pressCommand the new ui command
     */
-   public void setUiCommand(UICommand uiCommand) {
-      this.uiCommand = uiCommand;
+   public void setPressCommand(UICommand pressCommand) {
+      this.pressCommand = pressCommand;
    }
+   
    @Override
    public String getName() {
       return name;
@@ -142,8 +143,8 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    @JSON(include=false)
    public List<UICommand> getCommands() {
       List<UICommand> commands = new ArrayList<UICommand>();
-      if (uiCommand != null) {
-         commands.add(uiCommand);
+      if (pressCommand != null) {
+         commands.add(pressCommand);
       }
       return commands;
    }
@@ -154,8 +155,8 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    public String getPanelXml() {
       StringBuffer xmlContent = new StringBuffer();
       xmlContent.append("        <button id=\"" + getOid() + "\" name=\"" + StringUtils.escapeXml(getName()) + "\"");
-      if (uiCommand != null) {
-         xmlContent.append(" hasControlCommand=\"true\"");
+      if (pressCommand != null) {
+         xmlContent.append(" hasPressCommand=\"true\"");
       }
       if (repeate) {
          xmlContent.append(" repeat=\"" + repeate + "\"");

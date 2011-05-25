@@ -482,7 +482,7 @@ public class TemplateServiceImpl implements TemplateService {
       Collection<UIButton> buttons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
 
       for (UIButton btn : buttons) {
-         UICommand cmd = btn.getUiCommand();
+         UICommand cmd = btn.getPressCommand();
 
          if (cmd != null) {
             if (cmd instanceof DeviceCommandRef) {
@@ -687,8 +687,8 @@ public class TemplateServiceImpl implements TemplateService {
       Collection<UIButton> uiButtons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
 
       for (UIButton btn : uiButtons) {
-         if (btn.getUiCommand() instanceof DeviceMacroRef) {
-            DeviceMacroRef macroRef = (DeviceMacroRef) btn.getUiCommand();
+         if (btn.getPressCommand() instanceof DeviceMacroRef) {
+            DeviceMacroRef macroRef = (DeviceMacroRef) btn.getPressCommand();
 
             if (macroRef.getTargetDeviceMacro() != null) {
                DeviceMacro macro = macroRef.getTargetDeviceMacro();

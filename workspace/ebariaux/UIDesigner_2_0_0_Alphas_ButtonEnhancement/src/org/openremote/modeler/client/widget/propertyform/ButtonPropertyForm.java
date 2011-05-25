@@ -82,8 +82,8 @@ public class ButtonPropertyForm extends PropertyForm {
       });
       
       // initial command field.
-      final Button command = new Button("Select");
-      command.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      final Button pressCommand = new Button("Select");
+      pressCommand.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {
             SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
@@ -97,17 +97,17 @@ public class ButtonPropertyForm extends PropertyForm {
                   } else if (dataModel.getBean() instanceof DeviceMacro) {
                      uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
                   }
-                  uiButton.setUiCommand(uiCommand);
-                  command.setText(uiCommand.getDisplayName());
+                  uiButton.setPressCommand(uiCommand);
+                  pressCommand.setText(uiCommand.getDisplayName());
                }
             });
          }
       });
-      if (uiButton.getUiCommand() != null) {
-         command.setText(uiButton.getUiCommand().getDisplayName());
+      if (uiButton.getPressCommand() != null) {
+         pressCommand.setText(uiButton.getPressCommand().getDisplayName());
       }
-      AdapterField adapterCommand = new AdapterField(command);
-      adapterCommand.setFieldLabel("Command");
+      AdapterField adapterPressCommand = new AdapterField(pressCommand);
+      adapterPressCommand.setFieldLabel("Press command");
       
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
@@ -228,7 +228,7 @@ public class ButtonPropertyForm extends PropertyForm {
       });
       repeatCheckBoxGroup.add(repeat); 
       add(name);
-      add(adapterCommand);
+      add(adapterPressCommand);
       add(defaultImageField);
       add(pressImageField);
       add(repeatCheckBoxGroup);
