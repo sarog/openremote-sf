@@ -29,6 +29,9 @@ package org.openremote.controller;
 public class Constants
 {
 
+
+  // Logging Categories ---------------------------------------------------------------------------
+
   /**
    * Top level category for all controller related logging.
    */
@@ -40,10 +43,25 @@ public class Constants
    */
   public final static String CONTROLLER_PROTOCOL_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".protocol.";
 
+
+
+  // XML Parsing Logs -----------------------------------------------------------------------------
+
   /**
    * Logging subcategory for XML parsing.
    */
   public final static String XML_PARSER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".xml.parser";
+
+  /**
+   * Logging subcategory for sensor XML parsing -- this is a child category of
+   * {@link #XML_PARSER_LOG_CATEGORY} that can be used to direct XML parsing log output
+   * specifically on sensors to their own destinations.
+   */
+  public final static String SENSOR_XML_PARSER_LOG_CATEGORY = XML_PARSER_LOG_CATEGORY + ".sensor";
+
+
+
+  // REST API Logs --------------------------------------------------------------------------------
 
   /**
    * Logging subcategory for incoming requests on the Controller HTTP/REST API.
@@ -60,8 +78,14 @@ public class Constants
    */
   public final static String REST_GET_PANEL_DEF_LOG_CATEGORY = HTTP_REST_LOG_CATEGORY + ".panel.id";
 
+
+
+  // System Runtime Logs --------------------------------------------------------------------------
+
   /**
-   * Generic log category for runtime events.
+   * Generic log category for runtime events. These logs are generated during the normal
+   * 'runtime' operation of the controller (as opposed to startup, soft restart, shutdown,
+   * etc. phases) and can at time be fairly noisy.
    */
   public final static String CONTROLLER_RUNTIME_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".runtime";
 
@@ -76,7 +100,7 @@ public class Constants
   public final static String RUNTIME_COMMAND_EXECUTION_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".writecommand";
 
   /**
-   * TODO
+   * Specific log category for sensor runtime operations.
    */
   public final static String RUNTIME_SENSORS_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".sensors";
 
@@ -84,11 +108,21 @@ public class Constants
    * TODO
    */
   public final static String RUNTIME_STATECACHE_LOG_CATEGORY = CONTROLLER_RUNTIME_LOG_CATEGORY + ".cache";
-  
+
+
+
+  // Startup Logs ---------------------------------------------------------------------------------
+
   /**
    * Specific log category for reporting events during the controller startup
    */
   public final static String INIT_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".startup";
+
+  /**
+   * Specific subcategory of {@link #INIT_LOG_CATEGORY} that logs sensor initialization and
+   * creation at controller startup or soft restart phases.
+   */
+  public final static String SENSOR_INIT_LOG_CATEGORY = INIT_LOG_CATEGORY + ".sensor";
 
   /**
    * Specific log category for deployers.
@@ -96,6 +130,8 @@ public class Constants
   public final static String DEPLOYER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".deployer";
 
   
+
+
 
   public final static String LIRCD_CONF = "lircd.conf";
 
