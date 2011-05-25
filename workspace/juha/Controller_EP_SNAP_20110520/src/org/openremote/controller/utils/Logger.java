@@ -362,5 +362,65 @@ public class Logger extends java.util.logging.Logger
     super.log(record);
   }
 
+
+  // Trace Logging --------------------------------------------------------------------------------
+
+  /**
+   * Synonymous to using {@link java.util.logging.Logger#finer}.
+   *
+   * TODO : see ORCJAVA-114
+   *
+   * @param msg   log message
+   */
+  public void trace(String msg)
+  {
+    super.log(Level.FINER, msg);
+  }
+
+  /**
+   * Same as {@link #trace} but allows parameterized log messages.
+   *
+   * @param msg     log message
+   * @param params  log message parameters -- message parameterization must be compatible with
+   *                {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void trace(String msg, Object... params)
+  {
+    super.log(Level.FINER, msg, params);
+  }
+
+  /**
+   * Same as {@link #trace} with an additional exception stack trace added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   */
+  public void trace(String msg, Throwable throwable)
+  {
+    super.log(Level.FINER, msg, throwable);
+  }
+
+  /**
+   * Same as {@link #trace} with an additional exception stack trace and message parameterization
+   * added to the logging record.
+   *
+   * @param msg         log message
+   * @param throwable   exception or error associated with the log message
+   * @param params      log message parameters -- message parameterization must be compatible with
+   *                    {@link java.text.MessageFormat} API
+   *
+   * @see java.text.MessageFormat
+   */
+  public void trace(String msg, Throwable throwable, Object... params)
+  {
+    LogRecord record = new LogRecord(Level.FINER, msg);
+    record.setThrown(throwable);
+    record.setParameters(params);
+
+    super.log(record);
+  }
+
 }
 
