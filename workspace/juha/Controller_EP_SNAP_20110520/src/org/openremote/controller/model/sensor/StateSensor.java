@@ -171,7 +171,7 @@ public class StateSensor extends Sensor
   {
     if (!states.hasState(value))
     {
-      log.debug(      // TODO : might even need to be trace if this gets very noisy
+      log.debug(
           "Event producer bound to sensor (ID = {0}) returned a value that is not " +
           "consistent with sensor's datatype : {1}",
           super.getSensorID(), value
@@ -191,6 +191,24 @@ public class StateSensor extends Sensor
     }
 
   }
+
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * String representation of a state sensor. Returns sensor's name, ID, and state mappings.
+   *
+   * @return  this sensor as a string
+   */
+  @Override public String toString()
+  {
+    return
+        "Sensor (Name = '" + getName() + "', ID = '" + getSensorID() +
+        "', State Mappings: " + states.toString() + ")";
+  }
+
+
+
 
   // Nested Classes -------------------------------------------------------------------------------
 
@@ -244,19 +262,6 @@ public class StateSensor extends Sensor
       states.put(state, mapping);
     }
 
-
-
-    // Object Overrides ---------------------------------------------------------------------------
-
-    @Override public String toString()
-    {
-      return "Sensor's Distinct States: " + states.toString();
-    }
-
-
-    // Private Instance Methods -------------------------------------------------------------------
-
-
     /**
      * Indicates if the given state string is contained within this state collection
      *
@@ -264,10 +269,28 @@ public class StateSensor extends Sensor
      *
      * @return        true if the state string has been added, false otherwise
      */
-    private boolean hasState(String value)
+    public boolean hasState(String value)
     {
       return states.containsKey(value);
     }
+
+
+    // Object Overrides ---------------------------------------------------------------------------
+
+    /**
+     * Returns sensor's state mappings as a string. Implementation delegates to
+     * {@link java.util.Map#toString()}.
+     *
+     * @return  all state mappings as a string
+     */
+    @Override public String toString()
+    {
+      return states.toString();
+    }
+
+
+    // Private Instance Methods -------------------------------------------------------------------
+
 
     /**
      * Indicates if the given state string has a mapping in this state collection
