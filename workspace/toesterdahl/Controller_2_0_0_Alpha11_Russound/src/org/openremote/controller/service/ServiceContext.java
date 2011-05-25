@@ -21,10 +21,11 @@
 package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
-import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.RoundRobinConfiguration;
+import org.openremote.controller.RussoundConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.statuscache.StatusCache;
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -68,6 +69,8 @@ public abstract class ServiceContext
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),
 
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),
+
+    RUSSOUND_CONFIGURATION("russoundConfiguration"),
 
     DEVICE_POLLING("pollingMachinesService"),
 
@@ -134,6 +137,21 @@ public abstract class ServiceContext
     try
     {
       return (LutronHomeWorksConfig)getInstance().getService(ServiceName.LUTRON_HOMEWORKS_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static RussoundConfiguration getRussoundConfiguration()
+  {
+    try
+    {
+      return (RussoundConfiguration)getInstance().getService(ServiceName.RUSSOUND_CONFIGURATION);
     }
 
     catch (ClassCastException e)
