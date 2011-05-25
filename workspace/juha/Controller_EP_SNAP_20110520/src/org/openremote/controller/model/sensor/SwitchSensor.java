@@ -92,5 +92,20 @@ public class SwitchSensor extends StateSensor
   }
 
 
+
+  // Object Overrides -----------------------------------------------------------------------------
+
+  /**
+   * String representation of a range sensor. Returns sensor's name, ID, and range minimum and
+   * maximum values.
+   *
+   * @return  this sensor as a string
+   */
+  @Override public String toString()
+  {
+    return
+        "Switch Sensor (Name = '" + getName() + "', ID = '" + getSensorID() + "')";
+  }
+
 }
 
