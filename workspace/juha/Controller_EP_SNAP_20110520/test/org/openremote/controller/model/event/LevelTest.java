@@ -89,6 +89,8 @@ public class LevelTest
 
   @Test public void testEquals()
   {
+    // TODO
+
     Assert.fail("Not Yet Implemented -- See ORCJAVA-95 http://jira.openremote.org/browse/ORCJAVA-95");
   }
 

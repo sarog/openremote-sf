@@ -132,8 +132,12 @@ import org.openremote.controller.utils.Logger;
         {
           Sensor sensor = sensorBuilder.build(sensorElement);
 
-          // TODO : log here -- ORCJAVA-103
+          // Pull out a specific log category just to log the creation of sensor objects
+          // in this method (happens at startup or soft restart)...
 
+          Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
+              .info("Created sensor : {0}", sensor.toString());
+          
           controllerXMLListenSharingData.addSensor(sensor);
 
           statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), StatusCommand.UNKNOWN_STATUS);
