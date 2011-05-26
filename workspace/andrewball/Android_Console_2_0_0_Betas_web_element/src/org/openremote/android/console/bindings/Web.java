@@ -25,6 +25,7 @@ import java.net.URL;
 import org.openremote.android.console.Constants;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import android.util.Log;
 
@@ -33,7 +34,7 @@ import android.util.Log;
  * web page will be rendered.
  */
 @SuppressWarnings("serial")
-public class Web extends Component
+public class Web extends SensorComponent
 {
   public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "bindings/Web";
   /** the URL to view */
@@ -78,6 +79,14 @@ public class Web extends Component
         Log.e(LOG_CATEGORY, "invalid URL for web element with id " + getComponentId() + ": " +
             urlText);
       }
+    }
+
+    // We should have zero or one <link> elements pointing to a sensor which
+    // will supply updated URLs
+    NodeList childNodes = node.getChildNodes();
+    for (int i = 0; i < childNodes.getLength(); i++)
+    {
+      parser(childNodes.item(i));
     }
   }
 
