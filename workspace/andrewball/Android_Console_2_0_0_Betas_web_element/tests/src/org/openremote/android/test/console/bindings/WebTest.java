@@ -23,6 +23,7 @@ package org.openremote.android.test.console.bindings;
 
 import junit.framework.TestCase;
 
+import org.openremote.android.console.bindings.Sensor;
 import org.openremote.android.console.bindings.Web;
 import org.openremote.android.test.TestUtils;
 import org.w3c.dom.Node;
@@ -51,6 +52,7 @@ public class WebTest extends TestCase
     assertEquals(web.getComponentId(), id);
     assertEquals(web.getUsername(), username);
     assertEquals(web.getPassword(), password);
+    assertNull(web.getSensor());
   }
 
   /** Tests constructing a Web object with an invalid URL */
@@ -84,6 +86,33 @@ public class WebTest extends TestCase
     assertEquals(web.getComponentId(), id);
     assertNull(web.getUsername());
     assertNull(web.getPassword());
+    assertNull(web.getSensor());
   }
 
+  /**
+   * Tests contructing a web binding object that refers to a sensor
+   */
+  public void testWithSensor()
+  {
+    final int id = 12;
+    final int sensorId = 13;
+    final String url = "http://muppets.com/videofeed";
+    final String username = "fozzy";
+    final String password = "bear";
+    final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' >" +
+        "\n  <link type='sensor' ref='" + sensorId + "' />" +
+        "\n</web>";
+
+    Node parsedXml = TestUtils.parseXml(xmlText);
+    Web web = new Web(parsedXml);
+
+    assertEquals(web.getSrc().toString(), url);
+    assertEquals(web.getComponentId(), id);
+    assertEquals(web.getUsername(), username);
+    assertEquals(web.getPassword(), password);
+
+    Sensor sensor = web.getSensor();
+    assertNotNull(sensor);
+    assertEquals(sensorId, sensor.getSensorId());
+  }
 }
