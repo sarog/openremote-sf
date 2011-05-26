@@ -62,6 +62,7 @@ public class IpTunnelClient implements IpProcessorListener {
       this.processor = new IpProcessor(srcAddr, this);
       this.destDataEndpointAddr = null;
       this.shutdownHook = new ShutdownHook();
+      this.heartBeat = new Timer("KNX IP heartbeat");
    }
 
    public void register(IpTunnelClientListener l) {
@@ -127,7 +128,6 @@ public class IpTunnelClient implements IpProcessorListener {
             this.messageListener.notifyInterfaceStatus(Status.connected);
 
             // Schedule heartbeat every 60s
-            this.heartBeat = new Timer("KNX IP heartbeat");
             this.heartBeat.schedule(new HeartBeatTask(), 0, 60000);
 
             // Register shutdown hook
