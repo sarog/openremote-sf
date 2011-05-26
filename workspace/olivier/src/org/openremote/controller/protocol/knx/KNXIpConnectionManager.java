@@ -99,8 +99,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private final Object connectionLock;
   private String knxIpInterfaceHostname;
   private int knxIpInterfacePort;
-  private Timer reconnector;
-  private Object reconnectorLock;
+  private Timer connectionTimer;
+  private Object connectionTimerLock;
 
   // Constructors --------------------------------------------------------------------------------
 
@@ -110,8 +110,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
     this.connectionLock = new Object();
     this.discoverers = new HashSet<IpDiscoverer>();
     this.knxIpInterfaceHostname = null;
-    this.reconnector = null;
-    this.reconnectorLock = new Object();
+    this.connectionTimer = null;
+    this.connectionTimerLock = new Object();
   }
 
   public KNXIpConnectionManager(InetAddress srcAddr, InetSocketAddress destControlEndpointAddr)
@@ -165,7 +165,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
    * @throws ConnectionException
    *            if there was an I/O or configuration error
    */
-  protected void start() throws ConnectionException
+  private void start() throws ConnectionException
   {
     // Start KNX multicast discovery...
     Set<InetAddress> nics = resolveLocalAddresses();
@@ -188,7 +188,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   }
 
 
-  protected void stop() throws InterruptedException
+  private void stop() throws InterruptedException
   {
     this.stopDiscovery();
 
@@ -242,11 +242,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
       {
         return this.connection;
       }
-    }
 
-    // Wait for a connection
-    synchronized (this.connectionLock)
-    {
+      // Wait for a connection
       try
       {
         this.connectionLock.wait(CONNECT_TIMEOUT);
@@ -611,11 +608,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
   /**
    * Schedule a reconnect task every 10s, starting now.
    */
-  private void scheduleReconnectTask() {
-    synchronized(this.reconnectorLock) {
-      if(this.reconnector == null) {
-        this.reconnector = new Timer("KNX IP reconnector");
-        this.reconnector.schedule(new ReconnectTask(), 1, 10000);
+  protected void scheduleConnection() {
+    synchronized(this.connectionTimerLock) {
+      if(this.connectionTimer == null) {
+        this.connectionTimer = new Timer("KNX IP reconnector");
+        this.connectionTimer.schedule(new ConnectionTask(), 1, 10000);
         log.info("Scheduled reconnection task");
       }
     }
@@ -774,7 +771,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
        // If status is disconnected, launch a reconnect task
        if(status == Status.disconnected) {
-          KNXIpConnectionManager.this.scheduleReconnectTask();
+          KNXIpConnectionManager.this.scheduleConnection();
        }
 
        this.interfaceStatus = status;
@@ -950,13 +947,13 @@ public class KNXIpConnectionManager implements DiscoveryListener
     }
   }
   
-  private class ReconnectTask extends TimerTask {
+  private class ConnectionTask extends TimerTask {
 
     @Override
     public void run() {       
       // Launch new discovery
       try {
-        log.info("Trying to reconnect");
+        log.info("Trying to create connection");
         this.removeConnection();
         KNXIpConnectionManager.this.start();
         KNXConnectionImpl c = (KNXConnectionImpl) KNXIpConnectionManager.this.getConnection();
@@ -965,12 +962,12 @@ public class KNXIpConnectionManager implements DiscoveryListener
           return;
         }
       } catch (ConnectionException e) {
-        log.warn("Could not reconnect", e);
+        log.warn("Could not create connection", e);
       }
     }
     
     private void removeConnection() {
-      log.info("Cancelling reconnection");
+      log.info("Removing connection");
       try {
         KNXIpConnectionManager.this.stop();
       } catch (InterruptedException e) {
@@ -979,10 +976,10 @@ public class KNXIpConnectionManager implements DiscoveryListener
     }
     
     private void cancelTask() {
-      log.info("Stopping reconnect task");
-      synchronized(KNXIpConnectionManager.this.reconnectorLock) {
-        KNXIpConnectionManager.this.reconnector.cancel();
-        KNXIpConnectionManager.this.reconnector = null;
+      log.info("Stopping connection timer");
+      synchronized(KNXIpConnectionManager.this.connectionTimerLock) {
+        KNXIpConnectionManager.this.connectionTimer.cancel();
+        KNXIpConnectionManager.this.connectionTimer = null;
       }
     }
   }
