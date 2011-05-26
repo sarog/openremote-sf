@@ -189,15 +189,7 @@ public class KNXCommandBuilder implements CommandBuilder
   {
     this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
     this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
-    try
-    {
-      // TODO : this should be a container lifecycle method
-      connectionManager.start();
-    }
-    catch (ConnectionException exception)
-    {
-      log.error("KNX connection manager failed to start: " + exception.getMessage(), exception);
-    }
+    this.connectionManager.scheduleConnection();
   }
 
 
