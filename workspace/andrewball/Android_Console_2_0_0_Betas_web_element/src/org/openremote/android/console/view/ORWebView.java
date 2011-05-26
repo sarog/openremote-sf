@@ -23,9 +23,17 @@ import java.net.URL;
 
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.R;
+import org.openremote.android.console.bindings.Sensor;
 import org.openremote.android.console.bindings.Web;
+import org.openremote.android.console.model.ListenerConstant;
+import org.openremote.android.console.model.OREvent;
+import org.openremote.android.console.model.OREventListener;
+import org.openremote.android.console.model.ORListenerManager;
+import org.openremote.android.console.model.PollingStatusParser;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.HttpAuthHandler;
@@ -35,13 +43,23 @@ import android.webkit.WebViewClient;
 /**
  * OpenRemote wrapper around the standard Android WebView widget
  *
+ * May be associated with a sensor, which gives a URL to load as
+ * its polling value.
+ *
  * @author Andrew D. Ball <aball@osintegrators.com>
  */
-public class ORWebView extends ComponentView
+public class ORWebView extends ComponentView implements SensoryDelegate
 {
   public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "ORWebView";
 
   private android.webkit.WebView webView;
+
+  /**
+   * This gets set to what is sent to webView.loadUrl() before calling that
+   * method.  Used to avoid reloading the same URL when getting the same
+   * result on successive polls of the sensor.
+   */
+  private String currentUrl;
 
   /**
    * This is used to prevent clicking on links in the WebView from launching the system
@@ -166,6 +184,7 @@ public class ORWebView extends ComponentView
       URL url = web.getSrc();
       if (url != null)
       {
+        currentUrl = url.toString();
         webView.loadUrl(url.toString());
       }
       else
@@ -175,6 +194,49 @@ public class ORWebView extends ComponentView
             " " + web.getComponentId()), "text/html", "utf-8");
       }
       addView(webView);
+
+      if (web.getSensor() != null)
+      {
+        addPollingSensoryListener();
+      }
     }
   }
+
+  @Override
+  public void addPollingSensoryListener()
+  {
+    final Sensor sensor = ((Web) getComponent()).getSensor();
+    final Integer sensorId = sensor.getSensorId();
+    if (sensorId > 0)
+    {
+      ORListenerManager.getInstance().addOREventListener(
+          ListenerConstant.ListenerPollingStatusIdFormat + sensorId, new OREventListener()
+          {
+            public void handleEvent(OREvent event)
+            {
+              String newUrl = PollingStatusParser.statusMap.get(sensorId.toString());
+              if (currentUrl != newUrl)
+              {
+                currentUrl = newUrl;
+              }
+              // inform the UI thread that we have a new URL to load
+              handler.sendEmptyMessage(0);
+            }
+          });
+    }
+  }
+
+  /**
+   * Android message handler, used to inform the UI thread that the
+   * web view needs to load a different URL.
+   */
+  private Handler handler = new Handler() {
+     @Override
+     public void handleMessage(Message msg) {
+        if (currentUrl != null) {
+           webView.loadUrl(currentUrl);
+        }
+        super.handleMessage(msg);
+     }
+  };
 }
