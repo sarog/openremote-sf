@@ -20,7 +20,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import	"User.h"
 #import "sqlite3.h"
 
 /*
