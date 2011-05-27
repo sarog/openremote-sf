@@ -33,49 +33,22 @@ static DataBaseService *myInstance = nil;
 @implementation DataBaseService
 
 // Init DatabaseService with database file path.
-- (id) initWithDatabasePath:(NSString *)databasePath {
+- (id) init
+{
 	if (myInstance != nil) {
 		[self release];
 		[NSException raise:@"singletonClassError" format:@" Don't init singleton class DataBaseService."];
 	} else if (self = [super init]) {
 		myInstance = self;
-		if(sqlite3_open([databasePath UTF8String], &openDatabase) !=SQLITE_OK) {
-			NSLog(0, @"Failed to open database. %@", sqlite3_errmsg(openDatabase));
-		}
 	}
 	return myInstance;
 }
 
 // Class method for get singleton instance.
 + (DataBaseService *) sharedDataBaseService {
-	NSString *dbFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"database.db"];
 	@synchronized (self) {
 		if (myInstance == nil) {
-			NSFileManager *fileManager = [NSFileManager defaultManager];
-			BOOL success = [fileManager fileExistsAtPath:dbFilePath];			
-			if(!success) {				
-				[ViewHelper showAlertViewWithTitle:@"" Message:@"Couldn't find the database file."];
-				return nil;
-			}
-			[[DataBaseService alloc] initWithDatabasePath:dbFilePath];
-		}
-	}
-	return myInstance;
-}
-
-+ (DataBaseService *) sharedDataBaseServiceForTest {
-	NSBundle *thisBundle = [NSBundle bundleForClass:[self class]];
-	NSString *dbFilePath = [thisBundle pathForResource:@"database" ofType:@"db"];
-	NSLog(@"dbFilePath=%@", dbFilePath);
-	@synchronized (self) {
-		if (myInstance == nil) {
-			NSFileManager *fileManager = [NSFileManager defaultManager];
-			BOOL success = [fileManager fileExistsAtPath:dbFilePath];			
-			if(!success) {				
-				[ViewHelper showAlertViewWithTitle:@"" Message:@"Couldn't find the database file."];
-				return nil;
-			}
-			[[DataBaseService alloc] initWithDatabasePath:dbFilePath];
+			[[DataBaseService alloc] init];
 		}
 	}
 	return myInstance;
@@ -100,12 +73,6 @@ static DataBaseService *myInstance = nil;
 
 	[Definition sharedDefinition].username = username;
 	[Definition sharedDefinition].password = password;
-}
-
-- (void) dealloc {
-	sqlite3_close(openDatabase);
-	
-	[super dealloc];
 }
 
 @end

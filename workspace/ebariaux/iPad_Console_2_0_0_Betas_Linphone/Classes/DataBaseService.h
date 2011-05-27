@@ -28,19 +28,13 @@
  if using Sqlite, manages all database connections. expose a convenient method to access.
  
  this service manage the following:
- 1) last login username/password
- 2) Round-Robin (failover) group members' url
- 
+ 1) last login username/password 
  */
 @interface DataBaseService : NSObject {
-	sqlite3 *openDatabase;
 }
 
 // Class method for get singleton instance.
 + (DataBaseService *)sharedDataBaseService;
-
-// Class method for get singleton instance in unit test environment.
-+ (DataBaseService *)sharedDataBaseServiceForTest;
 
 // Clean the Users table data.
 - (void) deleteAllUsers;
