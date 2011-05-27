@@ -19,6 +19,7 @@
  */
 package org.openremote.controller.protocol.knx;
 
+import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 
 /**
  * TODO
@@ -41,5 +42,17 @@ interface KNXConnection
    * @return t
    */
   ApplicationProtocolDataUnit read(GroupValueRead command);
+
+  /**
+   * Get KNX-IP interface status.
+   * @return Requested status as a <code>boolean</code>.
+   */
+   IpTunnelClientListener.Status getInterfaceStatus();
+   
+   /**
+    * Connect to KNX-IP interface
+    * @throws ConnectionException Connection failed
+    */
+   void connect() throws ConnectionException;
 
 }
