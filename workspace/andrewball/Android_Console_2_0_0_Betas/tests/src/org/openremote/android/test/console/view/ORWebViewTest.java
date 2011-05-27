@@ -23,9 +23,11 @@ package org.openremote.android.test.console.view;
 
 import junitx.util.PrivateAccessor;
 
+import org.openremote.android.console.bindings.Sensor;
 import org.openremote.android.console.bindings.Web;
 import org.openremote.android.console.view.ORWebView;
 import org.openremote.android.test.TestUtils;
+import org.w3c.dom.Node;
 
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -70,4 +72,27 @@ public class ORWebViewTest extends AndroidTestCase
     assertEquals(webView, (WebView) orWebView.getChildAt(0));
   }
 
+  /**
+   * Make sure that nothing blows up when we initialize an ORWebView from a Web binding
+   * object that has a sensor.
+   *
+   * TODO figure out how to do some more involved testing here -- simulating polling results,
+   *      ensuring that the WebView.loadUrl() method isn't called unless the URL is
+   *      different from the last one it was called with, etc.
+   */
+  public void testWithSensor()
+  {
+    final int id = 12;
+    final int sensorId = 13;
+    final String url = "http://muppets.com/videofeed";
+    final String username = "fozzy";
+    final String password = "bear";
+    final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' >" +
+        "\n  <link type='sensor' ref='" + sensorId + "' />" +
+        "\n</web>";
+
+    Node parsedXml = TestUtils.parseXml(xmlText);
+    Web web = new Web(parsedXml);
+    ORWebView orWebView = new ORWebView(getContext(), web);
+  }
 }

@@ -25,6 +25,7 @@ import java.net.URL;
 import org.openremote.android.console.Constants;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import android.util.Log;
 
@@ -33,7 +34,7 @@ import android.util.Log;
  * web page will be rendered.
  */
 @SuppressWarnings("serial")
-public class Web extends Component
+public class Web extends SensorComponent
 {
   public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "bindings/Web";
   /** the URL to view */
@@ -42,6 +43,13 @@ public class Web extends Component
   private String username;
   /** optional password to use for HTTP basic authentication */
   private String password;
+  /**
+   * whether to ignore any SSL errors (such as self-signed certificates or expired certificates)
+   *
+   * This corresponds to an optional attribute of the same name in the XML used to construct an
+   * instance of this class, using the xsd:boolean type.
+   */
+  private boolean ignoreSslErrors;
 
   /**
    * Constructs a new Web object from an XML Node
@@ -79,6 +87,34 @@ public class Web extends Component
             urlText);
       }
     }
+
+    Node ignoreSslErrorsAttribute = attributes.getNamedItem(IGNORE_SSL_ERRORS);
+    if (ignoreSslErrorsAttribute != null)
+    {
+      String ignoreSslErrorsValue = ignoreSslErrorsAttribute.getNodeValue();
+      if (ignoreSslErrorsValue.equals("true") || ignoreSslErrorsValue.equals("1"))
+      {
+        ignoreSslErrors = true;
+      }
+      else if (ignoreSslErrorsValue.equals("false") || ignoreSslErrorsValue.equals("0"))
+      {
+        ignoreSslErrors = false;
+      }
+      else
+      {
+        Log.e(LOG_CATEGORY, "invalid ignoreSslErrors value for xsd:boolean, defaulting to false " +
+            "for web element with id " + getComponentId());
+        ignoreSslErrors = false;
+      }
+    }
+
+    // We should have zero or one <link> elements pointing to a sensor which
+    // will supply updated URLs
+    NodeList childNodes = node.getChildNodes();
+    for (int i = 0; i < childNodes.getLength(); i++)
+    {
+      parser(childNodes.item(i));
+    }
   }
 
   /** Returns the source URL */
@@ -97,5 +133,11 @@ public class Web extends Component
   public String getPassword()
   {
     return password;
+  }
+
+  /** Returns whether SSL errors should be ignored when displaying content */
+  public boolean getIgnoreSslErrors()
+  {
+    return ignoreSslErrors;
   }
 }
