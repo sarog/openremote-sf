@@ -43,6 +43,13 @@ public class Web extends SensorComponent
   private String username;
   /** optional password to use for HTTP basic authentication */
   private String password;
+  /**
+   * whether to ignore any SSL errors (such as self-signed certificates or expired certificates)
+   *
+   * This corresponds to an optional attribute of the same name in the XML used to construct an
+   * instance of this class, using the xsd:boolean type.
+   */
+  private boolean ignoreSslErrors;
 
   /**
    * Constructs a new Web object from an XML Node
@@ -81,6 +88,26 @@ public class Web extends SensorComponent
       }
     }
 
+    Node ignoreSslErrorsAttribute = attributes.getNamedItem(IGNORE_SSL_ERRORS);
+    if (ignoreSslErrorsAttribute != null)
+    {
+      String ignoreSslErrorsValue = ignoreSslErrorsAttribute.getNodeValue();
+      if (ignoreSslErrorsValue.equals("true") || ignoreSslErrorsValue.equals("1"))
+      {
+        ignoreSslErrors = true;
+      }
+      else if (ignoreSslErrorsValue.equals("false") || ignoreSslErrorsValue.equals("0"))
+      {
+        ignoreSslErrors = false;
+      }
+      else
+      {
+        Log.e(LOG_CATEGORY, "invalid ignoreSslErrors value for xsd:boolean, defaulting to false " +
+            "for web element with id " + getComponentId());
+        ignoreSslErrors = false;
+      }
+    }
+
     // We should have zero or one <link> elements pointing to a sensor which
     // will supply updated URLs
     NodeList childNodes = node.getChildNodes();
@@ -106,5 +133,11 @@ public class Web extends SensorComponent
   public String getPassword()
   {
     return password;
+  }
+
+  /** Returns whether SSL errors should be ignored when displaying content */
+  public boolean getIgnoreSslErrors()
+  {
+    return ignoreSslErrors;
   }
 }
