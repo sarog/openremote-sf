@@ -26,7 +26,6 @@
 #import "ControllerException.h"
 #import "CredentialUtil.h"
 #import "Definition.h"
-#import "DataBaseService.h"
 #import "NotificationConstant.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
@@ -141,9 +140,11 @@
 	textField.returnKeyType = UIReturnKeyDone;
 	[textField setBackgroundColor:[UIColor whiteColor]];
 	[textField setPlaceholder:@"username"];
-	if ([Definition sharedDefinition].username != nil) {
-		[textField setText:[Definition sharedDefinition].username];
-	}
+    
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    if (activeController.userName) {
+        textField.text = activeController.userName;
+    }
 	
 	[prompt addSubview:textField];
 	
@@ -170,9 +171,10 @@
 #pragma mark alert delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (buttonIndex == 1) {
-		[Definition sharedDefinition].username = textField.text;
-		[Definition sharedDefinition].password = textField2.text;
-		[[DataBaseService sharedDataBaseService] saveCurrentUser];
+        ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+        activeController.userName = textField.text;
+        activeController.password = textField2.text;
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
 		[self requestPanelList];
 	} 
 }

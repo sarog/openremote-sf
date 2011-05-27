@@ -21,12 +21,13 @@
 
 #import "LogoutHelper.h"
 #import "URLConnectionHelper.h"
-#import "Definition.h"
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
-#import "DataBaseService.h"
 #import "ViewHelper.h"
 #import "ControllerException.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface LogoutHelper (Private)
 
@@ -57,17 +58,17 @@
 - (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
 		switch (statusCode) {
-			case UNAUTHORIZED://logout succuessful 
-				NSLog(@"%@ logged out successfully", [Definition sharedDefinition].username);
-				[ViewHelper showAlertViewWithTitle:@"" Message:[NSString stringWithFormat:@"%@ logged out successfully", [Definition sharedDefinition].username]];
-				[Definition sharedDefinition].password = nil;
-				DataBaseService *dbService = [DataBaseService sharedDataBaseService];			
-				[dbService deleteAllUsers];
+			case UNAUTHORIZED://logout succuessful
+            {
+                ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+				NSLog(@"%@ logged out successfully", activeController.userName);
+				[ViewHelper showAlertViewWithTitle:@"" Message:[NSString stringWithFormat:@"%@ logged out successfully", activeController.userName]];
+                activeController.password = nil;
+                [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
 				return;
-		} 
-		
+            }
+		} 		
 		[ViewHelper showAlertViewWithTitle:@"Send Request Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
-
 	} 
 	
 }

@@ -27,7 +27,7 @@
 #import "AppDelegate.h"
 #import "NotificationConstant.h"
 #import "URLConnectionHelper.h"
-#import "DataBaseService.h"
+
 #ifdef INCLUDE_SIP_SUPPORT
     #import "SipController.h"
 #endif
@@ -52,10 +52,7 @@
     // EBR : This is currently used as a shared "memory" for local logic
     //       Must be reviewed in the future when deciding on how logic on the console side is implemented
 	localContext = [[NSMutableDictionary alloc] init];
-	
-	// Load last logged-in user
-	[[DataBaseService sharedDataBaseService] initLastLoginUser];
-	
+
 	defaultViewController = [[DefaultViewController alloc] initWithDelegate:self];
 
 	// Default window for the app

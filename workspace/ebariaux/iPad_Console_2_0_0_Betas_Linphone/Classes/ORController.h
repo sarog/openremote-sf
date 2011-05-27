@@ -33,6 +33,8 @@
 @property (nonatomic, retain) NSString * primaryURL;
 @property (nonatomic, retain) NSString *selectedPanelIdentity;
 @property (nonatomic, retain) NSNumber * index;
+@property (nonatomic, retain) NSString *userName;
+@property (nonatomic, retain) NSString *password;
 @property (nonatomic, retain) NSSet* groupMembers;
 @property (nonatomic, retain) ORConsoleSettings * settingsForAutoDiscoveredControllers;
 @property (nonatomic, retain) ORConsoleSettings * settingsForConfiguredControllers;

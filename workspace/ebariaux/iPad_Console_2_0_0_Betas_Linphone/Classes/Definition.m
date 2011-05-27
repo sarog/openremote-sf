@@ -52,7 +52,7 @@ static Definition *myInstance = nil;
 @implementation Definition
 
 
-@synthesize isUpdating, lastUpdateTime, groups, screens, labels, tabBar, localLogic, imageNames, loading, username, password;
+@synthesize isUpdating, lastUpdateTime, groups, screens, labels, tabBar, localLogic, imageNames, loading;
 
 - (id)init {			
 	if (myInstance != nil) {

@@ -30,6 +30,9 @@
 #import "ControllerException.h"
 #import "URLConnectionHelper.h"
 #import "NSString+ORAdditions.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 #define TIMEOUT_INTERVAL 5
 
@@ -105,7 +108,8 @@
 	NSError *error = nil;
 	NSURL *url = [NSURL URLWithString:[[ServerDefinition panelXmlRESTUrl] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]; 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
-	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
 
 	URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
     [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];

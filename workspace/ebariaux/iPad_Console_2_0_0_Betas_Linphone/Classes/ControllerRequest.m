@@ -87,7 +87,7 @@
     [request setURL:url];
     [request setHTTPMethod:method];
     
-    [CredentialUtil addCredentialToNSMutableURLRequest:request];
+    [CredentialUtil addCredentialToNSMutableURLRequest:request forController:usedGroupMember.controller];
 
     if (receivedData) {
         [receivedData release];
