@@ -26,6 +26,12 @@ extern void libmsilbc_init();
 extern void libmsamr_init();
 #endif
 
+@interface SipController ()
+
+- (void)doLinphoneConfiguration:(NSNotification *)notification;
+
+@end
+
 @implementation SipController
 
 @synthesize connectivity;
@@ -68,17 +74,13 @@ extern void libmsamr_init();
     NSLog(@"====> Current server URL %@", [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL);
     NSLog(@"Host %@", [[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]);
     
-//    [self sipDisconnect];
-    // TODO: check that this does un-register in SIP servlet
+    // TODO: un-register ?
     
     [[NSUserDefaults standardUserDefaults]
             setObject:[[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]
                forKey:@"proxy_preference"];
 
-//    [self doLinphoneConfiguration:nil]; // No need for this, update of the user defaults above triggers reconfig
-    
-    
-//    [self sipConnect];
+    [self doLinphoneConfiguration:nil];
 }
 
 -(void) onCall:(LinphoneCall *)currentCall stateChanged:(LinphoneCallState)new_state withMessage:(const char *)message
@@ -612,10 +614,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];//sync before loading config 
 	[ self doLinphoneConfiguration:nil];
-
+/*
 	[[NSNotificationCenter defaultCenter]	addObserver:self
 											 selector:@selector(doLinphoneConfiguration:)
 												 name:NSUserDefaultsDidChangeNotification object:nil];
+*/
 	
 	//initial state is network off should be done as soon as possible
 //	linphone_core_set_network_reachable(theLinphoneCore,false);
