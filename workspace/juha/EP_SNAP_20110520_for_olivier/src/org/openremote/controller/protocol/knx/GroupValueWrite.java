@@ -133,11 +133,14 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
        *   when new valid values for command names are added, the unit tests should be added
        *   accordingly into KNXCommandBuilderTest
        *
-       * TODO : add unit tests for DIM INCREASE, DIM DECREASE, SCALE, etc.
+       * TODO : add unit tests for RANGE (ORJAVA-69)
        *
-       * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.)
+       * TODO : add the rest of the boolean datatypes (UP/DOWN, DISABLE/ENABLE, etc.) (ORCJAVA-70)
        * 
-       * TODO : simple buttons should also allow parameterization so DIM_INCREASE|DECREASE can have different step values
+       * TODO :
+       *        some commands (DIM_INCREASE|DECREASE, RANGE, etc) should also allow
+       *        parameterization so can have pre-fixed values (use additional command property?)
+       *        (ORCJAVA-71)
        */
       name = name.toUpperCase().trim();
 
@@ -182,6 +185,23 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         try
         {
           return ApplicationProtocolDataUnit.createScaling(parameter);
+        }
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.equals("RANGE"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing value parameter for RANGE command.");
+        }
+
+        try
+        {
+          return ApplicationProtocolDataUnit.createRange(parameter);
         }
         catch (ConversionException e)
         {
