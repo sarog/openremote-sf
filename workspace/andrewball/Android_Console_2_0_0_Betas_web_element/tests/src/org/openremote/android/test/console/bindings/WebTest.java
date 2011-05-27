@@ -43,7 +43,8 @@ public class WebTest extends TestCase
     final String url = "http://muppets.com/videofeed";
     final String username = "fozzy";
     final String password = "bear";
-    final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password + "' />";
+    final String xmlText = "<web id='" + id + "' src='" + url + "' username='" + username + "' password='" + password +
+        "' ignoreSslErrors='true' />";
 
     Node parsedXml = TestUtils.parseXml(xmlText);
     Web web = new Web(parsedXml);
@@ -52,6 +53,7 @@ public class WebTest extends TestCase
     assertEquals(web.getComponentId(), id);
     assertEquals(web.getUsername(), username);
     assertEquals(web.getPassword(), password);
+    assertTrue(web.getIgnoreSslErrors());
     assertNull(web.getSensor());
   }
 
@@ -87,10 +89,11 @@ public class WebTest extends TestCase
     assertNull(web.getUsername());
     assertNull(web.getPassword());
     assertNull(web.getSensor());
+    assertFalse(web.getIgnoreSslErrors());
   }
 
   /**
-   * Tests contructing a web binding object that refers to a sensor
+   * Tests constructing a web binding object that refers to a sensor
    */
   public void testWithSensor()
   {
@@ -114,5 +117,53 @@ public class WebTest extends TestCase
     Sensor sensor = web.getSensor();
     assertNotNull(sensor);
     assertEquals(sensorId, sensor.getSensorId());
+  }
+
+  public void testIgnoreSslErrorsAttributeDefault()
+  {
+    // ignoreSslErrors defaults to false
+    String xml = "<web id='12' src='http://www.google.com/' />";
+    Node parsedXml = TestUtils.parseXml(xml);
+    Web web = new Web(parsedXml);
+    assertFalse("ignoreSslErrors should default to false", web.getIgnoreSslErrors());
+  }
+
+  public void testIgnoreSslErrorsAttributeTrue()
+  {
+    // "true" is valid for the attribute
+    String xml1 = "<web id='12' src='http://www.google.com/' ignoreSslErrors='true' />";
+    Node parsedXml1 = TestUtils.parseXml(xml1);
+    Web web1 = new Web(parsedXml1);
+    assertTrue(web1.getIgnoreSslErrors());
+
+    // "1" is also valid
+    String xml2 = "<web id='12' src='http://www.google.com/' ignoreSslErrors='1' />";
+    Node parsedXml2 = TestUtils.parseXml(xml2);
+    Web web2 = new Web(parsedXml2);
+    assertTrue(web2.getIgnoreSslErrors());
+  }
+
+  public void testIgnoreSslErrorsAttributeFalse()
+  {
+    // "false" is valid for the attribute
+    String xml1 = "<web id='12' src='http://www.google.com/' ignoreSslErrors='false' />";
+    Node parsedXml1 = TestUtils.parseXml(xml1);
+    Web web1 = new Web(parsedXml1);
+    assertFalse(web1.getIgnoreSslErrors());
+
+    // "0" is valid for the attribute
+    String xml2 = "<web id='12' src='http://www.google.com/' ignoreSslErrors='0' />";
+    Node parsedXml2 = TestUtils.parseXml(xml2);
+    Web web2 = new Web(parsedXml2);
+    assertFalse(web2.getIgnoreSslErrors());
+  }
+
+  public void testIgnoreSslErrorsAttributeInvalid()
+  {
+    // "True" is invalid for xsd:boolean, and will end up false in this implementation
+    String xml = "<web id='12' src='http://www.google.com/' ignoreSslErrors='True' />";
+    Node parsedXml = TestUtils.parseXml(xml);
+    Web web = new Web(parsedXml);
+    assertFalse("'True' is invalid for xsd:boolean, default to false", web.getIgnoreSslErrors());
   }
 }
