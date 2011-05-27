@@ -27,7 +27,6 @@
 #import "CredentialUtil.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
-#import "LoginViewController.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
