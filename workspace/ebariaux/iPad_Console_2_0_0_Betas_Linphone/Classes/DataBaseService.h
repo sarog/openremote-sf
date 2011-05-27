@@ -20,7 +20,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "sqlite3.h"
 
 /*
  Local database service.

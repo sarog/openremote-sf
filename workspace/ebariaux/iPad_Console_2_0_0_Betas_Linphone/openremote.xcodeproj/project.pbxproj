@@ -19,7 +19,6 @@
 		338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
-		33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
 		33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
@@ -274,7 +273,6 @@
 		60EB5721135C4E4100B29CED /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
 		60EB5722135C4E4100B29CED /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		60EB5723135C4E4100B29CED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		60EB5724135C4E4100B29CED /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 33981B3410B119BC0076DB59 /* libsqlite3.dylib */; };
 		60EB5725135C4E4100B29CED /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
@@ -934,7 +932,6 @@
 				8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				33981B3510B119BC0076DB59 /* libsqlite3.dylib in Frameworks */,
 				608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */,
 				60A6198D1355ED9900A7C87E /* libcrypto.a in Frameworks */,
 				60A6198E1355ED9900A7C87E /* libeXosip2.a in Frameworks */,
@@ -969,7 +966,6 @@
 				60EB5721135C4E4100B29CED /* CFNetwork.framework in Frameworks */,
 				60EB5722135C4E4100B29CED /* UIKit.framework in Frameworks */,
 				60EB5723135C4E4100B29CED /* Foundation.framework in Frameworks */,
-				60EB5724135C4E4100B29CED /* libsqlite3.dylib in Frameworks */,
 				60EB5725135C4E4100B29CED /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
