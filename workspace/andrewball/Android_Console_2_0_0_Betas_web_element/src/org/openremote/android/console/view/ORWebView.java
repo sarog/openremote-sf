@@ -112,6 +112,7 @@ public class ORWebView extends ComponentView implements SensoryDelegate
       {
         Log.e(LOG_CATEGORY, "onReceivedHttpAuthRequest(): HTTP authentication failed, " +
             "not trying again.");
+        handler.cancel();
         String errorMessage = context.getString(R.string.http_auth_failed);
         webView.loadData(composeHtmlErrorPage(errorMessage), "text/html", "utf-8");
         return;
@@ -129,6 +130,7 @@ public class ORWebView extends ComponentView implements SensoryDelegate
       {
         Log.e(LOG_CATEGORY, "received HTTP authentication request but did not have both username" +
             " and password from web element with id " + web.getComponentId());
+        handler.cancel();
         String errorMessage =
             context.getString(R.string.web_element_missing_username_or_password) + " " +
             web.getComponentId();
