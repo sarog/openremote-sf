@@ -27,61 +27,57 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
-@interface LoginViewController (Private)
+@interface LoginViewController ()
 
 - (void)goBack:(id)sender;
-- (void)cancelInput:(id)sender;
-@end
 
+@end
 
 @implementation LoginViewController
 
-
-- (id)initWithDelegate:(id)delegate  {
-	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
+- (id)initWithDelegate:(id)delegate 
+{
+    self = [super initWithStyle:UITableViewStyleGrouped];
+	if (self) {
 		[self	setTitle:@"Sign in"];
 		theDelegate = delegate;
 	}
 	return self;
 }
 
-- (void)viewDidLoad {
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-	//[[DataBaseService sharedDataBaseService] deleteAllUsers];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
-	//self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelInput:)];
-	[super viewDidLoad];
-}
-
-
-
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
+- (void)dealloc
+{
+	[usernameField release];
+	[passwordField release];
 	
-	// Release any cached data, images, etc that aren't in use.
+	[super dealloc];
 }
 
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
+}
+
+- (void)viewDidUnload
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
+    [super viewDidUnload];
 }
 
 // Back to the view where loginView was triggered from.
-- (void)goBack:(id)sender {
+- (void)goBack:(id)sender
+{
 	[self dismissModalViewControllerAnimated:YES];
 	if ([theDelegate respondsToSelector:@selector(onBackFromLogin)]) {
 		[theDelegate performSelector:@selector(onBackFromLogin)];
 	}
 }
 
-- (void)cancelInput:(id)sender {
-	[usernameField resignFirstResponder];
-	[passwordField resignFirstResponder];
-}
-
 // Send sign in request to remote controller server by loginViewController's delegate.
-- (void)signin:(id)sender {
+- (void)signin:(id)sender
+{
 	if (usernameField.text == nil || passwordField.text == nil ||
 			[@"" isEqualToString:usernameField.text] || [@"" isEqualToString:passwordField.text]) {
 		[ViewHelper showAlertViewWithTitle:@"" Message:@"No username or password entered."];
@@ -94,48 +90,42 @@
 	activeController.password = passwordField.text;
     [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
     
-    
 	[self dismissModalViewControllerAnimated:NO];
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
 	}
 }
 
-
-
 #pragma mark Table view methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 2;
 }
 
-
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if(section == 0) {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+	if (section == 0) {
 		return 2;
-	} else if (section ==1){
+	} else if (section == 1) {
 		return 1;
 	}
 	return 0;
 }
 
-
 // Customize the appearance of table view cells.
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{    
 	static NSString *loginCellIdentifier = @"loginCell";
-
 	
 	UITableViewCell *loginCell = [tableView dequeueReusableCellWithIdentifier:loginCellIdentifier];
 
-	
 	if (loginCell == nil) {
 		loginCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:loginCellIdentifier] autorelease];
 		loginCell.selectionStyle = UITableViewCellSelectionStyleNone;
 	}
 
-	
 	if (indexPath.section == 0) {
 		UITextField *textField = [[UITextField alloc] initWithFrame:CGRectZero];
 		textField.contentVerticalAlignment = UIControlContentHorizontalAlignmentCenter;
@@ -147,9 +137,7 @@
 		textField.textColor = [UIColor darkGrayColor];
 		textField.returnKeyType = UIReturnKeyDone;
 		textField.frame = CGRectInset(CGRectMake(100, (loginCell.bounds.size.height - 26)/2.0, loginCell.bounds.size.width,26),10,0);
-		
 		[textField setDelegate:self];
-		
 		[loginCell.contentView addSubview:textField];
     
 		if (indexPath.row == 0) {
@@ -164,8 +152,6 @@
 			[textField setSecureTextEntry:YES];
 			passwordField = textField;
 		}
-		
-		
 	} else if (indexPath.section == 1) {
 		UIButton *signinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		
@@ -176,23 +162,19 @@
 		signinButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		signinButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
 		[signinButton setTitle:@"Sign In" forState:UIControlStateNormal];
-		[loginCell.contentView addSubview:signinButton];
-		
+		[loginCell.contentView addSubview:signinButton];		
 		[signinButton addTarget:self action:@selector(signin:) forControlEvents:UIControlEventTouchDown];
 	}
-	
-	
 	return loginCell;
 }
 
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-	
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{	
 	[[cell textLabel] setBackgroundColor:[UIColor clearColor]];
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{	
 	if ([@"" isEqualToString:usernameField.text]) {
 		[usernameField becomeFirstResponder];
 		return YES;
@@ -212,33 +194,25 @@
 	return YES;
 }
 
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
 	if (section == 0) {
 		return @"Sign in using your Controller username and password";
 	}
 	return nil;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
 	if (section == 1) {
 		return @"Commands and updates from Controller are secured. This requires user authentication.";
 	}
 	return nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
 	return YES;
 }
 
-
-- (void)dealloc {
-	[usernameField release];
-	[passwordField release];
-	
-	[super dealloc];
-}
-
-
 @end
-
