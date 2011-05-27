@@ -29,6 +29,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
@@ -57,8 +58,8 @@ class IpProcessor {
    private class IpSocketListener extends Thread {
       private byte[] buffer;
 
-      public IpSocketListener() {
-         super("IpListener for " + IpProcessor.this.srcAddr);
+      public IpSocketListener(String name) {
+         super("IpSocketListener for " + name + ", listening on "+ IpProcessor.this.srcAddr);
          this.buffer = new byte[1024];
       }
 
@@ -111,10 +112,10 @@ class IpProcessor {
       this.srcAddr = new InetSocketAddress(srcAddr, 0);
    }
 
-   void start() throws KnxIpException, IOException, InterruptedException {
+   void start(String src) throws KnxIpException, IOException, InterruptedException {
       this.socket = new DatagramSocket();
       this.srcAddr = new InetSocketAddress(this.srcAddr.getAddress(), this.socket.getLocalPort());
-      this.socketListener = new IpSocketListener();
+      this.socketListener = new IpSocketListener(src);
       synchronized (this.socketListener) {
          this.socketListener.start();
          this.socketListener.wait();
@@ -166,7 +167,7 @@ class IpProcessor {
       IpMessage out = null;
 
       // Check header is 0x06 0x10
-      if ((is.read() != 0x06) || (is.read() != 0x10)) throw new KnxIpException("Invalid message header");
+      if ((is.read() != 0x06) || (is.read() != 0x10)) throw new KnxIpException(Code.invalidHeader, "Create message failed");
 
       // Extract Service Type Identifier
       int sti = (is.read() << 8) + is.read();
@@ -195,7 +196,7 @@ class IpProcessor {
          out = new IpConnectionStateResp(is, l);
          break;
       default:
-         throw new KnxIpException("Unexpected message service type");
+         throw new KnxIpException(Code.unexpectedServiceType, "Could not create message");
       }
       return out;
    }

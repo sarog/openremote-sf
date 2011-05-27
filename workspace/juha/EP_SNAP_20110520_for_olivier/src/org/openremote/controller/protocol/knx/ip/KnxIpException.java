@@ -22,8 +22,33 @@ package org.openremote.controller.protocol.knx.ip;
 
 public class KnxIpException extends Exception {
    private static final long serialVersionUID = 1L;
+   
+   public static enum Code {
+      alreadyConnected,
+      notConnected,
+      unknownHost,
+      noResponseFromInterface,
+      responseError,
+      wrongSequenceCounterValue,
+      wrongChannelId,
+      wrongResponseType,
+      invalidHeader,
+      unexpectedServiceType;
+   }
 
-   public KnxIpException(String msg) {
+   private Code code;
+
+   public KnxIpException(Code code, String msg) {
       super(msg);
+      this.code = code;
+   }
+
+   public Code getCode() {
+      return code;
+   }
+
+   @Override
+   public String getMessage() {
+      return super.getMessage();
    }
 }
