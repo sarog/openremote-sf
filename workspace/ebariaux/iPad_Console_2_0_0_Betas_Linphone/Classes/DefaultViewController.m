@@ -43,11 +43,11 @@
 - (void)rerenderTabbarWithNewOrientation;
 - (void)transformToOppositeOrientation;
 - (void)shouldRotateToOppositeOrientation;
+
 @end
 
 
 @implementation DefaultViewController
-
 
 - (id)initWithDelegate:(id)delegate
 {
@@ -174,9 +174,7 @@
 	NSLog(@"groups count is %d",groups.count);
 	
 	if (groups.count > 0) {
-		
 		GroupController *gc = [self recoverLastOrCreateGroup];
-		
 		currentGroupController = [gc retain];
 		
 		TabBar *localTabBar = currentGroupController.group.tabBar;
@@ -394,7 +392,6 @@
 	currentGroupController = [targetGroupController retain];
 }
 
-
 - (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId {
 	GroupController *targetGroupController = nil;
 	
@@ -567,7 +564,6 @@
 	}
 }
 
-
 #pragma mark Detect the shake motion.
 
 -(BOOL)canBecomeFirstResponder {
@@ -590,6 +586,5 @@
 		[self populateSettingsView:nil];
 	}
 }
-
 
 @end
