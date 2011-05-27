@@ -22,8 +22,10 @@
 #import "LoginViewController.h"
 #import "Definition.h"
 #import "ViewHelper.h"
-#import "DataBaseService.h"
 #import "NotificationConstant.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface LoginViewController (Private)
 
@@ -86,9 +88,13 @@
 		return;
 	}
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
-	[Definition sharedDefinition].username = usernameField.text;
-	[Definition sharedDefinition].password = passwordField.text;
-	[[DataBaseService sharedDataBaseService] saveCurrentUser];
+    
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    activeController.userName = usernameField.text;
+	activeController.password = passwordField.text;
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
+    
+    
 	[self dismissModalViewControllerAnimated:NO];
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
@@ -150,7 +156,9 @@
 			loginCell.textLabel.text = @"Username";
 			[textField becomeFirstResponder];
 			usernameField = textField;
-			usernameField.text = [Definition sharedDefinition].username; 
+            
+            ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+			usernameField.text = activeController.userName; 
 		} else if (indexPath.row == 1) {
 			loginCell.textLabel.text = @"Password";
 			[textField setSecureTextEntry:YES];

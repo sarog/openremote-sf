@@ -24,7 +24,6 @@
 #import "AppSettingsDefinition.h"
 #import "CheckNetwork.h"
 #import "CheckNetworkException.h"
-#import "DataBaseService.h"
 #import "NotificationConstant.h"
 
 #import "ORConsoleSettingsManager.h"

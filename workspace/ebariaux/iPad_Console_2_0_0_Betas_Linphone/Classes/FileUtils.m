@@ -25,6 +25,9 @@
 #import "StringUtils.h"
 #import "CredentialUtil.h"
 #import "URLConnectionHelper.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 #define DOWNLOAD_TIMEOUT_INTERVAL 20
 
@@ -54,7 +57,9 @@ NSFileManager *fileManager;
     [encodedUrl release];
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
     [url release];
-	[CredentialUtil addCredentialToNSMutableURLRequest:request];
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
+    
     URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
 	NSData *data = [connectionHelper sendSynchronousRequest:request returningResponse:&response error:&error];
     [request release];	

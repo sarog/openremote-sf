@@ -20,6 +20,9 @@
  */
 
 #import "DefaultViewController.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 #define degreesToRadian(x) (M_PI * (x) / 180.0)
 
@@ -441,7 +444,7 @@
 
 //logout only when password is saved.
 - (void)logout {
-	if ([Definition sharedDefinition].password) {
+	if ([ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password) {
 		LogoutHelper *logout = [[LogoutHelper alloc] init];
 		[logout requestLogout];
 		[logout release];

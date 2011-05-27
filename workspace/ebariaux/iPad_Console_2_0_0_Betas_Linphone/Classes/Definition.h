@@ -44,8 +44,6 @@
 	NSInvocationOperation *updateOperation;
 	NSOperationQueue *updateOperationQueue; 
 	UILabel *loading;
-	NSString *username;
-	NSString *password;
 }
 
 /**
@@ -124,7 +122,5 @@
 @property (nonatomic, readonly) LocalLogic *localLogic;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;
-@property	(nonatomic,copy) NSString *username;
-@property	(nonatomic,copy) NSString *password;
 
 @end

@@ -38,6 +38,8 @@
 @dynamic primaryURL;
 @dynamic selectedPanelIdentity;
 @dynamic index;
+@dynamic userName;
+@dynamic password;
 @dynamic groupMembers;
 @dynamic settingsForAutoDiscoveredControllers;
 @dynamic settingsForConfiguredControllers;

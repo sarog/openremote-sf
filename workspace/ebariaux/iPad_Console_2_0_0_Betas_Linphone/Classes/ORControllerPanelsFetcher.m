@@ -25,6 +25,9 @@
 #import "ViewHelper.h"
 #import "ControllerException.h"
 #import "NotificationConstant.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @implementation ORControllerPanelsFetcher
 
@@ -89,7 +92,7 @@
     int statusCode = ((NSHTTPURLResponse *)response).statusCode;
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
-			[Definition sharedDefinition].password = nil;
+            [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
 			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];            
 		} else {
 			[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	

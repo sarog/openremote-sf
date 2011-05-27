@@ -18,7 +18,6 @@
 		3338CDB810C5036C0067C94D /* LabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3338CDB610C5036C0067C94D /* LabelView.m */; };
 		338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
-		33981B1110B103260076DB59 /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
@@ -211,7 +210,6 @@
 		60EB56DE135C4E4100B29CED /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
 		60EB56DF135C4E4100B29CED /* GridCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C650567109870D2006FC19F /* GridCellView.m */; };
 		60EB56E0135C4E4100B29CED /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
-		60EB56E1135C4E4100B29CED /* DataBaseService.m in Sources */ = {isa = PBXBuildFile; fileRef = 33981B1010B103260076DB59 /* DataBaseService.m */; };
 		60EB56E2135C4E4100B29CED /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
 		60EB56E3135C4E4100B29CED /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
 		60EB56E4135C4E4100B29CED /* ErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF539AA10B9359F00C52FB0 /* ErrorViewController.m */; };
@@ -428,8 +426,6 @@
 		338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClippedUIImage.m; sourceTree = "<group>"; };
 		338D306A10D8DD000043BFE9 /* UIViewUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewUtil.h; sourceTree = "<group>"; };
 		338D306B10D8DD000043BFE9 /* UIViewUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewUtil.m; sourceTree = "<group>"; };
-		33981B0F10B103260076DB59 /* DataBaseService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataBaseService.h; sourceTree = "<group>"; };
-		33981B1010B103260076DB59 /* DataBaseService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataBaseService.m; sourceTree = "<group>"; };
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		33B8ECD810FC9F1E00F3363D /* SensoryDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensoryDelegate.h; sourceTree = "<group>"; };
 		33B8ECDC10FCA32600F3363D /* ControlDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlDelegate.h; sourceTree = "<group>"; };
@@ -995,7 +991,6 @@
 				60AFCED2137180AC00A811D4 /* Controller communication */,
 				608FBB74131FF8F900C9089F /* SIP */,
 				8CC6364210BD35E2009C25C9 /* delegate */,
-				33981AFD10B0F1240076DB59 /* service */,
 				8C267AB10FD27DE20054743E /* exception */,
 				8CF6A27B0FBD3751006ED733 /* lib */,
 				8CFEE2880F558C6700DF8759 /* config */,
@@ -1135,15 +1130,6 @@
 				8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */,
 			);
 			name = view;
-			sourceTree = "<group>";
-		};
-		33981AFD10B0F1240076DB59 /* service */ = {
-			isa = PBXGroup;
-			children = (
-				33981B0F10B103260076DB59 /* DataBaseService.h */,
-				33981B1010B103260076DB59 /* DataBaseService.m */,
-			);
-			name = service;
 			sourceTree = "<group>";
 		};
 		33B8ECE510FCA4CA00F3363D /* viewbase */ = {
@@ -2056,7 +2042,6 @@
 				8C6502E2109809EC006FC19F /* PollingHelper.m in Sources */,
 				8C650568109870D2006FC19F /* GridCellView.m in Sources */,
 				8CAEB81B10A6B25B0051C827 /* LoginViewController.m in Sources */,
-				33981B1110B103260076DB59 /* DataBaseService.m in Sources */,
 				8CEB4E7F10B2827200A67721 /* LogoutHelper.m in Sources */,
 				8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */,
 				8CF539AC10B9359F00C52FB0 /* ErrorViewController.m in Sources */,
@@ -2166,7 +2151,6 @@
 				60EB56DE135C4E4100B29CED /* PollingHelper.m in Sources */,
 				60EB56DF135C4E4100B29CED /* GridCellView.m in Sources */,
 				60EB56E0135C4E4100B29CED /* LoginViewController.m in Sources */,
-				60EB56E1135C4E4100B29CED /* DataBaseService.m in Sources */,
 				60EB56E2135C4E4100B29CED /* LogoutHelper.m in Sources */,
 				60EB56E3135C4E4100B29CED /* ChoosePanelViewController.m in Sources */,
 				60EB56E4135C4E4100B29CED /* ErrorViewController.m in Sources */,
