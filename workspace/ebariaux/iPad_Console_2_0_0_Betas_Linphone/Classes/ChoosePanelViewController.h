@@ -36,9 +36,6 @@
     NSObject <ChoosePanelViewControllerDelegate> *delegate;
     
 	NSString *chosenPanel;
-    
-	UITextField *textField;
-	UITextField *textField2;
 }
 
 @property (nonatomic, assign) NSObject <ChoosePanelViewControllerDelegate> *delegate;
