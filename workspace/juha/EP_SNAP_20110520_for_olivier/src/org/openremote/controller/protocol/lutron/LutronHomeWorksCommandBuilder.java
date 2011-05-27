@@ -28,6 +28,11 @@ import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.exception.NoSuchCommandException;
 
+/**
+ * 
+ * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
+ *
+ */
 public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 
 	// Constants ------------------------------------------------------------------------------------
@@ -135,7 +140,8 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 		
 		// Get the list of properties from XML...
 
-		List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
+		@SuppressWarnings("unchecked")
+    List<Element> propertyElements = element.getChildren(XML_ELEMENT_PROPERTY, element.getNamespace());
 
 		for (Element el : propertyElements) {
 			String propertyName = el.getAttributeValue(XML_ATTRIBUTENAME_NAME);
@@ -176,12 +182,12 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 		// instance...
 
 		if (addressAsString != null && !"".equals(addressAsString)) {
-			System.out.println("Will attemp to build address");
+			log.info("Will attemp to build address");
 
 			try {
 				address = new LutronHomeWorksAddress(addressAsString.trim());
 			} catch (InvalidLutronHomeWorksAddressException e) {
-
+			  log.error("Invalid Lutron HomeWorks address", e);
 				// TODO: re-check, message is not clear when address is invalid
 
 				throw new NoSuchCommandException(e.getMessage(), e);
@@ -193,6 +199,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 			try {
 				scene = Integer.parseInt(sceneAsString);
 			} catch (NumberFormatException e) {
+			  log.error("Invalid scene number", e);
 				throw new NoSuchCommandException(e.getMessage(), e);
 			}
 		}
@@ -202,6 +209,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 			try {
 				key = Integer.parseInt(keyAsString);
 			} catch (NumberFormatException e) {
+			  log.error("Invalid key number", e);
 				throw new NoSuchCommandException(e.getMessage(), e);
 			}
 		}
@@ -211,6 +219,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 			try {
 				level = Integer.parseInt(levelAsString);
 			} catch (NumberFormatException e) {
+			  log.error("Invalid level number", e);
 				throw new NoSuchCommandException(e.getMessage(), e);
 			}
 		}
@@ -222,6 +231,7 @@ public class LutronHomeWorksCommandBuilder implements CommandBuilder {
 				try {
 					level = Integer.parseInt(paramValue);
 				} catch (NumberFormatException e) {
+				  log.error("Invalid param value", e);
 					throw new NoSuchCommandException(e.getMessage(), e);
 				}
 			}
