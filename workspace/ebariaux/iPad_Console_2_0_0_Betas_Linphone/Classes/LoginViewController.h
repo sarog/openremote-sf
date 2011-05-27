@@ -28,8 +28,8 @@
 	
 	UITextField *usernameField;
 	UITextField *passwordField;
+    
 	id theDelegate;
-
 }
 
 @end
