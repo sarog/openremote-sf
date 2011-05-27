@@ -252,7 +252,6 @@
 		60EB5707135C4E4100B29CED /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87D10EB6E3300C0E1BB /* Switch.m */; };
 		60EB5708135C4E4100B29CED /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
 		60EB5709135C4E4100B29CED /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
-		60EB570A135C4E4100B29CED /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88710EB6E3300C0E1BB /* User.m */; };
 		60EB570B135C4E4100B29CED /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
 		60EB570C135C4E4100B29CED /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		60EB570D135C4E4100B29CED /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
@@ -398,7 +397,6 @@
 		8CECF8BD10EB6E3300C0E1BB /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87D10EB6E3300C0E1BB /* Switch.m */; };
 		8CECF8BE10EB6E3300C0E1BB /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
 		8CECF8BF10EB6E3300C0E1BB /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
-		8CECF8C210EB6E3300C0E1BB /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88710EB6E3300C0E1BB /* User.m */; };
 		8CECF8C310EB6E3300C0E1BB /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
 		8CEFDA8C11BF35EE00CEDC24 /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */; };
 		8CF5341F10B64C1900C52FB0 /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
@@ -901,8 +899,6 @@
 		8CECF87F10EB6E3300C0E1BB /* TabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBar.m; sourceTree = "<group>"; };
 		8CECF88010EB6E3300C0E1BB /* TabBarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItem.h; sourceTree = "<group>"; };
 		8CECF88110EB6E3300C0E1BB /* TabBarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarItem.m; sourceTree = "<group>"; };
-		8CECF88610EB6E3300C0E1BB /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
-		8CECF88710EB6E3300C0E1BB /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		8CECF88810EB6E3300C0E1BB /* XMLEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLEntity.h; sourceTree = "<group>"; };
 		8CECF88910EB6E3300C0E1BB /* XMLEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLEntity.m; sourceTree = "<group>"; };
 		8CEFDA8A11BF35EE00CEDC24 /* LoadingHUDView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadingHUDView.h; sourceTree = "<group>"; };
@@ -1705,8 +1701,6 @@
 				8CECF87F10EB6E3300C0E1BB /* TabBar.m */,
 				8CECF88010EB6E3300C0E1BB /* TabBarItem.h */,
 				8CECF88110EB6E3300C0E1BB /* TabBarItem.m */,
-				8CECF88610EB6E3300C0E1BB /* User.h */,
-				8CECF88710EB6E3300C0E1BB /* User.m */,
 				8CECF88810EB6E3300C0E1BB /* XMLEntity.h */,
 				8CECF88910EB6E3300C0E1BB /* XMLEntity.m */,
 				60A85C83131F965500C7918A /* Web.h */,
@@ -2106,7 +2100,6 @@
 				8CECF8BD10EB6E3300C0E1BB /* Switch.m in Sources */,
 				8CECF8BE10EB6E3300C0E1BB /* TabBar.m in Sources */,
 				8CECF8BF10EB6E3300C0E1BB /* TabBarItem.m in Sources */,
-				8CECF8C210EB6E3300C0E1BB /* User.m in Sources */,
 				8CECF8C310EB6E3300C0E1BB /* XMLEntity.m in Sources */,
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
@@ -2217,7 +2210,6 @@
 				60EB5707135C4E4100B29CED /* Switch.m in Sources */,
 				60EB5708135C4E4100B29CED /* TabBar.m in Sources */,
 				60EB5709135C4E4100B29CED /* TabBarItem.m in Sources */,
-				60EB570A135C4E4100B29CED /* User.m in Sources */,
 				60EB570B135C4E4100B29CED /* XMLEntity.m in Sources */,
 				60EB570C135C4E4100B29CED /* SensoryView.m in Sources */,
 				60EB570D135C4E4100B29CED /* SensoryControlView.m in Sources */,
