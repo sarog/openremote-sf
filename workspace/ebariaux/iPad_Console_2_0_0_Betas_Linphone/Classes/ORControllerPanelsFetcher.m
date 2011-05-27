@@ -93,7 +93,7 @@
 	if (statusCode != 200) {
 		if (statusCode == UNAUTHORIZED) {
             [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
-			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];            
+			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
 		} else {
 			[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 		}

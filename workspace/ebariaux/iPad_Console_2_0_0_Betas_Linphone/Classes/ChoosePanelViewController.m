@@ -27,6 +27,7 @@
 #import "CredentialUtil.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
+#import "LoginViewController.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
@@ -65,6 +66,18 @@
     self.panelsFetcher = nil;
 	
 	[super dealloc];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];    
+}
+
+- (void)viewDidUnload
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationPopulateCredentialView object:nil];
+    [super viewDidUnload];
 }
 
 // Load panel list from remote controller server.
@@ -116,67 +129,25 @@
 	[self.delegate didSelectPanelIdentity:[tableView cellForRowAtIndexPath:indexPath].textLabel.text];
 }
 
-
-
-
-
-// TODO EBR : this whole login thing is not active anymore, see code in ORControllerPanelsFetcher
-
-// Show login dialog for users, if users didn't login remote controller server.
-- (void)showLoginAlert {
-	
-    // TODO EBR: check what's the deal with user/pwd required for login -> store in "same place"
-    
-	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Controller Login" 
-													 message:@"\n\n\n" // IMPORTANT
-													delegate:self 
-										   cancelButtonTitle:@"Cancel" 
-										   otherButtonTitles:@"OK", nil];
-	
-	textField = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 50.0, 240.0, 25.0)]; 
-	textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-	textField.autocorrectionType = UITextAutocorrectionTypeNo;
-	textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-	textField.returnKeyType = UIReturnKeyDone;
-	[textField setBackgroundColor:[UIColor whiteColor]];
-	[textField setPlaceholder:@"username"];
-    
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    if (activeController.userName) {
-        textField.text = activeController.userName;
-    }
-	
-	[prompt addSubview:textField];
-	
-	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(22.0, 85.0, 240.0, 25.0)]; 
-	[textField2 setBackgroundColor:[UIColor whiteColor]];
-	textField2.autocapitalizationType = UITextAutocapitalizationTypeNone;
-	textField2.autocorrectionType = UITextAutocorrectionTypeNo;
-	textField2.clearButtonMode = UITextFieldViewModeWhileEditing;
-	[textField2 setPlaceholder:@"password"];
-	[textField2 setSecureTextEntry:YES];
-	textField2.returnKeyType = UIReturnKeyDone;
-	[prompt addSubview:textField2];
-	
-	// set place
-	//[prompt setTransform:CGAffineTransformMakeTranslation(0.0, 110.0)];
-	[prompt show];
-	[prompt release];
-	
-	// set cursor and show keyboard
-	[textField becomeFirstResponder];
-	
+//prompts the user to enter a valid user name and password
+- (void)populateLoginView:(id)sender {
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
+	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
+	[self presentModalViewController:loginNavController animated:NO];
+	[loginController release];
+	[loginNavController release];
 }
 
-#pragma mark alert delegate
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 1) {
-        ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-        activeController.userName = textField.text;
-        activeController.password = textField2.text;
-        [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
-		[self requestPanelList];
-	} 
+// When cancelled on credentials panel
+- (void)onBackFromLogin
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+}
+
+// When crendentials entered
+- (void)onSignin
+{
+    [self requestPanelList];
 }
 
 - (void)updateTableView {
