@@ -20,11 +20,11 @@
  */
 
 #import <UIKit/UIKit.h>
+#import	"LoginViewController.h"
 #import "GroupController.h"
 #import "ErrorViewController.h"
 #import "Navigate.h"
 #import "NotificationConstant.h"
-#import	"LoginViewController.h"
 #import "AppSettingController.h"
 #import "LogoutHelper.h"
 #import "Gesture.h"
@@ -38,7 +38,7 @@
  * It's responsible for controlling rendering of all views related to client.
  * Its view is the root view container of all views related to client.
  */
-@interface DefaultViewController : UIViewController {	
+@interface DefaultViewController : UIViewController <LoginViewControllerDelegate> {	
 	id theDelegate;
 	
 	InitViewController *initViewController;

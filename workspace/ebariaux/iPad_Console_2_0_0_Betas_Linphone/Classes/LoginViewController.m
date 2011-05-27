@@ -35,7 +35,7 @@
 
 @implementation LoginViewController
 
-- (id)initWithDelegate:(id)delegate 
+- (id)initWithDelegate:(NSObject <LoginViewControllerDelegate> *)delegate 
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
 	if (self) {
