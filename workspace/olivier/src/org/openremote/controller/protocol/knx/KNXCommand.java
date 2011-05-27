@@ -307,14 +307,11 @@ abstract class KNXCommand implements Command
    */
   void write(GroupValueWrite command)
   {
-    try
-    {
-      KNXConnection connection = connectionManager.getConnection();
+    KNXConnection connection = connectionManager.getCurrentConnection();
+    if(connection == null) {
+      log.error("Unable to send " + this + ", no connection available");
+    } else {
       connection.send(command);
-    }
-    catch (ConnectionException e)
-    {
-      log.error("Unable to send " + this + " : " + e.getMessage(), e);
     }
   }
 
@@ -334,16 +331,12 @@ abstract class KNXCommand implements Command
    */
   ApplicationProtocolDataUnit read(GroupValueRead command)
   {
-    try
-    {
-      KNXConnection connection = connectionManager.getConnection();
+    KNXConnection connection = connectionManager.getCurrentConnection();
+    if(connection == null) {
+       log.error("Unable to send " + this + ", no available connection");
+       return null;
+    } else {
       return connection.read(command);
-    }
-    catch (ConnectionException e)
-    {
-      log.error("Unable to send " + this + " : " + e.getMessage(), e);
-
-      return null;
     }
   }
   

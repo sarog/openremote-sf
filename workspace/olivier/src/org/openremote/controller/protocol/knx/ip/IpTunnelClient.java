@@ -74,8 +74,6 @@ public class IpTunnelClient implements IpProcessorListener {
    }
 
    public synchronized void service(byte[] message) throws KnxIpException, InterruptedException, IOException {
-      if (!this.isConnected()) this.connect();
-
       IpMessage resp = this.processor.service(new IpTunnelingReq(this.channelId, this.seqCounter, message),
             this.destDataEndpointAddr);
 
@@ -124,15 +122,15 @@ public class IpTunnelClient implements IpProcessorListener {
             // set destDataEndpointAddr with response HPAI value
             this.destDataEndpointAddr = cr.getDataEndpoint().getAddress();
             
-            // Notify that we are connected
-            this.messageListener.notifyInterfaceStatus(Status.connected);
-
             // Schedule heartbeat every 60s
             this.heartBeat.schedule(new HeartBeatTask(), 0, 60000);
 
             // Register shutdown hook
             Runtime.getRuntime().addShutdownHook(IpTunnelClient.this.shutdownHook);
             
+            // Notify that we are connected
+            this.messageListener.notifyInterfaceStatus(Status.connected);
+
             log.info("Connected to KNX-IP interface " + this.destControlEndpointAddr);
          } else {
             this.processor.stop();
@@ -145,51 +143,53 @@ public class IpTunnelClient implements IpProcessorListener {
    }
 
    public synchronized void disconnect() throws KnxIpException, InterruptedException, IOException {
-      if (!this.isConnected()) throw new KnxIpException(Code.notConnected, "Disconnect failed");
-      IpMessage resp = this.processor.service(
+      try {
+        if (!this.isConnected()) throw new KnxIpException(Code.notConnected, "Disconnect failed");
+        IpMessage resp = this.processor.service(
             new IpDisconnectReq(this.channelId, new Hpai(this.processor.getSrcAddr())), this.destDataEndpointAddr);
 
-      // Check response
-      if (resp instanceof IpDisconnectResp) {
-         IpDisconnectResp cr = (IpDisconnectResp) resp;
-         if (this.channelId == cr.getChannelId()) {
-            this.terminateConnection();
-
-            // Check status anyway
-            int st = cr.getStatus();
-            if (st != IpDisconnectResp.OK) {
-               throw new KnxIpException(Code.responseError, "Disconnect failed : " + st);
-            }
-            
-            log.info("Disconnected gracefully from " + this.destControlEndpointAddr);
-         } else {
-            this.terminateConnection();
-            throw new KnxIpException(Code.wrongChannelId, "Disconnect failed");
-         }
-      } else {
-         this.terminateConnection();
-         throw new KnxIpException(Code.wrongResponseType, "Disconnect failed");
-      }
+        // Check response
+        if (resp instanceof IpDisconnectResp) {
+           IpDisconnectResp cr = (IpDisconnectResp) resp;
+           if (this.channelId == cr.getChannelId()) {
+              this.terminateConnection();
+  
+              // Check status anyway
+              int st = cr.getStatus();
+              if (st != IpDisconnectResp.OK) {
+                 throw new KnxIpException(Code.responseError, "Disconnect failed : " + st);
+              }
+               
+              log.info("Disconnected gracefully from " + this.destControlEndpointAddr);
+           } else {
+              throw new KnxIpException(Code.wrongChannelId, "Disconnect failed");
+           }
+        } else {
+           throw new KnxIpException(Code.wrongResponseType, "Disconnect failed");
+        }
+     } finally {
+       this.terminateConnection(); 
+     }
    }
    
    public void terminateConnection() throws InterruptedException {
-      // notify connection OK
-      this.messageListener.notifyInterfaceStatus(Status.disconnected);
-      
       // Unregister shutdown hook
       Runtime.getRuntime().removeShutdownHook(IpTunnelClient.this.shutdownHook);
 
       // Stop heartbeat
       this.heartBeat.cancel();
 
+      // Stop IP processor
+      this.processor.stop();
+
       // Set server date endpoint address to null to force reconnection before sending new values
       this.destDataEndpointAddr = null;
 
-      // Stop IP processor
-      this.processor.stop();
+      // notify connection off
+      this.messageListener.notifyInterfaceStatus(Status.disconnected);
    }
    
-   private boolean isConnected() {
+   public boolean isConnected() {
       return this.destDataEndpointAddr != null;
    }
 
@@ -238,7 +238,6 @@ public class IpTunnelClient implements IpProcessorListener {
             }
             nbErrs++;
          }
-         IpTunnelClient.this.messageListener.notifyInterfaceStatus(Status.disconnected);
          try {
             IpTunnelClient.this.disconnect();
          } catch (KnxIpException e) {

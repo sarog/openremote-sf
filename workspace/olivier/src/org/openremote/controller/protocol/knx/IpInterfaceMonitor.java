@@ -5,7 +5,6 @@ import java.util.Map;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
-import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener.Status;
 
 public class IpInterfaceMonitor extends KNXCommand implements StatusCommand {

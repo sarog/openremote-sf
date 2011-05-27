@@ -47,7 +47,6 @@ import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.KnxIpException;
-import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.utils.Logger;
 
 
@@ -165,7 +164,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
    * @throws ConnectionException
    *            if there was an I/O or configuration error
    */
-  private void start() throws ConnectionException
+  protected void start() throws ConnectionException
   {
     // Start KNX multicast discovery...
     Set<InetAddress> nics = resolveLocalAddresses();
@@ -188,7 +187,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
   }
 
 
-  private void stop() throws InterruptedException
+  protected void stop() throws InterruptedException
   {
     this.stopDiscovery();
 
@@ -214,14 +213,13 @@ public class KNXIpConnectionManager implements DiscoveryListener
   * TODO
   *
   * @return
-  *
-  * @throws ConnectionException
   */
   protected KNXConnection getConnection() throws ConnectionException
   {
     KNXConnectionImpl c = this.waitForConnection();
+    c.connect();
 
-    // We have a connection, stop discovery process
+    // Connection process over, stop discovery process
     try
     {
        this.stopDiscovery();
@@ -260,11 +258,17 @@ public class KNXIpConnectionManager implements DiscoveryListener
       }
     }
 
-    throw new ConnectionException("KNX IP Gateway not found.");
+    throw new ConnectionException("KNX-IP interface not found");
   }
   
+  /**
+   * Get current KNX connection object, only if connected to KNX-IP interface.
+   * @return Requested <code>KNXConnection</code> object, null if not found or disconnected.
+   */
   protected KNXConnection getCurrentConnection() {
-     return this.connection;
+    synchronized(this.connectionLock) {
+       return this.connection != null && this.connection.client.isConnected() ? this.connection : null; 
+    }
   }
 
   /**
@@ -684,6 +688,19 @@ public class KNXIpConnectionManager implements DiscoveryListener
     public Status getInterfaceStatus() {
        return this.interfaceStatus;
     }
+    
+    @Override
+    public void connect() throws ConnectionException {
+       try {
+         this.client.connect();
+      } catch (KnxIpException e) {
+        throw new ConnectionException("Connect failed", e);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (IOException e) {
+        throw new ConnectionException("Connect failed", e);
+      }
+    }
 
     // Implements IpTunnelClientListener --------------------------------------------------------
 
@@ -764,7 +781,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
     //
     //  System.out.println(buffer);
     //
-    
+   
+   
     @Override
     public void notifyInterfaceStatus(Status status) {
        log.info("Notified with KNX interface status = " + status);
@@ -827,12 +845,10 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (KnxIpException e)
       {
         log.error("Service failed", e);
-        if(e.getCode() != Code.alreadyConnected) {
-          try {
-            this.client.terminateConnection();
-          } catch (InterruptedException e1) {
-             Thread.currentThread().interrupt();
-          }
+        try {
+          this.client.terminateConnection();
+        } catch (InterruptedException e1) {
+           Thread.currentThread().interrupt();
         }
       }
 
@@ -950,19 +966,16 @@ public class KNXIpConnectionManager implements DiscoveryListener
   private class ConnectionTask extends TimerTask {
 
     @Override
-    public void run() {       
+    public void run() {
       // Launch new discovery
+      log.info("Trying to create connection");
+      this.removeConnection();
       try {
-        log.info("Trying to create connection");
-        this.removeConnection();
         KNXIpConnectionManager.this.start();
-        KNXConnectionImpl c = (KNXConnectionImpl) KNXIpConnectionManager.this.getConnection();
-        if(c != null) {
-          this.cancelTask();
-          return;
-        }
-      } catch (ConnectionException e) {
-        log.warn("Could not create connection", e);
+        KNXIpConnectionManager.this.getConnection();
+        this.cancelTask();
+      } catch(ConnectionException e) {
+        log.warn("Could not connect", e);
       }
     }
     

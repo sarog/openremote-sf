@@ -49,4 +49,10 @@ interface KNXConnection
    * @return Requested status as a <code>boolean</code>.
    */
    IpTunnelClientListener.Status getInterfaceStatus();
+   
+   /**
+    * Connect to KNX-IP interface
+    * @throws ConnectionException Connection failed
+    */
+   void connect() throws ConnectionException;
 }
