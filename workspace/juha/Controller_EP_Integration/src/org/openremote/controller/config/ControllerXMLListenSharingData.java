@@ -26,11 +26,15 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.PollingMachineThread;
 
 /**
+ * TODO : deprecate and replace as per ORCJAVA-121 (http://jira.openremote.org/browse/ORCJAVA-121)
  * 
  * @author handy.wang 2010-03-19
  *
+ * @deprecated   This class has no clear purpose (the name is an omen) -- the sensor registration
+ *               belongs to Device state cache (see ORCJAVA-101) and the XML content parts belong
+ *               to a deployer (see ORCJAVA-115)
  */
-public class ControllerXMLListenSharingData {
+@Deprecated public class ControllerXMLListenSharingData {
 
    private Boolean isControllerXMLChanged = false;
    private List<PollingMachineThread> pollingMachineThreads = new ArrayList<PollingMachineThread>();
