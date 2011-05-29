@@ -19,13 +19,13 @@
 */
 package org.openremote.controller.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openremote.controller.statuscache.PollingMachineThread;
 
 /**
  * TODO : deprecate and replace as per ORCJAVA-121 (http://jira.openremote.org/browse/ORCJAVA-121)
+ *
+ *   -- removed sensor registration from this class (ORCJAVA-101)
+ *   -- removed externalized thread mgmt (ORCJAVA-116)
+ *
  * 
  * @author handy.wang 2010-03-19
  *
@@ -36,7 +36,7 @@ import org.openremote.controller.statuscache.PollingMachineThread;
 @Deprecated public class ControllerXMLListenSharingData {
 
    private Boolean isControllerXMLChanged = false;
-   private List<PollingMachineThread> pollingMachineThreads = new ArrayList<PollingMachineThread>();
+//   private List<PollingMachineThread> pollingMachineThreads = new ArrayList<PollingMachineThread>();
 //   private List<Sensor> sensors = new ArrayList<Sensor>();
    private StringBuffer controllerXMLFileContent = new StringBuffer();
    private StringBuffer panelXMLFileContent = new StringBuffer();
@@ -49,15 +49,15 @@ import org.openremote.controller.statuscache.PollingMachineThread;
 //      }
 //      return null;
 //   }
-   
-   public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
-      this.pollingMachineThreads.add(pollingMachineThread);
-   }
-   
-   public List<PollingMachineThread> getPollingMachineThreads() {
-      return pollingMachineThreads;
-   }
-
+//
+//   public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
+//      this.pollingMachineThreads.add(pollingMachineThread);
+//   }
+//
+//   public List<PollingMachineThread> getPollingMachineThreads() {
+//      return pollingMachineThreads;
+//   }
+//
 //   public void addSensor(Sensor sensor) {
 //      this.sensors.add(sensor);
 //   }
