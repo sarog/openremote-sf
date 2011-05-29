@@ -23,6 +23,7 @@ package org.openremote.controller.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
 import org.jdom.Document;
@@ -37,8 +38,9 @@ import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.service.PollingMachinesService;
-import org.openremote.controller.service.StatusCacheService;
+//import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.statuscache.PollingMachineThread;
+import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.Logger;
 
@@ -77,7 +79,8 @@ import org.openremote.controller.utils.Logger;
 
   // Private Instance Fields ----------------------------------------------------------------------
 
-  private StatusCacheService statusCacheService;
+  //private StatusCacheService statusCacheService;
+  private StatusCache deviceStateCache;
   private RemoteActionXMLParser remoteActionXMLParser;
   private ControllerXMLListenSharingData controllerXMLListenSharingData;
   private SensorBuilder sensorBuilder;
@@ -88,6 +91,9 @@ import org.openremote.controller.utils.Logger;
 
   @Override public void initStatusCacheWithControllerXML(Document doc)
   {
+
+    // TODO : this method should be in deployer, see ORCJAVA-115
+
     List<Element> sensorElements = null;
 
     try
@@ -138,9 +144,15 @@ import org.openremote.controller.utils.Logger;
           Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
               .info("Created sensor : {0}", sensor.toString());
           
-          controllerXMLListenSharingData.addSensor(sensor);
+          //controllerXMLListenSharingData.addSensor(sensor);
 
-          statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), StatusCommand.UNKNOWN_STATUS);
+          if (!deviceStateCache.registerSensor(sensor))
+              log.error("duplicate sensor registration");  // TODO
+
+
+          // TODO : see ORCJAVA-102
+
+          deviceStateCache.saveOrUpdateStatus(sensor.getSensorID(), StatusCommand.UNKNOWN_STATUS);
         }
         catch (NoSuchCommandException e)
         {
@@ -164,11 +176,15 @@ import org.openremote.controller.utils.Logger;
 
   @Override public void startPollingMachineMultiThread() throws InterruptedException
   {
-    for (Sensor sensor : controllerXMLListenSharingData.getSensors())
+    Iterator<Sensor> iterator = deviceStateCache.listSensors();
+
+    while (iterator.hasNext())
     {
+      Sensor sensor = iterator.next();
+
       if (sensor.isPolling())
       {
-        PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, statusCacheService);
+        PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, deviceStateCache);
         pollingMachineThread.start();
 
         Thread.sleep(3);    // TODO : the nap makes no sense -- is it because thread synchronization has not been implemented ? [JPL]
@@ -212,9 +228,17 @@ import org.openremote.controller.utils.Logger;
 //      }
 //   }
 
-   public void setStatusCacheService(StatusCacheService statusCacheService) {
-      this.statusCacheService = statusCacheService;
-   }
+//   public void setStatusCacheService(StatusCacheService statusCacheService) {
+//      this.statusCacheService = statusCacheService;
+//   }
+
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  public void setCache(StatusCache deviceStateCache)
+  {
+    this.deviceStateCache = deviceStateCache;
+  }
 
    public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
       this.remoteActionXMLParser = remoteActionXMLParser;
