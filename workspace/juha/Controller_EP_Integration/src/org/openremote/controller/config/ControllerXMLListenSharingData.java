@@ -22,7 +22,6 @@ package org.openremote.controller.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.statuscache.PollingMachineThread;
 
 /**
@@ -38,18 +37,18 @@ import org.openremote.controller.statuscache.PollingMachineThread;
 
    private Boolean isControllerXMLChanged = false;
    private List<PollingMachineThread> pollingMachineThreads = new ArrayList<PollingMachineThread>();
-   private List<Sensor> sensors = new ArrayList<Sensor>();
+//   private List<Sensor> sensors = new ArrayList<Sensor>();
    private StringBuffer controllerXMLFileContent = new StringBuffer();
    private StringBuffer panelXMLFileContent = new StringBuffer();
    
-   public Sensor findSensorById(String id) {
-      for (Sensor sensor : sensors) {
-         if (sensor.getSensorID() == Integer.valueOf(id)) {
-            return sensor;
-         }
-      }
-      return null;
-   }
+//   public Sensor findSensorById(String id) {
+//      for (Sensor sensor : sensors) {
+//         if (sensor.getSensorID() == Integer.valueOf(id)) {
+//            return sensor;
+//         }
+//      }
+//      return null;
+//   }
    
    public void addPollingMachineThread(PollingMachineThread pollingMachineThread) {
       this.pollingMachineThreads.add(pollingMachineThread);
@@ -59,13 +58,13 @@ import org.openremote.controller.statuscache.PollingMachineThread;
       return pollingMachineThreads;
    }
 
-   public void addSensor(Sensor sensor) {
-      this.sensors.add(sensor);
-   }
-   
-   public List<Sensor> getSensors() {
-      return sensors;
-   }
+//   public void addSensor(Sensor sensor) {
+//      this.sensors.add(sensor);
+//   }
+//
+//   public List<Sensor> getSensors() {
+//      return sensors;
+//   }
 
    public void setControllerXMLFileContent(StringBuffer controllerXMLFileContent) {
       this.controllerXMLFileContent = controllerXMLFileContent;
