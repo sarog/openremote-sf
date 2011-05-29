@@ -24,7 +24,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * service for manage the StatusCache
+ * TODO : Deprecate and remove, see ORCJAVA-122 (http://jira.openremote.org/browse/ORCJAVA-122)
+ *
+ * This service does *nothing*. Everything is delegated to status cache implementation. Completely
+ * useless.
+ * 
  * @author Javen
  *
  */
