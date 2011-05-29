@@ -55,7 +55,7 @@ public class MonitorController extends AbstractController
     mav.addObject("controller.xml", controllerXMLListenSharingData.getControllerXMLFileContent());
     mav.addObject("panel.xml", controllerXMLListenSharingData.getPanelXMLFileContent());
     mav.addObject("records", cache.getChangedStatusTable().getRecordList());
-    mav.addObject("sensors", controllerXMLListenSharingData.getSensors());
+    //mav.addObject("sensors", controllerXMLListenSharingData.getSensors());
 
     return mav;
   }
