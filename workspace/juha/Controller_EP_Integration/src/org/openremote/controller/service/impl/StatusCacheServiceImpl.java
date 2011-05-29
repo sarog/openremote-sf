@@ -24,12 +24,17 @@ import java.util.Set;
 
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.statuscache.StatusCache;
+
 /**
- * Implementation of StatusCacheService.
- * 
+ *
+ * TODO : Deprecate and remove, see ORCJAVA-122 (http://jira.openremote.org/browse/ORCJAVA-122)
+ *
+ * This service does *nothing*. Everything is delegated to status cache implementation. Completely
+ * useless.
+ *
  * @author Handy.Wang 2009-10-21
  */
-public class StatusCacheServiceImpl implements StatusCacheService{
+@Deprecated public class StatusCacheServiceImpl implements StatusCacheService {
    
    private StatusCache cache;
    
