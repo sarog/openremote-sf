@@ -32,7 +32,7 @@ import java.util.Set;
  * @author Javen
  *
  */
-public interface StatusCacheService {
+@Deprecated public interface StatusCacheService {
    
    void saveOrUpdateStatus(Integer sensorId,String newStatus);
    
