@@ -42,18 +42,18 @@ import org.openremote.controller.Constants;
   private volatile boolean alive = true;
 
   private Sensor sensor;
-	//private StatusCacheService statusCacheService;
-	private String lastStatus = StatusCommand.UNKNOWN_STATUS;
-	private static final long INTERVAL = 500;
+  //private StatusCacheService statusCacheService;
+  private String lastStatus = StatusCommand.UNKNOWN_STATUS;
+  private static final long INTERVAL = 500;
 
-	/** milliseconds */
-	private long pollingMachineInterval = INTERVAL;
-	
+  /** milliseconds */
+  private long pollingMachineInterval = INTERVAL;
+
   public PollingMachineThread(Sensor sensor)
   {
     this.sensor = sensor;
   }
-	
+
 //	public PollingMachineThread(long pollingMachineInterval, Sensor sensor)
 //  {
 //    this.pollingMachineInterval = pollingMachineInterval;
@@ -70,7 +70,6 @@ import org.openremote.controller.Constants;
       lastStatus = sensor.read();
 
       sensor.update(lastStatus);
-//      deviceStateCache.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
 
       try
       {
@@ -89,17 +88,19 @@ import org.openremote.controller.Constants;
     }
   }
 
-	public void kill()
+  public void kill()
   {
-	   this.alive = false;
-	}
+     this.alive = false;
+  }
 
-   public String getLastStatus() {
-      return lastStatus;
-   }
+  public String getLastStatus()
+  {
+    return lastStatus;
+  }
 
-   public Sensor getSensor() {
-      return sensor;
-   }
+  public Sensor getSensor()
+  {
+    return sensor;
+  }
 	
 }
