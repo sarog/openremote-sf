@@ -23,8 +23,6 @@ package org.openremote.controller.statuscache;
 
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.service.StatusCacheService;
-import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
 
@@ -45,24 +43,22 @@ import org.openremote.controller.Constants;
 
   private Sensor sensor;
 	//private StatusCacheService statusCacheService;
-  private StatusCache deviceStateCache;
 	private String lastStatus = StatusCommand.UNKNOWN_STATUS;
 	private static final long INTERVAL = 500;
 
 	/** milliseconds */
-	private long pollingMachineInterval;
+	private long pollingMachineInterval = INTERVAL;
 	
-  public PollingMachineThread(Sensor sensor, StatusCache deviceStateCache)
+  public PollingMachineThread(Sensor sensor)
   {
-    this(INTERVAL, sensor, deviceStateCache);
-  }
-	
-	public PollingMachineThread(long pollingMachineInterval, Sensor sensor, StatusCache deviceStateCache)
-  {
-    this.pollingMachineInterval = pollingMachineInterval;
     this.sensor = sensor;
-    this.deviceStateCache = deviceStateCache;
   }
+	
+//	public PollingMachineThread(long pollingMachineInterval, Sensor sensor)
+//  {
+//    this.pollingMachineInterval = pollingMachineInterval;
+//    this.sensor = sensor;
+//  }
 
 
   @Override public void run()
@@ -73,9 +69,8 @@ import org.openremote.controller.Constants;
     {
       lastStatus = sensor.read();
 
-      // TODO : see ORCJAVA-102
-      
-      deviceStateCache.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
+      sensor.update(lastStatus);
+//      deviceStateCache.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
 
       try
       {
