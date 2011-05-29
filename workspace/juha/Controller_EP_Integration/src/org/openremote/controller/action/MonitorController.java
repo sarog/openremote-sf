@@ -50,7 +50,7 @@ public class MonitorController extends AbstractController
   {
     ModelAndView mav = new ModelAndView("monitor");
 
-    mav.addObject("threads", controllerXMLListenSharingData.getPollingMachineThreads());
+    //mav.addObject("threads", controllerXMLListenSharingData.getPollingMachineThreads());
     mav.addObject("xmlChanged", controllerXMLListenSharingData.getIsControllerXMLChanged());
     mav.addObject("controller.xml", controllerXMLListenSharingData.getControllerXMLFileContent());
     mav.addObject("panel.xml", controllerXMLListenSharingData.getPanelXMLFileContent());
