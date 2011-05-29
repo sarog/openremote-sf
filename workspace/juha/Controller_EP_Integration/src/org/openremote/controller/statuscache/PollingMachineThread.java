@@ -24,14 +24,16 @@ package org.openremote.controller.statuscache;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.service.StatusCacheService;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
 
 /**
- * 
+ * TODO : Should move to sensor implementation, as per ORCJAVA-116
+ *
  * @author Handy.Wang 2009-03-17
  */
-public class PollingMachineThread extends Thread
+@Deprecated public class PollingMachineThread extends Thread
 {
 
   // Class Members --------------------------------------------------------------------------------
@@ -42,24 +44,24 @@ public class PollingMachineThread extends Thread
   private volatile boolean alive = true;
 
   private Sensor sensor;
-	private StatusCacheService statusCacheService;
+	//private StatusCacheService statusCacheService;
+  private StatusCache deviceStateCache;
 	private String lastStatus = StatusCommand.UNKNOWN_STATUS;
 	private static final long INTERVAL = 500;
 
 	/** milliseconds */
 	private long pollingMachineInterval;
 	
-  public PollingMachineThread(Sensor sensor, StatusCacheService statusCacheService)
+  public PollingMachineThread(Sensor sensor, StatusCache deviceStateCache)
   {
-    this(INTERVAL, sensor, statusCacheService);
+    this(INTERVAL, sensor, deviceStateCache);
   }
 	
-	public PollingMachineThread(long pollingMachineInterval, Sensor sensor,
-                              StatusCacheService statusCacheService)
+	public PollingMachineThread(long pollingMachineInterval, Sensor sensor, StatusCache deviceStateCache)
   {
     this.pollingMachineInterval = pollingMachineInterval;
     this.sensor = sensor;
-    this.statusCacheService = statusCacheService;
+    this.deviceStateCache = deviceStateCache;
   }
 
 
@@ -70,7 +72,10 @@ public class PollingMachineThread extends Thread
     while (alive)
     {
       lastStatus = sensor.read();
-      statusCacheService.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
+
+      // TODO : see ORCJAVA-102
+      
+      deviceStateCache.saveOrUpdateStatus(sensor.getSensorID(), lastStatus);
 
       try
       {
