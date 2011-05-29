@@ -33,57 +33,57 @@ import org.openremote.controller.Constants;
  */
 @Deprecated public class PollingMachineThread extends Thread
 {
-
-  // Class Members --------------------------------------------------------------------------------
-
-  private final static Logger log = Logger.getLogger(Constants.RUNTIME_SENSORS_LOG_CATEGORY);
-
-
-  private volatile boolean alive = true;
-
-  private Sensor sensor;
-  private static final long INTERVAL = 500;
-
-  /** milliseconds */
-  private long pollingMachineInterval = INTERVAL;
-
-  public PollingMachineThread(Sensor sensor)
-  {
-    this.sensor = sensor;
-  }
-
-
-
-  @Override public void run()
-  {
-    log.info("Started sensor (ID = {0}, type = {1}).", sensor.getSensorID(), sensor.getSensorType());
-
-    while (alive)
-    {
-      String lastStatus = sensor.read();
-
-      sensor.update(lastStatus);
-
-      try
-      {
-        Thread.sleep(pollingMachineInterval);
-      }
-      catch (InterruptedException e)
-      {
-        alive = false;
-
-        log.info("Shutting down sensor (ID = {0}, type = {1}).", sensor.getSensorID(), sensor.getSensorType());
-
-        // Allow the container to handle thread cleanup if it wants to...
-
-        Thread.currentThread().interrupt();
-      }
-    }
-  }
-
-  public void kill()
-  {
-     this.alive = false;
-  }
+//
+//  // Class Members --------------------------------------------------------------------------------
+//
+//  private final static Logger log = Logger.getLogger(Constants.RUNTIME_SENSORS_LOG_CATEGORY);
+//
+//
+//  private volatile boolean alive = true;
+//
+//  private Sensor sensor;
+//  private static final long INTERVAL = 500;
+//
+//  /** milliseconds */
+//  private long pollingMachineInterval = INTERVAL;
+//
+//  public PollingMachineThread(Sensor sensor)
+//  {
+//    this.sensor = sensor;
+//  }
+//
+//
+//
+//  @Override public void run()
+//  {
+//    log.info("Started sensor (ID = {0}, type = {1}).", sensor.getSensorID(), sensor.getSensorType());
+//
+//    while (alive)
+//    {
+//      String lastStatus = sensor.read();
+//
+//      sensor.update(lastStatus);
+//
+//      try
+//      {
+//        Thread.sleep(pollingMachineInterval);
+//      }
+//      catch (InterruptedException e)
+//      {
+//        alive = false;
+//
+//        log.info("Shutting down sensor (ID = {0}, type = {1}).", sensor.getSensorID(), sensor.getSensorType());
+//
+//        // Allow the container to handle thread cleanup if it wants to...
+//
+//        Thread.currentThread().interrupt();
+//      }
+//    }
+//  }
+//
+//  public void kill()
+//  {
+//     this.alive = false;
+//  }
 
 }
