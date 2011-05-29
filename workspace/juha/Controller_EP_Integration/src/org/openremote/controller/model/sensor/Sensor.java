@@ -52,7 +52,7 @@ import org.openremote.controller.component.EnumSensorType;
  *
  * A sensor class is designed as immutable. This immutability should be maintained by the sensor's
  * subclasses in order to make it safe to pass the sensor instances to protocol handlers and
- * possibly to other plugins and/or components.
+ * possibly to other plugins and/or components.  TODO -- no longer strictly immutable, see ORCJAVA-123
  *
  *
  * TODO : per sensor polling frequency
