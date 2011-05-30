@@ -108,7 +108,7 @@ public class ScriptManager
     */   
    public String executeScript(Action commandAction, String currentCommandValue, StatusCacheService statusCacheService) {
       Map<String, String> args = commandAction.getArgs();
-      String scriptName = args.get("scriptName");
+      String scriptName = args.get("scriptname");
       String result = "";
       
       try {
