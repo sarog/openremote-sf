@@ -883,6 +883,32 @@ public class ResourceServiceImpl implements ResourceService {
       try {
          ois = new ObjectInputStream(new FileInputStream(panelsObjFile));
          Collection<Panel> panels = (Collection<Panel>) ois.readObject();
+         
+         // Temporary fix, see ORCJAVA-65 and related issues
+         // We just read an archived panel configuration, it might violate some of the new constraints
+         // introduced when updating UIButton for the feature enhancements.
+         // Run some fixes to prevent errors for user when inspecting existing buttons.
+         // Note: this is maybe not the best place to implement this.
+         // The initial idea was to do that using the following method on UIButton
+         // private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+         //  in.defaultReadObject();
+         //  if (repeatDelay <= 100) repeatDelay = 100;
+         //  if (longPressDelay <= 250) longPressDelay = 250;
+         //  if (longReleaseCommand != null || longPressCommand != null) repeate = false;
+         // }
+         // This however fails to compile because UIButton is used in the GWT client side too.
+         // Next tried creating a UIButton_CustomFieldSerialiazer to handle this but it seems not to be called.
+         for (Panel panel : panels) {
+           for (Group group : panel.getGroups()) {
+             for (Screen screen : group.getPortraitScreens()) {
+               fixScreenComponentsForNewButtonEnhancementFeatures(screen);
+             }
+               for (Screen screen : group.getLandscapeScreens()) {
+                 fixScreenComponentsForNewButtonEnhancementFeatures(screen);
+             }
+           }
+         }
+         
          long maxOid = ois.readLong();
          return new PanelsAndMaxOid(panels, maxOid);
       } catch (Exception e) {
@@ -898,6 +924,40 @@ public class ResourceServiceImpl implements ResourceService {
          }
       }
    }
+
+   /**
+    * Finds all components within a screen and apply the fix required for the button enhancement new features.
+    * 
+    * @param screen Screen in which to look for components
+    */
+  private void fixScreenComponentsForNewButtonEnhancementFeatures(Screen screen) {
+    for (Absolute absolute : screen.getAbsolutes()) {
+       UIComponent component = absolute.getUiComponent();
+       fixComponentForNewButtonEnhancementFeatures(component);
+     }
+     for (UIGrid grid : screen.getGrids()) {
+       for (Cell cell : grid.getCells()) {
+         UIComponent component = cell.getUiComponent();
+         fixComponentForNewButtonEnhancementFeatures(component);
+       }                 
+     }
+  }
+
+   /**
+    * New attributes where added when enhancing buttons with features such as long press.
+    * This method makes sure the provided component, if a button, does not violate the new constraints,
+    * and fixes the issues if any.
+    *  
+    * @param component Component to validate and fix
+    */
+  private void fixComponentForNewButtonEnhancementFeatures(UIComponent component) {
+    if (component instanceof UIButton) {
+       UIButton button = (UIButton) component;
+       if (button.getRepeatDelay() <= 100) button.setRepeatDelay(100);
+       if (button.getLongPressDelay() <= 250) button.setLongPressDelay(250);
+       if (button.getLongReleaseCommand() != null || button.getLongPressCommand() != null) button.setRepeate(false);
+     }
+  }
 
    @SuppressWarnings("all")
    public void saveResourcesToBeehive(Collection<Panel> panels) {

@@ -482,40 +482,45 @@ public class TemplateServiceImpl implements TemplateService {
       Collection<UIButton> buttons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
 
       for (UIButton btn : buttons) {
-         UICommand cmd = btn.getPressCommand();
-
-         if (cmd != null) {
-            if (cmd instanceof DeviceCommandRef) {
-               DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
-
-               for (DeviceCommand tmpCmd : uiCmds) {
-                  if (tmpCmd.equals(cmdRef.getDeviceCommand())) {
-                     cmdRef.setDeviceCommand(tmpCmd);
-                  }
-               }
-
-               uiCmds.add(cmdRef.getDeviceCommand());
-
-            } else if (cmd instanceof DeviceMacroRef) {
-               DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
-               DeviceMacro macro = macroRef.getTargetDeviceMacro();
-
-               if (macro != null) {
-                  Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macro);
-
-                  for (DeviceCommandRef cmdFromMacro : cmds) {
-                     for (DeviceCommand cmdInCommandSet : uiCmds) {
-                        if (cmdFromMacro.getDeviceCommand().equals(cmdInCommandSet)) {
-                           cmdFromMacro.setDeviceCommand(cmdInCommandSet);
-                        }
-                     }
-                     uiCmds.add(cmdFromMacro.getDeviceCommand());
-                  }
-               }
-            }
-         }
+        addButtonCommandToCommandsSet(btn.getPressCommand(), uiCmds);
+        addButtonCommandToCommandsSet(btn.getShortReleaseCommand(), uiCmds);
+        addButtonCommandToCommandsSet(btn.getLongPressCommand(), uiCmds);
+        addButtonCommandToCommandsSet(btn.getLongReleaseCommand(), uiCmds);
       }
    }
+
+  private void addButtonCommandToCommandsSet(UICommand cmd, Set<DeviceCommand> uiCmds) {
+    if (cmd != null) {
+        if (cmd instanceof DeviceCommandRef) {
+           DeviceCommandRef cmdRef = (DeviceCommandRef) cmd;
+
+           for (DeviceCommand tmpCmd : uiCmds) {
+              if (tmpCmd.equals(cmdRef.getDeviceCommand())) {
+                 cmdRef.setDeviceCommand(tmpCmd);
+              }
+           }
+
+           uiCmds.add(cmdRef.getDeviceCommand());
+
+        } else if (cmd instanceof DeviceMacroRef) {
+           DeviceMacroRef macroRef = (DeviceMacroRef) cmd;
+           DeviceMacro macro = macroRef.getTargetDeviceMacro();
+
+           if (macro != null) {
+              Collection<DeviceCommandRef> cmds = getDeviceCommandsRefsFromMacro(macro);
+
+              for (DeviceCommandRef cmdFromMacro : cmds) {
+                 for (DeviceCommand cmdInCommandSet : uiCmds) {
+                    if (cmdFromMacro.getDeviceCommand().equals(cmdInCommandSet)) {
+                       cmdFromMacro.setDeviceCommand(cmdInCommandSet);
+                    }
+                 }
+                 uiCmds.add(cmdFromMacro.getDeviceCommand());
+              }
+           }
+        }
+     }
+  }
 
    @SuppressWarnings("unchecked")
    private void getDeviceCommandsFromSwitch(UIComponentBox box, Set<DeviceCommand> uiCmds) {
@@ -687,15 +692,10 @@ public class TemplateServiceImpl implements TemplateService {
       Collection<UIButton> uiButtons = (Collection<UIButton>) box.getUIComponentsByType(UIButton.class);
 
       for (UIButton btn : uiButtons) {
-         if (btn.getPressCommand() instanceof DeviceMacroRef) {
-            DeviceMacroRef macroRef = (DeviceMacroRef) btn.getPressCommand();
-
-            if (macroRef.getTargetDeviceMacro() != null) {
-               DeviceMacro macro = macroRef.getTargetDeviceMacro();
-               macros.add(macro);
-               macros.addAll(macro.getSubMacros());
-            }
-         }
+        addButtonCommandToMacrosSet(btn.getPressCommand(), macros);
+        addButtonCommandToMacrosSet(btn.getShortReleaseCommand(), macros);
+        addButtonCommandToMacrosSet(btn.getLongPressCommand(), macros);
+        addButtonCommandToMacrosSet(btn.getLongReleaseCommand(), macros);
       }
       if (gestures != null && gestures.size() >0) {
          for (Gesture gesture : gestures) {
@@ -712,6 +712,18 @@ public class TemplateServiceImpl implements TemplateService {
       }
       return macros;
    }
+
+  private void addButtonCommandToMacrosSet(UICommand pressCommand, Set<DeviceMacro> macros) {
+    if (pressCommand instanceof DeviceMacroRef) {
+        DeviceMacroRef macroRef = (DeviceMacroRef) pressCommand;
+
+        if (macroRef.getTargetDeviceMacro() != null) {
+           DeviceMacro macro = macroRef.getTargetDeviceMacro();
+           macros.add(macro);
+           macros.addAll(macro.getSubMacros());
+        }
+     }
+  }
 
    /*private  Set<DeviceMacro> getSubMacrosForMacro(DeviceMacro macro) {
       Set<DeviceMacro> macros = new HashSet<DeviceMacro> ();

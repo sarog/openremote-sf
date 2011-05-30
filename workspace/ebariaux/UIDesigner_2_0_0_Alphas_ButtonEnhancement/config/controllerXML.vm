@@ -54,6 +54,7 @@
   #foreach($button in $buttons)
 	  <button id="${button.getOid()}">
 		#if(${button.getPressCommand()})
+		    <macro commandParam="press">
 			#set($uiCmd=${button.getPressCommand()})
 			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
 				#if($cmd.getDelay().equals(""))
@@ -62,6 +63,43 @@
 					<delay>${cmd.getDelay()}</delay>
 				#end
 			#end
+			</macro>
+		#end
+		#if(${button.getShortReleaseCommand()})
+		    <macro commandParam="shortRelease">
+			#set($uiCmd=${button.getShortReleaseCommand()})
+			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+				#if($cmd.getDelay().equals(""))
+					<include type="command" ref="${cmd.getId()}"/>
+				#else
+					<delay>${cmd.getDelay()}</delay>
+				#end
+			#end
+			</macro>
+		#end
+		#if(${button.getLongPressCommand()})
+		    <macro commandParam="longPress">
+			#set($uiCmd=${button.getLongPressCommand()})
+			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+				#if($cmd.getDelay().equals(""))
+					<include type="command" ref="${cmd.getId()}"/>
+				#else
+					<delay>${cmd.getDelay()}</delay>
+				#end
+			#end
+			</macro>
+		#end
+		#if(${button.getLongReleaseCommand()})
+		    <macro commandParam="longRelease">
+			#set($uiCmd=${button.getLongReleaseCommand()})
+			#foreach($cmd in ${resouceServiceImpl.getCommandOwnerByUICommand($uiCmd,$eventContainer,$maxId)})
+				#if($cmd.getDelay().equals(""))
+					<include type="command" ref="${cmd.getId()}"/>
+				#else
+					<delay>${cmd.getDelay()}</delay>
+				#end
+			#end
+			</macro>
 		#end
 		</button>
   #end
