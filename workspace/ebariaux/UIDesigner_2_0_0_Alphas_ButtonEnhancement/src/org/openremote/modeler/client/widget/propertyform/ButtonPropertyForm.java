@@ -109,6 +109,104 @@ public class ButtonPropertyForm extends PropertyForm {
       AdapterField adapterPressCommand = new AdapterField(pressCommand);
       adapterPressCommand.setFieldLabel("Press command");
       
+      final Button shortReleaseCommand = new Button("Select");
+      shortReleaseCommand.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+           SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
+           selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 BeanModel dataModel = be.<BeanModel> getData();
+                 UICommand uiCommand = null;
+                 if (dataModel.getBean() instanceof DeviceCommand) {
+                    uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
+                 } else if (dataModel.getBean() instanceof DeviceMacro) {
+                    uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
+                 }
+                 uiButton.setShortReleaseCommand(uiCommand);
+                 shortReleaseCommand.setText(uiCommand.getDisplayName());
+              }
+           });
+        }
+     });
+     if (uiButton.getShortReleaseCommand() != null) {
+        shortReleaseCommand.setText(uiButton.getShortReleaseCommand().getDisplayName());
+     }
+      AdapterField adapterShortReleaseCommand = new AdapterField(shortReleaseCommand);
+      adapterShortReleaseCommand.setFieldLabel("Short release cmd");
+
+      final Button longPressCommand = new Button("Select");
+      longPressCommand.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+           SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
+           selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 BeanModel dataModel = be.<BeanModel> getData();
+                 UICommand uiCommand = null;
+                 if (dataModel.getBean() instanceof DeviceCommand) {
+                    uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
+                 } else if (dataModel.getBean() instanceof DeviceMacro) {
+                    uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
+                 }
+                 uiButton.setLongPressCommand(uiCommand);
+                 longPressCommand.setText(uiCommand.getDisplayName());
+                 uiButton.setRepeate(false);
+                 repeat.setValue(false);
+              }
+           });
+        }
+     });
+     if (uiButton.getLongPressCommand() != null) {
+        longPressCommand.setText(uiButton.getLongPressCommand().getDisplayName());
+     }
+      AdapterField adapterLongPressCommand = new AdapterField(longPressCommand);
+      adapterLongPressCommand.setFieldLabel("Long press cmd");
+
+      final Button longReleaseCommand = new Button("Select");
+      longReleaseCommand.addSelectionListener(new SelectionListener<ButtonEvent>() {
+        @Override
+        public void componentSelected(ButtonEvent ce) {
+           SelectCommandWindow selectCommandWindow = new SelectCommandWindow();
+           selectCommandWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+              @Override
+              public void afterSubmit(SubmitEvent be) {
+                 BeanModel dataModel = be.<BeanModel> getData();
+                 UICommand uiCommand = null;
+                 if (dataModel.getBean() instanceof DeviceCommand) {
+                    uiCommand = new DeviceCommandRef((DeviceCommand) dataModel.getBean());
+                 } else if (dataModel.getBean() instanceof DeviceMacro) {
+                    uiCommand = new DeviceMacroRef((DeviceMacro) dataModel.getBean());
+                 }
+                 uiButton.setLongReleaseCommand(uiCommand);
+                 longReleaseCommand.setText(uiCommand.getDisplayName());
+                 uiButton.setRepeate(false);
+                 repeat.setValue(false);
+              }
+           });
+        }
+     });
+     if (uiButton.getLongReleaseCommand() != null) {
+        longReleaseCommand.setText(uiButton.getLongReleaseCommand().getDisplayName());
+     }
+      AdapterField adapterLongReleaseCommand = new AdapterField(longReleaseCommand);
+      adapterLongReleaseCommand.setFieldLabel("Long release cmd");
+
+      // TODO EBR : must validate entered value >= 250
+      final TextField<String> longPressDelayField = new TextField<String>();
+      longPressDelayField.setFieldLabel("Long press delay");
+      longPressDelayField.setRegex("^[1-9][0-9]*$");
+      longPressDelayField.getMessages().setRegexText("The long press delay must be a positive integer");
+      longPressDelayField.setValue(Integer.toString(uiButton.getLongPressDelay()));
+      longPressDelayField.addListener(Events.Blur, new Listener<BaseEvent>() {
+         @Override
+         public void handleEvent(BaseEvent be) {
+           uiButton.setLongPressDelay(Integer.parseInt(longPressDelayField.getValue()));
+         }
+      });
+
       // initial navigate properties
       final Navigate navigate = uiButton.getNavigate();
       Group parentGroup = screenButton.getScreenCanvas().getScreen().getScreenPair().getParentGroup();
@@ -221,17 +319,40 @@ public class ButtonPropertyForm extends PropertyForm {
                   uiButton.getNavigate().setToGroup(-1L);
                   uiButton.getNavigate().setToLogical(null);
                }
+               uiButton.setLongPressCommand(null);
+               longPressCommand.setText("Select");
+               uiButton.setLongReleaseCommand(null);
+               longReleaseCommand.setText("Select");
             }
             navigateSet.collapse();
             uiButton.setRepeate(repeat.getValue());
          }
       });
       repeatCheckBoxGroup.add(repeat); 
+      
+      // TODO EBR : must validate entered value >= 100
+      final TextField<String> repeatDelayField = new TextField<String>();
+      repeatDelayField.setFieldLabel("Repeat delay");
+      repeatDelayField.setRegex("^[1-9][0-9]*$");
+      repeatDelayField.getMessages().setRegexText("The repeat delay must be a positive integer");
+      repeatDelayField.setValue(Integer.toString(uiButton.getRepeatDelay()));
+      repeatDelayField.addListener(Events.Blur, new Listener<BaseEvent>() {
+         @Override
+         public void handleEvent(BaseEvent be) {
+           uiButton.setRepeatDelay(Integer.parseInt(repeatDelayField.getValue()));
+         }
+      });
+
       add(name);
       add(adapterPressCommand);
+      add(adapterShortReleaseCommand);
+      add(adapterLongPressCommand);
+      add(adapterLongReleaseCommand);
+      add(longPressDelayField);
       add(defaultImageField);
       add(pressImageField);
       add(repeatCheckBoxGroup);
+      add(repeatDelayField);
       add(navigateSet);
       
    }

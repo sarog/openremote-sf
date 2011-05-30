@@ -19,6 +19,8 @@
 */
 package org.openremote.modeler.domain.component;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,6 +46,9 @@ public class UIButton extends UIControl implements ImageSourceOwner{
    /** If pressed the button, repeat to send command or not. */
    private boolean repeate;
    
+   /** Delay between each command send when repeating */
+   private int repeatDelay = 100;
+   
    /** The button's default image. */
    private ImageSource image;
    
@@ -55,6 +60,18 @@ public class UIButton extends UIControl implements ImageSourceOwner{
 
    /** If click the button, send the uicommand. */
    private UICommand pressCommand;
+   
+   /** Command sent when button is released after short press */
+   private UICommand shortReleaseCommand;
+   
+   /** Command sent when button is pressed for long time */
+   private UICommand longPressCommand;
+   
+   /** Command sent when button released after long press */
+   private UICommand longReleaseCommand;
+   
+   /** Delay after press for it to be considered long */
+   private int longPressDelay = 250;
 
    /**
     * Instantiates a new uI button.
@@ -66,10 +83,15 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       this.setOid(btn.getOid());
       this.name = btn.name;
       this.repeate = btn.repeate;
+      this.repeatDelay = btn.repeatDelay;
       this.image = btn.image;
       this.navigate = btn.navigate;
       this.pressImage = btn.pressImage;
       this.pressCommand = btn.pressCommand;
+      this.shortReleaseCommand = btn.shortReleaseCommand;
+      this.longPressCommand = btn.longPressCommand;
+      this.longReleaseCommand = btn.longReleaseCommand;
+      this.longPressDelay = btn.longPressDelay;
    }
    /**
     * Instantiates a new uI button.
@@ -98,7 +120,47 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       this.pressCommand = pressCommand;
    }
    
-   @Override
+  public UICommand getShortReleaseCommand() {
+    return shortReleaseCommand;
+  }
+   
+  public void setShortReleaseCommand(UICommand shortReleaseCommand) {
+    this.shortReleaseCommand = shortReleaseCommand;
+  }
+  
+  public UICommand getLongPressCommand() {
+    return longPressCommand;
+  }
+  
+  public void setLongPressCommand(UICommand longPressCommand) {
+    this.longPressCommand = longPressCommand;
+  }
+  
+  public UICommand getLongReleaseCommand() {
+    return longReleaseCommand;
+  }
+  
+  public void setLongReleaseCommand(UICommand longReleaseCommand) {
+    this.longReleaseCommand = longReleaseCommand;
+  }
+ 
+  public int getRepeatDelay() {
+    return repeatDelay;
+  }
+  
+  public void setRepeatDelay(int repeatDelay) {
+    this.repeatDelay = repeatDelay;
+  }
+  
+  public int getLongPressDelay() {
+    return longPressDelay;
+  }
+  
+  public void setLongPressDelay(int longPressDelay) {
+    this.longPressDelay = longPressDelay;
+  }
+  
+  @Override
    public String getName() {
       return name;
    }
@@ -146,6 +208,15 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       if (pressCommand != null) {
          commands.add(pressCommand);
       }
+      if (shortReleaseCommand != null) {
+        commands.add(shortReleaseCommand);
+      }
+      if (longPressCommand != null) {
+        commands.add(longPressCommand);
+      }
+      if (longReleaseCommand != null) {
+        commands.add(longReleaseCommand);
+      }
       return commands;
    }
 
@@ -158,8 +229,21 @@ public class UIButton extends UIControl implements ImageSourceOwner{
       if (pressCommand != null) {
          xmlContent.append(" hasPressCommand=\"true\"");
       }
+      if (shortReleaseCommand != null) {
+        xmlContent.append(" hasShortReleaseCommand=\"true\"");
+      }
+      if (longPressCommand != null) {
+        xmlContent.append(" hasLongPressCommand=\"true\"");
+      }
+      if (longReleaseCommand != null) {
+        xmlContent.append(" hasLongReleaseCommand=\"true\"");
+      }
+      if (longPressCommand != null || longReleaseCommand != null) {
+        xmlContent.append(" longPressDelay=\"" + longPressDelay + "\"");
+      }
+      
       if (repeate) {
-         xmlContent.append(" repeat=\"" + repeate + "\"");
+         xmlContent.append(" repeat=\"" + repeate + "\" repeatDelay=\"" + repeatDelay + "\"");
       }
       xmlContent.append(">\n");
       if (image != null && image.getImageFileName() != null) {
