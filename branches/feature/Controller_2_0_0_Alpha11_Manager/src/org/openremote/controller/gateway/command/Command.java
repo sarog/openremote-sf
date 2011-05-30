@@ -124,7 +124,9 @@ public class Command
                   if (paramArray.length == 2) {
                      args.put(paramArray[0].toLowerCase(), paramArray[1]);
                   } else {
-                     this.valid = false;
+                     if (actionType != EnumCommandActionType.READ) {
+                        this.valid = false;
+                     }
                      break;
                   }
                }

@@ -187,6 +187,7 @@ public class Gateway extends Thread
       
       // Apply supplied params
       for (Element ele : propertyEles) {
+
          String paramName = ele.getAttributeValue("name");
          String paramValue = ele.getAttributeValue("value");
 
@@ -372,7 +373,7 @@ public class Gateway extends Thread
             this.connectionState = EnumGatewayConnectionState.CONNECTED;
             
             // Disconnect unless connection type is permanent
-            if (this.connectionType != EnumGatewayConnectionType.PERMANENT || this.connectionType != EnumGatewayConnectionType.TIMED) {
+            if (this.connectionType != EnumGatewayConnectionType.PERMANENT && this.connectionType != EnumGatewayConnectionType.TIMED) {
                protocolDisconnect();
             }
          } catch (GatewayConnectionException e) {
@@ -401,6 +402,7 @@ public class Gateway extends Thread
          Integer sensorId = pollingMap.getValue();
          Command command = getCommand(commandId);
          String result = UNKNOWN_STATUS;         
+
          String commandResult = "";
          
          // Skip command if invalid or null
@@ -492,8 +494,8 @@ public class Gateway extends Thread
                switch (commandAction.getType()) {
                   case SCRIPT:
                      Map<String,String> args = commandAction.getArgs();
-                     if (args.containsKey("scriptName")) {
-                        valid = scriptManager.addScript(args.get("scriptName"));
+                     if (args.containsKey("scriptname")) {
+                        valid = scriptManager.addScript(args.get("scriptname"));
                      } else {
                         valid = false;
                      }
