@@ -38,8 +38,6 @@ import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.service.PollingMachinesService;
-//import org.openremote.controller.service.ServiceContext;
-import org.openremote.controller.statuscache.PollingMachineThread;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.utils.Logger;
@@ -138,21 +136,10 @@ import org.openremote.controller.utils.Logger;
         {
           Sensor sensor = sensorBuilder.build(sensorElement);
 
-          // Pull out a specific log category just to log the creation of sensor objects
-          // in this method (happens at startup or soft restart)...
-
-          Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
-              .info("Created sensor : {0}", sensor.toString());
-          
-          //controllerXMLListenSharingData.addSensor(sensor);
-
           if (!deviceStateCache.registerSensor(sensor))
               log.error("duplicate sensor registration");  // TODO
 
-
-          // TODO : see ORCJAVA-102
-
-          deviceStateCache.saveOrUpdateStatus(sensor.getSensorID(), StatusCommand.UNKNOWN_STATUS);
+          sensor.update(StatusCommand.UNKNOWN_STATUS);
         }
         catch (NoSuchCommandException e)
         {
@@ -182,20 +169,22 @@ import org.openremote.controller.utils.Logger;
     {
       Sensor sensor = iterator.next();
 
-      if (sensor.isPolling())
-      {
-        PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor, deviceStateCache);
-        pollingMachineThread.start();
+      sensor.start();
 
-        Thread.sleep(3);    // TODO : the nap makes no sense -- is it because thread synchronization has not been implemented ? [JPL]
-
-        controllerXMLListenSharingData.addPollingMachineThread(pollingMachineThread);
-      }
-
-      if (sensor.isEventListener())
-      {
-        sensor.start();
-      }
+//      if (sensor.isPolling())
+//      {
+//        PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor);
+//        pollingMachineThread.start();
+//
+//        Thread.sleep(3);    // TODO : the nap makes no sense -- is it because thread synchronization has not been implemented ? [JPL]
+//
+//        controllerXMLListenSharingData.addPollingMachineThread(pollingMachineThread);
+//      }
+//
+//      if (sensor.isEventListener())
+//      {
+//        sensor.start();
+//      }
     }
 
     storeXMLContent(Constants.CONTROLLER_XML);
