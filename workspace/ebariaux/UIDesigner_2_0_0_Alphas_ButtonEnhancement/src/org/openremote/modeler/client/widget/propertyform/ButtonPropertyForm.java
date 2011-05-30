@@ -38,8 +38,8 @@ import org.openremote.modeler.domain.Group;
 import org.openremote.modeler.domain.UICommand;
 import org.openremote.modeler.domain.component.ImageSource;
 import org.openremote.modeler.domain.component.Navigate;
-import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.Navigate.ToLogicalType;
+import org.openremote.modeler.domain.component.UIButton;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.BaseEvent;
@@ -53,7 +53,9 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.AdapterField;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.CheckBoxGroup;
+import com.extjs.gxt.ui.client.widget.form.Field;
 import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.extjs.gxt.ui.client.widget.form.Validator;
 
 /**
  * A panel for display screen button properties.
@@ -194,11 +196,24 @@ public class ButtonPropertyForm extends PropertyForm {
       AdapterField adapterLongReleaseCommand = new AdapterField(longReleaseCommand);
       adapterLongReleaseCommand.setFieldLabel("Long release cmd");
 
-      // TODO EBR : must validate entered value >= 250
       final TextField<String> longPressDelayField = new TextField<String>();
       longPressDelayField.setFieldLabel("Long press delay");
-      longPressDelayField.setRegex("^[1-9][0-9]*$");
-      longPressDelayField.getMessages().setRegexText("The long press delay must be a positive integer");
+      final Validator longPressDelayFieldValidator = new Validator() {
+          @Override
+          public String validate(Field<?> field, String value) {
+              if (field == longPressDelayField) {
+                try {
+                  if (Integer.parseInt(longPressDelayField.getValue()) < 250) {
+                      return "The long press delay must be at least 250";
+                  }
+                } catch (NumberFormatException e) {
+                  return "The long press delay must be a positive integer";
+                }
+              }
+              return null;
+          }
+      };
+      longPressDelayField.setValidator(longPressDelayFieldValidator);
       longPressDelayField.setValue(Integer.toString(uiButton.getLongPressDelay()));
       longPressDelayField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
@@ -330,11 +345,24 @@ public class ButtonPropertyForm extends PropertyForm {
       });
       repeatCheckBoxGroup.add(repeat); 
       
-      // TODO EBR : must validate entered value >= 100
       final TextField<String> repeatDelayField = new TextField<String>();
       repeatDelayField.setFieldLabel("Repeat delay");
-      repeatDelayField.setRegex("^[1-9][0-9]*$");
-      repeatDelayField.getMessages().setRegexText("The repeat delay must be a positive integer");
+      final Validator repeatDelayFieldValidator = new Validator() {
+        @Override
+        public String validate(Field<?> field, String value) {
+            if (field == repeatDelayField) {
+              try {
+                if (Integer.parseInt(repeatDelayField.getValue()) < 100) {
+                    return "The repeat delay must be at least 100";
+                }
+              } catch (NumberFormatException e) {
+                return "The repeat delay must be a positive integer";
+              }
+            }
+            return null;
+        }
+      };
+      repeatDelayField.setValidator(repeatDelayFieldValidator);
       repeatDelayField.setValue(Integer.toString(uiButton.getRepeatDelay()));
       repeatDelayField.addListener(Events.Blur, new Listener<BaseEvent>() {
          @Override
