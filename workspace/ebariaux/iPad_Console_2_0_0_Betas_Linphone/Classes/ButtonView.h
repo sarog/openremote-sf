@@ -32,7 +32,6 @@
 	UIButton *uiButton;
 	UIImage *uiImage;
 	UIImage *uiImagePressed;
-	
 }
 
 @property (nonatomic, readonly) UIButton *uiButton;

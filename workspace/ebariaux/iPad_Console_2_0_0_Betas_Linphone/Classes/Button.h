@@ -43,7 +43,12 @@
 	Image *defaultImage;
 	Image *pressedImage;
 	BOOL repeat;
-	BOOL hasCommand;
+    NSUInteger repeatDelay;
+    BOOL hasPressCommand;
+    BOOL hasShortReleaseCommand;
+    BOOL hasLongPressCommand;
+    BOOL hasLongReleaseCommand;
+    NSUInteger longPressDelay;
 	Navigate *navigate;
 	
 	NSString *subElememntNameOfBackground;
@@ -54,7 +59,12 @@
 @property (nonatomic, readonly) Image *defaultImage;
 @property (nonatomic, readonly) Image *pressedImage;
 @property (nonatomic, readonly) BOOL repeat;
-@property (nonatomic, readonly) BOOL hasCommand;
+@property (nonatomic, readonly) NSUInteger repeatDelay;
+@property (nonatomic, readonly) BOOL hasPressCommand;
+@property (nonatomic, readonly) BOOL hasShortReleaseCommand;
+@property (nonatomic, readonly) BOOL hasLongPressCommand;
+@property (nonatomic, readonly) BOOL hasLongReleaseCommand;
+@property (nonatomic, readonly) NSUInteger longPressDelay;
 @property (nonatomic, readonly) Navigate *navigate;
 @property (nonatomic, readonly) NSString *subElememntNameOfBackground;
 
