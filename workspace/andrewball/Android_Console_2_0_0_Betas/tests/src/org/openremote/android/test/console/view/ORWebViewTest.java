@@ -23,7 +23,6 @@ package org.openremote.android.test.console.view;
 
 import junitx.util.PrivateAccessor;
 
-import org.openremote.android.console.bindings.Sensor;
 import org.openremote.android.console.bindings.Web;
 import org.openremote.android.console.view.ORWebView;
 import org.openremote.android.test.TestUtils;

@@ -23,7 +23,6 @@ package org.openremote.android.test.console.net;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.net.MalformedURLException;
 import java.io.IOException;
 import java.util.Random;
 import java.util.HashSet;
