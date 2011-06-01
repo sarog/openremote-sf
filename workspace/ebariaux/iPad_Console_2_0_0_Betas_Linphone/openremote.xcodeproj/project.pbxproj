@@ -84,6 +84,7 @@
 		6068DEA213744EBB007746F1 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DEA113744EBB007746F1 /* CFNetwork.framework */; };
 		6068DEA313744EC7007746F1 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
 		6068DEA513744ED0007746F1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DEA413744ED0007746F1 /* SystemConfiguration.framework */; };
+		6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6082FEA9139643C4005A75C2 /* ButtonTest.m */; };
 		608FBB77131FF90500C9089F /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
 		608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
 		608FBDD113211DED00C9089F /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
@@ -446,6 +447,8 @@
 		6068DE9713744E36007746F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		6068DEA113744EBB007746F1 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		6068DEA413744ED0007746F1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		6082FEA8139643C4005A75C2 /* ButtonTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ButtonTest.h; path = ../ButtonEnhancement/iPad_Console_2_0_0_Betas_ButtonEnhancement/Test/ButtonTest.h; sourceTree = "<group>"; };
+		6082FEA9139643C4005A75C2 /* ButtonTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ButtonTest.m; path = ../ButtonEnhancement/iPad_Console_2_0_0_Betas_ButtonEnhancement/Test/ButtonTest.m; sourceTree = "<group>"; };
 		608FBB75131FF90500C9089F /* SipController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SipController.h; sourceTree = "<group>"; };
 		608FBB76131FF90500C9089F /* SipController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SipController.m; sourceTree = "<group>"; };
 		608FBB9D131FF9C300C9089F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -1510,6 +1513,8 @@
 		8C460E411095527300C7A686 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				6082FEA8139643C4005A75C2 /* ButtonTest.h */,
+				6082FEA9139643C4005A75C2 /* ButtonTest.m */,
 				8CEFDAEF11BF444100CEDC24 /* util */,
 				338C3CD210D60F3F0029D62B /* view */,
 				8CEB4E7810B27F3700A67721 /* panelxml */,
@@ -2285,6 +2290,7 @@
 				609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */,
 				609C57DE137430F60093C03A /* PanelXMLParsingTests.m in Sources */,
 				609C57DF137430F60093C03A /* ScreenTest.m in Sources */,
+				6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

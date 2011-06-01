@@ -30,7 +30,6 @@
  * It's super class of all control views in screen view.
  */
 @interface ControlView : ComponentView <ControlDelegate, ORControllerCommandSenderDelegate> {
-	NSTimer *controlTimer;
 	BOOL isError;
 }
 
@@ -43,11 +42,6 @@
  * Construct controlView instance with control model data and frame of its layout container.
  */
 - (id)initWithControl:(Control *)c frame:(CGRect)frame;
-
-/**
- * Cancel timer of repeated sending control command.
- */
-- (void)cancelTimer;
 
 - (void)commandSendFailed;
 

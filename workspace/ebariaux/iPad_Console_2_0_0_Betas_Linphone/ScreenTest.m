@@ -8,7 +8,6 @@
 
 #import "ScreenTest.h"
 #import "Definition.h"
-#import "Screen.h"
 
 @implementation ScreenTest
 
