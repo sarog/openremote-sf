@@ -122,7 +122,7 @@ public class ORControllerServerSwitcher
     catch (ParserConfigurationException e)
     {
       Log.e(LOG_CATEGORY, "Can't build new Document builder", e);
-      return false;
+      throw new RuntimeException("XML parsing configuration unrecoverably bad!", e);
     }
 
     try
