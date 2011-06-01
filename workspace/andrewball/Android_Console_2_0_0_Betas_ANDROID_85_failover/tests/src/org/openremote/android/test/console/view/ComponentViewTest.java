@@ -21,8 +21,6 @@
 
 package org.openremote.android.test.console.view;
 
-import junitx.util.PrivateAccessor;
-
 import org.openremote.android.console.bindings.Web;
 import org.openremote.android.console.view.ComponentView;
 import org.openremote.android.console.view.ORWebView;
@@ -63,7 +61,7 @@ public class ComponentViewTest extends AndroidTestCase
     web.setFrameHeight(height);
     ORWebView orWebView = (ORWebView) ComponentView.buildWithComponent(getContext(), web);
     assertEquals(web, (Web) orWebView.getComponent());
-    WebView webView = (WebView) PrivateAccessor.getField(orWebView, "webView");
+    WebView webView = (WebView) orWebView.getChildAt(0);
     assertNotNull(webView);
     ViewGroup.LayoutParams layoutParams = webView.getLayoutParams();
     assertEquals(width, layoutParams.width);
