@@ -87,7 +87,7 @@ public class ButtonView extends ControlView {
                   defaultImage.setAlpha(200);
                   uiButton.setBackgroundDrawable(defaultImage);
                }
-               if (button.isHasControlCommand()) {
+               if (button.isHasPressCommand()) {
                   sendCommand();
                   if (button.isRepeat()) {
                      Timer timer = new Timer();

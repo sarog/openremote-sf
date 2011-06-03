@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
 public class ORButton extends Control {
 
    private String name;
-   private boolean hasControlCommand;
+   private boolean hasPressCommand;
    private boolean repeat;
    
    /** The button's normal image. */
@@ -53,8 +53,8 @@ public class ORButton extends Control {
       NamedNodeMap nodeMap = node.getAttributes();
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue()));
       this.name = nodeMap.getNamedItem(NAME).getNodeValue();
-      if (nodeMap.getNamedItem("hasControlCommand") != null) {
-         this.hasControlCommand = Boolean.valueOf(nodeMap.getNamedItem("hasControlCommand").getNodeValue());
+      if (nodeMap.getNamedItem("hasPressCommand") != null) {
+         this.hasPressCommand = Boolean.valueOf(nodeMap.getNamedItem("hasPressCommand").getNodeValue());
       }
       if (nodeMap.getNamedItem("repeat") != null) {
          this.repeat = Boolean.valueOf(nodeMap.getNamedItem("repeat").getNodeValue());
@@ -80,8 +80,8 @@ public class ORButton extends Control {
       return name;
    }
    
-   public boolean isHasControlCommand() {
-      return hasControlCommand;
+   public boolean isHasPressCommand() {
+      return hasPressCommand;
    }
    
    public boolean isRepeat() {
