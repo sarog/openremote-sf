@@ -144,18 +144,18 @@ public class FileUtilTest extends InstrumentationTestCase {
       Assert.assertEquals("", pollingStatusIds);
 
       Assert.assertEquals(11, buttons.size());
-      Assert.assertFalse(buttons.get(0).isHasControlCommand());
-      Assert.assertTrue(buttons.get(1).isHasControlCommand());
+      Assert.assertFalse(buttons.get(0).isHasPressCommand());
+      Assert.assertTrue(buttons.get(1).isHasPressCommand());
       Assert.assertNull(buttons.get(1).getNavigate());
-      Assert.assertFalse(buttons.get(2).isHasControlCommand());
-      Assert.assertFalse(buttons.get(3).isHasControlCommand());
+      Assert.assertFalse(buttons.get(2).isHasPressCommand());
+      Assert.assertFalse(buttons.get(3).isHasPressCommand());
       Assert.assertEquals(9, buttons.get(3).getNavigate().getToGroup());
-      Assert.assertFalse(buttons.get(4).isHasControlCommand());
+      Assert.assertFalse(buttons.get(4).isHasPressCommand());
       Assert.assertEquals(9, buttons.get(4).getNavigate().getToGroup());
       Assert.assertEquals(10, buttons.get(4).getNavigate().getToScreen());
-      Assert.assertFalse(buttons.get(5).isHasControlCommand());
+      Assert.assertFalse(buttons.get(5).isHasPressCommand());
       Assert.assertTrue(buttons.get(5).getNavigate().isPreviousScreen());
-      Assert.assertFalse(buttons.get(6).isHasControlCommand());
+      Assert.assertFalse(buttons.get(6).isHasPressCommand());
       Assert.assertTrue(buttons.get(6).getNavigate().isNextScreen());
       Assert.assertTrue(buttons.get(7).getNavigate().isSetting());
       Assert.assertTrue(buttons.get(8).getNavigate().isBack());
