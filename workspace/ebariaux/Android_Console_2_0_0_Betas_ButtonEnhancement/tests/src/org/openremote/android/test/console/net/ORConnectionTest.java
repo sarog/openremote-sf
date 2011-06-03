@@ -644,14 +644,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
   
   /**
-   * Test a 'click' write command on a pre-configured button ID.
+   * Test a 'press' write command on a pre-configured button ID.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    */
   public void testControllerSimpleButtonCommand() throws IOException
   {
     final String BUTTON_ID = "22";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
@@ -676,7 +676,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerCmdBuildErrorOnButton() throws IOException
   {
     final String BROKEN_BUTTON_ID = "999";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BROKEN_BUTTON_ID + COMMAND_PARAM);
 
@@ -699,7 +699,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerCmdBuildErrorOnButton_BROKEN_API_IMPL() throws IOException, ParserConfigurationException
   {
     final String BUTTON_ID = "999";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
@@ -744,7 +744,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerCmdBuildErrorOnButton_BROKEN_API_IMPL_MIME() throws IOException, ParserConfigurationException
   {
     final String BUTTON_ID = "999";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
@@ -766,7 +766,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerRESTControlInvalidURI() throws IOException
   {
     final String INVALID_BUTTON_ID = "must-be-integer";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM);
 
@@ -790,7 +790,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerRESTControlInvalidURI_BROKEN_API_IMPL() throws IOException, ParserConfigurationException
   {
     final String INVALID_BUTTON_ID = "must-be-integer";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM);
 
@@ -837,7 +837,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerRESTControlInvalidURI_BROKEN_API_IMPL_MIME() throws Exception
   {
     final String INVALID_BUTTON_ID = "must-be-integer";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + INVALID_BUTTON_ID + COMMAND_PARAM);
 
@@ -860,7 +860,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
     final String LIGHTON_BUTTON_ID = "22";
     final String LIGHTOFF_BUTTON_ID = "24";
 
-    final String BUTTON_COMMAND_PARAM = "/click";
+    final String BUTTON_COMMAND_PARAM = "/press";
 
     final URL LIGHTON_BUTTON_URL =
         new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + LIGHTON_BUTTON_ID + BUTTON_COMMAND_PARAM);
@@ -900,7 +900,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
 
   /**
-   * Test HTTP response on a 'click' write command where the component ID is not found.
+   * Test HTTP response on a 'press' write command where the component ID is not found.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    * @throws ParserConfigurationException if DOM parsing fails on return data
@@ -909,7 +909,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerButtonCommandUnknownID() throws IOException, ParserConfigurationException, SAXException
   {
     final String UNKNOWN_BUTTON_ID = "22222";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_BUTTON_ID + COMMAND_PARAM);
 
@@ -925,14 +925,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
 
   /**
-   * Test HTTP response on a 'click' command that has been configured with an unknown protocol.
+   * Test HTTP response on a 'press' command that has been configured with an unknown protocol.
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    */
   public void testControllerButtonCommandUnknownProtocol() throws IOException
   {
     final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM);
 
@@ -956,7 +956,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerButtonCommandUnknownProtocol_BROKEN_API_IMPL() throws IOException, ParserConfigurationException
   {
     final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM);
 
@@ -1002,7 +1002,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerButtonCommandUnknownProtocol_BROKEN_API_IMPL_MIME() throws Exception
   {
     final String UNKNOWN_PROTOCOL_BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CMDERRORS_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNKNOWN_PROTOCOL_BUTTON_ID + COMMAND_PARAM);
 
@@ -1020,14 +1020,14 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
 
   /**
-   * Test HTTP Response on button 'click' command when controller XML has not been deployed.
+   * Test HTTP Response on button 'press' command when controller XML has not been deployed.
    *
    * @throws Exception if test fails for any reason
    */
   public void testControllerButtonCommandOnEmptyController() throws Exception
   {
     final String BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_EMPTY_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
@@ -1043,7 +1043,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
 
 
   /**
-   * Test HTTP error response on 'click' command when the command cannot be parsed (invalid XML).
+   * Test HTTP error response on 'press' command when the command cannot be parsed (invalid XML).
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    * @throws ParserConfigurationException if DOM parsing fails on return data
@@ -1052,7 +1052,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerButtonCommandOnBrokenControllerXML() throws IOException, SAXException, ParserConfigurationException
   {
     final String UNPARSEABLE_BUTTON_ID = "444";
-    final String COMMAND_PARAM = "/CLICK";
+    final String COMMAND_PARAM = "/PRESS";
 
     final URL TESTURL = new URL(TEST_BROKEN_CONTROLLER_URL + RESTAPI_CONTROL_URI + UNPARSEABLE_BUTTON_ID + COMMAND_PARAM);
 
@@ -1075,7 +1075,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerButtonCommandURITrimming() throws IOException
   {
     final String BUTTON_ID = "24";
-    final String COMMAND_PARAM = "/CLICK        ";
+    final String COMMAND_PARAM = "/PRESS        ";
 
     final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + BUTTON_ID + COMMAND_PARAM);
 
@@ -1134,7 +1134,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
   public void testControllerWrongSwitchCommand() throws IOException
   {
     final String COMPONENT_ID = "28";
-    final String COMMAND_PARAM = "/click";
+    final String COMMAND_PARAM = "/press";
 
     final URL TESTURL = new URL(TEST_CONTROLLER_URL + RESTAPI_CONTROL_URI + COMPONENT_ID + COMMAND_PARAM);
 

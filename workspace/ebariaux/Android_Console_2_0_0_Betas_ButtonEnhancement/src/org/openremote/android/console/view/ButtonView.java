@@ -118,6 +118,6 @@ public class ButtonView extends ControlView {
    }
 
    private void sendCommand() {
-      sendCommandRequest("click");
+      sendCommandRequest("press");
    }
 }
