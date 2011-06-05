@@ -66,7 +66,7 @@ public class ORConnection {
    private InputStream responseData;
    
    /**
-    * Instantiates a new oR connection without username and password.
+    * Instantiates a new OR connection without username and password.
     * 
     * @param url the url
     * @param httpMethod the http method
@@ -88,8 +88,21 @@ public class ORConnection {
     * @param username the username
     * @param password the password
     */
-   @SuppressWarnings("deprecation")
    public ORConnection(String url, ORHttpMethod httpMethod, String username, String password) {
+   	this(url, httpMethod, username, password, false);
+   }
+   
+	/**
+	 * Instantiates a new OR connection while specifying JSON return type
+	 * 
+    * @param url the url
+    * @param httpMethod the http method
+    * @param username the username
+    * @param password the password
+    * @param jsonResponse JSON Response Required
+	 */
+   @SuppressWarnings("deprecation")
+	public ORConnection(String url, ORHttpMethod httpMethod, String username, String password, boolean jsonResponse) {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 4 * 1000);
       HttpConnectionParams.setSoTimeout(params, 5 * 1000);
@@ -135,6 +148,12 @@ public class ORConnection {
          log.error("Create HttpRequest fail" + url);
          return;
       }
+      
+      // If JSON Response required set Accept Header
+      if (jsonResponse) {
+      	httpRequest.addHeader("Accept", "application/json");
+      }
+      
       if (username != null && password != null) {
          BASE64Encoder base64Encoder = new BASE64Encoder();    
          String encodedUsernameAndPassword = base64Encoder.encode((username+":"+password).getBytes());
@@ -174,6 +193,7 @@ public class ORConnection {
          throw new ORConnectionException(ControllerExceptionMessage.exceptionMessageOfCode(statusCode));
       }
    }
+
    
    /**
     * Gets the response data if request success.
