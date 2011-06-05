@@ -1,0 +1,51 @@
+.screen-background {
+   background-repeat: no-repeat;
+   position: relative;
+}
+.panel-table {
+	position: absolute;
+	border-collapse: collapse;
+	border: 1px dashed yellow;
+}
+.panel-table td{
+	border: 1px dashed yellow;
+}
+
+.absolute{
+	position: absolute;
+}
+
+.indicator-default {
+	cursor: pointer;
+	float: left;
+	margin-right: 2px;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat -16px 0;
+}
+
+.indicator-current {
+	cursor: default;
+	float: left;
+	margin-right: 2px;
+   background: url('../../resources/images/indicator_sprite.png') no-repeat 0 0;
+}
+
+.pressed {
+	opacity: 0.8;
+	*margin: 1px; /* for IE*/
+}
+
+.label-style {
+   text-align: center;
+   font-family: tahoma,arial,verdana,sans-serif;	
+}
+
+.image-style {
+   background-repeat: no-repeat;
+   background-position: 0 0;	
+}
+
+.error-text {
+	margin-top: 5px;
+	margin-bottom: 10px;
+   font-family: tahoma,arial,verdana,sans-serif;
+}
