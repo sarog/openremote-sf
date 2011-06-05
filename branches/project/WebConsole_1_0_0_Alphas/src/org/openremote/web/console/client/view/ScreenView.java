@@ -65,7 +65,7 @@ public class ScreenView extends com.extjs.gxt.ui.client.widget.LayoutContainer {
     */
    public ScreenView(Screen screen) {
       this.screen = screen;
-      setStyleAttribute("backgroundColor", "white");
+      setStyleAttribute("backgroundColor", "black");
       setStyleAttribute("position", "relative");
       setStyleAttribute("overflow", "auto");
       setBorders(true);

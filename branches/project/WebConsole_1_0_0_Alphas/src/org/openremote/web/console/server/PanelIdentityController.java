@@ -59,7 +59,7 @@ public class PanelIdentityController extends BaseGWTSpringController implements 
    public boolean isSupportJsonp(String url, String username, String password) {
       boolean isSupportJsonp = false;
       url = url + "/rest/panels?callback=jsonp";
-      ORConnection orConnection = new ORConnection(url, ORHttpMethod.GET, username, password);
+      ORConnection orConnection = new ORConnection(url, ORHttpMethod.GET, username, password, true);
       try {
          String result = IOUtils.toString(orConnection.getResponseData());
          if (result.startsWith("jsonp")) {
