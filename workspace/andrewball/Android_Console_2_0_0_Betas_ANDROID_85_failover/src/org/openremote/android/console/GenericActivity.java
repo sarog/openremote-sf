@@ -19,13 +19,13 @@
 */
 package org.openremote.android.console;
 
-import android.app.Activity;
+import roboguice.activity.RoboActivity;
 import android.os.Bundle;
 
 /**
  * The Class GenericActivity is the super activity in the application.
  */
-public class GenericActivity extends Activity {
+public class GenericActivity extends RoboActivity {
 
    /** The is activity resumed. */
    private boolean isActivityResumed;
