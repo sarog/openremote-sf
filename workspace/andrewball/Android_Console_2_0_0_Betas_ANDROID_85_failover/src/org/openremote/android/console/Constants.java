@@ -47,6 +47,16 @@ public class Constants
 
   // TODO : can be replaced with HttpURLConnection.HTTP_OK
   public static final int HTTP_SUCCESS = 200;
+  /**
+   * Default timeout (in milliseconds) to wait for a connection to a controller
+   * to be established
+   */
+  public static final int DEFAULT_CONTROLLER_CONNECTION_TIMEOUT = 5 * 1000;
+  /**
+   * Default timeout (in milliseconds) to wait for data on a connection to a
+   * controller
+   */
+  public static final int DEFAULT_CONTROLLER_SOCKET_TIMEOUT = 5 * 1000;
   
 
   public static final String ACTIVITY = "activity";
