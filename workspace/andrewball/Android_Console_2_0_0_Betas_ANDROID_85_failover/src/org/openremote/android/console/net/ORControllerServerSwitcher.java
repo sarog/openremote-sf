@@ -95,9 +95,8 @@ public class ORControllerServerSwitcher
           AppSettingsModel.getCurrentServer(context));
 
     HttpParams params = new BasicHttpParams();
-    // TODO: use constants for these
-    HttpConnectionParams.setConnectionTimeout(params, 5 * 1000);
-    HttpConnectionParams.setSoTimeout(params, 5 * 1000);
+    HttpConnectionParams.setConnectionTimeout(params, Constants.DEFAULT_CONTROLLER_CONNECTION_TIMEOUT);
+    HttpConnectionParams.setSoTimeout(params, Constants.DEFAULT_CONTROLLER_SOCKET_TIMEOUT);
     HttpClient httpClient = new DefaultHttpClient(params);
     URL url = AppSettingsModel.getSecuredServer(context);
     HttpGet httpGet = new HttpGet(url + "/rest/servers");
