@@ -83,4 +83,6 @@ public class Constants
    * Prefix for logging so OpenRemote related entries can be easily filtered.
    */
   public final static String LOG_CATEGORY = "OpenRemote/";
+
+  public static final String UTF8_ENCODING = "UTF-8";
 }
