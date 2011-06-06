@@ -198,7 +198,8 @@
 	[xmlParser parse];
 	[xmlParser release];
     
-    // TODO: persist list ! be carefull : can this occur while on settings screen and other changes pending ?
+    // TODO: is this OK to persist : can this occur while on settings screen and other changes pending ?
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
 
     NSLog(@"RoundRobin group members are:");
     for (ORGroupMember *gm in [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers) {
