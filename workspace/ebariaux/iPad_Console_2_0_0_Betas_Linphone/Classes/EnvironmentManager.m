@@ -40,7 +40,7 @@
     }
     NSString *periodValue = [formatter stringFromDate:[self getCurrentPeriod:context]];
     [formatter release];
-    return [NSString stringWithFormat:@"http://localhost:8080/beehive/rest/user/eric2/graph/temp1?period=%@&width=580&height=360", periodValue];
+    return [NSString stringWithFormat:@"http://192.168.0.118:8080/beehive/rest/user/openremote/graph/temperature?period=%@&width=580&height=360", periodValue];
 }
 
 + (NSString *)getPeriodString:(NSMutableDictionary *)context
