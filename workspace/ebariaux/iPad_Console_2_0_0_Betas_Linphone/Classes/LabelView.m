@@ -56,7 +56,7 @@
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Label *)component).sensor.sensorId;
 	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
-	NSLog(@"new status is : %@", newStatus);
+//	NSLog(@"new status is : %@", newStatus);
 	
 	Label *labelModel = ((Label *)component);
 	BOOL changeText = NO;
