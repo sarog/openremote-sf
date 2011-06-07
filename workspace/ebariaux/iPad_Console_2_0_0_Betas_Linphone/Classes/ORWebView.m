@@ -78,7 +78,7 @@
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = ((Web *)self.component).sensor.sensorId;
 	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
-	NSLog(@"new status is : %@", newStatus);
+//	NSLog(@"new status is : %@", newStatus);
     if (![self.oldStatus isEqualToString:newStatus]) {
         self.oldStatus = newStatus;
         [self loadRequestForURL:newStatus];
