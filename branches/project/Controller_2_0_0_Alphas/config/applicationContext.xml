@@ -153,24 +153,25 @@
 	
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
-    <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
-		<property name = "commandBuilders">
-		    <props>
-                <prop key = "ir">irCommandBuilder</prop>
-                <prop key = "knx">knxCommandBuilder</prop>
-                <prop key = "x10">x10CommandBuilder</prop>
-                <prop key = "socket">tcpSocketCommandBuilder</prop>
-                <prop key = "telnet">telnetCommandBuilder</prop>
-                <prop key = "http">httpGetCommandBuilder</prop>
-                <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
-                <prop key = "virtual">virtualCommandBuilder</prop>
-                <prop key = "mockup">mockupCommandBuilder</prop>
-                <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
-            <prop key = "russound">russoundCommandBuilder</prop>
-		    </props>
-		</property>
-	</bean>
+  <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
+    <property name = "commandBuilders">
+      <props>
+        <prop key = "ir">irCommandBuilder</prop>
+        <prop key = "knx">knxCommandBuilder</prop>
+        <prop key = "x10">x10CommandBuilder</prop>
+        <prop key = "socket">tcpSocketCommandBuilder</prop>
+        <prop key = "telnet">telnetCommandBuilder</prop>
+        <prop key = "http">httpGetCommandBuilder</prop>
+        <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
+        <prop key = "virtual">virtualCommandBuilder</prop>
+        <prop key = "mockup">mockupCommandBuilder</prop>
+        <prop key = "onewire">oneWireCommandBuilder</prop>
+        <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+        <prop key = "russound">russoundCommandBuilder</prop>
+        <prop key = "udp">udpSocketCommandBuilder</prop>
+      </props>
+    </property>
+  </bean>
 
 	<!-- COMMAND BUILDERS ============================================================================
 	 |
@@ -193,7 +194,11 @@
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
 	      scope = "prototype"/>
-	
+
+	<!-- UDP Socket Command Builder for IP enabled devices -->
+	<bean id = "udpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.UDPSocketCommandBuilder"
+	      scope = "prototype"/>
+	      
 	<!-- X10 Command Builder -->
 	<bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
 	
