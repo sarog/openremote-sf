@@ -369,7 +369,7 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
                   filteredResponse = matchedGroup;  
                }
             } else {
-               logger.error("Telnet Read Status: No Match using Regex: '" + getResponseFilter() + "' on response from command '" + getCommand() + "'");
+               logger.info("Telnet Read Status: No Match using Regex: '" + getResponseFilter() + "' on response from command '" + getCommand() + "'");
             } 
          }            
       }
