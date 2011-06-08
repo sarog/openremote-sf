@@ -33,7 +33,7 @@
       <validations>
         <allowBlank>true</allowBlank>
         <maxLength>2</maxLength>
-        <regex message = "Command is necessary">\d+</regex>
+        <regex message = "Timeout in seconds">\d+</regex>
       </validations>
     </attr>
 
