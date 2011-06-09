@@ -36,7 +36,7 @@
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
-	NSLog(@"absolute");
+	log4Info(@"absolute");
 	return self;
 }
 

@@ -91,7 +91,7 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
 - (ORConsoleSettings *)consoleSettings
 {
     if (!consoleSettings) {
-        NSLog(@"console settings not loaded");
+        log4Info(@"console settings not loaded");
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         fetchRequest.entity = [NSEntityDescription entityForName:@"ORConsoleSettings" inManagedObjectContext:self.managedObjectContext];
         NSError *error = nil;

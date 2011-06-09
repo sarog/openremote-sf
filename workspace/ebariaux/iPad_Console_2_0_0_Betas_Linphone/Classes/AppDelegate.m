@@ -98,7 +98,7 @@
 
 // this method will be called after UpdateController give a callback.
 - (void)updateDidFinished {
-	NSLog(@"----------updateDidFinished------");
+	log4Info(@"----------updateDidFinished------");
 
 	if ([defaultViewController isAppLaunching]) {//blocked from app launching, should refresh all groups.
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
@@ -112,7 +112,7 @@
 #pragma mark delegate method of updateController
 
 - (void)didUpdate {
-    NSLog(@">>AppDelegate.didUpdate");
+    log4Info(@">>AppDelegate.didUpdate");
 	[self updateDidFinished];
 }
 
@@ -129,7 +129,7 @@
 }
 
 - (void)didUpdateFail:(NSString *)errorMessage {
-	NSLog(@"%@", errorMessage);
+	log4Error(@"%@", errorMessage);
 	if ([errorMessage isEqualToString:@"401"]) {
 		[defaultViewController populateLoginView:nil];
 	} else {
