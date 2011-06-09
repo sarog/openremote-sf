@@ -63,9 +63,6 @@
 - (void)handleServerResponseWithStatusCode:(int)statusCode
 {
 	if (statusCode != 200) {
-        if ([delegate respondsToSelector:@selector(pollingDidReceiveErrorResponse)]) {
-            [delegate pollingDidReceiveErrorResponse];
-        }
 		switch (statusCode) {
 			case CONTROLLER_CONFIG_CHANGED: //controller config changed
             {
@@ -82,6 +79,9 @@
 				return;
             }
 		}		
+        if ([delegate respondsToSelector:@selector(pollingDidReceiveErrorResponse)]) {
+            [delegate pollingDidReceiveErrorResponse];
+        }
 		[ViewHelper showAlertViewWithTitle:@"Polling Failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	} else {
         if ([delegate respondsToSelector:@selector(pollingDidSucceed)]) {
