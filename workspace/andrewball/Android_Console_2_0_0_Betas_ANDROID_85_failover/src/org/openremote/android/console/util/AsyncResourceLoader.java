@@ -20,256 +20,290 @@
 
 package org.openremote.android.console.util;
 
-import java.util.Iterator;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 
-import org.apache.http.HttpResponse;
+import org.openremote.android.console.R;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.GroupActivity;
 import org.openremote.android.console.LoginViewActivity;
 import org.openremote.android.console.Main;
-import org.openremote.android.console.R;
+import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
+import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
-import org.openremote.android.console.net.ORControllerServerSwitcher;
-import org.openremote.android.console.net.ORNetworkCheck;
+import org.openremote.android.console.net.ControllerService;
+import org.xml.sax.SAXException;
+
+import com.google.inject.Inject;
+
+import roboguice.util.RoboAsyncTask;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
- * It's responsible for downloading resources in backgroud and updte progress in text.
- * 
+ * Load panel.xml and related images from the controller in a background thread,
+ * updating a TextView if provided to show status messages.
+ *
  * @author handy 2010-05-10
  * @author Dan Cong
- *
+ * @author Andrew D. Ball <aball@osintegrators.com>
  */
-public class AsyncResourceLoader extends AsyncTask<Void, String, AsyncResourceLoaderResult> {
-   private static final int TO_LOGIN = 0xF00A;
-//   private static final int TO_SETTING = 0xF00B;
-   private static final int TO_GROUP = 0xF00C;
-   private static final int SWITCH_TO_OTHER_CONTROLER = 0xF00D;
-   
-   private Activity activity;
-   
-   public AsyncResourceLoader(Activity activity) {
-      this.activity = activity;
-      
-   }
-   
-   /** 
-    * Download resources in background.
-    * 
-    * @see android.os.AsyncTask#doInBackground(Params[])
-    */
-   @Override
-   protected AsyncResourceLoaderResult doInBackground(Void... params) {
-      AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
-      boolean isDownloadSuccess = false;
-      String panelName = AppSettingsModel.getCurrentPanelIdentity(activity);
-      publishProgress("panel: " + panelName);
+public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult>
+{
+  public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "AsyncResourceLoader";
 
-      Log.i("OpenRemote/DOWNLOAD", "Getting panel: " + panelName);
+  private static final int TO_LOGIN = 1;
+  private static final int TO_GROUP = 2;
 
-      URL serverUrl = AppSettingsModel.getSecuredServer(activity);
+  private ControllerService controllerService;
+  private Context context;
 
-      HttpResponse checkResponse = null;
+  private TextView loadingText;
+  private Activity activity;
+
+  @Inject
+  public AsyncResourceLoader(ControllerService controllerService, Context context)
+  {
+    this.controllerService = controllerService;
+    this.context = context;
+  }
+
+  /**
+   * If a TextView needs to be updated with progress during execution of this
+   * task, you can pass a reference to it here.
+   *
+   * @param loadingText
+   */
+  public void setLoadingText(TextView loadingText)
+  {
+    this.loadingText = loadingText;
+  }
+
+  /**
+   * If the activity which launched this task needs its finish() method to be
+   * called before starting a new activity, you can pass a reference to that
+   * activity with this method.
+   *
+   * @param activity the activity to call finish() on before launching a different activity
+   */
+  public void setActivity(Activity activity)
+  {
+    this.activity = activity;
+  }
+
+  /**
+   * Download panel.xml and images in the background.
+   */
+  public AsyncResourceLoaderResult call() throws Exception
+  {
+    final String logPrefix = "call(): ";
+
+    AsyncResourceLoaderResult result = new AsyncResourceLoaderResult();
+    String panelName = AppSettingsModel.getCurrentPanelIdentity(context);
+
+    try
+    {
+      Log.i(LOG_CATEGORY, logPrefix + "Getting panel: " + panelName);
+      updateLoadingTextOnUiThread("panel: " + panelName);
+
+      InputStream panelStream = controllerService.getPanel(panelName);
+      FileUtil.writeStreamToFile(context, panelStream, Constants.PANEL_XML);
+
+      FileUtil.parsePanelXML(context);
+      result.setAction(TO_GROUP);
+
+      // now download images
+
+      for (String imageName : XMLEntityDataBase.imageSet)
+      {
+        updateLoadingTextOnUiThread(imageName);
+
+        // TODO image update capability?
+        if (FileUtil.checkFileExists(context, imageName))
+        {
+          Log.i(LOG_CATEGORY, logPrefix + "not downloading image " + imageName + " because it is already in the cache");
+        }
+        else
+        {
+          Log.i(LOG_CATEGORY, logPrefix + "downloading new image " + imageName);
+          InputStream imageStream = controllerService.getResource(imageName);
+          FileUtil.writeStreamToFile(context, imageStream, imageName);
+        }
+      }
+    }
+
+    catch (ControllerAuthenticationFailureException e)
+    {
+      Log.i(LOG_CATEGORY, logPrefix + "not authenticated to controller. going to login activity.");
+      result.setAction(TO_LOGIN);
+    }
+
+    catch (ORConnectionException e)
+    {
+      Log.e(LOG_CATEGORY, logPrefix + "could not connect to controller.  seeing if we can use local cache", e);
 
       try
       {
-        checkResponse = ORNetworkCheck.verifyControllerURL(activity, AppSettingsModel.getCurrentServer(activity));
+        FileUtil.parsePanelXML(context);
+        result.setAction(TO_GROUP);
+        result.setCanUseLocalCache(true);
       }
-      catch (IOException e)
+      catch (SAXException se)
       {
-        // TODO :
-        //   right now still not doing anything with this, user is still completely in the dark
-        //   what went wrong, need to untangle the async loader mess before can propagate info
-        //   back to user
-        //
-        //   So for now, an empty catch block, until I can build proper test cases for these
-        //                                                                                    [JPL]
-        //
+        Log.e(LOG_CATEGORY, logPrefix + "parse error on cached panel.xml.  " +
+            "not using local cache", e);
+        result.setCanUseLocalCache(false);
+        throw se;
       }
-
-     
-      isDownloadSuccess = checkResponse != null && checkResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS;
-
-      if (isDownloadSuccess) {
-         int downLoadPanelXMLStatusCode = HTTPUtil.downLoadPanelXml(activity, serverUrl.toString(), panelName);
-         if (downLoadPanelXMLStatusCode != Constants.HTTP_SUCCESS) { // download panel xml fail.
-            Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail.");
-            if (downLoadPanelXMLStatusCode == ControllerException.UNAUTHORIZED) {
-             result.setAction(TO_LOGIN);
-             result.setStatusCode(downLoadPanelXMLStatusCode);
-             return result;
-            }
-            
-            if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-               Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml fail, so use local cache.");
-               FileUtil.parsePanelXML(activity);
-               result.setCanUseLocalCache(true);
-               result.setStatusCode(downLoadPanelXMLStatusCode);
-               result.setAction(TO_GROUP);
-            } else {
-               Log.i("OpenRemote/DOWNLOAD", "No local cache is available, ready to switch controller.");
-               result.setAction(SWITCH_TO_OTHER_CONTROLER);
-               return result;
-            }
-         } else { // download panel xml success.
-            Log.i("OpenRemote/DOWNLOAD", "Download file panel.xml successfully.");
-            if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-               FileUtil.parsePanelXML(activity);
-               result.setAction(TO_GROUP);
-            } else {
-               Log.i("OpenRemote/DOWNLOAD","No local cache is available authouth downloaded file panel.xml successfully, ready to switch controller.");
-               result.setAction(SWITCH_TO_OTHER_CONTROLER);
-               return result;
-            }
-
-            Iterator<String> images = XMLEntityDataBase.imageSet.iterator();
-            String imageName = "";
-            while (images.hasNext()) {
-               imageName = images.next();
-               publishProgress(imageName);
-               HTTPUtil.downLoadImage(activity, serverUrl.toString(), imageName);
-            }
-         }
-      } else { // Download failed.
-         if (checkResponse != null && checkResponse.getStatusLine().getStatusCode() == ControllerException.UNAUTHORIZED) {
-            result.setAction(TO_LOGIN);
-            result.setStatusCode(ControllerException.UNAUTHORIZED);
-            return result;
-         }
-         
-         if (activity.getFileStreamPath(Constants.PANEL_XML).exists()) {
-            Log.i("OpenRemote/DOWNLOAD", "Download failed, so use local cache.");
-            FileUtil.parsePanelXML(activity);
-            result.setCanUseLocalCache(true);
-            result.setAction(TO_GROUP);
-            if (checkResponse == null) {
-               result.setStatusCode(ControllerException.CONTROLLER_UNAVAILABLE);
-            } else {
-               result.setStatusCode(checkResponse.getStatusLine().getStatusCode());
-            }
-         } else {
-            Log.i("OpenRemote/DOWNLOAD", "No local cache is available, ready to switch controller.");
-            result.setAction(SWITCH_TO_OTHER_CONTROLER);
-            return result;
-         }
+      catch (IOException ie)
+      {
+        Log.e(LOG_CATEGORY, logPrefix + "IO error when trying to parse panel.xml.  " +
+            "not using local cache", e);
+        result.setCanUseLocalCache(false);
+        throw ie;
       }
+    }
 
-      new Thread(new Runnable() {
-         public void run() {
-            ORControllerServerSwitcher.detectGroupMembers(activity);
-         }
-      }).start();
-      return result;
-   }
+    return result;
+  }
 
-   /**
-    * Update progress message in text.
-    * 
-    * @see android.os.AsyncTask#onProgressUpdate(Progress[])
-    */
-   @Override
-   protected void onProgressUpdate(String... values) {
-      RelativeLayout loadingView = (RelativeLayout) (activity.findViewById(R.id.welcome_view));
-      if (loadingView == null) {
-         return;
-      }
+  protected void onException(Exception e) throws RuntimeException
+  {
+    final String logPrefix = "onException(): ";
+    if (e instanceof ORConnectionException)
+    {
+      Log.e(LOG_CATEGORY, logPrefix + "unable to contact a controller and cannot use cache", e);
+      ViewHelper.showAlertViewWithTitle(context,
+          context.getString(R.string.controller_error),
+          context.getString(R.string.cannot_contact_controller_and_cannot_use_cache));
+    }
+    else if (e instanceof SAXException)
+    {
+      Log.e(LOG_CATEGORY, logPrefix + "parse error on panel.xml", e);
+      ViewHelper.showAlertViewWithTitle(context,
+          context.getString(R.string.error),
+          context.getString(R.string.panel_xml_parse_error));
+    }
+    else if (e instanceof IOException)
+    {
+      // TODO make it easier to know exactly what went wrong here.  There are very many
+      // places where IOException could be thrown in call().
       
-      TextView loadingText = (TextView)(activity.findViewById(R.id.loading_text));
-      loadingText.setText("loading " + values[0] + "...");
-      loadingText.setEllipsize(TruncateAt.MIDDLE);
-      loadingText.setSingleLine(true);
-   }
+      Log.e(LOG_CATEGORY, logPrefix + "IOException while loading resources");
+      ViewHelper.showAlertViewWithTitle(context,
+          context.getString(R.string.error),
+          "IOException while loading resources");
+    }
+  }
 
-   /**
-    * Finish downloading and forward to different view by result.
-    * 
-    * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-    */
-   @Override
-   protected void onPostExecute(AsyncResourceLoaderResult result) {
-      publishProgress("groups & screens");
-      Intent intent = new Intent();
-      switch (result.getAction()) {
-      case TO_GROUP:
-         intent.setClass(activity, GroupActivity.class);
-         if (result.isCanUseLocalCache()) {
-            intent.setData(Uri.parse(ControllerException.exceptionMessageOfCode(result.getStatusCode())));
-         }
-         break;
-      case TO_LOGIN:
-         intent.setClass(activity, LoginViewActivity.class);
-         intent.setData(Uri.parse(Main.LOAD_RESOURCE));
-         break;
-      case SWITCH_TO_OTHER_CONTROLER:
-        
-         ORControllerServerSwitcher.doSwitch(activity);
-         return;
+  @Override
+  protected void onSuccess(AsyncResourceLoaderResult result)
+  {
+    Intent intent = new Intent();
 
-      default:
-         ViewHelper.showAlertViewWithTitle(activity, "Send Request Error", ControllerException.exceptionMessageOfCode(result.getStatusCode()));
-         return;
-      }
-      
-      activity.startActivity(intent);
+    switch (result.getAction())
+    {
+    case TO_GROUP:
+      intent.setClass(context, GroupActivity.class);
+      break;
+
+    case TO_LOGIN:
+      intent.setClass(context, LoginViewActivity.class);
+      intent.setData(Uri.parse(Main.LOAD_RESOURCE));
+      break;
+
+    default:
+      ViewHelper.showAlertViewWithTitle(context, "Send Request Error",
+              ControllerException.exceptionMessageOfCode(result.getStatusCode()));
+      return;
+    }
+
+    if (activity != null)
+    {
       activity.finish();
-   }
+    }
+    context.startActivity(intent);
+  }
 
+  /**
+   * Update progress message in the loadingText TextView if one was provided
+   * via setLoadingText().
+   */
+  protected void updateLoadingTextOnUiThread(final String value) {
+    if (loadingText != null)
+    {
+      Log.d(LOG_CATEGORY, "publishProgress: " + value);
+      loadingText.post(new Runnable() {
+        @Override
+        public void run()
+        {
+          Log.d(LOG_CATEGORY, "in progress updater Runnable.run()");
+          loadingText.setText("loading " + value + "...");
+          loadingText.setEllipsize(TruncateAt.MIDDLE);
+          loadingText.setSingleLine(true);
+        }
+      });
+    }
+  }
 }
 
 /**
  * To express the downloading result state.
  */
-class AsyncResourceLoaderResult {
-   
-   /** The action after downloading. */
-   private int action;
-   
-   /** Download resources status code. */
-   private int statusCode;
-   
-   /** If download failed, can use local cache or not. */
-   private boolean canUseLocalCache;
+class AsyncResourceLoaderResult
+{
+  /** The action after downloading. */
+  private int action;
 
-   public AsyncResourceLoaderResult() {
-      action = -1;
-      statusCode = -1;
-      canUseLocalCache = false;
-   }
+  /** Download resources status code. */
+  private int statusCode;
 
-   public int getAction() {
-      return action;
-   }
+  /** If download failed, can use local cache or not. */
+  private boolean canUseLocalCache;
 
-   public void setAction(int action) {
-      this.action = action;
-   }
+  public AsyncResourceLoaderResult()
+  {
+    action = -1;
+    statusCode = -1;
+    canUseLocalCache = false;
+  }
 
-   public int getStatusCode() {
-      return statusCode;
-   }
+  public int getAction()
+  {
+    return action;
+  }
 
-   public void setStatusCode(int statusCode) {
-      this.statusCode = statusCode;
-   }
+  public void setAction(int action)
+  {
+    this.action = action;
+  }
 
-   public boolean isCanUseLocalCache() {
-      return canUseLocalCache;
-   }
+  public int getStatusCode()
+  {
+    return statusCode;
+  }
 
-   public void setCanUseLocalCache(boolean canUseLocalCache) {
-      this.canUseLocalCache = canUseLocalCache;
-   }
+  public void setStatusCode(int statusCode)
+  {
+    this.statusCode = statusCode;
+  }
+
+  public boolean isCanUseLocalCache()
+  {
+    return canUseLocalCache;
+  }
+
+  public void setCanUseLocalCache(boolean canUseLocalCache)
+  {
+    this.canUseLocalCache = canUseLocalCache;
+  }
 }
