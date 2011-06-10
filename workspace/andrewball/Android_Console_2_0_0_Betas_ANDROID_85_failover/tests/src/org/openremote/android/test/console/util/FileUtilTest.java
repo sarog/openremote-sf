@@ -45,8 +45,10 @@ import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.bindings.Switch;
 import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.TabBarItem;
+import org.openremote.android.console.exceptions.AppInitializationException;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.openremote.android.console.util.FileUtil;
+import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.test.InstrumentationTestCase;
@@ -65,7 +67,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_grid_button.xml.
     */
-   public void testParsePanelGridButtonXML() {
+   public void testParsePanelGridButtonXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_grid_button"));
 
       Group[] groups = new Group[2];
@@ -169,7 +172,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_grid_switch.xml.
     */
-   public void testParsePanelGridSwitchXML() {
+   public void testParsePanelGridSwitchXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_grid_switch"));
 
       Group[] groups = new Group[2];
@@ -255,7 +259,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_absolute_switch.xml.
     */
-   public void testParsePanelAbsoluteSwitchXML() {
+   public void testParsePanelAbsoluteSwitchXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_absolute_switch"));
 
       Group[] groups = new Group[2];
@@ -332,7 +337,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_grid_slider.xml.
     */
-   public void testParsePanelGridSliderXML() {
+   public void testParsePanelGridSliderXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_grid_slider"));
 
       Group[] groups = new Group[2];
@@ -416,7 +422,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_absolute_slider.xml.
     */
-   public void testParsePanelAbsoluteSliderXML() {
+   public void testParsePanelAbsoluteSliderXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_absolute_slider"));
 
       Group[] groups = new Group[2];
@@ -490,7 +497,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_grid_label.xml.
     */
-   public void testParsePanelGridLabelXML() {
+   public void testParsePanelGridLabelXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_grid_label"));
 
       Group[] groups = new Group[2];
@@ -581,7 +589,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_absolute_label.xml.
     */
-   public void testParsePanelAbsoluteLabelXML() {
+   public void testParsePanelAbsoluteLabelXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_absolute_label"));
 
       Group[] groups = new Group[2];
@@ -660,7 +669,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_grid_image.xml.
     */
-   public void testParsePanelGridImageXML() {
+   public void testParsePanelGridImageXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_grid_image"));
 
       Group[] groups = new Group[2];
@@ -756,7 +766,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_absolute_image.xml.
     */
-   public void testParsePanelAbsoluteImageXML() {
+   public void testParsePanelAbsoluteImageXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_absolute_image"));
 
       Group[] groups = new Group[2];
@@ -850,7 +861,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_absolute_screen_backgroundimage.xml.
     */
-   public void testParsePanelAbsoluteScreenBackgroundimageXML() {
+   public void testParsePanelAbsoluteScreenBackgroundimageXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_absolute_screen_backgroundimage"));
 
       Group[] groups = new Group[2];
@@ -910,7 +922,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_relative_screen_backgroundimage.xml.
     */
-   public void testParsePanelRelativeScreenBackgroundimageXML() {
+   public void testParsePanelRelativeScreenBackgroundimageXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_relative_screen_backgroundimage"));
 
       Group[] groups = new Group[2];
@@ -976,7 +989,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_absolute_slider_gesture.xml.
     */
-   public void testParsePanelAbsoluteSliderGestureXML() {
+   public void testParsePanelAbsoluteSliderGestureXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_absolute_slider_gesture"));
 
       Group[] groups = new Group[2];
@@ -1053,7 +1067,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_global_tabbar.xml.
     */
-   public void testParsePanelGlobalTabbarXML() {
+   public void testParsePanelGlobalTabbarXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_global_tabbar"));
 
       TabBar globalTabBar = XMLEntityDataBase.globalTabBar;
@@ -1084,7 +1099,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_local_tabbar.xml.
     */
-   public void testParsePanelLocalTabbarXML() {
+   public void testParsePanelLocalTabbarXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_local_tabbar"));
 
       Collection<Group> groups = XMLEntityDataBase.groups.values();
@@ -1122,7 +1138,8 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_portrait_landscape.xml .
     */
-   public void testParsePanelPortraitLandscapeXML() {
+   public void testParsePanelPortraitLandscapeXML() throws IOException, SAXException,
+         AppInitializationException {
       FileUtil.parsePanelXMLInputStream(readFile("panel_portrait_landscape"));
       
       Collection<Group> groups = XMLEntityDataBase.groups.values();

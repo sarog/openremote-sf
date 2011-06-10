@@ -20,6 +20,7 @@
  */
 package org.openremote.android.console;
 
+import android.content.Context;
 import android.view.Menu;
 
 /**
@@ -85,4 +86,15 @@ public class Constants
   public final static String LOG_CATEGORY = "OpenRemote/";
 
   public static final String UTF8_ENCODING = "UTF-8";
+
+  /**
+   * Files are ordinarily created with mode Context.MODE_PRIVATE.  However, this
+   * makes it next to impossible to read the files from real devices when debugging.
+   * If Context.MODE_WORLD_READABLE is used instead, one can use adb pull to download
+   * files written by the app.  For example, to download the panel.xml file, the
+   * following command could be used:
+   *
+   * adb pull /data/data/org.openremote.android.console/files/panel.xml
+   */
+  public static final int DEFAULT_FILE_CREATION_MODE = Context.MODE_PRIVATE;
 }

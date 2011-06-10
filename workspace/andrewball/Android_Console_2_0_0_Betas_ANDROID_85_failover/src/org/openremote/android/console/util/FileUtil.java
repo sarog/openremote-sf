@@ -19,7 +19,7 @@
 */
 package org.openremote.android.console.util;
 
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,6 +31,7 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.Group;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
+import org.openremote.android.console.exceptions.AppInitializationException;
 import org.openremote.android.console.model.XMLEntityDataBase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,6 +41,7 @@ import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.util.Log;
+
 /**
  * File I/O utility.
  * 
@@ -48,7 +50,8 @@ import android.util.Log;
  *
  */
 public class FileUtil {
-   
+   public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "FileUtil";
+
    /**
     * Checks whether a file exists by file name.
     * 
@@ -65,18 +68,19 @@ public class FileUtil {
    /**
     * Parses the panel from panel.xml.
     * 
+    * @throws AppInitializationException if an XML parser could not be constructed
+    * @throws SAXException if a parse error occurred
+    * @throws IOException if could not read panel.xml file
     */
-   public static void parsePanelXML(Context context) {
-      if (context.getFileStreamPath(Constants.PANEL_XML).exists()) {
-         try {
-            parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
-         } catch (FileNotFoundException e) {
-            Log.e("OpenRemote-FileUtil", "panel.xml not found.", e);
-         }
-      }
+   public static void parsePanelXML(Context context) throws SAXException, IOException,
+         AppInitializationException {
+      parsePanelXMLInputStream(context.openFileInput(Constants.PANEL_XML));
    }
    
-   public static void parsePanelXMLInputStream(InputStream fIn) {
+   public static void parsePanelXMLInputStream(InputStream fIn) throws SAXException, IOException,
+         AppInitializationException {
+      final String logPrefix = "parsePanelXMLInputStream(): ";
+
       try {
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
@@ -107,16 +111,21 @@ public class FileUtil {
             XMLEntityDataBase.groups.put(group.getGroupId(), group);
          }
       } catch (ParserConfigurationException e) {
-         e.printStackTrace();
+         String message = "cannot construct an XML parser";
+         Log.e(LOG_CATEGORY, logPrefix + message, e);
+         throw new AppInitializationException(message, e);
       } catch (SAXException e) {
-         e.printStackTrace();
+         Log.e(LOG_CATEGORY, logPrefix + "parse error while trying to parse panel", e);
+         throw e;
       } catch (IOException e) {
-         e.printStackTrace();
+         Log.e(LOG_CATEGORY, logPrefix + "IOException while trying to parse panel", e);
+         throw e;
       } finally {
          try {
             fIn.close();
          } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOG_CATEGORY, logPrefix + "IOException while closing panel InputStream", e);
+            throw e;
          }
       }
    }
@@ -135,4 +144,29 @@ public class FileUtil {
       }
    }
    
+   /**
+    * Opens a new file in the app's local storage space, writing the contents of an
+    * InputStream to it and closing it.
+    *
+    * Change Constants.DEFAULT_FILE_CREATION_MODE if you need to pull files from
+    * an actual device for debugging.
+    *
+    * @param context an Android Context, preferably the Application context
+    * @param in the input stream to read from
+    * @param filename name of the file to write
+    *
+    * @throws IOException
+    */
+   public static void writeStreamToFile(Context context, InputStream in, String filename)
+         throws IOException {
+
+      FileOutputStream fOut = context.openFileOutput(filename,
+          Constants.DEFAULT_FILE_CREATION_MODE);
+      byte buf[] = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0) {
+         fOut.write(buf, 0, len);
+      }
+      fOut.close();
+   }
 }
