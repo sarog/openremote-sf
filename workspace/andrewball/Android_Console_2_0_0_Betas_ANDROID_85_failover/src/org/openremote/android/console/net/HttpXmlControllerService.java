@@ -23,6 +23,7 @@ package org.openremote.android.console.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -42,7 +44,10 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.exceptions.AppInitializationException;
 import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
+import org.openremote.android.console.exceptions.InvalidDataFromControllerException;
+import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.SecurityUtil;
 import org.w3c.dom.Document;
@@ -64,7 +69,7 @@ import android.util.Log;
  */
 public class HttpXmlControllerService implements ControllerService
 {
-  public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "ControllerServiceImpl";
+  public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "HttpXmlControllerService";
 
   private Context ctx;
 
@@ -89,7 +94,8 @@ public class HttpXmlControllerService implements ControllerService
   protected HttpClient getHttpClient()
   {
     HttpParams params = new BasicHttpParams();
-    HttpConnectionParams.setConnectionTimeout(params, Constants.DEFAULT_CONTROLLER_CONNECTION_TIMEOUT);
+    HttpConnectionParams.setConnectionTimeout(params,
+        Constants.DEFAULT_CONTROLLER_CONNECTION_TIMEOUT);
     HttpConnectionParams.setSoTimeout(params, Constants.DEFAULT_CONTROLLER_SOCKET_TIMEOUT);
     return new DefaultHttpClient(params);
   }
@@ -111,11 +117,29 @@ public class HttpXmlControllerService implements ControllerService
     // accept self-signed SSL certificates
     if ("https".equals(url.getProtocol()))
     {
-      Scheme sch = new Scheme(url.getProtocol(), new SelfCertificateSSLSocketFactory(), url.getPort());
+      Scheme sch = new Scheme(url.getProtocol(), new SelfCertificateSSLSocketFactory(),
+          url.getPort());
       httpClient.getConnectionManager().getSchemeRegistry().register(sch);
     }
 
     return request;
+  }
+
+  protected void dealWithConnectionFailure(URL url, Throwable t) throws ORConnectionException
+  {
+    String message = "could not make connection to controller for URL " + url;
+    Log.e(LOG_CATEGORY, message, t);
+
+    // TODO attempt client-side controller failover:
+    //
+    // If an untried controller was found in the same failover group as the
+    // current one, set the current controller URL to that one and do not throw
+    // an ORConnectionException.
+    //
+    // Otherwise, throw an ORConnectionException, indicating that we are giving
+    // up on the current controller failover group.
+
+    throw new ORConnectionException(message, t);
   }
 
   /**
@@ -132,7 +156,8 @@ public class HttpXmlControllerService implements ControllerService
    *
    * TODO This code probably belongs elsewhere.  It's here to prevent code duplication.
    */
-  protected Document parseXml(InputStream data) throws IOException, SAXException
+  protected Document parseXml(InputStream data) throws IOException, SAXException,
+      AppInitializationException
   {
     DocumentBuilderFactory factory = null;
     DocumentBuilder builder = null;
@@ -144,7 +169,7 @@ public class HttpXmlControllerService implements ControllerService
     catch (ParserConfigurationException e)
     {
       Log.e(LOG_CATEGORY, "Can't construct new document builder", e);
-      throw new RuntimeException("XML parsing configuration unrecoverably bad!", e);
+      throw new AppInitializationException("XML parsing configuration unrecoverably bad!", e);
     }
 
     return builder.parse(data);
@@ -153,26 +178,42 @@ public class HttpXmlControllerService implements ControllerService
   /**
    * Returns a list of all of the controller's cluster group member URLs.
    *
-   * @throws MalformedURLException if a URL from the controller was invalid
-   *
-   * TODO make a generic bad data from controller exception and throw it instead of
-   * MalformedURLException?
-   *
    * See {@link ControllerService.getServers}
    */
-  public List<URL> getServers() throws Exception
+  public List<URL> getServers() throws ControllerAuthenticationFailureException,
+      ORConnectionException, AppInitializationException, InvalidDataFromControllerException,
+      Exception
   {
+    final String logPrefix = "getServers(): ";
+
     URL url = new URL(getControllerUrl().toString() + "/rest/servers");
     HttpClient httpClient = getHttpClient();
     HttpGet request = getHttpGetRequest(httpClient, url);
 
-    HttpResponse response = httpClient.execute(request);
+    HttpResponse response = null;
+    try
+    {
+      response = httpClient.execute(request);
+    }
+    catch (HttpHostConnectException e)
+    {
+      dealWithConnectionFailure(url, e);
+      Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
+      getServers();
+    }
+
     int statusCode = response.getStatusLine().getStatusCode();
 
-    if (statusCode != HttpURLConnection.HTTP_OK)
+    if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
+    {
+      throw new ControllerAuthenticationFailureException("received HTTP unauthorized (401) " +
+          "response for " + url);
+    }
+    else if (statusCode != HttpURLConnection.HTTP_OK)
     {
       // TODO throw a better exception
-      throw new Exception("getServers() request to controller failed with HTTP status code " + statusCode);
+      throw new Exception("getServers() request to controller failed with HTTP status code " +
+          statusCode);
     }
 
     Document dom = parseXml(response.getEntity().getContent());
@@ -180,9 +221,17 @@ public class HttpXmlControllerService implements ControllerService
     ArrayList<URL> servers = new ArrayList<URL>();
 
     NodeList serverNodes = dom.getDocumentElement().getElementsByTagName("server");
-    for (int i = 0; i < serverNodes.getLength(); i++)
+
+    try
     {
-      servers.add(new URL(serverNodes.item(i).getAttributes().getNamedItem("url").getNodeValue()));
+      for (int i = 0; i < serverNodes.getLength(); i++)
+      {
+        servers.add(
+            new URL(serverNodes.item(i).getAttributes().getNamedItem("url").getNodeValue()));
+      }
+    } catch (MalformedURLException e)
+    {
+      throw new InvalidDataFromControllerException("received URL from controller via " + url, e);
     }
 
     return servers;
@@ -194,25 +243,40 @@ public class HttpXmlControllerService implements ControllerService
    * See {@link ControllerService.getPanel}
    */
   @Override
-  public InputStream getPanel(String panelName) throws ControllerAuthenticationFailureException, Exception
+  public InputStream getPanel(String panelName) throws ControllerAuthenticationFailureException,
+      ORConnectionException, AppInitializationException, Exception
   {
+    final String logPrefix = "getPanel(): ";
+
     String encodedPanelName = URLEncoder.encode(panelName, Constants.UTF8_ENCODING);
 
     URL url = new URL(getControllerUrl().toString() + "/rest/panel/" + encodedPanelName);
     HttpClient httpClient = getHttpClient();
     HttpGet request = getHttpGetRequest(httpClient, url);
 
-    HttpResponse response = httpClient.execute(request);
+    HttpResponse response = null;
+    try
+    {
+      response = httpClient.execute(request);
+    }
+    catch (HttpHostConnectException e)
+    {
+      dealWithConnectionFailure(url, e);
+      Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
+      getPanel(panelName);
+    }
+
     int statusCode = response.getStatusLine().getStatusCode();
 
-    if (statusCode != HttpURLConnection.HTTP_UNAUTHORIZED)
+    if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
     {
       throw new ControllerAuthenticationFailureException("controller authentication required");
     }
-    else if (statusCode == HttpURLConnection.HTTP_OK)
+    else if (statusCode != HttpURLConnection.HTTP_OK)
     {
       // TODO throw a better exception
-      throw new Exception("getPanel() request to controller failed with HTTP status code " + statusCode);
+      throw new Exception("getPanel() request to controller failed with HTTP status code " +
+          statusCode);
     }
 
     return response.getEntity().getContent();
@@ -224,21 +288,41 @@ public class HttpXmlControllerService implements ControllerService
    * See {@link ControllerService.getResource}
    */
   @Override
-  public InputStream getResource(String resourceName) throws Exception
+  public InputStream getResource(String resourceName)
+      throws ControllerAuthenticationFailureException, ORConnectionException,
+             AppInitializationException, Exception
   {
+    final String logPrefix = "getResource(): ";
+
     String encodedResourceName = URLEncoder.encode(resourceName, Constants.UTF8_ENCODING);
 
     URL url = new URL(getControllerUrl().toString() + "/resources/" + encodedResourceName);
     HttpClient httpClient = getHttpClient();
     HttpGet request = getHttpGetRequest(httpClient, url);
 
-    HttpResponse response = httpClient.execute(request);
+    HttpResponse response = null;
+    try
+    {
+      response = httpClient.execute(request);
+    }
+    catch (HttpHostConnectException e)
+    {
+      dealWithConnectionFailure(url, e);
+      Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
+      getResource(resourceName);
+    }
+
     int statusCode = response.getStatusLine().getStatusCode();
 
-    if (statusCode != HttpURLConnection.HTTP_OK)
+    if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
+    {
+      throw new ControllerAuthenticationFailureException("controller authentication required");
+    }
+    else if (statusCode != HttpURLConnection.HTTP_OK)
     {
       // TODO throw a better exception
-      throw new Exception("getResource() request to controller failed with HTTP status code " + statusCode);
+      throw new Exception("getResource() request to controller failed with HTTP status code " +
+          statusCode);
     }
 
     return response.getEntity().getContent();

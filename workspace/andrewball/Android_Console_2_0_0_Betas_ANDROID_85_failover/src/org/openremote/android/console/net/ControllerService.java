@@ -24,7 +24,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import org.openremote.android.console.exceptions.AppInitializationException;
 import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
+import org.openremote.android.console.exceptions.InvalidDataFromControllerException;
+import org.openremote.android.console.exceptions.ORConnectionException;
 
 /**
  * Abstraction of a controller, used to keep code that does communication with a controller
@@ -44,7 +47,9 @@ public interface ControllerService
    * Returns a list of all of the cluster group member's URLs,
    * from the /rest/servers service.
    */
-  public List<URL> getServers() throws Exception;
+  public List<URL> getServers() throws ControllerAuthenticationFailureException,
+      ORConnectionException, AppInitializationException, InvalidDataFromControllerException,
+      Exception;
 
   /**
    * Returns an InputStream containing the contents of a particular
@@ -62,7 +67,10 @@ public interface ControllerService
    *
    * @return InputStream containing panel.xml contents from controller
    */
-  public InputStream getPanel(String panelName) throws ControllerAuthenticationFailureException, Exception;
+  public InputStream getPanel(String panelName) throws ControllerAuthenticationFailureException,
+      ORConnectionException, AppInitializationException, Exception;
 
-  public InputStream getResource(String resourceName) throws Exception;
+  public InputStream getResource(String resourceName)
+      throws ControllerAuthenticationFailureException, ORConnectionException,
+             AppInitializationException, Exception;
 }
