@@ -22,13 +22,13 @@ package org.openremote.android.console.exceptions;
 
 
 /**
- * This is the exceptions' root in Android console side.
+ * This is the exception's root in Android console side.
  * 
  * @author handy 2010-04-27
  *
  */
 
-public abstract class AndroidConsoleException extends RuntimeException {
+public abstract class AndroidConsoleException extends Exception {
 
 	public AndroidConsoleException(String msg) {
 		super(msg);
