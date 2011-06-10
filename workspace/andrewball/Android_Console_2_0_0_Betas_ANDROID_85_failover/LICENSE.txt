@@ -626,8 +626,10 @@ copy of the Program in return for a fee.
 =                                                                             =
 ===============================================================================
 
-Class org.openremote.android.console.util.base64.Base64Encoder is licensed 
-under the following terms:
+- Guice and Roboguice libraries are licensed under Apache Software License 2.0
+
+- Class org.openremote.android.console.util.base64.Base64Encoder is licensed 
+  under the following terms:
 
 // Copyright 2003-2010 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
 // www.source-code.biz, www.inventec.ch/chdh
