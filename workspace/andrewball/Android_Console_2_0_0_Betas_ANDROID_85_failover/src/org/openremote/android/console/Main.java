@@ -25,6 +25,8 @@ import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.util.AsyncResourceLoader;
 import org.openremote.android.console.util.ImageUtil;
 
+import roboguice.inject.InjectView;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -38,6 +40,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -54,6 +57,9 @@ public class Main extends GenericActivity {
     public static boolean isRefreshingController;
     public static Toast loadingToast;
     
+    @InjectView(R.id.loading_text)
+    private TextView loadingText;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +78,10 @@ public class Main extends GenericActivity {
         checkNetType();
         readDisplayMetrics();        
         if(!checkServerAndPanel()) {        
-           new AsyncResourceLoader(this).execute((Void) null);
+           AsyncResourceLoader loader = getInjector().getInstance(AsyncResourceLoader.class);
+           loader.setLoadingText(loadingText);
+           loader.setActivity(this);
+           loader.execute();
         }
     }
     

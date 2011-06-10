@@ -31,4 +31,8 @@
     <string name="http_auth_failed">HTTP authentication failed</string>
     <string name="web_element_missing_username_or_password">HTTP authorization required, but missing username or password from web element in panel.xml with id</string>
     <string name="web_element_invalid_or_missing_src_url">invalid or missing URL in src attribute of web element in panel.xml with id</string>
+    <string name="controller_error">Controller error</string>
+    <string name="cannot_contact_controller_and_cannot_use_cache">Cannot contact controller and cannot use cache.</string>
+    <string name="error">Error</string>
+    <string name="panel_xml_parse_error">Parse error on panel.xml</string>
 </resources>
