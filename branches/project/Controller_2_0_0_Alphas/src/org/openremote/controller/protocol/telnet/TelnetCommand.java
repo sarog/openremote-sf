@@ -261,6 +261,9 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
          tc.connect(getIp(), Integer.parseInt(getPort()));
          StringTokenizer st = new StringTokenizer(getCommand(), "|");
          int count = 0;
+         if(getCommand().startsWith("|")) {
+            count++;
+         }
          String waitFor = "";
          while (st.hasMoreElements()) {
             String cmd = (String) st.nextElement();
@@ -369,7 +372,7 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
                   filteredResponse = matchedGroup;  
                }
             } else {
-               logger.info("Telnet Read Status: No Match using Regex: '" + getResponseFilter() + "' on response from command '" + getCommand() + "'");
+               logger.error("Telnet Read Status: No Match using Regex: '" + getResponseFilter() + "' on response from command '" + getCommand() + "'");
             } 
          }            
       }
