@@ -2,6 +2,8 @@ Juha Lindfors
 Marcus Redeker
 Eric Bariaux
 Jaroslav Misura
+Greg Rapp
+Richard Turner
 OpenRemote, Inc. employees and contractors.
 
 Number of third party Open Source components are used in OpenRemote Designer each
