@@ -261,6 +261,9 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
          tc.connect(getIp(), Integer.parseInt(getPort()));
          StringTokenizer st = new StringTokenizer(getCommand(), "|");
          int count = 0;
+         if(getCommand().startsWith("|")) {
+            count++;
+         }
          String waitFor = "";
          while (st.hasMoreElements()) {
             String cmd = (String) st.nextElement();
