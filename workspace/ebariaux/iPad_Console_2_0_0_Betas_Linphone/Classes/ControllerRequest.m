@@ -39,9 +39,11 @@
 
 - (void)dealloc
 {
+    // Cancel the connection first, so we can nicely clean
+    [self cancel];
+    [connection release];
     [requestPath release];
     [receivedData release];
-    [connection release];
     [usedGroupMember release];
     [potentialGroupMembers release];
     [super dealloc];
@@ -135,8 +137,7 @@
 - (void)cancel
 {
     [connection cancel];
-    [delegate release];
-    delegate = nil;
+    self.delegate = nil;
 }
 
 #pragma mark NSURLConnection delegate implementation
