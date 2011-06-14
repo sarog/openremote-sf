@@ -104,7 +104,7 @@ class IpProcessor {
                }
             } catch (IOException x) {
                // Socket read error, stop thread
-              log.info("KNX-IP socket listener IOException", x);
+              log.debug("KNX-IP socket listener IOException", x);
               Thread.currentThread().interrupt();
             } catch (KnxIpException x) {
                // Invalid message, stop thread
