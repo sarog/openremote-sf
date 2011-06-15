@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.channels.SocketChannel;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -38,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openremote.controller.Constants;
+import org.openremote.controller.agent.proxy.ControllerProxy;
 import org.openremote.controller.bootstrap.Startup;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.ZipUtil;
@@ -174,7 +176,9 @@ public class BackendCommandsAgent {
       if("update-controller".equals(type)){
          updateController(command);
       }else if("upload-logs".equals(type)){
-            uploadLogs(command);
+         uploadLogs(command);
+      }else if("initiate-proxy".equals(type)){
+         initiateProxy(command);
       }else if(type == null){
          throw new AgentException("Missing command type");
       }else{
@@ -184,7 +188,39 @@ public class BackendCommandsAgent {
 
    //
    // Commands
-   
+
+   protected void initiateProxy(JSONObject command) throws AgentException {
+      String id = getID(command);
+      String url = getUrl(command);
+      String token = getToken(command);
+      
+      SocketChannel beehiveSocket = null;
+      boolean needsAck = true;
+      try {
+         log.info("Connecting to beehive at "+url+" for proxy");
+         beehiveSocket = ControllerProxy.makeClientSocket(url, token);
+         // at this point the command should already have been marked as ack by the listening end at beehive
+         log.info("Connected to beehive");
+         needsAck = false;
+         // try to connect to it, see if it's still valid
+         ControllerProxy proxy = new ControllerProxy(beehiveSocket);
+         log.info("Starting proxy");
+         proxy.start();
+      } catch (IOException e) {
+         log.info("Got exception while connecting to beehive", e);
+         if(beehiveSocket != null){
+            try {
+               beehiveSocket.close();
+            } catch (IOException e1) {
+               // ignore
+            }
+         }
+         // the server should have closed it, but let's help him to make sure
+         if(needsAck)
+            ackCommand(id);
+      }
+   }
+
    protected void updateController(JSONObject command) throws AgentException{
       String id = getID(command);
       String resource = getResource(command);
@@ -437,6 +473,14 @@ public class BackendCommandsAgent {
 
    private String getResource(JSONObject command) throws AgentException {
       return getNonEmptyString(command, "@resource");
+   }
+
+   private String getUrl(JSONObject command) throws AgentException {
+      return getNonEmptyString(command, "@url");
+   }
+
+   private String getToken(JSONObject command) throws AgentException {
+      return getNonEmptyString(command, "@token");
    }
 
    private String getID(JSONObject command) throws AgentException {
