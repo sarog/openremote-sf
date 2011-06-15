@@ -14,13 +14,17 @@ import org.openremote.controller.Constants;
 
 public class ControllerProxy extends Proxy {
    private static Logger logger = Logger.getLogger(Constants.AGENT_LOG_CATEGORY);
+   private int controllerPort;
+   private String controllerIP;
 
-   public ControllerProxy(SocketChannel srcSocket)
+   public ControllerProxy(SocketChannel srcSocket, String controllerIP, int controllerPort, int timeout)
          throws IOException {
-      super(srcSocket);
+      super(srcSocket, timeout);
+      this.controllerIP = controllerIP;
+      this.controllerPort = controllerPort;
    }
 
-   public static SocketChannel makeClientSocket(String urlString, String token) throws IOException {
+   public static SocketChannel makeClientSocket(String urlString, String token, int timeout) throws IOException {
       logger.info("Opening socket to beehive at "+urlString);
       URL url = new URL(urlString);
       SocketChannel socket = SocketChannel.open();
@@ -35,8 +39,7 @@ public class ControllerProxy extends Proxy {
          Selector selector = Selector.open();
          SelectionKey key = socket.register(selector, SelectionKey.OP_CONNECT);
          ByteBuffer buffer = ByteBuffer.wrap(token.getBytes("ASCII"));
-         // timeout of 5s
-         while(selector.select(5000) > 0){
+         while(selector.select(timeout) > 0){
             logger.info("Out of select");
             // we only have one key really
             selector.selectedKeys().clear();
@@ -75,6 +78,6 @@ public class ControllerProxy extends Proxy {
 
    @Override
    protected SocketChannel openDestinationSocket() throws IOException {
-      return SocketChannel.open(new InetSocketAddress("localhost", 9000));
+      return SocketChannel.open(new InetSocketAddress(controllerIP, controllerPort));
    }
 }
