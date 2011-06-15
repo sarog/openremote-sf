@@ -521,7 +521,7 @@
     </copy>
     <jar destfile="${agent.dir}/lib/agent.jar">
       <fileset dir="${classes.dir}">
-        <include name="org/openremote/controller/agent/*.class"/>
+        <include name="org/openremote/controller/agent/**/*.class"/>
         <include name="org/openremote/controller/bootstrap/Startup*.class"/>
         <include name="org/openremote/controller/exception/*.class"/>
         <include name="org/openremote/controller/utils/*.class"/>
