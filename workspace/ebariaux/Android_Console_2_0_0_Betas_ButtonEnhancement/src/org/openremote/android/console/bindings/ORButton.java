@@ -33,7 +33,12 @@ public class ORButton extends Control {
 
    private String name;
    private boolean hasPressCommand;
+   private boolean hasShortReleaseCommand;
+   private boolean hasLongPressCommand;
+   private boolean hasLongReleaseCommand;
    private boolean repeat;
+   private int repeatDelay = 100;
+   private int longPressDelay = 250;
    
    /** The button's normal image. */
    private Image defaultImage;
@@ -53,11 +58,37 @@ public class ORButton extends Control {
       NamedNodeMap nodeMap = node.getAttributes();
       this.setComponentId(Integer.valueOf(nodeMap.getNamedItem(ID).getNodeValue()));
       this.name = nodeMap.getNamedItem(NAME).getNodeValue();
+
+      if (nodeMap.getNamedItem("repeatDelay") != null) {
+        this.repeatDelay = Integer.valueOf(nodeMap.getNamedItem("repeatDelay").getNodeValue());
+      }
+      if (this.repeatDelay < 100) {
+        this.repeatDelay = 100;
+      }
+      
       if (nodeMap.getNamedItem("hasPressCommand") != null) {
          this.hasPressCommand = Boolean.valueOf(nodeMap.getNamedItem("hasPressCommand").getNodeValue());
       }
+      if (nodeMap.getNamedItem("hasShortReleaseCommand") != null) {
+        this.hasShortReleaseCommand = Boolean.valueOf(nodeMap.getNamedItem("hasShortReleaseCommand").getNodeValue());
+      }
+      if (nodeMap.getNamedItem("hasLongPressCommand") != null) {
+        this.hasLongPressCommand = Boolean.valueOf(nodeMap.getNamedItem("hasLongPressCommand").getNodeValue());
+      }
+      if (nodeMap.getNamedItem("hasLongReleaseCommand") != null) {
+        this.hasLongReleaseCommand = Boolean.valueOf(nodeMap.getNamedItem("hasLongReleaseCommand").getNodeValue());
+      }
       if (nodeMap.getNamedItem("repeat") != null) {
          this.repeat = Boolean.valueOf(nodeMap.getNamedItem("repeat").getNodeValue());
+      }
+      if (nodeMap.getNamedItem("longPressDelay") != null) {
+        this.longPressDelay = Integer.valueOf(nodeMap.getNamedItem("longPressDelay").getNodeValue());
+      }
+      if (this.longPressDelay < 250) {
+        this.longPressDelay = 250;
+      }
+      if (this.hasLongPressCommand || this.hasLongReleaseCommand) {
+        this.repeat = false;
       }
       
       NodeList childNodes = node.getChildNodes();
@@ -84,8 +115,28 @@ public class ORButton extends Control {
       return hasPressCommand;
    }
    
+   public boolean isHasShortReleaseCommand() {
+     return hasShortReleaseCommand;
+   }
+
+   public boolean isHasLongPressCommand() {
+     return hasLongPressCommand;
+   }
+
+   public boolean isHasLongReleaseCommand() {
+     return hasLongReleaseCommand;
+   }
+
+   public int getLongPressDelay() {
+     return longPressDelay;
+   }
+
    public boolean isRepeat() {
       return repeat;
+   }
+
+   public int getRepeatDelay() {
+     return repeatDelay;
    }
 
    public Image getDefaultImage() {
