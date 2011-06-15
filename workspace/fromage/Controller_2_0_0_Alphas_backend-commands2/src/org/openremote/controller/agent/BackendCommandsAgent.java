@@ -66,6 +66,7 @@ public class BackendCommandsAgent {
    private String controllerDeployPath;
    private String controllerBackupPath;
    private String controllerLogsPath;
+   private int proxyTimeout;
    private String tmpPath;
 
    public BackendCommandsAgent() throws AgentException{
@@ -106,6 +107,7 @@ public class BackendCommandsAgent {
          throw new AgentException("Failed to get localhost IP", e);
       }
       controllerPort = getIntProperty(config, "controller.port", 8080);
+      proxyTimeout = getIntProperty(config, "proxyTimeout", 5000);
    }
 
    protected Properties getConfig() throws AgentException {
@@ -198,12 +200,12 @@ public class BackendCommandsAgent {
       boolean needsAck = true;
       try {
          log.info("Connecting to beehive at "+url+" for proxy");
-         beehiveSocket = ControllerProxy.makeClientSocket(url, token);
+         beehiveSocket = ControllerProxy.makeClientSocket(url, token, proxyTimeout);
          // at this point the command should already have been marked as ack by the listening end at beehive
          log.info("Connected to beehive");
          needsAck = false;
          // try to connect to it, see if it's still valid
-         ControllerProxy proxy = new ControllerProxy(beehiveSocket);
+         ControllerProxy proxy = new ControllerProxy(beehiveSocket, controllerIP, controllerPort, proxyTimeout);
          log.info("Starting proxy");
          proxy.start();
       } catch (IOException e) {
