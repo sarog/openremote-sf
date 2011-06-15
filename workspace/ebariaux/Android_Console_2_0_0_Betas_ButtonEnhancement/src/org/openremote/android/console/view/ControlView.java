@@ -20,7 +20,6 @@
 package org.openremote.android.console.view;
 
 import java.io.InputStream;
-import java.util.Timer;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.LoginDialog;
@@ -42,9 +41,6 @@ import android.content.Context;
  * The super class of all control view, include ButtonView, SwitchView and SliderView.
  */
 public class ControlView extends ComponentView implements ORConnectionDelegate {
-
-   /** The repeat send command timer. */
-   private Timer timer;
 
    protected ControlView(Context context) {
       super(context);
@@ -78,20 +74,6 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    /**
-    * Cancel repeat send command.
-    */
-   public void cancelTimer() {
-      if (timer != null) {
-         timer.cancel();
-      }
-      timer = null;
-   }
-
-   public void setTimer(Timer timer) {
-      this.timer = timer;
-   }
-
-   /**
     * Handle server error with status code.
     * If status code not equals 200, cancel the timer, and display alert with error message.
     * 
@@ -99,15 +81,9 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
     */
    public void handleServerErrorWithStatusCode(int statusCode) {
       if (statusCode != 200) {
-         cancelTimer();
          ViewHelper.showAlertViewWithTitle(getContext(), "Send Request Error", ControllerException
                .exceptionMessageOfCode(statusCode));
       }
-   }
-
-   @Override
-   public void urlConnectionDidFailWithException(Exception e) {
-      cancelTimer();
    }
 
    @Override
@@ -116,10 +92,14 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
    }
 
    @Override
+   public void urlConnectionDidFailWithException(Exception e) {
+     // do nothing.
+   }
+
+   @Override
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
       int responseCode = httpResponse.getStatusLine().getStatusCode();
       if (responseCode != 200) {
-         cancelTimer();
          if (responseCode == 401) {
             new LoginDialog(getContext());
          } else {

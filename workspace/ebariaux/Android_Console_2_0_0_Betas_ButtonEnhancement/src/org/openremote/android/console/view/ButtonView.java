@@ -21,7 +21,7 @@ package org.openremote.android.console.view;
 
 import java.util.Timer;
 import java.util.TimerTask;
-
+import org.apache.http.HttpResponse;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.model.ListenerConstant;
@@ -41,9 +41,10 @@ public class ButtonView extends ControlView {
    private BitmapDrawable defaultImage;
    private BitmapDrawable pressedImage;
    
-   /** The Constant REPEAT_CMD_INTERVAL. */
-   public final static long REPEAT_CMD_INTERVAL = 300;
-   
+   private boolean longPress; // Indicates that the current press is considered long
+   private Timer longPressTimer;
+   private Timer buttonRepeatTimer;
+      
    public ButtonView(Context context, ORButton button) {
       super(context);
       setComponent(button);
@@ -80,7 +81,9 @@ public class ButtonView extends ControlView {
       View.OnTouchListener touchListener = new OnTouchListener() {
          public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-               cancelTimer();
+              cancelTimers();
+               longPress = false;
+               
                if (pressedImage != null) {
                   uiButton.setBackgroundDrawable(pressedImage);
                } else if (defaultImage != null) {
@@ -88,22 +91,39 @@ public class ButtonView extends ControlView {
                   uiButton.setBackgroundDrawable(defaultImage);
                }
                if (button.isHasPressCommand()) {
-                  sendCommand();
+                  sendPressCommand();
                   if (button.isRepeat()) {
-                     Timer timer = new Timer();
-                     timer.schedule(new TimerTask() {
+                     buttonRepeatTimer = new Timer();
+                     buttonRepeatTimer.schedule(new TimerTask() {
                         public void run() {
-                           sendCommand();
+                           sendPressCommand();
                         }
-                     }, REPEAT_CMD_INTERVAL, REPEAT_CMD_INTERVAL);
-                     setTimer(timer);
+                     }, button.getRepeatDelay(), button.getRepeatDelay());
                   }
                }
+               if (button.isHasLongPressCommand() || button.isHasLongReleaseCommand()) {
+                 // Set-up timer to detect when this becomes a long press
+                 longPressTimer = new Timer();
+                 longPressTimer.schedule(new TimerTask() {
+                   public void run() {
+                     longPress = true;
+                     sendLongPressCommand();
+                   }
+                 }, button.getLongPressDelay());
+               }
+               
+               
             } else if (event.getAction() == MotionEvent.ACTION_UP) {
-               cancelTimer();
+              cancelTimers();
                if (defaultImage != null) {
                   defaultImage.setAlpha(255);
                   uiButton.setBackgroundDrawable(defaultImage);
+               }
+               if (button.isHasShortReleaseCommand() && !longPress) {
+                 sendShortReleaseCommand();
+               }
+               if (button.isHasLongReleaseCommand() && longPress) {
+                 sendLongReleaseCommand();
                }
                if (button.getNavigate() != null) {
                   uiButton.setPressed(false);
@@ -116,8 +136,63 @@ public class ButtonView extends ControlView {
       uiButton.setOnTouchListener(touchListener);
       addView(uiButton);
    }
+   
+   private void cancelButtonRepeatTimer() {
+     if (buttonRepeatTimer != null) {
+       buttonRepeatTimer.cancel();
+       buttonRepeatTimer = null;
+     }
+   }
 
-   private void sendCommand() {
+   private void cancelLongPressTimer() {
+     if (longPressTimer != null) {
+       longPressTimer.cancel();
+       longPressTimer = null;
+     }
+   }
+   
+   private void cancelTimers() {
+     cancelButtonRepeatTimer();
+     cancelLongPressTimer();
+   }
+   
+   private void sendPressCommand() {
       sendCommandRequest("press");
    }
+   
+   private void sendLongPressCommand() {
+     sendCommandRequest("longPress");
+   }
+   
+   private void sendShortReleaseCommand() {
+     sendCommandRequest("shortRelease");
+   }
+
+   private void sendLongReleaseCommand() {
+     sendCommandRequest("longRelease");
+   }
+   
+   @Override
+   public void handleServerErrorWithStatusCode(int statusCode) {
+     if (statusCode != 200) {
+       cancelTimers();
+     }
+     super.handleServerErrorWithStatusCode(statusCode);
+  }
+
+   @Override
+   public void urlConnectionDidFailWithException(Exception e) {
+      cancelTimers();
+      super.urlConnectionDidFailWithException(e);
+   }
+
+   @Override
+   public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
+      int responseCode = httpResponse.getStatusLine().getStatusCode();
+      if (responseCode != 200) {
+         cancelTimers();
+      }
+      super.urlConnectionDidReceiveResponse(httpResponse);
+   }
+
 }
