@@ -36,6 +36,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -55,6 +56,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import android.content.Context;
 import android.util.Log;
@@ -67,6 +69,7 @@ import android.util.Log;
  *
  * @author Andrew D. Ball <aball@osintegrators.com>
  */
+@Singleton
 public class HttpXmlControllerService implements ControllerService
 {
   public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "HttpXmlControllerService";
@@ -112,6 +115,22 @@ public class HttpXmlControllerService implements ControllerService
   protected HttpGet getHttpGetRequest(HttpClient httpClient, URL url)
   {
     HttpGet request = new HttpGet(url.toString());
+    SecurityUtil.addCredentialToHttpRequest(ctx, request);
+
+    // accept self-signed SSL certificates
+    if ("https".equals(url.getProtocol()))
+    {
+      Scheme sch = new Scheme(url.getProtocol(), new SelfCertificateSSLSocketFactory(),
+          url.getPort());
+      httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+    }
+
+    return request;
+  }
+
+  protected HttpPost getHttpPostRequest(HttpClient httpClient, URL url)
+  {
+    HttpPost request = new HttpPost(url.toString());
     SecurityUtil.addCredentialToHttpRequest(ctx, request);
 
     // accept self-signed SSL certificates
@@ -326,6 +345,46 @@ public class HttpXmlControllerService implements ControllerService
     }
 
     return response.getEntity().getContent();
+  }
+
+  @Override
+  public void sendWriteCommand(int controlId, String command)
+          throws ControllerAuthenticationFailureException, ORConnectionException, Exception
+  {
+    final String logPrefix = "sendWriteCommand(): ";
+
+    String encodedCommand = URLEncoder.encode(command, Constants.UTF8_ENCODING);
+
+    URL url = new URL(getControllerUrl().toString() + "/rest/control/" +
+        Integer.toString(controlId) + "/" + encodedCommand);
+    HttpClient httpClient = getHttpClient();
+    HttpPost request = getHttpPostRequest(httpClient, url);
+
+    HttpResponse response = null;
+    try
+    {
+      response = httpClient.execute(request);
+    }
+    catch (HttpHostConnectException e)
+    {
+      dealWithConnectionFailure(url, e);
+      Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
+      sendWriteCommand(controlId, command);
+    }
+
+    int statusCode = response.getStatusLine().getStatusCode();
+
+    if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
+    {
+      throw new ControllerAuthenticationFailureException("controller authentication required");
+    }
+    else if (statusCode != HttpURLConnection.HTTP_OK)
+    {
+      // TODO throw a better exception, there are several documented error conditions associated
+      //      with other HTTP response status codes in the controller REST API documentation
+      throw new Exception(logPrefix + "request to controller failed with HTTP status code " +
+          statusCode);
+    }
   }
 
 }

@@ -73,4 +73,19 @@ public interface ControllerService
   public InputStream getResource(String resourceName)
       throws ControllerAuthenticationFailureException, ORConnectionException,
              AppInitializationException, Exception;
+
+  /**
+   * Sends a command to a control via a controller.  This corresponds to
+   * /rest/control/{control_id}/{command_param} in the XML REST API.
+   *
+   * @param controlId identifier for the control
+   * @param command what command to send (e.g. "ON", "OFF", "3", "2.1", "click", "swipe")
+   *
+   * @throws ControllerAuthenticationFailureException
+   * @throws ORConnectionException if failed to connect to any valid controller
+   * @throws Exception if something else wrong occurred
+   */
+  public void sendWriteCommand(int controlId, String command)
+      throws ControllerAuthenticationFailureException, ORConnectionException,
+             Exception;
 }
