@@ -37,7 +37,7 @@
 #import "DirectoryDefinition.h"
 #import "RoundRobinException.h"
 #import "URLConnectionHelper.h"
-
+#import "CredentialUtil.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
@@ -176,7 +176,10 @@
     
     
     // TODO: doing this with a 5 sec timeout is short if done from carrier data network
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];   
+    [CredentialUtil addCredentialToNSMutableURLRequest:request forController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController];
+
+    
     URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
 	NSData *data = [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	[request release];
@@ -185,9 +188,18 @@
 		NSLog(@"getRoundRobinGroupMembers failed %@",[error localizedDescription]);
 		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" 
 												 message:@"Could not find OpenRemote Controller. It may not be running or the connection URL in Settings is invalid."];
-	} else if ([resp statusCode] != 200) {	
-		NSLog(@"getRoundRobinGroupMembers statusCode %d",[resp statusCode] );
-		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" message:[RoundRobinException exceptionMessageOfCode:[resp statusCode]]];
+	} else if ([resp statusCode] != 200) {
+        if ([resp statusCode] == UNAUTHORIZED) {
+            [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+            NSLog(@"Need to login");
+            
+            // TODO: notification mechanism does not work, check who's listening, maybe app settings is not
+            
+        } else {
+            NSLog(@"getRoundRobinGroupMembers statusCode %d",[resp statusCode] );
+            @throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" message:[RoundRobinException exceptionMessageOfCode:[resp statusCode]]];            
+        }
 	}
     
     // Parses the XML reply and fill-in the GroupMembers cache for this controller

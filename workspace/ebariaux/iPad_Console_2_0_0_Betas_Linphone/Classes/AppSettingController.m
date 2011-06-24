@@ -121,6 +121,15 @@
 	}	
 }
 
+//prompts the user to enter a valid user name and password
+- (void)populateLoginView:(id)sender {
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
+	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
+	[self presentModalViewController:loginNavController animated:NO];
+	[loginController release];
+	[loginNavController release];
+}
+
 // Check if the section parameter indexPath specified is auto discovery section.
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath {
 	return indexPath.section == AUTO_DISCOVERY_SWITCH_SECTION;
@@ -298,6 +307,14 @@
 	
 	// Register notification when the keyboard will be hide
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];    
+}
+
+- (void)viewDidUnload
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationPopulateCredentialView object:nil];
+    [super viewDidUnload];
 }
 
 // Updates controller server list in tableview, and updates panel identity view in tableview.
@@ -670,6 +687,23 @@
 		settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
         identityCell.textLabel.text = @"None";
 	}
+}
+
+#pragma mark LoginViewControllerDelegate implementation
+
+// When cancelled on credentials panel
+- (void)onBackFromLogin
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+}
+
+// When crendentials entered
+- (void)onSignin
+{
+    
+    // TODO: double check fetchGroupMember is the only source that can trigger this
+    
+    [self fetchGroupMembers];
 }
 
 @end

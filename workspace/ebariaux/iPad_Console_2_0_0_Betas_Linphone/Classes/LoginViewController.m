@@ -39,7 +39,7 @@
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
 	if (self) {
-		[self	setTitle:@"Sign in"];
+		[self setTitle:@"Sign in"];
 		theDelegate = delegate;
 	}
 	return self;
