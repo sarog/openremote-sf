@@ -39,7 +39,7 @@ public class GatewayCreatorUtil {
     * A List of supported gateway Protocols, these protocols will be handled
     * by the gateway manager whereas others will go through the standard controller route
     */
-   public static final List<String> supportedProtocols = Arrays.asList("telnet", "http", "udp");
+   public static final List<String> supportedProtocols = Arrays.asList("telnet", "http", "udp", "socket");
    
    /**
     * *********************************
@@ -106,6 +106,11 @@ public class GatewayCreatorUtil {
          props.put("port", true);
          props.put("sendterminator", false);
       }
+	   if("socket".equals(protocolType)) {
+		   props.put("host", true);
+		   props.put("port", true);
+		   props.put("sendterminator", false);
+	   }   
 
       if ("http".equals(protocolType)) {
           props.put("host", true);
