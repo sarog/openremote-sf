@@ -1,0 +1,12 @@
+<module>	
+	<inherits name="com.google.gwt.user.User"/>
+	<inherits name="com.google.gwt.user.theme.standard.Standard"/>
+	
+  	<!-- Other module inherits                                      -->
+  	<source path='client'/>
+  	<source path='components'/>
+  	<source path="types"/>
+  	<source path="utils"/>
+  	<source path="views"/>
+	<entry-point class="org.openremote.web.console.client.WebConsole"/>
+</module>
