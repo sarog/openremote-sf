@@ -21,10 +21,11 @@
 package org.openremote.controller.service;
 
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.RoundRobinConfiguration;
+import org.openremote.controller.DenonAVRSerialConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
-import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.statuscache.StatusCache;
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -68,6 +69,8 @@ public abstract class ServiceContext
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),
 
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),
+
+    DENONAVRSERIAL_CONFIGURATION("denonAVRSerialConfiguration"),
 
     DEVICE_POLLING("pollingMachinesService"),
 
@@ -140,6 +143,21 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Lutron HomeWorks Configuration service has had an incompatible change.", e
+      );
+    }
+  }
+
+  public static DenonAVRSerialConfiguration getDenonAVRSerialConfiguration()
+  {
+    try
+    {
+      return (DenonAVRSerialConfiguration)getInstance().getService(ServiceName.DENONAVRSERIAL_CONFIGURATION);
+    }
+
+    catch (ClassCastException e)
+    {
+      throw new Error(
+          "Denon AVR Serial Configuration service has had an incompatible change.", e
       );
     }
   }
