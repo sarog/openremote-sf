@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      	<!-- For mobile devices -->
+      	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no" />
+      	<!-- For android devices -->
+      	<meta name="viewport" content="target-densitydpi=device-dpi" />
+      	<!-- For mobile devices not supporting viewport -->
+      	<meta name="HandheldFriendly" content="true"/>
+      	<!-- Apple settings -->
+		<!-- hide the browser chrome -->
+		<meta name="apple-mobile-web-app-capable" content="yes" /> 
+		<!-- set the phone status bar style; can be grey, black, or black translucent -->
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		
+		<!--                                                               -->
+		<!-- Consider inlining CSS to reduce the number of requested files -->
+		<!--                                                               -->
+		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
+		<link type="text/css" rel="stylesheet" href="resources/css/loadingscreen.css">
+	
+		<!--                                           -->
+		<!-- Any title is fine                         -->
+		<!--                                           -->
+		<title>Wrapper HTML for WebConsole</title>
+
+		<!--                                           -->
+		<!-- This script loads your compiled module.   -->
+		<!-- If you add any GWT meta tags, they must   -->
+		<!-- be added before this line.                -->
+		<!--                                           -->
+		<script language="javascript" src="org.openremote.web.console.WebConsole/org.openremote.web.console.WebConsole.nocache.js"></script>
+		<script language="javascript">
+   		document.ontouchmove = function(e){ e.preventDefault(); }
+		</script>
+	</head>
+
+	<!--                                           -->
+	<!-- The body can have arbitrary html, or      -->
+	<!-- we leave the body empty because we want   -->
+	<!-- to create a completely dynamic ui         -->
+	<!--                                           -->
+	<body onorientationchange="window.scrollTo(0,1);">
+
+		<!-- OPTIONAL: include this if you want history support -->
+		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+		<div id="consoleUnitContainer"></div>
+	    <noscript>
+	      <div id="noScriptError">
+	        Your web browser must have JavaScript enabled
+	        in order for this application to display correctly.
+	      </div>
+	    </noscript>
+	</body>
+</html>

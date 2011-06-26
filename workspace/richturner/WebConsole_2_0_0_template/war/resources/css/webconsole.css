@@ -1,0 +1,72 @@
+body { 
+	background-color: white;
+	color: black;
+	font-family: Arial, sans-serif;
+	font-size: small;
+	text-align: center;
+}
+
+#consoleUnit {
+	display:-moz-inline-stack;
+	display:inline-block;
+	zoom:1;
+	*display:inline;
+	margin: 0 auto;
+}
+
+.consoleFrame {
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(0, rgb(0,0,0)),
+	    color-stop(0.5, rgb(56,56,56))
+	);
+	background-image: -moz-linear-gradient(
+	    center bottom,
+	    rgb(0,0,0) 0%,
+	    rgb(56,56,56) 50%
+	);
+	-moz-border-radius: 15px;
+	border-radius: 15px;		
+}
+
+#consoleFrameLogoLeft {
+	color: #245E36;
+}
+
+#consoleFrameLogoRight {
+	color: #4FA800;
+}
+
+.consoleFrameLogo div {
+	font-weight: bold;
+	font-size: 25px;
+	font-family: verdana, arial, sans-serif;
+	border: none;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+.consoleDisplay {
+	background-color: black;
+	color: black;
+	overflow: hidden;
+}
+
+.consoleDisplayBoss {
+	border: solid 2px #333333; 
+}
+
+#noScriptError {
+	width: 22em;
+	position: absolute;
+	left: 50%;
+	margin-left: -11em;
+	color: red;
+	background-color: white;
+	border: 1px solid red;
+	padding: 4px;
+	font-family: sans-serif;	
+}
