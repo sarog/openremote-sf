@@ -55,6 +55,12 @@
 	</property>
   </bean>
 
+  <bean id="denonAVRSerialConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	<property name="location">
+		<value>classpath:denonAVRSerial.properties</value>
+	</property>
+  </bean>
+
   <!--
   | Configuration variable mapping from controller config.properties file
   | to org.openremote.controller.ControllerConfiguration class.
@@ -153,25 +159,26 @@
 	
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
-  <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
-    <property name = "commandBuilders">
-      <props>
-        <prop key = "ir">irCommandBuilder</prop>
-        <prop key = "knx">knxCommandBuilder</prop>
-        <prop key = "x10">x10CommandBuilder</prop>
-        <prop key = "socket">tcpSocketCommandBuilder</prop>
-        <prop key = "telnet">telnetCommandBuilder</prop>
-        <prop key = "http">httpGetCommandBuilder</prop>
-        <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
-        <prop key = "virtual">virtualCommandBuilder</prop>
-        <prop key = "mockup">mockupCommandBuilder</prop>
-        <prop key = "onewire">oneWireCommandBuilder</prop>
-        <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
-        <prop key = "russound">russoundCommandBuilder</prop>
-        <prop key = "udp">udpSocketCommandBuilder</prop>
-      </props>
-    </property>
-  </bean>
+    <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
+		<property name = "commandBuilders">
+		    <props>
+		        <prop key = "ir">irCommandBuilder</prop>
+		        <prop key = "knx">knxCommandBuilder</prop>
+		        <prop key = "x10">x10CommandBuilder</prop>
+             	<prop key = "socket">tcpSocketCommandBuilder</prop>
+            	<prop key = "telnet">telnetCommandBuilder</prop>
+            	<prop key = "http">httpGetCommandBuilder</prop>
+                <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
+                <prop key = "virtual">virtualCommandBuilder</prop>
+                <prop key = "mockup">mockupCommandBuilder</prop>
+                <prop key = "onewire">oneWireCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "russound">russoundCommandBuilder</prop>
+                <prop key = "denonAVRSerial">denonAVRSerialCommandBuilder</prop>
+                <prop key = "udp">udpSocketCommandBuilder</prop>
+		    </props>
+		</property>
+	</bean>
 
 	<!-- COMMAND BUILDERS ============================================================================
 	 |
@@ -219,6 +226,11 @@
   <!-- Russound Command Builder -->
   <bean id = "russoundCommandBuilder"
         class = "org.openremote.controller.protocol.russound.RussoundCommandBuilder"
+        scope = "prototype"/>
+
+  <!-- Denon AVR Command Builder -->
+  <bean id = "denonAVRSerialCommandBuilder"
+        class = "org.openremote.controller.protocol.denonavrserial.DenonAVRSerialCommandBuilder"
         scope = "prototype"/>
 
   <!-- Universal Plug'n'Play Command Builder -->
