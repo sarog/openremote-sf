@@ -19,13 +19,8 @@
 */
 package org.openremote.android.console.view;
 
-import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import java.util.List;
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.Constants;
@@ -34,13 +29,10 @@ import org.openremote.android.console.R;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.AsyncPanelListReader;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -123,44 +115,31 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
 
    @Override
    public void urlConnectionDidReceiveData(InputStream data) {
-      arrayAdapter.clear();
-      try {
-         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-         DocumentBuilder builder = factory.newDocumentBuilder();
-         Document dom = builder.parse(data);
-         Element root = dom.getDocumentElement();
-
-         NodeList nodeList = root.getElementsByTagName("panel");
-         int nodeNums = nodeList.getLength();
-         for (int i = 0; i < nodeNums; i++) {
-            arrayAdapter.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
-         }
-      } catch (IOException e) {
-         Log.e("OpenRemote-PANEL LIST", "The data is from ORConnection is bad", e);
-         return;
-      } catch (ParserConfigurationException e) {
-         Log.e("OpenRemote-PANEL LIST", "Cant build new Document builder", e);
-         return;
-      } catch (SAXException e) {
-         Log.e("OpenRemote-PANEL LIST", "Parse data error", e);
-         return;
-      }
-      String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
-      int panelCount = arrayAdapter.getCount();
-      if (!TextUtils.isEmpty(panel)) {
-         if (panelCount == 0) {
-            arrayAdapter.add(panel);
-         } else {
-            for (int i = 0; i < panelCount; i++) {
-               if (panel.equals(arrayAdapter.getItem(i))) {
-                  this.setSelection(i, true);
-                  break;
+      AsyncPanelListReader asyncReader =  new AsyncPanelListReader() {
+         protected void onPostExecute(List<String> panelList) {
+            arrayAdapter.clear();
+            for (int i = 0; i < panelList.size(); i++) {   
+               arrayAdapter.add(panelList.get(i));
+            }
+            String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
+            int panelCount = arrayAdapter.getCount();
+            if (!TextUtils.isEmpty(panel)) {
+               if (panelCount == 0) {
+                  arrayAdapter.add(panel);
+               } else {
+                  for (int i = 0; i < panelCount; i++) {
+                     if (panel.equals(arrayAdapter.getItem(i))) {
+                        PanelSelectSpinnerView.this.setSelection(i, true);
+                        break;
+                     }
+                  }
                }
+            } else if (panelCount == 0) {
+               arrayAdapter.add(CHOOSE_PANEL);
             }
          }
-      } else if (panelCount == 0) {
-         arrayAdapter.add(CHOOSE_PANEL);
-      }
+      };
+      asyncReader.execute(data);
    }
 
    @Override
