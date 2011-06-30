@@ -40,6 +40,13 @@ body {
 }
 
 .consoleFrameLogo div {
+	/*
+  	text-shadow:
+   		-1px -1px 0 #FFF,
+    	1px -1px 0 #FFF,
+    	-1px 1px 0 #FFF,
+     	1px 1px 0 #FFF;
+    */
 	font-weight: bold;
 	font-size: 25px;
 	font-family: verdana, arial, sans-serif;
