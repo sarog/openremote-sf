@@ -52,11 +52,11 @@ public class ResizableUnit extends ConsoleUnit {
 		logoPanel.getElement().setAttribute("style", "line-height: " + FRAME_WIDTH_BOTTOM + "px;");		
 		Label logoLeft = new Label();
 		logoLeft.setText(LOGO_TEXT_LEFT);
-		DOM.setElementAttribute(logoLeft.getElement(), "id", "consoleFrameLogoLeft");
+		logoLeft.getElement().setId("consoleFrameLogoLeft");
 		logoPanel.add(logoLeft);
 		Label logoRight = new Label();
 		logoRight.setText(LOGO_TEXT_RIGHT);
-		DOM.setElementAttribute(logoRight.getElement(), "id", "consoleFrameLogoRight");
+		logoRight.getElement().setId("consoleFrameLogoRight");
 		logoPanel.add(logoRight);
 		add(logoPanel);
 	}
