@@ -9,4 +9,7 @@
   	<source path="utils"/>
   	<source path="views"/>
 	<entry-point class="org.openremote.web.console.client.WebConsole"/>
+	
+	
+	<set-property name="user.agent" value="safari" /> 
 </module>

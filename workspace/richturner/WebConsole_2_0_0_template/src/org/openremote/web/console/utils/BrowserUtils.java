@@ -1,6 +1,8 @@
 package org.openremote.web.console.utils;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 
 	public class BrowserUtils {
 		
@@ -32,5 +34,13 @@ import com.google.gwt.user.client.Window;
 				return true;
 			}
 			return false;
+		}
+		
+		public static void setBodySize(int width, int height) {
+			RootPanel.getBodyElement().setAttribute("style", "width: " + width + "px; height:" + height + "px;");
+		}
+		
+		public static void removeBodySize() {
+			RootPanel.getBodyElement().removeAttribute("style");
 		}
 }

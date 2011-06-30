@@ -33,19 +33,40 @@ public class WebConsole implements EntryPoint {
 	int topMargin;
 	int bottomMargin;
 	HandlerRegistration scrollHandler;
+	Timer addressBarMonitor;
+	Timer initialisationTimer;
 	
 	public void onModuleLoad() {
 		// Get Window information
 		getWindowInfo();
 		
-		// If mobile get address bar size and actual display size
+		// Create a timer to wait for window to be initialised
+		initialisationTimer = new Timer() {
+			@Override
+			public void run() {
+				// if window initialised then initialise console
+				if (isInitialised) {
+					Window.alert("INIT: " + windowWidth +  " x " + windowHeight);
+					initialiseConsole();
+					this.cancel();
+				}
+			}
+		};
+		initialisationTimer.scheduleRepeating(200);
+		
+		// If mobile device then hide address bar and determine true window size
 		if (BrowserUtils.isMobile()) {
-			// Add scroll listener
-			scrollHandler = Window.addWindowScrollHandler(new ScrollHandler() {
-				@Override
-				public void onWindowScroll(ScrollEvent event) {
-					scrollHandler.removeHandler();
-					scrollHandler = null;
+			// Address bar monitor to determine when bar is hidden and to
+			// keep it hidden unless user wants to see it then display for 5s
+			Timer addressBarMonitor = new Timer() {
+			  private boolean addressVisible = false;
+			  public void run() {
+				  	
+				  	if(addressVisible) {
+				  		// Scroll window
+				  		Window.scrollTo(0, 1);
+				  		addressVisible = false;
+				  	}
 					
 					getWindowInfo();
 					
@@ -81,20 +102,37 @@ public class WebConsole implements EntryPoint {
 			  }
 			};
 			
-			/**
-			 * Special iphone timer to delay scroll; doesn't seem
-			 * to scroll otherwise
-			 */
-			Timer t2 = new Timer() {
-				  public void run() {
-					  Window.scrollTo(0, 1);
-				  }
-				};
+		   // Make body twice window height to ensure there's something to scroll
+		   BrowserUtils.setBodySize(windowWidth, windowHeight*2);
+		   
+		   // Scroll Window to hide address bar
+			Window.scrollTo(0, 1);
 			
-			/**
-			 *  Add simple panel which is taller than the window height
-			 *  so we can do a scroll event to hide address bar only then
-			 *  can we determine the true window size
+			// Wait 1s for first run as some browsers take a while to do scroll
+			addressBarMonitor.schedule(1000);
+		   
+			/*
+			 *  Prevent rotation of the window
+			 */
+//			Window.addResizeHandler(new ResizeHandler() {
+//				@Override
+//				public void onResize(ResizeEvent event) {
+//					getWindowInfo();
+					
+//					if(consoleUnit instanceof ResizableUnit && (event.getWidth() < consoleUnit.getWidth() || event.getHeight() < consoleUnit.getHeight())) {
+//						redrawConsoleUnit();
+//					} else if(consoleUnit instanceof FullScreenUnit && (event.getWidth() > consoleUnit.getWidth() && event.getHeight() > consoleUnit.getHeight())) {
+//						redrawConsoleUnit();
+//					}
+//				}
+//			});		   
+		} else {
+			// No initialising to do so set the flag now
+			isInitialised = true;
+			
+			/*
+			 *  Monitor window resize to change console unit type if necessary
+			 *  only monitor on desktop as mobile size should be fixed
 			 */
 			SimplePanel simplePanel = new SimplePanel();
 			simplePanel.setSize("1px", "10000px");
