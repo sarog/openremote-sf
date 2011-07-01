@@ -29,6 +29,7 @@ package org.openremote.android.console.exceptions;
  */
 
 public abstract class AndroidConsoleException extends Exception {
+  private static final long serialVersionUID = 1L;
 
 	public AndroidConsoleException(String msg) {
 		super(msg);
