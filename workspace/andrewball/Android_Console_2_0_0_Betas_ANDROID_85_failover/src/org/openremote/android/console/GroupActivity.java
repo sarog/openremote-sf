@@ -30,7 +30,7 @@ import org.openremote.android.console.bindings.Navigate;
 import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.bindings.TabBar;
 import org.openremote.android.console.bindings.TabBarItem;
-import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ListenerConstant;
 import org.openremote.android.console.model.OREvent;
@@ -39,18 +39,21 @@ import org.openremote.android.console.model.ORListenerManager;
 import org.openremote.android.console.model.UserCache;
 import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.model.XMLEntityDataBase;
-import org.openremote.android.console.net.ORConnectionDelegate;
-import org.openremote.android.console.net.ORHttpMethod;
-import org.openremote.android.console.net.ORRoundRobinConnection;
+import org.openremote.android.console.net.ControllerService;
 import org.openremote.android.console.util.ImageUtil;
 import org.openremote.android.console.view.GroupView;
 import org.openremote.android.console.view.ScreenView;
 import org.openremote.android.console.view.ScreenViewFlipper;
 
+import roboguice.util.RoboAsyncTask;
+
+import com.google.inject.Inject;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -76,7 +79,7 @@ import android.widget.LinearLayout;
  * 
  */
 
-public class GroupActivity extends GenericActivity implements OnGestureListener, ORConnectionDelegate {
+public class GroupActivity extends GenericActivity implements OnGestureListener {
 
    /** To detect gesture, just for one finger touch. */
    private GestureDetector gestureScanner;
@@ -98,6 +101,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
    private boolean isNavigetionBackward;
    private boolean isLandscape = false;
 
+   @Inject
+   ControllerService controllerService;
 
    private int lastConfigurationOrientation = -1;
    
@@ -361,11 +366,35 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
     */
    private void onScreenGestureEvent(int gestureType) {
       currentScreen = ((ScreenView) currentScreenViewFlipper.getCurrentView()).getScreen();
-      Gesture gesture = currentScreen.getGestureByType(gestureType);
+      final Gesture gesture = currentScreen.getGestureByType(gestureType);
       if (gesture != null) {
          if (gesture.isHasControlCommand()) {
-            new ORRoundRobinConnection(this, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(this) + "/rest/control/"
-                  + gesture.getComponentId() + "/swipe", this);
+            new RoboAsyncTask<Void>() {
+              public Void call() throws Exception {
+                controllerService.sendWriteCommand(gesture.getComponentId(), "swipe");
+                return null;
+              }
+
+              public void onException(Exception e) {
+                if (e instanceof ControllerAuthenticationFailureException) {
+                  // TODO is this really what we want to do here?  Can this be refactored
+                  // to make handling errors like this simpler for other small
+                  // RoboAsyncTasks?
+                  Intent loginIntent = new Intent();
+                  loginIntent.setClass(context, LoginViewActivity.class);
+                  loginIntent.setData(Uri.parse(Main.LOAD_RESOURCE));
+                  finish();
+                  context.startActivity(loginIntent);
+                }
+
+                // TODO This is what we used to do when a response was given that did not have
+                // 200 (OK) or 401 (unauthorized) as its response code.  Make sure we have an
+                // adequate number of checked exceptions for what could go wrong and handle them here.
+
+                // ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException
+                // .exceptionMessageOfCode(responseCode));
+              }
+            }.execute();
          }
          if (gesture.getNavigate() != null) {
             handleNavigate(gesture.getNavigate());
@@ -727,30 +756,6 @@ public class GroupActivity extends GenericActivity implements OnGestureListener,
          return true;
       }
       return super.onKeyDown(keyCode, event);
-   }
-
-   @Override
-   public void urlConnectionDidFailWithException(Exception e) {
-      // do nothing.
-   }
-
-   @Override
-   public void urlConnectionDidReceiveData(InputStream data) {
-      // do nothing.
-   }
-
-   @Override
-   public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
-      int responseCode = httpResponse.getStatusLine().getStatusCode();
-      if (responseCode != 200) {
-         if (responseCode == 401) {
-            new LoginDialog(this);
-         } else {
-            ViewHelper.showAlertViewWithTitle(this, "Send Request Error", ControllerException
-                  .exceptionMessageOfCode(responseCode));
-         }
-      }
-
    }
 
    /**
