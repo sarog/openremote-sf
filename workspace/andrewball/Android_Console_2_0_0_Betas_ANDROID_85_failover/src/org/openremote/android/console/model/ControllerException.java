@@ -48,14 +48,14 @@ public class ControllerException {
    /**
     * Get exception message by code.
     * 
-    * @param erroCode the erro code
+    * @param errorCode the error code
     * 
     * @return the string
     */
-   public static String exceptionMessageOfCode(int erroCode) {
+   public static String exceptionMessageOfCode(int errorCode) {
       String errorMessage = null;
-      if (erroCode != 200) {
-         switch (erroCode) {
+      if (errorCode != 200) {
+         switch (errorCode) {
             case REQUEST_ERROR://404
                errorMessage = "The command was sent to an invalid URL.";
                break;
@@ -106,7 +106,7 @@ public class ControllerException {
             	break;
          }
          if (errorMessage == null) {
-            errorMessage = "Occured unknown error, satus code is " + erroCode;
+            errorMessage = "Occured unknown error, satus code is " + errorCode;
          }
       }
       return errorMessage;
