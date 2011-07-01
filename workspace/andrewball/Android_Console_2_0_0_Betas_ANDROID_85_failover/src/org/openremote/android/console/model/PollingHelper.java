@@ -41,7 +41,6 @@ import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
-import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
 import org.openremote.android.console.util.SecurityUtil;
 
@@ -63,6 +62,7 @@ public class PollingHelper {
 
    /** The polling status ids is split by ",". */
    private String pollingStatusIds;
+   /** whether polling is enabled for ? */
    private boolean isPolling;
    private HttpClient client;
    private HttpGet httpGet;
@@ -72,6 +72,7 @@ public class PollingHelper {
    private Handler handler;
    private static final int NETWORK_ERROR = 0;
    private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "POLLING";
+
    /**
     * Instantiates a new polling helper.
     * 
@@ -99,13 +100,18 @@ public class PollingHelper {
             // only if the network is error, server error and request error, 
             // switch controller server, or endless loop would happen to switch server.
             int statusCode = msg.what;
-            if (statusCode == NETWORK_ERROR || statusCode == ControllerException.SERVER_ERROR
-                  || statusCode == ControllerException.REQUEST_ERROR) {
-               ORControllerServerSwitcher.doSwitch(context);
-            } else {
+//            if (statusCode == NETWORK_ERROR || statusCode == ControllerException.SERVER_ERROR
+//                  || statusCode == ControllerException.REQUEST_ERROR) {
+               // TODO switching the controller should probably happen in the implementation of
+               //      the ControllerService interface
+
+               // ORControllerServerSwitcher.doSwitch();
+//            } else {
+               // TODO ANDROID--89 Gracefully fail on polling errors
+               //      don't be so loud and disruptive here
                ViewHelper.showAlertViewWithTitle(context, "Polling Error", ControllerException
                      .exceptionMessageOfCode(statusCode));
-            }
+//            }
          }
       };
    }
@@ -117,11 +123,12 @@ public class PollingHelper {
       HttpParams params = new BasicHttpParams();
       HttpConnectionParams.setConnectionTimeout(params, 50 * 1000);
       
-      //make polling socket timout bigger than Controller (50s)
+      // make polling socket timeout bigger than Controller (50s)
       HttpConnectionParams.setSoTimeout(params, 55 * 1000);
       
       client = new DefaultHttpClient(params);
       if (isPolling) {
+         // TODO Explain this part! We don't want to start polling again for the same thing?
          return;
       }
       
@@ -159,6 +166,7 @@ public class PollingHelper {
    private void handleRequest(String requestUrl) {
       Log.i(LOG_CATEGORY, requestUrl);
       httpGet = new HttpGet(requestUrl);
+      // why would httpGet ever be aborted here, right after instantiation?
       if (!httpGet.isAborted()) {
          SecurityUtil.addCredentialToHttpRequest(context, httpGet);
          try {
@@ -202,7 +210,7 @@ public class PollingHelper {
    }
    
    /**
-    * Cancel the polling, abort http request.
+    * Cancel the polling, abort HTTP request.
     */
    public void cancelPolling() {
       Log.i(LOG_CATEGORY, "polling [" + pollingStatusIds +"] canceled");
@@ -225,11 +233,12 @@ public class PollingHelper {
          if (statusCode == ControllerException.GATEWAY_TIMEOUT) { // polling timeout, need to refresh
             return;
          } if (statusCode == ControllerException.REFRESH_CONTROLLER) {
+            // TODO explain "refreshing the controller"
             Main.prepareToastForRefreshingController();
             Intent refreshControllerIntent = new Intent();
             refreshControllerIntent.setClass(context, Main.class);
             context.startActivity(refreshControllerIntent);
-            // Notify the groupactiviy to finish.
+            // Notify the group activity to finish.
             ORListenerManager.getInstance().notifyOREventListener(ListenerConstant.FINISH_GROUP_ACTIVITY, null);
             return;
          } else {
@@ -240,7 +249,7 @@ public class PollingHelper {
    }
 
    /**
-    * Read the device id for send it in polling request url.
+    * Read the device id for send it in polling request URL.
     * 
     * @param context the context
     */
