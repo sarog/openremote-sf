@@ -637,8 +637,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     if (!TextUtils.isEmpty(AppSettingsActivity.currentServer)) {
       loadingPanelProgress.show();
       new ORConnection(this.getApplicationContext(), ORHttpMethod.GET, true,
-          AppSettingsActivity.currentServer + "/rest/panels", this,
-          orControllerServerSwitcher);
+          AppSettingsActivity.currentServer + "/rest/panels", this);
     }
   }
 
