@@ -25,6 +25,8 @@ import android.content.Context;
 
 /**
  * The Class ORRoundRobinConnection for switching the connection of android console to a available controller server in groupmembers of self.
+ *
+ * TODO deprecate this class!
  */
 public class ORRoundRobinConnection extends ORConnection {
 
@@ -40,6 +42,9 @@ public class ORRoundRobinConnection extends ORConnection {
     */
    protected void connectionDidFailWithException(Context context, ORConnectionException e) {
       delegate.urlConnectionDidFailWithException(e);
-      ORControllerServerSwitcher.doSwitch(context);
+
+      // TODO this should happen in the ControllerService implementation instead
+
+      // ORControllerServerSwitcher.doSwitch();
    }
 }

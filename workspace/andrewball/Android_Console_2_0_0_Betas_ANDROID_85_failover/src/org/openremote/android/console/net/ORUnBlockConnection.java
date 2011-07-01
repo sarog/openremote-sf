@@ -28,6 +28,8 @@ import android.os.Message;
 
 /**
  * The every handler would have a different looper.
+ *
+ * TODO What is this? a non-blocking connection?
  */
 public class ORUnBlockConnection extends ORConnection {
 
