@@ -34,9 +34,11 @@ import org.apache.http.HttpResponse;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.ControllerService;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
+import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
@@ -45,6 +47,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.google.inject.Inject;
+
+import roboguice.util.RoboAsyncTask;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -113,6 +119,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private ProgressDialog loadingPanelProgress;
   
   private IPAutoDiscoveryServer autoDiscoveryServer;
+
+  @Inject
+  private ORControllerServerSwitcher orControllerServerSwitcher;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -461,6 +470,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
             toast.show();
           }
           writeCustomServerToFile();
+          requestFailoverGroupUrls();
           requestPanelList();
        }
     });
@@ -581,6 +591,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
             return;
           }
         }
+        requestFailoverGroupUrls();
         requestPanelList();
       }
     };
@@ -625,10 +636,42 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     setEmptySpinnerContent();
     if (!TextUtils.isEmpty(AppSettingsActivity.currentServer)) {
       loadingPanelProgress.show();
-      new ORConnection(this.getApplicationContext(), ORHttpMethod.GET, true, AppSettingsActivity.currentServer + "/rest/panels", this);
+      new ORConnection(this.getApplicationContext(), ORHttpMethod.GET, true,
+          AppSettingsActivity.currentServer + "/rest/panels", this,
+          orControllerServerSwitcher);
     }
   }
-  
+
+  public static class FetchControllerFailoverGroupUrls extends RoboAsyncTask<Void>
+  {
+    @Inject
+    private ControllerService controllerService;
+
+    @Inject
+    private ORControllerServerSwitcher orControllerServerSwitcher;
+
+    @Override
+    public Void call() throws Exception
+    {
+      List<URL> servers = controllerService.getServers();
+
+      for (URL url : servers)
+      {
+        Log.i(TAG, "received failover group member URL " + url);
+
+        orControllerServerSwitcher.saveGroupMembersToFile(servers);
+      }
+
+      return null;
+    }
+  }
+
+  private void requestFailoverGroupUrls()
+  {
+    Log.d(TAG, "requestFailoverGroupUrls(): entry");
+    getInjector().getInstance(FetchControllerFailoverGroupUrls.class).execute();
+  }
+
   @Override
   public void urlConnectionDidFailWithException(Exception e) {
     loadingPanelProgress.dismiss();
