@@ -55,7 +55,7 @@ public class ConsoleUnit extends VerticalPanel {
 		ConsoleUnit console;
 
 		// Look at window size to determine console unit type for mobiles always use fullscreen
-		if(BrowserUtils.isMobile() || windowWidth < ResizableUnit.requiredConsoleWidth(requiredDisplayWidth) || windowHeight < ResizableUnit.requiredConsoleHeight(requiredDisplayHeight)) {
+		if(BrowserUtils.isMobile || windowWidth < ResizableUnit.requiredConsoleWidth(requiredDisplayWidth) || windowHeight < ResizableUnit.requiredConsoleHeight(requiredDisplayHeight)) {
 			console = new FullScreenUnit(requiredDisplayWidth, requiredDisplayHeight, consoleDisplay);
 		} else {
 			console = new ResizableUnit(requiredDisplayWidth, requiredDisplayHeight, consoleDisplay);
