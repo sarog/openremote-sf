@@ -13,15 +13,16 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.ScrollEvent;
-import com.google.gwt.user.client.Window.ScrollHandler;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
+ * This class configures the Window for mobile and desktop environments
+ * and determines the size of the window we have to work with:
+ * windowHeight = Longest window dimension (i.e. portrait)
+ * windowWidth = Shortest window dimension
  */
 public class WebConsole implements EntryPoint {
 	
@@ -29,124 +30,140 @@ public class WebConsole implements EntryPoint {
 	ConsoleUnit consoleUnit;
 	int windowHeight = 0;
 	int windowWidth = 0;
-	boolean isInitialised = false;
-	boolean isWindowPortrait;
+	public boolean isInitialised = false;
+	String windowOrientation = "portrait";
 	int topMargin;
 	int bottomMargin;
 	HandlerRegistration scrollHandler;
 	Timer addressBarMonitor;
-	Timer initialisationTimer;
 	
 	public void onModuleLoad() {
 		// Get Window information
 		getWindowInfo();
 		
 		// Create a timer to wait for window to be initialised
-		initialisationTimer = new Timer() {
+		Timer initialisationTimer = new Timer() {
 			@Override
 			public void run() {
 				// if window initialised then initialise console
 				if (isInitialised) {
-					Window.alert("INIT: " + windowWidth +  " x " + windowHeight);
+					// Initialise the DOM
+					initialiseDom();
+
 					initialiseConsole();
 					this.cancel();
 				}
 			}
 		};
-		initialisationTimer.scheduleRepeating(200);
+		initialisationTimer.scheduleRepeating(100);
 		
-		// If mobile device then hide address bar and determine true window size
-		if (BrowserUtils.isMobile()) {
-			// Address bar monitor to determine when bar is hidden and to
-			// keep it hidden unless user wants to see it then display for 5s
-			Timer addressBarMonitor = new Timer() {
-			  private boolean addressVisible = false;
-			  public void run() {
-				  	
-				  	if(addressVisible) {
-				  		// Scroll window
-				  		Window.scrollTo(0, 1);
-				  		addressVisible = false;
-				  	}
-					
-				  	// Check window height
-					if (Window.getClientHeight() >= Window.getClientWidth()) {
-						if (Window.getClientHeight() >= windowHeight) {
-							// Indicates we've hidden address bar
-							windowHeight = Window.getClientHeight();
-							
-					  		// Scroll window
-					  		Window.scrollTo(0, 1);
-					  		
-							this.schedule(500);
-						} else {
-							// Means address bar is now visible
-							addressVisible = true;
-							this.schedule(5000);
-						}
-					} else {
-						if (Window.getClientHeight() >= windowWidth) {
-							// Indicates we've hidden address bar
-							windowWidth = Window.getClientHeight();
-							this.schedule(500);
-						} else {
-							this.schedule(5000);
-						}
-					}
-					
-					// Indicate system is initialised
-					isInitialised = true;
-			  }
-			};
-			
-		   // Make body twice window height to ensure there's something to scroll
-		   BrowserUtils.setBodySize(windowWidth, windowHeight*2);
-		   
-		   // Scroll Window to hide address bar
-			Window.scrollTo(0, 1);
-			
-			// Wait 1s for first run as some browsers take a while to do scroll
-			addressBarMonitor.schedule(1000);
-		   
-			/*
-			 *  Prevent rotation of the window
-			 */
-//			Window.addResizeHandler(new ResizeHandler() {
-//				@Override
-//				public void onResize(ResizeEvent event) {
-//					getWindowInfo();
-					
-//					if(consoleUnit instanceof ResizableUnit && (event.getWidth() < consoleUnit.getWidth() || event.getHeight() < consoleUnit.getHeight())) {
-//						redrawConsoleUnit();
-//					} else if(consoleUnit instanceof FullScreenUnit && (event.getWidth() > consoleUnit.getWidth() && event.getHeight() > consoleUnit.getHeight())) {
-//						redrawConsoleUnit();
-//					}
-//				}
-//			});		   
+		/*
+		 * If mobile device then hide address bar and determine true window size
+		 * and lock the window in place. User can still get to the address bar if
+		 * they wish by touching the status bar on iphone or pressing menu on android
+		 */		
+		if (BrowserUtils.isMobile) {
+			// Will initialise window and set initialised flag when done
+			BrowserUtils.initWindow(this);
 		} else {
 			// No initialising to do so set the flag now
 			isInitialised = true;
-			
-			/*
-			 *  Monitor window resize to change console unit type if necessary
-			 *  only monitor on desktop as mobile size should be fixed
-			 */
-			Window.addResizeHandler(new ResizeHandler() {
-				@Override
-				public void onResize(ResizeEvent event) {
-					getWindowInfo();
-					
-					if(consoleUnit instanceof ResizableUnit && (event.getWidth() < consoleUnit.getWidth() || event.getHeight() < consoleUnit.getHeight())) {
-						redrawConsoleUnit();
-					} else if(consoleUnit instanceof FullScreenUnit && (event.getWidth() > consoleUnit.getWidth() && event.getHeight() > consoleUnit.getHeight())) {
-						redrawConsoleUnit();
-					}
-				}
-			});
-			
-			// Create the console unit
-			initialiseConsole();
 		}
+	}
+	
+	/**
+	 * Method to size body to window dynamically as window changes.
+	 * Window change on mobile devices will be an orientation
+	 * change
+	 */
+	private void initialiseDom() {
+		// Size body
+		BrowserUtils.setBodySize(windowWidth, windowHeight);
+		
+		// Prevent touch moves for mobile devices(won't affect desktop)
+		RootPanel.get().addDomHandler(new TouchMoveHandler() {
+			public void onTouchMove(TouchMoveEvent e) {
+				e.preventDefault();
+			}
+		}, TouchMoveEvent.getType());
+		
+		// Add resize handler
+		Window.addResizeHandler(new ResizeHandler() {
+			@Override
+			public void onResize(ResizeEvent event) {
+				/**
+				 * For desktops we just update window dimensions
+				 * For mobiles we switch width and height depending on orientation
+				 */
+				resizeBodyElement();
+				
+				// Scroll to hide address bar
+				Window.scrollTo(0, 1);
+				
+				
+//				if (!BrowserUtils.isMobile) {
+//					getWindowInfo();
+//					newWidth = windowWidth;
+//					newHeight = windowHeight;
+//				} else {
+//					if (Window.getClientHeight() > Window.getClientWidth()) {
+//						// Portrait
+//						isWindowPortrait = true;
+//						newWidth = windowWidth;
+//						newHeight = windowHeight;
+//					} else {
+//						// Landscape
+//						isWindowPortrait = false;
+//						newWidth = windowHeight;
+//						newHeight = windowWidth;
+//					}
+//					
+//					// Scroll to hide address bar
+//					Window.scrollTo(0, 1);
+//					
+//					if (!isWindowPortrait) {
+//						RootPanel.get().getElement().addClassName("landscape");
+//					} else {
+//						RootPanel.get().getElement().removeClassName("landscape");
+//					}
+//				}
+				
+				
+//				// Change console type if necessary
+//				if(consoleUnit instanceof ResizableUnit && (event.getWidth() < consoleUnit.getWidth() || event.getHeight() < consoleUnit.getHeight())) {
+//					redrawConsoleUnit();
+//				} else if(consoleUnit instanceof FullScreenUnit && (event.getWidth() > consoleUnit.getWidth() && event.getHeight() > consoleUnit.getHeight())) {
+//					redrawConsoleUnit();
+//				}
+			}
+		});
+	}
+	
+	/**
+	 * Resize the body element to match current window size
+	 */
+	public void resizeBodyElement() {
+		int newWidth;
+		int newHeight;
+		
+		// If mobile update orientation info
+		if (BrowserUtils.isMobile) {
+			getWindowInfo();
+			// Get new window size if desktop
+			if("portrait".equals(windowOrientation)) {
+					newWidth = windowWidth;
+					newHeight = windowHeight;						
+			} else {
+					newWidth = windowHeight;
+					newHeight = windowWidth;
+			}
+		} else {
+			newWidth = Window.getClientWidth();
+			newHeight = Window.getClientHeight();
+		}
+			
+		// Resize body to new window size
+		BrowserUtils.setBodySize(newWidth, newHeight);
 	}
 	
 	/**
@@ -155,30 +172,38 @@ public class WebConsole implements EntryPoint {
 	 * Horizontally align the console in the centre
 	 */
 	private void initialiseConsole() {
-		return;
-//		consoleUnit = ConsoleUnit.create(windowWidth, windowHeight);
-//		
-//		if (BrowserUtils.isMobile()) {
-//			// Prevent touch move unless console display is bigger than window
-//			if (windowWidth > consoleUnit.displayWidth && windowHeight > consoleUnit.displayHeight) {
-//				RootPanel.get().addDomHandler(new TouchMoveHandler() {
-//					public void onTouchMove(TouchMoveEvent e) {
-//						e.preventDefault();
-//					}
-//				}, TouchMoveEvent.getType());
-//			}
-//		}		
-//		
-//		// Add Console Unit to the screen and position vertically
-//		addAndPositionConsole();
-//
-//		// Show loading screen
-//		consoleUnit.consoleDisplay.showLoadingScreen();
+		consoleUnit = ConsoleUnit.create(windowWidth, windowHeight);
+		
+		
+		// Add Console Unit to the screen and position vertically
+		addAndPositionConsole();
+
+		// Show loading screen
+		consoleUnit.consoleDisplay.showLoadingScreen();
+	}
+	
+	// This is our window height i.e. the longest window dimension
+	public int getWindowHeight() {
+		return windowHeight;
+	}
+	
+	public int getWindowWidth() {
+		return windowWidth;
 	}
 	
 	public void getWindowInfo() {
-		if (Window.getClientHeight() >= Window.getClientWidth()) {
-			isWindowPortrait = true;
+		/**
+		 * Only set window orientation the first time as desktops will
+		 * be static but mobile device orientation will be picked up
+		 * by the resize handler
+		 */
+		if (BrowserUtils.isMobile) {
+			setWindowOrientation();
+		}
+		
+		// Get window sizes independent of screen orientation
+		// largest dimension is always the height
+		if ("portrait".equals(windowOrientation)) {
 			if (Window.getClientHeight() > windowHeight) {
 				windowHeight = Window.getClientHeight();
 			}
@@ -186,7 +211,6 @@ public class WebConsole implements EntryPoint {
 				windowWidth = Window.getClientWidth();
 			}
 		} else {
-			isWindowPortrait = false;
 			if (Window.getClientHeight() > windowWidth) {
 				windowWidth = Window.getClientHeight();
 			}
@@ -196,15 +220,33 @@ public class WebConsole implements EntryPoint {
 		}
 	}
 	
+	public void setWindowOrientation() {
+		if (Window.getClientHeight() >= Window.getClientWidth()) {
+			windowOrientation = "portrait";
+			if (BrowserUtils.isMobile) {
+				RootPanel.get().getElement().removeClassName("landscape");
+				RootPanel.get().getElement().addClassName("portrait");
+			}
+		} else {
+			windowOrientation = "landscape";
+			if (BrowserUtils.isMobile) {
+				RootPanel.get().getElement().removeClassName("portrait");
+				RootPanel.get().getElement().addClassName("landscape");
+			}
+		}
+	}
+	
 	public void addAndPositionConsole() {
 		// Add console to page
-		RootPanel.get("consoleUnitContainer").add(consoleUnit);
+		RootPanel.get().add(consoleUnit);
 
-		// Add margin to top and bottom for vertical align of console unit
-		topMargin = ((windowHeight - consoleUnit.getHeight()) / 2) - 2;
-		bottomMargin = topMargin;
-		DOM.setStyleAttribute(consoleUnit.getElement(), "marginTop", topMargin + "px");
-		DOM.setStyleAttribute(consoleUnit.getElement(), "marginBottom", bottomMargin + "px");		
+		RootPanel.get().setStylePrimaryName("consoleUnitContainer");
+		
+//		// Add margin to top and bottom for vertical align of console unit
+//		topMargin = ((windowHeight - consoleUnit.getHeight()) / 2) - 2;
+//		bottomMargin = topMargin;
+//		DOM.setStyleAttribute(consoleUnit.getElement(), "marginTop", topMargin + "px");
+//		DOM.setStyleAttribute(consoleUnit.getElement(), "marginBottom", bottomMargin + "px");		
 	}
 	
 	public void redrawConsoleUnit() {

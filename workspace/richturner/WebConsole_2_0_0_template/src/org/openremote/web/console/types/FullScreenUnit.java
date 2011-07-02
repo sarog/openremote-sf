@@ -16,6 +16,6 @@ public class FullScreenUnit extends ConsoleUnit {
 		super(displayWidth, displayHeight, consoleDisplay);
 		
 		// Make body background same colour as console display by setting style to consoleDisplay
-		RootPanel.get().addStyleName("consoleDisplay");
+		//RootPanel.get().addStyleName("consoleDisplay");
 	}
 }
