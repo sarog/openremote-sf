@@ -13,6 +13,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -95,39 +97,22 @@ public class WebConsole implements EntryPoint {
 				 * For desktops we just update window dimensions
 				 * For mobiles we switch width and height depending on orientation
 				 */
+				Window.scrollTo(0,1);
+				
+				if (BrowserUtils.isMobile) {
+					String prevOrientation = windowOrientation;
+					
+					setWindowOrientation();
+					
+					if (prevOrientation.equals(windowOrientation)) {
+						return;
+					}
+					consoleUnit.setOrientation(windowOrientation);
+				}
+				
 				resizeBodyElement();
 				
-				// Scroll to hide address bar
-				Window.scrollTo(0, 1);
-				
-				
-//				if (!BrowserUtils.isMobile) {
-//					getWindowInfo();
-//					newWidth = windowWidth;
-//					newHeight = windowHeight;
-//				} else {
-//					if (Window.getClientHeight() > Window.getClientWidth()) {
-//						// Portrait
-//						isWindowPortrait = true;
-//						newWidth = windowWidth;
-//						newHeight = windowHeight;
-//					} else {
-//						// Landscape
-//						isWindowPortrait = false;
-//						newWidth = windowHeight;
-//						newHeight = windowWidth;
-//					}
-//					
-//					// Scroll to hide address bar
-//					Window.scrollTo(0, 1);
-//					
-//					if (!isWindowPortrait) {
-//						RootPanel.get().getElement().addClassName("landscape");
-//					} else {
-//						RootPanel.get().getElement().removeClassName("landscape");
-//					}
-//				}
-				
+				Window.scrollTo(0,1);
 				
 //				// Change console type if necessary
 //				if(consoleUnit instanceof ResizableUnit && (event.getWidth() < consoleUnit.getWidth() || event.getHeight() < consoleUnit.getHeight())) {
@@ -148,7 +133,6 @@ public class WebConsole implements EntryPoint {
 		
 		// If mobile update orientation info
 		if (BrowserUtils.isMobile) {
-			getWindowInfo();
 			// Get new window size if desktop
 			if("portrait".equals(windowOrientation)) {
 					newWidth = windowWidth;
@@ -161,7 +145,7 @@ public class WebConsole implements EntryPoint {
 			newWidth = Window.getClientWidth();
 			newHeight = Window.getClientHeight();
 		}
-			
+		
 		// Resize body to new window size
 		BrowserUtils.setBodySize(newWidth, newHeight);
 	}
@@ -174,12 +158,11 @@ public class WebConsole implements EntryPoint {
 	private void initialiseConsole() {
 		consoleUnit = ConsoleUnit.create(windowWidth, windowHeight);
 		
-		
 		// Add Console Unit to the screen and position vertically
 		addAndPositionConsole();
-
-		// Show loading screen
-		consoleUnit.consoleDisplay.showLoadingScreen();
+		
+		// Orient the console to match the window
+		consoleUnit.setOrientation(windowOrientation);
 	}
 	
 	// This is our window height i.e. the longest window dimension
@@ -223,22 +206,23 @@ public class WebConsole implements EntryPoint {
 	public void setWindowOrientation() {
 		if (Window.getClientHeight() >= Window.getClientWidth()) {
 			windowOrientation = "portrait";
-			if (BrowserUtils.isMobile) {
-				RootPanel.get().getElement().removeClassName("landscape");
-				RootPanel.get().getElement().addClassName("portrait");
-			}
 		} else {
 			windowOrientation = "landscape";
-			if (BrowserUtils.isMobile) {
-				RootPanel.get().getElement().removeClassName("portrait");
-				RootPanel.get().getElement().addClassName("landscape");
-			}
 		}
 	}
 	
 	public void addAndPositionConsole() {
+		// Use a vertical panel to position the console vertically
+		VerticalPanel consoleUnitWrapper = new VerticalPanel();
+		consoleUnitWrapper.setWidth("100%");
+		consoleUnitWrapper.setHeight("100%");
+		consoleUnitWrapper.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		consoleUnitWrapper.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		
+		consoleUnitWrapper.add(consoleUnit);
+		
 		// Add console to page
-		RootPanel.get().add(consoleUnit);
+		RootPanel.get().add(consoleUnitWrapper);
 
 		RootPanel.get().setStylePrimaryName("consoleUnitContainer");
 		

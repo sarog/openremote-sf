@@ -26,9 +26,8 @@ public class ResizableUnit extends ConsoleUnit {
 		// Create console frame
 		createFrame();
 		
-		// Update Console dimensions
-		consoleWidth = consoleWidth + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT;
-		consoleHeight = consoleHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;		
+		// Update Console dimensions	
+		setDimensions(consoleWidth + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT, consoleHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM);	
 	}
 	
 	public static int requiredConsoleWidth(int requiredDisplayWidth) {
@@ -41,7 +40,9 @@ public class ResizableUnit extends ConsoleUnit {
 	
 	public void createFrame() {
 		// Add the frame for this re-sizable console unit by setting style attributes
-		this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px " + FRAME_WIDTH_RIGHT + "px 0px " + FRAME_WIDTH_LEFT + "px;");
+		// Only need to add padding to top as Vertical Panel deals with left right padding
+		//this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px " + FRAME_WIDTH_RIGHT + "px 0px " + FRAME_WIDTH_LEFT + "px;");
+		this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px 0px 0px 0px;");
 		addStyleName("consoleFrame");
 		getConsoleDisplay().addStyleName("consoleDisplayBoss");
 		
