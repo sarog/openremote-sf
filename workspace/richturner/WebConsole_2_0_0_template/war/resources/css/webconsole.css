@@ -1,15 +1,24 @@
+#noScriptError {
+	width: 22em;
+	position: absolute;
+	left: 50%;
+	margin-left: -11em;
+	color: red;
+	background-color: white;
+	border: 1px solid red;
+	padding: 4px;
+	font-family: sans-serif;	
+}
+
 body { 
 	background-color: white;
 	color: black;
-	font-family: Arial, sans-serif;
-	font-size: small;
+	font-family: verdana, arial, sans-serif;
 	text-align: center;
 }
 
 .consoleUnitContainer {
 	text-align: center;
-	width: 100%;
-	height: 100%;
 	vertical-align: middle;	
 }
 
@@ -68,33 +77,36 @@ body {
 	overflow: hidden;
 }
 
+.consoleDisplay .portraitDisplay {
+	
+}
+
+.consoleDisplay .landscapeDisplay {
+     -moz-transform: rotate(90deg);  /* FF3.5+ */
+       -o-transform: rotate(90deg);  /* Opera 10.5 */
+  -webkit-transform: rotate(90deg);  /* Saf3.1+, Chrome */
+      -ms-transform: rotate(90deg);  /* IE9 */
+          transform: rotate(90deg);  
+             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */ 
+                     M11=0, M12=-1, M21=1, M22=0, sizingMethod='auto expand');
+               zoom: 1;
+}
+
 .consoleDisplayBoss {
 	border: solid 2px #333333; 
 }
 
-#noScriptError {
-	width: 22em;
-	position: absolute;
-	left: 50%;
-	margin-left: -11em;
-	color: red;
-	background-color: white;
-	border: 1px solid red;
-	padding: 4px;
-	font-family: sans-serif;	
-}
-
-.portrait {
+.portraitConsole {
 	
 }
 
-.landscape {
+.landscapeConsole {
      -moz-transform: rotate(-90deg);  
        -o-transform: rotate(-90deg);  
   -webkit-transform: rotate(-90deg);  
       -ms-transform: rotate(-90deg);  
           transform: rotate(-90deg);  
              filter: progid:DXImageTransform.Microsoft.Matrix( 
-                     M11=6.123031769111886e-17, M12=1, M21=-1, M22=6.123031769111886e-17, sizingMethod='auto expand');
-               zoom: 1;		
+                     M11=0, M12=1, M21=-1, M22=0, sizingMethod='auto expand');
+               zoom: 1;
 }

@@ -8,15 +8,17 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleUnit extends VerticalPanel {
+public class ConsoleUnit extends SimplePanel {
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
-	
+	private VerticalPanel consoleContainer;
 	public ConsoleDisplay consoleDisplay;
 	protected int displayWidth;
 	protected int displayHeight;
@@ -29,11 +31,12 @@ public class ConsoleUnit extends VerticalPanel {
 	
 	public ConsoleUnit(int width, int height, ConsoleDisplay consoleDisplay) {
 		super();
-		setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		consoleContainer = new VerticalPanel();
+		consoleContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		super.add(consoleContainer);
 		displayWidth = width;
 		displayHeight = height;
-		consoleWidth = displayWidth;
-		consoleHeight = displayHeight;
+		setDimensions(width, height);
 		this.getElement().setId(CONSOLE_HTML_ELEMENT_ID);
 		this.getElement().addClassName("consoleUnit");
 		if (consoleDisplay == null) {
@@ -41,6 +44,18 @@ public class ConsoleUnit extends VerticalPanel {
 		}
 		this.consoleDisplay = consoleDisplay;
 		this.add(this.consoleDisplay);
+	}
+	
+	@Override
+	public void add(Widget widget) {
+		consoleContainer.add(widget);
+	}
+	
+	public void setDimensions(int width, int height) {
+		consoleWidth = width;
+		consoleHeight = height;
+		this.setWidth(width + "px");
+		this.setHeight(height + "px");
 	}
 	
 	/**
@@ -71,7 +86,7 @@ public class ConsoleUnit extends VerticalPanel {
 		this.remove(this.consoleDisplay);
 		this.consoleDisplay = null;
 		this.consoleDisplay = consoleDisplay;
-		this.insert(this.consoleDisplay, 0);		
+		consoleContainer.insert(this.consoleDisplay, 0);		
 	}
 	
 	public int getWidth() {
@@ -99,5 +114,18 @@ public class ConsoleUnit extends VerticalPanel {
 		newConsole = ConsoleUnit.create(windowWidth, windowHeight, this.displayWidth, this.displayHeight, this.consoleDisplay);
 		newConsole.setConsoleDisplay(consoleDisplay);
 		return newConsole;
+	}
+	
+	public void setOrientation(String orientation) {
+		if ("portrait".equals(orientation)) {
+			getElement().removeClassName("landscapeConsole");
+			getElement().addClassName("portraitConsole");
+		}
+		if ("landscape".equals(orientation)) {
+			getElement().removeClassName("portraitConsole");
+			getElement().addClassName("landscapeConsole");
+		}
+			
+		consoleDisplay.setOrientation(orientation);
 	}
 }
