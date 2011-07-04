@@ -6,6 +6,7 @@ import org.openremote.web.console.utils.BrowserUtils;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -121,16 +122,24 @@ public class ConsoleUnit extends SimplePanel {
 		return newConsole;
 	}
 	
-	public void setOrientation(String orientation) {
+	public void setOrientationAndPosition(String orientation) {
+		// Set CSS to rotate the console unit and reposition it
+		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
+		int winWidth = Window.getClientWidth();
+		int winHeight = Window.getClientHeight();
+		
 		if ("portrait".equals(orientation)) {
 			getElement().removeClassName("landscapeConsole");
 			getElement().addClassName("portraitConsole");
+			consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleWidth/2), (winHeight/2)-(consoleHeight/2));
 		}
 		if ("landscape".equals(orientation)) {
 			getElement().removeClassName("portraitConsole");
 			getElement().addClassName("landscapeConsole");
+			consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleHeight/2), (winHeight/2)-(consoleWidth/2));
 		}
-			
+		
+		// Set CSS to rotate the console display
 		consoleDisplay.setOrientation(orientation);
 	}
 }

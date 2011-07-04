@@ -13,9 +13,11 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 
@@ -102,7 +104,7 @@ public class WebConsole implements EntryPoint {
 				 * For mobiles we switch width and height depending on orientation
 				 */
 				
-				if (BrowserUtils.isMobile) {
+				if (!BrowserUtils.isMobile) {
 					Window.scrollTo(0,1);
 					
 					String prevOrientation = windowOrientation;
@@ -112,7 +114,7 @@ public class WebConsole implements EntryPoint {
 					if (prevOrientation.equals(windowOrientation)) {
 						return;
 					}
-					consoleUnit.setOrientation(windowOrientation);
+					consoleUnit.setOrientationAndPosition(windowOrientation);
 				}
 				
 				resizeBodyElement();
@@ -167,10 +169,10 @@ public class WebConsole implements EntryPoint {
 		consoleUnit = ConsoleUnit.create(windowWidth, windowHeight);
 		
 		// Add Console Unit to the screen and position vertically
-		addAndPositionConsole();
+		addConsole();
 		
-		// Orient the console to match the window
-		consoleUnit.setOrientation(windowOrientation);
+		// Set Console Orientation
+		consoleUnit.setOrientationAndPosition(windowOrientation);
 	}
 	
 	// This is our window height i.e. the longest window dimension
@@ -219,30 +221,19 @@ public class WebConsole implements EntryPoint {
 		}
 	}
 	
-	public void addAndPositionConsole() {
-		// Use a vertical panel to position the console vertically
-		VerticalPanel consoleUnitWrapper = new VerticalPanel();
-		consoleUnitWrapper.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		consoleUnitWrapper.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		consoleUnitWrapper.setStylePrimaryName("consoleUnitWrapper");
-		consoleUnitWrapper.add(consoleUnit);
+	public void addConsole() {
+		AbsolutePanel consoleUnitContainer = new AbsolutePanel();
+		consoleUnitContainer.setStylePrimaryName("consoleUnitContainer");
+		consoleUnitContainer.add(consoleUnit);
 		
 		// Add console to page
-		RootPanel.get().add(consoleUnitWrapper);
-
-		RootPanel.get().setStylePrimaryName("consoleUnitContainer");
-		
-//		// Add margin to top and bottom for vertical align of console unit
-//		topMargin = ((windowHeight - consoleUnit.getHeight()) / 2) - 2;
-//		bottomMargin = topMargin;
-//		DOM.setStyleAttribute(consoleUnit.getElement(), "marginTop", topMargin + "px");
-//		DOM.setStyleAttribute(consoleUnit.getElement(), "marginBottom", bottomMargin + "px");		
+		RootPanel.get().add(consoleUnitContainer);
 	}
 	
 	public void redrawConsoleUnit() {
 		ConsoleUnit newConsole = consoleUnit.redraw(windowWidth, windowHeight);
 		RootPanel.get("consoleUnitContainer").remove(consoleUnit);
 		consoleUnit = newConsole;
-		addAndPositionConsole();
+		addConsole();
 	}
 }
