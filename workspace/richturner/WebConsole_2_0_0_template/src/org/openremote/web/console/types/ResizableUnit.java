@@ -3,6 +3,8 @@ package org.openremote.web.console.types;
 import org.openremote.web.console.client.ConsoleUnit;
 import org.openremote.web.console.components.ConsoleDisplay;
 
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -48,7 +50,7 @@ public class ResizableUnit extends ConsoleUnit {
 		//this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px " + FRAME_WIDTH_RIGHT + "px 0px " + FRAME_WIDTH_LEFT + "px;");
 		this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px 0px 0px 0px;");
 		addStyleName("consoleFrame");
-		getConsoleDisplay().displayBoss();
+		addDisplayBoss();
 		
 		// Add the logo along the bottom of the frame
 		HorizontalPanel logoPanel = new HorizontalPanel();
@@ -64,5 +66,14 @@ public class ResizableUnit extends ConsoleUnit {
 		logoRight.getElement().setId("consoleFrameLogoRight");
 		logoPanel.add(logoRight);
 		add(logoPanel);
+	}
+	
+	/**
+	 * Adds a border to the display to give boss illusion
+	 */
+	public void addDisplayBoss() {
+		this.consoleDisplay.getElement().getStyle().setBorderWidth(2,Unit.PX);
+		this.consoleDisplay.getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
+		this.consoleDisplay.getElement().getStyle().setBorderColor("#333");
 	}
 }

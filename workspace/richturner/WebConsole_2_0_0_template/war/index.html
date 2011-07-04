@@ -37,28 +37,6 @@
 		<!-- be added before this line.                -->
 		<!--                                           -->
 		<script language="javascript" src="org.openremote.web.console.WebConsole/org.openremote.web.console.WebConsole.nocache.js"></script>
-<script type="text/javascript">
-function degreesToRadians(num) {
-	return (num) * Math.PI / 180;
-}
-function createIEMatrixString(M) {
-	return 'M11=' + M.e(1, 1) + ', M12=' + M.e(1,2) + ', M21=' + M.e(2,1) + ', M22=' + M.e(2,2);
-}
-function rotateElement(e, deg) {
-	deg_str = deg + "";
-	rotate_transform = "rotate(" + deg + "deg)";
-	matrix_str = "M11=0, M12=1, M21=1, M22=0";
-	filter_str = "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', " + matrix_str + ")";
-
-	e.style["rotation"] = deg_str + "deg"; // CSS3
-	e.style.MozTransform = rotate_transform; // Moz
-	e.style.OTransform = rotate_transform; // Opera
-	e.style.WebkitTransform = rotate_transform; // Webkit/Safari/Chrome
-	e.style.filter = filter_str; // IE 6/7
-	e.style.MsFilter = filter_str; // IE 8
-	e.style["zoom"] = "1"; // ??? Probably IEs
-}
-</script>
 	</head>
 
 	<!--                                           -->
@@ -73,7 +51,6 @@ function rotateElement(e, deg) {
 		
 		<!-- KLUDGE: here for testing when page is empty and still need to hide address bar on ipod touch -->
 		<!-- <div style="width:100%; height: 200%; position: absolute;";></div> -->
-		
 	    <noscript>
 	      <div id="noScriptError">
 	        Your web browser must have JavaScript enabled
