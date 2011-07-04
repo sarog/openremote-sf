@@ -12,9 +12,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 	public class BrowserUtils {
 		public static boolean isMobile;
-		
-		static HandlerRegistration scrollHandler = null;
-		
+		static String userAgent = Window.Navigator.getUserAgent();
+		static HandlerRegistration scrollHandler = null;		
 		static final String[] MOBILE_SPECIFIC_SUBSTRING = {
 	      "iphone","android","midp","opera mobi",
 	      "opera mini","blackberry","hp ipaq","iemobile",
@@ -24,7 +23,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 	      "windows ce","windowsce","smartphone","240x320",
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
-	      "sie","sonyericsson","mmp","ucweb","ipod"};
+	      "sie","sonyericsson","mmp","ucweb","ipod", "ipad"};
 
 		
 		static {
@@ -32,7 +31,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 		}
 		
 		private static boolean isMobile() {
-			String userAgent = Window.Navigator.getUserAgent();
 			for (String mobile: MOBILE_SPECIFIC_SUBSTRING) {
 				if (userAgent.toLowerCase().contains(mobile)) {
 					return true;
@@ -42,15 +40,22 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 		}
 		
 		public static boolean isWebkit() {
-			String userAgent = Window.Navigator.getUserAgent();
 			if (userAgent.toLowerCase().contains("webkit")) {
 				return true;
 			}
 			return false;
 		}
 		
+		public static boolean isApple() {
+			if (userAgent.toLowerCase().contains("ipod") || userAgent.toLowerCase().contains("iphone") || userAgent.toLowerCase().contains("ipad")) {
+				return true;
+			}
+			return false;
+		}
+		
 		public static void setBodySize(int width, int height) {
-			RootPanel.getBodyElement().setAttribute("style", "width: " + width + "px; height:" + height + "px;");
+			RootPanel.get().setWidth(width + "px");
+			RootPanel.get().setHeight(height + "px");
 		}
 		
 		public static void removeBodySize() {
@@ -72,7 +77,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 			};
 			
 		   // Make body twice window height to ensure there's something to scroll
-		   BrowserUtils.setBodySize(webConsole.getWindowWidth(), webConsole.getWindowHeight()*2);
+		   BrowserUtils.setBodySize(Window.getClientWidth(), Window.getClientHeight()*2);
 		   
 		   // Scroll Window to hide address bar
 		   Window.scrollTo(0, 1);

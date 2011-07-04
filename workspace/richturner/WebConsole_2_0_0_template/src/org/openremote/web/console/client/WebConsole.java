@@ -80,12 +80,16 @@ public class WebConsole implements EntryPoint {
 	 */
 	private void initialiseDom() {
 		// Size body
-		BrowserUtils.setBodySize(windowWidth, windowHeight);
+		if("portrait".equals(windowOrientation)) {
+			BrowserUtils.setBodySize(windowWidth, windowHeight);
+		} else {
+			BrowserUtils.setBodySize(windowHeight, windowWidth);
+		}
 		
 		// Prevent touch moves for mobile devices(won't affect desktop)
 		RootPanel.get().addDomHandler(new TouchMoveHandler() {
 			public void onTouchMove(TouchMoveEvent e) {
-				e.preventDefault();
+					e.preventDefault();
 			}
 		}, TouchMoveEvent.getType());
 		
@@ -97,9 +101,10 @@ public class WebConsole implements EntryPoint {
 				 * For desktops we just update window dimensions
 				 * For mobiles we switch width and height depending on orientation
 				 */
-				Window.scrollTo(0,1);
 				
 				if (BrowserUtils.isMobile) {
+					Window.scrollTo(0,1);
+					
 					String prevOrientation = windowOrientation;
 					
 					setWindowOrientation();
@@ -112,7 +117,10 @@ public class WebConsole implements EntryPoint {
 				
 				resizeBodyElement();
 				
-				Window.scrollTo(0,1);
+				// Do scroll if address bar has re-appeared 
+				if (BrowserUtils.isMobile && ((Window.getClientHeight() != windowWidth || Window.getClientHeight() != windowHeight) || (Window.getClientWidth() != windowWidth || Window.getClientWidth() != windowHeight))) {
+					Window.scrollTo(0,1);
+				}
 				
 //				// Change console type if necessary
 //				if(consoleUnit instanceof ResizableUnit && (event.getWidth() < consoleUnit.getWidth() || event.getHeight() < consoleUnit.getHeight())) {
@@ -214,11 +222,9 @@ public class WebConsole implements EntryPoint {
 	public void addAndPositionConsole() {
 		// Use a vertical panel to position the console vertically
 		VerticalPanel consoleUnitWrapper = new VerticalPanel();
-		consoleUnitWrapper.setWidth("100%");
-		consoleUnitWrapper.setHeight("100%");
 		consoleUnitWrapper.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		consoleUnitWrapper.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		
+		consoleUnitWrapper.setStylePrimaryName("consoleUnitWrapper");
 		consoleUnitWrapper.add(consoleUnit);
 		
 		// Add console to page

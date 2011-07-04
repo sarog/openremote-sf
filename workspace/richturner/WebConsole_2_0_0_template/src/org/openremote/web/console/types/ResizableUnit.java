@@ -6,6 +6,7 @@ import org.openremote.web.console.components.ConsoleDisplay;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * 
@@ -22,6 +23,9 @@ public class ResizableUnit extends ConsoleUnit {
 	public ResizableUnit(int displayWidth, int displayHeight, ConsoleDisplay consoleDisplay) {
 		// Create basic Console Unit
 		super(displayWidth, displayHeight, consoleDisplay);
+		
+		// Clear document body colour setting
+		RootPanel.getBodyElement().getStyle().clearBackgroundColor();
 		
 		// Create console frame
 		createFrame();
@@ -44,7 +48,7 @@ public class ResizableUnit extends ConsoleUnit {
 		//this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px " + FRAME_WIDTH_RIGHT + "px 0px " + FRAME_WIDTH_LEFT + "px;");
 		this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px 0px 0px 0px;");
 		addStyleName("consoleFrame");
-		getConsoleDisplay().addStyleName("consoleDisplayBoss");
+		getConsoleDisplay().displayBoss();
 		
 		// Add the logo along the bottom of the frame
 		HorizontalPanel logoPanel = new HorizontalPanel();

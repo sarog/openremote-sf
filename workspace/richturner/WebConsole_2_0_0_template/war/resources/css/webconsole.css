@@ -10,16 +10,29 @@
 	font-family: sans-serif;	
 }
 
-body { 
+html, body {
+	margin: 0;
+	padding: 0;
 	background-color: white;
 	color: black;
 	font-family: verdana, arial, sans-serif;
 	text-align: center;
+	overflow: hidden;
+	vertical-align: middle;
+}
+
+.consoleUnitWrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;	
 }
 
 .consoleUnitContainer {
 	text-align: center;
-	vertical-align: middle;	
+	vertical-align: middle;
+	margin: 0 auto;	
 }
 
 #consoleUnit {
@@ -28,6 +41,7 @@ body {
 	zoom:1;
 	*display:inline;
 	margin: 0 auto;
+	text-align: center;
 }
 
 .consoleFrame {
