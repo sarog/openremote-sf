@@ -24,6 +24,8 @@ public class ConsoleUnit extends SimplePanel {
 	protected int displayHeight;
 	protected int consoleWidth;
 	protected int consoleHeight;
+	protected String DEFAULT_DISPLAY_COLOUR = "black";
+	protected String displayColour = DEFAULT_DISPLAY_COLOUR;
 	
 	public ConsoleUnit(int width, int height) {
 		this(width, height, null);
@@ -42,6 +44,9 @@ public class ConsoleUnit extends SimplePanel {
 		if (consoleDisplay == null) {
 			consoleDisplay = new ConsoleDisplay(displayWidth, displayHeight);
 		}
+		
+		// Set console display color
+		consoleDisplay.getElement().getStyle().setBackgroundColor(displayColour);
 		this.consoleDisplay = consoleDisplay;
 		this.add(this.consoleDisplay);
 	}
@@ -59,7 +64,7 @@ public class ConsoleUnit extends SimplePanel {
 	}
 	
 	/**
-	 * Create new console unit with type based on window size and display size requested
+	 * Create new console unit with type based on window size and requested display size
 	 * @return
 	 */
 	public static ConsoleUnit create(int windowWidth, int windowHeight) {
