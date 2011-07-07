@@ -45,12 +45,18 @@
 }
 
 + (void)checkIPAddress {
+    /*
+     TODO EBR 6-Jul-2011
+     Do not use this for now as this does not take mobile data connection into account
+     Should review all the reachability code, also for "dynamic" changes in connection status
+     
 	@try {
 		[CheckNetwork checkWhetherNetworkAvailable];
 	}
 	@catch (CheckNetworkException * e) {
 		@throw e;
 	}
+     */
     
 	// Extract host from server URL to use in reachability test
     NSString *host = [[ServerDefinition serverUrl] hostOfURL];
