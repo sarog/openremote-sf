@@ -41,6 +41,15 @@
 
 @synthesize isPolling, pollingStatusIds, isError, pollingSender;
 
+- (void)setPollingSender:(ORControllerPollingSender *)aPollingSender
+{
+    if (pollingSender != aPollingSender) {
+        pollingSender.delegate = nil;
+        [pollingSender release];
+        pollingSender = [aPollingSender retain];
+    }
+}
+
 - (id) initWithComponentIds:(NSString *)ids
 {
     self = [super init];

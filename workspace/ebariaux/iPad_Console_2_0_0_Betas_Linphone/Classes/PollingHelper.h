@@ -34,8 +34,6 @@
 	NSMutableDictionary *localSensorTimers;
 	BOOL isPolling;
 	BOOL isError;
-    
-    ORControllerPollingSender *pollingSender;
 }
 
 /**
