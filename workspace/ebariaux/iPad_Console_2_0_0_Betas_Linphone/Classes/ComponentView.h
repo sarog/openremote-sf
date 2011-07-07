@@ -29,7 +29,7 @@
 	Component *component;	
 }
 
-@property(nonatomic,readonly) Component *component;
+@property(nonatomic, readonly) Component *component;
 
 /**
  * Build componentViews with component model data and frame of its layout container.

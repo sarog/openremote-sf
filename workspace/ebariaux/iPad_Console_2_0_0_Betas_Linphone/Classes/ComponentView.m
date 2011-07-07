@@ -56,8 +56,10 @@
 
 #pragma mark instance methods.
 
-- (id)initWithComponent:(Component *)c frame:(CGRect)frame {
-	if (self = [super initWithFrame:frame]) {
+- (id)initWithComponent:(Component *)c frame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+	if (self) {
 		component = c;
 		//transparent background 
 		[self setBackgroundColor:[UIColor clearColor]];
@@ -76,10 +78,5 @@
 - (void)layoutSubviews {
 	[self initView];
 }
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 
 @end
