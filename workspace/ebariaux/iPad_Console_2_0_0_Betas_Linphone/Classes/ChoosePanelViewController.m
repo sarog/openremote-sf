@@ -67,6 +67,15 @@
 	[super dealloc];
 }
 
+- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
+{
+    if (panelsFetcher != aPanelsFetcher) {
+        panelsFetcher.delegate = nil;
+        [panelsFetcher release];
+        panelsFetcher = [aPanelsFetcher retain];
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

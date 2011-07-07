@@ -101,6 +101,15 @@
 	[super dealloc];
 }
 
+- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
+{
+    if (panelsFetcher != aPanelsFetcher) {
+        panelsFetcher.delegate = nil;
+        [panelsFetcher release];
+        panelsFetcher = [aPanelsFetcher retain];
+    }
+}
+
 // Show spinner after title of "Choose Controller" while auto discovery running.
 - (void)showSpinner {
 	spinner = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(210, 113, 44, 44)] autorelease];
