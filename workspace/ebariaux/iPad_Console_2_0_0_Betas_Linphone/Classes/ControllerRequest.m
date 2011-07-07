@@ -65,14 +65,31 @@
     
     if (!potentialGroupMembers) {
         if ([activeController.groupMembers count] == 0) {
+            
+            // TODO: maybe use primary URL as fallback solution ?
+            
             return NO;
         }
         potentialGroupMembers = [activeController.groupMembers mutableCopy];
     }
     if (self.usedGroupMember) {
         [potentialGroupMembers removeObject:self.usedGroupMember];
+    } else {
+        // First time we're selecting a group member, start with the one matching the primary URL (the one entered by the user)
+        // TODO: have comparison on URL and not only on string
+        for (ORGroupMember *gm in potentialGroupMembers) {
+            if ([activeController.primaryURL isEqualToString:gm.url]) {
+                self.usedGroupMember = gm;
+                break;
+            }
+        }
     }
-    self.usedGroupMember = [potentialGroupMembers anyObject];
+    if (!self.usedGroupMember) {
+        self.usedGroupMember = [potentialGroupMembers anyObject];        
+    }
+
+    // TODO: check when we should reset the activeController.activeGroupMember to nil -> should be when all group members have failed
+    
     return (self.usedGroupMember != nil);
 }
 
