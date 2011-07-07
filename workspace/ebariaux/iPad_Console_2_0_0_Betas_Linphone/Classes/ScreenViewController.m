@@ -32,16 +32,28 @@
 #import "ORConsoleSettings.h"
 #import "ORControllerProxy.h"
 
-@interface ScreenViewController (Private)
+@interface ScreenViewController ()
 
 - (void)sendCommandRequest:(Component *)component;
 - (void)doNavigate:(Navigate *)navi;
+
+@property (nonatomic, retain) ORControllerCommandSender *commandSender;
 
 @end
 
 @implementation ScreenViewController
 
 @synthesize screen, polling;
+@synthesize commandSender;
+
+- (void)setCommandSender:(ORControllerCommandSender *)aCommandSender
+{
+    if (commandSender != aCommandSender) {
+        commandSender.delegate = nil;
+        [commandSender release];
+        commandSender = [aCommandSender retain];
+    }
+}
 
 /**
  * Assign parameter screen model data to screenViewController.
@@ -68,7 +80,6 @@
 			[self doNavigate:g.navigate];
 		}
 	}
-
 }
 
 // Implement loadView to create a view hierarchy programmatically.
@@ -93,7 +104,7 @@
 // Send control command for gesture actions.
 - (void)sendCommandRequest:(Component *)component
 {
-    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:@"swipe" forComponent:component delegate:self];
+    self.commandSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:@"swipe" forComponent:component delegate:self];
 }
 
 - (void)doNavigate:(Navigate *)navi {
@@ -101,6 +112,7 @@
 }
 
 - (void)dealoc {
+    self.commandSender = nil;
 	[polling release];
 	//[screen release];
 	
