@@ -74,6 +74,7 @@
     }
     if (self.usedGroupMember) {
         [potentialGroupMembers removeObject:self.usedGroupMember];
+        self.usedGroupMember = nil;
     } else {
         // First time we're selecting a group member, start with the one matching the primary URL (the one entered by the user)
         // TODO: have comparison on URL and not only on string
