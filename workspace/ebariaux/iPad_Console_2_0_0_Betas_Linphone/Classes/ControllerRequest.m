@@ -77,6 +77,8 @@
     } else {
         // First time we're selecting a group member, start with the one matching the primary URL (the one entered by the user)
         // TODO: have comparison on URL and not only on string
+        // URL comparison does not help, should somehow normalize the URL or just make sure the URLs are entered the same in configs
+        
         for (ORGroupMember *gm in potentialGroupMembers) {
             if ([activeController.primaryURL isEqualToString:gm.url]) {
                 self.usedGroupMember = gm;
