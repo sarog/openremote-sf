@@ -85,7 +85,12 @@
 	NSError *error = nil;
 	NSHTTPURLResponse *resp = nil;
 	NSURL *url = [NSURL URLWithString:[ServerDefinition serverUrl]]; 
-	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
+
+    
     URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
 	[connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
 	NSLog(@"%@", [ServerDefinition serverUrl]);
