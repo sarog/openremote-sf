@@ -37,23 +37,11 @@
 - (void)sendCommandRequest:(Component *)component;
 - (void)doNavigate:(Navigate *)navi;
 
-@property (nonatomic, retain) ORControllerCommandSender *commandSender;
-
 @end
 
 @implementation ScreenViewController
 
 @synthesize screen, polling;
-@synthesize commandSender;
-
-- (void)setCommandSender:(ORControllerCommandSender *)aCommandSender
-{
-    if (commandSender != aCommandSender) {
-        commandSender.delegate = nil;
-        [commandSender release];
-        commandSender = [aCommandSender retain];
-    }
-}
 
 /**
  * Assign parameter screen model data to screenViewController.
@@ -104,7 +92,7 @@
 // Send control command for gesture actions.
 - (void)sendCommandRequest:(Component *)component
 {
-    self.commandSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:@"swipe" forComponent:component delegate:self];
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:@"swipe" forComponent:component delegate:nil];
 }
 
 - (void)doNavigate:(Navigate *)navi {
@@ -112,8 +100,7 @@
 }
 
 - (void)dealoc {
-    self.commandSender = nil;
-	[polling release];
+    [polling release];
 	//[screen release];
 	
 	[super dealloc];
