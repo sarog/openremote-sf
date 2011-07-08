@@ -40,28 +40,7 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORControllerProxy.h"
 
-@interface ControlView ()
-
-@property (nonatomic, retain) ORControllerCommandSender *commandSender;
-
-@end
-
 @implementation ControlView
-
-// TODO EBR : synthesize this property creates other compilation issue (error accessing component), re-check
-- (ORControllerCommandSender *)commandSender
-{
-    return commandSender;
-}
-
-- (void)setCommandSender:(ORControllerCommandSender *)aCommandSender
-{
-    if (commandSender != aCommandSender) {
-        commandSender.delegate = nil;
-        [commandSender release];
-        commandSender = [aCommandSender retain];
-    }
-}
 
 //NOTE:You should init all these views with initWithFrame and you should pass in valid frame rects.
 //Otherwise, UI widget will not work in nested UIViews
@@ -82,10 +61,6 @@
 	return [[controlView initWithControl:control frame:frame] autorelease];
 }
 
-- (void)dealloc {
-    self.commandSender = nil;
-    [super dealloc];
-}
 #pragma mark instance methods
 
 - (id)initWithControl:(Control *)c frame:(CGRect)frame
@@ -112,7 +87,7 @@
 		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);
 		[clazz performSelector:selector withObject:((AppDelegate *)[[UIApplication sharedApplication] delegate]).localContext];
 	} else {
-        self.commandSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:component delegate:self];
+        [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController sendCommand:commandType forComponent:component delegate:nil];
 	}
 }
 

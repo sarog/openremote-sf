@@ -32,9 +32,6 @@
 @interface ControlView : ComponentView <ControlDelegate, ORControllerCommandSenderDelegate> {
 	BOOL isError;
     
-    // EBR: this should not be in here but required because of synthesize issue, see comment in .m
-    ORControllerCommandSender *commandSender;
-
 }
 
 /**
