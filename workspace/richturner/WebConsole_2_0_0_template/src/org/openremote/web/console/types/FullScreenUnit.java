@@ -13,6 +13,11 @@ import com.google.gwt.user.client.ui.RootPanel;
  * size as the physical window it is being displayed on
  */
 public class FullScreenUnit extends ConsoleUnit {
+	
+	public FullScreenUnit() {
+		this(ConsoleUnit.DEFAULT_DISPLAY_WIDTH, ConsoleUnit.DEFAULT_DISPLAY_HEIGHT, null);
+	}
+	
 	public FullScreenUnit(int displayWidth, int displayHeight, ConsoleDisplay consoleDisplay) {
 		super(displayWidth, displayHeight, consoleDisplay);
 		

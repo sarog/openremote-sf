@@ -1,21 +1,15 @@
 package org.openremote.web.console.client;
 
 import org.openremote.web.console.components.ConsoleDisplay;
-import org.openremote.web.console.types.*;
-import org.openremote.web.console.utils.BrowserUtils;
-
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ConsoleUnit extends SimplePanel {
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
-	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
+	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -64,26 +58,6 @@ public class ConsoleUnit extends SimplePanel {
 		this.setHeight(height + "px");
 	}
 	
-	/**
-	 * Create new console unit with type based on window size and requested display size
-	 * @return
-	 */
-	public static ConsoleUnit create(int windowWidth, int windowHeight) {
-		return create(windowWidth, windowHeight, DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT, null);
-	}
-	
-	public static ConsoleUnit create(int windowWidth, int windowHeight, int requiredDisplayWidth, int requiredDisplayHeight, ConsoleDisplay consoleDisplay) {
-		ConsoleUnit console;
-
-		// Look at window size to determine console unit type for mobiles always use fullscreen
-		if(BrowserUtils.isMobile || windowWidth < ResizableUnit.requiredConsoleWidth(requiredDisplayWidth) || windowHeight < ResizableUnit.requiredConsoleHeight(requiredDisplayHeight)) {
-			console = new FullScreenUnit(requiredDisplayWidth, requiredDisplayHeight, consoleDisplay);
-		} else {
-			console = new ResizableUnit(requiredDisplayWidth, requiredDisplayHeight, consoleDisplay);
-		}
-		return console;
-	}
-	
 	public ConsoleDisplay getConsoleDisplay() {
 		return this.consoleDisplay;
 	}
@@ -103,30 +77,28 @@ public class ConsoleUnit extends SimplePanel {
 		return consoleHeight;
 	}
 
-	/*
-	 * Redraws the console unit when a change occurs to
-	 * the window that allows/requires a different console
-	 * type to be used
-	 */
-	public ConsoleUnit redraw(int windowWidth, int windowHeight) {
-		ConsoleUnit newConsole;
-		// Reset the body background colour
-		RootPanel.get().removeStyleName("consoleDisplay");
-		
-		// Remove boss from console display
-		consoleDisplay.removeStyleName("consoleDisplayBoss");
-		
-		// Create the new console and add display from old console
-		newConsole = ConsoleUnit.create(windowWidth, windowHeight, this.displayWidth, this.displayHeight, this.consoleDisplay);
-		newConsole.setConsoleDisplay(consoleDisplay);
-		return newConsole;
-	}
+//	/*
+//	 * Redraws the console unit when a change occurs to
+//	 * the window that allows/requires a different console
+//	 * type to be used
+//	 */
+//	public ConsoleUnit redraw(int windowWidth, int windowHeight) {
+//		ConsoleUnit newConsole;
+//		// Reset the body background colour
+//		RootPanel.get().removeStyleName("consoleDisplay");
+//		
+//		// Remove boss from console display
+//		consoleDisplay.removeStyleName("consoleDisplayBoss");
+//		
+//		// Create the new console and add display from old console
+//		newConsole = ConsoleUnit.create(windowWidth, windowHeight, this.displayWidth, this.displayHeight, this.consoleDisplay);
+//		newConsole.setConsoleDisplay(consoleDisplay);
+//		return newConsole;
+//	}
 	
-	public void setOrientationAndPosition(String orientation) {
+	public void setOrientationAndPosition(String orientation, int winWidth, int winHeight) {		
 		// Set CSS to rotate the console unit and reposition it
 		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
-		int winWidth = Window.getClientWidth();
-		int winHeight = Window.getClientHeight();
 		
 		if ("portrait".equals(orientation)) {
 			getElement().removeClassName("landscapeConsole");
@@ -136,7 +108,8 @@ public class ConsoleUnit extends SimplePanel {
 		if ("landscape".equals(orientation)) {
 			getElement().removeClassName("portraitConsole");
 			getElement().addClassName("landscapeConsole");
-			consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleHeight/2), (winHeight/2)-(consoleWidth/2));
+			//consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleHeight/2), (winHeight/2)-(consoleWidth/2));
+			consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleWidth/2), (winHeight/2)-(consoleHeight/2));
 		}
 		
 		// Set CSS to rotate the console display

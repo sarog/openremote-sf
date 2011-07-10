@@ -22,6 +22,10 @@ public class ResizableUnit extends ConsoleUnit {
 	public static final int FRAME_WIDTH_LEFT = 20;
 	public static final int FRAME_WIDTH_RIGHT = 20;
 	
+	public ResizableUnit() {
+		this(ConsoleUnit.DEFAULT_DISPLAY_WIDTH, ConsoleUnit.DEFAULT_DISPLAY_HEIGHT, null);
+	}
+	
 	public ResizableUnit(int displayWidth, int displayHeight, ConsoleDisplay consoleDisplay) {
 		// Create basic Console Unit
 		super(displayWidth, displayHeight, consoleDisplay);
@@ -36,12 +40,20 @@ public class ResizableUnit extends ConsoleUnit {
 		setDimensions(consoleWidth + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT, consoleHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM);	
 	}
 	
-	public static int requiredConsoleWidth(int requiredDisplayWidth) {
-		return requiredDisplayWidth + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT;
+	public static int requiredConsoleWidth() {
+		return requiredConsoleWidth(ConsoleUnit.DEFAULT_DISPLAY_WIDTH);
 	}
 	
-	public static int requiredConsoleHeight(int requiredDisplayHeight) {
-		return requiredDisplayHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;
+	public static int requiredConsoleWidth(int displayWidth) {
+		return displayWidth + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT;
+	}
+	
+	public static int requiredConsoleHeight() {
+		return requiredConsoleHeight(ConsoleUnit.DEFAULT_DISPLAY_HEIGHT);
+	}
+	
+	public static int requiredConsoleHeight(int displayHeight) {
+		return displayHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;
 	}
 	
 	public void createFrame() {
