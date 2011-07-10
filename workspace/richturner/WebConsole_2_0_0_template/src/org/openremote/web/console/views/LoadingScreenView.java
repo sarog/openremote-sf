@@ -59,7 +59,7 @@ public class LoadingScreenView extends ConsoleScreenView {
 		msgWidget.setText(LOADING_MESSAGE);
 		
 		// Add widgets to msg panel only add spinner if using a webkit browser
-		if (BrowserUtils.isWebkit()) {
+		if (BrowserUtils.isWebkit) {
 			loadingMsgPanel.add(spinnerWidget);
 		}
 		loadingMsgPanel.add(msgWidget);

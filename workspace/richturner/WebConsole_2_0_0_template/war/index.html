@@ -9,7 +9,7 @@
 	<head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<!-- For mobile devices -->
-	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no" />
+	<meta name = "viewport" content="width=device-width; initial-scale=1.0; minimum-scale=1.0; maximum-scale=1.0; user-scalable=no" />
 	<!-- For android devices -->
 	<meta name="viewport" content="target-densitydpi=device-dpi" />
 	<!-- For mobile devices not supporting viewport -->
@@ -29,7 +29,7 @@
 		<!--                                           -->
 		<!-- Any title is fine                         -->
 		<!--                                           -->
-		<title>Wrapper HTML for WebConsole</title>
+		<title>OpenRemote Web Console</title>
 
 		<!--                                           -->
 		<!-- This script loads your compiled module.   -->
@@ -49,8 +49,8 @@
 		<!-- OPTIONAL: include this if you want history support -->
 		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 		
-		<!-- KLUDGE: here for testing when page is empty and still need to hide address bar on ipod touch -->
-		<!-- <div style="width:100%; height: 200%; position: absolute;";></div> -->
+		<div id="consoleContainer"></div>
+		
 	    <noscript>
 	      <div id="noScriptError">
 	        Your web browser must have JavaScript enabled
