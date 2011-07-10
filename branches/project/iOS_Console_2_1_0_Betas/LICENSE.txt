@@ -656,6 +656,21 @@ copy of the Program in return for a fee.
 
 -------------------------------------------------------------------------------
 
+ COCOA ASYNC SOCKET
+
+ Classes/lib/AsyncSocket.h, Classes/lib/AsyncSocket.m, 
+ Classes/lib/AsyncUdpSocket.h, Classes/lib/AsyncUdpSocket.m
+-------------------------------------------------------------------------------
+
+http://code.google.com/p/cocoaasyncsocket/
+
+The library is public domain, originally written by Dustin Voss. 
+Now available in a public setting to allow and encourage its continued support. 
+
+
+
+-------------------------------------------------------------------------------
+
  TAPKU LIBRARY
 
  Classes/lib/LoadingHUDView.m and Classes/lib/LoadingHUDView.h
