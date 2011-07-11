@@ -91,6 +91,14 @@
 		608FBDD5132120D200C9089F /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
 		608FBDD8132120D700C9089F /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
 		608FBDDB132120DD00C9089F /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
+		60950D9813CB115400B983E7 /* CheckMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9613CB115400B983E7 /* CheckMark.png */; };
+		60950D9913CB115400B983E7 /* CheckMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9613CB115400B983E7 /* CheckMark.png */; };
+		60950D9A13CB115400B983E7 /* CheckMark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9713CB115400B983E7 /* CheckMark@2x.png */; };
+		60950D9B13CB115400B983E7 /* CheckMark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9713CB115400B983E7 /* CheckMark@2x.png */; };
+		60950D9E13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
+		60950D9F13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
+		60950DA013CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
+		60950DA113CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
 		6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
@@ -460,6 +468,10 @@
 		608FBDD7132120D700C9089F /* LocalCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalCommand.m; sourceTree = "<group>"; };
 		608FBDD9132120DD00C9089F /* LocalTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalTask.h; sourceTree = "<group>"; };
 		608FBDDA132120DD00C9089F /* LocalTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalTask.m; sourceTree = "<group>"; };
+		60950D9613CB115400B983E7 /* CheckMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CheckMark.png; sourceTree = "<group>"; };
+		60950D9713CB115400B983E7 /* CheckMark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CheckMark@2x.png"; sourceTree = "<group>"; };
+		60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CheckMarkBlankPlaceHolder.png; sourceTree = "<group>"; };
+		60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CheckMarkBlankPlaceHolder@2x.png"; sourceTree = "<group>"; };
 		6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerPollingSender.h; sourceTree = "<group>"; };
 		6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollingSender.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1061,6 +1073,10 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */,
+				60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */,
+				60950D9613CB115400B983E7 /* CheckMark.png */,
+				60950D9713CB115400B983E7 /* CheckMark@2x.png */,
 				60A61A821355FC8100A7C87E /* oldphone-mono.wav */,
 				60A61A831355FC8100A7C87E /* ringback.wav */,
 				60A61A861355FD1E00A7C87E /* linphonerc */,
@@ -1913,6 +1929,10 @@
 				60A61A841355FC8100A7C87E /* oldphone-mono.wav in Resources */,
 				60A61A851355FC8100A7C87E /* ringback.wav in Resources */,
 				60A61A871355FD1E00A7C87E /* linphonerc in Resources */,
+				60950D9813CB115400B983E7 /* CheckMark.png in Resources */,
+				60950D9A13CB115400B983E7 /* CheckMark@2x.png in Resources */,
+				60950D9E13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */,
+				60950DA013CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1944,6 +1964,10 @@
 				60EB56B7135C4E4100B29CED /* Icon.png in Resources */,
 				60EB56B8135C4E4100B29CED /* ErrorViewController~iPad.xib in Resources */,
 				60EB56B9135C4E4100B29CED /* ErrorViewController~iPhone.xib in Resources */,
+				60950D9913CB115400B983E7 /* CheckMark.png in Resources */,
+				60950D9B13CB115400B983E7 /* CheckMark@2x.png in Resources */,
+				60950D9F13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */,
+				60950DA113CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
