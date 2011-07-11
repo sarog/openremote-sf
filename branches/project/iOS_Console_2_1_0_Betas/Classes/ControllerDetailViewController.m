@@ -100,6 +100,7 @@
 	}
     
     if (self.controller) {
+        self.controller.primaryURL = url;
         [delegate didEditController:self.controller];
     } else {
         [delegate didAddServerURL:url];        

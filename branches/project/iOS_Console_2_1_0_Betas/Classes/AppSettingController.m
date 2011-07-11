@@ -566,6 +566,17 @@
 	return nil;
 }
 
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == CONTROLLER_URLS_SECTION) {
+        ControllerDetailViewController *cdvc = [[ControllerDetailViewController alloc] initWithController:((ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row])];
+        cdvc.delegate = self;
+		[[self navigationController] pushViewController:cdvc animated:YES];
+		[cdvc release];        
+    }
+}
+
+
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([self isCustomServerSection:indexPath]) {
 		return UITableViewCellEditingStyleDelete;
@@ -675,9 +686,9 @@
 
 - (void)didEditController:(ORController *)controller
 {
-    // TODO: for now just get rid of screen, must implement
-    
     [self.navigationController popViewControllerAnimated:YES];
+    
+    // TODO: re-start a round robin discovery for that controller
 }
 
 #pragma mark ChoosePanelViewControllerDelegate implementation
@@ -687,7 +698,6 @@
     [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity = identity;
     [self.navigationController popViewControllerAnimated:YES];    
 }
-
 
 #pragma mark ORControllerPanelsFetcherDelegate implementation
 
