@@ -547,6 +547,7 @@
                 serverCell.imageView.image = [UIImage imageNamed:@"CheckMark"];
                 serverCell.textLabel.textColor = [UIColor or_TableViewCheckMarkColor];
 			} else {
+                serverCell.textLabel.textColor = [UIColor blackColor];
                 serverCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
 			}
 		}
