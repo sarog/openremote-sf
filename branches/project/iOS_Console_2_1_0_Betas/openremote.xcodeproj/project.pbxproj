@@ -20,7 +20,6 @@
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
-		33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
@@ -263,7 +262,6 @@
 		60EB570B135C4E4100B29CED /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
 		60EB570C135C4E4100B29CED /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		60EB570D135C4E4100B29CED /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
-		60EB570E135C4E4100B29CED /* ColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 33C3A49310FE32E3001C520E /* ColorUtil.m */; };
 		60EB570F135C4E4100B29CED /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */; };
 		60EB5711135C4E4100B29CED /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
 		60EB5712135C4E4100B29CED /* ORWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C95131F972000C7918A /* ORWebView.m */; };
@@ -444,8 +442,6 @@
 		33B8ED1210FCA5B700F3363D /* SensoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryView.m; sourceTree = "<group>"; };
 		33B8ED4E10FCAB4F00F3363D /* SensoryControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensoryControlView.h; sourceTree = "<group>"; };
 		33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryControlView.m; sourceTree = "<group>"; };
-		33C3A49210FE32E3001C520E /* ColorUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorUtil.h; sourceTree = "<group>"; };
-		33C3A49310FE32E3001C520E /* ColorUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorUtil.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
@@ -1557,8 +1553,6 @@
 				8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */,
 				338D306A10D8DD000043BFE9 /* UIViewUtil.h */,
 				338D306B10D8DD000043BFE9 /* UIViewUtil.m */,
-				33C3A49210FE32E3001C520E /* ColorUtil.h */,
-				33C3A49310FE32E3001C520E /* ColorUtil.m */,
 				60A619591354A24900A7C87E /* NSString+ORAdditions.h */,
 				60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */,
 				60950DA213CB153500B983E7 /* UIColor+ORAdditions.h */,
@@ -2119,7 +2113,6 @@
 				8CECF8C310EB6E3300C0E1BB /* XMLEntity.m in Sources */,
 				33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */,
 				33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */,
-				33C3A49410FE32E3001C520E /* ColorUtil.m in Sources */,
 				8CEFDA8C11BF35EE00CEDC24 /* LoadingHUDView.m in Sources */,
 				60A85C85131F965500C7918A /* Web.m in Sources */,
 				60A85C96131F972000C7918A /* ORWebView.m in Sources */,
@@ -2229,7 +2222,6 @@
 				60EB570B135C4E4100B29CED /* XMLEntity.m in Sources */,
 				60EB570C135C4E4100B29CED /* SensoryView.m in Sources */,
 				60EB570D135C4E4100B29CED /* SensoryControlView.m in Sources */,
-				60EB570E135C4E4100B29CED /* ColorUtil.m in Sources */,
 				60EB570F135C4E4100B29CED /* LoadingHUDView.m in Sources */,
 				60EB5711135C4E4100B29CED /* Web.m in Sources */,
 				60EB5712135C4E4100B29CED /* ORWebView.m in Sources */,
