@@ -23,7 +23,7 @@
 #import "NotificationConstant.h"
 #import "SensorState.h"
 #import "PollingStatusParserDelegate.h"
-#import "ColorUtil.h"
+#import "UIColor+ORAdditions.h"
 
 @implementation LabelView
 
@@ -42,7 +42,7 @@
 	
 	uiLabel.text = labelModel.text;
 	uiLabel.font = [UIFont fontWithName:@"Arial" size:labelModel.fontSize];
-	uiLabel.textColor = [ColorUtil colorWithRGBString:[labelModel.color substringFromIndex:1]];
+	uiLabel.textColor = [UIColor or_ColorWithRGBString:[labelModel.color substringFromIndex:1]];
 	
 	[self addSubview:uiLabel];
 }

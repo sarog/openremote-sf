@@ -27,7 +27,7 @@
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
 #import "SensorState.h"
-#import "ColorUtil.h"
+#import "UIColor+ORAdditions.h"
 
 @interface ImageView(Private)
 -(Image *) initImageModelWithLabel;
@@ -125,7 +125,7 @@
 	[uiLabel setTextAlignment:UITextAlignmentCenter];
 	uiLabel.text = imageModel.label.text;
 	uiLabel.font = [UIFont fontWithName:@"Arial" size:imageModel.label.fontSize];
-	uiLabel.textColor = [ColorUtil colorWithRGBString:[imageModel.label.color substringFromIndex:1]];
+	uiLabel.textColor = [UIColor or_ColorWithRGBString:[imageModel.label.color substringFromIndex:1]];
 	
 	for (SensorState *sensorState in imageModel.label.sensor.states) {
 		if ([[sensorState.name lowercaseString] isEqualToString:[newStatus lowercaseString]]) {

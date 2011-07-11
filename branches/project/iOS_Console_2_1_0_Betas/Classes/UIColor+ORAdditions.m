@@ -20,13 +20,22 @@
  */
 
 #import "UIColor+ORAdditions.h"
-#import "ColorUtil.h"
 
 @implementation UIColor (UIColor_ORAdditions)
 
 + (UIColor *)or_TableViewCheckMarkColor
 {
-    return [ColorUtil colorWithRGBString:@"334F84"];
+    return [UIColor or_ColorWithRGBString:@"334F84"];
+}
+
++ (UIColor *)or_ColorWithRGBString:(NSString *)rgbString
+{
+	if (!rgbString) {
+		return [UIColor grayColor];
+	}
+	unsigned int hexIntColorValue;
+	[[NSScanner scannerWithString:rgbString] scanHexInt:&hexIntColorValue];
+	return UIColorWithRGB(hexIntColorValue);
 }
 
 @end
