@@ -99,6 +99,8 @@
 		60950D9F13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
 		60950DA013CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
 		60950DA113CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
+		60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
+		60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
 		6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
@@ -472,6 +474,8 @@
 		60950D9713CB115400B983E7 /* CheckMark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CheckMark@2x.png"; sourceTree = "<group>"; };
 		60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CheckMarkBlankPlaceHolder.png; sourceTree = "<group>"; };
 		60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CheckMarkBlankPlaceHolder@2x.png"; sourceTree = "<group>"; };
+		60950DA213CB153500B983E7 /* UIColor+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ORAdditions.h"; sourceTree = "<group>"; };
+		60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ORAdditions.m"; sourceTree = "<group>"; };
 		6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerPollingSender.h; sourceTree = "<group>"; };
 		6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollingSender.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1557,6 +1561,8 @@
 				33C3A49310FE32E3001C520E /* ColorUtil.m */,
 				60A619591354A24900A7C87E /* NSString+ORAdditions.h */,
 				60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */,
+				60950DA213CB153500B983E7 /* UIColor+ORAdditions.h */,
+				60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -2138,6 +2144,7 @@
 				6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 				60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
 				605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
+				60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2246,6 +2253,7 @@
 				6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
 				60C81D9E137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
 				605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
+				60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

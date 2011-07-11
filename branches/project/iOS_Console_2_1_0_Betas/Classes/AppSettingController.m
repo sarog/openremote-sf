@@ -30,6 +30,7 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 #import "ORControllerProxy.h"
+#import "UIColor+ORAdditions.h"
 
 @interface AppSettingController ()
 
@@ -544,11 +545,12 @@
 			if ([settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row] == settingsManager.consoleSettings.selectedController) {
 				currentSelectedServerIndex = indexPath;
                 serverCell.imageView.image = [UIImage imageNamed:@"CheckMark"];
+                serverCell.textLabel.textColor = [UIColor or_TableViewCheckMarkColor];
 			} else {
                 serverCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
 			}
 		}
-		return serverCell;        
+		return serverCell;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
 		panelCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity?settingsManager.consoleSettings.selectedController.selectedPanelIdentity:@"None";
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -634,8 +636,10 @@
 		if (currentSelectedServerIndex) {
 			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
             oldCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
+            oldCell.textLabel.textColor = [UIColor blackColor];
 		} 
         cell.imageView.image = [UIImage imageNamed:@"CheckMark"];
+        cell.textLabel.textColor = [UIColor or_TableViewCheckMarkColor];
 
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
         
