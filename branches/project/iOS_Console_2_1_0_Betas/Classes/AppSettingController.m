@@ -612,11 +612,10 @@
 	}
 	
 	if ([self isAddCustomServerRow:indexPath]) {
-		AddServerViewController *addServerViewController = [[AddServerViewController alloc] init];
-		addServerViewController.urlToEdit = nil;
-        addServerViewController.delegate = self;
-		[[self navigationController] pushViewController:addServerViewController animated:YES];
-		[addServerViewController release];
+        ControllerDetailViewController *cdvc = [[ControllerDetailViewController alloc] initWithController:nil];
+        cdvc.delegate = self;
+		[[self navigationController] pushViewController:cdvc animated:YES];
+		[cdvc release];
 		return;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
 		if (!settingsManager.consoleSettings.selectedController) {
@@ -664,13 +663,20 @@
 	return YES;
 }
 
-#pragma mark AddServerViewControllerDelegate implementation
+#pragma mark ControllerDetailViewControllerDelegate implementation
 
 - (void)didAddServerURL:(NSString *)serverURL
 {
     [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
     [self fetchGroupMembers];
+}
+
+- (void)didEditController:(ORController *)controller
+{
+    // TODO: for now just get rid of screen, must implement
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark ChoosePanelViewControllerDelegate implementation

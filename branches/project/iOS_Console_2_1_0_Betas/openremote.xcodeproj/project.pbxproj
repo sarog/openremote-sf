@@ -100,6 +100,8 @@
 		60950DA113CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
 		60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
 		60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
+		60950E1613CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
+		60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
 		6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
@@ -204,7 +206,6 @@
 		60EB56CE135C4E4100B29CED /* LayoutContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E921095563A00C7A686 /* LayoutContainerView.m */; };
 		60EB56CF135C4E4100B29CED /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E941095563A00C7A686 /* ScreenView.m */; };
 		60EB56D0135C4E4100B29CED /* SwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E961095563A00C7A686 /* SwitchView.m */; };
-		60EB56D1135C4E4100B29CED /* AddServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EFF1095628C00C7A686 /* AddServerViewController.m */; };
 		60EB56D2135C4E4100B29CED /* AppSettingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F011095628C00C7A686 /* AppSettingController.m */; };
 		60EB56D3135C4E4100B29CED /* GroupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F031095628C00C7A686 /* GroupController.m */; };
 		60EB56D4135C4E4100B29CED /* InitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F051095628C00C7A686 /* InitViewController.m */; };
@@ -310,7 +311,6 @@
 		8C460E9D1095563A00C7A686 /* LayoutContainerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E921095563A00C7A686 /* LayoutContainerView.m */; };
 		8C460E9E1095563A00C7A686 /* ScreenView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E941095563A00C7A686 /* ScreenView.m */; };
 		8C460E9F1095563A00C7A686 /* SwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E961095563A00C7A686 /* SwitchView.m */; };
-		8C460F141095628C00C7A686 /* AddServerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460EFF1095628C00C7A686 /* AddServerViewController.m */; };
 		8C460F151095628C00C7A686 /* AppSettingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F011095628C00C7A686 /* AppSettingController.m */; };
 		8C460F161095628C00C7A686 /* GroupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F031095628C00C7A686 /* GroupController.m */; };
 		8C460F171095628C00C7A686 /* InitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F051095628C00C7A686 /* InitViewController.m */; };
@@ -472,6 +472,8 @@
 		60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CheckMarkBlankPlaceHolder@2x.png"; sourceTree = "<group>"; };
 		60950DA213CB153500B983E7 /* UIColor+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ORAdditions.h"; sourceTree = "<group>"; };
 		60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ORAdditions.m"; sourceTree = "<group>"; };
+		60950E1413CB3A6100B983E7 /* ControllerDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerDetailViewController.h; sourceTree = "<group>"; };
+		60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerDetailViewController.m; sourceTree = "<group>"; };
 		6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerPollingSender.h; sourceTree = "<group>"; };
 		6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollingSender.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -766,8 +768,6 @@
 		8C460E941095563A00C7A686 /* ScreenView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenView.m; sourceTree = "<group>"; };
 		8C460E951095563A00C7A686 /* SwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchView.h; sourceTree = "<group>"; };
 		8C460E961095563A00C7A686 /* SwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchView.m; sourceTree = "<group>"; };
-		8C460EFE1095628C00C7A686 /* AddServerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddServerViewController.h; sourceTree = "<group>"; };
-		8C460EFF1095628C00C7A686 /* AddServerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddServerViewController.m; sourceTree = "<group>"; };
 		8C460F001095628C00C7A686 /* AppSettingController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppSettingController.h; sourceTree = "<group>"; };
 		8C460F011095628C00C7A686 /* AppSettingController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppSettingController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		8C460F021095628C00C7A686 /* GroupController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupController.h; sourceTree = "<group>"; };
@@ -1762,8 +1762,6 @@
 		8CFEE2870F558C5700DF8759 /* controller */ = {
 			isa = PBXGroup;
 			children = (
-				8C460EFE1095628C00C7A686 /* AddServerViewController.h */,
-				8C460EFF1095628C00C7A686 /* AddServerViewController.m */,
 				8C460F001095628C00C7A686 /* AppSettingController.h */,
 				8C460F011095628C00C7A686 /* AppSettingController.m */,
 				8C460F021095628C00C7A686 /* GroupController.h */,
@@ -1788,6 +1786,8 @@
 				33DF56CD10CCF6B50005446D /* TabBarController.m */,
 				8CC1E07C10DB491400155CC0 /* DefaultViewController.h */,
 				8CC1E07D10DB491400155CC0 /* DefaultViewController.m */,
+				60950E1413CB3A6100B983E7 /* ControllerDetailViewController.h */,
+				60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */,
 			);
 			name = controller;
 			sourceTree = "<group>";
@@ -2055,7 +2055,6 @@
 				8C460E9D1095563A00C7A686 /* LayoutContainerView.m in Sources */,
 				8C460E9E1095563A00C7A686 /* ScreenView.m in Sources */,
 				8C460E9F1095563A00C7A686 /* SwitchView.m in Sources */,
-				8C460F141095628C00C7A686 /* AddServerViewController.m in Sources */,
 				8C460F151095628C00C7A686 /* AppSettingController.m in Sources */,
 				8C460F161095628C00C7A686 /* GroupController.m in Sources */,
 				8C460F171095628C00C7A686 /* InitViewController.m in Sources */,
@@ -2138,6 +2137,7 @@
 				60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
 				605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 				60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
+				60950E1613CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2164,7 +2164,6 @@
 				60EB56CE135C4E4100B29CED /* LayoutContainerView.m in Sources */,
 				60EB56CF135C4E4100B29CED /* ScreenView.m in Sources */,
 				60EB56D0135C4E4100B29CED /* SwitchView.m in Sources */,
-				60EB56D1135C4E4100B29CED /* AddServerViewController.m in Sources */,
 				60EB56D2135C4E4100B29CED /* AppSettingController.m in Sources */,
 				60EB56D3135C4E4100B29CED /* GroupController.m in Sources */,
 				60EB56D4135C4E4100B29CED /* InitViewController.m in Sources */,
@@ -2246,6 +2245,7 @@
 				60C81D9E137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
 				605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 				60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
+				60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
