@@ -530,28 +530,25 @@
 		[switchView setOn:settingsManager.consoleSettings.autoDiscovery];
 		[switchView addTarget:self action:@selector(autoDiscoverChanged:) forControlEvents:UIControlEventValueChanged];
 		return switchCell;
-        
-        
-        
 	} else if (indexPath.section == CONTROLLER_URLS_SECTION) {
 		if ([self isAddCustomServerRow:indexPath]) {
 			serverCell.textLabel.text = @"Add New Controller...";
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            serverCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
 		} else {
 			serverCell.textLabel.text = ((ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row]).primaryURL;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            serverCell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+
 			if ([settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row] == settingsManager.consoleSettings.selectedController) {
 				currentSelectedServerIndex = indexPath;
-				serverCell.accessoryType = UITableViewCellAccessoryCheckmark;
+                serverCell.imageView.image = [UIImage imageNamed:@"CheckMark"];
 			} else {
-				serverCell.accessoryType = UITableViewCellAccessoryNone;
+                serverCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
 			}
 		}
-		return serverCell;
-        
-        
-        
+		return serverCell;        
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
 		panelCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity?settingsManager.consoleSettings.selectedController.selectedPanelIdentity:@"None";
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -636,9 +633,10 @@
 	if (indexPath.section == CONTROLLER_URLS_SECTION) {        
 		if (currentSelectedServerIndex) {
 			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
-			oldCell.accessoryType = UITableViewCellAccessoryNone;
+            oldCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
 		} 
-		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        cell.imageView.image = [UIImage imageNamed:@"CheckMark"];
+
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
         
         [self fetchGroupMembers];
