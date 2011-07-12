@@ -31,6 +31,7 @@
 #import "ORController.h"
 #import "ORControllerProxy.h"
 #import "UIColor+ORAdditions.h"
+#import "TableViewCellWithSelectionAndIndicator.h"
 
 @interface AppSettingController ()
 
@@ -482,7 +483,7 @@
 	static NSString *inputCellIdentifier = @"inputCell";
 	
 	UITableViewCell *switchCell = [tableView dequeueReusableCellWithIdentifier:switchCellIdentifier];
-	UITableViewCell *serverCell = [tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
+	TableViewCellWithSelectionAndIndicator *serverCell = (TableViewCellWithSelectionAndIndicator *)[tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
 	UITableViewCell *panelCell = [tableView dequeueReusableCellWithIdentifier:panelCellIdentifier];
 	UITableViewCell *buttonCell = [tableView dequeueReusableCellWithIdentifier:buttonCellIdentifier];
 	UITableViewCell *inputCell = [tableView dequeueReusableCellWithIdentifier:inputCellIdentifier];
@@ -495,7 +496,7 @@
 		[switchView release];
 	}
 	if (serverCell == nil) {
-		serverCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:serverCellIdentifier] autorelease];
+		serverCell = [[[TableViewCellWithSelectionAndIndicator alloc] initWithReuseIdentifier:serverCellIdentifier] autorelease];
 	}
 	if (panelCell == nil) {
 		panelCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:panelCellIdentifier] autorelease];
@@ -536,7 +537,7 @@
 			serverCell.textLabel.text = @"Add New Controller...";
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
-            serverCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
+            serverCell.entrySelected = NO;
 		} else {
 			serverCell.textLabel.text = ((ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row]).primaryURL;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -544,11 +545,9 @@
 
 			if ([settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row] == settingsManager.consoleSettings.selectedController) {
 				currentSelectedServerIndex = indexPath;
-                serverCell.imageView.image = [UIImage imageNamed:@"CheckMark"];
-                serverCell.textLabel.textColor = [UIColor or_TableViewCheckMarkColor];
+                serverCell.entrySelected = YES;
 			} else {
-                serverCell.textLabel.textColor = [UIColor blackColor];
-                serverCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
+                serverCell.entrySelected = NO;
 			}
 		}
 		return serverCell;
@@ -646,11 +645,9 @@
 	if (indexPath.section == CONTROLLER_URLS_SECTION) {        
 		if (currentSelectedServerIndex) {
 			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
-            oldCell.imageView.image = [UIImage imageNamed:@"CheckMarkBlankPlaceHolder"];
-            oldCell.textLabel.textColor = [UIColor blackColor];
-		} 
-        cell.imageView.image = [UIImage imageNamed:@"CheckMark"];
-        cell.textLabel.textColor = [UIColor or_TableViewCheckMarkColor];
+            ((TableViewCellWithSelectionAndIndicator *)oldCell).entrySelected = NO;
+ 		}
+        ((TableViewCellWithSelectionAndIndicator *)cell).entrySelected = YES;
 
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
         
