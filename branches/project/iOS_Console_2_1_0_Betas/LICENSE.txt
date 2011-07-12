@@ -668,8 +668,11 @@ copy of the Program in return for a fee.
   the terms described below.
 * opencore-amrnb is licensed under Apache License, Version 2.0
 * opencore-amrwb is licensed under Apache License, Version 2.0
+* Internet Low Bit Rate Codec (ilbc) is part of RFC 3951 and licensed
+  under "Simplified BSD License" -- IETF Trust license policy is available
+  here: http://trustee.ietf.org/license-info/IETF-Trust-License-Policy-20091228.htm 
 * speex library is licensed under the terms included below.
-* GSM 06.10 13 kbit/s RPE/LTP speech compression implementatoin is 
+* GSM 06.10 13 kbit/s RPE/LTP speech compression implementation is 
   licensed under the terms included below.
 * Cocoa AsyncSocket library is licensed under the terms included below.
 * Tapku library is licensed under the terms included below.
