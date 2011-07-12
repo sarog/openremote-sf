@@ -119,6 +119,7 @@ public abstract class DataPointType
 
   // Scene management
   public final static Unsigned8BitValue SCENE_NUMBER = new Unsigned8BitValue(17, 1);
+  public final static Unsigned8BitValue SCENE_CONTROL = new Unsigned8BitValue(18, 1);
 
   public static DataPointType lookup(String dptID)
   {

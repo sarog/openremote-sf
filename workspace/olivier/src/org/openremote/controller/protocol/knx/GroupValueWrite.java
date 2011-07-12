@@ -45,8 +45,8 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
   final static int DIMCONTROL_INCREASE_VALUE = 7;
   final static int DIMCONTROL_DECREASE_VALUE = 7;
-  final static Pattern SCENE_COMMAND = Pattern.compile("SCENE (\\d+)");
-
+  final static Pattern SCENE_NUMBER = Pattern.compile("SCENE (\\d+)");
+  final static Pattern SCENE_CONTROL = Pattern.compile("LEARN_SCENE (\\d+)");
   
   // Class Members --------------------------------------------------------------------------------
 
@@ -215,13 +215,27 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
       else if (name.startsWith("SCENE"))
       {
-        Matcher m = SCENE_COMMAND.matcher(name);
+        Matcher m = SCENE_NUMBER.matcher(name);
         if(!m.matches()) {
           throw new NoSuchCommandException("Missing value parameter for SCENE command.");
         }
 
         try {
-          return ApplicationProtocolDataUnit.createSceneNumber(new CommandParameter(m.group(1)));
+          return ApplicationProtocolDataUnit.createSceneNumber(new CommandParameter(m.group(1)), false);
+        } catch (ConversionException e) {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.startsWith("LEARN_SCENE"))
+      {
+        Matcher m = SCENE_CONTROL.matcher(name);
+        if(!m.matches()) {
+          throw new NoSuchCommandException("Missing value parameter for LEARN_SCENE command.");
+        }
+
+        try {
+          return ApplicationProtocolDataUnit.createSceneNumber(new CommandParameter(m.group(1)), true);
         } catch (ConversionException e) {
           throw new NoSuchCommandException(e.getMessage(), e);
         }

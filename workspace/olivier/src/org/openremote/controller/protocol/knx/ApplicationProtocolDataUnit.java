@@ -302,13 +302,15 @@ class ApplicationProtocolDataUnit
   *
   * @param parameter
   *           scene number value
+  * @param learn
+  *           <code>true</code> if command to learn scene
   *
   * @return APDU instance for a 8-bit unsigned counter value
   *
   * @throws ConversionException
   *            if the value is not in a given range
   */
-  static ApplicationProtocolDataUnit createSceneNumber(CommandParameter parameter)
+  static ApplicationProtocolDataUnit createSceneNumber(CommandParameter parameter, boolean learn)
      throws ConversionException
   {
     int value = parameter.getValue();
@@ -322,7 +324,7 @@ class ApplicationProtocolDataUnit
         ApplicationLayer.Service.GROUPVALUE_WRITE,
         new Unsigned8Bit(
           DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
-          value)
+          learn ? value : 0x80 | value)
     );
   }
 
