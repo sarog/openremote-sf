@@ -181,18 +181,15 @@ public class KNXCommandBuilder implements CommandBuilder
 
 
   // Constructors ---------------------------------------------------------------------------------
-  private static int count = 0;
+
   /**
    * TODO
    */
   public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort)
   {
-    count++;
-    if(count == 2) {
     this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
     this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
     this.connectionManager.scheduleConnection();
-    }
   }
 
 
