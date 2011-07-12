@@ -20,12 +20,15 @@
  */
 package org.openremote.controller.protocol.knx;
 
-import org.openremote.controller.command.ExecutableCommand;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.openremote.controller.command.CommandParameter;
+import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.exception.ConversionException;
+import org.openremote.controller.exception.NoSuchCommandException;
 import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
-import org.openremote.controller.exception.NoSuchCommandException;
-import org.openremote.controller.exception.ConversionException;
 
 /**
  * Write command representing KNX Group Value Write service. This class implements the
@@ -42,6 +45,7 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
 
   final static int DIMCONTROL_INCREASE_VALUE = 7;
   final static int DIMCONTROL_DECREASE_VALUE = 7;
+  final static Pattern SCENE_COMMAND = Pattern.compile("SCENE (\\d+)");
 
   
   // Class Members --------------------------------------------------------------------------------
@@ -205,6 +209,20 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         }
         catch (ConversionException e)
         {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+
+      else if (name.startsWith("SCENE"))
+      {
+        Matcher m = SCENE_COMMAND.matcher(name);
+        if(!m.matches()) {
+          throw new NoSuchCommandException("Missing value parameter for SCENE command.");
+        }
+
+        try {
+          return ApplicationProtocolDataUnit.createSceneNumber(new CommandParameter(m.group(1)));
+        } catch (ConversionException e) {
           throw new NoSuchCommandException(e.getMessage(), e);
         }
       }
