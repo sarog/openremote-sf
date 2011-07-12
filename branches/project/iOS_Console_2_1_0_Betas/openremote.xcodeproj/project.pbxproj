@@ -83,6 +83,8 @@
 		6068DEA213744EBB007746F1 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DEA113744EBB007746F1 /* CFNetwork.framework */; };
 		6068DEA313744EC7007746F1 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
 		6068DEA513744ED0007746F1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DEA413744ED0007746F1 /* SystemConfiguration.framework */; };
+		6079C2B913CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
+		6079C2BA13CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
 		6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6082FEA9139643C4005A75C2 /* ButtonTest.m */; };
 		608FBB77131FF90500C9089F /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
 		608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
@@ -453,6 +455,8 @@
 		6068DE9713744E36007746F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		6068DEA113744EBB007746F1 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		6068DEA413744ED0007746F1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		6079C2B713CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCellWithSelectionAndIndicator.h; sourceTree = "<group>"; };
+		6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCellWithSelectionAndIndicator.m; sourceTree = "<group>"; };
 		6082FEA8139643C4005A75C2 /* ButtonTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ButtonTest.h; path = ../ButtonEnhancement/iPad_Console_2_0_0_Betas_ButtonEnhancement/Test/ButtonTest.h; sourceTree = "<group>"; };
 		6082FEA9139643C4005A75C2 /* ButtonTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ButtonTest.m; path = ../ButtonEnhancement/iPad_Console_2_0_0_Betas_ButtonEnhancement/Test/ButtonTest.m; sourceTree = "<group>"; };
 		608FBB75131FF90500C9089F /* SipController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SipController.h; sourceTree = "<group>"; };
@@ -1755,6 +1759,8 @@
 				338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */,
 				60A85C94131F972000C7918A /* ORWebView.h */,
 				60A85C95131F972000C7918A /* ORWebView.m */,
+				6079C2B713CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.h */,
+				6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -2138,6 +2144,7 @@
 				605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 				60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 				60950E1613CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
+				6079C2B913CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2246,6 +2253,7 @@
 				605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
 				60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 				60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
+				6079C2BA13CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
