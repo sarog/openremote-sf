@@ -14,6 +14,11 @@
 
 @end
 
+/**
+ * This is a Decorator to be used on objects setting themselves as delegate of NSURLConnection.
+ * As data is received, it is captured and handled back in one go once connection is completed.
+ * All other delegate methods are forwarded to encapsulated object.
+ */
 @interface DataCapturingNSURLConnectionDelegate : NSObject {
     
 }
