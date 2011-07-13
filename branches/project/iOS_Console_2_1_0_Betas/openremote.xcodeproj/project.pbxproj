@@ -28,6 +28,12 @@
 		6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
 		605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
 		605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
+		6055687913CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
+		6055687A13CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
+		6055687E13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
+		6055687F13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
+		6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
+		6055688313CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
 		6068DE6B13744BC8007746F1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6A13744BC8007746F1 /* QuartzCore.framework */; };
 		6068DE6D13744BF5007746F1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6C13744BF5007746F1 /* CoreGraphics.framework */; };
 		6068DE6E13744C11007746F1 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
@@ -450,6 +456,12 @@
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
 		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
 		605393F71383FF0A00F3F5FC /* EnvironmentManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnvironmentManager.m; sourceTree = "<group>"; };
+		6055687713CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerGroupMembersFetcher.h; sourceTree = "<group>"; };
+		6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerGroupMembersFetcher.m; sourceTree = "<group>"; };
+		6055687C13CDC4A20035CC1A /* NSURLRequest+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLRequest+ORAdditions.h"; sourceTree = "<group>"; };
+		6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLRequest+ORAdditions.m"; sourceTree = "<group>"; };
+		6055688013CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataCapturingNSURLConnectionDelegate.h; sourceTree = "<group>"; };
+		6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataCapturingNSURLConnectionDelegate.m; sourceTree = "<group>"; };
 		6068DE6A13744BC8007746F1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		6068DE6C13744BF5007746F1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6068DE9713744E36007746F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1513,6 +1525,8 @@
 				60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */,
 				60AFCEE713729AA400A811D4 /* ControllerRequest.h */,
 				60AFCEE813729AA400A811D4 /* ControllerRequest.m */,
+				6055687713CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.h */,
+				6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */,
 			);
 			name = "Controller communication";
 			sourceTree = "<group>";
@@ -1561,6 +1575,10 @@
 				60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */,
 				60950DA213CB153500B983E7 /* UIColor+ORAdditions.h */,
 				60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */,
+				6055687C13CDC4A20035CC1A /* NSURLRequest+ORAdditions.h */,
+				6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */,
+				6055688013CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.h */,
+				6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -2145,6 +2163,9 @@
 				60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 				60950E1613CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
 				6079C2B913CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */,
+				6055687913CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */,
+				6055687E13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */,
+				6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2254,6 +2275,9 @@
 				60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
 				60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
 				6079C2BA13CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */,
+				6055687A13CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */,
+				6055687F13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */,
+				6055688313CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

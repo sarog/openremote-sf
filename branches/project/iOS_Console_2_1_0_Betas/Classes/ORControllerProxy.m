@@ -55,4 +55,12 @@
     return [panelsFetcher autorelease];
 }
 
+- (ORControllerGroupMembersFetcher *)fetchGroupMembersWithDelegate:(NSObject <ORControllerGroupMembersFetcherDelegate> *)delegate
+{
+    ORControllerGroupMembersFetcher *groupMembersFetcher = [[ORControllerGroupMembersFetcher alloc] init];
+    groupMembersFetcher.delegate = delegate;
+    [groupMembersFetcher fetch];
+    return [groupMembersFetcher autorelease];
+}
+
 @end

@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
+#import "DataCapturingNSURLConnectionDelegate.h"
 
 @class ORGroupMember;
 
@@ -39,11 +40,10 @@
  * It is retained and released when the connection is finished (after NSURLConnection sent
  * connectionDidFinishLoading: or connection:didFailWithError:
  */
-@interface ControllerRequest : NSObject {
+@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate> {
 
     NSString *requestPath;
     NSString *method;
-    NSMutableData *receivedData;
 	NSURLConnection *connection;
     NSError* lastError;
 
