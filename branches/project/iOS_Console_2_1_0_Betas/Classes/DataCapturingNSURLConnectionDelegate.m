@@ -55,6 +55,8 @@ static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
     [super dealloc];
 }
 
+#pragma mark -
+
 - (BOOL)isDelegateSelector:(SEL)selector
 {
     for (int i = 0; i < NUM_DELEGATE_METHODS; i++) {
@@ -72,6 +74,18 @@ static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
     }
     return [super respondsToSelector:aSelector];
 }
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [receiveData appendData:data];
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    [delegate connectionDidFinishLoading:connection receivedData:receiveData];
+}
+
+#pragma mark - Forwarded delegate methods
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
 {
@@ -108,19 +122,9 @@ static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
     return [delegate connection:connection didReceiveResponse:response];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [receiveData appendData:data];
-}
-
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
     [delegate connection:connection didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    [delegate connectionDidFinishLoading:connection receivedData:receiveData];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
