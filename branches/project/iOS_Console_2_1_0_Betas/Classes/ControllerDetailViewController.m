@@ -137,7 +137,7 @@
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kControllerUrlCellIdentifier];
     if (cell == nil) {
-		cell = [[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kControllerUrlCellIdentifier];
+		cell = [[[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kControllerUrlCellIdentifier] autorelease];
         urlField = ((TextFieldCell *)cell).textField;
         urlField.delegate = self;
     }
