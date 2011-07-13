@@ -24,8 +24,14 @@
 
 @implementation CredentialUtil
 
-+ (void)addCredentialToNSMutableURLRequest:(NSMutableURLRequest *)request forController:(ORController *)controller {
-	NSString *format = [NSString stringWithFormat:@"%@:%@", controller.userName, controller.password];
++ (void)addCredentialToNSMutableURLRequest:(NSMutableURLRequest *)request forController:(ORController *)controller
+{
+    [self addCredentialToNSMutableURLRequest:request withUserName:controller.userName password:controller.password];
+}
+
++ (void)addCredentialToNSMutableURLRequest:(NSMutableURLRequest *)request withUserName:(NSString *)userName password:(NSString *)password
+{
+	NSString *format = [NSString stringWithFormat:@"%@:%@", userName, password];
 	NSData *utf8Data = [format dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *base64String = [NSString base64StringFromData:utf8Data length:[utf8Data length]];
 	[request setValue:[NSString stringWithFormat:@"Basic %@", base64String] forHTTPHeaderField:@"Authorization"];	

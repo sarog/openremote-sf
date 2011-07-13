@@ -24,6 +24,7 @@ extern NSString *const kControllerControlPath;
 extern NSString *const kControllerStatusPath;
 extern NSString *const kControllerPollingPath;
 extern NSString *const kControllerFetchPanelsPath;
+extern NSString *const kControllerFetchGroupMembersPath;
 
 /**
  * Infomations about controller server panel client use.

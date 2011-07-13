@@ -29,6 +29,7 @@ NSString *const kControllerControlPath = @"rest/control";
 NSString *const kControllerStatusPath = @"rest/status";
 NSString *const kControllerPollingPath = @"rest/polling";
 NSString *const kControllerFetchPanelsPath = @"rest/panels";
+NSString *const kControllerFetchGroupMembersPath = @"rest/servers";
 
 @implementation ServerDefinition
 

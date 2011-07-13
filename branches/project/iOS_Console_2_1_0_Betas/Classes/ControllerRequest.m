@@ -20,7 +20,7 @@
  */
 #import <UIKit/UIKit.h>
 #import "ControllerRequest.h"
-#import "CredentialUtil.h"
+#import "NSURLRequest+ORAdditions.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
@@ -42,7 +42,6 @@
     [self cancel];
     [connection release];
     [requestPath release];
-    [receivedData release];
     [usedGroupMember release];
     [potentialGroupMembers release];
     [super dealloc];
@@ -100,27 +99,13 @@
     NSString *location = [usedGroupMember.url stringByAppendingFormat:@"/%@", requestPath];
     NSLog(@"Trying to send command to %@", location);
     
-    NSURL *url = [[NSURL alloc] initWithString:location];
-    
-    //assemble put request 
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:url];
-    [request setHTTPMethod:method];
-    
-    [CredentialUtil addCredentialToNSMutableURLRequest:request forController:usedGroupMember.controller];
-
-    if (receivedData) {
-        [receivedData release];
-    }
-    receivedData = [[NSMutableData alloc] init];
+    NSURLRequest *request = [NSURLRequest or_requestWithURLString:location method:method userName:usedGroupMember.controller.userName password:usedGroupMember.controller.password];
     
     if (connection) {
+        [connection cancel];
         [connection release];
     }
-    connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-    
-    [url release];
-    [request release];
+    connection = [[NSURLConnection alloc] initWithRequest:request delegate:[[[DataCapturingNSURLConnectionDelegate alloc] initWithNSURLConnectionDelegate:self] autorelease]];
 }
 
 - (void)requestWithPath:(NSString *)path
@@ -159,21 +144,17 @@
     self.delegate = nil;
 }
 
-#pragma mark NSURLConnection delegate implementation
+#pragma mark DataCapturingNSURLConnectionDelegate delegate implementation
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    // Collect data as we receive it
-	[receivedData appendData:data];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection receivedData:(NSData *)receivedData
 {
     [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember = self.usedGroupMember;
 	[delegate controllerRequestDidFinishLoading:receivedData];
     [delegate release];
     delegate = nil;
 }
+
+#pragma mark NSURLConnection delegate implementation
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
