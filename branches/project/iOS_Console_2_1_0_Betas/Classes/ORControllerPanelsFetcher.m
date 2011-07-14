@@ -61,7 +61,7 @@
 {
     NSAssert(!controllerRequest, @"ORControllerPanelsFetcher can only be used to send a request once");
 
-    controllerRequest = [[ControllerRequest alloc] init];
+    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
     controllerRequest.delegate = self;
     [controllerRequest getRequestWithPath:kControllerFetchPanelsPath];
 }

@@ -70,7 +70,7 @@
     NSAssert(!controllerRequest, @"ORControllerPollingSender can only be used to send a request once");
 
     NSString *urlPath = [kControllerStatusPath stringByAppendingFormat:@"/%@", ids];
-    controllerRequest = [[ControllerRequest alloc] init];
+    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
     controllerRequest.delegate = self;
     [controllerRequest getRequestWithPath:urlPath];
 }
@@ -81,7 +81,7 @@
     
     NSString *deviceId = [[UIDevice currentDevice] uniqueIdentifier];
     NSString *urlPath = [kControllerPollingPath stringByAppendingFormat:@"/%@/%@", deviceId, ids];
-    controllerRequest = [[ControllerRequest alloc] init];
+    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
     controllerRequest.delegate = self;
     [controllerRequest getRequestWithPath:urlPath];
 }
