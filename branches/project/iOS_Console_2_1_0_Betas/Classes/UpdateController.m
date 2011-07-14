@@ -216,9 +216,7 @@
     NSLog(@"RoundRobin group members are:");
     for (ORGroupMember *gm in [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers) {
         NSLog(@"%@", gm.url);
-    }
-    
-    
+    }    
 }
 
 #pragma mark delegate method of NSXMLParser
@@ -256,8 +254,8 @@
 
 
 #pragma mark delegate method of ServerAutoDiscoveryController
-- (void)onFindServer:(NSString *)serverUrl {
-	NSLog(@"onFindServer %@", serverUrl);
+- (void)onFindServer:(ORController *)aController {
+	NSLog(@"onFindServer %@", aController.primaryURL);
 	NSLog(@"after find server, find auto server %d",[[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.autoDiscoveredControllers count]);
 	[self checkNetworkAndUpdate];
 }
