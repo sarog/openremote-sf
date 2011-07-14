@@ -22,9 +22,11 @@
 #import "AsyncSocket.h"
 #import "AsyncUdpSocket.h"
 
+@class ORController;
+
 @protocol ServerAutoDiscoveryControllerDelagate <NSObject>
 
-- (void)onFindServer:(NSString *)serverUrl;
+- (void)onFindServer:(ORController *)aController;
 - (void)onFindServerFail:(NSString *)errorMessage;
 
 @end

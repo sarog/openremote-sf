@@ -399,8 +399,8 @@
 }
 
 #pragma mark Delegate method of ServerAutoDiscoveryController
-- (void)onFindServer:(NSString *)serverUrl {
-    [self fetchGroupMembers];
+- (void)onFindServer:(ORController *)aController {
+    [aController fetchGroupMembers];
 	[self updateTableView];
 }
 

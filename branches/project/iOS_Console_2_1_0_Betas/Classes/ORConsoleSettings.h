@@ -35,7 +35,7 @@
 
 - (void)removeAllAutoDiscoveredControllers;
 - (void)addAutoDiscoveredController:(ORController *)controller;
-- (void)addAutoDiscoveredControllerForURL:(NSString *)url;
+- (ORController *)addAutoDiscoveredControllerForURL:(NSString *)url;
 
 @property (nonatomic, assign, getter=isAutoDiscovery) BOOL autoDiscovery;
 @property (nonatomic, retain) NSSet *unorderedAutoDiscoveredControllers;

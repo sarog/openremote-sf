@@ -100,7 +100,7 @@
 - (void)onFindServer:(NSString *)serverUrl
 {
 	isReceiveServerUrl = YES;
-    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addAutoDiscoveredControllerForURL:serverUrl];
+    ORController *controller = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addAutoDiscoveredControllerForURL:serverUrl];
     
     //Disconnect all the tcp client received
 	for(int i = 0; i < [clients count]; i++)
@@ -119,7 +119,7 @@
 			
 	// Call the delegate method delegate implemented
 	if (self.delegate && [self.delegate  respondsToSelector:@selector(onFindServer:)]) {
-		[self.delegate performSelector:@selector(onFindServer:) withObject:serverUrl];
+        [self.delegate onFindServer:controller];
 	}
 }
 		
