@@ -73,7 +73,7 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    if ([delegate respondsToSelector:@selector(fetchPanelsDidFailWithError:)]) {
+    if ([delegate respondsToSelector:@selector(fetchGroupMembersDidFailWithError:)]) {
         [delegate fetchGroupMembersDidFailWithError:error];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
