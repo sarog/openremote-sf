@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "DataCapturingNSURLConnectionDelegate.h"
 
+@class ORController;
+
 @protocol ORControllerGroupMembersFetcherDelegate
 
 - (void)fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers;
@@ -23,6 +25,7 @@
 
 @property (nonatomic, assign) NSObject <ORControllerGroupMembersFetcherDelegate> *delegate;
 
+- (id)initWithController:(ORController *)aController;
 - (void)fetch;
 
 @end

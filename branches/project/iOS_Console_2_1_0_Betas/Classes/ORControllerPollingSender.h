@@ -31,6 +31,8 @@
 #import "ControllerRequest.h"
 #import "UpdateController.h"
 
+@class ORController;
+
 @protocol ORControllerPollingSenderDelegate <NSObject>
 
 // Note that this applies to both polling and status request, even if the name would indicate otherwise
@@ -50,7 +52,7 @@
 
 @property (nonatomic, assign) NSObject <ORControllerPollingSenderDelegate> *delegate;
 
-- (id)initWithIds:(NSString *)someIds;
+- (id)initWithController:(ORController *)aController ids:(NSString *)someIds;
 - (void)requestStatus;
 - (void)poll;
 

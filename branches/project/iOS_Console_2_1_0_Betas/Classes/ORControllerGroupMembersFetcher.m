@@ -19,19 +19,22 @@
 @interface ORControllerGroupMembersFetcher ()
 
 @property (nonatomic, retain) NSURLConnection *connection;
+@property (nonatomic, retain) ORController *controller;
 
 @end
 
 @implementation ORControllerGroupMembersFetcher
 
+@synthesize controller;
 @synthesize delegate;
 @synthesize connection;
 
-- (id)init
+- (id)initWithController:(ORController *)aController
 {
     self = [super init];
     if (self) {
         members = [[NSMutableArray alloc] init];
+        self.controller = aController;
     }
     return self;
 }
@@ -41,6 +44,7 @@
     [members release];
     [self.connection cancel];
     self.connection = nil;
+    self.controller = nil;
     [super dealloc];
 }
 
@@ -50,7 +54,6 @@
 {
     NSAssert(!self.connection, @"ORControllerGroupMembersFetcher can only be used to send a request once");
 
-    ORController *controller = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
     
     // TODO: request URL is incorrect, must have controller URL as base !!!
     
