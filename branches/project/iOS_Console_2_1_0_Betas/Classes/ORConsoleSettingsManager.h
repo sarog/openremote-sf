@@ -31,16 +31,13 @@
     NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
     ORConsoleSettings *consoleSettings;
-
-    // TODO EBR maybe not the best place to store this but will do for now
-    ORControllerProxy *currentController;
 }
 
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
-@property (nonatomic, retain) ORControllerProxy *currentController;
+@property (nonatomic, readonly) ORControllerProxy *currentController;
 
 + (ORConsoleSettingsManager *)sharedORConsoleSettingsManager;
 

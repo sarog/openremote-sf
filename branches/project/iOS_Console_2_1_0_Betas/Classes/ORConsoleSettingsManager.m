@@ -21,6 +21,7 @@
 #import "ORConsoleSettingsManager.h"
 #import "DirectoryDefinition.h"
 #import "ORConsoleSettings.h"
+#import "ORController.h"
 #import "ORControllerProxy.h"
 
 static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
@@ -35,11 +36,6 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
 {
     if (sharedORConsoleSettingsManager == nil) {
         sharedORConsoleSettingsManager = [[super allocWithZone:NULL] init];
-        
-        
-        sharedORConsoleSettingsManager.currentController = [[ORControllerProxy alloc] init];
-        
-        
     }
     return sharedORConsoleSettingsManager;
 }
@@ -84,6 +80,11 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
 }
 
 #pragma mark
+
+- (ORControllerProxy *)currentController
+{
+    return self.consoleSettings.selectedController.proxy;
+}
 
 #pragma mark ORConsoleSettings management
 

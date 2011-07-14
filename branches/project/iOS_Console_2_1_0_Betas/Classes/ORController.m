@@ -20,6 +20,7 @@
  */
 #import "ORController.h"
 #import "ORGroupMember.h"
+#import "ORControllerProxy.h"
 
 @interface ORController ()
 
@@ -47,6 +48,24 @@
 
 
 // TODO EBR watch groupMembers change and reset activeGroupMember if required
+
+- (void)didTurnIntoFault
+{
+    [proxy release];
+    proxy = nil;
+    [super didTurnIntoFault];
+}
+
+#pragma mark -
+
+- (ORControllerProxy *)proxy
+{
+    if (!proxy) {
+        proxy = [[ORControllerProxy alloc] initWithController:self];
+    }
+    return proxy;
+}
+#pragma mark -
 
 - (NSString *)selectedPanelIdentityDisplayString
 {

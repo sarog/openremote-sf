@@ -19,9 +19,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "ORControllerProxy.h"
+#import "ORController.h"
 #import "Component.h"
 
+@interface ORControllerProxy ()
+
+@property (nonatomic, assign) ORController *controller;
+
+@end
+
 @implementation ORControllerProxy
+
+@synthesize controller;
+
+- (id)initWithController:(ORController *)aController
+{
+    self = [super init];
+    if (self) {
+        self.controller = aController;
+    }
+    return self;
+}
+
+#pragma mark -
 
 - (ORControllerCommandSender *)sendCommand:(NSString *)command forComponent:(Component *)component delegate:(NSObject <ORControllerCommandSenderDelegate> *)delegate
 {    
