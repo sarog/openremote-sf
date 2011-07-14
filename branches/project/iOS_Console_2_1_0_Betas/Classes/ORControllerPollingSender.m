@@ -34,16 +34,25 @@
 #import "NotificationConstant.h"
 #import "ServerDefinition.h"
 #import "PollingStatusParserDelegate.h"
+#import "ORController.h"
+
+@interface ORControllerPollingSender ()
+
+@property (nonatomic, retain) ORController *controller;
+
+@end
 
 @implementation ORControllerPollingSender
 
+@synthesize controller;
 @synthesize delegate;
 
-- (id)initWithIds:(NSString *)someIds
+- (id)initWithController:(ORController *)aController ids:(NSString *)someIds
 {
     self = [super init];
     if (self) {
         ids = [someIds retain];
+        self.controller = aController;
     }
     return self;
 }
@@ -52,6 +61,7 @@
 {
     [ids release];
     [controllerRequest release];
+    self.controller = nil;
     [super dealloc];
 }
 

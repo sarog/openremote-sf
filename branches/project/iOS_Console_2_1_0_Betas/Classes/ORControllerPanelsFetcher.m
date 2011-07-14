@@ -28,15 +28,23 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
+@interface ORControllerPanelsFetcher ()
+
+@property (nonatomic, retain) ORController *controller;
+
+@end
+
 @implementation ORControllerPanelsFetcher
 
+@synthesize controller;
 @synthesize delegate;
 
-- (id)init
+- (id)initWithController:(ORController *)aController
 {
     self = [super init];
     if (self) {
         panels = [[NSMutableArray alloc] init];
+        self.controller = aController;
     }
     return self;
 }
@@ -45,6 +53,7 @@
 {
     [controllerRequest release];
     [panels release];
+    self.controller = nil;
     [super dealloc];
 }
 

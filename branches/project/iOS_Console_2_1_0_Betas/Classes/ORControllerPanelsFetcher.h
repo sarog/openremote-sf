@@ -21,6 +21,8 @@
 #import <Foundation/Foundation.h>
 #import "ControllerRequest.h"
 
+@class ORController;
+
 @protocol ORControllerPanelsFetcherDelegate
 
 - (void)fetchPanelsDidSucceedWithPanels:(NSArray *)thePanels;
@@ -39,6 +41,7 @@
 
 @property (nonatomic, assign) NSObject <ORControllerPanelsFetcherDelegate> *delegate;
 
+- (id)initWithController:(ORController *)aController;
 - (void)fetch;
 
 @end

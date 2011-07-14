@@ -29,16 +29,24 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
+@interface ORControllerCommandSender ()
+
+@property (nonatomic, retain) ORController *controller;
+
+@end
+
 @implementation ORControllerCommandSender
 
+@synthesize controller;
 @synthesize delegate;
 
-- (id)initWithCommand:(NSString *)aCommand component:(Component *)aComponent
+- (id)initWithController:(ORController *)aController command:(NSString *)aCommand component:(Component *)aComponent
 {
     self = [super init];
     if (self) {
         command = [aCommand retain];
         component = [aComponent retain];
+        self.controller = aController;
     }
     return self;
 }
@@ -48,8 +56,11 @@
     [command release];
     [component release];
     [controllerRequest release];
+    self.controller = nil;
     [super dealloc];
 }
+
+#pragma mark -
 
 - (void)send
 {  

@@ -44,8 +44,8 @@
 #pragma mark -
 
 - (ORControllerCommandSender *)sendCommand:(NSString *)command forComponent:(Component *)component delegate:(NSObject <ORControllerCommandSenderDelegate> *)delegate
-{    
-    ORControllerCommandSender *commandSender = [[ORControllerCommandSender alloc] initWithCommand:command component:component];
+{
+    ORControllerCommandSender *commandSender = [[ORControllerCommandSender alloc] initWithController:self.controller command:command component:component];
     commandSender.delegate = delegate;
     [commandSender send];
     return [commandSender autorelease];
@@ -53,7 +53,7 @@
 
 - (ORControllerPollingSender *)requestStatusForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate
 {
-    ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithIds:ids];
+    ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithController:self.controller ids:ids];
     pollingSender.delegate = delegate;
     [pollingSender requestStatus];
     return [pollingSender autorelease];
@@ -61,7 +61,7 @@
 
 - (ORControllerPollingSender *)requestPollingForIds:(NSString *)ids delegate:(NSObject <ORControllerPollingSenderDelegate> *)delegate
 {
-    ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithIds:ids];
+    ORControllerPollingSender *pollingSender = [[ORControllerPollingSender alloc] initWithController:self.controller ids:ids];
     pollingSender.delegate = delegate;
     [pollingSender poll];
     return [pollingSender autorelease];
@@ -69,7 +69,7 @@
 
 - (ORControllerPanelsFetcher *)fetchPanelsWithDelegate:(NSObject <ORControllerPanelsFetcherDelegate> *)delegate
 {
-    ORControllerPanelsFetcher *panelsFetcher = [[ORControllerPanelsFetcher alloc] init];
+    ORControllerPanelsFetcher *panelsFetcher = [[ORControllerPanelsFetcher alloc] initWithController:self.controller];
     panelsFetcher.delegate = delegate;
     [panelsFetcher fetch];
     return [panelsFetcher autorelease];
@@ -77,7 +77,7 @@
 
 - (ORControllerGroupMembersFetcher *)fetchGroupMembersWithDelegate:(NSObject <ORControllerGroupMembersFetcherDelegate> *)delegate
 {
-    ORControllerGroupMembersFetcher *groupMembersFetcher = [[ORControllerGroupMembersFetcher alloc] init];
+    ORControllerGroupMembersFetcher *groupMembersFetcher = [[ORControllerGroupMembersFetcher alloc] initWithController:self.controller];
     groupMembersFetcher.delegate = delegate;
     [groupMembersFetcher fetch];
     return [groupMembersFetcher autorelease];
