@@ -525,13 +525,11 @@
 	static NSString *serverCellIdentifier = @"serverCell";
 	static NSString *panelCellIdentifier = @"panelCell";
 	static NSString *buttonCellIdentifier = @"buttonCell";
-	static NSString *inputCellIdentifier = @"inputCell";
 	
 	UITableViewCell *switchCell = [tableView dequeueReusableCellWithIdentifier:switchCellIdentifier];
 	TableViewCellWithSelectionAndIndicator *serverCell = (TableViewCellWithSelectionAndIndicator *)[tableView dequeueReusableCellWithIdentifier:serverCellIdentifier];
 	UITableViewCell *panelCell = [tableView dequeueReusableCellWithIdentifier:panelCellIdentifier];
 	UITableViewCell *buttonCell = [tableView dequeueReusableCellWithIdentifier:buttonCellIdentifier];
-	UITableViewCell *inputCell = [tableView dequeueReusableCellWithIdentifier:inputCellIdentifier];
 	
 	if (switchCell == nil) {
 		switchCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:switchCellIdentifier] autorelease];
@@ -548,27 +546,6 @@
 	}
 	if (buttonCell == nil) {
 		buttonCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:buttonCellIdentifier] autorelease];
-	}
-	if (inputCell == nil) {
-		inputCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:inputCellIdentifier] autorelease];
-		inputCell.selectionStyle = UITableViewCellSelectionStyleNone;
-		
-		UITextField *textField = [[UITextField alloc] init];
-		textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-		textField.textAlignment = UITextAlignmentRight;
-		textField.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
-		textField.returnKeyType = UIReturnKeyDone;
-		textField.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
-		textField.clearButtonMode = UITextFieldViewModeWhileEditing;// has a clear 'x' button to the right
-		textField.autocapitalizationType = UITextAutocapitalizationTypeNone;// no auto capitalization support
-		textField.autocorrectionType = UITextAutocorrectionTypeNo;// no auto correction support
-		textField.textColor = [UIColor darkGrayColor];
-		CGFloat w = inputCell.bounds.size.width;
-		CGFloat h = inputCell.bounds.size.height;
-		textField.frame = CGRectInset(CGRectMake(w/2, (h - 26)/2.0, w/2,26),20,0);
-		portField = textField;
-		[textField setDelegate:self];		
-		[inputCell setAccessoryView:textField];
 	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {
@@ -727,8 +704,7 @@
 - (void)didEditController:(ORController *)controller
 {
     [self.navigationController popViewControllerAnimated:YES];
-    
-    // TODO: re-start a round robin discovery for that controller
+    [controller fetchGroupMembers];
 }
 
 #pragma mark ChoosePanelViewControllerDelegate implementation
