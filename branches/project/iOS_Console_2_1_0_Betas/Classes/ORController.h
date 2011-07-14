@@ -26,6 +26,11 @@
 @class ORGroupMember;
 @class ORControllerProxy;
 
+#define kORControllerGroupMembersFetchingNotification @"kORControllerGroupMembersFetchingNotification"
+#define kORControllerGroupMembersFetchSucceededNotification @"kORControllerGroupMembersFetchSucceededNotification"
+#define kORControllerGroupMembersFetchFailedNotification @"kORControllerGroupMembersFetchFailedNotification"
+#define kORControllerGroupMembersFetchRequiresAuthenticationNotification @"kORControllerGroupMembersFetchRequiresAuthenticationNotification"
+
 @interface ORController : NSManagedObject <ORControllerGroupMembersFetcherDelegate> {
 @private
     ORGroupMember *activeGroupMember;

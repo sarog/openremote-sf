@@ -433,11 +433,55 @@
 	}
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 	self.navigationItem.rightBarButtonItem = done;
 	self.navigationItem.leftBarButtonItem = cancel;
 
-	[self.tableView reloadData];	
+	[self.tableView reloadData];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetching:) name:kORControllerGroupMembersFetchingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchFailed:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchSucceeded:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super viewDidDisappear:animated];
+}
+
+#pragma mark - ORController group members fetch notifications
+
+- (void)orControllerGroupMemberFetching:(NSNotification *)notification
+{
+    TableViewCellWithSelectionAndIndicator *cell = (TableViewCellWithSelectionAndIndicator *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]];
+    UIActivityIndicatorView *aiv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    [aiv startAnimating];
+    cell.indicatorView = aiv;
+    [aiv release];
+}
+
+- (void)orControllerGroupMemberFetchFailed:(NSNotification *)notification
+{
+    TableViewCellWithSelectionAndIndicator *cell = (TableViewCellWithSelectionAndIndicator *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]];
+    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerNOK"]];
+    cell.indicatorView = iv;
+    [iv release];
+}
+
+- (void)orControllerGroupMemberFetchSucceeded:(NSNotification *)notification
+{
+    TableViewCellWithSelectionAndIndicator *cell = (TableViewCellWithSelectionAndIndicator *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]];
+    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerOK"]];
+    cell.indicatorView = iv;
+    [iv release];
+}
+
+- (void)orControllerGroupMemberFetchRequiresAuthentication:(NSNotification *)notification
+{
 }
 
 #pragma mark Table view methods
@@ -575,7 +619,6 @@
 		[cdvc release];        
     }
 }
-
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([self isCustomServerSection:indexPath]) {
