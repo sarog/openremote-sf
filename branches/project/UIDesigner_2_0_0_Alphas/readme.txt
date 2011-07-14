@@ -1,26 +1,17 @@
 
-================================================================================
-===                                                                          ===
-===                 MODELER DEPLOYMENT GUIDE                                 ===
-===                                                                          ===
-=== version 2.0.0                                http://www.openremote.org   ===
-================================================================================
 
-I. Introduction 
-===============
-The modeler allows home-owners and professional installers to configure devices and appliances of a building visually against a floor plan. 
-Device configurations can be retrieved from Beehive database and scenes and event controls can be modeled visually.
+I. Build and Deployment Requirements
+====================================
 
-II. Requirements
-================
-The "Modeler" requires this 3rd party software:
-1) GWT 1.6.4
-2) JBoss 4.2.3 GA or above, Tomcat 5.5.26 or above
-3) Java 1.6 or above
-4) MySQL 5.0 or above
-5) Ant 1.7.1 or above
+To build, you will need to install GWT SDK from Google first. Currently GWT version 2.0.4
+is required. Modify the build.properties file to target your GWT 2.0.4 SDK install location.
 
-III. "Modeler" site deployment
+Java SDK 6 is required for build. 
+
+Apache ANT 1.7 or higher is required for the build scripts.
+
+
+II. "Modeler" site deployment
 ==============================================
 1) share a database named 'beehive' with Beehive in MySQL.
 2) modify following configuration variables in "%PROJECT_ROOT%/config/config.properties"
@@ -50,7 +41,7 @@ III. "Modeler" site deployment
 4) run 'ant deploy' in command line under project dir. 
 
    
-IV. Supported functions
+III. Supported functions
 =======================
 In the current iteration we are focusing on infrared (LIRC), KNX, X10, HTTP, TCP/IP, Telnet protocol.
 1) create device, command, macro
@@ -61,10 +52,10 @@ In the current iteration we are focusing on infrared (LIRC), KNX, X10, HTTP, TCP
 6) ui designer: slider, image, label
 7) template save, share
     
-V. "Modeler" logging
+IV. "Modeler" logging
 ====================================
 You can modify the log4j configuration in "%PROJECT_ROOT%/config/log4j.properties".
 
-VI. "Modeler" javadoc
+V. "Modeler" javadoc
 ====================================
 You can generate javadoc by using "ant javadoc"
