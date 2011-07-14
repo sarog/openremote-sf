@@ -153,7 +153,7 @@
     [self addUnorderedAutoDiscoveredControllersObject:controller];
 }
 
-- (void)addAutoDiscoveredControllerForURL:(NSString *)url
+- (ORController *)addAutoDiscoveredControllerForURL:(NSString *)url
 {
     ORController *controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
     controller.primaryURL = url;
@@ -161,6 +161,7 @@
     if (!self.selectedDiscoveredController) {
         self.selectedDiscoveredController = controller;
     }
+    return controller;
 }
 
 - (NSArray *)controllers
