@@ -20,12 +20,13 @@
  */
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "ORControllerGroupMembersFetcher.h"
 
 @class ORConsoleSettings;
 @class ORGroupMember;
 @class ORControllerProxy;
 
-@interface ORController : NSManagedObject {
+@interface ORController : NSManagedObject <ORControllerGroupMembersFetcherDelegate> {
 @private
     ORGroupMember *activeGroupMember;
     ORControllerProxy *proxy;
@@ -48,6 +49,7 @@
 
 @property (nonatomic, readonly, retain) ORControllerProxy *proxy;
 
+- (void)fetchGroupMembers;
 - (void)addGroupMemberForURL:(NSString *)url;
 
 @end
