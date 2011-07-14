@@ -48,16 +48,13 @@
     [super dealloc];
 }
 
-// TODO: must be able to specify controller, delegate methods must pass back controller
+// TODO: delegate methods must pass back controller ?
 
 - (void)fetch
 {
     NSAssert(!self.connection, @"ORControllerGroupMembersFetcher can only be used to send a request once");
-
-    
-    // TODO: request URL is incorrect, must have controller URL as base !!!
-    
-    NSURLRequest *request = [NSURLRequest or_requestWithURLString:kControllerFetchGroupMembersPath method:@"GET" userName:controller.userName password:controller.password];    
+    NSURLRequest *request = [NSURLRequest or_requestWithURLString:[self.controller.primaryURL stringByAppendingFormat:@"/%@", kControllerFetchGroupMembersPath]
+                                                           method:@"GET" userName:controller.userName password:controller.password];    
     self.connection = [[[NSURLConnection alloc] initWithRequest:request delegate:[[[DataCapturingNSURLConnectionDelegate alloc] initWithNSURLConnectionDelegate:self] autorelease]] autorelease];
 }
 
