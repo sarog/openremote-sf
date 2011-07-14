@@ -21,20 +21,29 @@
 #import <UIKit/UIKit.h>
 #import "ControllerRequest.h"
 #import "NSURLRequest+ORAdditions.h"
-#import "ORConsoleSettingsManager.h"
-#import "ORConsoleSettings.h"
 #import "ORController.h"
 #import "ORGroupMember.h"
 
 @interface ControllerRequest ()
 
 @property (nonatomic, retain) ORGroupMember *usedGroupMember;
+@property (nonatomic, assign) ORController *controller;
 
 @end
 
 @implementation ControllerRequest
 
+@synthesize controller;
 @synthesize delegate, usedGroupMember;
+
+- (id)initWithController:(ORController *)aController
+{
+    self = [super init];
+    if (self) {
+        self.controller = aController;
+    }
+    return self;
+}
 
 - (void)dealloc
 {
@@ -44,6 +53,7 @@
     [requestPath release];
     [usedGroupMember release];
     [potentialGroupMembers release];
+    self.controller = nil;
     [super dealloc];
 }
 
@@ -52,23 +62,21 @@
  */
 - (BOOL)selectNextGroupMemberToTry
 {
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-    
     if (!self.usedGroupMember) {
-        self.usedGroupMember = activeController.activeGroupMember;
+        self.usedGroupMember = self.controller.activeGroupMember;
         if (self.usedGroupMember) {
             return YES;
         }
     }
     
     if (!potentialGroupMembers) {
-        if ([activeController.groupMembers count] == 0) {
+        if ([self.controller.groupMembers count] == 0) {
             
             // TODO: maybe use primary URL as fallback solution ?
             
             return NO;
         }
-        potentialGroupMembers = [activeController.groupMembers mutableCopy];
+        potentialGroupMembers = [self.controller.groupMembers mutableCopy];
     }
     if (self.usedGroupMember) {
         [potentialGroupMembers removeObject:self.usedGroupMember];
@@ -79,7 +87,7 @@
         // URL comparison does not help, should somehow normalize the URL or just make sure the URLs are entered the same in configs
         
         for (ORGroupMember *gm in potentialGroupMembers) {
-            if ([activeController.primaryURL isEqualToString:gm.url]) {
+            if ([self.controller.primaryURL isEqualToString:gm.url]) {
                 self.usedGroupMember = gm;
                 break;
             }
@@ -148,7 +156,7 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection receivedData:(NSData *)receivedData
 {
-    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember = self.usedGroupMember;
+    self.controller.activeGroupMember = self.usedGroupMember;
 	[delegate controllerRequestDidFinishLoading:receivedData];
     [delegate release];
     delegate = nil;

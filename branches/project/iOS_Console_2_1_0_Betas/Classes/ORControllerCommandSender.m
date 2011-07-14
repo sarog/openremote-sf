@@ -67,7 +67,7 @@
     NSAssert(!controllerRequest, @"ORControllerCommandSender can only be used to send a request once");
     
     NSString *commandURLPath = [kControllerControlPath stringByAppendingFormat:@"/%d/%@", component.componentId, command];
-    controllerRequest = [[ControllerRequest alloc] init];
+    controllerRequest = [[ControllerRequest alloc] initWithController:self.controller];
     controllerRequest.delegate = self;
     [controllerRequest postRequestWithPath:commandURLPath];
 }
