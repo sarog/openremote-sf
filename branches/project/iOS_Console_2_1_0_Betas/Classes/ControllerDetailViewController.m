@@ -138,10 +138,10 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kControllerUrlCellIdentifier];
     if (cell == nil) {
 		cell = [[[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kControllerUrlCellIdentifier] autorelease];
-        urlField = ((TextFieldCell *)cell).textField;
-        urlField.delegate = self;
+        self.urlField = ((TextFieldCell *)cell).textField;
+        self.urlField.delegate = self;
     }
-    urlField.text = self.controller.primaryURL;
+    self.urlField.text = self.controller.primaryURL;
     
     return cell;
 }
