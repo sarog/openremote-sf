@@ -355,6 +355,7 @@
     // TODO EBR : this might need to be cancelled some time
 }
 
+// TODO: deprecated method, to be removed
 - (void)fetchGroupMembers
 {
     // TODO EBR at this stage, group members should be fetched in the background, then panel identity
@@ -651,7 +652,8 @@
 
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
         
-        [self fetchGroupMembers];
+//        [self fetchGroupMembers];
+        [settingsManager.consoleSettings.selectedController fetchGroupMembers];
         
 		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
 			[self updatePanelIdentityView];

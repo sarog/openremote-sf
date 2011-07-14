@@ -49,6 +49,28 @@
 
 // TODO EBR watch groupMembers change and reset activeGroupMember if required
 
+
+- (void)fetchGroupMembers
+{
+    [self.proxy fetchGroupMembersWithDelegate:self];
+}
+
+- (void)fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers
+{
+    
+    // TODO: do that in seperate MOC, save to DB and refresh in main MOC
+    self.activeGroupMember = nil;
+    self.groupMembers = [NSSet set];
+
+    NSLog(@"RoundRobin group members are:");
+    for (NSString *url in theMembers) {
+        NSLog(@"%@", url);
+        [self addGroupMemberForURL:url];
+    }
+}
+
+#pragma mark -
+
 - (void)didTurnIntoFault
 {
     [proxy release];
