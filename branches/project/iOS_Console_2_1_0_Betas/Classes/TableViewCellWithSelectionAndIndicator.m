@@ -39,14 +39,22 @@
     }
 }
 
+- (void)setIndicatorView:(UIView *)aView
+{
+    if (indicatorView != aView) {
+        [indicatorView removeFromSuperview];
+        [indicatorView release];
+        indicatorView = [aView retain];
+        [self.contentView addSubview:indicatorView];
+        [self setNeedsLayout];
+    }
+}
+
+#pragma mark -
+
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
-    if (self) {
-        indicatorView = [[UIView alloc] initWithFrame:CGRectZero];
-        [self.contentView addSubview:indicatorView];
-        
-    }
     return self;
 }
 
@@ -54,6 +62,21 @@
 {
     [indicatorView release];
     [super dealloc];
+}
+
+#pragma mark -
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    // indicatorView : fit height, place on right, 10px space with accessoryView and vertically centered    
+    indicatorView.frame = CGRectMake(self.contentView.bounds.size.width - 10.0 - indicatorView.frame.size.width,
+                                     (int)((self.contentView.bounds.size.height - indicatorView.frame.size.height) / 2),
+                                     indicatorView.frame.size.width, MIN(indicatorView.frame.size.height, self.contentView.bounds.size.height));
+    
+    // label : make room for indicatorView
+    self.textLabel.frame = CGRectMake(self.textLabel.frame.origin.x, self.textLabel.frame.origin.y, self.contentView.bounds.size.width - self.textLabel.frame.origin.x - indicatorView.frame.size.width - 10.0, self.textLabel.frame.size.height);
 }
 
 @end

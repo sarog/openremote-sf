@@ -27,12 +27,13 @@
  * just in front of accessory view.
  */
 @interface TableViewCellWithSelectionAndIndicator : UITableViewCell {
-    
+@private 
+    UIView *indicatorView;
 }
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier;
 
 @property (nonatomic) BOOL entrySelected;
-@property (nonatomic, readonly) UIView *indicatorView;
+@property (nonatomic, retain) UIView *indicatorView;
 
 @end

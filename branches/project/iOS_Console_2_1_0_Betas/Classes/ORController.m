@@ -52,6 +52,7 @@
 
 - (void)fetchGroupMembers
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchingNotification object:self];
     [self.proxy fetchGroupMembersWithDelegate:self];
 }
 
@@ -67,6 +68,14 @@
         NSLog(@"%@", url);
         [self addGroupMemberForURL:url];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
+}
+
+- (void)fetchGroupMembersDidFailWithError:(NSError *)error
+{
+    // TODO: handle authentication case ??? Should not really be here
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];    
 }
 
 #pragma mark -
