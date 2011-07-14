@@ -651,8 +651,6 @@
         ((TableViewCellWithSelectionAndIndicator *)cell).entrySelected = YES;
 
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
-        
-//        [self fetchGroupMembers];
         [settingsManager.consoleSettings.selectedController fetchGroupMembers];
         
 		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
@@ -678,9 +676,9 @@
 
 - (void)didAddServerURL:(NSString *)serverURL
 {
-    [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
+    ORController *controller = [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
-    [self fetchGroupMembers];
+    [controller fetchGroupMembers];
 }
 
 - (void)didEditController:(ORController *)controller

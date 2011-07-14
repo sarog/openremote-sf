@@ -30,7 +30,7 @@
 }
 
 - (void)addConfiguredController:(ORController *)controller;
-- (void)addConfiguredControllerForURL:(NSString *)url;
+- (ORController *)addConfiguredControllerForURL:(NSString *)url;
 - (void)removeConfiguredControllerAtIndex:(NSUInteger)index;
 
 - (void)removeAllAutoDiscoveredControllers;

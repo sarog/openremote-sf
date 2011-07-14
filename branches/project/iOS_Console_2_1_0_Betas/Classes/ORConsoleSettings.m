@@ -128,7 +128,7 @@
     [self addUnorderedConfiguredControllersObject:controller];
 }
 
-- (void)addConfiguredControllerForURL:(NSString *)url
+- (ORController *)addConfiguredControllerForURL:(NSString *)url
 {
     ORController *controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
     controller.primaryURL = url;
@@ -136,6 +136,7 @@
     if (!self.selectedConfiguredController) {
         self.selectedConfiguredController = controller;
     }
+    return controller;
 }
 
 - (void)removeConfiguredControllerAtIndex:(NSUInteger)index
