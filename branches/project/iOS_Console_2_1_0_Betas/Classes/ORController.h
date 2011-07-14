@@ -23,10 +23,12 @@
 
 @class ORConsoleSettings;
 @class ORGroupMember;
+@class ORControllerProxy;
 
 @interface ORController : NSManagedObject {
 @private
     ORGroupMember *activeGroupMember;
+    ORControllerProxy *proxy;
 }
 
 @property (nonatomic, retain) NSString * primaryURL;
@@ -43,6 +45,8 @@
 @property (nonatomic, readonly) NSString *selectedPanelIdentityDisplayString;
 
 @property (nonatomic, assign) ORGroupMember *activeGroupMember;
+
+@property (nonatomic, readonly, retain) ORControllerProxy *proxy;
 
 - (void)addGroupMemberForURL:(NSString *)url;
 
