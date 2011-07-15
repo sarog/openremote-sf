@@ -226,13 +226,28 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetching:) name:kORControllerGroupMembersFetchingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchFailed:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchSucceeded:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+
 }
 
 - (void)viewDidUnload
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationPopulateCredentialView object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super viewDidUnload];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+	self.navigationItem.rightBarButtonItem = done;
+	self.navigationItem.leftBarButtonItem = cancel;
+    
+	[self.tableView reloadData];    
 }
 
 // Updates controller server list in tableview, and updates panel identity view in tableview.
@@ -308,6 +323,7 @@
 }
 
 #pragma mark Delegate method of ServerAutoDiscoveryController
+
 - (void)onFindServer:(ORController *)aController {
     [aController fetchGroupMembers];
 	[self updateTableView];
@@ -319,6 +335,7 @@
 }
 
 #pragma mark Delegate method of UpdateController
+
 - (void)didUpdate {
 	[self dismissModalViewControllerAnimated:YES];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
@@ -340,26 +357,6 @@
 	} else {
 		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
 	}
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-	self.navigationItem.rightBarButtonItem = done;
-	self.navigationItem.leftBarButtonItem = cancel;
-
-	[self.tableView reloadData];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetching:) name:kORControllerGroupMembersFetchingNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchFailed:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchSucceeded:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super viewDidDisappear:animated];
 }
 
 #pragma mark - ORController group members fetch notifications
