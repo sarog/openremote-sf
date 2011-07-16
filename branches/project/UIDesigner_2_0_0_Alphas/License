@@ -700,6 +700,7 @@ OpenRemote Designer Sub-components:
   HTTPClient 3.0, IO 1.2, Lang 2.1, Logging 1.1 and Pool 1.2 are licensed 
   under Apache License, v2.0
 * Asm library is licensed under BSD-like license which is included below.
+* Beanlib libraries are licensed under Apache License, v2.0
 
 
 GPL v3 license and Apache License 2.0 are available from the following 
