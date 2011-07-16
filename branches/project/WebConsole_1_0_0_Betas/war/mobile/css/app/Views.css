@@ -1,0 +1,10 @@
+.horizontal-slider-min-track-image { border: 1px solid #aaaaaa; background: #0757ad url(../../images/horizontal_slider_bg_image.png) 50% 50% repeat-x; color: #222222; font-weight: bold; }
+.vertical-slider-min-track-image { border: 1px solid #aaaaaa; background: #0757ad url(../../images/vertical_slider_bg_image.png) 0% 50% repeat-y; color: #222222; font-weight: bold; }
+
+.slider-thumb-image {
+  background:url("images/ui-bg_glass_75_e6e6e6_1x400.png") repeat-x scroll 50% 50% #E6E6E6;
+  border:1px solid #D3D3D3;
+  color:#555555;
+  font-weight:normal;
+  text-decoration:none;
+}
