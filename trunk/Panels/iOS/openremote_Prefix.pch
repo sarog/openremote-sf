@@ -1,0 +1,18 @@
+//
+// Prefix header for all source files of the 'openremote' target in the 'openremote' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+#endif
+
+//Removing NSLogs on Release Builds by redefining NSLog to empty.
+//If you are in development mode, comment this empty NSLog to show log.
+//#define NSLog(...) {}
+
+#define log4Debug(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Info(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Warn(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Error(message, ...) NSLog(message, ##__VA_ARGS__)
+#define log4Fatal(message, ...) NSLog(message, ##__VA_ARGS__)
