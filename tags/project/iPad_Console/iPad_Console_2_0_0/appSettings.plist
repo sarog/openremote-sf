@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>header</key>
+		<string></string>
+		<key>item</key>
+		<dict>
+			<key>name</key>
+			<string>Auto Discovery</string>
+			<key>value</key>
+			<false/>
+		</dict>
+		<key>footer</key>
+		<string>Turn off auto-discovery to input controller URL manually.</string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string>Choose Controller:</string>
+		<key>servers</key>
+		<array/>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string>Choose Controller:</string>
+		<key>servers</key>
+		<array>
+			<dict>
+				<key>choose</key>
+				<true/>
+				<key>url</key>
+				<string>http://controller.openremote.org/ipad/controller</string>
+			</dict>
+		</array>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string>Choose Panel Identity:</string>
+		<key>item</key>
+		<dict>
+			<key>name</key>
+			<string>Panel</string>
+			<key>identity</key>
+			<string>None</string>
+		</dict>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string></string>
+		<key>footer</key>
+		<string></string>
+	</dict>
+	<dict>
+		<key>header</key>
+		<string>Security:</string>
+		<key>item</key>
+		<dict>
+			<key>useSSL</key>
+			<false/>
+			<key>port</key>
+			<real>8443</real>
+		</dict>
+		<key>footer</key>
+		<string></string>
+	</dict>
+</array>
+</plist>
