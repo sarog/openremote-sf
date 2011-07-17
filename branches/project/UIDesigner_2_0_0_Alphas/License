@@ -704,6 +704,7 @@ OpenRemote Designer Sub-components:
 * cglib library is licensed under Apache License, v2.0
 * dom4j library is licensed undre a BSD-like license which is included
   below.
+* FlexJSON library is licensed under Apache License, v2.0
 
 
 GPL v3 license and Apache License 2.0 are available from the following 
