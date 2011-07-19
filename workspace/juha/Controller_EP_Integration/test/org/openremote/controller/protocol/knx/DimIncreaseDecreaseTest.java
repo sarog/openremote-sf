@@ -129,7 +129,7 @@ public class DimIncreaseDecreaseTest
     assertTrue(cmd2 instanceof GroupValueWrite);
 
 
-    assertTrue(cmd1.equals(cmd2));
+    assertTrue("DIM INCREASE commands to same group address were not equal (see ORCJAVA-150)", cmd1.equals(cmd2));
     assertTrue(cmd2.equals(cmd1));
 
 
