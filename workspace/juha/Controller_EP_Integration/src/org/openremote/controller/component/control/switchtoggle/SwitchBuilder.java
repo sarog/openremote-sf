@@ -36,7 +36,12 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.service.ServiceContext;
 
 /**
- * TODO : It is mainly responsible for build Switch control with control element and commandParam.
+ * TODO :
+ *
+ *  - see related tasks
+ *     ORCJAVA-145  (http://jira.openremote.org/browse/ORCJAVA-145)
+ *     ORCJAVA-146  (http://jira.openremote.org/browse/ORCJAVA-146)
+ *     ORCJAVA-147  (http://jira.openremote.org/browse/ORCJAVA-147)
  * 
  * @author Handy.Wang 2009-10-23
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
