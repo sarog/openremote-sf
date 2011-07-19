@@ -33,8 +33,11 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.Constants;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.command.CommandFactory;
@@ -104,9 +107,14 @@ public class ComponentBuilderTest
     componentBuilder.setCommandFactory(cf);
     componentBuilder.setRemoteActionXMLParser(ServiceContext.getControllerXMLParser());
 
+
+    ControllerConfiguration cc = new ControllerConfiguration();
+    StatusCache sc = new StatusCache();
+    Deployer deployer = new Deployer(sc, cc);
+
     // Setup the sensor builder with same dependencies
 
-    sensorBuilder = new SensorBuilder();
+    sensorBuilder = new SensorBuilder(deployer);
     sensorBuilder.setCommandFactory(cf);
     sensorBuilder.setRemoteActionXMLParser(ServiceContext.getControllerXMLParser());
   }
