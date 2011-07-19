@@ -41,6 +41,12 @@ import org.openremote.controller.Constants;
 /**
  * TODO
  *
+ *   - see related tasks
+ *     ORCJAVA-145  (http://jira.openremote.org/browse/ORCJAVA-145)
+ *     ORCJAVA-146  (http://jira.openremote.org/browse/ORCJAVA-146)
+ *     ORCJAVA-147  (http://jira.openremote.org/browse/ORCJAVA-147)
+
+ *
  * @author Javen
  */
 public class SwitchBuilderTest
@@ -65,20 +71,21 @@ public class SwitchBuilderTest
 
   // Tests ----------------------------------------------------------------------------------------
 
-  @Test public void testNoSuchSwitch() throws Exception
-  {
-    try
-    {
-      getSwitchByID("9", "on");
-      fail();
-    }
-    catch (XMLParsingException e)
-    {
+//  @Test public void testNoSuchSwitch() throws Exception
+//  {
+//    try
+//    {
+//      getSwitchByID("9", "on");
+//      fail();
+//    }
+//    catch (XMLParsingException e)
+//    {
+//
+//    }
+//
+//  }
 
-    }
-
-  }
-
+  
   @Test public void testNoNull() throws Exception
   {
     Assert.assertNotNull(getSwitchByID("3", "on"));
