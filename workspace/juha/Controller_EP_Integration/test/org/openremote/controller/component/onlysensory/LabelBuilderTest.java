@@ -83,21 +83,21 @@ public class LabelBuilderTest
 //
 //    }
 //  }
-
-  @Test public void testGetLabelforNoSuchID() throws Exception
-  {
-    try
-    {
-       getLabelByID("200");
-       fail();
-    }
-
-    catch (XMLParsingException e)
-    {
-
-    }
-  }
-
+//
+//  @Test public void testGetLabelforNoSuchID() throws Exception
+//  {
+//    try
+//    {
+//       getLabelByID("200");
+//       fail();
+//    }
+//
+//    catch (XMLParsingException e)
+//    {
+//
+//    }
+//  }
+//
 
   // Helpers --------------------------------------------------------------------------------------
 
