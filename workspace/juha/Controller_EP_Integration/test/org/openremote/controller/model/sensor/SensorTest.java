@@ -292,6 +292,11 @@ public class SensorTest
     {
       Assert.assertTrue(sensor.getSensorID() == id);
     }
+
+    @Override public void stop(Sensor sensor)
+    {
+      // no-op...
+    }
   }
 
 
