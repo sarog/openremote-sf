@@ -40,7 +40,9 @@ import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.utils.SpringTestContext;
 
 /**
- * TODO
+ * TODO :
+ *
+ *   see ORCJAVA-148 (http://jira.openremote.org/browse/ORCJAVA-148)
  *
  * @author Javen
  */
@@ -68,19 +70,19 @@ public class LabelBuilderTest
     Assert.assertNotNull(label);
   }
 
-  @Test public void testGetLabelforInvalidLabel() throws Exception
-  {
-    try
-    {
-       getLabelByID("8");
-       fail();
-    }
-
-    catch (XMLParsingException e)
-    {
-
-    }
-  }
+//  @Test public void testGetLabelforInvalidLabel() throws Exception
+//  {
+//    try
+//    {
+//       getLabelByID("8");
+//       fail();
+//    }
+//
+//    catch (XMLParsingException e)
+//    {
+//
+//    }
+//  }
 
   @Test public void testGetLabelforNoSuchID() throws Exception
   {
