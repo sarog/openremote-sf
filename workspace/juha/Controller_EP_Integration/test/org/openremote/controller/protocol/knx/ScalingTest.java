@@ -408,7 +408,7 @@ public class ScalingTest
     assertTrue(cmd2 instanceof GroupValueWrite);
 
 
-    assertTrue(cmd1.equals(cmd2));
+    assertTrue("DIM commands to same group address were not equal. See ORCJAVA-150", cmd1.equals(cmd2));
     assertTrue(cmd2.equals(cmd1));
 
 
@@ -452,7 +452,7 @@ public class ScalingTest
     assertTrue(cmd2 instanceof GroupValueWrite);
 
 
-    assertTrue(cmd1.equals(cmd2));
+    assertTrue("SCALE commands to same group address were not equal. See ORCJAVA-150", cmd1.equals(cmd2));
     assertTrue(cmd2.equals(cmd1));
 
 
