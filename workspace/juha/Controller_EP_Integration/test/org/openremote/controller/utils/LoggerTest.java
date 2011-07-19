@@ -133,7 +133,7 @@ public class LoggerTest
 
     log.error(null, null, "arg");
 
-    log.error(null, new RuntimeException("test err null args"), null);
+    log.error(null, new RuntimeException("test err null args"), (Object[])null);
 
     log.error("error msg", (Exception)null);
 
@@ -157,7 +157,7 @@ public class LoggerTest
 
     log.warn(null, null, "arg");
 
-    log.warn(null, new RuntimeException("test warning null args"), null);
+    log.warn(null, new RuntimeException("test warning null args"), (Object[])null);
 
     log.warn("warn msg", (Exception)null);
 
@@ -181,7 +181,7 @@ public class LoggerTest
 
     log.info(null, null, "arg");
 
-    log.info(null, new RuntimeException("test information null args"), null);
+    log.info(null, new RuntimeException("test information null args"), (Object[])null);
 
     log.info("info msg", (Exception)null);
 
@@ -206,7 +206,7 @@ public class LoggerTest
 
     log.debug(null, null, "arg");
 
-    log.debug(null, new RuntimeException("test debugging null args"), null);
+    log.debug(null, new RuntimeException("test debugging null args"), (Object[])null);
 
     log.debug("debug msg", (Exception)null);
 
