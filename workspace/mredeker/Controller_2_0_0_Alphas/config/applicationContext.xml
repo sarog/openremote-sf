@@ -169,6 +169,7 @@
         <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
         <prop key = "russound">russoundCommandBuilder</prop>
         <prop key = "udp">udpSocketCommandBuilder</prop>
+        <prop key = "wol">wolCommandBuilder</prop>
       </props>
     </property>
   </bean>
@@ -181,6 +182,9 @@
 	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
 	 | extend the implementation with additional command types.
 	 +-->
+	
+	<!-- WOL Command Builder -->
+	<bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
 	
 	<!-- Infrared Command Builder -->
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
