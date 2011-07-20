@@ -43,13 +43,14 @@ public class JettyStart {
 
    public static void main(String[] args) throws Exception {
       server = new Server();
+
       SocketConnector connector = new SocketConnector();
       connector.setPort(AllTests.WEBAPP_PORT);
       server.setConnectors(new Connector[] { connector });
       WebAppContext context = new WebAppContext();
       context.setServer(server);
       context.setContextPath("/controller");
-      context.setWar("web");
+      context.setWar(".");
       server.addHandler(context);
       Thread monitor = new MonitorThread();
       monitor.start();
