@@ -37,6 +37,11 @@ import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.utils.SpringTestContext;
 import org.openremote.controller.utils.XMLUtil;
 import org.openremote.controller.Constants;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.spring.SpringContext;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.service.ServiceContext;
 
 /**
  * TODO
@@ -53,7 +58,7 @@ public class SwitchBuilderTest
 {
 
   private Document doc = null;
-  private SwitchBuilder builder = (SwitchBuilder) SpringTestContext.getInstance().getBean("switchBuilder");
+  private SwitchBuilder builder = (SwitchBuilder)SpringContext.getInstance().getBean("switchBuilder");
 
 
 
@@ -61,10 +66,13 @@ public class SwitchBuilderTest
 
   @Before public void setUp() throws Exception
   {
-    String controllerXMLPath = this.getClass().getClassLoader().getResource(
-        AllTests.FIXTURE_DIR + Constants.CONTROLLER_XML).getFile();
+    AllTests.replaceControllerXML(Constants.CONTROLLER_XML);
 
-    doc = XMLUtil.getControllerDocument(controllerXMLPath);
+    Deployer deployer = (Deployer)SpringContext.getInstance().getBean("deployer");
+
+    deployer.softRestart();
+
+    doc = deployer.getControllerDocument();
   }
 
 
