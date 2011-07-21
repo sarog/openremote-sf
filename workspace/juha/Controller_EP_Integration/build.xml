@@ -40,11 +40,12 @@
   <property name = "build.dir" value = "build"/>
   <property name = "output.dir" value = "output"/>
   <property name = "javadoc.dir" value = "doc"/>
+  <property name = "web.dir" value = "web"/>
   <property name = "javadoc.locale" value = "en_US"/>
   <property name = "build-config.dir" value = "build_config"/>
   <property name = "config.dir" value = "config"/>
   <property name = "classes.dir" value = "build/classes"/>
-  <property name = "webapp.classes.dir" value = "web/WEB-INF/classes"/>
+  <property name = "webapp.classes.dir" value = "${web.dir}/WEB-INF/classes"/>
   <property name = "instrumented.dir" value = "build/instrumented"/>
   <property name = "junit.reports.dir" location = "build/junit_report"/>
   <property name = "checkstyle.reports.dir" location = "build/checkstyle_report"/>
@@ -126,8 +127,17 @@
   | Make directory for this project.
   +-->
   <target name = "init" depends = "clean" description = "create folder">
+
     <mkdir dir = "${build.dir}"/>
+    <mkdir dir = "${build.dir}/testcontainer"/>
+    <mkdir dir = "${build.dir}/testcontainer/webapps"/>
+    <mkdir dir = "${build.dir}/testcontainer/logs"/>
+    <mkdir dir = "${build.dir}/testcontainer/logs/dev"/>
+    <mkdir dir = "${build.dir}/testcontainer/logs/knx"/>
+    <mkdir dir = "${build.dir}/testcontainer/logs/onewire"/>
+
     <mkdir dir = "${output.dir}"/>
+
     <copy todir = "${build.dir}/lib" flatten = "true">
       <fileset dir = "${lib.dir}/core">
         <include name = "**/*.jar"/>
@@ -145,6 +155,8 @@
         <include name = "*.jar"/>
       </fileset>
     </copy>
+
+
     <copy todir = "${build.dir}/lib/native" flatten = "true">
       <fileset dir = "${lib.dir}/rxtx">
         <include name = "**/*.dll"/>
@@ -338,9 +350,22 @@
     <echo message = " Running test..."/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
+
+    <copy todir = "${build.dir}/testcontainer/war">
+      <fileset dir = "${web.dir}">
+        <include name = "**/*"/>
+      </fileset>
+    </copy>
+    
     <property name="test.targetclasspath" value="${classes.dir}" />
     <parallel>
-      <java classname="org.openremote.controller.jetty.JettyStart" classpathref="test.path.id" fork="true" />
+
+      <java classname = "org.openremote.controller.jetty.JettyStart"
+            classpathref = "test.path.id"
+            dir = "${build.dir}/testcontainer/war"
+            fork = "true">
+      </java>
+
       <sequential>
         <waitfor>
           <socket server="127.0.0.1" port="8090" />
@@ -357,6 +382,7 @@
     |
     | JUnit test.
     +-->
+<!--
   <target name = "test" description = "junit test">
     <delete includeemptydirs = "true" dir = "${junit.reports.dir}"/>
     <mkdir dir = "${junit.reports.dir}"/>
@@ -381,17 +407,17 @@
     </junitreport>
     <fail if = "tests.failed"/>
   </target>
-
+-->
+  
   <!--
    | TEST:
    |
    | JUnit test suite.
    +-->
-
   <target name="testsuite" description="Running Test Suite">
     <delete includeemptydirs="true" dir="${junit.reports.dir}" />
     <mkdir dir="${junit.reports.dir}" />
-    <junit printsummary="yes" haltonfailure="no" fork="yes" maxmemory="512m">
+    <junit dir="${build.dir}/testcontainer/war" printsummary="yes" haltonfailure="no" fork="yes" maxmemory="512m">
       <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}" />
       <classpath location="${test.targetclasspath}" />
       <classpath location="${classes.dir}" />
@@ -428,6 +454,16 @@
     <delete dir = "${deploy.dir}/controller"/>
     <copy todir = "${deploy.dir}" file = "${output.dir}/${project.name}.war"/>
   </target>
+
+
+
+
+
+
+
+
+
+
 
   <!--
     | COBERTURA_INSTRUMENT:
