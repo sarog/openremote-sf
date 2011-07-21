@@ -185,10 +185,11 @@ public class KNXCommandBuilder implements CommandBuilder
   /**
    * TODO
    */
-  public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort)
+  public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort, String physicalBusClazz)
   {
     this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
     this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
+    this.connectionManager.setPhysicalBusClazz(physicalBusClazz);
     this.connectionManager.scheduleConnection();
   }
 
