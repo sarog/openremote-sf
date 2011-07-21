@@ -26,8 +26,6 @@ import org.junit.Assert;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
 import org.openremote.controller.protocol.knx.datatype.DataPointType;
-import org.openremote.controller.protocol.knx.datatype.Controlled3Bit;
-import org.openremote.controller.protocol.knx.datatype.Bool;
 import org.openremote.controller.protocol.knx.datatype.Unsigned8Bit;
 import org.openremote.controller.utils.Strings;
 import org.openremote.controller.exception.NoSuchCommandException;
@@ -49,7 +47,7 @@ public class ScalingTest
   @Before
   public void setUp()
   {
-    builder = new KNXCommandBuilder("127.0.0.1", 9999);
+    builder = new KNXCommandBuilder("127.0.0.1", 9999, "org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus");
   }
 
 
