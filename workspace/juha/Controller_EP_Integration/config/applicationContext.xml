@@ -114,11 +114,13 @@
     <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
     
     <!-- polling machine service -->
-    <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl" />
-    
+    <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl">
+      <property name="cache" ref="statusCache"></property>
+    </bean>
+
     <!-- service for status command from panel -->
     <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
-    
+
     <!-- service for listening the status of device -->
     <bean id="statusPollingService" class="org.openremote.controller.service.impl.StatusPollingServiceImpl" />
     
@@ -136,10 +138,39 @@
     <property name="cache" ref="statusCache"></property>
   </bean>
 
-  <bean id="sensorBuilder" class="org.openremote.controller.model.xml.SensorBuilder" />
-	
+
+  <!--
+   | TODO
+   |
+   |
+   +-->
+  <bean id = "deployer" class = "org.openremote.controller.service.Deployer">
+    <constructor-arg><ref bean = "statusCache"/></constructor-arg>
+    <constructor-arg><ref bean = "configuration"/></constructor-arg>
+  </bean>
+  
+
+  <!--
+   | TODO   : XML mappers
+   |
+   |
+   +-->
+  <bean id = "sensorBuilder" class = "org.openremote.controller.model.xml.SensorBuilder">
+    <constructor-arg><ref bean = "deployer"/></constructor-arg>
+    <property name = "commandFactory" ref = "commandFactory"/>
+  </bean>
+  
+
 	<!-- controller.xml change service -->
-  <bean id = "controllerXMLChangeService" class="org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl" />
+  <bean id = "controllerXMLChangeService"
+        class = "org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl">
+    <property name = "cache" ref = "statusCache"/>
+    <property name = "deployer" ref = "deployer"/>
+    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
+    <property name = "controllerXMLListenSharingData" ref = "controllerXMLListenSharingData"/>
+    <property name = "changedStatusTable" ref = "changedStatusTable"/>
+    <property name = "sensorBuilder" ref = "sensorBuilder"/>
+  </bean>
 	
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
@@ -250,22 +281,28 @@
 	 | extend the implementation with additional UI component types.
 	 +-->
 	 
-	<!-- Button Builder -->
-	<bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder"/>
+	<bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
+  </bean>
 	
-	<!-- Switch Builder -->
-	<bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder"/>
+	<bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
+  </bean>
 	
-	<!-- Label Builder -->
-	<bean id= "labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
+	<bean id = "labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
 	
-	<!-- Slider Builder -->
-	<bean id= "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder" />
+	<bean id = "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>    
+  </bean>
 	
-	<!-- Gesture Builder -->
-	<bean id= "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder" />
-	
-	<!-- imageBuilder -->
-	<bean id="imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
+	<bean id = "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder">
+    <property name = "commandFactory" ref = "commandFactory"/>
+    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
+	</bean>
+
+	<bean id = "imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
 
 </beans>
