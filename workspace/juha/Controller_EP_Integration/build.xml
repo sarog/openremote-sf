@@ -29,23 +29,33 @@
  |  Author: Juha Lindfors
  |  Author: Jerome Velociter
  +-->
-<project name = "controller" default = "run-test" basedir = ".">
+<project name = "controller" default = "war" basedir = ".">
+
   <property file = "build.properties"/>
   <property file = "config/config.properties"/>
-  <!-- some variables used -->
+
+  <!--
+   | Project name used for packaging the binary, etc.
+   +-->
   <property name = "project.name" value = "controller"/>
+
+  <!--
+   | Top level directories in the project source structure.
+   +-->
   <property name = "src.dir" value = "src"/>
   <property name = "test.dir" value = "test"/>
   <property name = "lib.dir" value = "lib"/>
   <property name = "build.dir" value = "build"/>
+  <property name = "classes.dir" value = "${build.dir}/classes"/>
   <property name = "output.dir" value = "output"/>
   <property name = "javadoc.dir" value = "doc"/>
   <property name = "web.dir" value = "web"/>
+  <property name = "webapp.classes.dir" value = "${web.dir}/WEB-INF/classes"/>
+  <property name = "config.dir" value = "config"/>
+
+
   <property name = "javadoc.locale" value = "en_US"/>
   <property name = "build-config.dir" value = "build_config"/>
-  <property name = "config.dir" value = "config"/>
-  <property name = "classes.dir" value = "build/classes"/>
-  <property name = "webapp.classes.dir" value = "${web.dir}/WEB-INF/classes"/>
   <property name = "instrumented.dir" value = "build/instrumented"/>
   <property name = "junit.reports.dir" location = "build/junit_report"/>
   <property name = "checkstyle.reports.dir" location = "build/checkstyle_report"/>
@@ -54,34 +64,36 @@
   <property name = "version" value = "0.1-SNAPSHOT"/>
   <property name = "sql.dir" value = "sql"/>
 
-  <!-- paths used for compilation and run  -->
+  <!--
+   | Binary Compile Classpath
+   +-->
   <path id = "compile.path.id">
-    <fileset dir = "${lib.dir}/compile"/>
+    <fileset dir = "${lib.dir}/compile" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/rxtx"/>
-    <fileset dir = "${lib.dir}/apache/commons-net"/>
-    <fileset dir = "${lib.dir}/apache/commons-lang"/>
-    <fileset dir = "${lib.dir}/clink"/>
-  	<fileset dir = "${lib.dir}/json"/>
+    <fileset dir = "${lib.dir}/rxtx" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/apache/commons-net" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/apache/commons-lang" includes = "**/*.jar"/>
+    <fileset dir = "${lib.dir}/clink" includes = "**/*.jar"/>
+  	<fileset dir = "${lib.dir}/json" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
+
     <path location = "${classes.dir}"/>
   </path>
-  
+
+  <!--
+   | Additional classpath elements for running the test suites.
+   +-->
   <path id = "test.path.id">
-    <fileset dir = "${lib.dir}/compile"/>
-    <fileset dir = "${lib.dir}/core" includes = "**/*.jar"/>
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
-    <fileset dir = "${lib.dir}/clink" includes = "*.jar"/>
-  	<fileset dir = "${lib.dir}/json" includes = "*.jar"/>
     <path location = "${classes.dir}"/>
     <path location = "${test.dir}"/>
     <fileset dir = "${lib.dir}/test" includes = "**/*.jar"/>
     <path location = "${config.dir}"/>
-    <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/drools-5.1.1" includes = "**/*.jar"/>
-    <fileset dir = "${lib.dir}/onewire" includes = "**/*.jar"/>
+
+    <path refid = "compile.path.id"/>
   </path>
+
 
   <path id = "container.libs">
     <path location = "${test.dir}"/>
@@ -112,9 +124,8 @@
   <!--
     | CLEAN:
     |
-    | Cleans up the output directory for this project.
     +-->
-  <target name = "clean" description = "delete folder">
+  <target name = "clean" description = "deletes all generated files">
     <delete dir = "${build.dir}"/>
     <delete dir = "${output.dir}"/>
     <delete dir = "${webapp.classes.dir}" />
@@ -124,9 +135,9 @@
   |
   | INIT:
   |
-  | Make directory for this project.
+  | Initializes the project build structure.
   +-->
-  <target name = "init" depends = "clean" description = "create folder">
+  <target name = "init" depends = "clean">
 
     <mkdir dir = "${build.dir}"/>
     <mkdir dir = "${build.dir}/testcontainer"/>
@@ -166,17 +177,22 @@
     </copy>    
   </target>
 
+
+
   <!--
     | COMPILE:
     |
     | Run javac on all Java source.
     +-->
-  <target name = "compile" depends = "init" description = "--> compile the source.">
+  <target name = "compile" depends = "init" description = "--> compile the project sources">
+
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Compiling Java classes..."/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
+
     <mkdir dir = "${classes.dir}"/>
+
     <copy todir = "${classes.dir}">
       <fileset dir = "${config.dir}">
         <include name = "**.*"/>
@@ -192,13 +208,13 @@
 			</fileset>
 		</copy>
 
-		<copy todir="${classes.dir}">
-			<fileset dir="${test.dir}">
-				<include name="**/*.xml" />
-				<include name="**/*.properties" />
+		<copy todir = "${classes.dir}">
+			<fileset dir = "${test.dir}">
+				<include name = "**/*.xml" />
+				<include name = "**/*.properties" />
 			</fileset>
-			<fileset dir="${test.dir}">
-				<include name="**/*.xml" />
+			<fileset dir = "${test.dir}">
+				<include name = "**/*.xml" />
 			</fileset>
  		</copy>
     
@@ -208,41 +224,29 @@
   </target>
 
 
-  <!--
-    | SCHEMA:
-    |
-    | Initialize the database schema only for test.
-    +-->
-  <target name = "schema" description = "test fixture">
-    <sql driver = "com.mysql.jdbc.Driver" url = "${jdbc.url.test}" userid = "${jdbc.username.test}"
-         password = "${jdbc.password.test}" delimiter = ";" onerror = "continue">
-      <classpath>
-        <path refid = "compile.path.id"/>
-      </classpath>
-      <fileset dir = "${sql.dir}">
-        <include name = "test.sql"/>
-      </fileset>
-    </sql>
-  </target>
-
 
   <!--
     | COMPILE-TEST:
     |
-    | Compile the test.
+    | Compile tests.
     +-->
   <target name = "compile-test" depends = "compile" description = "--> compile the test cases.">
+
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Compiling test..."/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
+
     <copy todir = "${classes.dir}">
       <fileset dir = "${test.dir}">
         <include name = "**/*.xml"/>
       </fileset>
     </copy>
+
     <javac srcdir = "${test.dir}" destdir = "${classes.dir}" classpathref = "test.path.id" debug = "true" />
   </target>
+
+
 
   <!--
     | WAR:
@@ -250,10 +254,12 @@
     | Pack the war.
     +-->
   <target name = "war" depends = "compile" description = "package application to war">
+
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Packing war..."/>
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = ""/>
+
     <war warfile = "${output.dir}/${project.name}.war" webxml = "web/WEB-INF/web.xml">
       <fileset dir = "web">
         <exclude name = "WEB-INF/classes/**/*.*"/>
@@ -269,83 +275,14 @@
     </war>
   </target>
 
-  <!--
-    | JAVADOC:
-    |
-    | Run the javadoc.
-    +-->
-  <target name = "javadoc" description = "Generate API docs for the DocCheck source">
-    <echo message = "--------------------------------------------------------------------"/>
-    <echo message = " Generating javadoc..."/>
-    <echo message = "--------------------------------------------------------------------"/>
-    <echo message = ""/>
-    <mkdir dir = "${javadoc.dir}"/>
-    <javadoc
-        locale = "${javadoc.locale}"
-        defaultexcludes = "yes"
-        use = "yes"
-        header = "OpenRemote Controller API"
-        doctitle = "OpenRemote Controller API Specification V2.0"
-        nodeprecatedlist = "yes"
-        classpathref = "compile.path.id"
-        sourcepath = "./${src.dir}"
-        destdir = "./${javadoc.dir}"
-        packagenames = "org.openremote.controller.*"
-        additionalparam = "-breakiterator"
-        />
-  </target>
-
- 	<!--
- 	 | TEST-COVERAGE:
- 	 |
- 	 | Run the test with cobertura.
- 	 +-->
- 	<target name = "test-cov"  description = "--> run the test cases.">
- 		<echo message = "--------------------------------------------------------------------" />
- 		<echo message = " Running test..." />
- 		<echo message = "--------------------------------------------------------------------" />
- 		<echo message = "" />
- 		<property name = "test.targetclasspath" value = "${classes.dir}" />
- 		<parallel>
-      <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "test.path.id" fork = "true" />
- 			<sequential>
- 				<waitfor>
- 					<socket server = "127.0.0.1" port = "8090" />
- 				</waitfor>
- 				<antcall target = "testsuite" />
- 				<java classname = "org.openremote.controller.jetty.JettyStop" classpathref = "test.path.id" />
- 			</sequential>
- 		</parallel>
- 	</target>
-
-
-
-
-  <!--
-   |
-   |
-   | .
-   +-->
-  <target name = "run"  description = "--> .">
-    <echo message = "--------------------------------------------------------------------" />
-    <echo message = " Starting Container..." />
-    <echo message = "--------------------------------------------------------------------" />
-    <echo message = "" />
-    <property name = "test.targetclasspath" value = "${classes.dir}" />
-    <parallel>
-     <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "container.libs" fork = "true" />
-    </parallel>
-  </target>
-
-
-
 
   <!--
     | RUN-TEST:
     |
-    | Run the test.
+    | Run all tests.
     +-->
-  <target name = "run-test" depends = "compile-test" description = "--> run the test cases.">
+  <target name = "run-test" depends = "compile-test" description = "--> run all test cases.">
+
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Running test..."/>
     <echo message = "--------------------------------------------------------------------"/>
@@ -358,8 +295,12 @@
     </copy>
     
     <property name="test.targetclasspath" value="${classes.dir}" />
+
     <parallel>
 
+      <!--
+       | Start web server to service tests against HTTP/REST interface
+       +-->
       <java classname = "org.openremote.controller.jetty.JettyStart"
             classpathref = "test.path.id"
             dir = "${build.dir}/testcontainer/war"
@@ -368,12 +309,122 @@
 
       <sequential>
         <waitfor>
-          <socket server="127.0.0.1" port="8090" />
+          <socket server = "127.0.0.1" port = "8090" />
         </waitfor>
-        <antcall target="testsuite" />
-        <java classname="org.openremote.controller.jetty.JettyStop" classpathref="test.path.id" />
+
+        <antcall target = "testsuite"/>
+
+        <java classname = "org.openremote.controller.jetty.JettyStop" classpathref = "test.path.id" />
       </sequential>
     </parallel>
+  </target>
+
+
+  <!--
+   | Deletes previously generated test reports.
+   +-->
+  <target name = "clean-testreport">
+
+    <delete includeemptydirs = "true" dir = "${junit.reports.dir}" />
+    <mkdir dir = "${junit.reports.dir}" />
+
+  </target>
+
+
+  <!--
+   | TESTSUITE:
+   |
+   +-->
+  <target name = "testsuite" depends = "clean-testreport">
+
+    <junit dir = "${build.dir}/testcontainer/war"
+           printsummary = "yes"
+           haltonfailure = "no"
+           fork = "yes"
+           maxmemory = "512m">
+
+      <sysproperty key = "net.sourceforge.cobertura.datafile" file = "${cobertura.datafile}" />
+      <classpath location = "${test.targetclasspath}" />
+      <classpath location = "${classes.dir}" />
+      <classpath refid = "test.path.id"/>
+
+      <sysproperty key = "ant.home" value = "${ant.home}" />
+
+      <formatter type = "xml" />
+
+      <batchtest fork = "yes" todir = "${junit.reports.dir}">
+        <fileset dir = "${classes.dir}" includes = "**/AllTests.class" />
+      </batchtest>
+    </junit>
+
+    <junitreport todir = "${junit.reports.dir}">
+      <fileset dir = "${junit.reports.dir}">
+        <include name = "TEST-*.xml" />
+      </fileset>
+
+      <report format = "frames" todir = "${junit.reports.dir}" />
+    </junitreport>
+
+    <fail if="tests.failed" />
+  </target>
+
+
+  <!--
+    | Inceremental compile of unit tests.
+    +-->
+  <target name = "compile-test-incremental" depends = "clean-testreport">
+
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Compiling test..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+
+    <copy todir = "${classes.dir}">
+      <fileset dir = "${test.dir}">
+        <include name = "**/*.xml"/>
+      </fileset>
+    </copy>
+
+    <javac srcdir = "${test.dir}" destdir = "${classes.dir}" classpathref = "test.path.id" debug = "true" />
+  </target>
+
+
+  <!--
+   | TEST:
+   |
+   | Execute individual test classes from the test suite. Expects a system property 'test' with
+   | a value of the class name to be passed to the Ant runtime.
+   +-->
+  <target name = "test" depends = "compile-test-incremental"
+          description = "Executes a single test class, add -Dtest=fully.qualified.ClassName to select test to run.">
+
+    <junit dir = "${build.dir}/testcontainer/war"
+           printsummary = "true"
+           fork = "yes"
+           forkmode = "once"
+           haltonerror = "no"
+           filtertrace = "on"
+           maxmemory = "512m"
+           includeantruntime = "true"
+           showoutput = "false"
+           logfailedtests = "true">
+
+      <classpath refid = "test.path.id"/>
+
+      <test name = "${test}" todir = "${junit.reports.dir}">
+        <formatter type = "xml"/>
+      </test>
+    </junit>
+
+
+    <junitreport todir = "${junit.reports.dir}">
+      <fileset dir = "${junit.reports.dir}">
+        <include name = "TEST-*.xml" />
+      </fileset>
+
+      <report format = "frames" todir = "${junit.reports.dir}" />
+    </junitreport>
+    
   </target>
 
 
@@ -408,44 +459,43 @@
     <fail if = "tests.failed"/>
   </target>
 -->
-  
-  <!--
-   | TEST:
-   |
-   | JUnit test suite.
-   +-->
-  <target name="testsuite" description="Running Test Suite">
-    <delete includeemptydirs="true" dir="${junit.reports.dir}" />
-    <mkdir dir="${junit.reports.dir}" />
-    <junit dir="${build.dir}/testcontainer/war" printsummary="yes" haltonfailure="no" fork="yes" maxmemory="512m">
-      <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.datafile}" />
-      <classpath location="${test.targetclasspath}" />
-      <classpath location="${classes.dir}" />
-      <classpath refid="test.path.id">
-      </classpath>
-      <sysproperty key="ant.home" value="${ant.home}" />
-      <formatter type="xml" />
-      <batchtest fork="yes" todir="${junit.reports.dir}">
 
-        <fileset dir="${classes.dir}" includes="**/AllTests.class" />
-      </batchtest>
-    </junit>
-    <junitreport todir="${junit.reports.dir}">
-      <fileset dir="${junit.reports.dir}">
-        <include name="TEST-*.xml" />
-      </fileset>
-      <report format="frames" todir="${junit.reports.dir}" />
-    </junitreport>
-    <fail if="tests.failed" />
+
+
+
+  <!--
+    | JAVADOC:
+    |
+    | Run the javadoc.
+    +-->
+  <target name = "javadoc">
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = " Generating javadoc..."/>
+    <echo message = "--------------------------------------------------------------------"/>
+    <echo message = ""/>
+    <mkdir dir = "${javadoc.dir}"/>
+    <javadoc
+        locale = "${javadoc.locale}"
+        defaultexcludes = "yes"
+        use = "yes"
+        header = "OpenRemote Controller API"
+        doctitle = "OpenRemote Controller API Specification V2.0"
+        nodeprecatedlist = "yes"
+        classpathref = "compile.path.id"
+        sourcepath = "./${src.dir}"
+        destdir = "./${javadoc.dir}"
+        packagenames = "org.openremote.controller.*"
+        additionalparam = "-breakiterator"
+        />
   </target>
 
-  
+
   <!--
     | DEPLOY:
     |
     | Deploy the project to a directory.
     +-->
-  <target name = "deploy" depends = "war" description = "--> deploy the project">
+  <target name = "deploy" depends = "war">
     <echo message = "--------------------------------------------------------------------"/>
     <echo message = " Deploying project..."/>
     <echo message = "--------------------------------------------------------------------"/>
@@ -455,6 +505,22 @@
     <copy todir = "${deploy.dir}" file = "${output.dir}/${project.name}.war"/>
   </target>
 
+  <!--
+   |
+   |
+   | .
+   +-->
+  <target name = "run">
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = " Starting Container..." />
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = "" />
+    <property name = "test.targetclasspath" value = "${classes.dir}" />
+    <parallel>
+     <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "container.libs" fork = "true" />
+    </parallel>
+  </target>
+
 
 
 
@@ -466,12 +532,54 @@
 
 
   <!--
+    | SCHEMA:
+    |
+    | Initialize the database schema only for test.
+    +-->
+  <target name = "schema">
+    <sql driver = "com.mysql.jdbc.Driver" url = "${jdbc.url.test}" userid = "${jdbc.username.test}"
+         password = "${jdbc.password.test}" delimiter = ";" onerror = "continue">
+      <classpath>
+        <path refid = "compile.path.id"/>
+      </classpath>
+      <fileset dir = "${sql.dir}">
+        <include name = "test.sql"/>
+      </fileset>
+    </sql>
+  </target>
+
+
+  <!--
+   | TEST-COVERAGE:
+   |
+   | Run the test with cobertura.
+   +-->
+  <target name = "test-cov">
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = " Running test..." />
+    <echo message = "--------------------------------------------------------------------" />
+    <echo message = "" />
+    <property name = "test.targetclasspath" value = "${classes.dir}" />
+    <parallel>
+     <java classname = "org.openremote.controller.jetty.JettyStart" classpathref = "test.path.id" fork = "true" />
+      <sequential>
+        <waitfor>
+          <socket server = "127.0.0.1" port = "8090" />
+        </waitfor>
+        <antcall target = "testsuite" />
+        <java classname = "org.openremote.controller.jetty.JettyStop" classpathref = "test.path.id" />
+      </sequential>
+    </parallel>
+  </target>
+
+
+
+  <!--
     | COBERTURA_INSTRUMENT:
     |
     | Make instrument for cobertura.
     +-->
-  <target name = "cobertura_instrument" depends = "compile-test"
-          description = "add log info in class files">
+  <target name = "cobertura_instrument" depends = "compile-test">
     <delete file = "${cobertura.datafile}"/>
     <cobertura-instrument todir = "${instrumented.dir}" datafile = "${cobertura.datafile}">
       <ignore regex = "org.apache.log4j.*"/>
@@ -491,8 +599,7 @@
     |
     | Generate the cobertura report.
     +-->
-  <target name = "report-cobertura" depends = "cobertura_instrument"
-          description = "--> generate the coverage report.">
+  <target name = "report-cobertura" depends = "cobertura_instrument">
     <property name = "test.targetclasspath" value = "${instrumented.dir}"/>
     <antcall target = "test-cov"/>
     <delete includeemptydirs = "true" dir = "${cobertura.report.dir}"/>
@@ -510,8 +617,7 @@
     |
     | Generate the checkstyle report.
     +-->
-  <target name = "report-checkstyle"
-          description = "--> generates a report of code convention violations.">
+  <target name = "report-checkstyle">
     <mkdir dir = "${checkstyle.reports.dir}"/>
     <checkstyle config = "${build-config.dir}/openremote_checks.xml"
                 failureProperty = "checkstyle.failure"
