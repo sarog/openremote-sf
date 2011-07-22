@@ -19,21 +19,16 @@
 */
 package org.openremote.android.console;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.AsyncPanelListReader;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
@@ -41,11 +36,6 @@ import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -636,28 +626,14 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
 
   @Override
   public void urlConnectionDidReceiveData(InputStream data) {
-    loadingPanelProgress.dismiss();
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document dom = builder.parse(data);
-      Element root = dom.getDocumentElement();
-
-      NodeList nodeList = root.getElementsByTagName("panel");
-      int nodeNums = nodeList.getLength();
-      if (nodeNums == 1) {
-        panelSelectSpinnerView.setOnlyPanel(nodeList.item(0).getAttributes().getNamedItem("name").getNodeValue());
+    AsyncPanelListReader asyncReader = new AsyncPanelListReader() {
+      protected void onPostExecute(List<String> panelList) {
+        loadingPanelProgress.dismiss();
+        if (!panelList.isEmpty())
+          panelSelectSpinnerView.setOnlyPanel(panelList.get(0));
       }
-    } catch (IOException e) {
-      Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "The data is from ORConnection is bad", e);
-      return;
-    } catch (ParserConfigurationException e) {
-      Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "Cant build new Document builder", e);
-      return;
-    } catch (SAXException e) {
-      Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "Parse data error", e);
-      return;
-    }
+    };
+    asyncReader.execute(data);
   }
 
   @Override
