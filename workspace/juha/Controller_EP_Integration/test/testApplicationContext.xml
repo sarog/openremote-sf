@@ -157,7 +157,6 @@
    +-->
   <bean id = "sensorBuilder" class = "org.openremote.controller.model.xml.SensorBuilder">
     <constructor-arg><ref bean = "deployer"/></constructor-arg>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
     <property name = "commandFactory" ref = "commandFactory"/>
   </bean>
 
