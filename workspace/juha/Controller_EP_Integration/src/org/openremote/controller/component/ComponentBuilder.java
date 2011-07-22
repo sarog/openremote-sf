@@ -38,135 +38,15 @@ import org.openremote.controller.protocol.EventProducer;
 
 
 /**
- * TODO : super class for parsing the <component> elements from controller.xml
+ * TODO : see ORCJAVA-143 (http://jira.openremote.org/browse/ORCJAVA-143)
  * 
  * @author Handy.Wang 2009-10-15
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public abstract class ComponentBuilder
+@Deprecated public abstract class ComponentBuilder
 {
-
-  // Class Members --------------------------------------------------------------------------------
-
-  /**
-   * Use common log category for XML parsing related errors.
-   */
-  private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
-
-
-  // Instance Fields ------------------------------------------------------------------------------
-
   protected RemoteActionXMLParser remoteActionXMLParser;
   protected CommandFactory commandFactory;
-
-
-  // Instance Methods -----------------------------------------------------------------------------
-
-//  /**
-//   * TODO
-//   *
-//   * @param componentElement
-//   * @param sensorIncludeElement
-//   *
-//   * @throws XMLParsingException
-//   *
-//   * @return
-//   */
-//  protected Sensor parseSensor(Element componentElement, Element sensorIncludeElement)
-//      throws InitializationException
-//  {
-//    if (componentElement == null || sensorIncludeElement == null)
-//      throw new InitializationException("null arguments");
-//
-//
-//    String sensorID = sensorIncludeElement.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
-//
-//    Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(), sensorID);
-//
-//
-//    SensorBuilder builder = (SensorBuilder)ServiceContext.getXMLBinding("sensor");
-//
-//    return builder.build(sensorElement.getDocument(), sensorElement);
-//  }
-//
-//
-//
-//
-//    if (sensorElement == null)
-//    {
-//     throw new XMLParsingException(MessageFormat.format(
-//         "Component was configured with sensor (ID: {0}) which was not not found.",
-//         sensorID
-//     ));
-//    }
-//
-//    List<Element> sensorSubElements = sensorElement.getChildren();
-//    Sensor sensor = null;
-//
-//    for (Element sensorSubElement : sensorSubElements)
-//    {
-//      if (!hasEventProducer(sensorSubElement))
-//        continue;
-//
-//      String eventProducerID = sensorSubElement.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
-//
-//      Element eventProducerElement = remoteActionXMLParser.queryElementFromXMLById(
-//          componentElement.getDocument(),
-//          eventProducerID
-//      );
-//
-//      if (eventProducerElement == null)
-//      {
-//        throw new XMLParsingException(MessageFormat.format(
-//            "Configuration error in {0}: sensor with ID {1} has been configured to reference " +
-//            "an event producer (command) with ID {2} -- command with this ID was not found.",
-//            Constants.CONTROLLER_XML, sensorID, eventProducerID
-//        ));
-//      }
-//
-//      Command cmd = commandFactory.getCommand(eventProducerElement);
-//
-//      try
-//      {
-//        if (cmd instanceof EventProducer)
-//        {
-//          EventProducer eventProducer = (EventProducer) cmd;
-//          sensor = new Sensor(eventProducer);
-//          sensor.setSensorID(Integer.parseInt(sensorID));
-//        }
-//
-//        break;
-//      }
-//
-//      catch (NumberFormatException e)
-//      {
-//        log.warn(
-//            "Sensor with ID = {0} could not be parsed to a unique integer ID. " +
-//            "Skipping the sensor creation.", sensorID
-//        );
-//      }
-//    }
-//
-//    if (sensor == null)
-//    {
-//      throw new XMLParsingException(
-//          "Configured component sensor reference {0} could not be constructed.", sensorID
-//      );
-//    }
-//
-//    return sensor;
-//  }
-//
-//
-//
-//
-//  private boolean hasEventProducer(Element sensorSubElement)
-//  {
-//     return Component.INCLUDE_ELEMENT_NAME.equalsIgnoreCase(sensorSubElement.getName()) &&
-//            Component.COMMAND_ELEMENT_NAME.equalsIgnoreCase(sensorSubElement.getAttributeValue(Component.INCLUDE_TYPE_ATTRIBUTE_NAME));
-//  }
-//
-
 
 
 
