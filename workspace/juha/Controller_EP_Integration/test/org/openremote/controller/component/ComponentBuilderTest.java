@@ -40,6 +40,7 @@ import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.command.CommandFactory;
 
 import org.jdom.Document;
@@ -135,16 +136,13 @@ public class ComponentBuilderTest
     Assert.assertTrue(include.getAttribute("type").getValue().equals("sensor"));
     Assert.assertTrue(include.getAttribute("ref").getValue().equals("1001"));
 
-//    Sensor sensor = componentBuilder.parseSensor(switch1, include);
     SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
     Sensor sensor = builder.buildFromComponentInclude(include);
 
     Assert.assertTrue(sensor.getSensorID() == 1001);
-
-//  TODO :
-//   - this is a bug, shown in the test below -- sensor type is never set.
-
-    //Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
+    Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
+    Assert.assertTrue(sensor instanceof SwitchSensor);
+    Assert.assertTrue(sensor.isRunning());
   }
 
 
@@ -157,18 +155,10 @@ public class ComponentBuilderTest
     SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
     Sensor sensor = builder.buildFromComponentInclude(include);
     
-//    Sensor sensor = componentBuilder.parseSensor(switch1, include);
-
     Assert.assertTrue(sensor.getSensorID() == 1001);
-
-//  TODO :
-//   - this is a bug due to copy/paste code in parseSensor() that got not updated in sync
-//     with SensorBuilder code. Typical chinese crap. Will throw assert error until fixed.
-//
-    Assert.assertTrue("sensor type not set properly when using parseSensor()",
-        sensor.getSensorType() == EnumSensorType.SWITCH);
-
-    Assert.fail("bug has been fixed, please update the test case.");
+    Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
+    Assert.assertTrue(sensor instanceof SwitchSensor);
+    Assert.assertTrue(sensor.isRunning());
   }
 
 
@@ -178,6 +168,8 @@ public class ComponentBuilderTest
 
     Assert.assertTrue(s.getSensorID() == 1001);
     Assert.assertTrue(s.getSensorType() == EnumSensorType.SWITCH);
+    Assert.assertTrue(s instanceof SwitchSensor);
+    Assert.assertTrue(s.isRunning());
   }
 
 
@@ -200,36 +192,32 @@ public class ComponentBuilderTest
 
     SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
     Sensor sensor = builder.buildFromComponentInclude(include);
-//    Sensor sensor = componentBuilder.parseSensor(slider, include);
-
     Assert.assertTrue(sensor.getSensorID() == 1008);
 
 //  TODO :
 //   - this is a bug, shown in the test above -- sensor type is never set.
 
-    //Assert.assertTrue(sensor.getSensorType() == EnumSensorType.RANGE);
+    Assert.assertTrue(sensor.getSensorType() == EnumSensorType.RANGE);
+    Assert.assertTrue(sensor instanceof RangeSensor);
+    Assert.assertTrue(sensor.isRunning());
 
-//    Assert.assertTrue(
-//        "Expected 100, got " + sensor.getMaxValue(),
-//        sensor.getMaxValue() == 100
-//    );
-//
-//    Assert.assertTrue(
-//        "Expected -20, got " + sensor.getMinValue(),
-//        sensor.getMinValue() == -20
-//    );
+    RangeSensor range = (RangeSensor)sensor;
 
-//  TODO :
-//   - this is another bug, shown in another test below -- sensor properties are never set.
+    Assert.assertTrue(
+        "Expected 100, got " + range.getMaxValue(),
+        range.getMaxValue() == 100
+    );
 
-//    Assert.assertNotNull(sensor.getStateMap());
+    Assert.assertTrue(
+        "Expected -20, got " + range.getMinValue(),
+        range.getMinValue() == -20
+    );
 
-
-
-
-
-    //Assert.assertNotNull(sensor.getEventProducer());
-    //Assert.assertTrue(sensor.getEventProducer() instanceof StatusCommand);
+    Assert.assertNotNull(sensor.getProperties());
+    Assert.assertTrue(sensor.getProperties().containsKey(Sensor.RANGE_MAX_STATE));
+    Assert.assertTrue(sensor.getProperties().containsKey(Sensor.RANGE_MIN_STATE));
+    Assert.assertTrue(sensor.getProperties().get(Sensor.RANGE_MAX_STATE).equals("100"));
+    Assert.assertTrue(sensor.getProperties().get(Sensor.RANGE_MIN_STATE).equals("-20"));
   }
 
 
@@ -239,16 +227,17 @@ public class ComponentBuilderTest
     Element slider = getComponentByID(8);
     Element include = slider.getChild("include", ns);
 
-//    Sensor sensor = componentBuilder.parseSensor(slider, include);
     SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
     Sensor sensor = builder.buildFromComponentInclude(include);
 
-    // TODO : BUG -- same as above, parseSensor does not initialize sensors properly.
-
-    //Assert.assertNotNull("sensor properties not set properly when using parseSensor", sensor.getStateMap());
-
-    Assert.fail("bug has been fixed, please update the test case.");    
+    Assert.assertNotNull(sensor.getProperties());
+    Assert.assertTrue(sensor.getProperties().containsKey(Sensor.RANGE_MAX_STATE));
+    Assert.assertTrue(sensor.getProperties().containsKey(Sensor.RANGE_MIN_STATE));
+    Assert.assertTrue(sensor.getProperties().get(Sensor.RANGE_MAX_STATE).equals("100"));
+    Assert.assertTrue(sensor.getProperties().get(Sensor.RANGE_MIN_STATE).equals("-20"));
   }
+
+
 
   @Test public void testSensorBuilderOnRangeSensor() throws Exception
   {
@@ -258,13 +247,11 @@ public class ComponentBuilderTest
     Assert.assertTrue(s.getSensorType() == EnumSensorType.RANGE);
     Assert.assertTrue(s.getMaxValue() == 100);
     Assert.assertTrue(s.getMinValue() == -20);
-    //Assert.assertTrue(s.getEventProducer() != null);
-    //Assert.assertTrue(s.getEventProducer() instanceof StatusCommand);
-    //Assert.assertTrue(s.getStateMap() != null);
-    //Assert.assertTrue(s.getStateMap().containsKey(Sensor.RANGE_MAX_STATE));
-    //Assert.assertTrue(s.getStateMap().containsKey(Sensor.RANGE_MIN_STATE));
-    //Assert.assertTrue(s.getStateMap().get(Sensor.RANGE_MAX_STATE).equals("100"));
-    //Assert.assertTrue(s.getStateMap().get(Sensor.RANGE_MIN_STATE).equals("-20"));
+    Assert.assertNotNull(s.getProperties());
+    Assert.assertTrue(s.getProperties().containsKey(Sensor.RANGE_MAX_STATE));
+    Assert.assertTrue(s.getProperties().containsKey(Sensor.RANGE_MIN_STATE));
+    Assert.assertTrue(s.getProperties().get(Sensor.RANGE_MAX_STATE).equals("100"));
+    Assert.assertTrue(s.getProperties().get(Sensor.RANGE_MIN_STATE).equals("-20"));
   }
 
   
@@ -328,33 +315,6 @@ public class ComponentBuilderTest
     return sensors.get(id);
   }
 
-
-//  private Node getComponentXML(Document doc, int componentID) throws Exception
-//  {
-//    List<Node> components = RESTTests.getChildElements(doc.getDocumentElement());
-//
-//    Assert.assertTrue(components.get(0).getNodeName().equals("components"));
-//
-//
-//    List<Node> componentList = RESTTests.getChildElements(components.get(0));
-//
-//    Assert.assertTrue(componentList.size() != 0);
-//
-//    // Ineffective? Yes.  Good enough for test suite? Yes...
-//
-//    for (Node component : componentList)
-//    {
-//      NamedNodeMap attrs = component.getAttributes();
-//      Node idAttr = attrs.getNamedItem("id");
-//
-//      Assert.assertNotNull(idAttr);
-//
-//      if (Integer.parseInt(idAttr.getNodeValue()) == componentID)
-//        return component;
-//    }
-//
-//    throw new Error("TEST FAILURE : component with ID " + componentID + " was not found in document " + doc);
-//  }
 
   // Nested Classes -------------------------------------------------------------------------------
 
