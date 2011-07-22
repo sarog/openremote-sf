@@ -34,6 +34,7 @@
 @implementation ORController
 
 @synthesize activeGroupMember;
+@synthesize groupMembersFetchStatus;
 
 @dynamic primaryURL;
 @dynamic selectedPanelIdentity;
@@ -52,6 +53,7 @@
 
 - (void)fetchGroupMembers
 {
+    groupMembersFetchStatus = GroupMembersFetching;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchingNotification object:self];
     [self.proxy fetchGroupMembersWithDelegate:self];
 }
@@ -68,13 +70,14 @@
         NSLog(@"%@", url);
         [self addGroupMemberForURL:url];
     }
+    groupMembersFetchStatus = GroupMembersFetchSucceeded;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
 }
 
 - (void)fetchGroupMembersDidFailWithError:(NSError *)error
 {
     // TODO: handle authentication case ??? Should not really be here
-    
+    groupMembersFetchStatus = GroupMembersFetchFailed;    
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];    
 }
 

@@ -228,11 +228,10 @@
 	[super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetching:) name:kORControllerGroupMembersFetchingNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchFailed:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchSucceeded:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMemberFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
 }
 
 - (void)viewDidUnload
@@ -361,33 +360,9 @@
 
 #pragma mark - ORController group members fetch notifications
 
-- (void)orControllerGroupMemberFetching:(NSNotification *)notification
+- (void)orControllerGroupMembersFetchStatusChanged:(NSNotification *)notification
 {
-    TableViewCellWithSelectionAndIndicator *cell = (TableViewCellWithSelectionAndIndicator *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]];
-    UIActivityIndicatorView *aiv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    [aiv startAnimating];
-    cell.indicatorView = aiv;
-    [aiv release];
-}
-
-- (void)orControllerGroupMemberFetchFailed:(NSNotification *)notification
-{
-    TableViewCellWithSelectionAndIndicator *cell = (TableViewCellWithSelectionAndIndicator *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]];
-    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerNOK"]];
-    cell.indicatorView = iv;
-    [iv release];
-}
-
-- (void)orControllerGroupMemberFetchSucceeded:(NSNotification *)notification
-{
-    TableViewCellWithSelectionAndIndicator *cell = (TableViewCellWithSelectionAndIndicator *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]];
-    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerOK"]];
-    cell.indicatorView = iv;
-    [iv release];
-}
-
-- (void)orControllerGroupMemberFetchRequiresAuthentication:(NSNotification *)notification
-{
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark Table view methods
@@ -467,16 +442,51 @@
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
             serverCell.entrySelected = NO;
 		} else {
-			serverCell.textLabel.text = ((ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row]).primaryURL;
+            ORController *controller = (ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
+			serverCell.textLabel.text = controller.primaryURL;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
             serverCell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 
-			if ([settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row] == settingsManager.consoleSettings.selectedController) {
+			if (controller == settingsManager.consoleSettings.selectedController) {
 				currentSelectedServerIndex = indexPath;
                 serverCell.entrySelected = YES;
 			} else {
                 serverCell.entrySelected = NO;
 			}
+            switch (controller.groupMembersFetchStatus) {
+                case GroupMembersFetching:
+                {
+                    UIActivityIndicatorView *aiv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+                    [aiv startAnimating];
+                    serverCell.indicatorView = aiv;
+                    [aiv release];
+                    break;
+                }
+                case GroupMembersFetchSucceeded:
+                {
+                    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerOK"]];
+                    serverCell.indicatorView = iv;
+                    [iv release];
+                    break;
+                }
+                case GroupMembersFetchFailed:
+                {
+                    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerNOK"]];
+                    serverCell.indicatorView = iv;
+                    [iv release];
+                    break;
+                }
+                case GroupMembersFetchRequiresAuthentication:
+                {
+                    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerRequiresAuthentication"]];
+                    serverCell.indicatorView = iv;
+                    [iv release];
+                    break;
+                }
+                default:
+                    serverCell.indicatorView = nil;
+                    break;
+            }
 		}
 		return serverCell;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
