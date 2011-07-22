@@ -20,7 +20,7 @@
       <max value = "60"/>
     </sensor>
 
-    <sensor id = "4" name = "Sensor 4" type = "level">
+    <sensor id = "4" name = "Sensor 4" type = "custom">
       <include type = "command" ref = "40" />
       <state name = "red" value = "1"/>
       <state name = "blue" value = "2"/>
