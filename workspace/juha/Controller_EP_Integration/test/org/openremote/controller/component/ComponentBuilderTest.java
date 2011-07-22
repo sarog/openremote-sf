@@ -116,7 +116,6 @@ public class ComponentBuilderTest
 
     sensorBuilder = new SensorBuilder(deployer);
     sensorBuilder.setCommandFactory(cf);
-    sensorBuilder.setRemoteActionXMLParser(ServiceContext.getControllerXMLParser());
   }
 
   @Test public void testParseSensorOnSwitch1() throws Exception
