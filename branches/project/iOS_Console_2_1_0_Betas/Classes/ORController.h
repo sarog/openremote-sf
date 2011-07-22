@@ -31,10 +31,21 @@
 #define kORControllerGroupMembersFetchFailedNotification @"kORControllerGroupMembersFetchFailedNotification"
 #define kORControllerGroupMembersFetchRequiresAuthenticationNotification @"kORControllerGroupMembersFetchRequiresAuthenticationNotification"
 
+enum {
+    GroupMembersFetchStatusUnknown = 0,
+	GroupMembersFetching,
+    GroupMembersFetchSucceeded,
+    GroupMembersFetchFailed,
+    GroupMembersFetchRequiresAuthentication
+};
+typedef NSInteger ORControllerGroupMembersFetchStatus;
+
+
 @interface ORController : NSManagedObject <ORControllerGroupMembersFetcherDelegate> {
 @private
     ORGroupMember *activeGroupMember;
     ORControllerProxy *proxy;
+    ORControllerGroupMembersFetchStatus groupMembersFetchStatus;
 }
 
 @property (nonatomic, retain) NSString * primaryURL;
@@ -53,6 +64,7 @@
 @property (nonatomic, assign) ORGroupMember *activeGroupMember;
 
 @property (nonatomic, readonly, retain) ORControllerProxy *proxy;
+@property (nonatomic, readonly) ORControllerGroupMembersFetchStatus groupMembersFetchStatus;
 
 - (void)fetchGroupMembers;
 - (void)addGroupMemberForURL:(NSString *)url;
