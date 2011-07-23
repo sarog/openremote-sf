@@ -31,6 +31,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.xml.ObjectBuilder;
@@ -326,9 +328,14 @@ public class Deployer
 
 
   /**
-   * TODO
+   * Allows object builders to be registered with this deployer. Object builders can be
+   * registered for multiple different XML schema versions.
    *
-   * @param builder
+   * @see org.openremote.controller.service.Deployer.ControllerSchemaVersion
+   * @see org.openremote.controller.model.xml.ObjectBuilder
+   * @see org.openremote.controller.model.xml.SensorBuilder
+   *
+   * @param builder   object builder instance to register
    */
   public void registerObjectBuilder(ObjectBuilder builder)
   {
@@ -366,10 +373,18 @@ public class Deployer
 
 
   /**
-   * TODO
+   * Returns a registered sensor instance. Sensor instances are shared across threads.
+   * Retrieving a sensor with the same ID will yield a same instance. <p>
    *
-   * @param id
-   * @return
+   * If the sensor with given ID is not found, a <tt>null</tt> is returned.
+   *
+   * TODO - define Sensor interface
+   *
+   * @see org.openremote.controller.model.sensor.Sensor#getSensorID()
+   *
+   * @param id    sensor ID
+   *
+   * @return      sensor instance, or null if sensor with given ID was not found
    */
   public Sensor getSensor(int id)
   {
@@ -415,13 +430,26 @@ public class Deployer
 
 
   /**
-   * TODO:
+   * Initiate a shutdown/startup sequence.  <p>
    *
-   *   - stopSensors() and clearDeviceStateCache() should be eventually included here
-   *   - currently multiple object models must be supported through class hierarchy. If
-   *     this needs to change, Sensor must be defined via an interface
+   * Shutdown phase will undeploy the current runtime object model. Resources will be stopped and
+   * freed. This however only impacts the runtime object model of the controller. The controller
+   * itself stays at an init level where a new object model can be loaded into the system. The JVM
+   * process will not exit. <p>
    *
-   * @throws InitializationException
+   * Startup phase loads back a runtime object model into the controller. The loading is done
+   * from the controller definition file, path of which is indicated by the
+   * {@link org.openremote.controller.ControllerConfiguration#getResourcePath()} method. <p>
+   *
+   * After the startup phase is done, a complete functional controller definition has been
+   * loaded into the controller (unless fatal errors occured), has been initialized and
+   * started as is ready to handle incoming requests.
+   *
+   * @see org.openremote.controller.ControllerConfiguration#getResourcePath
+   * @see #softShutdown
+   * @see #startup()
+   *
+   * @throws InitializationException    if the restart encounters errors it cannot recover from
    */
   public void softRestart() throws InitializationException
   {
@@ -439,10 +467,11 @@ public class Deployer
 
 
   /**
-   * TODO:
-   *   should implement the sequence of shutting down the currently deployed controller
-   *   configuration (but not exit the process). Currently only manages sensor resources.
-   *   Others should follow.
+   * Implements the sequence of shutting down the currently deployed controller
+   * runtime (but will not exit the VM process). <p>
+   *
+   * After this method completes, the controller has no active runtime object model but is
+   * at an init level where a new one can be loaded in.
    */
   private void softShutdown()
   {
@@ -470,11 +499,19 @@ public class Deployer
 
 
   /**
-   * TODO:
-   *   should manage the build-up of controller runtime with object model creation
-   *   from the XML document instance(s).
+   * Manages the build-up of controller runtime with object model creation
+   * from the XML document instance(s). Attempts to detect from configuration files
+   * which version of object model and corresponding XML schema should be used to
+   * build the runtime model. <p>
+   *
+   * Once this method returns, the controller runtime is 'ready' -- that is, the object
+   * model has been created but also initialized, registered and started so it is fully
+   * functional and able to receive requests.
    *
    * @throws InitializationException
+   *              If the startup cannot be completed. Note that partial failures (such as
+   *              minor errors in the controller's object model definition) may not prevent
+   *              the startup from completing, and will be logged as errors instead.
    */
   private void startup() throws InitializationException
   {
@@ -499,7 +536,7 @@ public class Deployer
         // NOTE: the schema 2.0 builder auto-starts all the sensors it locates in the
         //       controller.xml definition
 
-        modelBuilder = new Version20ModelBuilder();
+        modelBuilder = new Version20ModelBuilder(this);
         break;
 
       default:
@@ -513,29 +550,39 @@ public class Deployer
   }
 
 
-
-
-
-  private ControllerSchemaVersion detectVersion()
+  /**
+   * A simplistic attempt at detecting which schema version we should use to build
+   * the object model.
+   *
+   * TODO -- the document instances we use need to start declaring version information
+   *
+   * @return  the detected schema version
+   *
+   * @throws  ConfigurationException    if we can't find any controller definition files to load
+   */
+  private ControllerSchemaVersion detectVersion() throws ConfigurationException
   {
-    String uri = new File(controllerConfig.getResourcePath()).toURI().toString() + "openremote.xml";
 
-    if (new File(uri).exists())       // TODO : sec manager
+    // Check if 3.0 schema instance is in place (this doesn't actually exist yet...)
+
+    if (Version30ModelBuilder.checkControllerDefinitionExists(controllerConfig))
     {
       return ControllerSchemaVersion.VERSION_3_0;
     }
 
-    String xmlPath =
-        PathUtil.addSlashSuffix(controllerConfig.getResourcePath()) +
-        Constants.CONTROLLER_XML;
+    // Check for 2.0 schema instance...
 
-    if (new File(xmlPath).exists())   // TODO : sec manager
+    if (Version20ModelBuilder.checkControllerDefinitionExists(controllerConfig))
     {
       return ControllerSchemaVersion.VERSION_2_0;
     }
 
-    return ControllerSchemaVersion.VERSION_2_0; // TODO: use DEFAULT_SCHEMA_VERSION;
+    throw new ConfigurationException(
+        "Could not find a controller definition to load at path ''{0}''",
+        Version20ModelBuilder.getControllerDefinitionFile(controllerConfig)
+    );
   }
+
 
 
 
@@ -549,8 +596,67 @@ public class Deployer
   /**
    * Controller's object model builder for the current 2.0 version of the implementation.
    */
-  private class Version20ModelBuilder implements ModelBuilder
+  private static class Version20ModelBuilder implements ModelBuilder
   {
+
+
+    // Class Members ------------------------------------------------------------------------------
+
+    /**
+     * Utility method to return a Java I/O File instance representing the artifact with
+     * controller runtime object model definition.
+     *
+     * @param   config    controller's user configuration
+     *
+     * @return  file representing an object model definition for a controller
+     */
+    private static File getControllerDefinitionFile(ControllerConfiguration config)
+    {
+      String xmlPath = PathUtil.addSlashSuffix(config.getResourcePath()) + Constants.CONTROLLER_XML;
+
+      return new File(xmlPath);
+    }
+
+
+    /**
+     * Utility method to isolate the privileged code block for file read access check (exists)
+     *
+     * @param   config    controller's user configuration
+     *
+     * @return  true if file exists; false if file does not exists or was denied by
+     *          security manager
+     */
+    private static boolean checkControllerDefinitionExists(ControllerConfiguration config)
+    {
+      final File file = getControllerDefinitionFile(config);
+
+      // BEGIN PRIVILEGED CODE BLOCK ----------------------------------------------------------------
+
+      return AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Boolean>()
+      {
+        @Override public Boolean run()
+        {
+          try
+          {
+            return file.exists();
+          }
+
+          catch (SecurityException e)
+          {
+            log.error(
+                "Security manager prevented read access to file ''{0}'' : {1}",
+                e, file.getAbsoluteFile(), e.getMessage()
+            );
+
+            return false;
+          }
+        }
+      });
+
+      // END PRIVILEGED CODE BLOCK ------------------------------------------------------------------
+    }
+
+
 
 
     // Instance Fields ----------------------------------------------------------------------------
@@ -564,15 +670,20 @@ public class Deployer
      */
     protected ControllerSchemaVersion version;
 
+    private Deployer deployer;
+
 
     // Constructors -------------------------------------------------------------------------------
 
     /**
      * Initialize this model builder instance to schema version 2.0
      * ({@link ControllerSchemaVersion#VERSION_2_0}).
+     *
+     * @param deployer
      */
-    protected Version20ModelBuilder()
+    protected Version20ModelBuilder(Deployer deployer)
     {
+      this.deployer = deployer;
       this.version = ControllerSchemaVersion.VERSION_2_0;
     }
 
@@ -596,9 +707,7 @@ public class Deployer
     {
       SAXBuilder builder = new SAXBuilder();
       String xsdPath = Constants.CONTROLLER_XSD_PATH;
-
-      String xmlPath = PathUtil.addSlashSuffix(
-          controllerConfig.getResourcePath()) + Constants.CONTROLLER_XML;
+      File controllerXMLFile = getControllerDefinitionFile(deployer.controllerConfig);
 
       try
       {
@@ -618,16 +727,14 @@ public class Deployer
           builder.setValidation(true);
         }
 
-        File controllerXMLFile = new File(xmlPath);
-
-        if (!controllerXMLFile.exists())              // TODO : sec manager
+        if (!checkControllerDefinitionExists(deployer.controllerConfig))
         {
            throw new ConfigurationException(
                "Controller.xml not found -- make sure it's in " + controllerXMLFile.getAbsoluteFile()
            );
         }
 
-        return builder.build(xmlPath);
+        return builder.build(controllerXMLFile);
       }
 
       catch (Throwable t)
@@ -635,7 +742,7 @@ public class Deployer
         throw new XMLParsingException(
             "Unable to parse controller definition from " +
             "''{0}'' (accessing schema from ''{1}'') : {2}",
-            t, new File(xmlPath).getAbsoluteFile(), xsdPath, t.getMessage()
+            t, controllerXMLFile.getAbsoluteFile(), xsdPath, t.getMessage()
         );
       }
     }
@@ -676,7 +783,7 @@ public class Deployer
 
       for (Sensor sensor : sensors)
       {
-        deviceStateCache.registerSensor(sensor);
+        deployer.deviceStateCache.registerSensor(sensor);
 
         sensor.start();
       }
@@ -709,7 +816,10 @@ public class Deployer
       {
         // Parse <sensors> element from the controller.xml...
 
-        Element sensorsElement = querySensorSegment();      // may return null
+        Document doc = getControllerDocument();
+        String xPathExpression = "//" + Constants.OPENREMOTE_NAMESPACE + ":sensors";
+
+        Element sensorsElement = queryElementFromXML(doc, xPathExpression);
 
         if (sensorsElement == null)
         {
@@ -734,7 +844,7 @@ public class Deployer
 
             BuilderKey key = new BuilderKey(version, XMLSegment.SENSORS);
 
-            ObjectBuilder ob = objectBuilders.get(key);
+            ObjectBuilder ob = deployer.objectBuilders.get(key);
 
             if (ob == null)
             {
@@ -779,76 +889,14 @@ public class Deployer
     /**
      * Isolated this one method call to suppress warnings (JDOM API does not use generics).
      *
-     * @param sensorsElement
+     * @param sensorsElement  the {@code <sensors>} element of controller.xml file
      *
-     * @return
+     * @return  the child elements of {@code <sensors>}
      */
     @SuppressWarnings("unchecked")
     private List<Element> getSensorElements(Element sensorsElement)
     {
       return sensorsElement.getChildren();
-    }
-
-
-    private Element querySensorSegment() throws InitializationException
-    {
-//      SAXBuilder sb = new SAXBuilder();
-//      String xsdPath = Constants.CONTROLLER_XSD_PATH;
-//      URL resource = this.getClass().getResource(xsdPath);
-//
-//      if (resource == null)
-//      {
-//        log.error("Unable to locate schema file ''{0}''. Disabling validation.", xsdPath);
-//      }
-//
-//      else
-//      {
-//        try
-//        {
-//          String schemaFilePath = resource.getPath();
-//
-//          // TODO : why are we decoding the XML schema path? This doesn't make sense to me. [JPL]
-//          schemaFilePath = URLDecoder.decode(schemaFilePath, Constants.CHARACTER_ENCODING_UTF8);
-//          sb.setProperty(Constants.SCHEMA_SOURCE, new File(schemaFilePath));
-//          sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-//          sb.setValidation(true);
-//        }
-//        catch (Throwable t)
-//        {
-//          throw new ConfigurationException("Decoding error : {0}", t, t.getMessage());
-//        }
-//      }
-//
-//      String xmlPath = PathUtil.addSlashSuffix(
-//          controllerConfig.getResourcePath()) + Constants.CONTROLLER_XML;
-//
-//      File controllerXMLFile = new File(xmlPath);
-//
-//      if (!controllerXMLFile.exists())
-//      {
-//         throw new ConfigurationException(
-//             "Controller.xml not found -- make sure it's in " + controllerXMLFile.getAbsoluteFile()
-//         );
-//      }
-//
-//
-//
-//
-//      try
-//      {
-//        Document doc = sb.build(controllerXMLFile);
-        Document doc = getControllerDocument();
-        String xPathExpression = "//" + Constants.OPENREMOTE_NAMESPACE + ":sensors";
-
-        return queryElementFromXML(doc, xPathExpression);
-//      }
-//
-//      catch (Throwable t)
-//      {
-//        throw new XMLParsingException(
-//            "Unable to parse ''{0}'': {1}", t, controllerXMLFile.getAbsoluteFile(), t.getMessage()
-//        );
-//      }
     }
   }
 
@@ -912,12 +960,69 @@ public class Deployer
     {
       // nothing here yet...
     }
+
+    /**
+     * Utility method to return a Java I/O File instance representing the artifact with
+     * controller runtime object model definition.
+     *
+     * @param   config    controller's user configuration
+     *
+     * @return  file representing an object model definition for a controller
+     */
+    private static File getControllerDefinitionFile(ControllerConfiguration config)
+    {
+      String uri = new File(config.getResourcePath()).toURI().toString() + "openremote.xml";
+
+      return new File(uri);
+    }
+
+    /**
+     * Utility method to isolate the privileged code block for file read access check (exists)
+     *
+     * @param   config    controller's user configuration
+     *
+     * @return  true if file exists; false if file does not exists or was denied by
+     *          security manager
+     */
+    private static boolean checkControllerDefinitionExists(ControllerConfiguration config)
+    {
+      final File file = getControllerDefinitionFile(config);
+
+      // BEGIN PRIVILEGED CODE BLOCK ----------------------------------------------------------------
+
+      return AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Boolean>()
+      {
+        @Override public Boolean run()
+        {
+          try
+          {
+            return file.exists();
+          }
+
+          catch (SecurityException e)
+          {
+            log.error(
+                "Security manager prevented read access to file ''{0}'' : {1}",
+                e, file.getAbsoluteFile(), e.getMessage()
+            );
+
+            return false;
+          }
+        }
+      });
+
+      // END PRIVILEGED CODE BLOCK ------------------------------------------------------------------
+    }
+
   }
 
 
   /**
-   * TODO
+   * Key implementation for object builders. Constructs a key based on the controller schema
+   * version and xml segment identifier provided by a concrete object builder implementation.
    *
+   * @see org.openremote.controller.model.xml.ObjectBuilder#getSchemaVersion()
+   * @see org.openremote.controller.model.xml.ObjectBuilder#getRootSegment()
    */
   private static class BuilderKey
   {
