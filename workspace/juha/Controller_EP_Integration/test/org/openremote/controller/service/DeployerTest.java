@@ -206,7 +206,7 @@ public class DeployerTest
   /**
    * Use softRestart to load new controller definition once.
    */
-  @Test public void testSoftRestart()
+  @Test public void testSoftRestart() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
@@ -281,7 +281,7 @@ public class DeployerTest
    * Test soft restart to load one controller definition and then override it with
    * a new one.
    */
-  @Test public void testSoftRestart2()
+  @Test public void testSoftRestart2() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
@@ -462,7 +462,7 @@ public class DeployerTest
   /**
    * Test restart with redeploying the same controller definition over itself.
    */
-  @Test public void redeployItself()
+  @Test public void redeployItself() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
@@ -595,7 +595,7 @@ public class DeployerTest
    * At the moment, no exception is propagated, the error is logged but the runtime
    * stays operational although not executing any functions.
    */
-  @Test public void testSoftRestartNoXMLDoc()
+  @Test public void testSoftRestartNoXMLDoc() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/doesntexist/");
