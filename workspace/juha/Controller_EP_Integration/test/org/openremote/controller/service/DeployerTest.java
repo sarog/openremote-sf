@@ -21,10 +21,12 @@
 package org.openremote.controller.service;
 
 import java.util.Properties;
+import java.util.Iterator;
 
 import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.suite.AllTests;
@@ -201,12 +203,17 @@ public class DeployerTest
   // SoftRestart Tests ----------------------------------------------------------------------------
 
 
+  /**
+   * Use softRestart to load new controller definition once.
+   */
   @Test public void testSoftRestart()
   {
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
 
+    ChangedStatusTable cst = new ChangedStatusTable();
     StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
 
     Deployer d = new Deployer(sc, cc);
 
@@ -255,6 +262,330 @@ public class DeployerTest
     Assert.assertTrue(sensor4.getSensorID() == 4);
     Assert.assertTrue(sensor4 instanceof StateSensor);
     Assert.assertTrue(sensor4.isRunning());
+
+    Iterator it = sc.listSensors();
+    int count = 0;
+
+    while(it.hasNext())
+    {
+      count++;
+      it.next();
+    }
+
+    Assert.assertTrue(count == 4);
+
+  }
+
+
+  /**
+   * Test soft restart to load one controller definition and then override it with
+   * a new one.
+   */
+  @Test public void testSoftRestart2()
+  {
+    ControllerConfiguration cc = new ControllerConfiguration();
+    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
+
+    ChangedStatusTable cst = new ChangedStatusTable();
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
+
+    Deployer d = new Deployer(sc, cc);
+
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", VirtualCommandBuilder.class.getName());
+
+    cf.setCommandBuilders(p);
+
+    SensorBuilder sb = new SensorBuilder(d);
+    sb.setCommandFactory(cf);
+
+    d.softRestart();
+
+    Sensor sensor1 = d.getSensor(1);
+
+    Assert.assertNotNull("got null sensor", sensor1);
+    Assert.assertTrue(sensor1.getName().equals("Sensor 1"));
+    Assert.assertTrue(sensor1.getSensorID() == 1);
+    Assert.assertTrue(sensor1 instanceof SwitchSensor);
+    Assert.assertTrue(sensor1.isRunning());
+
+
+    Sensor sensor2 = d.getSensor(2);
+
+    Assert.assertNotNull(sensor2);
+    Assert.assertTrue(sensor2.getName().equals("Sensor 2"));
+    Assert.assertTrue(sensor2.getSensorID() == 2);
+    Assert.assertTrue(sensor2 instanceof LevelSensor);
+    Assert.assertTrue(sensor2.isRunning());
+
+
+    Sensor sensor3 = d.getSensor(3);
+
+    Assert.assertNotNull(sensor3);
+    Assert.assertTrue(sensor3.getName().equals("Sensor 3"));
+    Assert.assertTrue(sensor3.getSensorID() == 3);
+    Assert.assertTrue(sensor3 instanceof RangeSensor);
+    Assert.assertTrue(sensor3.isRunning());
+
+
+    Sensor sensor4 = d.getSensor(4);
+
+    Assert.assertNotNull(sensor4);
+    Assert.assertTrue(sensor4.getName().equals("Sensor 4"));
+    Assert.assertTrue(sensor4.getSensorID() == 4);
+    Assert.assertTrue(sensor4 instanceof StateSensor);
+    Assert.assertTrue(sensor4.isRunning());
+
+    Iterator it = sc.listSensors();
+    int count = 0;
+
+    while(it.hasNext())
+    {
+      count++;
+      it.next();
+    }
+
+    Assert.assertTrue(count == 4);
+
+
+    // do the change...
+
+    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly2/");
+
+    d.softRestart();
+
+    Assert.assertFalse(sensor4.isRunning());
+    Assert.assertFalse(sensor3.isRunning());
+    Assert.assertFalse(sensor2.isRunning());
+    Assert.assertFalse(sensor1.isRunning());
+
+    Assert.assertTrue(d.getSensor(1) == null);
+    Assert.assertTrue(d.getSensor(2) == null);
+    Assert.assertTrue(d.getSensor(3) == null);
+    Assert.assertTrue(d.getSensor(4) == null);
+
+
+    it = sc.listSensors();
+    count = 0;
+
+    while(it.hasNext())
+    {
+      count++;
+      it.next();
+    }
+
+    Assert.assertTrue(count == 5);
+
+
+    Sensor sensor5 = d.getSensor(5);
+
+    Assert.assertNotNull("got null sensor", sensor5);
+    Assert.assertTrue(sensor5.getName().equals("Sensor 5"));
+    Assert.assertTrue(sensor5.getSensorID() == 5);
+    Assert.assertTrue(sensor5 instanceof StateSensor);
+    Assert.assertTrue(sensor5.isRunning());
+
+
+    Sensor sensor6 = d.getSensor(6);
+
+    Assert.assertNotNull(sensor6);
+    Assert.assertTrue(sensor6.getName().equals("Sensor 6"));
+    Assert.assertTrue(sensor6.getSensorID() == 6);
+    Assert.assertTrue(sensor6 instanceof RangeSensor);
+    Assert.assertTrue(sensor6.isRunning());
+
+
+    Sensor sensor7 = d.getSensor(7);
+
+    Assert.assertNotNull(sensor7);
+    Assert.assertTrue(sensor7.getName().equals("Sensor 7"));
+    Assert.assertTrue(sensor7.getSensorID() == 7);
+    Assert.assertTrue(sensor7 instanceof LevelSensor);
+    Assert.assertTrue(sensor7.isRunning());
+
+
+    Sensor sensor8 = d.getSensor(8);
+
+    Assert.assertNotNull(sensor8);
+    Assert.assertTrue(sensor8.getName().equals("Sensor 8"));
+    Assert.assertTrue(sensor8.getSensorID() == 8);
+    Assert.assertTrue(sensor8 instanceof SwitchSensor);
+    Assert.assertTrue(sensor8.isRunning());
+
+
+    Sensor sensor9 = d.getSensor(9);
+
+    Assert.assertNotNull(sensor9);
+    Assert.assertTrue(sensor9.getName().equals("Sensor 9"));
+    Assert.assertTrue(sensor9.getSensorID() == 9);
+    Assert.assertTrue(sensor9 instanceof StateSensor);
+    Assert.assertTrue(sensor9.isRunning());
+
+
+    // finish by deploying empty...
+
+    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/doesnotexist/");
+
+    d.softRestart();
+
+
+    Assert.assertFalse(sensor5.isRunning());
+    Assert.assertFalse(sensor6.isRunning());
+    Assert.assertFalse(sensor7.isRunning());
+    Assert.assertFalse(sensor8.isRunning());
+    Assert.assertFalse(sensor9.isRunning());
+
+    Assert.assertTrue("expected sensor 5 to be cleared", d.getSensor(5) == null);
+    Assert.assertTrue("expected sensor 6 to be cleared", d.getSensor(6) == null);
+    Assert.assertTrue("expected sensor 7 to be cleared", d.getSensor(7) == null);
+    Assert.assertTrue("expected sensor 8 to be cleared", d.getSensor(8) == null);
+    Assert.assertTrue("expected sensor 9 to be cleared", d.getSensor(9) == null);
+
+
+    it = sc.listSensors();
+    count = 0;
+
+    while(it.hasNext())
+    {
+      count++;
+      it.next();
+    }
+
+    Assert.assertTrue(count == 0);
+
+    Assert.assertTrue(cst.getRecordList().isEmpty());
+  }
+
+
+  /**
+   * Test restart with redeploying the same controller definition over itself.
+   */
+  @Test public void redeployItself()
+  {
+    ControllerConfiguration cc = new ControllerConfiguration();
+    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
+
+    ChangedStatusTable cst = new ChangedStatusTable();
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
+
+    Deployer d = new Deployer(sc, cc);
+
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", VirtualCommandBuilder.class.getName());
+
+    cf.setCommandBuilders(p);
+
+    SensorBuilder sb = new SensorBuilder(d);
+    sb.setCommandFactory(cf);
+
+    d.softRestart();
+
+    Sensor sensor1 = d.getSensor(1);
+
+    Assert.assertNotNull("got null sensor", sensor1);
+    Assert.assertTrue(sensor1.getName().equals("Sensor 1"));
+    Assert.assertTrue(sensor1.getSensorID() == 1);
+    Assert.assertTrue(sensor1 instanceof SwitchSensor);
+    Assert.assertTrue(sensor1.isRunning());
+
+
+    Sensor sensor2 = d.getSensor(2);
+
+    Assert.assertNotNull(sensor2);
+    Assert.assertTrue(sensor2.getName().equals("Sensor 2"));
+    Assert.assertTrue(sensor2.getSensorID() == 2);
+    Assert.assertTrue(sensor2 instanceof LevelSensor);
+    Assert.assertTrue(sensor2.isRunning());
+
+
+    Sensor sensor3 = d.getSensor(3);
+
+    Assert.assertNotNull(sensor3);
+    Assert.assertTrue(sensor3.getName().equals("Sensor 3"));
+    Assert.assertTrue(sensor3.getSensorID() == 3);
+    Assert.assertTrue(sensor3 instanceof RangeSensor);
+    Assert.assertTrue(sensor3.isRunning());
+
+
+    Sensor sensor4 = d.getSensor(4);
+
+    Assert.assertNotNull(sensor4);
+    Assert.assertTrue(sensor4.getName().equals("Sensor 4"));
+    Assert.assertTrue(sensor4.getSensorID() == 4);
+    Assert.assertTrue(sensor4 instanceof StateSensor);
+    Assert.assertTrue(sensor4.isRunning());
+
+    Iterator it = sc.listSensors();
+    int count = 0;
+
+    while(it.hasNext())
+    {
+      count++;
+      it.next();
+    }
+
+    Assert.assertTrue(count == 4);
+
+
+    // redeploy
+
+    d.softRestart();
+
+    Assert.assertFalse(sensor4.isRunning());
+    Assert.assertFalse(sensor3.isRunning());
+    Assert.assertFalse(sensor2.isRunning());
+    Assert.assertFalse(sensor1.isRunning());
+
+    it = sc.listSensors();
+    count = 0;
+
+    while(it.hasNext())
+    {
+      count++;
+      it.next();
+    }
+
+    Assert.assertTrue(count == 4);
+
+    sensor1 = d.getSensor(1);
+
+    Assert.assertNotNull("got null sensor", sensor1);
+    Assert.assertTrue(sensor1.getName().equals("Sensor 1"));
+    Assert.assertTrue(sensor1.getSensorID() == 1);
+    Assert.assertTrue(sensor1 instanceof SwitchSensor);
+    Assert.assertTrue(sensor1.isRunning());
+
+
+    sensor2 = d.getSensor(2);
+
+    Assert.assertNotNull(sensor2);
+    Assert.assertTrue(sensor2.getName().equals("Sensor 2"));
+    Assert.assertTrue(sensor2.getSensorID() == 2);
+    Assert.assertTrue(sensor2 instanceof LevelSensor);
+    Assert.assertTrue(sensor2.isRunning());
+
+
+    sensor3 = d.getSensor(3);
+
+    Assert.assertNotNull(sensor3);
+    Assert.assertTrue(sensor3.getName().equals("Sensor 3"));
+    Assert.assertTrue(sensor3.getSensorID() == 3);
+    Assert.assertTrue(sensor3 instanceof RangeSensor);
+    Assert.assertTrue(sensor3.isRunning());
+
+
+    sensor4 = d.getSensor(4);
+
+    Assert.assertNotNull(sensor4);
+    Assert.assertTrue(sensor4.getName().equals("Sensor 4"));
+    Assert.assertTrue(sensor4.getSensorID() == 4);
+    Assert.assertTrue(sensor4 instanceof StateSensor);
+    Assert.assertTrue(sensor4.isRunning());
+
   }
 
 
@@ -269,8 +600,10 @@ public class DeployerTest
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/doesntexist/");
 
+    ChangedStatusTable cst = new ChangedStatusTable();
     StatusCache sc = new StatusCache();
-
+    sc.setChangedStatusTable(cst);
+    
     Deployer d = new Deployer(sc, cc);
 
     d.softRestart();
