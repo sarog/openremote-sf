@@ -35,6 +35,7 @@ import java.net.URL;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.xml.ObjectBuilder;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.PathUtil;
 import org.openremote.controller.Constants;
@@ -49,7 +50,26 @@ import org.jdom.xpath.XPath;
 import org.jdom.input.SAXBuilder;
 
 /**
- * TODO : ORCJAVA-115
+ * Deployer service centralizes access to the controller's runtime state information. It maintains
+ * the controller object model (declared in the XML documents controller deploys), and also
+ * acts as a mediator for some other key services in the controller. <p>
+ *
+ * Mainly the tasks relate to objects and services that maintain some state in-memory of
+ * the controller, and where access to such objects or services needs to be shared across
+ * multiple threads (rather than created per thread or invocation). Deployer manages the lifecycle
+ * of such stateful objects and services to ensure proper state transitions when new controller
+ * definitions (from the XML model) are loaded, for instance. <p>
+ *
+ * Main parts of this implementation relate to managing the XML to Java object mapping --
+ * transferring the information from the XML document instance that describe controller
+ * behavior into a runtime object model -- and managing the lifecycle of services through
+ * restarts and reloading the controller descriptions. In addition, this deployer provides
+ * access to the object model instances it generetaes (such as references to the sensor
+ * implementations).
+ *
+ *
+ * @see #softRestart
+ * @see #getSensor
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -59,9 +79,11 @@ public class Deployer
   // Enums ----------------------------------------------------------------------------------------
 
   /**
-   * TODO
-   *
    * Indicates a controller schema version which the deployer attempts to map to its object model.
+   * <p>
+   *
+   * These enums act as keys (or part of keys) to locate XML mapping components and object model
+   * builders associated with specific XML document schemas.
    */
   public enum ControllerSchemaVersion
   {
@@ -139,14 +161,34 @@ public class Deployer
 
 
   /**
-   * TODO
+   * Utility method to execute a given XPath expression against the given XML document
+   * instance. This implementation is limited to XPath expressions that target XML document
+   * elements only.
    *
-   * @param doc
-   * @param xPath
-   * @return
+   * @param doc     XML document instance
+   * @param xPath   XPath expression to return a single XML document element
+   *
+   * @return  One XML document element or <tt>null</tt> if nothing was found
+   *
+   * @throws  XMLParsingException   if there were errors creating the XPath expression
+   *                                or executing it
    */
   private static Element queryElementFromXML(Document doc, String xPath) throws XMLParsingException
   {
+    if (doc == null)
+    {
+      throw new XMLParsingException(
+          "Cannot executed XPath expression ''{0}'' -- XML document instance was null.", xPath
+      );
+    }
+
+    if (xPath == null || xPath.equals(""))
+    {
+      throw new XMLParsingException(
+          "Null or empty XPath expression for document {0}", doc
+      );
+    }
+
     try
     {
       XPath xpath = XPath.newInstance(xPath);
@@ -187,7 +229,7 @@ public class Deployer
 
 
   /**
-   * TODO : temp
+   * TODO : temporarly here, may be moved later
    *
    * @param doc
    * @param id
@@ -213,36 +255,60 @@ public class Deployer
 
 
   /**
-   * TODO
+   * Reference to status cache instance that does the actual lifecycle management of sensors
+   * (and receives the event updates). This implementation delegates these tasks to it.
    */
   private StatusCache deviceStateCache;
 
+
   /**
-   * TODO
+   * User defined controller configuration variables.
    */
   private ControllerConfiguration controllerConfig;
 
 
   /**
-   * TODO
+   * Acts as a registry of object builders for this deployer. Object builders are responsible
+   * for mapping the XML document model into Java object model for specific XML schema versions. <p>
+   *
+   * The key to this map contains the expected schema version and the XML segment root element
+   * which the builder is able to map to Java objects. <p>
+   *
+   * Map of object builders is maintained through the lifecycle of the JVM -- they are not
+   * reset at controller soft restarts.
+   *
+   * @see org.openremote.controller.model.xml.ObjectBuilder
+   * @see org.openremote.controller.model.xml.SensorBuilder
+   * @see ModelBuilder
+   * @see BuilderKey
+   * @see #softRestart
    */
   private Map<BuilderKey, ObjectBuilder> objectBuilders = new HashMap<BuilderKey, ObjectBuilder>(10);
 
 
   /**
-   * TODO
+   * Model builders are sequences of actions to construct the controller's object model (a.k.a
+   * strategy pattern). Different model builders may therefore act on differently
+   * structured XML document instances. <p>
+   *
+   * This model builder's lifecycle is delimited by the controller's soft restart 
+   * lifecycle (see {@link #softRestart()}. Each deploy lifecycle represents one object model
+   * (and therefore one model builder instance) that matches a particular XML schema structure.
+   *
+   * @see ModelBuilder
+   * @see #softRestart
    */
-
   private ModelBuilder modelBuilder = null;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * TODO
+   * Creates a new deployer service with a given device state cache implementation and user
+   * configuration variables.
    *
-   * @param deviceStateCache
-   * @param controllerConfig
+   * @param deviceStateCache    device cache instance for this deployer
+   * @param controllerConfig    user configuration of this deployer's controller
    */
   public Deployer(StatusCache deviceStateCache, ControllerConfiguration controllerConfig)
   {
@@ -326,28 +392,6 @@ public class Deployer
   }
 
 
-  /**
-   * TODO : temporary -- these are here temporarily until ControllerXMLChangeServiceImpl has been completely phased out (part of ORCJAVA-115)
-   */
-  public void stopSensors()
-  {
-    Iterator<Sensor> allSensors = deviceStateCache.listSensors();
-
-    while (allSensors.hasNext())
-    {
-      log.info("Stopping sensor ''{0}'' (ID = ''{1}'')...");
-
-      allSensors.next().stop();
-    }
-  }
-
-  /**
-   * TODO : temporary -- these are here temporarily until ControllerXMLChangeServiceImpl has been completely phased out (part of ORCJAVA-115)
-   */
-  public void clearDeviceStateCache()
-  {
-    deviceStateCache.clear();
-  }
 
   /**
    * TODO - temporary
@@ -356,7 +400,17 @@ public class Deployer
    */
   public Document getControllerDocument()
   {
-    return modelBuilder.getControllerDocument();
+    try
+    {
+      return modelBuilder.getControllerDocument();
+    }
+
+    catch (InitializationException e)
+    {
+      log.error("Unable to retrieve the controller's document instance : {0}", e, e.getMessage());
+
+      return null;
+    }
   }
 
 
@@ -366,8 +420,10 @@ public class Deployer
    *   - stopSensors() and clearDeviceStateCache() should be eventually included here
    *   - currently multiple object models must be supported through class hierarchy. If
    *     this needs to change, Sensor must be defined via an interface
+   *
+   * @throws InitializationException
    */
-  public void softRestart()
+  public void softRestart() throws InitializationException
   {
     softShutdown();
 
@@ -398,8 +454,12 @@ public class Deployer
         "********************************************************************\n"
     );
 
-    deviceStateCache.unregisterAllSensors();
 
+    deviceStateCache.shutdown();
+
+
+    // TODO : stop file watcher
+    
     // TODO : connection manager shutdowns
 
     // TODO : event processor shutdowns
@@ -414,8 +474,9 @@ public class Deployer
    *   should manage the build-up of controller runtime with object model creation
    *   from the XML document instance(s).
    *
+   * @throws InitializationException
    */
-  private void startup()
+  private void startup() throws InitializationException
   {
     log.info(
         "\n" +
@@ -434,6 +495,9 @@ public class Deployer
         break;
 
       case VERSION_2_0:
+
+        // NOTE: the schema 2.0 builder auto-starts all the sensors it locates in the
+        //       controller.xml definition
 
         modelBuilder = new Version20ModelBuilder();
         break;
@@ -482,15 +546,31 @@ public class Deployer
   // Inner Classes --------------------------------------------------------------------------------
 
 
-
+  /**
+   * Controller's object model builder for the current 2.0 version of the implementation.
+   */
   private class Version20ModelBuilder implements ModelBuilder
   {
 
 
+    // Instance Fields ----------------------------------------------------------------------------
+
+    /**
+     * Contains the schema version for this implementation. This is used by some generic
+     * implementations in this class which may be overriden by subclasses that implement
+     * minor (but incompatible) changes to schema as it evolves. Therefore in some cases
+     * it may be possible to extend and override this implementation for a next minor schema
+     * version rather than implement the entire model builder from scratch.
+     */
     protected ControllerSchemaVersion version;
 
 
+    // Constructors -------------------------------------------------------------------------------
 
+    /**
+     * Initialize this model builder instance to schema version 2.0
+     * ({@link ControllerSchemaVersion#VERSION_2_0}).
+     */
     protected Version20ModelBuilder()
     {
       this.version = ControllerSchemaVersion.VERSION_2_0;
@@ -501,55 +581,98 @@ public class Deployer
     // Implements ModelBuilder --------------------------------------------------------------------
 
     /**
-     * Get a document for a user referenced controller.xml with xsd validation.
+     * TODO :
+     * 
+     *   Get a document for a user referenced controller.xml with xsd validation.
      *
-     * @return a builded document for controller.xml.
+     *   This implementation is here temporarily to support existing client interface access
+     *   to deployer service -- it may however be removed later since it should not be necessary
+     *   to expose the XML document instance to outside services beyond what is provided by the
+     *   Deployer API.
+     *
+     * @return a built document for controller.xml.
      */
-    @Override public Document getControllerDocument()
+    @Override public Document getControllerDocument() throws InitializationException
     {
+      SAXBuilder builder = new SAXBuilder();
+      String xsdPath = Constants.CONTROLLER_XSD_PATH;
+
       String xmlPath = PathUtil.addSlashSuffix(
           controllerConfig.getResourcePath()) + Constants.CONTROLLER_XML;
 
-      SAXBuilder builder = new SAXBuilder();
-      Document doc = null;
-
       try
       {
-        builder.setValidation(true);
-        File xsdfile = new File(Version20ModelBuilder.class.getResource(Constants.CONTROLLER_XSD_PATH).getPath());
+        URL xsdResource = Version20ModelBuilder.class.getResource(xsdPath);
 
-        builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-        builder.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
-        doc = builder.build(xmlPath);
+        if (xsdResource == null)
+        {
+          log.error("Cannot find XSD schema ''{0}''. Disabling validation...", xsdPath);
+        }
+
+        else
+        {
+          xsdPath = xsdResource.getPath();
+
+          builder.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+          builder.setProperty(Constants.SCHEMA_SOURCE, new File(xsdPath));
+          builder.setValidation(true);
+        }
+
+        File controllerXMLFile = new File(xmlPath);
+
+        if (!controllerXMLFile.exists())              // TODO : sec manager
+        {
+           throw new ConfigurationException(
+               "Controller.xml not found -- make sure it's in " + controllerXMLFile.getAbsoluteFile()
+           );
+        }
+
+        return builder.build(xmlPath);
       }
 
-      catch (JDOMException e)
+      catch (Throwable t)
       {
-        throw new RuntimeException(e);    // TODO : fix this
+        throw new XMLParsingException(
+            "Unable to parse controller definition from " +
+            "''{0}'' (accessing schema from ''{1}'') : {2}",
+            t, new File(xmlPath).getAbsoluteFile(), xsdPath, t.getMessage()
+        );
       }
-
-      catch (IOException e)
-      {
-        throw new RuntimeException(e);    // TODO : fix this
-      }
-
-      return doc;
     }
 
 
-    @Override public void buildModel()
+    /**
+     * TODO:
+     *    - Sequence of actions to build object model based on the current 2.0 schema.
+     *      Right now just has sensors.
+     */
+    @Override public void buildModel() throws InitializationException
     {
+      // TODO : command model
+      
       buildSensorModel();
     }
 
 
 
 
-    // Private Instance Methods -------------------------------------------------------------------
+    // Protected Instance Methods -----------------------------------------------------------------
 
-    private void buildSensorModel()
+    /**
+     * Build concrete sensor Java instances from the XML declaration. <p>
+     *
+     * NOTE: this implementation will register and start the sensors at build time automatically.
+     *
+     * @throws XMLParsingException  if building the model fails because of parser errors
+     */
+    protected void buildSensorModel() throws XMLParsingException
     {
+
+      // Build...
+
       Set<Sensor> sensors = buildSensorObjectModelFromXML();
+
+      // Register and start...
 
       for (Sensor sensor : sensors)
       {
@@ -560,19 +683,33 @@ public class Deployer
     }
 
 
+
     /**
-     * TODO
+     * Parse sensor definitions from controller.xml and create the corresponding Java objects. <p>
      *
-     * @return
+     * This method is somewhat generic in that it delegates to object builder instances that
+     * register with {@link XMLSegment#SENSORS} identifier. Therefore if the top-level
+     * {@code <sensors>} element is present in other schema definitions, this implementation
+     * may be reused by registering an alternative object builder with the same <tt>SENSORS</tt>
+     * identifier. The schema version part of the key in {@link Deployer#objectBuilders} is
+     * determined by subclassing and overriding this implementations {@link #version} field.
+     *
+     * @see org.openremote.controller.model.xml.ObjectBuilder
+     * @see #version
+     * @see Deployer#registerObjectBuilder
+     *
+     * @return  list of sensor instances that were succesfully built from the controller.xml
+     *          declaration
+     *
+     * @throws XMLParsingException if appropriate sensor object builder has not been registered
      */
-    private Set<Sensor> buildSensorObjectModelFromXML()
+    protected Set<Sensor> buildSensorObjectModelFromXML() throws XMLParsingException
     {
-
-      // Parse <sensors> element from the controller.xml...
-
       try
       {
-        Element sensorsElement = querySensorSegment();
+        // Parse <sensors> element from the controller.xml...
+
+        Element sensorsElement = querySensorSegment();      // may return null
 
         if (sensorsElement == null)
         {
@@ -592,13 +729,16 @@ public class Deployer
           {
             Element sensorElement = sensorElementIterator.next();
 
+            // Get and build using the registered sensor builder implementation
+            // (needs to have a matching schema version and correct XML segment identifier)
+
             BuilderKey key = new BuilderKey(version, XMLSegment.SENSORS);
 
             ObjectBuilder ob = objectBuilders.get(key);
 
             if (ob == null)
             {
-              throw new Error( // TODO : proper exception handling
+              throw new XMLParsingException(
                   "No object builder found for <" + XMLSegment.SENSORS.getName() + "> XML segment " +
                   "in schema " + version
               );
@@ -618,10 +758,6 @@ public class Deployer
           {
             // If building the sensor fails for any reason, log it and skip it...
 
-            // TODO :
-            //   - at this point it is likely the component will fail in this case, unless and
-            //     until its error handling is made more robust
-
             log.error("Creating sensor failed : " + t.getMessage(), t);
           }
         }
@@ -637,10 +773,14 @@ public class Deployer
     }
 
 
+
+    // Private Instance Methods -------------------------------------------------------------------
+
     /**
-     * TODO
+     * Isolated this one method call to suppress warnings (JDOM API does not use generics).
      *
      * @param sensorsElement
+     *
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -652,59 +792,63 @@ public class Deployer
 
     private Element querySensorSegment() throws InitializationException
     {
-      SAXBuilder sb = new SAXBuilder();
-      String xsdPath = Constants.CONTROLLER_XSD_PATH;
-      URL resource = this.getClass().getResource(xsdPath);
-
-      if (resource == null)
-      {
-        log.error("Unable to locate schema file ''{0}''. Disabling validation.", xsdPath);
-      }
-
-      else
-      {
-        try
-        {
-          String schemaFilePath = resource.getPath();
-
-          // TODO : why are we decoding the XML schema path? This doesn't make sense to me. [JPL]
-          schemaFilePath = URLDecoder.decode(schemaFilePath, Constants.CHARACTER_ENCODING_UTF8);
-          sb.setProperty(Constants.SCHEMA_SOURCE, new File(schemaFilePath));
-          sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-          sb.setValidation(true);
-        }
-        catch (Throwable t)
-        {
-          throw new ConfigurationException("Decoding error : {0}", t, t.getMessage());
-        }
-      }
-
-      String xmlPath = PathUtil.addSlashSuffix(
-          controllerConfig.getResourcePath()) + Constants.CONTROLLER_XML;
-
-      File controllerXMLFile = new File(xmlPath);
-
-      if (!controllerXMLFile.exists())
-      {
-         throw new ConfigurationException(
-             "Controller.xml not found -- make sure it's in " + controllerXMLFile.getAbsoluteFile()
-         );
-      }
-
-      try
-      {
-        Document doc = sb.build(controllerXMLFile);
+//      SAXBuilder sb = new SAXBuilder();
+//      String xsdPath = Constants.CONTROLLER_XSD_PATH;
+//      URL resource = this.getClass().getResource(xsdPath);
+//
+//      if (resource == null)
+//      {
+//        log.error("Unable to locate schema file ''{0}''. Disabling validation.", xsdPath);
+//      }
+//
+//      else
+//      {
+//        try
+//        {
+//          String schemaFilePath = resource.getPath();
+//
+//          // TODO : why are we decoding the XML schema path? This doesn't make sense to me. [JPL]
+//          schemaFilePath = URLDecoder.decode(schemaFilePath, Constants.CHARACTER_ENCODING_UTF8);
+//          sb.setProperty(Constants.SCHEMA_SOURCE, new File(schemaFilePath));
+//          sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+//          sb.setValidation(true);
+//        }
+//        catch (Throwable t)
+//        {
+//          throw new ConfigurationException("Decoding error : {0}", t, t.getMessage());
+//        }
+//      }
+//
+//      String xmlPath = PathUtil.addSlashSuffix(
+//          controllerConfig.getResourcePath()) + Constants.CONTROLLER_XML;
+//
+//      File controllerXMLFile = new File(xmlPath);
+//
+//      if (!controllerXMLFile.exists())
+//      {
+//         throw new ConfigurationException(
+//             "Controller.xml not found -- make sure it's in " + controllerXMLFile.getAbsoluteFile()
+//         );
+//      }
+//
+//
+//
+//
+//      try
+//      {
+//        Document doc = sb.build(controllerXMLFile);
+        Document doc = getControllerDocument();
         String xPathExpression = "//" + Constants.OPENREMOTE_NAMESPACE + ":sensors";
 
         return queryElementFromXML(doc, xPathExpression);
-      }
-
-      catch (Throwable t)
-      {
-        throw new XMLParsingException(
-            "Unable to parse ''{0}'': {1}", t, controllerXMLFile.getAbsoluteFile(), t.getMessage()
-        );
-      }
+//      }
+//
+//      catch (Throwable t)
+//      {
+//        throw new XMLParsingException(
+//            "Unable to parse ''{0}'': {1}", t, controllerXMLFile.getAbsoluteFile(), t.getMessage()
+//        );
+//      }
     }
   }
 
@@ -715,13 +859,47 @@ public class Deployer
 
   // Nested Classes -------------------------------------------------------------------------------
 
+  /**
+   * Model builders are sequences of actions which construct the controller's object model.
+   * Therefore it implements a strategy pattern. Different model builders may act on differently
+   * structured XML document instances. <p>
+   *
+   * The implementation of a model builder is expected not only to create the Java object instances
+   * representing the object model, but also initialize, register and start all the created
+   * resources as necessary. On returning from the {@link #buildModel()} method, the controller's
+   * object model is expected to be running and fully functional.
+   */
   private static interface ModelBuilder
   {
-    void buildModel();
+    /**
+     * Responsible for constructing the controller's object model. Implementation details
+     * vary depending on the schema and source of defining artifacts.
+     *
+     * @throws InitializationException
+     *            If there's a failure to build the controller's object model for any reason.
+     *            Notice that partial failures (on particular isolated object instances, for
+     *            example) may be tolerated by the model builder implementation. This exception
+     *            usually indicates a fatal problem in initializing the object model (such
+     *            as failure to read the model definitions altogether).
+     */
+    void buildModel() throws InitializationException;
 
-    Document getControllerDocument();
+    /**
+     * TODO : temporary
+     *
+     * @return
+     *
+     * @throws XMLParsingException 
+     */
+    Document getControllerDocument() throws InitializationException;
   }
 
+
+  /**
+   * TODO :
+   *
+   *   placeholder for the next major schema version that is currently in planning stages.
+   */
   private static class Version30ModelBuilder implements ModelBuilder
   {
 
@@ -730,14 +908,17 @@ public class Deployer
       return null;
     }
 
-    @Override public void buildModel()
+    @Override public void buildModel() throws InitializationException
     {
       // nothing here yet...
     }
   }
 
 
-
+  /**
+   * TODO
+   *
+   */
   private static class BuilderKey
   {
 
