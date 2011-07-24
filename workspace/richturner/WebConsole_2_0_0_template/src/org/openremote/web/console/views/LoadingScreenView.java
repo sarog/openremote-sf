@@ -8,9 +8,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.dom.client.Style.Unit;
 
 public class LoadingScreenView extends ConsoleScreenView {
 
@@ -41,8 +39,6 @@ public class LoadingScreenView extends ConsoleScreenView {
 		VerticalPanel loadingMsgPanel = new VerticalPanel();
 		DOM.setElementAttribute(loadingMsgPanel.getElement(), "id", "loadingMsgPanel");
 		loadingMsgPanel.setStylePrimaryName("msgPanel");
-		loadingMsgPanel.setWidth("100%");
-		//loadingMsgPanel.setHeight("100%");
 		loadingMsgPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		loadingMsgPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		

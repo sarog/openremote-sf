@@ -8,8 +8,11 @@
   	<source path="types"/>
   	<source path="utils"/>
   	<source path="views"/>
+  	<source path="events"/>
 	<entry-point class="org.openremote.web.console.client.WebConsole"/>
 	
 	
-	<set-property name="user.agent" value="safari" /> 
+	<!-- <set-property name="user.agent" value="safari" /> -->
+	<set-property name="user.agent" value="safari" />
 </module>
+

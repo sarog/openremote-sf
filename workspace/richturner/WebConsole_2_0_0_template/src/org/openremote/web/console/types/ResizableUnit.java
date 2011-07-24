@@ -1,11 +1,10 @@
 package org.openremote.web.console.types;
 
 import org.openremote.web.console.client.ConsoleUnit;
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.components.ConsoleDisplay;
-
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -21,14 +20,20 @@ public class ResizableUnit extends ConsoleUnit {
 	public static final int FRAME_WIDTH_BOTTOM = 50;
 	public static final int FRAME_WIDTH_LEFT = 20;
 	public static final int FRAME_WIDTH_RIGHT = 20;
+	public static final int BOSS_WIDTH = 2;
 	
-	public ResizableUnit() {
-		this(ConsoleUnit.DEFAULT_DISPLAY_WIDTH, ConsoleUnit.DEFAULT_DISPLAY_HEIGHT, null);
+	public ResizableUnit(WebConsole consoleModule) {
+		super(consoleModule);
+		initialiseUnit();
 	}
 	
-	public ResizableUnit(int displayWidth, int displayHeight, ConsoleDisplay consoleDisplay) {
-		// Create basic Console Unit
-		super(displayWidth, displayHeight, consoleDisplay);
+	public ResizableUnit(WebConsole consoleModule, int displayWidth, int displayHeight) {
+		super(consoleModule, displayWidth, displayHeight);
+		initialiseUnit();
+	}
+	
+	private void initialiseUnit() {
+		super.addStyleName("resizableConsole");
 		
 		// Clear document body colour setting
 		RootPanel.getBodyElement().getStyle().clearBackgroundColor();
@@ -36,12 +41,13 @@ public class ResizableUnit extends ConsoleUnit {
 		// Create console frame
 		createFrame();
 		
-		// Update Console dimensions	
-		setDimensions(consoleWidth + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT, consoleHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM);	
+		// Update console unit size
+		setSize(width + FRAME_WIDTH_LEFT + FRAME_WIDTH_RIGHT, height + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM);
 	}
 	
+	
 	public static int requiredConsoleWidth() {
-		return requiredConsoleWidth(ConsoleUnit.DEFAULT_DISPLAY_WIDTH);
+		return requiredConsoleWidth(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH);
 	}
 	
 	public static int requiredConsoleWidth(int displayWidth) {
@@ -49,18 +55,22 @@ public class ResizableUnit extends ConsoleUnit {
 	}
 	
 	public static int requiredConsoleHeight() {
-		return requiredConsoleHeight(ConsoleUnit.DEFAULT_DISPLAY_HEIGHT);
+		return requiredConsoleHeight(ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
 	}
 	
 	public static int requiredConsoleHeight(int displayHeight) {
 		return displayHeight + FRAME_WIDTH_TOP + FRAME_WIDTH_BOTTOM;
 	}
 	
+	/**
+	 * Frame is added to console unit by applying a margin to the console display
+	 * and setting the CSS class of the console unit
+	 */
 	public void createFrame() {
-		// Add the frame for this re-sizable console unit by setting style attributes
-		// Only need to add padding to top as Vertical Panel deals with left right padding
-		//this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px " + FRAME_WIDTH_RIGHT + "px 0px " + FRAME_WIDTH_LEFT + "px;");
-		this.getElement().setAttribute("style", "padding: " + FRAME_WIDTH_TOP + "px 0px 0px 0px;");
+		this.consoleDisplay.getElement().getStyle().setMarginTop(FRAME_WIDTH_TOP-BOSS_WIDTH, Unit.PX);
+		this.consoleDisplay.getElement().getStyle().setMarginRight(FRAME_WIDTH_RIGHT-BOSS_WIDTH, Unit.PX);
+		this.consoleDisplay.getElement().getStyle().setMarginLeft(FRAME_WIDTH_LEFT-BOSS_WIDTH, Unit.PX);
+		this.consoleDisplay.getElement().getStyle().setMarginBottom(-BOSS_WIDTH, Unit.PX);
 		addStyleName("consoleFrame");
 		addDisplayBoss();
 		
@@ -84,7 +94,7 @@ public class ResizableUnit extends ConsoleUnit {
 	 * Adds a border to the display to give boss illusion
 	 */
 	public void addDisplayBoss() {
-		this.consoleDisplay.getElement().getStyle().setBorderWidth(2,Unit.PX);
+		this.consoleDisplay.getElement().getStyle().setBorderWidth(BOSS_WIDTH,Unit.PX);
 		this.consoleDisplay.getElement().getStyle().setBorderStyle(BorderStyle.SOLID);
 		this.consoleDisplay.getElement().getStyle().setBorderColor("#333");
 	}
