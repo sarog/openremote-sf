@@ -3,6 +3,14 @@ package org.openremote.web.console.utils;
 import org.openremote.web.console.client.WebConsole;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Timer;
@@ -27,7 +35,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
 	      "sie","sonyericsson","mmp","ucweb","ipod", "ipad"};
-
 		
 		static {
 			isMobile = isMobile();
@@ -57,20 +64,70 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 			}
 			return false;
 		}
-
-		// Create a native orientation change handler as resize handler
-		// isn't reliable on ipod
-	   public static void nativeOrientationHandler() {
-	   	handle.resizeHandler();
-	   }
 	   
-	   public static native void addNativeOrientationHandler() /*-{
-	   	function eventHandler(e) {
-				@org.openremote.web.console.utils.BrowserUtils::nativeOrientationHandler()();
-	   	}
-	   	$wnd.addEventListener("orientationchange", eventHandler, false);
-		}-*/;
-		  
+//		// Create a native shake handler for detecting shake event
+//	   public static void nativeShakeHandler() {
+//	   	handle.resizeHandler();
+//	   }
+//	   
+//	   public static native void addNativeShakeHandler() /*-{
+//	   	if (typeof window.DeviceMotionEvent != 'undefined') {
+//   			function motionHandler(e) {
+//					x1 = e.accelerationIncludingGravity.x;
+//					y1 = e.accelerationIncludingGravity.y;
+//					z1 = e.accelerationIncludingGravity.z;
+//					
+//					// Shake sensitivity (a lower number is more)
+//					var sensitivity = 20;
+//				
+//					// Position variables
+//					var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
+//				
+//					// Periodically check the position and fire
+//					// if the change is greater than the sensitivity
+//					setInterval(function () {
+//						var change = Math.abs(x1-x2+y1-y2+z1-z2);
+//				
+//						if (change > sensitivity) {
+//							@org.openremote.web.console.utils.BrowserUtils::nativeShakeHandler()();
+//						}
+//				
+//						// Update new position
+//						x2 = x1;
+//						y2 = y1;
+//						z2 = z1;
+//					}, 150);
+//   			}
+//				$wnd.addEventListener("devicemotion", motionHandler, false);
+//			}
+//		}-*/;
+
+//	   /**
+//	    * Capture menu key press on Android devices
+//	    */
+//		public static void addMenuKeyEventHandler() {			
+//			RootPanel.get().addDomHandler(new KeyPressHandler() {
+//				public void onKeyPress(KeyPressEvent e) {
+//					Window.alert("KEY PRESS");
+//					e.preventDefault();
+//					for (char menuKey: MENU_KEYCODES) {
+//						if (e.getCharCode() == menuKey) {
+//							Window.alert("MENU KEY PRESS");		
+//			         }
+//					}
+//				}
+//			}, KeyPressEvent.getType());
+//		}
+//	   public static native void addNativeKeyHandler() /*-{
+//	   	function eventHandler(e) {
+//				@org.openremote.web.console.utils.BrowserUtils::nativeKeyHandler()();
+//	   	}
+//	   	$wnd.addEventListener("backKeyDown", eventHandler, false);
+//		}-*/;
+//	   public static void nativeKeyHandler() {
+//	   	Window.alert("BACK BUTTON");
+//	   }
+		
 		// Seem to have issue with getting height using GWT on ipod so resort to native JS
 		public native static int getNativeWindowDim(String dim) /*-{
 			var height = $wnd.innerHeight;
@@ -84,39 +141,5 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 		
 		public static int getNativeWidth() {
 			return getNativeWindowDim("width");
-		}
-		
-		public static void initWindow(final WebConsole webConsole) {
-			handle = webConsole;
-			initWindow();
-		}
-		
-		public static void initWindow() {
-			Timer addressBarMonitor = new Timer() {
-				public void run() {
-					// Attempt scroll again just in case missed first time
-					Window.scrollTo(0, 1);
-					
-					// Get Window information
-					handle.getWindowSize();
-					
-					// Indicate system is initialised if already initialised
-					// then this is the second init so go to do resize
-					if (!handle.isInitialised) {
-						handle.isInitialised = true;
-					} else {
-						handle.doResize();
-					}
-			  }
-			};
-			
-		   // Make body twice window height to ensure there's something to scroll
-		   //handle.setBodySize(handle.windowHeight, handle.windowHeight);
-
-		   // Scroll Window to hide address bar
-		   Window.scrollTo(0, 1);
-
-			// Wait 1s for first run as some browsers take a while to do the scroll
-		   addressBarMonitor.schedule(1000);
 		}
 }

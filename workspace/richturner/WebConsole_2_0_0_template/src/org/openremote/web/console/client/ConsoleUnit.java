@@ -1,82 +1,153 @@
 package org.openremote.web.console.client;
 
 import org.openremote.web.console.components.ConsoleDisplay;
+import org.openremote.web.console.events.HoldEvent;
+import org.openremote.web.console.events.HoldHandler;
+import org.openremote.web.console.events.RotationEvent;
+import org.openremote.web.console.events.RotationHandler;
+import org.openremote.web.console.events.SwipeEvent;
+import org.openremote.web.console.events.SwipeHandler;
+
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleUnit extends SimplePanel {
-	public static final int DEFAULT_DISPLAY_WIDTH = 320;
-	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
+public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler {
+	private WebConsole consoleModule;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
-	private VerticalPanel consoleContainer;
-	public ConsoleDisplay consoleDisplay;
-	protected int displayWidth;
-	protected int displayHeight;
-	protected int consoleWidth;
-	protected int consoleHeight;
-	protected String DEFAULT_DISPLAY_COLOUR = "black";
-	protected String displayColour = DEFAULT_DISPLAY_COLOUR;
+	private VerticalPanel componentContainer;
+	protected ConsoleDisplay consoleDisplay;
+	protected int width;
+	protected int height;
 	
-	public ConsoleUnit(int width, int height) {
-		this(width, height, null);
+	
+	public ConsoleUnit(WebConsole consoleModule) {
+		this(consoleModule, ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
 	}
 	
-	public ConsoleUnit(int width, int height, ConsoleDisplay consoleDisplay) {
+	public ConsoleUnit(WebConsole consoleModule, int width, int height) {
 		super();
-		consoleContainer = new VerticalPanel();
-		consoleContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		super.add(consoleContainer);
-		displayWidth = width;
-		displayHeight = height;
-		setDimensions(width, height);
-		this.getElement().setId(CONSOLE_HTML_ELEMENT_ID);
-		this.getElement().addClassName("consoleUnit");
-		if (consoleDisplay == null) {
-			consoleDisplay = new ConsoleDisplay(displayWidth, displayHeight);
-		}
+		this.consoleModule = consoleModule;
 		
-		// Set console display color
-		consoleDisplay.getElement().getStyle().setBackgroundColor(displayColour);
-		this.consoleDisplay = consoleDisplay;
-		this.add(this.consoleDisplay);
+		// Create console container to store display and possibly logo for resizable units
+		componentContainer = new VerticalPanel();
+		componentContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		super.add(componentContainer);
+		
+		// Create a console wrapper to allow easy positioning of the console unit
+		AbsolutePanel consoleWrapper = new AbsolutePanel();
+		consoleWrapper.setWidth("100%");
+		consoleWrapper.setHeight("100%");
+		consoleWrapper.add(this);
+		RootPanel.get(WebConsole.CONSOLE_UNIT_CONTAINER_ID).add(consoleWrapper);
+		
+		// Set console unit properties
+		setSize(width, height);
+		this.getElement().setId(CONSOLE_HTML_ELEMENT_ID);
+		this.addStyleName("consoleUnit");
+		
+		// Create a display and add to console container
+		consoleDisplay = new ConsoleDisplay(width, height);
+		add(consoleDisplay);
+		
+		// Set Console Orientation
+		setOrientation();
+		setPosition();
+		
+		// Register handlers
+		this.addHandler(this, RotationEvent.getType());
+		this.addHandler(this, SwipeEvent.getType());
+		this.addHandler(this, HoldEvent.getType());
+	}
+	
+	@Override
+	public void onRotate(RotationEvent event) {
+		setOrientation();
+		setPosition();
+	}
+	
+	@Override
+	public void onHold(HoldEvent event) {
+		Window.alert("HOLD: " + event.getXPos() + " : " + event.getYPos());		
+	}
+
+	@Override
+	public void onSwipe(SwipeEvent event) {
+		Window.alert("SWIPE: " + event.getDirection());
 	}
 	
 	@Override
 	public void add(Widget widget) {
-		consoleContainer.add(widget);
+		componentContainer.add(widget);
 	}
 	
-	public void setDimensions(int width, int height) {
-		consoleWidth = width;
-		consoleHeight = height;
-		this.setWidth(width + "px");
-		this.setHeight(height + "px");
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		//this.setWidth(width + "px");
+		//this.setHeight(height + "px");
 	}
 	
 	public ConsoleDisplay getConsoleDisplay() {
 		return this.consoleDisplay;
 	}
 	
-	public void setConsoleDisplay(ConsoleDisplay consoleDisplay) {
-		this.remove(this.consoleDisplay);
-		this.consoleDisplay = null;
-		this.consoleDisplay = consoleDisplay;
-		consoleContainer.insert(this.consoleDisplay, 0);		
-	}
+//	public void setConsoleDisplay(ConsoleDisplay consoleDisplay) {
+//		this.remove(this.consoleDisplay);
+//		this.consoleDisplay = null;
+//		this.consoleDisplay = consoleDisplay;
+//		componentContainer.insert(this.consoleDisplay, 0);		
+//	}
 	
 	public int getWidth() {
-		return consoleWidth;
+		return width;
 	}
 	
 	public int getHeight() {
-		return consoleHeight;
+		return height;
+	}
+	
+	/**
+	 * Position the console unit in the centre of the window
+	 */
+	public void setPosition() {
+		int winWidth = consoleModule.getWindowWidth();
+		int winHeight = consoleModule.getWindowHeight();
+		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
+		consoleContainer.setWidgetPosition(this, (winWidth/2)-(width/2), (winHeight/2)-(height/2));
 	}
 
+	/**
+	 * Adjusts the CSS class to either landscape or portrait
+	 * @param orientation
+	 */
+	public void setOrientation() {
+		String orientation = consoleModule.getWindowOrientation();
+		if ("portrait".equals(orientation)) {
+			getElement().removeClassName("landscapeConsole");
+			getElement().addClassName("portraitConsole");
+		} else {
+			getElement().removeClassName("portraitConsole");
+			getElement().addClassName("landscapeConsole");
+		}
+		// Set CSS to rotate the console display
+		consoleDisplay.setOrientation(orientation);
+	}
+	
+	public void hide() {
+		 setVisible(false);
+	}
+	
+	public void show() {
+		 setVisible(true);
+	}
+	
 //	/*
 //	 * Redraws the console unit when a change occurs to
 //	 * the window that allows/requires a different console
@@ -95,24 +166,4 @@ public class ConsoleUnit extends SimplePanel {
 //		newConsole.setConsoleDisplay(consoleDisplay);
 //		return newConsole;
 //	}
-	
-	public void setOrientationAndPosition(String orientation, int winWidth, int winHeight) {		
-		// Set CSS to rotate the console unit and reposition it
-		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
-		
-		if ("portrait".equals(orientation)) {
-			getElement().removeClassName("landscapeConsole");
-			getElement().addClassName("portraitConsole");
-			consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleWidth/2), (winHeight/2)-(consoleHeight/2));
-		}
-		if ("landscape".equals(orientation)) {
-			getElement().removeClassName("portraitConsole");
-			getElement().addClassName("landscapeConsole");
-			//consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleHeight/2), (winHeight/2)-(consoleWidth/2));
-			consoleContainer.setWidgetPosition(this, (winWidth/2)-(consoleWidth/2), (winHeight/2)-(consoleHeight/2));
-		}
-		
-		// Set CSS to rotate the console display
-		consoleDisplay.setOrientation(orientation);
-	}
 }

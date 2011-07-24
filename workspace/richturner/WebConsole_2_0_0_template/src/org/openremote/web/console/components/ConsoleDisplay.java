@@ -1,48 +1,72 @@
 package org.openremote.web.console.components;
 
+import java.util.Date;
+
 import org.openremote.web.console.views.ConsoleScreenView;
 import org.openremote.web.console.views.LoadingScreenView;
 
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Touch;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * This is the container where content will actually be displayed
+ * An absolute panel is used as a wrapper to ease with repositioning
+ * the display within the console unit during orientation change
+ * @author rich
+ *
+ */
 public class ConsoleDisplay extends AbsolutePanel {
 	
+	public static final int DEFAULT_DISPLAY_WIDTH = 320;
+	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
+	private static final String DEFAULT_DISPLAY_COLOUR = "black";
 	private SimplePanel display;
 	private String currentOrientation;
 	private final ConsoleScreenView loadingScreen;
 	private ConsoleScreenView currentScreen;
 	private int width;
 	private int height;
+	public String colour;
 	
 	public ConsoleDisplay(int width, int height) {
-		// Create the empty layout panel which will be
-		// the screen where content will be displayed
 		super();
 		this.width = width;
 		this.height = height;
-		this.setWidth(width + "px");
-		this.setHeight(height + "px");
-		this.setStylePrimaryName("consoleDisplay");
-		currentOrientation = "portrait";
+		setWidth(this.width + "px");
+		setHeight(this.height + "px");
+		getElement().setId("consoleDisplayWrapper");
+		setStylePrimaryName("consoleDisplay");
 		
-		// Create display widgets for both orientations
+		// Create display panel where screen is actually loaded
 		display = new SimplePanel();
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
-		display.setStylePrimaryName("portraitDisplay");
+		display.getElement().setId("consoleDisplay");
 		
-		this.add(display, 0, 0);
-		//this.add(landscapeDisplay, (width/2)-(height/2), (height/2)-(width/2));
+		// Add display to the wrapper
+		add(display, 0, 0);
+
 		// Set default display orientation to portrait
 		setOrientation("portrait");
+		
+		// Set default colour
+		setColour(DEFAULT_DISPLAY_COLOUR);
 		
 		// Initialise loading screen
 		loadingScreen = new LoadingScreenView();
@@ -51,6 +75,12 @@ public class ConsoleDisplay extends AbsolutePanel {
 		showScreen(loadingScreen);
 	}
 	
+	/**
+	 * Set the display orientation which changes the CSS class causing a
+	 * rotate transform to be applied, have to also adjust the display
+	 * size and position within the wrapper
+	 * @param orientation
+	 */
 	public void setOrientation(String orientation) {
 		if ("portrait".equals(orientation)) {
 		   this.setWidgetPosition(display,0,0);
@@ -68,11 +98,27 @@ public class ConsoleDisplay extends AbsolutePanel {
 		}
 	}
 	
+	public void setColour(String colour) {
+		getElement().getStyle().setBackgroundColor(colour);
+		this.colour = colour;
+	}
+	
+	public String getColour() {
+		return colour;
+	}
+	
+	/**
+	 * Shows the specified screen on the display
+	 * @param screen
+	 */
 	public void showScreen(ConsoleScreenView screen) {
 		currentScreen = screen;
 		display.setWidget(screen);
 	}
 	
+	/**
+	 * Completely clear the display
+	 */
 	public void clearScreen() {
 		display.setWidget(null);
 	}
