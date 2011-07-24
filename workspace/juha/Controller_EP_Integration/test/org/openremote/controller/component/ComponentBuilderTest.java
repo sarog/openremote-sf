@@ -38,6 +38,7 @@ import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
@@ -50,78 +51,82 @@ import org.jdom.Attribute;
 
 
 /**
- * TODO
+ * TODO :
+ *   - most of these tests belong to their particular component builder tests but are
+ *     left here until new builder implementations are ready for all component types
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class ComponentBuilderTest
 {
   private static Namespace ns = Namespace.getNamespace(Constants.OPENREMOTE_WEBSITE);
-  private static Document document;
 
-  static
-  {
-    try
-    {
-      initXML();
-    }
-    catch (Throwable t)
-    {
-      StringWriter stringBuffer = new StringWriter();
-      PrintWriter writer = new PrintWriter(stringBuffer);
-
-      t.printStackTrace(writer);
-
-      Assert.fail(
-        "\n\n" +
-        "**************************************************************************" +
-        "\n" +
-        " Cannot initialize tests: \n" +
-        " " + t.getMessage() +
-        "\n\n" +
-        " " + stringBuffer.getBuffer() + 
-        "**************************************************************************\n\n"
-      );
-    }
-  }
-
-
-  
-  private ComponentBuilder componentBuilder;
+  //private ComponentBuilder componentBuilder;
   private SensorBuilder sensorBuilder;
+  private Deployer deployer;
 
 
+  // Test Lifecycle -------------------------------------------------------------------------------
 
-  @Before public void setUp()
+  @Before public void setUp() throws Exception
   {
-    componentBuilder = new TestComponentBuilder();
+    //componentBuilder = new TestComponentBuilder();
 
-    // Setup the component builder with one protocol implementation we can use with components...
+    // Setup command factory with one protocol implementation we can use with components...
 
-    CommandFactory cf = new CommandFactory();
+    CommandFactory commandFactory = new CommandFactory();
     Properties props = new Properties();
     props.setProperty("virtual", "virtualCommandBuilder");
-    cf.setCommandBuilders(props);
+    commandFactory.setCommandBuilders(props);
 
-    // Configure the dependencies...
-
-    componentBuilder.setCommandFactory(cf);
-    componentBuilder.setRemoteActionXMLParser(ServiceContext.getControllerXMLParser());
+    //componentBuilder.setCommandFactory(commandFactory);
+    //componentBuilder.setRemoteActionXMLParser(ServiceContext.getControllerXMLParser());
 
 
     ControllerConfiguration cc = new ControllerConfiguration();
-    StatusCache sc = new StatusCache();
-    Deployer deployer = new Deployer(sc, cc);
+    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("component").getPath());
 
-    // Setup the sensor builder with same dependencies
+    ChangedStatusTable cst = new ChangedStatusTable();
+
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
+
+    deployer = new Deployer(sc, cc);
 
     sensorBuilder = new SensorBuilder(deployer);
-    sensorBuilder.setCommandFactory(cf);
+    sensorBuilder.setCommandFactory(commandFactory);
+
+    deployer.softRestart();
   }
 
+
+  // Tests ----------------------------------------------------------------------------------------
+
+
+  /**
+   * Test constructing a sensor reference through a {@code <switch>} component
+   * sensor reference:
+   *
+   * <pre>{@code
+   *
+   * <switch id = "1">
+   *  <on>
+   *   <include type = "command" ref = "501" />
+   *  </on>
+   *  <off>
+   *   <include type = "command" ref = "502" />
+   *  </off>
+   *
+   *  <include type = "sensor" ref = "1001" />
+   * </switch>
+   *
+   * }</pre>
+   *
+   * @throws Exception  if test fails
+   */
   @Test public void testParseSensorOnSwitch1() throws Exception
   {
-    Element switch1 = getComponentByID(1);
+    Element switch1 = deployer.queryElementById(1);
 
     Assert.assertNotNull(switch1);
     Assert.assertTrue(switch1.getAttribute("id").getIntValue() == 1);
@@ -132,12 +137,13 @@ public class ComponentBuilderTest
     Assert.assertNotNull(include.getAttribute("type"));
     Assert.assertNotNull(include.getAttribute("ref"));
 
-    
     Assert.assertTrue(include.getAttribute("type").getValue().equals("sensor"));
     Assert.assertTrue(include.getAttribute("ref").getValue().equals("1001"));
 
-    SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-    Sensor sensor = builder.buildFromComponentInclude(include);
+    // Test...
+
+    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+
 
     Assert.assertTrue(sensor.getSensorID() == 1001);
     Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
@@ -146,15 +152,23 @@ public class ComponentBuilderTest
   }
 
 
+  /**
+   * Redundant regression test of {@link #testParseSensorOnSwitch1()} on a bug
+   * that has since been fixed. Leaving this in place for now.
+   *
+   * @throws Exception  if test fails
+   */
   @Test public void testParseSensorBUG() throws Exception
   {
-    Element switch1 = getComponentByID(1);
-
+    Element switch1 = deployer.queryElementById(1);
     Element include = switch1.getChild("include", ns);
 
-    SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-    Sensor sensor = builder.buildFromComponentInclude(include);
-    
+
+    // Test...
+
+    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+
+
     Assert.assertTrue(sensor.getSensorID() == 1001);
     Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(sensor instanceof SwitchSensor);
@@ -162,20 +176,66 @@ public class ComponentBuilderTest
   }
 
 
+  /**
+   * Tests parsing of a switch sensor definition with redundant {@code <state>} elements.
+   *
+   * <pre>{@code
+   *
+   * <sensor id = "1001" name = "lampA power sensor" type = "switch">
+   *  <include type = "command" ref = "98" />
+   *
+   *   <state name = "on" value = "on" />
+   *   <state name = "off" value = "off" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception    if test fails
+   */
   @Test public void testSensorBuilderOnSwitchSensor() throws Exception
   {
-    Sensor s = sensorBuilder.build(getSensorByID(1001));
+    Element sensor1001 = deployer.queryElementById(1001);
+
+
+    // Test...
+
+    Sensor s = sensorBuilder.build(sensor1001);
+
 
     Assert.assertTrue(s.getSensorID() == 1001);
     Assert.assertTrue(s.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s instanceof SwitchSensor);
     Assert.assertTrue(s.isRunning());
+
+    // although there are distinct states in the sensor, they should not show up as
+    // properties for the protocol implementors -- the state values are automatically
+    // mapped by the controller
+
+    Assert.assertTrue(s.getProperties().size() == 0);
   }
 
 
+  /**
+   * Test constructing a sensor reference through a {@code <slider>} component
+   * sensor reference:
+   *
+   * <pre>{@code
+   *
+   * <slider id = "8">
+   *   <setValue>
+   *     <include type = "command" ref = "507" />
+   *   </setValue>
+   *
+   *   <include type = "sensor" ref = "1008" />
+   * </slider>
+   *
+   * }</pre>
+   *
+   * @throws Exception      if test fails
+   */
   @Test public void testParseSensorOnSlider() throws Exception
   {
-    Element slider = getComponentByID(8);
+    Element slider = deployer.queryElementById(8);
 
     Assert.assertNotNull(slider);
     Assert.assertTrue(slider.getAttribute("id").getIntValue() == 8);
@@ -186,16 +246,16 @@ public class ComponentBuilderTest
     Assert.assertNotNull(include.getAttribute("type"));
     Assert.assertNotNull(include.getAttribute("ref"));
 
-
     Assert.assertTrue(include.getAttribute("type").getValue().equals("sensor"));
     Assert.assertTrue(include.getAttribute("ref").getValue().equals("1008"));
 
-    SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-    Sensor sensor = builder.buildFromComponentInclude(include);
-    Assert.assertTrue(sensor.getSensorID() == 1008);
 
-//  TODO :
-//   - this is a bug, shown in the test above -- sensor type is never set.
+    // Test...
+
+    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+
+
+    Assert.assertTrue(sensor.getSensorID() == 1008);
 
     Assert.assertTrue(sensor.getSensorType() == EnumSensorType.RANGE);
     Assert.assertTrue(sensor instanceof RangeSensor);
@@ -221,14 +281,22 @@ public class ComponentBuilderTest
   }
 
 
-
+  /**
+   * Redundant regression test of {@link #testParseSensorOnSlider()} on a bug
+   * that has since been fixed. Leaving this in place for now.
+   *
+   * @throws Exception  if test fails
+   */
   @Test public void testParseSensorOnSliderBUG() throws Exception
   {
-    Element slider = getComponentByID(8);
+    Element slider = deployer.queryElementById(8);
     Element include = slider.getChild("include", ns);
 
-    SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-    Sensor sensor = builder.buildFromComponentInclude(include);
+
+    // Test...
+
+    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+
 
     Assert.assertNotNull(sensor.getProperties());
     Assert.assertTrue(sensor.getProperties().containsKey(Sensor.RANGE_MAX_STATE));
@@ -238,10 +306,30 @@ public class ComponentBuilderTest
   }
 
 
-
+  /**
+   * Tests parsing of a range sensor definition with redundant min/max elements.
+   *
+   * <pre>{@code
+   *
+   *  <sensor id = "1008" name = "range sensor" type = "range">
+   *   <include type = "command" ref = "96" />
+   *
+   *    <min value = "-20" />
+   *    <max value = "100" />
+   *  </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception      if test fails
+   */
   @Test public void testSensorBuilderOnRangeSensor() throws Exception
   {
-    RangeSensor s = (RangeSensor)sensorBuilder.build(getSensorByID(1008));
+    Element sensor1008 = deployer.queryElementById(1008);
+
+    // Test...
+
+    RangeSensor s = (RangeSensor)sensorBuilder.build(sensor1008);
+
 
     Assert.assertTrue(s.getSensorID() == 1008);
     Assert.assertTrue(s.getSensorType() == EnumSensorType.RANGE);
@@ -255,65 +343,6 @@ public class ComponentBuilderTest
   }
 
   
-
-  // Helpers --------------------------------------------------------------------------------------
-
-  private static Map<Integer, Element> components;
-  private static Map<Integer, Element> sensors;
-
-  private static void initXML() throws Exception
-  {
-    String path = AllTests.getFixtureFile("ComponentsAndSensors-controller.xml");
-    document = AllTests.getJDOMDocument(new File(path));
-
-    Element root = document.getRootElement();
-
-    Element componentElements = root.getChild("components", ns);
-
-    Assert.assertNotNull("components is null", componentElements);
-
-    List<Element> componentList = componentElements.getChildren();
-    Map<Integer, Element> componentMap = new HashMap<Integer, Element>();
-
-    for (Element component : componentList)
-    {
-      Attribute attrID = component.getAttribute("id");
-
-      Assert.assertNotNull(attrID);
-
-      Integer componentID = attrID.getIntValue();
-
-      componentMap.put(componentID, component);
-    }
-
-    components = componentMap;
-
-
-
-    Element sensorElements = root.getChild("sensors", ns);
-    List<Element> sensorsList = sensorElements.getChildren();
-    Map<Integer, Element> sensorMap = new HashMap<Integer, Element>();
-
-    for (Element sensor : sensorsList)
-    {
-      Attribute attrID = sensor.getAttribute("id");
-      Integer sensorID = attrID.getIntValue();
-      sensorMap.put(sensorID, sensor);
-    }
-
-    sensors = sensorMap;
-
-  }
-
-  private static Element getComponentByID(int id)
-  {
-    return components.get(id);
-  }
-
-  private static Element getSensorByID(int id)
-  {
-    return sensors.get(id);
-  }
 
 
   // Nested Classes -------------------------------------------------------------------------------
