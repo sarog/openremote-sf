@@ -21,13 +21,14 @@
 package org.openremote.controller.model.xml;
 
 
+import java.util.Properties;
+
 import junit.framework.Assert;
 
 
 import org.jdom.Element;
 import org.junit.Test;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.model.sensor.Sensor;
@@ -35,50 +36,56 @@ import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.ControllerConfiguration;
 
 /**
- * TODO: Sensor Builder Test.
+ * Unit tests for {@link org.openremote.controller.model.xml.SensorBuilder} class.
  *
- * fixture: org/openremote/controller/fixture/controller.xml
- * 
- * @author Dan Cong 
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class SensorBuilderTest
 {
 
-  private static SensorBuilder sensorBuilder;
-  private static RemoteActionXMLParser controllerXMLParser;
 
+  private Deployer deployer;
+  private SensorBuilder sensorBuilder;
 
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
-  @BeforeClass public static void beforeTests()
+
+  /**
+   * Setup the service dependencies of deployer and other required services.
+   *
+   * @throws Exception    if setup fails
+   */
+  @Before public void setUp() throws Exception
   {
-    try
-    {
-      sensorBuilder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-      controllerXMLParser = ServiceContext.getControllerXMLParser();
+    ChangedStatusTable cst = new ChangedStatusTable();
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
 
-      AllTests.deleteControllerXML();
-      AllTests.restoreControllerXML();
+    ControllerConfiguration cc = new ControllerConfiguration();
+    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/sensor").getPath());
 
-      AllTests.replaceControllerXML("SensorBuilderTests.xml");
-    }
+    deployer = new Deployer(sc, cc);
 
-    catch (Throwable t)
-    {
-      Assert.fail("Cannot initialize tests: " + t.getMessage());  
-    }
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", "org.openremote.controller.protocol.virtual.VirtualCommandBuilder");
+    cf.setCommandBuilders(p);
+
+    sensorBuilder = new SensorBuilder(deployer);
+    sensorBuilder.setCommandFactory(cf);
+
+    deployer.softRestart();
   }
 
-  @AfterClass public static void afterTests()
-  {
-    AllTests.restoreControllerXML();
-  }
 
   // Tests ----------------------------------------------------------------------------------------
 
@@ -98,7 +105,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateRangeSensor() throws Exception
   {
-    RangeSensor s = (RangeSensor)getSensor(SensorType.RANGE);
+    RangeSensor s = (RangeSensor)buildSensor(SensorType.RANGE);
     Assert.assertEquals(EnumSensorType.RANGE, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(-20, s.getMinValue());
@@ -123,7 +130,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateSwitchSensor() throws Exception
   {
-    Sensor s = getSensor(SensorType.SWITCH);
+    Sensor s = buildSensor(SensorType.SWITCH);
     Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
     Assert.assertTrue(s.getName().equals("lampA power sensor"));
     Assert.assertTrue(s.getProperties().size() == 0);
@@ -146,7 +153,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateLevelSensor() throws Exception
   {
-    LevelSensor s = (LevelSensor)getSensor(SensorType.LEVEL);
+    LevelSensor s = (LevelSensor)buildSensor(SensorType.LEVEL);
     Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
@@ -176,7 +183,7 @@ public class SensorBuilderTest
    */
   @Test public void testCreateCustomSensor() throws Exception
   {
-    Sensor s = getSensor(SensorType.CUSTOM);
+    Sensor s = buildSensor(SensorType.CUSTOM);
     Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
     Assert.assertTrue(s.getName().equals("Door power sensor"));
     Assert.assertTrue(s.getProperties().size() == 2);
@@ -231,7 +238,7 @@ public class SensorBuilderTest
    */
   @Test public void testSwitchStateMappingWithNoValue() throws Exception
   {
-    Sensor s = getSensorByID(717);
+    Sensor s = buildSensorWithID(717);
 
     Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
     Assert.assertTrue(s.getName().equals("se"));
@@ -271,7 +278,7 @@ public class SensorBuilderTest
    */
   @Test public void testSwitchStateMappingWithNoValueAndListener() throws Exception
   {
-    Sensor s = getSensorByID(727);
+    Sensor s = buildSensorWithID(727);
 
     s.start();
     
@@ -312,12 +319,13 @@ public class SensorBuilderTest
 
   // TODO : test Sensor.update
   // TODO : test Sensor.start
+  // TODO : test Sensor.isRunning()
 
   
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Sensor getSensor(SensorType type) throws Exception
+  private Sensor buildSensor(SensorType type) throws Exception
   {
 
     Element ele = null;
@@ -325,19 +333,19 @@ public class SensorBuilderTest
     switch (type)
     {
       case RANGE:
-        ele = controllerXMLParser.queryElementFromXMLById("1008");
+        ele = deployer.queryElementById(1008);
         break;
 
       case LEVEL:
-        ele = controllerXMLParser.queryElementFromXMLById("1010");
+        ele = deployer.queryElementById(1010);
         break;
 
       case SWITCH:
-        ele = controllerXMLParser.queryElementFromXMLById("1001");
+        ele = deployer.queryElementById(1001);
         break;
 
       case CUSTOM:
-        ele = controllerXMLParser.queryElementFromXMLById("1009");
+        ele = deployer.queryElementById(1009);
         break;
 
       default:
@@ -348,9 +356,9 @@ public class SensorBuilderTest
   }
 
 
-  private Sensor getSensorByID(int id) throws Exception
+  private Sensor buildSensorWithID(int id) throws Exception
   {
-    Element el = controllerXMLParser.queryElementFromXMLById(Integer.toString(id));
+    Element el = deployer.queryElementById(id);
 
     return sensorBuilder.build(el);
   }
