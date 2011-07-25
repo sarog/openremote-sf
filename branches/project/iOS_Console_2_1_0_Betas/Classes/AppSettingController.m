@@ -226,12 +226,14 @@
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
+    
+    // TODO: get rid of that when fully handled by delegate messages
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
 }
 
 - (void)viewDidUnload
@@ -363,6 +365,14 @@
 - (void)orControllerGroupMembersFetchStatusChanged:(NSNotification *)notification
 {
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
+{
+    [self orControllerGroupMembersFetchStatusChanged:notification];
+    if (settingsManager.consoleSettings.selectedController == [notification object]) {
+        [self populateLoginView:self];
+    }
 }
 
 #pragma mark Table view methods
@@ -657,7 +667,8 @@
     
     // TODO: double check fetchGroupMember is the only source that can trigger this
     
-    [self fetchGroupMembers];
+    // TODO: the controller should be passed back in the message
+    [settingsManager.consoleSettings.selectedController fetchGroupMembers];
 }
 
 @end
