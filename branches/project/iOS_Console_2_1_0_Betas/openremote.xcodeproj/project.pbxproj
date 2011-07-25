@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -186,7 +186,6 @@
 		60EB56A2135C4E4100B29CED /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		60EB56A3135C4E4100B29CED /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
 		60EB56A4135C4E4100B29CED /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
-		60EB56A5135C4E4100B29CED /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 974DAC871063ADEF00B1B04B /* Entitlements.plist */; };
 		60EB56A6135C4E4100B29CED /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 8CECF3E010E9DD1400C0E1BB /* database.db */; };
 		60EB56A7135C4E4100B29CED /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
 		60EB56A8135C4E4100B29CED /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
@@ -430,7 +429,6 @@
 		8CF6A2810FBD3782006ED733 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
 		8CF6A2B10FBD784C006ED733 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
 		8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
-		974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 974DAC871063ADEF00B1B04B /* Entitlements.plist */; };
 		97B00120106127AF00C31E4A /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
 /* End PBXBuildFile section */
 
@@ -1922,10 +1920,11 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0410;
 				ORGANIZATIONNAME = "OpenRemote, Inc.";
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "openremote" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1953,7 +1952,6 @@
 				8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */,
 				8CFDB2770FBBBF4500D204CB /* appSettings.plist in Resources */,
 				97B00120106127AF00C31E4A /* iTunesArtwork in Resources */,
-				974DAC881063ADEF00B1B04B /* Entitlements.plist in Resources */,
 				8CECF3E110E9DD1400C0E1BB /* database.db in Resources */,
 				8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */,
 				8C3DE3091163492C00DD4EE7 /* button.png in Resources */,
@@ -1997,7 +1995,6 @@
 				60EB56A2135C4E4100B29CED /* Entitlements.plist in Resources */,
 				60EB56A3135C4E4100B29CED /* appSettings.plist in Resources */,
 				60EB56A4135C4E4100B29CED /* iTunesArtwork in Resources */,
-				60EB56A5135C4E4100B29CED /* Entitlements.plist in Resources */,
 				60EB56A6135C4E4100B29CED /* database.db in Resources */,
 				60EB56A7135C4E4100B29CED /* btn_green.png in Resources */,
 				60EB56A8135C4E4100B29CED /* button.png in Resources */,
@@ -2536,7 +2533,6 @@
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
@@ -2548,7 +2544,6 @@
 					"-framework",
 					UIKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_NAME = UnitTest;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -2567,7 +2562,6 @@
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
 				OTHER_LDFLAGS = (
@@ -2578,7 +2572,6 @@
 					"-framework",
 					UIKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_NAME = UnitTest;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -2598,7 +2591,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = NO;
-				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -2650,7 +2642,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = NO;
-				PREBINDING = NO;
 				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
 				SDKROOT = iphoneos;
@@ -2701,7 +2692,6 @@
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
 				OTHER_LDFLAGS = (
@@ -2712,7 +2702,6 @@
 					"-framework",
 					UIKit,
 				);
-				PREBINDING = NO;
 				PRODUCT_NAME = UnitTest;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -2733,7 +2722,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
-				PREBINDING = NO;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
