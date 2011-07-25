@@ -82,11 +82,18 @@
 		[ViewHelper showAlertViewWithTitle:@"" Message:@"No username or password entered."];
 		return;
 	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
+
+    // Why was it here ?
+	// [[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
     
+    
+    // TODO: All this should not be in here, we are just presenting username/password request, we should not be concerned about how this gets used
+    // TODO: + should not use selectedController but controller for which credentials were requested -> pass it somehow
     ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
     activeController.userName = usernameField.text;
 	activeController.password = passwordField.text;
+    
+    // TODO: we might not want to save here, maybe have a method to set this and save in dedicated MOC
     [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
     
 	[self dismissModalViewControllerAnimated:NO];
