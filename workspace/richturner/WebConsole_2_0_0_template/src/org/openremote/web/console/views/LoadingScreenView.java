@@ -2,7 +2,12 @@ package org.openremote.web.console.views;
 
 import org.openremote.web.console.utils.BrowserUtils;
 
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -10,7 +15,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class LoadingScreenView extends ConsoleScreenView {
+public class LoadingScreenView extends ConsoleScreenView implements MouseUpHandler {
 
 	public static final String CLASS_NAME = "loadingScreen";
 
@@ -35,7 +40,7 @@ public class LoadingScreenView extends ConsoleScreenView {
 		super();
 		this.setStylePrimaryName(CLASS_NAME);
 		
-		// Create Loading Message Widget and wrap in simple panel to  align vertically
+		// Create Loading Message Widget and wrap in simple panel to align vertically
 		VerticalPanel loadingMsgPanel = new VerticalPanel();
 		DOM.setElementAttribute(loadingMsgPanel.getElement(), "id", "loadingMsgPanel");
 		loadingMsgPanel.setStylePrimaryName("msgPanel");
@@ -60,13 +65,20 @@ public class LoadingScreenView extends ConsoleScreenView {
 		}
 		loadingMsgPanel.add(msgWidget);
 		
+		msgWidget.addDomHandler(this, MouseUpEvent.getType());
+		
 		// Add panel to screen and position in centre middle
 		HorizontalPanel panelWrapper = new HorizontalPanel();
 		panelWrapper.setWidth("100%");
 		panelWrapper.setHeight("100%");
 		panelWrapper.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panelWrapper.add(loadingMsgPanel);
-		this.add(panelWrapper);
-		
+		this.add(panelWrapper);		
+	}
+
+	@Override
+	public void onMouseUp(MouseUpEvent event) {
+		// TODO Auto-generated method stub
+		Window.alert("TOUCH END");
 	}
 }

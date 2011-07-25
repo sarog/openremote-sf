@@ -142,7 +142,11 @@ public class WebConsole implements EntryPoint {
 	}
 	
 	public int getWindowHeight() {
-		if("portrait".equals(windowOrientation)) {
+		return getWindowHeight(windowOrientation);
+	}
+	
+	public int getWindowHeight(String orientation) {
+		if("portrait".equals(orientation)) {
 			return windowHeightPortrait;
 		} else {
 			return windowHeightLandscape;
@@ -158,7 +162,11 @@ public class WebConsole implements EntryPoint {
 	}
 	
 	public int getWindowWidth() {
-		if("portrait".equals(windowOrientation)) {
+		return getWindowWidth(windowOrientation);
+	}
+	
+	public int getWindowWidth(String orientation) {
+		if("portrait".equals(orientation)) {
 			return windowWidthPortrait;
 		} else {
 			return windowWidthLandscape;
@@ -203,12 +211,20 @@ public class WebConsole implements EntryPoint {
 			if (!isPortraitInitialised  || !BrowserUtils.isMobile) {
 				windowWidthPortrait = winWidth;
 				windowHeightPortrait = winHeight;
+				if (!isLandscapeInitialised) {
+					windowWidthLandscape = winHeight;
+					windowHeightLandscape = winWidth;
+				}
 			}
 			isPortraitInitialised = true;
 		} else {
 			if (!isLandscapeInitialised  || !BrowserUtils.isMobile) {
 				windowWidthLandscape = winWidth;
 				windowHeightLandscape = winHeight;
+				if (!isPortraitInitialised) {
+					windowWidthPortrait = winHeight;
+					windowHeightPortrait = winWidth;
+				}
 			}
 			isLandscapeInitialised = true;
 		}

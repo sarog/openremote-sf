@@ -10,6 +10,8 @@ import com.google.gwt.event.shared.GwtEvent;
  */
 public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	private static final Type<SwipeHandler> TYPE = new Type<SwipeHandler>();
+	public static final int MIN_X_TOLERANCE = 200;
+	public static final int MAX_Y_TOLERANCE = 80;
 	String direction;
 	
 	public SwipeEvent(String direction) {
