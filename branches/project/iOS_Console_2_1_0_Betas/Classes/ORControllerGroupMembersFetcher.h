@@ -15,17 +15,17 @@
 
 /**
  */
-- (void)fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers;
+- (void)controller:(ORController *)aController fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers;
 
 @optional
 
 /**
  */
-- (void)fetchGroupMembersDidFailWithError:(NSError *)error;
+- (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error;
 
 /**
  */
-- (void)fetchGroupMembersRequiresAuthentication;
+- (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController;
 
 @end
 
