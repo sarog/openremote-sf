@@ -20,28 +20,25 @@
  */
 package org.openremote.controller.component.control;
 
-import static org.junit.Assert.fail;
-import junit.framework.Assert;
+import java.net.URI;
+import java.util.Properties;
 
-import org.jdom.Document;
+import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.suite.AllTests;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.switchtoggle.Switch;
 import org.openremote.controller.component.control.switchtoggle.SwitchBuilder;
-import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.exception.XMLParsingException;
-import org.openremote.controller.exception.ConfigurationException;
-import org.openremote.controller.utils.SpringTestContext;
-import org.openremote.controller.utils.XMLUtil;
-import org.openremote.controller.Constants;
-import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.spring.SpringContext;
-import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 import org.openremote.controller.service.Deployer;
-import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.suite.AllTests;
 
 /**
  * TODO
@@ -50,91 +47,96 @@ import org.openremote.controller.service.ServiceContext;
  *     ORCJAVA-145  (http://jira.openremote.org/browse/ORCJAVA-145)
  *     ORCJAVA-146  (http://jira.openremote.org/browse/ORCJAVA-146)
  *     ORCJAVA-147  (http://jira.openremote.org/browse/ORCJAVA-147)
-
  *
- * @author Javen
  */
 public class SwitchBuilderTest
 {
 
-  private Document doc = null;
-  private SwitchBuilder builder = (SwitchBuilder)SpringContext.getInstance().getBean("switchBuilder");
+  // Instance Fields ------------------------------------------------------------------------------
 
+  private SwitchBuilder builder;
+  private Deployer deployer;
 
 
   // Test Lifecycle -------------------------------------------------------------------------------
 
+  /**
+   * Setup the service dependencies of deployer and other required services.
+   *
+   * @throws Exception    if setup fails
+   */
   @Before public void setUp() throws Exception
   {
-    AllTests.replaceControllerXML(Constants.CONTROLLER_XML);
 
-    Deployer deployer = (Deployer)SpringContext.getInstance().getBean("deployer");
+    ChangedStatusTable cst = new ChangedStatusTable();
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
 
+    ControllerConfiguration cc = new ControllerConfiguration();
+
+    URI uri = AllTests.getAbsoluteFixturePath().resolve("builder/switch");
+    cc.setResourcePath(uri.getPath());
+
+    deployer = new Deployer(sc, cc);
+
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", VirtualCommandBuilder.class.getName());
+    cf.setCommandBuilders(p);
+
+    SensorBuilder sensorBuilder = new SensorBuilder(deployer);
+    sensorBuilder.setCommandFactory(cf);
+
+    builder = new SwitchBuilder();
+    builder.setDeployer(deployer);
+    builder.setCommandFactory(cf);
+    
     deployer.softRestart();
-
-    doc = deployer.getControllerDocument();
   }
 
 
 
   // Tests ----------------------------------------------------------------------------------------
 
-//  @Test public void testNoSuchSwitch() throws Exception
-//  {
-//    try
-//    {
-//      getSwitchByID("9", "on");
-//      fail();
-//    }
-//    catch (XMLParsingException e)
-//    {
-//
-//    }
-//
-//  }
+  // TODO : add some broken definitions to test error handling
+
 
   
   @Test public void testNoNull() throws Exception
   {
-    Assert.assertNotNull(getSwitchByID("3", "on"));
+    Assert.assertNotNull(getSwitchByID(3, "on"));
   }
 
   @Test public void testGetCommand() throws Exception
   {
-    Switch swh = getSwitchByID("4", "on");
-    Assert.assertEquals(swh.getExecutableCommands().size(), 1);
-    swh = getSwitchByID("4", "off");
-    Assert.assertEquals(swh.getExecutableCommands().size(), 1);
+    Switch sw = getSwitchByID(4, "on");
 
-    swh = getSwitchByID("4", "status");
-    Assert.assertTrue(swh instanceof Sensory);
-    Assert.assertTrue(((Sensory)swh).fetchSensorID() == 1004);
+    Assert.assertEquals(sw.getExecutableCommands().size(), 1);
+
+    sw = getSwitchByID(4, "off");
+
+    Assert.assertEquals(sw.getExecutableCommands().size(), 1);
+
+    sw = getSwitchByID(4, "status");
+
+    Assert.assertTrue(sw instanceof Sensory);
+    Assert.assertTrue(sw.fetchSensorID() == 1004);
   }
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private Switch getSwitchByID(String switchID, String cmdParam)
-      throws XMLParsingException, ConfigurationException
+  private Switch getSwitchByID(int switchID, String cmdParam)
+      throws InitializationException
   {
-    Element controlElement = getElementByID(switchID);
+    Element controlElement = deployer.queryElementById(switchID);
 
     Assert.assertTrue(
         "Was expecting 'switch', got '" + controlElement.getName() + "'.",
         controlElement.getName().equals("switch")
     );
     
-//    if (!controlElement.getName().equals("switch"))
-//    {
-//      throw new NoSuchComponentException("switch .");
-//    }
-
     return (Switch) builder.build(controlElement, cmdParam);
-  }
-
-  private Element getElementByID(String id)
-  {
-    return XMLUtil.getElementByID(doc, id);
   }
 
 }
