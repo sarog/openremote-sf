@@ -85,13 +85,18 @@
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     int statusCode = ((NSHTTPURLResponse *)response).statusCode;
+    if (statusCode == UNAUTHORIZED) {
+        if ([delegate respondsToSelector:@selector(fetchGroupMembersRequiresAuthentication)]) {
+            [delegate fetchGroupMembersRequiresAuthentication];
+        }
+        // TODO: call delegate with error
+
+        return;
+    }
 	if (statusCode != 200) {
-		if (statusCode == UNAUTHORIZED) {
-            [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
-			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		} else {
-			[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
-		}
+        // TODO: call delegate with error
+        
+		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	} 
 }
 

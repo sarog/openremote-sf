@@ -21,6 +21,7 @@
 #import "ORController.h"
 #import "ORGroupMember.h"
 #import "ORControllerProxy.h"
+#import "NotificationConstant.h"
 
 @interface ORController ()
 
@@ -76,9 +77,16 @@
 
 - (void)fetchGroupMembersDidFailWithError:(NSError *)error
 {
-    // TODO: handle authentication case ??? Should not really be here
     groupMembersFetchStatus = GroupMembersFetchFailed;    
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];    
+}
+
+- (void)fetchGroupMembersRequiresAuthentication
+{
+//    self.password = nil;
+    groupMembersFetchStatus = GroupMembersFetchRequiresAuthentication;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:self];    
+  //  [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
 }
 
 #pragma mark -

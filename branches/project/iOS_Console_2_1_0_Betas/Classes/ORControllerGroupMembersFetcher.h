@@ -13,10 +13,20 @@
 
 @protocol ORControllerGroupMembersFetcherDelegate
 
+/**
+ */
 - (void)fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers;
 
 @optional
+
+/**
+ */
 - (void)fetchGroupMembersDidFailWithError:(NSError *)error;
+
+/**
+ */
+- (void)fetchGroupMembersRequiresAuthentication;
+
 @end
 
 @interface ORControllerGroupMembersFetcher : NSObject <NSXMLParserDelegate, DataCapturingNSURLConnectionDelegateDelegate> {
