@@ -37,9 +37,11 @@ import org.openremote.controller.exception.NoSuchComponentException;
  * This class supply some utility method for operating xml file, such as get the document for
  * panel.xml, controller.xml, get element by element id,
  *
+ * TODO : class to be deleted, see ORCJAVA-154
+ * 
  * @author Javen
  */
-public class XMLUtil
+@Deprecated public class XMLUtil
 {
 
   /**
@@ -140,47 +142,47 @@ public class XMLUtil
 //
 //    return doc;
 //  }
-
-
-  /**
-   * Get a element by element id.
-   *
-   * @param doc The document for a xml file.
-   * @param id a attribute for a element.  Different element must have different id.
-   * @return a element which has such id.
-   * @throws NoSuchComponentException if there is no such a element which not has the id.
-   * @throws RuntimeException if the id is duplicated or the xml file is not a valid file.
-   */
-  @SuppressWarnings("unchecked")
-  public static Element getElementByID(Document doc, String id)
-  {
-    String xpath = "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']";
-
-    try
-    {
-      XPath xPath = XPath.newInstance(xpath);
-      xPath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-      List<Element> elements = xPath.selectNodes(doc);
-
-      if (elements.size() > 1)
-      {
-        throw new RuntimeException("duplicated id :" + id);
-      }
-
-      else if (elements.size() == 0)
-      {
-        throw new NoSuchComponentException("No such component id " + id);
-      }
-
-      return elements.get(0);
-    }
-
-    catch (JDOMException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-
+//
+//
+//  /**
+//   * Get a element by element id.
+//   *
+//   * @param doc The document for a xml file.
+//   * @param id a attribute for a element.  Different element must have different id.
+//   * @return a element which has such id.
+//   * @throws NoSuchComponentException if there is no such a element which not has the id.
+//   * @throws RuntimeException if the id is duplicated or the xml file is not a valid file.
+//   */
+//  @SuppressWarnings("unchecked")
+//  public static Element getElementByID(Document doc, String id)
+//  {
+//    String xpath = "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']";
+//
+//    try
+//    {
+//      XPath xPath = XPath.newInstance(xpath);
+//      xPath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+//      List<Element> elements = xPath.selectNodes(doc);
+//
+//      if (elements.size() > 1)
+//      {
+//        throw new RuntimeException("duplicated id :" + id);
+//      }
+//
+//      else if (elements.size() == 0)
+//      {
+//        throw new NoSuchComponentException("No such component id " + id);
+//      }
+//
+//      return elements.get(0);
+//    }
+//
+//    catch (JDOMException e)
+//    {
+//      throw new RuntimeException(e);
+//    }
+//  }
+//
 //  /**
 //   * Validate the controller.xml
 //   *
