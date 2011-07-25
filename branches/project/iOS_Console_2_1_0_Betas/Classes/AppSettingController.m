@@ -37,8 +37,6 @@
 
 @property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
 
-- (void)fetchGroupMembers;
-
 - (void)autoDiscoverChanged:(id)sender;
 - (void)updateTableView;
 - (void)saveSettings;
@@ -278,23 +276,6 @@
     self.panelsFetcher = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController fetchPanelsWithDelegate:self];
     
     // TODO EBR : this might need to be cancelled some time
-}
-
-// TODO: deprecated method, to be removed
-- (void)fetchGroupMembers
-{
-    // TODO EBR at this stage, group members should be fetched in the background, then panel identity
-    // for now, it is done syncrhonously
-    UpdateController *uc = [[UpdateController alloc] init];
-    @try {
-        [uc getRoundRobinGroupMembers];            
-    }
-    @catch (CheckNetworkException *exception) {
-        [ViewHelper showAlertViewWithTitle:@"Error" Message:exception.message];
-    }
-    @finally {
-        [uc release];
-    }
 }
 
 // Cancle(Dismiss) appSettings view.
