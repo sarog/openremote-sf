@@ -59,9 +59,8 @@
     [self.proxy fetchGroupMembersWithDelegate:self];
 }
 
-- (void)fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers
+- (void)controller:(ORController *)aController fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers
 {
-    
     // TODO: do that in seperate MOC, save to DB and refresh in main MOC
     self.activeGroupMember = nil;
     self.groupMembers = [NSSet set];
@@ -75,13 +74,13 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
 }
 
-- (void)fetchGroupMembersDidFailWithError:(NSError *)error
+- (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error
 {
     groupMembersFetchStatus = GroupMembersFetchFailed;    
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];    
 }
 
-- (void)fetchGroupMembersRequiresAuthentication
+- (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController
 {
 //    self.password = nil;
     groupMembersFetchStatus = GroupMembersFetchRequiresAuthentication;

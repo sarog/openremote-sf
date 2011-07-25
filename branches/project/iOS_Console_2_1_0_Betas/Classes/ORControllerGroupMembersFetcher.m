@@ -20,6 +20,7 @@
 
 @property (nonatomic, retain) NSURLConnection *connection;
 @property (nonatomic, retain) ORController *controller;
+@property (nonatomic) BOOL lastRequestWasError;
 
 @end
 
@@ -28,6 +29,7 @@
 @synthesize controller;
 @synthesize delegate;
 @synthesize connection;
+@synthesize lastRequestWasError;
 
 - (id)initWithController:(ORController *)aController
 {
@@ -48,13 +50,12 @@
     [super dealloc];
 }
 
-// TODO: delegate methods must pass back controller ?
-
 - (void)fetch
 {
     NSAssert(!self.connection, @"ORControllerGroupMembersFetcher can only be used to send a request once");
+    self.lastRequestWasError = NO;
     NSURLRequest *request = [NSURLRequest or_requestWithURLString:[self.controller.primaryURL stringByAppendingFormat:@"/%@", kControllerFetchGroupMembersPath]
-                                                           method:@"GET" userName:controller.userName password:controller.password];    
+                                                           method:@"GET" userName:controller.userName password:controller.password];
     self.connection = [[[NSURLConnection alloc] initWithRequest:request delegate:[[[DataCapturingNSURLConnectionDelegate alloc] initWithNSURLConnectionDelegate:self] autorelease]] autorelease];
 }
 
@@ -62,19 +63,21 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection receivedData:(NSData *)receivedData
 {
-    NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:receivedData];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	[xmlParser release];
-    [delegate fetchGroupMembersDidSucceedWithMembers:[NSArray arrayWithArray:members]];
+    if (!self.lastRequestWasError) {
+        NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:receivedData];
+        [xmlParser setDelegate:self];
+        [xmlParser parse];
+        [xmlParser release];
+        [delegate controller:self.controller fetchGroupMembersDidSucceedWithMembers:[NSArray arrayWithArray:members]];
+    }
 }
 
 #pragma mark NSURLConnection delegate implementation
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    if ([delegate respondsToSelector:@selector(fetchGroupMembersDidFailWithError:)]) {
-        [delegate fetchGroupMembersDidFailWithError:error];
+    if ([delegate respondsToSelector:@selector(controller:fetchGroupMembersDidFailWithError:)]) {
+        [delegate controller:self.controller fetchGroupMembersDidFailWithError:error];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
@@ -85,18 +88,18 @@
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     int statusCode = ((NSHTTPURLResponse *)response).statusCode;
-    if (statusCode == UNAUTHORIZED) {
-        if ([delegate respondsToSelector:@selector(fetchGroupMembersRequiresAuthentication)]) {
-            [delegate fetchGroupMembersRequiresAuthentication];
+	if (statusCode != 200) {
+        if (statusCode == UNAUTHORIZED) {
+            if ([delegate respondsToSelector:@selector(fetchGroupMembersRequiresAuthenticationForController:)]) {
+                [delegate fetchGroupMembersRequiresAuthenticationForController:self.controller];
+            }
         }
+        self.lastRequestWasError = YES;
+
         // TODO: call delegate with error
 
-        return;
-    }
-	if (statusCode != 200) {
-        // TODO: call delegate with error
+//		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
         
-		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
 	} 
 }
 
