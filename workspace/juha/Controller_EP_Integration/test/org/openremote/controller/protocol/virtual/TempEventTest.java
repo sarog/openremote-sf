@@ -26,9 +26,7 @@ import java.net.HttpURLConnection;
 import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.suite.RESTTests;
-import org.openremote.controller.Constants;
-import org.openremote.controller.service.ServiceContext;
-import org.openremote.controller.service.ControllerXMLChangeService;
+import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.rest.FindPanelByIDTest;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -44,24 +42,18 @@ public class TempEventTest
 
   @Test public void testTemperatureEvents() throws Exception
   {
-   // RESTTests.replaceControllerPanelXML("VirtualTempEventListenerAndRangeSensor-controller.xml");
+    AllTests.replaceTestContainerControllerXML("VirtualTempEventListenerAndRangeSensor-controller.xml");
 
-    URL statusRequest = new URL(RESTTests.containerURL + FindPanelByIDTest.RESTAPI_STATUS_URI + "1002");
+    URL statusRequest = new URL(RESTTests.containerURL + FindPanelByIDTest.RESTAPI_STATUS_URI + "8880");
 
-    ControllerXMLChangeService deployer = ServiceContext.getDeployer();
-    deployer.refreshController();
-    
+
+    Thread.sleep(7000);
+
     HttpURLConnection connection = (HttpURLConnection)statusRequest.openConnection();
 
-//    RESTTests.assertHttpResponse(
-//        connection, Constants.HTTP_RESPONSE_INVALID_PANEL_XML,
-//        RESTTests.ASSERT_BODY_CONTENT, Constants.MIME_APPLICATION_XML,
-//        Constants.CHARACTER_ENCODING_UTF8
-//    );
 
     Document doc = RESTTests.getDOMDocument(connection.getInputStream());
 
-//    RESTTests.assertOpenRemoteRootElement(doc);
 
     NodeList list = doc.getElementsByTagName("status");
 
