@@ -10,6 +10,7 @@ import com.google.gwt.event.shared.GwtEvent;
  */
 public class HoldEvent extends GwtEvent<HoldHandler> {
 	private static final Type<HoldHandler> TYPE = new Type<HoldHandler>();
+	public static final int MIN_HOLD_SECONDS = 1;
 	int xPos;
 	int yPos;
 	

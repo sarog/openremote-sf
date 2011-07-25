@@ -74,7 +74,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	@Override
 	public void onHold(HoldEvent event) {
-		Window.alert("HOLD: " + event.getXPos() + " : " + event.getYPos());		
+		Window.alert("HOLD");		
 	}
 
 	@Override

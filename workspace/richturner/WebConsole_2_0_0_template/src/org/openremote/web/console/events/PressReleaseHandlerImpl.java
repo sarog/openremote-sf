@@ -5,10 +5,7 @@ import org.openremote.web.console.client.WebConsole;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, PressMoveHandler {
-	public static final int SWIPE_GESTURE_MIN_X_TOLERANCE = 200;
-	public static final int SWIPE_GESTURE_MAX_Y_TOLERANCE = 80;
-	public static final int HOLD_GESTURE_MIN_HOLD_SECONDS = 1; 
+public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, PressMoveHandler { 
 	public boolean pressStarted = false;
 	private PressEvent pressEvent;
 	private PressMoveEvent pressMoveEvent;
@@ -66,7 +63,7 @@ public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, Pr
 		
 		// Check for left right swipe gesture
 		if (moveOccurred) {
-			if (Math.abs(moveDistanceX) >= SWIPE_GESTURE_MIN_X_TOLERANCE && Math.abs(moveDistanceY) < SWIPE_GESTURE_MAX_Y_TOLERANCE) {
+			if (Math.abs(moveDistanceX) >= SwipeEvent.MIN_X_TOLERANCE && Math.abs(moveDistanceY) < SwipeEvent.MAX_Y_TOLERANCE) {
 				String swipeDir = "RIGHT";
 				if (moveDistanceX < 0) {
 					swipeDir = "LEFT";
@@ -77,7 +74,7 @@ public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, Pr
 		}
 		
 		// Check for hold gesture
-		if (duration >= HOLD_GESTURE_MIN_HOLD_SECONDS) {
+		if (duration >= HoldEvent.MIN_HOLD_SECONDS) {
 			consoleModule.getConsoleUnit().fireEvent(new HoldEvent(pressEvent.getClientX(), pressEvent.getClientY()));
 			return;
 		}

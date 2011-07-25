@@ -101,6 +101,7 @@ body {
 .consoleDisplay {
 	background-color: black;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .consoleDisplay .portraitDisplay {
