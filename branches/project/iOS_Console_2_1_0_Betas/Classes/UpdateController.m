@@ -134,8 +134,9 @@
 	@try {
 		// this method will throw CheckNetworkException if the check failed.
 		[CheckNetwork checkAll];
-		
-		[self getRoundRobinGroupMembers];
+
+		// TODO: check what we really want to do 
+//		[self getRoundRobinGroupMembers];
 
 		//Add an Observer to listern Definition's update behavior
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdate) name:DefinitionUpdateDidFinishNotification object:nil];
@@ -163,68 +164,6 @@
 		[self didUseLocalCache:errorMessage];
 	} else {
 		[self didUpdateFail:errorMessage];
-	}
-}
-
-// Get the group members(controller url) of current using controller.
-- (void)getRoundRobinGroupMembers {
-	NSError *error = nil;
-	NSHTTPURLResponse *resp = nil;
-	NSURL *url = [NSURL URLWithString:[ServerDefinition serversXmlRESTUrl]];
-    
-	NSLog(@"Servers Xml REST url is : %@", [ServerDefinition serversXmlRESTUrl]);
-    
-    
-    // TODO: doing this with a 5 sec timeout is short if done from carrier data network
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:TIMEOUT_INTERVAL];   
-    [CredentialUtil addCredentialToNSMutableURLRequest:request forController:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController];
-
-    
-    URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];
-	NSData *data = [connectionHelper sendSynchronousRequest:request returningResponse:&resp error:&error];
-	[request release];
-    [connectionHelper release];
-	if (error ) {
-		NSLog(@"getRoundRobinGroupMembers failed %@",[error localizedDescription]);
-		@throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" 
-												 message:@"Could not find OpenRemote Controller. It may not be running or the connection URL in Settings is invalid."];
-	} else if ([resp statusCode] != 200) {
-        if ([resp statusCode] == UNAUTHORIZED) {
-            [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
-            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-            NSLog(@"Need to login");
-            
-            // TODO: notification mechanism does not work, check who's listening, maybe app settings is not
-            
-        } else {
-            NSLog(@"getRoundRobinGroupMembers statusCode %d",[resp statusCode] );
-            @throw [CheckNetworkException exceptionWithTitle:@"Servers request fail" message:[RoundRobinException exceptionMessageOfCode:[resp statusCode]]];            
-        }
-	}
-    
-    // Parses the XML reply and fill-in the GroupMembers cache for this controller
-    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers = [NSSet set];
-    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.activeGroupMember = nil;
-	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-	[xmlParser setDelegate:self];
-	[xmlParser parse];
-	[xmlParser release];
-    
-    // TODO: is this OK to persist : can this occur while on settings screen and other changes pending ?
-    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
-
-    NSLog(@"RoundRobin group members are:");
-    for (ORGroupMember *gm in [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.groupMembers) {
-        NSLog(@"%@", gm.url);
-    }    
-}
-
-#pragma mark delegate method of NSXMLParser
-//when find a servers, gets their *url* attribute.
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
-{
-	if ([elementName isEqualToString:@"server"]) {
-        [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController addGroupMemberForURL:[attributeDict valueForKey:@"url"]];
 	}
 }
 
