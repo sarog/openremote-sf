@@ -36,16 +36,23 @@ import com.extjs.gxt.ui.client.data.MemoryProxy;
 import com.extjs.gxt.ui.client.data.ModelData;
 import com.extjs.gxt.ui.client.data.ModelType;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.EventType;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.SelectionChangedEvent;
+import com.extjs.gxt.ui.client.event.SelectionChangedListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.store.StoreEvent;
+import com.extjs.gxt.ui.client.store.StoreListener;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.CheckBox;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.SimpleComboBox;
+import com.extjs.gxt.ui.client.widget.form.SimpleComboValue;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
@@ -67,11 +74,12 @@ import com.google.gwt.core.client.GWT;
 public class KNXImportWindow extends FormWindow {
    
     private Device device;
-    private Button windowOkBtn;
+    private Button importBtn;
     private final KNXImportWindow importWindow;
     private MemoryProxy<String> proxy;
     private BaseListLoader<ListLoadResult<ModelData>> loader; 
     private FileUploadField fileUploadField;
+    private ListStore<ModelData> store;
         
    /**
     * Instantiates a new import window.
@@ -110,21 +118,50 @@ public class KNXImportWindow extends FormWindow {
     * Creates the fields.
     */
    private void createResultGrid() {
+       // defines the xml structure  
+       ModelType type = new ModelType();  
+       type.setRoot("records");  
+       type.addField("GroupAddress", "groupAddress");  
+       type.addField("Name", "name");  
+       type.addField("DPT", "dpt");
+       type.addField("commandType", "command");
+       type.addField("import", "importGA");
+       
+       // need a loader, proxy, and reader  
+       proxy = new MemoryProxy<String>(null);  
+       JsonLoadResultReader<ListLoadResult<ModelData>> reader = new JsonLoadResultReader<ListLoadResult<ModelData>>(type);  
+       loader = new BaseListLoader<ListLoadResult<ModelData>>(proxy, reader);
+       store = new ListStore<ModelData>(loader);
+       store.addStoreListener(new StoreListener<ModelData>(){
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void storeUpdate(StoreEvent<ModelData> se) {
+            List<ModelData> data = (List<ModelData>) se.getStore().getModels();
+            boolean enable = false;
+            if (data != null) {
+                for (ModelData modelData : data) {
+                    if (modelData.get("import")) {
+                        enable = true;
+                        break;
+                    }
+                }
+            }
+            importBtn.setEnabled(enable);
+        }
+
+       });
+       
+       final NoButtonsRowEditor<ModelData> re = new NoButtonsRowEditor<ModelData>(store);
+
        // create the column model
        List<ColumnConfig> columns = new ArrayList<ColumnConfig>();  
-
+       
        //Col1
        columns.add(new ColumnConfig("GroupAddress", "GroupAddress", 100));  
 
        //Col2
-       ColumnConfig column = new ColumnConfig();  
-       column.setId("Name");  
-       column.setHeader("Name");  
-       column.setWidth(165);  
-       TextField<String> text = new TextField<String>();  
-       text.setAllowBlank(false);  
-       column.setEditor(new CellEditor(text));  
-       columns.add(column);  
+       columns.add(new ColumnConfig("Name", "Name", 165));
        
        //Col3
        columns.add(new ColumnConfig("DPT", "DPT", 100));
@@ -140,8 +177,9 @@ public class KNXImportWindow extends FormWindow {
        combo.add("Scene");  
        combo.add("Dimmer/Blind Step");
        combo.add("N/A");
+
      
-       CellEditor editor = new CellEditor(combo) {  
+       final CellEditor editor = new CellEditor(combo) {  
          @Override  
          public Object preProcessValue(Object value) {  
            if (value == null) {  
@@ -157,39 +195,34 @@ public class KNXImportWindow extends FormWindow {
            }  
            return ((ModelData) value).get("value");  
          }  
-       };  
+       };
+       combo.addSelectionChangedListener(new SelectionChangedListener<SimpleComboValue<String>>(){
+           @Override
+           public void selectionChanged(SelectionChangedEvent<SimpleComboValue<String>> se) {
+               if (combo.isRendered()) {
+                   re.stopEditing(true);
+               }
+           }
+      });
      
+       ColumnConfig column = new ColumnConfig();
        column = new ColumnConfig();  
        column.setId("commandType");  
-       column.setHeader("Command");  
+       column.setHeader("Command type");  
        column.setWidth(130);  
        column.setEditor(editor);  
        columns.add(column);  
        
        //Col5
-       CheckColumnConfig checkColumn = new CheckColumnConfig("import", "Import?", 55);  
-       CellEditor checkBoxEditor = new CellEditor(new CheckBox());  
+       AutoCommitCheckColumnConfig checkColumn = new AutoCommitCheckColumnConfig("import", "Import?", 55);
+       CheckBox cb = new CheckBox();
+       CellEditor checkBoxEditor = new CellEditor(cb);
        checkColumn.setEditor(checkBoxEditor);  
        columns.add(checkColumn); 
        
        ColumnModel cm = new ColumnModel(columns);  
      
-       // defines the xml structure  
-       ModelType type = new ModelType();  
-       type.setRoot("records");  
-       type.addField("GroupAddress", "groupAddress");  
-       type.addField("Name", "name");  
-       type.addField("DPT", "dpt");
-       type.addField("commandType", "command");
-       type.addField("import", "importGA");
-      
-       // need a loader, proxy, and reader  
-       proxy = new MemoryProxy<String>(null);  
-       JsonLoadResultReader<ListLoadResult<ModelData>> reader = new JsonLoadResultReader<ListLoadResult<ModelData>>(type);  
-       loader = new BaseListLoader<ListLoadResult<ModelData>>(proxy, reader);
-       ListStore<ModelData> store = new ListStore<ModelData>(loader);
-       
-       final RowEditor<ModelData> re = new RowEditor<ModelData>();
+       //Create the grid
        final Grid<ModelData> grid = new Grid<ModelData>(store, cm);
        grid.addPlugin(checkColumn);  
        grid.addPlugin(re); 
@@ -258,10 +291,10 @@ public class KNXImportWindow extends FormWindow {
     * Creates the buttons.
     */
    private void createWindowButtons() {
-      windowOkBtn = new Button("OK");
-      windowOkBtn.ensureDebugId(DebugId.KNX_IMPORT_WINDOW_OK_BTN);
-      windowOkBtn.setEnabled(false);
-      windowOkBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
+      importBtn = new Button("OK");
+      importBtn.ensureDebugId(DebugId.KNX_IMPORT_WINDOW_OK_BTN);
+      importBtn.setEnabled(false);
+      importBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
           @Override
           public void componentSelected(ButtonEvent ce) {
               importSelectedGridData();
@@ -277,13 +310,27 @@ public class KNXImportWindow extends FormWindow {
              importWindow.hide();
          }
       });
-      form.addButton(windowOkBtn);
+      form.addButton(importBtn);
       form.addButton(cancelBtn);
    }
 
    private void importSelectedGridData() {
+       List<ModelData> data = (List<ModelData>) store.getModels();
+       List<ModelData> importData = new ArrayList<ModelData>();
+       for (ModelData modelData : data) {
+           if (modelData.get("import")) {
+               if ("N/A".equals(modelData.get("commandType"))) {
+                   MessageBox.alert("Alert", "Each GroupAddress which should be imported needs a command type.", null);  
+                   return;
+               } else {
+                   importData.add(modelData);
+               }
+           }
+       }
+
+       
+       //TODO use grid data to create list
        List<BeanModel> deviceCommandModels = new ArrayList<BeanModel>();
-       //TODO use grid data to create list 
        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommandModels));   
    }
    
