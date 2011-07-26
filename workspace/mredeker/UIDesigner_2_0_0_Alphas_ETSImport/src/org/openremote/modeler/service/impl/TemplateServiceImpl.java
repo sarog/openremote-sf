@@ -96,6 +96,7 @@ import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.TemplateService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.UIComponentBox;
+import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.ClassLocator;
 import flexjson.JSONDeserializer;
@@ -124,6 +125,7 @@ public class TemplateServiceImpl implements TemplateService {
 
    @Override
 
+   @Transactional
    public Template saveTemplate(Template screenTemplate) {
 
       log.debug("save Template Name: " + screenTemplate.getName());
@@ -280,6 +282,7 @@ public class TemplateServiceImpl implements TemplateService {
    }
    
    @Override
+   @Transactional
    public boolean deleteTemplate(long templateOid) {
 
       log.debug("Delete Template id: " + templateOid);

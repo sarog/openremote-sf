@@ -64,7 +64,7 @@ public class SwitchController extends BaseGWTSpringControllerWithHibernateSuppor
       this.switchService = switchService;
    }
 
-   public void setUserService(UserServiceImpl userService) {
+   public void setUserService(UserService userService) {
       this.userService = userService;
    }
 

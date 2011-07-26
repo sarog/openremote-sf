@@ -50,6 +50,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 /**
@@ -120,6 +121,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+    @Transactional
     public boolean createUserAccount(String username, String password, String email) {
       if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
@@ -141,6 +143,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
     * {@inheritDoc}
     */
+    @Transactional
     public void saveUser(User user) {
         genericDAO.save(user.getAccount());
         genericDAO.save(user);
@@ -148,6 +151,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     /**
      * {@inheritDoc}
      */
+    @Transactional
     public void updateUser(User user) {
        genericDAO.update(user);
     }
@@ -209,6 +213,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
     * {@inheritDoc}
     */
    @Override
+   @Transactional
    public boolean activateUser(String userOid, String aid) {
       long id = 0;
       try {
@@ -249,6 +254,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return genericDAO.getByNonIdField(User.class, "username", username);
    }
 
+   @Transactional
    public User inviteUser(String email, String role, User currentUser) {
       User invitee = null;
       if (isUsernameAvailable(email)) {
@@ -328,6 +334,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return false;
    }
 
+   @Transactional
    public boolean createInviteeAccount(String userOid, String username, String password, String email) {
       if (StringUtils.isEmpty(userOid) || StringUtils.isEmpty(username) || StringUtils.isEmpty(password) || StringUtils.isEmpty(email)) {
          return false;
@@ -365,6 +372,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return invitees;
    }
 
+   @Transactional
    public User updateUserRoles(long uid, String roles) {
       User user = getUserById(uid);
       user.getRoles().clear();
@@ -385,6 +393,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       }
    }
 
+   @Transactional
    public void deleteUser(long uid) {
       User user = getUserById(uid);
       genericDAO.delete(user);
@@ -405,6 +414,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return accessUsers;
    }
 
+   @Transactional
    public User forgetPassword(String username) {
       final User user = genericDAO.getByNonIdField(User.class, "username", username);
       final String passwordToken = UUID.randomUUID().toString();
@@ -446,6 +456,7 @@ public class UserServiceImpl extends BaseAbstractService<User> implements UserSe
       return null;
    }
 
+   @Transactional
    public boolean resetPassword(long uid, String password, String passwordToken) {
       User user = getUserById(uid);
       if (user != null && passwordToken.equals(user.getToken())) {

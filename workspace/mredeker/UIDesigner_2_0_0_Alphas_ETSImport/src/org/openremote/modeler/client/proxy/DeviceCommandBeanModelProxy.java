@@ -121,7 +121,7 @@ public class DeviceCommandBeanModelProxy {
     * @param callback the callback
     */
    public static void saveAllDeviceCommands(Device device, List<ModelData> datas, final AsyncSuccessCallback<List<BeanModel>> callback) {
-      List<DeviceCommand> deviceCommands = convert2DeviceCommand(device, datas);
+      List<DeviceCommand> deviceCommands = convertToIrDeviceCommand(device, datas);
       AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
          public void onSuccess(List<DeviceCommand> deviceCommands) {
             List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
@@ -141,7 +141,7 @@ public class DeviceCommandBeanModelProxy {
     * 
     * @return the list< device command>
     */
-   public static List<DeviceCommand> convert2DeviceCommand(Device device, List<ModelData> datas) {
+   public static List<DeviceCommand> convertToIrDeviceCommand(Device device, List<ModelData> datas) {
       List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
       for (ModelData m : datas) {
          Protocol protocol = new Protocol();
@@ -173,6 +173,51 @@ public class DeviceCommandBeanModelProxy {
       }
       return deviceCommands;
    }
+   
+
+   /**
+    * Convert to device command.
+    * 
+    * @param device
+    *           the device
+    * @param datas
+    *           the datas
+    * 
+    * @return the list< device command>
+    */
+   public static List<DeviceCommand> convertToKnxDeviceCommand(Device device, List<ModelData> datas) {
+      List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
+      for (ModelData m : datas) {
+         Protocol protocol = new Protocol();
+         protocol.setType(Constants.INFRARED_TYPE);
+
+         ProtocolAttr nameAttr = new ProtocolAttr();
+         nameAttr.setName("name");
+         nameAttr.setValue(m.get("remoteName").toString());
+         nameAttr.setProtocol(protocol);
+         protocol.getAttributes().add(nameAttr);
+
+         ProtocolAttr commandAttr = new ProtocolAttr();
+         commandAttr.setName("command");
+         commandAttr.setValue(m.get("name").toString());
+         commandAttr.setProtocol(protocol);
+         protocol.getAttributes().add(commandAttr);
+
+         DeviceCommand deviceCommand = new DeviceCommand();
+         deviceCommand.setDevice(device);
+         deviceCommand.setProtocol(protocol);
+         deviceCommand.setName(m.get("name").toString());
+         deviceCommand.setSectionId(m.get("sectionId").toString());
+
+         protocol.setDeviceCommand(deviceCommand);
+
+         device.getDeviceCommands().add(deviceCommand);
+
+         deviceCommands.add(deviceCommand);
+      }
+      return deviceCommands;
+   }
+   
    
    /**
     * Delete device command.
