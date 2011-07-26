@@ -28,6 +28,8 @@ import org.openremote.android.console.bindings.Web;
 import org.openremote.android.test.TestUtils;
 import org.w3c.dom.Node;
 
+import android.test.suitebuilder.annotation.SmallTest;
+
 /**
  * Tests the {@link org.openremote.android.console.bindings.Web} class.
  *
@@ -37,6 +39,7 @@ public class WebTest extends TestCase
 {
 
   /** Tests constructing a Web object with all parameters present and valid */
+	@SmallTest
   public void testConstructor()
   {
     final int id = 12;
@@ -58,6 +61,7 @@ public class WebTest extends TestCase
   }
 
   /** Tests constructing a Web object with an invalid URL */
+	@SmallTest
   public void testBadUrl()
   {
     final int id = 12;
@@ -75,6 +79,7 @@ public class WebTest extends TestCase
   /**
    * Verifies that the username and password attributes are optional.
    */
+  @SmallTest
   public void testNoUsernameAndPassword()
   {
     final int id = 12;
@@ -95,6 +100,7 @@ public class WebTest extends TestCase
   /**
    * Tests constructing a web binding object that refers to a sensor
    */
+  @SmallTest
   public void testWithSensor()
   {
     final int id = 12;
@@ -119,6 +125,10 @@ public class WebTest extends TestCase
     assertEquals(sensorId, sensor.getSensorId());
   }
 
+  /*
+   * ignoreSslErrors is an xml attribute that can be set. If not set is false
+   */
+  @SmallTest
   public void testIgnoreSslErrorsAttributeDefault()
   {
     // ignoreSslErrors defaults to false
@@ -128,6 +138,7 @@ public class WebTest extends TestCase
     assertFalse("ignoreSslErrors should default to false", web.getIgnoreSslErrors());
   }
 
+  @SmallTest
   public void testIgnoreSslErrorsAttributeTrue()
   {
     // "true" is valid for the attribute
@@ -143,6 +154,7 @@ public class WebTest extends TestCase
     assertTrue(web2.getIgnoreSslErrors());
   }
 
+  @SmallTest
   public void testIgnoreSslErrorsAttributeFalse()
   {
     // "false" is valid for the attribute
@@ -158,6 +170,7 @@ public class WebTest extends TestCase
     assertFalse(web2.getIgnoreSslErrors());
   }
 
+  @SmallTest
   public void testIgnoreSslErrorsAttributeInvalid()
   {
     // "True" is invalid for xsd:boolean, and will end up false in this implementation

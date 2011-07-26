@@ -25,19 +25,24 @@ import junit.framework.TestCase;
 
 import org.openremote.android.console.util.StringUtil;
 
+import android.test.suitebuilder.annotation.SmallTest;
+
 /**
  * Tests for {@link org.openremote.android.console.util.StringUtil} class.
  *
  * @author <a href="mailto:aball@osintegrators.com">Andrew Ball</a>
+ *@SmallTest
  */
 public class StringUtilTest extends TestCase
 {
 
+  @SmallTest
   public void testMarkControllerServerURLSelected()
   {
     assertEquals("+http://localhost:8080/controller", StringUtil.markControllerServerURLSelected("http://localhost:8080/controller"));
   }
 
+  @SmallTest
   public void testIpLongToString()
   {
     assertNull(StringUtil.removeControllerServerURLSelected(null));

@@ -34,6 +34,8 @@ import org.openremote.android.console.net.IPAutoDiscoveryClient;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
+import android.test.suitebuilder.annotation.MediumTest;
 import android.util.Log;
 
 /**
@@ -61,6 +63,9 @@ public class IPAutoDiscoveryTest extends ActivityInstrumentationTestCase2<AppSet
    *
    * @throws InterruptedException if interrupted while sleeping
    */
+  //Network access, multiple threads
+  
+  @LargeTest 
   public void testAutoDiscoveryServers() throws InterruptedException {
     getActivity().stopControllerAutoDiscovery();
     // wait for the auto-discovery process that was started when the activity

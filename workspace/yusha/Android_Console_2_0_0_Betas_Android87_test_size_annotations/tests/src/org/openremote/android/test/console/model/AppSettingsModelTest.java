@@ -27,6 +27,8 @@ import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.model.AppSettingsModel;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.content.Context;
 
 
@@ -83,6 +85,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Test basic set/get on Controller URL setting.
    */
+  @MediumTest
   public void testSetCurrentServer() throws MalformedURLException
   {
     URL controllerURL = new URL("http://timbuktu:8080/controller");
@@ -98,6 +101,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Test setting controller URL to null value
    */
+  @MediumTest
   public void testSetCurrentServerNull()
   {
     AppSettingsModel.setCurrentServer(ctx, null);
@@ -111,6 +115,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Test basic controller URL modifications when SSL is enabled.
    */
+  @MediumTest
   public void testGetHTTPSControllerURL() throws MalformedURLException
   {
     URL plainURL = new URL("http://controller.openremote.org/test");
@@ -130,7 +135,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
     AppSettingsModel.enableSSL(ctx, true);
 
-    controller = AppSettingsModel.getSecuredServer(ctx);
+    controller = AppSettingsModel.getSecuredServer(ctx);//same method secure or no
 
     // Without explicit port in the original user configured controller URL (meaning port 80
     // is used for HTTP), default to httpd SSL port 443...
@@ -143,6 +148,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Tests controller URL modifications when SSL is turned on and specific ports are used.
    */
+  @MediumTest
   public void testGetHTTPSControllerURLWithExplicitPort() throws MalformedURLException
   {
     URL httpUrlWithExplicitPort = new URL("http://controller.openremote.org:8111/test");
@@ -204,6 +210,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Making sure if explicit SSL port has been configured, it is used.
    */
+  @MediumTest
   public void testGetHTTPSControllerURLWithExplicitPort2() throws MalformedURLException
   {
     URL httpUrlWithImplicitPort = new URL("http://controller.openremote.org/test");
@@ -225,6 +232,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Basic SSL enabled on/off test.
    */
+  @MediumTest
   public void testEnableSSL()
   {
     AppSettingsModel.enableSSL(ctx, true);
@@ -238,7 +246,9 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
 
   /**
    * Basic set/get SSL port test.
+   * @writeTest updates FileSystem
    */
+  @MediumTest
   public void testSetGetSSLPort() throws MalformedURLException
   {
     URL httpUrlWithImplicitPort = new URL("http://controller.openremote.org/test");
@@ -266,6 +276,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * In case of config failure, still try to give a reasonable return value
    */
+  @MediumTest
   public void testGetSSLPortWithNullController()
   {
     AppSettingsModel.setCurrentServer(ctx, null);
@@ -278,6 +289,7 @@ public class AppSettingsModelTest extends ActivityInstrumentationTestCase2<AppSe
   /**
    * Tests setSSLPort edge cases
    */
+  @SmallTest
   public void testSetGetSSLPortEdgeCases()
   {
     AppSettingsModel.setSSLPort(ctx, 0);

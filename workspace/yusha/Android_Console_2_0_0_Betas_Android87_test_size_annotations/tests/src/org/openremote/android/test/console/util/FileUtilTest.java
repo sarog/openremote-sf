@@ -50,6 +50,7 @@ import org.openremote.android.console.util.FileUtil;
 
 import android.content.Context;
 import android.test.InstrumentationTestCase;
+import android.test.suitebuilder.annotation.MediumTest;
 
 /**
  * The Class test to parse panel.xml.
@@ -65,6 +66,7 @@ public class FileUtilTest extends InstrumentationTestCase {
    /**
     * Test parse panel_grid_button.xml.
     */
+   @MediumTest
    public void testParsePanelGridButtonXML() {
       FileUtil.parsePanelXMLInputStream(readFile("panel_grid_button"));
 

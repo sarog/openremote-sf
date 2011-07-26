@@ -23,6 +23,8 @@ import org.openremote.android.console.model.UserCache;
 
 import android.content.Context;
 import android.test.InstrumentationTestCase;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.test.suitebuilder.annotation.SmallTest;
 
 /**
  * Test for {@link org.openremote.android.console.model.UserCache} class.
@@ -45,7 +47,9 @@ public class UserCacheTest extends InstrumentationTestCase {
    
    /**
     * Test get empty group id and screen id, if there has not been set.
+    * @readFileSystemTest reading from a shared preference file
     */
+   @MediumTest
    public void testGetEmptyGroupIdAndScreenId() {
       assertEquals(0, UserCache.getLastGroupId(ctx));
       assertEquals(0, UserCache.getLastScreenId(ctx));
@@ -54,6 +58,7 @@ public class UserCacheTest extends InstrumentationTestCase {
    /**
     * Test basic set/get on groupId and screenId.
     */
+   @MediumTest
    public void testSaveLastGroupIdAndScreenId() {
       int groupId = 1;
       int screenId = 10;
@@ -67,6 +72,7 @@ public class UserCacheTest extends InstrumentationTestCase {
    /**
     * Test get empty username and password, if there has not been set.
     */
+   @MediumTest
    public void testGetEmptyUserAndPassword() {
       assertEquals("", UserCache.getUsername(ctx));
       assertEquals("", UserCache.getPassword(ctx));
@@ -75,6 +81,7 @@ public class UserCacheTest extends InstrumentationTestCase {
    /**
     * Test basic save/get username and password.
     */
+   @MediumTest
    public void testSaveUserAndPassword() {
       String username = "openremote";
       String password = "123456";

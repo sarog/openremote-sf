@@ -28,11 +28,14 @@ import org.openremote.android.console.bindings.Web;
 import org.openremote.android.test.TestUtils;
 import org.w3c.dom.Node;
 
+import android.test.suitebuilder.annotation.SmallTest;
+
 /**
  * Tests the {@link org.openremote.android.console.bindings.Component} class.
  *
  * @author <a href="mailto:aball@osintegrators.com">Andrew Ball</a>
  */
+@SmallTest
 public class ComponentTest extends TestCase
 {
   /** Tests that we can construct a Web object from the buildFromXml() method */
