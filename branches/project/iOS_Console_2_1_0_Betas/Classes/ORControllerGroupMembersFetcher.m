@@ -59,6 +59,11 @@
     self.connection = [[[NSURLConnection alloc] initWithRequest:request delegate:[[[DataCapturingNSURLConnectionDelegate alloc] initWithNSURLConnectionDelegate:self] autorelease]] autorelease];
 }
 
+- (void)cancelFetch
+{
+    [self.connection cancel];
+}
+
 #pragma mark DataCapturingNSURLConnectionDelegate delegate implementation
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection receivedData:(NSData *)receivedData
