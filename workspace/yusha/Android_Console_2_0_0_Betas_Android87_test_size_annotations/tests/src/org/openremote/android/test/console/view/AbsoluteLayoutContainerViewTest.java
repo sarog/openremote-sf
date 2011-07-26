@@ -30,6 +30,7 @@ import org.w3c.dom.Node;
 
 import android.webkit.WebView;
 import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.SmallTest;
 
 /**
  * Tests the {@link org.openremote.android.console.view.AbsoluteLayoutContainerView} class.
@@ -44,6 +45,7 @@ public class AbsoluteLayoutContainerViewTest extends AndroidTestCase
    *
    * This is where the width and height to use for the WebView are set.
    */
+	@SmallTest
   public void testConstructorWithAbsoluteLayoutContainerContainingWebElement()
   {
     final int left = 12;

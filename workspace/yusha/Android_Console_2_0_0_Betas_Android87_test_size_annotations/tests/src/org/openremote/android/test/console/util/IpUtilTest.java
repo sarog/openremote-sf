@@ -26,6 +26,8 @@ import junit.framework.TestCase;
 
 import org.openremote.android.console.util.IpUtil;
 
+import android.test.suitebuilder.annotation.SmallTest;
+
 /**
  * Tests for {@link org.openremote.android.console.util.IpUtil} class.
  * 
@@ -36,18 +38,22 @@ import org.openremote.android.console.util.IpUtil;
 public class IpUtilTest extends TestCase
 {
 
+
+	@SmallTest
   public void testIpStringToLong()
   {
     long ipLong = IpUtil.ipStringToLong("80.35.83.10");
     Assert.assertEquals(1344492298, ipLong);
   }
 
+  @SmallTest
   public void testIpLongToString()
   {
     String ipString = IpUtil.ipLongToString(1344492298);
     Assert.assertEquals("80.35.83.10", ipString);
   }
 
+  @SmallTest
   public void testSplitIpFromURL()
   {
     String ip1 = IpUtil.splitIpFromURL("http://192.168.100.34:8080/controller");

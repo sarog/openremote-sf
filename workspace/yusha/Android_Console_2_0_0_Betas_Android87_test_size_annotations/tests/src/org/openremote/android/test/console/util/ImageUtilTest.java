@@ -30,6 +30,7 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.test.InstrumentationTestCase;
+import android.test.suitebuilder.annotation.MediumTest;
 
 /**
  * The Class test to parse panel.xml.
@@ -78,6 +79,7 @@ public class ImageUtilTest extends InstrumentationTestCase
    *
    * @throws IOException
    */
+  @MediumTest
   public void testCreateFromPathQuietlyNoScaling() throws IOException
   {
     Drawable d = ImageUtil.createFromPathQuietly(targetCtx, Constants.FILE_FOLDER_PATH + LIGHTS_BUTTON_FILENAME);
@@ -91,6 +93,7 @@ public class ImageUtilTest extends InstrumentationTestCase
    *
    * @throws IOException
    */
+  @MediumTest
   public void testCreateClipedDrawableFromPathNoScaling() throws IOException
   {
     BitmapDrawable bd = ImageUtil.createClipedDrawableFromPath(targetCtx,

@@ -31,6 +31,8 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
+
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.model.AppSettingsModel;
@@ -106,6 +108,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    *
    * @throws IOException  if connecting to remote controller fails for every reason
    */
+  @LargeTest
   public void testVerifyControllerURL() throws IOException
   {
     URL publicControllerUrl = new URL("http://controller.openremote.org/test/controller");
@@ -141,6 +144,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    *
    * @throws IOException if connecting to the remote test controller fails for any reason
    */
+  @LargeTest
   public void testVerifyControllerURLWrongPanelName() throws IOException
   {
     URL publicControllerUrl = new URL("http://controller.openremote.org/test/controller");
@@ -175,6 +179,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    *
    * @throws IOException if remote test controller can't be accessed
    */
+  @LargeTest
   public void testVerifyControllerURLSpacesInPanelName() throws IOException
   {
     URL publicControllerUrl = new URL("http://controller.openremote.org/test/controller");
@@ -211,6 +216,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    * @throws IOException if something happens to the connection, invalid URL path should only
    *                     result an HTTP error code
    */
+  @LargeTest
   public void testVerifyControllerWrongURL() throws IOException
   {
     URL publicControllerUrl = new URL("http://controller.openremote.org/nothing/here");
@@ -245,6 +251,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
   /**
    * Tests behavior with a controller URL containing a hostname that doesn't resolve.
    */
+  @LargeTest
   public void testControllerAtUnknownHost() throws MalformedURLException
   {
     URL controllerUrlWithUnknownHost =

@@ -27,6 +27,7 @@ import org.openremote.android.console.model.PollingStatusParser;
 
 import android.content.Context;
 import android.test.InstrumentationTestCase;
+import android.test.suitebuilder.annotation.MediumTest;
 
 /**
  * Test for polling result's parser.
@@ -36,11 +37,12 @@ public class PollingStatusParserTest extends InstrumentationTestCase {
    /**
     * Test parsing fixture/polling_status.xml.
     */
+	@MediumTest
    public void testParse() {
       Context ctx = getInstrumentation().getContext();
       
       try {
-         InputStream is = ctx.getAssets().open("fixture/polling_status.xml");
+         InputStream is = ctx.getAssets().open("fixture/polling_status.xml");//File System access
          PollingStatusParser.parse(is);
          
          HashMap<String, String> statusMap = PollingStatusParser.statusMap;

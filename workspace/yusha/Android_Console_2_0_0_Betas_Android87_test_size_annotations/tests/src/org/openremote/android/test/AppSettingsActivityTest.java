@@ -21,6 +21,7 @@
 package org.openremote.android.test;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.app.Activity;
 import android.widget.EditText;
 import android.widget.ToggleButton;
@@ -112,6 +113,7 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
   /**
    * Tests SSL valid port values through R.id.ssl_port EditField UI widget.
    */
+  @SmallTest
   public void testValidSSLPorts()
   {
 
@@ -162,6 +164,7 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
   /**
    * Test SSL port value limits through R.id.ssl_port EditField UI widget.
    */
+  @SmallTest
   public void testSSLPortLimits()
   {
     activity.runOnUiThread(
@@ -195,6 +198,7 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
    * Test SSL port values out of bounds -- incorrect user input should not allow settings
    * to change.
    */
+  @SmallTest
   public void testOutOfBoundsSSLPorts()
   {
     AppSettingsModel.setSSLPort(ctx, 8443);
@@ -217,6 +221,7 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
   /**
    * Test SSL port values with invalid input -- should allow numbers only
    */
+  @SmallTest
   public void testInvalidInputOnSSLPortField()
   {
     AppSettingsModel.setSSLPort(ctx, 8443);
@@ -244,6 +249,7 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
    * Test the SSL toggle and SSL port edit field mutual exclusion and inclusion -- when SSL is
    * on/off, the port edit field should be enabled/disabled
    */
+  @SmallTest
   public void testSSLTogglePortMutualExclusionAndInclusion()
   {
     toggleSSL(true);
@@ -301,6 +307,7 @@ public class AppSettingsActivityTest extends ActivityInstrumentationTestCase2<Ap
    * Tests the SSL Port widget text value is rolled back to previous valid value if new
    * incorrect value was entered.
    */
+  @SmallTest
   public void testIncorrectValueUIRollback()
   {
     toggleSSL(true);

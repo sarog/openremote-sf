@@ -46,6 +46,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.SAXException;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.app.Activity;
 
 /**
@@ -179,6 +181,8 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    *
    * @throws IOException see checkURLWithHTTPProtocol javadoc for details
    */
+  //Network access
+  @LargeTest
   public void testURLConnectionBasicGET() throws IOException
   {
     HttpResponse response = ORConnection.checkURLWithHTTPProtocol(
@@ -194,6 +198,7 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    */
+  @LargeTest
   public void testURLConnectionUnknownHost() throws IOException
   {
     final String NOHOST_TESTURL = "http://controller.openremotetest.org/test/controller";
@@ -218,6 +223,8 @@ public class ORConnectionTest extends ActivityInstrumentationTestCase2<AppSettin
    *
    * @throws IOException if connection fails for any reason, see checkURLWithHTTPProtocol javadoc
    */
+  
+  @SmallTest
   public void testURLConnectionWithNullArg() throws IOException
   {
     final URL TESTURL = null;

@@ -28,6 +28,8 @@ import org.openremote.android.console.bindings.Web;
 import org.openremote.android.test.TestUtils;
 import org.w3c.dom.Node;
 
+import android.test.suitebuilder.annotation.SmallTest;
+
 /**
  * Tests the {@link org.openremote.android.console.bindings.AbsoluteLayoutContainer} class.
  *
@@ -39,6 +41,7 @@ public class AbsoluteLayoutContainerTest extends TestCase
    * Tests that we can construct an AbsoluteLayoutContainer object from XML which contains
    * a child &lt;web&gt; element.
    */
+	@SmallTest
   public void testConstructorWithChildWebElement()
   {
     final int left = 12;

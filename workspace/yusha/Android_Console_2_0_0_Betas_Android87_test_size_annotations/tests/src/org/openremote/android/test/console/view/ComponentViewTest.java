@@ -29,6 +29,7 @@ import org.openremote.android.test.TestUtils;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.SmallTest;
 
 /**
  * Tests the {@link org.openremote.android.console.view.ComponentView} class.
@@ -42,6 +43,7 @@ public class ComponentViewTest extends AndroidTestCase
    * Tests constructing a ComponentView from an ORWebView via its
    * buildWithComponent() method.
    */
+	@SmallTest
   public void testBuildWithComponentWithORWebView() throws NoSuchFieldException
   {
     final int id = 12;

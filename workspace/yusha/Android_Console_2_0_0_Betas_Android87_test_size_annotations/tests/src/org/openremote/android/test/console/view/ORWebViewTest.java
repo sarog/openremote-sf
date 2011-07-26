@@ -29,6 +29,7 @@ import org.w3c.dom.Node;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.SmallTest;
 
 /**
  * Tests the {@link org.openremote.android.console.view.ORWebView} class.
@@ -39,6 +40,7 @@ public class ORWebViewTest extends AndroidTestCase
 {
 
   /** Tests constructing an ORWebView from a Web binding object. */
+	@SmallTest
   public void testConstructor() throws NoSuchFieldException
   {
     final int id = 12;
