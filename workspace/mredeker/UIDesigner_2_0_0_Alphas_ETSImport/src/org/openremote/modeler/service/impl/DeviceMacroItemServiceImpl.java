@@ -30,6 +30,7 @@ import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.domain.DeviceMacroRef;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Default implement of DeviceMacroItemService.
@@ -42,6 +43,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceCommand(org.openremote.modeler.domain.DeviceCommand)
     */
+    @Transactional
    public void deleteByDeviceCommand(DeviceCommand deviceCommand) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceCommandRef.class);
       List<DeviceCommandRef> deviceCommandRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("deviceCommand", deviceCommand)));
@@ -53,6 +55,7 @@ public class DeviceMacroItemServiceImpl extends BaseAbstractService<DeviceMacroI
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroItemService#deleteByDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
+    @Transactional
    public void deleteByDeviceMacro(DeviceMacro targetDeviceMacro) {
       DetachedCriteria criteria = DetachedCriteria.forClass(DeviceMacroRef.class);
       List<DeviceMacroRef> deviceMacroRefs = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("targetDeviceMacro", targetDeviceMacro)));

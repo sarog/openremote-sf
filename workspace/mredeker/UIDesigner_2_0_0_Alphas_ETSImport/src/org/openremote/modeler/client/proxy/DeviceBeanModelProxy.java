@@ -169,7 +169,7 @@ public class DeviceBeanModelProxy {
     *           the callback
     */
    public static void saveDeviceWithCommands(final Device device, List<ModelData> datas, final AsyncSuccessCallback<BeanModel> callback) {
-      device.setDeviceCommands(DeviceCommandBeanModelProxy.convert2DeviceCommand(device, datas));
+      device.setDeviceCommands(DeviceCommandBeanModelProxy.convertToIrDeviceCommand(device, datas));
       AsyncServiceFactory.getDeviceServiceAsync().saveDevice(device, new AsyncSuccessCallback<Device>() {
          public void onSuccess(Device result) {
             BeanModel deviceModel = result.getBeanModel();

@@ -25,6 +25,7 @@ import org.openremote.modeler.client.rpc.DeviceRPCService;
 import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.service.DeviceService;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
@@ -39,7 +40,7 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
    private DeviceService deviceService;
    
    /** The user service. */
-   private UserServiceImpl userService;
+   private UserService userService;
 
     /**
      * Sets the device service .
@@ -92,7 +93,7 @@ public class DeviceController extends BaseGWTSpringControllerWithHibernateSuppor
     * 
     * @param userService the new user service
     */
-   public void setUserService(UserServiceImpl userService) {
+   public void setUserService(UserService userService) {
       this.userService = userService;
    }
 

@@ -152,12 +152,14 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSensorMenuItem = createNewSensorMenu();
       final MenuItem newSliderMenuItem = createNewSliderMenu();
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
+      final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
       
       newMenu.add(newCommandMemuItem);
       newMenu.add(importCommandMemuItem);
       newMenu.add(newSensorMenuItem);
       newMenu.add(newSliderMenuItem);
       newMenu.add(newSwitchMenuItem);
+      newMenu.add(importKnxCommandMemuItem);
       
       // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -173,6 +175,7 @@ public class DevicePanel extends ContentPanel {
             newSensorMenuItem.setEnabled(enabled);
             newSliderMenuItem.setEnabled(enabled);
             newSwitchMenuItem.setEnabled(enabled);
+            importKnxCommandMemuItem.setEnabled(enabled);
          }
          
       });
@@ -605,6 +608,24 @@ public class DevicePanel extends ContentPanel {
       });
       return importCommandItem;
    }
+   
+   
+   /**
+    * Creates the import knx menu item.
+    * 
+    * @return the menu item
+    */
+   private MenuItem createImportKnxMenuItem() {
+      MenuItem importCommandItem = new MenuItem("Import KNX Commands from ETS4");
+      importCommandItem.setIcon(icon.importFromDB());
+      importCommandItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+         public void componentSelected(MenuEvent ce) {
+            importKNXCommand();
+         }
+
+      });
+      return importCommandItem;
+   }
 
    /**
     * Import ir command.
@@ -625,6 +646,27 @@ public class DevicePanel extends ContentPanel {
             }
          });
       }
+   }
+   
+   /**
+    * Import KNX command.
+    */
+   private void importKNXCommand() {
+       final BeanModel deviceModel = getDeviceModel();
+       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+          final KNXImportWindow knxImportWindow = new KNXImportWindow(deviceModel);
+          knxImportWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+             @Override
+             public void afterSubmit(SubmitEvent be) {
+                List<BeanModel> deviceCommandModels = be.getData();
+                for (BeanModel deviceCommandModel : deviceCommandModels) {
+                   tree.getStore().add(deviceModel, deviceCommandModel, false);
+                }
+                tree.setExpanded(deviceModel, true);
+                knxImportWindow.hide();
+             }
+          });
+       }
    }
    
    private void addTreeStoreEventListener() {

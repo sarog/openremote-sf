@@ -29,12 +29,14 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SliderService;
 import org.openremote.modeler.service.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 public class SliderServiceImpl extends BaseAbstractService<Slider> implements SliderService {
 
    private UserService userService = null;
    
    @Override
+   @Transactional
    public void delete(long id) {
       Slider slider = super.loadById(id);
       genericDAO.delete(slider);
@@ -50,12 +52,14 @@ public class SliderServiceImpl extends BaseAbstractService<Slider> implements Sl
    }
 
    @Override
+   @Transactional
    public Slider save(Slider slider) {
       genericDAO.save(slider);
       return slider;
    }
 
    @Override
+   @Transactional
    public Slider update(Slider slider) {
       Slider oldSlider = genericDAO.loadById(Slider.class, slider.getOid());
       if (oldSlider.getSliderSensorRef() != null) {
