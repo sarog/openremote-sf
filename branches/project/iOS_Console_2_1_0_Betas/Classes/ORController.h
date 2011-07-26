@@ -67,6 +67,8 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 @property (nonatomic, readonly) ORControllerGroupMembersFetchStatus groupMembersFetchStatus;
 
 - (void)fetchGroupMembers;
+- (void)cancelGroupMembersFetch;
+
 - (void)addGroupMemberForURL:(NSString *)url;
 
 @end

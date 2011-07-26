@@ -30,12 +30,15 @@
 - (void)addGroupMembers:(NSSet *)value;
 - (void)removeGroupMembers:(NSSet *)value;
 
+@property (nonatomic, retain) ORControllerGroupMembersFetcher *groupMembersFetcher;
+
 @end
 
 @implementation ORController
 
 @synthesize activeGroupMember;
 @synthesize groupMembersFetchStatus;
+@synthesize groupMembersFetcher;
 
 @dynamic primaryURL;
 @dynamic selectedPanelIdentity;
@@ -54,9 +57,17 @@
 
 - (void)fetchGroupMembers
 {
+    if (self.groupMembersFetcher) {
+        return;
+    }
     groupMembersFetchStatus = GroupMembersFetching;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchingNotification object:self];
-    [self.proxy fetchGroupMembersWithDelegate:self];
+    self.groupMembersFetcher = [self.proxy fetchGroupMembersWithDelegate:self];
+}
+
+- (void)cancelGroupMembersFetch
+{
+    [self.groupMembersFetcher cancelFetch];
 }
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers
@@ -72,12 +83,14 @@
     }
     groupMembersFetchStatus = GroupMembersFetchSucceeded;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchSucceededNotification object:self];
+    self.groupMembersFetcher = nil;
 }
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error
 {
     groupMembersFetchStatus = GroupMembersFetchFailed;    
-    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];    
+    [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchFailedNotification object:self];
+    self.groupMembersFetcher = nil;
 }
 
 - (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController
@@ -86,6 +99,7 @@
     groupMembersFetchStatus = GroupMembersFetchRequiresAuthentication;
     [[NSNotificationCenter defaultCenter] postNotificationName:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:self];    
   //  [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+    self.groupMembersFetcher = nil;
 }
 
 #pragma mark -
@@ -94,6 +108,7 @@
 {
     [proxy release];
     proxy = nil;
+    self.groupMembersFetcher = nil;
     [super didTurnIntoFault];
 }
 

@@ -37,5 +37,6 @@
 
 - (id)initWithController:(ORController *)aController;
 - (void)fetch;
+- (void)cancelFetch;
 
 @end
