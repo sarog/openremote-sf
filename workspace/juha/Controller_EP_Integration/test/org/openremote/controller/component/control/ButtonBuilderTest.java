@@ -20,73 +20,108 @@
  */
 package org.openremote.controller.component.control;
 
-import static org.junit.Assert.fail;
-import junit.framework.Assert;
+import java.util.Properties;
 
-import org.jdom.Document;
+import junit.framework.Assert;
 import org.jdom.Element;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.suite.AllTests;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.control.button.Button;
 import org.openremote.controller.component.control.button.ButtonBuilder;
-import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.exception.ConfigurationException;
-import org.openremote.controller.utils.SpringTestContext;
-import org.openremote.controller.utils.XMLUtil;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.suite.AllTests;
 
 /**
- * 
- * @author Javen
+ * TODO
+ *
+ *  - see related tasks
+ *     ORCJAVA-155  (http://jira.openremote.org/browse/ORCJAVA-155)
+ *     ORCJAVA-156  (http://jira.openremote.org/browse/ORCJAVA-156)
+ *     ORCJAVA-157  (http://jira.openremote.org/browse/ORCJAVA-157)
  *
  */
-public class ButtonBuilderTest {
-   private String controllerXMLPath = null;
-   private Document doc = null;
-   private ButtonBuilder builder = (ButtonBuilder) SpringTestContext.getInstance().getBean("buttonBuilder");
+public class ButtonBuilderTest
+{
 
-   @Before
-   public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "controller.xml")
-            .getFile();
-      doc = XMLUtil.getControllerDocument(controllerXMLPath);
-   }
+  // Instance Fields ------------------------------------------------------------------------------
 
-   protected Element getElementByID(String id) {
-      return XMLUtil.getElementByID(doc, id);
-   }
 
-   private Button getButtonByID(String buttonID, String cmdParam) throws ConfigurationException {
-      Element controlElement = getElementByID(buttonID);
-      if (!controlElement.getName().equals("button")) {
-         throw new NoSuchComponentException("button .");
-      }
-      return (Button) builder.build(controlElement, cmdParam);
-   }
+  private ButtonBuilder builder;
+  private Deployer deployer;
 
-   @Test
-   public void testNoSuchButton() {
-      try {
-         getButtonByID("10", "click");
-         fail();
-      } catch (Exception e) {
-      };
-   }
 
-   @Test
-   public void testNotNull() throws Exception {
-      Button btn = getButtonByID("9", "click");
-      Assert.assertNotNull(btn);
-   }
+  
+  // Test Lifecycle -------------------------------------------------------------------------------
 
-   @Test
-   public void testGetCommand() throws Exception {
-      Button btn = getButtonByID("9", "click");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+  @Before public void setUp() throws Exception
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(cst);
 
-      btn = getButtonByID("9", "click");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
-      btn = getButtonByID("9", "status");
-      Assert.assertEquals(btn.getExecutableCommands().size(), 0);
-   }
+    ControllerConfiguration cc = new ControllerConfiguration();
+    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/button").getPath());
+
+    deployer = new Deployer(sc, cc);
+
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", VirtualCommandBuilder.class.getName());
+    cf.setCommandBuilders(p);
+
+    builder = new ButtonBuilder();
+    builder.setCommandFactory(cf);
+    builder.setDeployer(deployer);
+
+
+    deployer.softRestart();
+  }
+
+
+  // Tests ----------------------------------------------------------------------------------------
+
+  @Test public void testNoSuchButton() throws Exception
+  {
+    getButtonByID(10, "click");
+
+    fail("should not get here..");
+  }
+
+  @Test public void testBasicBuild() throws Exception
+  {
+     Button btn = getButtonByID(9, "click");
+     Assert.assertNotNull(btn);
+  }
+
+  @Test public void testGetCommand() throws Exception
+  {
+     Button btn = getButtonByID(9, "click");
+     Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+
+     btn = getButtonByID(9, "click");
+     Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+
+     btn = getButtonByID(9, "status");
+     Assert.assertEquals(btn.getExecutableCommands().size(), 0);
+  }
+
+
+  // Helper ---------------------------------------------------------------------------------------
+
+
+  private Button getButtonByID(int buttonID, String cmdParam) throws InitializationException
+  {
+    Element controlElement = deployer.queryElementById(buttonID);
+
+    return (Button) builder.build(controlElement, cmdParam);
+  }
+
+
 }
