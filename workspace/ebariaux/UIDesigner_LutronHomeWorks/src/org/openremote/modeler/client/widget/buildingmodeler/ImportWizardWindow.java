@@ -107,6 +107,7 @@ public class ImportWizardWindow extends FormWindow {
      @Override
      public void handleEvent(FormEvent be) {
        final String NoScene = null;
+       final String NoLevel = null;
        
        JSONObject jsonProject = JSONParser.parse(be.getResultHtml()).isObject();
  
@@ -127,12 +128,12 @@ public class ImportWizardWindow extends FormWindow {
              
              
              if ("Dimmer".equals(outputType) || "QEDShade".equals(outputType)) {
-               addDeviceCommand(aDevice, jsonOutput, "RAISE", NoScene, "_Raise");
-               addDeviceCommand(aDevice, jsonOutput, "LOWER", NoScene, "_Lower");
-               addDeviceCommand(aDevice, jsonOutput, "STOP", NoScene, "_Stop");
-               DeviceCommand sliderCommand = addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "_Fade");
+               addDeviceCommand(aDevice, jsonOutput, "RAISE", NoScene, NoLevel, "_Raise");
+               addDeviceCommand(aDevice, jsonOutput, "LOWER", NoScene, NoLevel, "_Lower");
+               addDeviceCommand(aDevice, jsonOutput, "STOP", NoScene, NoLevel, "_Stop");
+               DeviceCommand sliderCommand = addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, NoLevel, "_Fade");
 
-               DeviceCommand levelReadCommand = addDeviceCommand(aDevice, jsonOutput, "STATUS_DIMMER", NoScene, "_LevelRead");
+               DeviceCommand levelReadCommand = addDeviceCommand(aDevice, jsonOutput, "STATUS_DIMMER", NoScene, NoLevel, "_LevelRead");
                Sensor sensor = addDeviceSensor(aDevice, jsonOutput, SensorType.LEVEL, levelReadCommand, "Level");
 
                Slider slider = new Slider();
@@ -148,20 +149,24 @@ public class ImportWizardWindow extends FormWindow {
                slider.setSliderSensorRef(sliderSensorRef);
                aDevice.getSliders().add(slider);
              } else if ("GrafikEyeMainUnit".equals(outputType)) {
-               addDeviceCommand(aDevice, jsonOutput, "SCENE", "0", "SceneOff");
-               DeviceCommand dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", "0", "OffRead");
+               addDeviceCommand(aDevice, jsonOutput, "SCENE", "0", NoLevel, "SceneOff");
+               DeviceCommand dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", "0", NoLevel, "OffRead");
                for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
-                 addDeviceCommand(aDevice, jsonOutput, "SCENE", Integer.toString(sceneNumber), "Scene" + Integer.toString(sceneNumber));
-                 dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", Integer.toString(sceneNumber), "Scene" + Integer.toString(sceneNumber) + "Read");
+                 addDeviceCommand(aDevice, jsonOutput, "SCENE", Integer.toString(sceneNumber), NoLevel, "Scene" + Integer.toString(sceneNumber));
+                 dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", Integer.toString(sceneNumber), NoLevel, "Scene" + Integer.toString(sceneNumber) + "Read");
                  addDeviceSensor(aDevice, jsonOutput, SensorType.SWITCH, dc, "Scene" + Integer.toString(sceneNumber) + "Selected");
                }
                
-               dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", NoScene, "SceneRead");
+               dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", NoScene, NoLevel, "SceneRead");
                Sensor sensor = addDeviceSensor(aDevice, jsonOutput, SensorType.RANGE, dc, "SelectedScene");
                ((RangeSensor)sensor).setMin(0);
                ((RangeSensor)sensor).setMax(8);
              } else if ("Fan".equals(outputType)) {
-               
+               addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "0", "Off");
+               addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "25", "Low");
+               addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "50", "Medium");
+               addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "75", "MediumHigh");
+               addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "100", "Full");
              }
            }
          }
@@ -193,7 +198,7 @@ public class ImportWizardWindow extends FormWindow {
     return sensor;
   }
 
-  private static DeviceCommand addDeviceCommand(Device aDevice, JSONObject output, String command, String scene, String nameSuffix) {
+  private static DeviceCommand addDeviceCommand(Device aDevice, JSONObject output, String command, String scene, String level, String nameSuffix) {
     DeviceCommand dc = new DeviceCommand();
     Map<String, String> attrMap = new HashMap<String, String>();
     attrMap.put(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL, "Lutron HomeWorks"); // Display name of protocol needs to be used
@@ -201,6 +206,9 @@ public class ImportWizardWindow extends FormWindow {
     attrMap.put("command", command);
     if (scene != null) {
       attrMap.put("scene", scene);
+    }
+    if (level != null) {
+      attrMap.put("level", level);
     }
     dc.setProtocol(DeviceCommandBeanModelProxy.careateProtocol(attrMap, dc));
     dc.setName(output.get("name").isString().stringValue() + nameSuffix);
