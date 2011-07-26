@@ -47,6 +47,9 @@
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 - (void)cancelView:(id)sender;
 
+- (void)fetchGroupMembersForAllControllers;
+- (void)cancelFetchGroupMembers;
+
 @end
 
 // The section of table cell where autoDiscoverySwitch is in.
@@ -246,6 +249,7 @@
 	self.navigationItem.rightBarButtonItem = done;
 	self.navigationItem.leftBarButtonItem = cancel;
     
+    [self fetchGroupMembersForAllControllers];
 	[self.tableView reloadData];    
 }
 
@@ -432,6 +436,7 @@
 			serverCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleBlue;
             serverCell.entrySelected = NO;
+            serverCell.indicatorView = nil;
 		} else {
             ORController *controller = (ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
 			serverCell.textLabel.text = controller.primaryURL;
@@ -650,6 +655,18 @@
     
     // TODO: the controller should be passed back in the message
     [settingsManager.consoleSettings.selectedController fetchGroupMembers];
+}
+
+#pragma mark -
+
+- (void)fetchGroupMembersForAllControllers
+{
+    [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(fetchGroupMembers)];
+}
+
+- (void)cancelFetchGroupMembers
+{
+    [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(cancelGroupMembersFetch)];
 }
 
 @end
