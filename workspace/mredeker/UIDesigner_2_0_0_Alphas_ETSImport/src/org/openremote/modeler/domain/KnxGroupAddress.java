@@ -15,11 +15,9 @@ public class KnxGroupAddress {
         this.name = name;
         if ((dpt != null) && (dpt.startsWith("3."))) {
             command = "Dimmer/Blind Step";
-            importGA = Boolean.TRUE;
         }
         if ((dpt != null) && (dpt.startsWith("18."))) {
             command = "Scene";
-            importGA = Boolean.TRUE;
         }
     }
 
