@@ -123,7 +123,7 @@ public class DeviceContentWizardForm extends CommonForm {
    private LayoutContainer createContentContainer() {
       LayoutContainer contentContainer = new LayoutContainer();
       contentContainer.setBorders(false);
-      contentContainer.setSize(340, 170);
+      contentContainer.setSize(340, 200);
       HBoxLayout tabbarContainerLayout = new HBoxLayout();
       tabbarContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
       contentContainer.setLayout(tabbarContainerLayout);
@@ -142,7 +142,7 @@ public class DeviceContentWizardForm extends CommonForm {
       contentItemsContainer.add(deviceContentTree);
       
       LayoutContainer buttonsContainer = new LayoutContainer();
-      buttonsContainer.setSize(110, 160);
+      buttonsContainer.setSize(110, 190);
       buttonsContainer.setBorders(false);
       buttonsContainer.setLayout(new RowLayout(Orientation.VERTICAL));
       
@@ -158,6 +158,9 @@ public class DeviceContentWizardForm extends CommonForm {
       Button addSliderBtn = new Button("Add slider");
       addSliderBtn.addSelectionListener(new AddSliderListener());
       
+      Button importBtn = new Button("Import...");
+      importBtn.addSelectionListener(new ImportListener());
+      
       Button deleteBtn = new Button("Delete");
       deleteBtn.addSelectionListener(new DeleteContentListener());
       
@@ -165,6 +168,7 @@ public class DeviceContentWizardForm extends CommonForm {
       buttonsContainer.add(addSensorBtn, new RowData(110, -1, new Margins(5)));
       buttonsContainer.add(addSwitchBtn, new RowData(110, -1, new Margins(5)));
       buttonsContainer.add(addSliderBtn, new RowData(110, -1, new Margins(5)));
+      buttonsContainer.add(importBtn, new RowData(110, -1, new Margins(5)));
       buttonsContainer.add(deleteBtn, new RowData(110, -1, new Margins(5)));
       
       contentContainer.add(contentItemsContainer);
@@ -309,6 +313,42 @@ public class DeviceContentWizardForm extends CommonForm {
          });
       }
    }
+   
+  private final class ImportListener extends SelectionListener<ButtonEvent> {
+    @Override
+    public void componentSelected(ButtonEvent ce) {
+      final ImportWizardWindow importWizardWindow = new ImportWizardWindow(device);
+      importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+        @Override
+        public void afterSubmit(SubmitEvent be) {
+          Info.display("Info", "Import submitted");
+
+          
+          Device createdDevice = be.getData();
+
+          for (DeviceCommand dc : createdDevice.getDeviceCommands()) {
+            device.getDeviceCommands().add(dc);
+            dc.setDevice(device);
+            deviceContentTree.getStore().add(dc.getBeanModel(), false);
+          }
+
+          for (Sensor s : createdDevice.getSensors()) {
+            device.getSensors().add(s);
+            s.setDevice(device);
+            deviceContentTree.getStore().add(s.getBeanModel(), false);
+          }
+          
+          for (Slider sl : createdDevice.getSliders()) {
+            device.getSliders().add(sl);
+            sl.setDevice(device);
+            deviceContentTree.getStore().add(sl.getBeanModel(), false);
+          }
+          
+          importWizardWindow.hide();
+        }
+      });
+    }
+  }
    
    /**
     * Add a listener to delete the selected device content.
