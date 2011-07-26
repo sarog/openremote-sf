@@ -20,72 +20,103 @@
  */
 package org.openremote.controller.component.control;
 
-import static org.junit.Assert.fail;
-import junit.framework.Assert;
+import java.util.Properties;
 
-import org.jdom.Document;
+import junit.framework.Assert;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.suite.AllTests;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
+import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.control.gesture.Gesture;
 import org.openremote.controller.component.control.gesture.GestureBuilder;
-import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.exception.ConfigurationException;
-import org.openremote.controller.utils.SpringTestContext;
-import org.openremote.controller.utils.XMLUtil;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.suite.AllTests;
 
 /**
- * 
- * @author Javen
+ * TODO :
+ *
+ *  - see related tasks
+ *     ORCJAVA-158  (http://jira.openremote.org/browse/ORCJAVA-158)
+ *     ORCJAVA-159  (http://jira.openremote.org/browse/ORCJAVA-159)
  *
  */
-public class GestureBuilderTest {
-   private String controllerXMLPath = null;
-   private Document doc = null;
-   private GestureBuilder builder = (GestureBuilder) SpringTestContext.getInstance().getBean("gestureBuilder");
-   
-   @Before
-   public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "controller.xml").getFile();
-      doc = XMLUtil.getControllerDocument(controllerXMLPath);
-   }
+public class GestureBuilderTest
+{
 
-   protected Element getElementByID(String id) throws JDOMException {
-      return XMLUtil.getElementByID(doc, id);
-   }
-   
-   private Gesture getGestureByID(String labelID) throws JDOMException, ConfigurationException {
-      Element controlElement = getElementByID(labelID);
-      if(! controlElement.getName().equals("gesture")) {
-         throw new NoSuchComponentException("Invalid Gesture.");
-      }
-      return (Gesture) builder.build(controlElement, "test");
-   }
 
-   @Test
-   public void testGetGestureforRealID() throws Exception{
-      Gesture gesture = getGestureByID("7");
-      Assert.assertNotNull(gesture);
-   }
+  // Instance Fields ------------------------------------------------------------------------------
 
-   @Test
-   public void testGetGestureforInvalidGesture() throws Exception{
-      try{
-         getGestureByID("8");
-         fail();
-      } catch (NoSuchComponentException e){
-      }
-   }
-   @Test
-   public void testGetGestureforNoSuchID() throws Exception{
-      try{
-         getGestureByID("200");
-         fail();
-      } catch (NoSuchComponentException e){
-      }
-   }
-   
+  private GestureBuilder builder;
+  private Deployer deployer;
+
+
+  // Test Lifecycle -------------------------------------------------------------------------------
+
+  @Before public void setUp() throws Exception
+  {
+    ChangedStatusTable sct = new ChangedStatusTable();
+    StatusCache sc = new StatusCache();
+    sc.setChangedStatusTable(sct);
+    
+    ControllerConfiguration cc = new ControllerConfiguration();
+    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/gesture").getPath());
+
+    deployer = new Deployer(sc, cc);
+
+
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", VirtualCommandBuilder.class.getName());
+    cf.setCommandBuilders(p);
+
+    builder = new GestureBuilder();
+    builder.setCommandFactory(cf);
+    builder.setDeployer(deployer);
+
+
+    deployer.softRestart();
+  }
+
+
+  // Tests ----------------------------------------------------------------------------------------
+
+  @Test public void testGetGestureforRealID() throws Exception
+  {
+    Element controlElement = deployer.queryElementById(7);
+
+    Gesture gesture = (Gesture)builder.build(controlElement, "test");
+
+    Assert.assertNotNull(gesture);
+
+    // TODO : make test more complete -- assert associated commands, etc.
+  }
+
+  @Test public void testGetGestureforInvalidGesture() throws Exception
+  {
+    Element controlElement = deployer.queryElementById(9);
+
+    Gesture g = (Gesture)builder.build(controlElement, "test");
+
+    Assert.assertNull(
+        "Expected null gesture (or exception) when building with wrong XML content", g
+    );
+  }
+
+  @Test public void testBuildNullArg() throws Exception
+  {
+    Gesture g = (Gesture)builder.build(null, "test");
+
+    Assert.assertNull(
+        "Expected null gesture (or exception) when building " +
+        "with non-existent element", g
+    );
+  }
+
+
+
    
 }
