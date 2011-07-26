@@ -142,7 +142,7 @@ public class ComponentBuilderTest
 
     // Test...
 
-    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+    Sensor sensor = deployer.getSensorFromComponentInclude(include);
 
 
     Assert.assertTrue(sensor.getSensorID() == 1001);
@@ -166,7 +166,7 @@ public class ComponentBuilderTest
 
     // Test...
 
-    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+    Sensor sensor = deployer.getSensorFromComponentInclude(include);
 
 
     Assert.assertTrue(sensor.getSensorID() == 1001);
@@ -252,7 +252,7 @@ public class ComponentBuilderTest
 
     // Test...
 
-    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+    Sensor sensor = deployer.getSensorFromComponentInclude(include);
 
 
     Assert.assertTrue(sensor.getSensorID() == 1008);
@@ -295,7 +295,7 @@ public class ComponentBuilderTest
 
     // Test...
 
-    Sensor sensor = sensorBuilder.buildFromComponentInclude(include);
+    Sensor sensor = deployer.getSensorFromComponentInclude(include);
 
 
     Assert.assertNotNull(sensor.getProperties());
