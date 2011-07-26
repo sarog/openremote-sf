@@ -10,6 +10,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.openremote.modeler.lutron.importmodel.Area;
+import org.openremote.modeler.lutron.importmodel.Button;
+import org.openremote.modeler.lutron.importmodel.ControlStation;
+import org.openremote.modeler.lutron.importmodel.Device;
 import org.openremote.modeler.lutron.importmodel.Output;
 import org.openremote.modeler.lutron.importmodel.Project;
 import org.openremote.modeler.lutron.importmodel.Room;
@@ -28,9 +31,7 @@ public class LutronHomeworksImporter {
     
     try {
       protocolDoc = reader.read(configurationStream);
-
-      Element projectElement = protocolDoc.getRootElement();
-      
+      Element projectElement = protocolDoc.getRootElement();      
       project = new Project(projectElement.elementText("ProjectName"));
       Iterator<Element> areaIterator = projectElement.elementIterator("Area");
       while (areaIterator.hasNext()) {
@@ -50,16 +51,25 @@ public class LutronHomeworksImporter {
             String outputType = outputElement.elementText("Type");
             Output output = new Output(outputElement.elementText("Name"), outputType, outputElement.elementText("Address"));
             room.addOutput(output);
-            
-            System.out.println("    Output " + outputElement.elementText("Name") + " of type " + outputType);
-            
-            /*
-            */
           }
-          
-          
-          // TODO: handle inputs
-          
+          Iterator<Element> inputIterator = roomElement.element("Inputs").elementIterator("ControlStation");
+          while (inputIterator.hasNext()) {
+            Element controlStationElement = inputIterator.next();
+            ControlStation controlStation = new ControlStation(controlStationElement.elementText("Name"));
+            room.addInput(controlStation);
+            Iterator<Element> deviceIterator = controlStationElement.element("Devices").elementIterator("Device");
+            while (deviceIterator.hasNext()) {
+              Element deviceElement = deviceIterator.next();
+              Device device = new Device(deviceElement.elementText("Type"), deviceElement.elementText("Address"), deviceElement.elementText("WebEnabled").equalsIgnoreCase("True"), deviceElement.elementText("WebKeypadName"));
+              controlStation.addDevice(device);
+              Iterator<Element> buttonIterator = deviceElement.element("Buttons").elementIterator("Button");
+              while (buttonIterator.hasNext()) {
+                Element buttonElement = buttonIterator.next();
+                Button button = new Button(buttonElement.elementText("Name"), Integer.parseInt(buttonElement.elementText("Number")));
+                device.addButton(button);
+              }
+            }
+          }
         }
       }
     } catch (DocumentException e) {

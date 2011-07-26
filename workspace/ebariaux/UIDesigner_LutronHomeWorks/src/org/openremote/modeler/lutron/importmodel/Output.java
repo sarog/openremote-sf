@@ -15,7 +15,7 @@ public class Output {
     MaintainedOutput("MAINTAINED OUTPUT"),
     PulsedOutput("PULSED OUTPUT"),
     QEDShade("QED SHADE"),
-    SivoiaShadeKeypad("SIVOIA SHADE KEPAD");
+    SivoiaShadeKeypad("SIVOIA SHADE KEYPAD");
     
     private static final Map<String, OutputType> lookup = new HashMap<String, OutputType>();
 
