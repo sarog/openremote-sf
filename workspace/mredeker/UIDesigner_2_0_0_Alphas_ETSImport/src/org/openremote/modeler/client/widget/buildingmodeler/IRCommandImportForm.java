@@ -175,7 +175,7 @@ public class IRCommandImportForm extends CommonForm {
                for (ModelData modelData : modelDatas) {
                   modelData.set("sectionId", sectionId);
                }
-               DeviceCommandBeanModelProxy.saveAllDeviceCommands(device, modelDatas, new AsyncSuccessCallback<List<BeanModel>>() {
+               DeviceCommandBeanModelProxy.saveAllIrDeviceCommands(device, modelDatas, new AsyncSuccessCallback<List<BeanModel>>() {
                   @Override
                   public void onSuccess(List<BeanModel> deviceCommandModels) {
                      wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommandModels));
