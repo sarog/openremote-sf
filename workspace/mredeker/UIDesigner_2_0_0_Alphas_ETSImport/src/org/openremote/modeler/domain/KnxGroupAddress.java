@@ -13,12 +13,6 @@ public class KnxGroupAddress {
         this.dpt = dpt;
         this.groupAddress = groupAddress;
         this.name = name;
-        if ((dpt != null) && (dpt.startsWith("3."))) {
-            command = "Dimmer/Blind Step";
-        }
-        if ((dpt != null) && (dpt.startsWith("18."))) {
-            command = "Scene";
-        }
     }
 
     public String getName() {
