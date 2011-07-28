@@ -1,3 +1,22 @@
+/* OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openremote.modeler.utils;
 
 import java.io.BufferedReader;
@@ -16,14 +35,24 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.modeler.domain.KnxGroupAddress;
 
+
+/**
+ * The class takes a ets4 export file as inputstream and creates a list of KnxGroupAddress objects
+ * 
+ * @author marcus@openremote.org
+ */
 public class KnxImporter {
 
+    private static final Logger LOGGER = Logger.getLogger(KnxImporter.class);
+    
+    @SuppressWarnings("unchecked")
     public List<KnxGroupAddress> importETSConfiguration(InputStream inputStream) {
 
         List<KnxGroupAddress> result = new ArrayList<KnxGroupAddress>();
@@ -74,12 +103,11 @@ public class KnxImporter {
                   }
                   String levelAddress = getAddressFromInt(Integer.parseInt(address));
                   result.add(new KnxGroupAddress(dpt, levelAddress, name));
-                  System.out.println(levelAddress + " - " + name + " - " + dpt);
+                  LOGGER.debug("Created GroupAddress: " + levelAddress + " - " + name + " - " + dpt);
                }
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("Could not parse ETS4 export file.", e);
         }
         
         return result;
