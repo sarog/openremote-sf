@@ -22,9 +22,10 @@ import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHandler, MouseMoveHandler, TouchMoveHandler, MouseUpHandler, TouchEndHandler, MouseOutHandler {
-	private final HandlerManager handlerManager;
+	private final HandlerManager eventBus;
 	private PressReleaseHandlerImpl pressReleaseHandler;
 	private ResizeHandlerImpl resizeHandler;
 	private WebConsole consoleModule;
@@ -33,7 +34,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	public ConsoleUnitEventManager(WebConsole consoleModule) {
 		this.consoleModule = consoleModule;
 		consoleUnit = this.consoleModule.getConsoleUnit();
-		handlerManager = new HandlerManager(consoleUnit);
+		eventBus = new HandlerManager(consoleUnit);
 		pressReleaseHandler = new PressReleaseHandlerImpl(this);
 		resizeHandler = new ResizeHandlerImpl(this);
 		attachHandlers();
@@ -42,7 +43,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onMouseDown(MouseDownEvent event) {
 		if (!pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new PressEvent(event));
+			eventBus.fireEvent(new PressEvent(event));
 		}
 		event.preventDefault();
 	}
@@ -50,7 +51,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onTouchEnd(TouchEndEvent event) {
 		if (pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new ReleaseEvent(event));
+			eventBus.fireEvent(new ReleaseEvent(event));
 		}
 		event.preventDefault();
 	}
@@ -58,7 +59,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onMouseUp(MouseUpEvent event) {
 		if (pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new ReleaseEvent(event));
+			eventBus.fireEvent(new ReleaseEvent(event));
 		}
 		event.preventDefault();
 	}
@@ -66,7 +67,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onTouchMove(TouchMoveEvent event) {
 		if (pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new PressMoveEvent(event));
+			eventBus.fireEvent(new PressMoveEvent(event));
 		}
 		event.preventDefault();
 	}
@@ -74,7 +75,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onMouseMove(MouseMoveEvent event) {
 		if (pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new PressMoveEvent(event));
+			eventBus.fireEvent(new PressMoveEvent(event));
 		}
 		event.preventDefault();
 	}
@@ -82,7 +83,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onTouchStart(TouchStartEvent event) {
 		if (!pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new PressEvent(event));
+			eventBus.fireEvent(new PressEvent(event));
 		}
 		event.preventDefault();
 	}
@@ -90,33 +91,27 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
 		if (pressReleaseHandler.pressStarted) {
-			handlerManager.fireEvent(new ReleaseEvent(event));
+			if (event.getSource() instanceof ConsoleDisplay) {
+				eventBus.fireEvent(new ReleaseEvent(event));
+			} else {
+				pressReleaseHandler.reset();
+			}
+			
 		}
 		event.preventDefault();
 	}
 	
 	private void attachHandlers() {
-		ConsoleDisplay consoleDisplay = consoleUnit.getConsoleDisplay(); 
-		consoleDisplay.addDomHandler(this, MouseDownEvent.getType());
-		consoleDisplay.addDomHandler(this, TouchStartEvent.getType());
-		consoleDisplay.addDomHandler(this, MouseMoveEvent.getType());
-		consoleDisplay.addDomHandler(this, TouchMoveEvent.getType());
-		consoleDisplay.addDomHandler(this, MouseUpEvent.getType());
-		consoleDisplay.addDomHandler(this, TouchEndEvent.getType());
-		consoleDisplay.addDomHandler(this, MouseOutEvent.getType());
-//		consoleDisplay.addHandler(pressReleaseHandler, PressEvent.getType());
-//		consoleDisplay.addHandler(pressReleaseHandler, PressMoveEvent.getType());
-//		consoleDisplay.addHandler(pressReleaseHandler, ReleaseEvent.getType());
-		handlerManager.addHandler(PressEvent.getType(),pressReleaseHandler);
-		handlerManager.addHandler(PressMoveEvent.getType(),pressReleaseHandler);
-		handlerManager.addHandler(ReleaseEvent.getType(),pressReleaseHandler);
+		eventBus.addHandler(PressEvent.getType(),pressReleaseHandler);
+		eventBus.addHandler(PressMoveEvent.getType(),pressReleaseHandler);
+		eventBus.addHandler(ReleaseEvent.getType(),pressReleaseHandler);
 		
 		// Add window resize handler
 		Window.addResizeHandler(resizeHandler);
 		
 		// Add native orientation handler for mobiles
 		if (BrowserUtils.isMobile) {
-			addNativeOrientationHandler(resizeHandler, consoleUnit);
+			addNativeOrientationHandler(resizeHandler);
 		}
 		
 		// Disable scrolling on mobile devices
@@ -131,7 +126,7 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
 	}
 	
 	// Create a native orientation change handler as resize handler isn't reliable on iOS 3.x
-   public native void addNativeOrientationHandler(ResizeHandlerImpl resizeHandler, ConsoleUnit consoleUnit) /*-{
+   public native void addNativeOrientationHandler(ResizeHandlerImpl resizeHandler) /*-{
    	if (typeof window.onorientationchange != 'undefined') {
 	   	function eventHandler(e) {
 				resizeHandler.@org.openremote.web.console.events.ResizeHandlerImpl::onResize()();
@@ -146,5 +141,16 @@ public class ConsoleUnitEventManager implements MouseDownHandler, TouchStartHand
    
    public ResizeHandlerImpl getResizeHandler() {
    	return resizeHandler;
+   }
+   
+   public HandlerManager getEventBus() {
+   	return eventBus;
+   }
+   
+   public void attachWidgetInputHandlers(Widget widget) {
+		widget.addDomHandler(this, MouseDownEvent.getType());
+		widget.addDomHandler(this, TouchStartEvent.getType());
+		widget.addDomHandler(this, MouseUpEvent.getType());
+		widget.addDomHandler(this, TouchEndEvent.getType());
    }
 }

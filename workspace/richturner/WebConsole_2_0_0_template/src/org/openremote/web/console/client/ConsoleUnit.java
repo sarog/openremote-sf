@@ -1,13 +1,25 @@
 package org.openremote.web.console.client;
 
 import org.openremote.web.console.components.ConsoleDisplay;
+import org.openremote.web.console.events.ConsoleUnitEventManager;
 import org.openremote.web.console.events.HoldEvent;
 import org.openremote.web.console.events.HoldHandler;
 import org.openremote.web.console.events.RotationEvent;
 import org.openremote.web.console.events.RotationHandler;
 import org.openremote.web.console.events.SwipeEvent;
 import org.openremote.web.console.events.SwipeHandler;
+import org.openremote.web.console.screens.ConsoleScreen;
+import org.openremote.web.console.screens.LoadingScreen;
 
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -18,6 +30,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler {
 	private WebConsole consoleModule;
+	private ConsoleUnitEventManager eventManager;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -25,15 +38,15 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	protected ConsoleDisplay consoleDisplay;
 	protected int width;
 	protected int height;
+	private ConsoleScreen loadingScreen;
 	
-	
-	public ConsoleUnit(WebConsole consoleModule) {
-		this(consoleModule, ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
+	public ConsoleUnit(ConsoleUnitEventManager eventManager) {
+		this(eventManager, ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
 	}
 	
-	public ConsoleUnit(WebConsole consoleModule, int width, int height) {
+	public ConsoleUnit(ConsoleUnitEventManager eventManager, int width, int height) {
 		super();
-		this.consoleModule = consoleModule;
+		this.eventManager = eventManager;
 		
 		// Create console container to store display and possibly logo for resizable units
 		componentContainer = new VerticalPanel();
@@ -53,23 +66,23 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		this.addStyleName("consoleUnit");
 		
 		// Create a display and add to console container
-		consoleDisplay = new ConsoleDisplay(width, height);
+		consoleDisplay = new ConsoleDisplay(eventManager, width, height);
 		add(consoleDisplay);
 		
-		// Set Console Orientation
-		setOrientation();
-		setPosition();
-		
 		// Register handlers
-		this.addHandler(this, RotationEvent.getType());
-		this.addHandler(this, SwipeEvent.getType());
-		this.addHandler(this, HoldEvent.getType());
+		registerHandlers();
+	
+		// Create loading screen
+		loadingScreen = new LoadingScreen(eventManager);
+		
+		// Show loading screen
+		setScreen(loadingScreen);
 	}
 	
 	@Override
 	public void onRotate(RotationEvent event) {
-		setOrientation();
-		setPosition();
+		setOrientation(event.getOrientation());
+		setPosition(event.getWindowWidth(), event.getWindowHeight());
 	}
 	
 	@Override
@@ -90,20 +103,11 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	public void setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
-		//this.setWidth(width + "px");
-		//this.setHeight(height + "px");
 	}
 	
 	public ConsoleDisplay getConsoleDisplay() {
 		return this.consoleDisplay;
 	}
-	
-//	public void setConsoleDisplay(ConsoleDisplay consoleDisplay) {
-//		this.remove(this.consoleDisplay);
-//		this.consoleDisplay = null;
-//		this.consoleDisplay = consoleDisplay;
-//		componentContainer.insert(this.consoleDisplay, 0);		
-//	}
 	
 	public int getWidth() {
 		return width;
@@ -116,9 +120,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	/**
 	 * Position the console unit in the centre of the window
 	 */
-	public void setPosition() {
-		int winWidth = consoleModule.getWindowWidth();
-		int winHeight = consoleModule.getWindowHeight();
+	public void setPosition(int winWidth, int winHeight) {
 		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
 		consoleContainer.setWidgetPosition(this, (winWidth/2)-(width/2), (winHeight/2)-(height/2));
 	}
@@ -127,8 +129,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	 * Adjusts the CSS class to either landscape or portrait
 	 * @param orientation
 	 */
-	public void setOrientation() {
-		String orientation = consoleModule.getWindowOrientation();
+	public void setOrientation(String orientation) {
+		//String orientation = consoleModule.getWindowOrientation();
 		if ("portrait".equals(orientation)) {
 			getElement().removeClassName("landscapeConsole");
 			getElement().addClassName("portraitConsole");
@@ -146,6 +148,17 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	public void show() {
 		 setVisible(true);
+	}
+	
+	// Display specified screen
+	public void setScreen(ConsoleScreen screen) {
+		consoleDisplay.setScreen(loadingScreen);	
+	}
+	
+	public void registerHandlers() {
+		this.addHandler(this, RotationEvent.getType());
+		this.addHandler(this, SwipeEvent.getType());
+		this.addHandler(this, HoldEvent.getType());
 	}
 	
 //	/*

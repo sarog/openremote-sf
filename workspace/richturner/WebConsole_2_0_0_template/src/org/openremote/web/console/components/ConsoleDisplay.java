@@ -1,7 +1,17 @@
 package org.openremote.web.console.components;
 
-import org.openremote.web.console.views.ConsoleScreenView;
-import org.openremote.web.console.views.LoadingScreenView;
+import org.openremote.web.console.events.ConsoleUnitEventManager;
+import org.openremote.web.console.screens.ConsoleScreen;
+import org.openremote.web.console.screens.LoadingScreen;
+
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -13,20 +23,20 @@ import com.google.gwt.user.client.ui.SimplePanel;
  *
  */
 public class ConsoleDisplay extends AbsolutePanel {
-	
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
 	private SimplePanel display;
 	private String currentOrientation;
-	private final ConsoleScreenView loadingScreen;
-	private ConsoleScreenView currentScreen;
+	private ConsoleScreen currentScreen;
 	private int width;
 	private int height;
 	public String colour;
+	private ConsoleUnitEventManager eventManager;
 	
-	public ConsoleDisplay(int width, int height) {
+	public ConsoleDisplay(ConsoleUnitEventManager eventManager, int width, int height) {
 		super();
+		this.eventManager = eventManager;
 		this.width = width;
 		this.height = height;
 		setWidth(this.width + "px");
@@ -49,11 +59,8 @@ public class ConsoleDisplay extends AbsolutePanel {
 		// Set default colour
 		setColour(DEFAULT_DISPLAY_COLOUR);
 		
-		// Initialise loading screen
-		loadingScreen = new LoadingScreenView();
-		
-		// Display loading screen
-		showScreen(loadingScreen);
+		// Register Event Handlers
+		registerHandlers();
 	}
 	
 	/**
@@ -92,7 +99,7 @@ public class ConsoleDisplay extends AbsolutePanel {
 	 * Shows the specified screen on the display
 	 * @param screen
 	 */
-	public void showScreen(ConsoleScreenView screen) {
+	public void setScreen(ConsoleScreen screen) {
 		currentScreen = screen;
 		display.setWidget(screen);
 	}
@@ -101,6 +108,16 @@ public class ConsoleDisplay extends AbsolutePanel {
 	 * Completely clear the display
 	 */
 	public void clearScreen() {
-		display.setWidget(null);
+		setScreen(null);
+	}
+	
+	public void registerHandlers() {
+		this.addDomHandler(eventManager, MouseDownEvent.getType());
+		this.addDomHandler(eventManager, TouchStartEvent.getType());
+		this.addDomHandler(eventManager, MouseMoveEvent.getType());
+		this.addDomHandler(eventManager, TouchMoveEvent.getType());
+		this.addDomHandler(eventManager, MouseUpEvent.getType());
+		this.addDomHandler(eventManager, TouchEndEvent.getType());
+		this.addDomHandler(eventManager, MouseOutEvent.getType());
 	}
 }

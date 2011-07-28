@@ -1,6 +1,7 @@
 package org.openremote.web.console.events;
 
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.components.ConsoleDisplay;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
@@ -11,6 +12,9 @@ public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, Pr
 	private PressMoveEvent pressMoveEvent;
 	private ConsoleUnitEventManager eventManager;
 	private WebConsole consoleModule;
+	private boolean eventHandled;
+	private static int TAP_X_TOLERANCE = 30;
+	private static int TAP_Y_TOLERANCE = 30;
 	
 	public PressReleaseHandlerImpl(ConsoleUnitEventManager eventManager) {
 		this.eventManager = eventManager;
@@ -25,7 +29,9 @@ public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, Pr
 
 	@Override
 	public void onRelease(ReleaseEvent event) {
-		processPressRelease(event);
+		if (!eventHandled) {
+			processPressRelease(event);
+		}
 		reset();
 	}
 
@@ -74,18 +80,29 @@ public class PressReleaseHandlerImpl implements PressHandler, ReleaseHandler, Pr
 		}
 		
 		// Check for hold gesture
-		if (duration >= HoldEvent.MIN_HOLD_SECONDS) {
+		if (duration >= HoldEvent.HOLD_TIME_TOLERANCE) {
 			consoleModule.getConsoleUnit().fireEvent(new HoldEvent(pressEvent.getClientX(), pressEvent.getClientY()));
 			return;
 		}
-		
+
 		// Assume tap event only if pressed and released widgets are the same
-		Window.alert("TAP");		
+		// and it's not the display that's been tapped also check move distance
+		// is within tolerance
+		boolean withinTapTolerance = true;
+		if (pressMoveEvent != null) {
+			if (Math.abs(pressMoveEvent.getClientX() - pressEvent.getClientX()) > TAP_X_TOLERANCE || Math.abs(pressMoveEvent.getClientY() - pressEvent.getClientY()) > TAP_Y_TOLERANCE) {
+				withinTapTolerance = false;
+			}
+		}
+		if (!(pressEvent.getSource() instanceof ConsoleDisplay) && pressedWidget == releasedWidget && withinTapTolerance) { 
+			Window.alert("TAP: " + pressedWidget.getElement().getId());
+		}
 	}
 	
-	private void reset() {
+	public void reset() {
 		pressEvent = null;
 		pressMoveEvent = null;
 		pressStarted = false;
+		eventHandled = false;
 	}
 }
