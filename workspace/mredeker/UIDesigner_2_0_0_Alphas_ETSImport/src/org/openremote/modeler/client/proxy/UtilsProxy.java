@@ -58,13 +58,7 @@ public class UtilsProxy {
     * @param activityList the activity list
     */
    public static void exportFiles(long maxId, List<Panel> panelList, final AsyncSuccessCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, panelList, new AsyncSuccessCallback<String>() {
-         @Override
-         public void onSuccess(String exportURL) {
-            callback.onSuccess(exportURL);
-         }
-      });
-   
+      AsyncServiceFactory.getUtilsRPCServiceAsync().exportFiles(maxId, panelList,callback);
    }
 
    /**
@@ -74,62 +68,19 @@ public class UtilsProxy {
     * @param callback the callback
     */
    public static void autoSaveUiDesignerLayout(Collection<Panel> panels, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels,  maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
-         @Override
-         public void onSuccess(AutoSaveResponse result) {
-            callback.onSuccess(result);
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().autoSaveUiDesignerLayout(panels,  maxID, callback);
    }
    
    public static void saveUiDesignerLayout(Collection<Panel> panels, long maxID, final AsyncSuccessCallback<AutoSaveResponse> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().saveUiDesignerLayout(panels,  maxID, new AsyncSuccessCallback<AutoSaveResponse>() {
-         @Override
-         public void onSuccess(AutoSaveResponse result) {
-            callback.onSuccess(result);
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().saveUiDesignerLayout(panels,  maxID, callback);
    }
+   
    public static void restore(final AsyncCallback<PanelsAndMaxOid> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().restore(new AsyncSuccessCallback<PanelsAndMaxOid>() {
-         @Override
-         public void onSuccess(PanelsAndMaxOid result) {
-            callback.onSuccess(result);
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().restore(callback);
    }
    
    public static void canRestore(final AsyncCallback<Boolean> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().canRestore(new AsyncSuccessCallback<Boolean>() {
-         @Override
-         public void onSuccess(Boolean result) {
-            callback.onSuccess(result);
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().canRestore(callback);
    }
    
    /**
@@ -139,46 +90,19 @@ public class UtilsProxy {
     * 
     */
    public static void getBeehiveRestIconUrl(final AsyncSuccessCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().beehiveRestIconUrl(new AsyncSuccessCallback<String>() {
-         @Override
-         public void onSuccess(String result) {
-            callback.onSuccess(result);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().beehiveRestIconUrl(callback);
    }
    
    public static void loadPanelsFromSession(final AsyncSuccessCallback<Collection<Panel>> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(new AsyncSuccessCallback<Collection<Panel>>() {
-         @Override
-         public void onSuccess(Collection<Panel> panels) {
-            callback.onSuccess(panels);
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadPanelsFromSession(callback);
    }
    
    public static void loadGroupsFromSession(final AsyncSuccessCallback<List<Group>> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadGroupsFromSession(new AsyncSuccessCallback<List<Group>>() {
-         @Override
-         public void onSuccess(List<Group> groups) {
-            callback.onSuccess(groups);
-         }
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadGroupsFromSession(callback);
    }
    
    public static void loadScreensFromSession(final AsyncSuccessCallback<List<Screen>> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadScreensFromSession(new AsyncSuccessCallback<List<Screen>>() {
-         @Override
-         public void onSuccess(List<Screen> screens) {
-            callback.onSuccess(screens);
-         }
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadScreensFromSession(callback);
    }
    
    /**
@@ -186,90 +110,31 @@ public class UtilsProxy {
     * 
     */
    public static void loadMaxID(final AsyncSuccessCallback<Long> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().loadMaxID(new AsyncSuccessCallback<Long>() {
-         @Override
-         public void onSuccess(Long maxID) {
-            callback.onSuccess(maxID);
-         }
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().loadMaxID(callback);
    }
    
    public static void downLoadImage(String url, final AsyncCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().downLoadImage(url, new AsyncSuccessCallback<String>() {
-         @Override
-         public void onSuccess(String result) {
-            callback.onSuccess(result);
-         }
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().downLoadImage(url, callback);
    }
    
    public static void getTemplatesListRestUrl(final AsyncCallback <String> callback){
-      AsyncServiceFactory.getConfigurationRPCServiceAsync().getTemplatesListRestUrl(new AsyncSuccessCallback<String>(){
-
-         @Override
-         public void onSuccess(String result) {
-           callback.onSuccess(result);
-         }
-         
-      });
+      AsyncServiceFactory.getConfigurationRPCServiceAsync().getTemplatesListRestUrl(callback);
    }
    
    public static void getAllPublicTemplateRestURL(final AsyncCallback <String> callback){
-      AsyncServiceFactory.getConfigurationRPCServiceAsync().getAllPublicTemplateRestUrl(new AsyncSuccessCallback<String>(){
-
-         @Override
-         public void onSuccess(String result) {
-           callback.onSuccess(result);
-         }
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-         
-      });
+      AsyncServiceFactory.getConfigurationRPCServiceAsync().getAllPublicTemplateRestUrl(callback);
    }
    
    public static void roteImages(final UISlider uiSlider, final AsyncCallback <UISlider> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().rotateImage(uiSlider, new AsyncCallback<UISlider>(){
-
-         @Override
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-
-         @Override
-         public void onSuccess(UISlider result) {
-            callback.onSuccess(result);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().rotateImage(uiSlider, callback);
    }
 
    public static void getAccountRelativePath(final AsyncCallback <String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(new AsyncCallback <String>() {
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-
-         public void onSuccess(String result) {
-            callback.onSuccess(result);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getAccountPath(callback);
    }
    
    public static void getOnTestLineURL(final AsyncCallback<String> callback) {
-      AsyncServiceFactory.getUtilsRPCServiceAsync().getOnLineTestURL(new AsyncCallback <String>() {
-         public void onFailure(Throwable caught) {
-            callback.onFailure(caught);
-         }
-
-         public void onSuccess(String result) {
-            callback.onSuccess(result);
-         }
-         
-      });
+      AsyncServiceFactory.getUtilsRPCServiceAsync().getOnLineTestURL(callback);
    }
    
    public static boolean isPanelNameAvailable(String panelName) {
