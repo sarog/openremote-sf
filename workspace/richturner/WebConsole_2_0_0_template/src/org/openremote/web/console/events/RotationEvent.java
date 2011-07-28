@@ -11,9 +11,13 @@ import com.google.gwt.event.shared.GwtEvent;
 public class RotationEvent extends GwtEvent<RotationHandler> {
 	private static final Type<RotationHandler> TYPE = new Type<RotationHandler>();
 	String orientation;
+	int winWidth;
+	int winHeight;
 	
-	public RotationEvent(String orientation) {
+	public RotationEvent(String orientation, int winWidth, int winHeight) {
 			this.orientation = orientation;
+			this.winWidth = winWidth;
+			this.winHeight = winHeight;
 	}
 	
 	@Override
@@ -32,5 +36,13 @@ public class RotationEvent extends GwtEvent<RotationHandler> {
 
 	public String getOrientation() {
 		return orientation;
+	}
+	
+	public int getWindowWidth() {
+		return winWidth;
+	}
+	
+	public int getWindowHeight() {
+		return winHeight;
 	}
 }

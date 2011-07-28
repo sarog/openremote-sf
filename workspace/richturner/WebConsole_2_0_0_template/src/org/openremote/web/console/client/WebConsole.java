@@ -6,6 +6,7 @@ import org.openremote.web.console.types.ResizableUnit;
 import org.openremote.web.console.utils.BrowserUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -53,14 +54,18 @@ public class WebConsole implements EntryPoint {
 					// Cancel this timer
 					this.cancel();
 					
-					// Update windpw
+					// Update window
 					updateWindow();
 					
-					// Initialise the Console
-					initialiseConsole();
-
-					// Add Event Manager
-					addEventManager();
+					// Create Event Manager
+					createEventManager();
+					
+					// Create the Console Unit
+					createConsoleUnit();
+					
+					// Set initial console orientation and position
+					consoleUnit.setOrientation(windowOrientation);
+					consoleUnit.setPosition(getWindowWidth(), getWindowHeight());
 				}
 			}
 		};
@@ -112,7 +117,7 @@ public class WebConsole implements EntryPoint {
 	   addressBarMonitor.schedule(1000);
 	}
 	
-	public void addEventManager() {
+	public void createEventManager() {
 		eventManager = new ConsoleUnitEventManager(this);
 	}
 	
@@ -121,13 +126,13 @@ public class WebConsole implements EntryPoint {
 	 * Vertically align the console unit in the middle
 	 * Horizontally align the console in the centre
 	 */
-	private void initialiseConsole() {
+	private void createConsoleUnit() {
 		ConsoleUnit console;
 		
 		if(BrowserUtils.isMobile || windowWidthPortrait < ResizableUnit.requiredConsoleWidth() || windowHeightPortrait < ResizableUnit.requiredConsoleHeight()) {
-			console = new FullScreenUnit(this);
+			console = new FullScreenUnit(eventManager, getWindowWidth("portrait"), getWindowHeight("portrait"));
 		} else {
-			console = new ResizableUnit(this);
+			console = new ResizableUnit(eventManager);
 		}
 		consoleUnit = console;
 	}
@@ -244,5 +249,9 @@ public class WebConsole implements EntryPoint {
 	
 	public boolean isMobileWindowFullyInitialised() {
 		return (isPortraitInitialised && isLandscapeInitialised);
+	}
+	
+	public HandlerManager getEventBus() {
+		return eventManager.getEventBus();
 	}
 }

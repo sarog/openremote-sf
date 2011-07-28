@@ -7,7 +7,7 @@
   	<source path='components'/>
   	<source path="types"/>
   	<source path="utils"/>
-  	<source path="views"/>
+  	<source path="screens"/>
   	<source path="events"/>
 	<entry-point class="org.openremote.web.console.client.WebConsole"/>
 	

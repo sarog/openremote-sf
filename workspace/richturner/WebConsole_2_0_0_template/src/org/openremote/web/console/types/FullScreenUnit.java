@@ -1,7 +1,7 @@
 package org.openremote.web.console.types;
 
 import org.openremote.web.console.client.ConsoleUnit;
-import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.events.ConsoleUnitEventManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -13,8 +13,8 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class FullScreenUnit extends ConsoleUnit {
 
-	public FullScreenUnit(WebConsole consoleModule) {
-		super(consoleModule, consoleModule.getWindowWidth("portrait"), consoleModule.getWindowHeight("portrait"));
+	public FullScreenUnit(ConsoleUnitEventManager eventManager, int winWidth, int winHeight) {
+		super(eventManager, winWidth, winHeight);
 		initialiseUnit();
 	}
 
@@ -23,5 +23,6 @@ public class FullScreenUnit extends ConsoleUnit {
 		
 		// Set document body colour the same as the console display
 		RootPanel.getBodyElement().getStyle().setBackgroundColor(consoleDisplay.colour);
+		RootPanel.get().getElement().getStyle().setBackgroundColor(consoleDisplay.colour);
 	}
 }

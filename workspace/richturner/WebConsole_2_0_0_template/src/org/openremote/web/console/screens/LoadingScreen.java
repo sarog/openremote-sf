@@ -1,11 +1,16 @@
-package org.openremote.web.console.views;
+package org.openremote.web.console.screens;
 
+import org.openremote.web.console.events.ConsoleUnitEventManager;
 import org.openremote.web.console.utils.BrowserUtils;
 
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.TouchEndEvent;
-import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
@@ -15,12 +20,9 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class LoadingScreenView extends ConsoleScreenView implements MouseUpHandler {
-
+public class LoadingScreen extends ConsoleScreen {
 	public static final String CLASS_NAME = "loadingScreen";
-
 	public static final String LOADING_MESSAGE = "LOADING....";
-
 	public static final String SPINNER_HTML_CODE = 
 		"<div class=\"bar1\"></div>" +
 		"<div class=\"bar2\"></div>" +
@@ -35,9 +37,11 @@ public class LoadingScreenView extends ConsoleScreenView implements MouseUpHandl
 		"<div class=\"bar11\"></div>" +
    	"<div class=\"bar12\"></div>" +
    	"</div>";
+
+		private ConsoleUnitEventManager eventManager;
 	
-	public LoadingScreenView() {
-		super();
+	public LoadingScreen(ConsoleUnitEventManager eventManager) {
+		super(eventManager);
 		this.setStylePrimaryName(CLASS_NAME);
 		
 		// Create Loading Message Widget and wrap in simple panel to align vertically
@@ -64,8 +68,8 @@ public class LoadingScreenView extends ConsoleScreenView implements MouseUpHandl
 			loadingMsgPanel.add(spinnerWidget);
 		}
 		loadingMsgPanel.add(msgWidget);
-		
-		msgWidget.addDomHandler(this, MouseUpEvent.getType());
+		eventManager.attachWidgetInputHandlers(msgWidget);
+		//msgWidget.addDomHandler(eventManager, MouseOutEvent.getType());
 		
 		// Add panel to screen and position in centre middle
 		HorizontalPanel panelWrapper = new HorizontalPanel();
@@ -73,12 +77,6 @@ public class LoadingScreenView extends ConsoleScreenView implements MouseUpHandl
 		panelWrapper.setHeight("100%");
 		panelWrapper.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panelWrapper.add(loadingMsgPanel);
-		this.add(panelWrapper);		
-	}
-
-	@Override
-	public void onMouseUp(MouseUpEvent event) {
-		// TODO Auto-generated method stub
-		Window.alert("TOUCH END");
+		this.add(panelWrapper);
 	}
 }
