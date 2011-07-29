@@ -27,6 +27,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
@@ -37,6 +39,7 @@ import org.junit.Assert;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.model.PanelTest;
 import org.openremote.controller.spring.SpringContext;
 import org.openremote.controller.Constants;
@@ -90,7 +93,7 @@ public class AllTests
   public final static String LOCALHOST = "127.0.0.1";
 
   /**
-   * Path to test fixture directory.
+   * Path to test fixture directory. This is relevant when at the top level of classes directory.
    */
   public final static String FIXTURE_DIR = "org/openremote/controller/fixture/";
 
@@ -125,6 +128,38 @@ public class AllTests
     }
   }
 
+
+  private final static Logger log = Logger.getLogger(AllTests.class.getName());
+
+
+  // Path Helpers ---------------------------------------------------------------------------------
+
+  /**
+   * Returns the absolute directory path to the root directory of test fixture files. The location
+   * where fixture files are searched from is set by the (Ant) build script with its
+   * ${classes.dir} property. The value is passed to the jUnit VM from the build script. <p>
+   *
+   * Note that the value of the <tt>classes.dir</tt> JVM property should be set to the root
+   * of the compiled test classes directory -- this is then resolved to point to a subdirectory
+   * defined by {@link #FIXTURE_DIR} constant.
+   *
+   * @return  absolute file URI to the root directory of test fixture files
+   */
+  public static URI getAbsoluteFixturePath()
+  {
+    String relativeFixturePath = System.getProperty("classes.dir");
+
+    Assert.assertNotNull(
+        "Could not find ${classes.dir} absolute path which points to compiled test directory " +
+        "in system properties. Please ensure the unit test JVM is started with " +
+        "'-Dclasses.dir=<absolute path to compiled test directory with fixture files>' " +
+        "or '<sysproperty name = 'classes.dir' file = '${classes.dir}/>' is included " +
+        "in the Ant build script which executes the <junit> tasks.",
+        relativeFixturePath
+    );
+    
+    return new File(relativeFixturePath).toURI().resolve(FIXTURE_DIR);
+  }
 
 
   // XML Parser Utilities -------------------------------------------------------------------------
@@ -180,45 +215,41 @@ public class AllTests
 
   // Container Controller.xml Utilities -----------------------------------------------------------
 
-  public static void restoreControllerXML()
-  {
-    String controllerXML = AllTests.getFixtureFile(Constants.CONTROLLER_XML);
 
-    if (new File(controllerXML + ".bak").exists())
-    {
-       new File(controllerXML + ".bak").renameTo(new File(controllerXML));
-    }
+
+  /**
+   * Replaces the controller.xml of the *test container* with a file from the test fixture
+   * directory structure. <p>
+   *
+   * The location of test containers resource files (where controller.xml is) is resolved
+   * by setting a <tt>testcontainer.vm.resource.path</tt> system property for this unit test
+   * JVM. This is done by Ant build script which will read the deployed controller web app's
+   * config.properties file and resolve the <tt>resource.path</tt> property from within.
+   *
+   * @param filename
+   */
+  public static void replaceTestContainerControllerXML(String filename)
+  {
+    URI fixtureFile = getAbsoluteFixturePath().resolve(filename);
+
+    String testContainerConfigResourcePath = System.getProperty("testcontainer.vm.resource.path");
+
+    Assert.assertFalse("got " + testContainerConfigResourcePath,
+                       testContainerConfigResourcePath == null ||
+                       testContainerConfigResourcePath.equals("")
+    );
+
+    URI testContainerControllerXML = new File(testContainerConfigResourcePath).toURI()
+        .resolve(Constants.CONTROLLER_XML);
+
+    log.info(
+        "Replacing Test Container ''{0}'' with ''{1}''",
+        testContainerConfigResourcePath, fixtureFile
+    );
+
+    copyFile(fixtureFile.getPath(), testContainerControllerXML.getPath());
   }
 
-
-  public static void replaceControllerXML(String filename)
-  {
-    String fixtureFile = AllTests.getFixtureFile(filename);
-
-    String controllerXML = getControllerXML();
-
-    if (new File(controllerXML).exists())
-    {
-       new File(controllerXML).renameTo(new File(controllerXML + ".bak"));
-    }
-
-    copyFile(fixtureFile, controllerXML);
-  }
-
-
-  private static String getControllerXML()
-  {
-    return PathUtil.addSlashSuffix(
-        ControllerConfiguration.readXML().getResourcePath()) +
-        Constants.CONTROLLER_XML;
-  }
-
-  public static void deleteControllerXML()
-  {
-    String controllerXML = getControllerXML();
-
-    deleteFile(controllerXML);
-  }
 
 
 
@@ -284,7 +315,6 @@ public class AllTests
   }
 
 
-
   private static void copyFile(String src, String dest)
   {
     File inputFile = new File(src);
@@ -326,16 +356,6 @@ public class AllTests
   }
 
 
-  private static void deleteFile(String fileName)
-  {
-
-    File f = new File(fileName);
-
-    if (!f.exists())
-      return;
-
-    f.delete();
-  }
 
 
 }
