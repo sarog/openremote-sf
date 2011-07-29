@@ -138,7 +138,7 @@ public class DeviceCommandBeanModelProxy {
     * @param datas the datas
     * @param callback the callback
     */
-   public static void saveAllKnxDeviceCommands(Device device, List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
+   public static void saveAllKnxDeviceCommands(List<DeviceCommand> deviceCommands, final AsyncSuccessCallback<List<BeanModel>> callback) {
       AsyncServiceFactory.getDeviceCommandServiceAsync().saveAll(deviceCommands, new AsyncSuccessCallback<List<DeviceCommand>>() {
          public void onSuccess(List<DeviceCommand> deviceCommands) {
             List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);

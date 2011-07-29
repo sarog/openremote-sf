@@ -26,12 +26,18 @@ import java.util.TreeMap;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.utils.AutoCommitCheckColumnConfig;
 import org.openremote.modeler.client.utils.NoButtonsRowEditor;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.domain.Protocol;
+import org.openremote.modeler.domain.RangeSensor;
+import org.openremote.modeler.domain.Sensor;
+import org.openremote.modeler.domain.SensorCommandRef;
+import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.selenium.DebugId;
 
 import com.extjs.gxt.ui.client.Style.HorizontalAlignment;
@@ -355,13 +361,69 @@ public class KNXImportWindow extends FormWindow {
             }
         }
         List<DeviceCommand> deviceCommands = createDeviceCommandsFromGridData(importData);
-        DeviceCommandBeanModelProxy.saveAllKnxDeviceCommands(device, deviceCommands,
+        DeviceCommandBeanModelProxy.saveAllKnxDeviceCommands(deviceCommands,
                 new AsyncSuccessCallback<List<BeanModel>>() {
                     @Override
                     public void onSuccess(List<BeanModel> deviceCommandModels) {
-                        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(deviceCommandModels));
+                        createSensorsForStatusCommands(deviceCommandModels);
                     }
                 });
+    }
+
+    
+    private void createSensorsForStatusCommands(final List<BeanModel> deviceCommandModels) {
+        List<Sensor> sensorList = createSensorListFromDevices(deviceCommandModels);
+        SensorBeanModelProxy.saveSensorList(sensorList, new AsyncSuccessCallback<List<BeanModel>>() {
+            public void onSuccess(List<BeanModel> sensordModels) {
+                List<BeanModel> allCommandsAndSensors = new ArrayList<BeanModel>();
+                allCommandsAndSensors.addAll(deviceCommandModels);
+                allCommandsAndSensors.addAll(sensordModels);
+               fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allCommandsAndSensors));
+            }
+         });
+    }
+    
+    private List<Sensor> createSensorListFromDevices(List<BeanModel> deviceCommandModels) {
+        List<Sensor> result = new ArrayList<Sensor>();
+        for (BeanModel commandBeanModel : deviceCommandModels) {
+            DeviceCommand deviceCommand = (DeviceCommand)commandBeanModel.getBean(); 
+            Protocol prot = deviceCommand.getProtocol();
+            String cmdName = prot.getAttributeValue("command");
+            String dpt = prot.getAttributeValue("DPT");
+            if ("status".equalsIgnoreCase(cmdName)) {
+                if ("1.001".equals(dpt)) {
+                    Sensor sensor = createSensor(SensorType.SWITCH, deviceCommand);
+                    result.add(sensor);
+                } else if ("5.001".equals(dpt)) {
+                    Sensor sensor = createSensor(SensorType.LEVEL, deviceCommand);
+                    result.add(sensor);
+                } else if ("5.010".equals(dpt)) {
+                    Sensor sensor = createSensor(SensorType.RANGE, deviceCommand);
+                    result.add(sensor);
+                }
+            }
+        }
+        return result;
+    }
+
+    private Sensor createSensor(SensorType type, DeviceCommand command) {
+        Sensor sensor;
+        if (type == SensorType.RANGE) {
+            sensor = new RangeSensor();
+           ((RangeSensor) sensor).setMin(0);
+           ((RangeSensor) sensor).setMax(255);
+        } else {
+            sensor = new Sensor();
+        }
+        sensor.setType(type);
+        sensor.setName(command.getName());
+
+        SensorCommandRef sensorCommandRef = new SensorCommandRef();
+        sensorCommandRef.setDeviceCommand(command);
+        sensorCommandRef.setSensor(sensor);
+        sensor.setSensorCommandRef(sensorCommandRef);
+        sensor.setDevice(device);
+        return sensor;
     }
 
     private List<DeviceCommand> createDeviceCommandsFromGridData(List<ModelData> importDataList) {

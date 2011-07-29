@@ -66,4 +66,9 @@ public class SensorController extends BaseGWTSpringControllerWithHibernateSuppor
       return sensorService.loadById(id);
    }
 
+
+   public List<Sensor> saveAll(List<Sensor> sensorList) {
+       return sensorService.saveAllSensors(sensorList, userService.getAccount());
+   }
+
 }
