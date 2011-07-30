@@ -34,10 +34,17 @@
 
   <!--
 
-      COMPONENT DEFINITIONS
+      COMPONENT DEFINITIONS:
+
+      Define two buttons to set the virtual device 'cmd5' state on and off.
+      These buttons are triggered manually by some of the sensor tests to
+      change the returned read status values.
 
   -->
-  <components></components>
+  <components>
+    <button id = "555"><include type = "command" ref = "95"/></button>
+    <button id = "666"><include type = "command" ref = "94"/></button>
+  </components>
 
 
   <!--
@@ -147,31 +154,41 @@
   -->
   <commands>
 
-    <command id = "100" protocol = "virtual">
-      <property name = "command" value = "ON" />
-      <property name = "address" value = "cmd1" />
-    </command>
-
-    <command id = "99" protocol = "virtual">
-      <property name = "command" value = "OFF" />
-      <property name = "address" value = "cmd2" />
-    </command>
 
     <command id = "98" protocol = "virtual">
       <property name = "command" value = "STATUS" />
       <property name = "address" value = "cmd3" />
     </command>
 
-    <command id = "97" protocol = "virtual">
-      <property name = "command" value = "CHANGE" />
-      <property name = "address" value = "cmd4" />
-    </command>
+
+    <!--
+
+         VIRTUAL COMMAND 'CMD5'
+
+         Commands used by the <button> components to set
+         address 'cmd5' state on and off (used by some
+         of the sensor tests to change the return value
+         state).
+
+         ID 96 is the read status command and 95 & 94 are
+         the on/off write commands.
+
+     -->
 
     <command id = "96" protocol = "virtual">
-      <property name = "command" value = "ReadAndSet-Switch" />
+      <property name = "command" value = "STATUS" />
       <property name = "address" value = "cmd5" />
     </command>
 
+    <command id = "95" protocol = "virtual">
+      <property name = "command" value = "on" />
+      <property name = "address" value = "cmd5" />
+    </command>
+
+    <command id = "94" protocol = "virtual">
+      <property name = "command" value = "off" />
+      <property name = "address" value = "cmd5" />
+    </command>
 
     <!--
 
