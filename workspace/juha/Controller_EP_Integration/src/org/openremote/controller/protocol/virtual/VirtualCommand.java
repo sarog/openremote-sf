@@ -22,6 +22,7 @@ package org.openremote.controller.protocol.virtual;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.command.ExecutableCommand;
@@ -44,7 +45,7 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   /**
    * Map of address to state.
    */
-  private final static Map<String, String>virtualDevices = new HashMap<String, String>(20);
+  private final static Map<String, String>virtualDevices = new ConcurrentHashMap<String, String>(20);
 
   /**
    * Logging. Use common log category for all related classes.
@@ -110,15 +111,6 @@ public class VirtualCommand implements ExecutableCommand, StatusCommand
   public String read(EnumSensorType sensorType, Map<String, String> stateMap)
   {
     String state = virtualDevices.get(address);
-
-    if (command.equalsIgnoreCase("ReadAndSet-Switch"))
-    {
-      if (state == null || state.trim().equalsIgnoreCase("off"))
-        virtualDevices.put(address, "on");
-      else
-        virtualDevices.put(address, "off");
-    }
-    
 
     switch (sensorType)
     {
