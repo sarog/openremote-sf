@@ -123,8 +123,10 @@ public class VirtualCommandBuilder implements CommandBuilder
 
     // Properties come in as child elements...
 
-    List<Element> propertyElements = element.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY,
-                                                         element.getNamespace());
+    List<Element> propertyElements = getCommandProperties(element);
+
+
+    // Parse 'address' and 'command' properties...
 
     for (Element el : propertyElements)
     {
@@ -165,13 +167,23 @@ public class VirtualCommandBuilder implements CommandBuilder
       );
     }
 
+    // grab the command parameter coming through the REST interface (for sliders et al)
+    // it's an ugly hack but there it is...
+
     String commandParam = element.getAttributeValue(Command.DYNAMIC_VALUE_ATTR_NAME);
     Command cmd;
+
+
+    // Handle couple of special commands that will start an event listener to generate
+    // events (instead of polling read commands or write commands)...
 
     if (command.equalsIgnoreCase("TemperatureSensor") ||
         command.equalsIgnoreCase("Temperature_Sensor") ||
         command.equalsIgnoreCase("Temperature-Sensor"))
     {
+      // thermo will produce range values between [-50..50] going higher or lower once
+      // ever 5 seconds...
+
       cmd = new ThermometerListener();
     }
 
@@ -179,9 +191,14 @@ public class VirtualCommandBuilder implements CommandBuilder
     else if (command.equalsIgnoreCase("BlinkLight") ||
         command.equalsIgnoreCase("BlinkLights") )
     {
+      // Blink light will produce a switch on/off event every two seconds...
+
       cmd = new BlinkLightListener();
     }
 
+
+    // if it's not one of the special keywords for event listeners, then create the
+    // command as normal (with command param included if found)...
 
     else if (commandParam == null || commandParam.equals(""))
     {
@@ -199,11 +216,41 @@ public class VirtualCommandBuilder implements CommandBuilder
   }
 
 
+  // Private Instance Methods ---------------------------------------------------------------------
 
+  /**
+   * Isolated here to limit the scope of the unchecked warnings to this one method (JDOM does not
+   * use Java generics).
+   *
+   * @param   element   the element corresponding to {@code <command} in controller.xml
+   *
+   * @return    child elements of {@code <command} i.e. a list of {@code <property}) elements
+   */
+  @SuppressWarnings("unchecked")
+  private List<Element> getCommandProperties(Element element)
+  {
+    return element.getChildren(
+        CommandBuilder.XML_ELEMENT_PROPERTY,
+        element.getNamespace()
+    );
+  }
+
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+  /**
+   * TODO
+   */
   static class BlinkLightListener implements EventListener, Runnable
   {
 
     private Sensor sensor;
+
+    private volatile boolean running = true;
+
+    private Thread listenerThread;
+
 
     @Override public void setSensor(Sensor sensor)
     {
@@ -211,13 +258,26 @@ public class VirtualCommandBuilder implements CommandBuilder
 
       sensor.update("off");
 
-      Thread t = new Thread(this);
-      t.start();
+      log.info(
+          "Initialized 'Blinking Light' sensor ''{0}'' (ID = ''{1}'') to value 'off'.",
+          sensor.getName(), sensor.getSensorID()
+      );
+
+      String name =
+          "Event producer thread for 'blink lights' " +
+          "(Sensor Name : '" + sensor.getName() + "', ID : '" + sensor.getSensorID() + "')";
+
+      listenerThread = new Thread(this);
+      listenerThread.setDaemon(true);
+      listenerThread.setName(name);
+
+      listenerThread.start();
+
+      log.info("Started " + name);
     }
 
     @Override public void run()
     {
-      boolean running = true;
       boolean setOn = true;
 
       while (running)
@@ -242,14 +302,29 @@ public class VirtualCommandBuilder implements CommandBuilder
         }
         catch (InterruptedException e)
         {
+          // wind out of the while loop...
+
           running = false;
         }
       }
+
+      log.info("Stopped " + listenerThread.getName());
+    }
+
+    @Override public void stop(Sensor s)
+    {
+      log.info("Stopping " + listenerThread.getName());
+
+      running = false;
+
+      listenerThread.interrupt(); // TODO : sec manager
     }
   }
 
 
   /**
+   * TODO
+   * 
    * A fake temp sensor implemented as a listener that fluxuates the values between -50 and 50
    * on 5 second intervals.
    */
@@ -258,19 +333,23 @@ public class VirtualCommandBuilder implements CommandBuilder
 
     private Sensor sensor;
 
+    private Thread listenerThread;
+
+    private volatile boolean running = true;
+
+
     @Override public void setSensor(Sensor sensor)
     {
       this.sensor = sensor;
 
       sensor.update("0");
       
-      Thread t = new Thread(this);
-      t.start();
+      listenerThread = new Thread(this);
+      listenerThread.start();
     }
 
     @Override public void run()
     {
-      boolean running = true;
       int temp = 0;
       int step = 1;
 
@@ -295,6 +374,13 @@ public class VirtualCommandBuilder implements CommandBuilder
           running = false;
         }
       }
+    }
+
+    @Override public void stop(Sensor sensor)
+    {
+      running = false;
+
+      listenerThread.interrupt();
     }
   }
 }
