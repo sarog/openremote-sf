@@ -284,7 +284,7 @@ public class VirtualCommandBuilder implements CommandBuilder
       {
         try
         {
-          Thread.sleep(500);
+          Thread.sleep(2000);
 
           if (setOn)
           {
