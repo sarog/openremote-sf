@@ -22,6 +22,8 @@ package org.openremote.controller.model.xml;
 
 
 import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -35,13 +37,20 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.ComponentFactory;
+import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.control.button.ButtonBuilder;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.service.Deployer;
+import org.openremote.controller.service.ControlCommandService;
+import org.openremote.controller.service.impl.ControlCommandServiceImpl;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 
 /**
  * Unit tests for {@link org.openremote.controller.model.xml.SensorBuilder} class.
@@ -51,9 +60,11 @@ import org.openremote.controller.ControllerConfiguration;
 public class SensorBuilderTest
 {
 
+  // Instance Fields ------------------------------------------------------------------------------
 
   private Deployer deployer;
   private SensorBuilder sensorBuilder;
+  private ControlCommandService commandService;
 
 
   // Test Lifecycle -------------------------------------------------------------------------------
@@ -77,11 +88,23 @@ public class SensorBuilderTest
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
-    p.put("virtual", "org.openremote.controller.protocol.virtual.VirtualCommandBuilder");
+    p.put("virtual", VirtualCommandBuilder.class.getName());
     cf.setCommandBuilders(p);
 
     sensorBuilder = new SensorBuilder(deployer);
     sensorBuilder.setCommandFactory(cf);
+
+    ButtonBuilder bb = new ButtonBuilder();
+    bb.setDeployer(deployer);
+    bb.setCommandFactory(cf);
+
+    Map<String, ComponentBuilder> cb = new HashMap<String, ComponentBuilder>();
+    cb.put("button", bb);
+
+    ComponentFactory cof = new ComponentFactory();
+    cof.setComponentBuilders(cb);
+    
+    commandService = new ControlCommandServiceImpl(deployer, cof);
 
     deployer.softRestart();
   }
@@ -248,9 +271,23 @@ public class SensorBuilderTest
 
     Assert.assertTrue(s.getProperties().size() == 0);
 
+    commandService.trigger("666", "click");
 
-    Assert.assertTrue(s.read().equals("off"));
-    Assert.assertTrue(s.read().equals("on"));
+    String offValue = s.read();
+
+    Assert.assertTrue(
+        "Expected 'off', got '" + offValue + "'",
+        offValue.equals("off")
+    );
+
+    commandService.trigger("555", "click");
+
+    String onValue = s.read();
+
+    Assert.assertTrue(
+        "Expected 'on', got '" + onValue + "'",
+        onValue.equals("on")
+    );
 
     Assert.assertTrue(s instanceof SwitchSensor);
 
@@ -317,6 +354,7 @@ public class SensorBuilderTest
   }
 
 
+  // TODO : test sensor 1099 use case
   // TODO : test Sensor.update
   // TODO : test Sensor.start
   // TODO : test Sensor.isRunning()
