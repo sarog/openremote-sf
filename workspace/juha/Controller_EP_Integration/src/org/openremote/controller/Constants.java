@@ -127,7 +127,7 @@ public class Constants
   /**
    * Specific log category for deployers.
    */
-  public final static String DEPLOYER_LOG_CATEGORY = CONTROLLER_ROOT_LOG_CATEGORY + ".deployer";
+  public final static String DEPLOYER_LOG_CATEGORY = INIT_LOG_CATEGORY + ".deployer";
 
   
 
