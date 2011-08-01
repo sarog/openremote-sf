@@ -66,111 +66,110 @@ import org.openremote.controller.utils.Logger;
  */
 @Deprecated public class PollingMachinesServiceImpl implements PollingMachinesService {
 
-
-  // Class Members --------------------------------------------------------------------------------
-
-  /**
-   * Common log category for startup related events.
-   */
-  private final static Logger log = Logger.getLogger(Constants.INIT_LOG_CATEGORY);
-
+//
+//  // Class Members --------------------------------------------------------------------------------
+//
+//  /**
+//   * Common log category for startup related events.
+//   */
+//  private final static Logger log = Logger.getLogger(Constants.INIT_LOG_CATEGORY);
+//
 
   // Private Instance Fields ----------------------------------------------------------------------
 
   //private StatusCacheService statusCacheService;
-  private StatusCache deviceStateCache;
-  private RemoteActionXMLParser remoteActionXMLParser;
-  private ControllerXMLListenSharingData controllerXMLListenSharingData;
-  private SensorBuilder sensorBuilder;
+  //private StatusCache deviceStateCache;
+  //private RemoteActionXMLParser remoteActionXMLParser;
+  //private ControllerXMLListenSharingData  controllerXMLListenSharingData;
+  //private SensorBuilder sensorBuilder;
 
 
 
   // Implements PollingMachinesService ------------------------------------------------------------
 
-  @Override public void initStatusCacheWithControllerXML(Document doc)
-  {
-
-    // TODO : this method should be in deployer, see ORCJAVA-115
-
-    List<Element> sensorElements = null;
-
-    try
-    {
-//      if (document == null)
-//      {
-        sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
-//      }
+//  @Override public void initStatusCacheWithControllerXML(Document doc)
+//  {
 //
-//      else
+//    // TODO : this method should be in deployer, see ORCJAVA-115
+//
+//    List<Element> sensorElements = null;
+//
+//    try
+//    {
+////      if (document == null)
+////      {
+//        sensorElements = remoteActionXMLParser.queryElementsFromXMLByName("sensor");
+////      }
+////
+////      else
+////      {
+////        sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
+////      }
+//    }
+//    catch (ControllerXMLNotFoundException e)
+//    {
+//      log.info(
+//         "\n\n" +
+//         "********************************************************************************\n" +
+//         "\n" +
+//         " File controller.xml was not found in this OpenRemote Controller instance.      \n" +
+//         "\n" +
+//         " If you are starting the controller for the first time, please use your web     \n" +
+//         " browser to connect to the controller home page and synchronize it with your    \n" +
+//         " online account. \n" +
+//         "\n" +
+//         "********************************************************************************\n\n"
+//      );
+//
+//      log.debug(e.getMessage(), e);
+//
+//      // No controller.xml meeans no sensors to init, so just return back...
+//
+//      return;
+//    }
+//
+//    if (sensorElements != null)
+//    {
+//      for (Element sensorElement : sensorElements)
 //      {
-//        sensorElements = remoteActionXMLParser.queryElementsFromXMLByName(document, "sensor");
+//        try
+//        {
+//          Sensor sensor = sensorBuilder.build(sensorElement);
+//
+//          deviceStateCache.registerSensor(sensor);    // TODO : also go through deployer? or should be IN deployer.
+//
+//          sensor.update(StatusCommand.UNKNOWN_STATUS);
+//        }
+//        catch (NoSuchCommandException e)
+//        {
+//          // TODO : should be a checked exception so this doesn't accidentally propagate higher
+//
+//          log.warn(
+//              "Unable to initialize sensor at startup due to configuration error: " +
+//              e.getMessage(), e
+//          );
+//        }
+//        catch (Throwable t)
+//        {
+//          // Catch all -- keep trying subsequent sensors...
+//
+//          log.warn("Failed to initialize a sensor: " + t.getMessage(), t);
+//        }
 //      }
-    }
-    catch (ControllerXMLNotFoundException e)
-    {
-      log.info(
-         "\n\n" +
-         "********************************************************************************\n" +
-         "\n" +
-         " File controller.xml was not found in this OpenRemote Controller instance.      \n" +
-         "\n" +
-         " If you are starting the controller for the first time, please use your web     \n" +
-         " browser to connect to the controller home page and synchronize it with your    \n" +
-         " online account. \n" +
-         "\n" +
-         "********************************************************************************\n\n"
-      );
-
-      log.debug(e.getMessage(), e);
-
-      // No controller.xml meeans no sensors to init, so just return back...
-
-      return;
-    }
-
-    if (sensorElements != null)
-    {
-      for (Element sensorElement : sensorElements)
-      {
-        try
-        {
-          Sensor sensor = sensorBuilder.build(sensorElement);
-
-          if (!deviceStateCache.registerSensor(sensor))
-              log.error("duplicate sensor registration");  // TODO
-
-          sensor.update(StatusCommand.UNKNOWN_STATUS);
-        }
-        catch (NoSuchCommandException e)
-        {
-          // TODO : should be a checked exception so this doesn't accidentally propagate higher
-
-          log.warn(
-              "Unable to initialize sensor at startup due to configuration error: " +
-              e.getMessage(), e
-          );
-        }
-        catch (Throwable t)
-        {
-          // Catch all -- keep trying subsequent sensors...
-
-          log.warn("Failed to initialize a sensor: " + t.getMessage(), t);
-        }
-      }
-    }
-  }
-
-
-  @Override public void startPollingMachineMultiThread() throws InterruptedException
-  {
-    Iterator<Sensor> iterator = deviceStateCache.listSensors();
-
-    while (iterator.hasNext())
-    {
-      Sensor sensor = iterator.next();
-
-      sensor.start();
-
+//    }
+//  }
+//
+//
+//  @Override public void startPollingMachineMultiThread() throws InterruptedException
+//  {
+//    Iterator<Sensor> iterator = deviceStateCache.listSensors();
+//
+//    while (iterator.hasNext())
+//    {
+//      Sensor sensor = iterator.next();
+//
+//      sensor.start();
+//
 //      if (sensor.isPolling())
 //      {
 //        PollingMachineThread pollingMachineThread = new PollingMachineThread(sensor);
@@ -185,29 +184,29 @@ import org.openremote.controller.utils.Logger;
 //      {
 //        sensor.start();
 //      }
-    }
-
-    storeXMLContent(Constants.CONTROLLER_XML);
-    storeXMLContent(Constants.PANEL_XML);
-  }
-
-
-   private void storeXMLContent(String xmlFileName)
-   {
-      String xmlFilePath = PathUtil.addSlashSuffix(ControllerConfiguration.readXML().getResourcePath()) + xmlFileName;
-      File xmlFile = new File(xmlFilePath);
-      try {
-         StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(xmlFile, "utf-8"));
-         if (Constants.CONTROLLER_XML.equals(xmlFileName)) {
-            controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
-         } else if (Constants.PANEL_XML.equals(xmlFileName)) {
-            controllerXMLListenSharingData.setPanelXMLFileContent(fileContent);
-         }
-      } catch (IOException ioe) {
-         log.info("Skipped " + xmlFileName + " change check, failed to read " + xmlFile.getAbsolutePath());
-      }
-   }
-   
+//    }
+//
+//    storeXMLContent(Constants.CONTROLLER_XML);
+//    storeXMLContent(Constants.PANEL_XML);
+//  }
+//
+//
+//   private void storeXMLContent(String xmlFileName)
+//   {
+//      String xmlFilePath = PathUtil.addSlashSuffix(ControllerConfiguration.readXML().getResourcePath()) + xmlFileName;
+//      File xmlFile = new File(xmlFilePath);
+//      try {
+//         StringBuffer fileContent = new StringBuffer(FileUtils.readFileToString(xmlFile, "utf-8"));
+//         if (Constants.CONTROLLER_XML.equals(xmlFileName)) {
+//            controllerXMLListenSharingData.setControllerXMLFileContent(fileContent);
+//         } else if (Constants.PANEL_XML.equals(xmlFileName)) {
+//            controllerXMLListenSharingData.setPanelXMLFileContent(fileContent);
+//         }
+//      } catch (IOException ioe) {
+//         log.info("Skipped " + xmlFileName + " change check, failed to read " + xmlFile.getAbsolutePath());
+//      }
+//   }
+//
 //   /** Sleep for several seconds */
 //   private void nap(long sec) {
 //      try {
@@ -224,21 +223,21 @@ import org.openremote.controller.utils.Logger;
 
   // Service Dependencies -------------------------------------------------------------------------
 
-  public void setCache(StatusCache deviceStateCache)
-  {
-    this.deviceStateCache = deviceStateCache;
-  }
-
-   public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
-      this.remoteActionXMLParser = remoteActionXMLParser;
-   }
-
-   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
-      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
-   }
-
-   public void setSensorBuilder(SensorBuilder sensorBuilder) {
-      this.sensorBuilder = sensorBuilder;
-   }
+//  public void setCache(StatusCache deviceStateCache)
+//  {
+//    this.deviceStateCache = deviceStateCache;
+//  }
+//
+//   public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser) {
+//      this.remoteActionXMLParser = remoteActionXMLParser;
+//   }
+//
+//   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
+//      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
+//   }
+//
+//   public void setSensorBuilder(SensorBuilder sensorBuilder) {
+//      this.sensorBuilder = sensorBuilder;
+//   }
    
 }
