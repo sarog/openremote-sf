@@ -35,12 +35,12 @@ package org.openremote.controller.config;
  */
 @Deprecated public class ControllerXMLListenSharingData {
 
-   private Boolean isControllerXMLChanged = false;
+//   private Boolean  isControllerXMLChanged = false;
 //   private List<PollingMachineThread> pollingMachineThreads = new ArrayList<PollingMachineThread>();
 //   private List<Sensor> sensors = new ArrayList<Sensor>();
-   private StringBuffer controllerXMLFileContent = new StringBuffer();
-   private StringBuffer panelXMLFileContent = new StringBuffer();
-   
+//   private StringBuffer controllerXMLFileContent = new StringBuffer();
+//   private StringBuffer panelXMLFileContent = new StringBuffer();
+//
 //   public Sensor findSensorById(String id) {
 //      for (Sensor sensor : sensors) {
 //         if (sensor.getSensorID() == Integer.valueOf(id)) {
@@ -65,30 +65,29 @@ package org.openremote.controller.config;
 //   public List<Sensor> getSensors() {
 //      return sensors;
 //   }
+//
+//   public void setControllerXMLFileContent(StringBuffer controllerXMLFileContent) {
+//      this.controllerXMLFileContent = controllerXMLFileContent;
+//   }
+//
+//   public String getControllerXMLFileContent() {
+//      return controllerXMLFileContent.toString();
+//   }
+//
+//   public String getPanelXMLFileContent() {
+//      return panelXMLFileContent.toString();
+//   }
+//
+//   public void setPanelXMLFileContent(StringBuffer panelXMLFileContent) {
+//      this.panelXMLFileContent = panelXMLFileContent;
+//   }
+//
+//   public Boolean getIsControllerXMLChanged() {
+//      return isControllerXMLChanged;
+//   }
+//
+//   public void setIsControllerXMLChanged(Boolean isControllerXMLChanged) {
+//      this.isControllerXMLChanged = isControllerXMLChanged;
+//   }
 
-   public void setControllerXMLFileContent(StringBuffer controllerXMLFileContent) {
-      this.controllerXMLFileContent = controllerXMLFileContent;
-   }
-
-   public String getControllerXMLFileContent() {
-      return controllerXMLFileContent.toString();
-   }
-
-   public String getPanelXMLFileContent() {
-      return panelXMLFileContent.toString();
-   }
-
-   public void setPanelXMLFileContent(StringBuffer panelXMLFileContent) {
-      this.panelXMLFileContent = panelXMLFileContent;
-   }
-
-   public Boolean getIsControllerXMLChanged() {
-      return isControllerXMLChanged;
-   }
-
-   public void setIsControllerXMLChanged(Boolean isControllerXMLChanged) {
-      this.isControllerXMLChanged = isControllerXMLChanged;
-   }
-   
-   
 }
