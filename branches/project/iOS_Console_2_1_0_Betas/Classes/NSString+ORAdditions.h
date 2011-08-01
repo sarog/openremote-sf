@@ -18,15 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-//
-//  NSString+ORAdditions.h
-//  openremote
-//
-//  Created by Eric Bariaux on 12/04/11.
-//  Copyright 2011 OpenRemote, Inc. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 
