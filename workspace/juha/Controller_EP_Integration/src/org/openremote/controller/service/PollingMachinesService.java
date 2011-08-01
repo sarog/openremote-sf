@@ -32,10 +32,10 @@ import org.jdom.Document;
  * 
  * @author Handy.Wang 2010-03-17
  */
-public interface PollingMachinesService {
-   /** init the <b>STATUSCACHE</b> with all sensor ids parsed from <b>CONTROLLER</b>.xml and their statuses */
-   public void initStatusCacheWithControllerXML(Document document);
-   
-   /** Create looped threads initialized by <b>STATUSCOMMAND</b> */
-   public void startPollingMachineMultiThread() throws InterruptedException;
+@Deprecated public interface PollingMachinesService {
+//   /** init the <b>STATUSCACHE</b> with all sensor ids parsed from <b>CONTROLLER</b>.xml and their statuses */
+//   //public void initStatusCacheWithControllerXML(Document document);
+//
+//   /** Create looped threads initialized by <b>STATUSCOMMAND</b> */
+//   public void startPollingMachineMultiThread() throws InterruptedException;
 }
