@@ -23,20 +23,18 @@ package org.openremote.controller.service.impl;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.component.Component;
+import org.openremote.controller.component.ComponentFactory;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.NoSuchCommandException;
-import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.service.ControlCommandService;
-import org.openremote.controller.utils.MacrosIrDelayUtil;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
-import org.openremote.controller.Constants;
+import org.openremote.controller.utils.MacrosIrDelayUtil;
 
 
 /**
@@ -58,8 +56,18 @@ public class ControlCommandServiceImpl implements ControlCommandService
 
   // Private Instance Fields ----------------------------------------------------------------------
 
-  private RemoteActionXMLParser remoteActionXMLParser;
+  private Deployer deployer;
   private ComponentFactory componentFactory;
+
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public ControlCommandServiceImpl(Deployer deployer, ComponentFactory cf)
+  {
+    this.deployer = deployer;
+    this.componentFactory = cf;
+  }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
@@ -130,23 +138,12 @@ public class ControlCommandServiceImpl implements ControlCommandService
 
 
 
-  public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser)
-  {
-    this.remoteActionXMLParser = remoteActionXMLParser;
-  }
-
-  public void setComponentFactory(ComponentFactory componentFactory)
-  {
-    this.componentFactory = componentFactory;
-  }
-
-
 
   // Private Instance Methods ---------------------------------------------------------------------
 
   private Control getControl(String controlID, String commandParam) throws InitializationException
   {
-    Element controlElement = remoteActionXMLParser.queryElementFromXMLById(controlID);
+    Element controlElement = deployer.queryElementById(Integer.parseInt(controlID));
 
     if (controlElement == null)
     {
