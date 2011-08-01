@@ -1,19 +1,25 @@
-//
-//  NSString+ORAdditionsTest.h
-//  openremote
-//
-//  Created by Eric Bariaux on 12/04/11.
-//  Copyright 2011 OpenRemote, Inc. All rights reserved.
-//
-//  See Also: http://developer.apple.com/iphone/library/documentation/Xcode/Conceptual/iphone_development/135-Unit_Testing_Applications/unit_testing_applications.html
-
-//  Application unit tests contain unit test code that must be injected into an application to run correctly.
-//  Define USE_APPLICATION_UNIT_TEST to 0 if the unit test code is designed to be linked into an independent test executable.
-
+/* OpenRemote, the Home of the Digital Home.
+ *  * Copyright 2008-2011, OpenRemote Inc-2009, OpenRemote Inc.
+ * 
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3.0 of
+ * the License, or (at your option) any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 #import <SenTestingKit/SenTestingKit.h>
 #import <UIKit/UIKit.h>
-//#import "application_headers" as required
-
 
 @interface NSString_ORAdditionsTest : SenTestCase {
     

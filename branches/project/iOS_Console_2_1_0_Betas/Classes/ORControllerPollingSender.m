@@ -18,15 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-//
-//  ORControllerPollingSender.m
-//  openremote
-//
-//  Created by Eric Bariaux on 09/05/11.
-//  Copyright 2011 OpenRemote, Inc. All rights reserved.
-//
-
 #import "ORControllerPollingSender.h"
 #import "Definition.h"
 #import "ViewHelper.h"

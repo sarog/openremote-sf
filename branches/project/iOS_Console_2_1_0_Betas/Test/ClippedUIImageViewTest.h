@@ -19,9 +19,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-//  Application unit tests contain unit test code that must be injected into an application to run correctly.
-//  Define USE_APPLICATION_UNIT_TEST to 0 if the unit test code is designed to be linked into an independent test executable.
-
 #define USE_APPLICATION_UNIT_TEST 0
 #define IPHONE_SCREEN_WIDTH_FOR_TEST 320
 #define IPHONE_SCREEN_HEIGHT_FOR_TEST 480
