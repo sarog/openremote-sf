@@ -31,12 +31,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.openremote.modeler.lutron.ImportException;
+import org.openremote.modeler.lutron.LutronHomeworksImporter;
+import org.openremote.modeler.lutron.importmodel.Project;
+import org.openremote.modeler.server.UtilsController;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.MultipartFileUtil;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+
+import flexjson.JSONSerializer;
 
 /**
  * The Class is used for uploading files.
@@ -81,6 +87,21 @@ public class FileUploadController extends MultiActionController {
    public void setResourceService(ResourceService resourceService) {
       this.resourceService = resourceService;
    }
+   
+   public void importLutron(HttpServletRequest request, HttpServletResponse response) throws IOException {
+     MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "lutron");
+
+     try {
+       Project project = LutronHomeworksImporter.importXMLConfiguration(multipartFile.getInputStream());
+       JSONSerializer serializer = new JSONSerializer();
+       response.getWriter().println(serializer.exclude("*.class").deepSerialize(project));
+     } catch (ImportException e) {
+       LOGGER.error("Import file error.", e);
+       response.getWriter().println("{\"ERROR\":\"" + e.getMessage() + "\"}");
+       
+     }
+   }
+   
    /**
     * upload an image.<br />
     * your action should be : fileUploadController.htm?method=uploadImage&uploadFieldName=<b>your
