@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
 import org.openremote.modeler.lutron.importmodel.Project;
 import org.openremote.modeler.server.UtilsController;
@@ -90,18 +91,16 @@ public class FileUploadController extends MultiActionController {
    public void importLutron(HttpServletRequest request, HttpServletResponse response) throws IOException {
      MultipartFile multipartFile = MultipartFileUtil.getMultipartFileFromRequest(request, "lutron");
 
-     
-      new LutronHomeworksImporter();
-      Project project = LutronHomeworksImporter.importXMLConfiguration(multipartFile.getInputStream());
-      JSONSerializer serializer = new JSONSerializer();
-
-      System.out.println("Responding with string\n" + serializer.exclude("*.class").deepSerialize(project));
-      response.getWriter().println(serializer.exclude("*.class").deepSerialize(project));
-     
-     Logger.getLogger(UtilsController.class).info("Just printing something out to test, content type is " + multipartFile.getContentType());
-     LOGGER.error("Just printing something out to test, content type is " + multipartFile.getContentType());
+     try {
+       Project project = LutronHomeworksImporter.importXMLConfiguration(multipartFile.getInputStream());
+       JSONSerializer serializer = new JSONSerializer();
+       response.getWriter().println(serializer.exclude("*.class").deepSerialize(project));
+     } catch (ImportException e) {
+       LOGGER.error("Import file error.", e);
+       response.getWriter().println("{\"ERROR\":\"" + e.getMessage() + "\"}");
+       
+     }
    }
-   
    
    /**
     * upload an image.<br />

@@ -20,7 +20,7 @@ import org.openremote.modeler.lutron.importmodel.Room;
 public class LutronHomeworksImporter {
 
   @SuppressWarnings("unchecked")
-  public static Project importXMLConfiguration(InputStream configurationStream) {
+  public static Project importXMLConfiguration(InputStream configurationStream) throws ImportException {
     Document protocolDoc = null;
     SAXReader reader = new SAXReader();
     SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -31,7 +31,10 @@ public class LutronHomeworksImporter {
     
     try {
       protocolDoc = reader.read(configurationStream);
-      Element projectElement = protocolDoc.getRootElement();      
+      Element projectElement = protocolDoc.getRootElement();
+      if (projectElement.element("ProjectName") == null) {
+        throw new ImportException("Invalid file format", null);
+      }
       project = new Project(projectElement.elementText("ProjectName"));
       Iterator<Element> areaIterator = projectElement.elementIterator("Area");
       while (areaIterator.hasNext()) {
@@ -73,10 +76,7 @@ public class LutronHomeworksImporter {
         }
       }
     } catch (DocumentException e) {
-      
-      
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new ImportException("Error parsing file", e);
     }
 
     return project;

@@ -323,28 +323,29 @@ public class DeviceContentWizardForm extends CommonForm {
         public void afterSubmit(SubmitEvent be) {
           Info.display("Info", "Import submitted");
 
-          
-          Device createdDevice = be.getData();
-
-          for (DeviceCommand dc : createdDevice.getDeviceCommands()) {
-            device.getDeviceCommands().add(dc);
-            dc.setDevice(device);
-            deviceContentTree.getStore().add(dc.getBeanModel(), false);
+          if (be.getData() != null) {          
+            Device createdDevice = be.getData();
+  
+            for (DeviceCommand dc : createdDevice.getDeviceCommands()) {
+              device.getDeviceCommands().add(dc);
+              dc.setDevice(device);
+              deviceContentTree.getStore().add(dc.getBeanModel(), false);
+            }
+  
+            for (Sensor s : createdDevice.getSensors()) {
+              device.getSensors().add(s);
+              s.setDevice(device);
+              deviceContentTree.getStore().add(s.getBeanModel(), false);
+            }
+            
+            for (Slider sl : createdDevice.getSliders()) {
+              device.getSliders().add(sl);
+              sl.setDevice(device);
+              deviceContentTree.getStore().add(sl.getBeanModel(), false);
+            }
+            
+            importWizardWindow.hide();
           }
-
-          for (Sensor s : createdDevice.getSensors()) {
-            device.getSensors().add(s);
-            s.setDevice(device);
-            deviceContentTree.getStore().add(s.getBeanModel(), false);
-          }
-          
-          for (Slider sl : createdDevice.getSliders()) {
-            device.getSliders().add(sl);
-            sl.setDevice(device);
-            deviceContentTree.getStore().add(sl.getBeanModel(), false);
-          }
-          
-          importWizardWindow.hide();
         }
       });
     }
