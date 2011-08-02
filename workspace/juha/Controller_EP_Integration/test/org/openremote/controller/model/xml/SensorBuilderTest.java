@@ -24,6 +24,7 @@ package org.openremote.controller.model.xml;
 import java.util.Properties;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URI;
 
 import junit.framework.Assert;
 
@@ -82,9 +83,10 @@ public class SensorBuilderTest
     sc.setChangedStatusTable(cst);
 
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/sensor").getPath());
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/sensor");
+    cc.setResourcePath(deploymentURI.getPath());
 
-    deployer = new Deployer(sc, cc);
+    deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
@@ -358,7 +360,7 @@ public class SensorBuilderTest
   // TODO : test Sensor.update
   // TODO : test Sensor.start
   // TODO : test Sensor.isRunning()
-
+  
   
 
   // Helpers --------------------------------------------------------------------------------------

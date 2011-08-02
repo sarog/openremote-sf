@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 
 import org.junit.Test;
 import org.junit.Assert;
@@ -84,14 +85,15 @@ public class ComponentBuilderTest
 
 
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("component").getPath());
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("component");
+    cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
 
     StatusCache sc = new StatusCache();
     sc.setChangedStatusTable(cst);
 
-    deployer = new Deployer(sc, cc);
+    deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
     sensorBuilder = new SensorBuilder(deployer);
     sensorBuilder.setCommandFactory(commandFactory);

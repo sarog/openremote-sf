@@ -21,6 +21,7 @@
 package org.openremote.controller.component.control;
 
 import java.util.Properties;
+import java.net.URI;
 
 import junit.framework.Assert;
 import org.jdom.Element;
@@ -67,9 +68,10 @@ public class ButtonBuilderTest
     sc.setChangedStatusTable(cst);
 
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/button").getPath());
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/button");
+    cc.setResourcePath(deploymentURI.getPath());
 
-    deployer = new Deployer(sc, cc);
+    deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
