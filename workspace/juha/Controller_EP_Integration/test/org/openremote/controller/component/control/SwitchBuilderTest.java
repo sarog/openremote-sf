@@ -77,7 +77,7 @@ public class SwitchBuilderTest
     URI uri = AllTests.getAbsoluteFixturePath().resolve("builder/switch");
     cc.setResourcePath(uri.getPath());
 
-    deployer = new Deployer(sc, cc);
+    deployer = new Deployer("Deployment for " + uri, sc, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
