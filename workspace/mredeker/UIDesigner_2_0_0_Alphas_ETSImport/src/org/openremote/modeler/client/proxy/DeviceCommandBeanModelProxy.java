@@ -199,12 +199,6 @@ public class DeviceCommandBeanModelProxy {
        Protocol protocol = new Protocol();
        protocol.setType(Constants.KNX_TYPE);
 
-       ProtocolAttr nameAttr = new ProtocolAttr();
-       nameAttr.setName("name");
-       nameAttr.setValue(name);
-       nameAttr.setProtocol(protocol);
-       protocol.getAttributes().add(nameAttr);
-
        ProtocolAttr commandAttr = new ProtocolAttr();
        commandAttr.setName("command");
        commandAttr.setValue(command);
