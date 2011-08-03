@@ -158,6 +158,10 @@
 		60A61A871355FD1E00A7C87E /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A861355FD1E00A7C87E /* linphonerc */; };
 		60A85C85131F965500C7918A /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
 		60A85C96131F972000C7918A /* ORWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C95131F972000C7918A /* ORWebView.m */; };
+		60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
+		60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
+		60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
+		60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
 		60AFCED01371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
@@ -738,6 +742,10 @@
 		60A85C84131F965500C7918A /* Web.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Web.m; sourceTree = "<group>"; };
 		60A85C94131F972000C7918A /* ORWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORWebView.h; sourceTree = "<group>"; };
 		60A85C95131F972000C7918A /* ORWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORWebView.m; sourceTree = "<group>"; };
+		60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2.h; sourceTree = "<group>"; };
+		60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2.m; sourceTree = "<group>"; };
+		60AA14BA13E9673E008ACE4A /* ControllerButtonAPI_v2_1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2_1.h; sourceTree = "<group>"; };
+		60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2_1.m; sourceTree = "<group>"; };
 		60AFCECE1371787200A811D4 /* ORControllerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerProxy.h; sourceTree = "<group>"; };
 		60AFCECF1371787300A811D4 /* ORControllerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerProxy.m; sourceTree = "<group>"; };
 		60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerCommandSender.h; sourceTree = "<group>"; };
@@ -1534,9 +1542,21 @@
 			path = speex;
 			sourceTree = "<group>";
 		};
+		60AA14B413E9651D008ACE4A /* API Implementation */ = {
+			isa = PBXGroup;
+			children = (
+				60AA14B613E9653E008ACE4A /* ControllerButtonAPI_v2.h */,
+				60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */,
+				60AA14BA13E9673E008ACE4A /* ControllerButtonAPI_v2_1.h */,
+				60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */,
+			);
+			name = "API Implementation";
+			sourceTree = "<group>";
+		};
 		60AFCED2137180AC00A811D4 /* Controller communication */ = {
 			isa = PBXGroup;
 			children = (
+				60AA14B413E9651D008ACE4A /* API Implementation */,
 				60AFCECE1371787200A811D4 /* ORControllerProxy.h */,
 				60AFCECF1371787300A811D4 /* ORControllerProxy.m */,
 				60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */,
@@ -2199,6 +2219,8 @@
 				6055687913CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */,
 				6055687E13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */,
 				6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
+				60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
+				60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2311,6 +2333,8 @@
 				6055687A13CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */,
 				6055687F13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */,
 				6055688313CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
+				60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
+				60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

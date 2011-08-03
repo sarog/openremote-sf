@@ -22,6 +22,17 @@
 #import "Button.h"
 #import "ControlView.h"
 
+@class ButtonView;
+
+@protocol ControllerButtonAPI
+
+- (void)sendPressCommand:(ButtonView *)sender;
+- (void)sendShortReleaseCommand:(ButtonView *)sender;
+- (void)sendLongPressCommand:(ButtonView *)sender;
+- (void)sendLongReleaseCommand:(ButtonView *)sender;
+
+@end
+
 /**
  * Button View for sending control command and there is no polling for button view.
  */
@@ -35,5 +46,7 @@
 @property (nonatomic, readonly) UIButton *uiButton;
 @property (nonatomic, readonly) UIImage *uiImage;
 @property (nonatomic, readonly) UIImage *uiImagePressed;
+
+@property (nonatomic, retain) id<ControllerButtonAPI> controllerButtonAPI;
 
 @end
