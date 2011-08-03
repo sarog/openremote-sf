@@ -365,9 +365,15 @@ public class Deployer
     
     this.deviceStateCache = deviceStateCache;
     this.controllerConfig = controllerConfig;
-    this.name = serviceName;
 
+    if (name != null)
+    {
+      this.name = serviceName;
+    }
+    
     this.controllerDefinitionWatch = new ControllerDefinitionWatch(this);
+
+    log.debug("Deployer ''{0}'' initialized.", name);
   }
   
 
@@ -990,7 +996,7 @@ public class Deployer
 
         try
         {
-          deployer.detectVersion();
+          deployer.detectVersion();     // will throw an exception if no known schemas are found...
 
 
           if (deployer.modelBuilder == null || deployer.modelBuilder.hasControllerDefinitionChanged())
