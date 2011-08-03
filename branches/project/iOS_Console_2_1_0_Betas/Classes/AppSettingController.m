@@ -72,6 +72,7 @@
 
 @implementation AppSettingController
 
+@synthesize needsControllerRefresh;
 @synthesize panelsFetcher;
 
 - (id)init
@@ -248,9 +249,20 @@
     [super viewWillAppear:animated];
 	self.navigationItem.rightBarButtonItem = done;
 	self.navigationItem.leftBarButtonItem = cancel;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
     
-    [self fetchGroupMembersForAllControllers];
-	[self.tableView reloadData];    
+    // We only trigger the fetch of group members if requested to
+    // This is required because we can't do this when coming back from the controller detail view controller
+    // otherwise there is some violation of the assertions on the table view number of rows
+    // TODO: when moving to iOS 5, there is a way to know "where" we're coming from, use that instead of the flag    
+    if (self.needsControllerRefresh) {
+        [self fetchGroupMembersForAllControllers];
+        self.needsControllerRefresh = NO;
+    }
 }
 
 // Updates controller server list in tableview, and updates panel identity view in tableview.
@@ -606,6 +618,8 @@
 {
     ORController *controller = [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
+    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] - 1 inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationFade];
+    
     [controller fetchGroupMembers];
 }
 
