@@ -25,16 +25,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openremote.controller.Constants;
-import org.openremote.controller.utils.Logger;
 import org.openremote.controller.config.ControllerXMLChangedException;
-import org.openremote.controller.config.ControllerXMLListenSharingData;
-import org.openremote.controller.service.StatusCacheService;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.service.StatusCommandService;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.utils.Logger;
 
 /**
  * TODO
  * 
  * @author Handy.Wang 2009-10-15
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class StatusCommandServiceImpl implements StatusCommandService
 {
@@ -42,77 +43,33 @@ public class StatusCommandServiceImpl implements StatusCommandService
 
   private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
 
-//  private RemoteActionXMLParser remoteActionXMLParser;
-//  private ComponentFactory componentFactory;
 
-  private StatusCacheService statusCacheService;
-  private ControllerXMLListenSharingData controllerXMLListenSharingData;
+  // Instance Fields ------------------------------------------------------------------------------
 
-// TODO : looks like dead code [JPL]
-//  
-//  public String trigger(String unParsedSensorIDs)
-//  {
-//
-//    String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
-//    //Map<String, EventProducer> sensorIdAndStatusCommandsMap = new HashMap<String, EventProducer>();
-//    Set<String> sensorIds = new HashSet<String>(100);
-//    sensorIds.addAll(Arrays.asList(parsedSensorIDs));
-//
-////    for (String sensorID : parsedSensorIDs)
-////    {
-////      sensorIds.add(sensorID/*, getStatusCommand(sensorID)*/);
-////    }
-//
-//    StringBuffer sb = new StringBuffer();
-//    sb.append(Constants.STATUS_XML_HEADER);
-//
-//    //Set<String> sensorIDs = sensorIdAndStatusCommandsMap.keySet();
-//    for (String sensorID : sensorIds)
-//    {
-//      sb.append("<")
-//          .append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME)
-//          .append(" ")
-//          .append(Constants.STATUS_XML_STATUS_RESULT_ELEMENT_SENSOR_IDENTITY)
-//          .append("=\"")
-//          .append(sensorID)
-//          .append("\">");
-//
-//      Sensor sensor = controllerXMLListenSharingData.findSensorById(sensorID);
-//
-//      sb.append(sensor == null ? StatusCommand.UNKNOWN_STATUS : sensor.read());
-//
-//      sb.append("</" + Constants.STATUS_XML_STATUS_RESULT_ELEMENT_NAME + ">\n");
-//      sb.append("\n");
-//    }
-//
-//    sb.append(Constants.STATUS_XML_TAIL);
-//
-//    return sb.toString();
-//  }
-//
-//  private EventProducer getStatusCommand(String sensorID)
-//  {
-//    Element sensorElement = remoteActionXMLParser.queryElementFromXMLById(sensorID);
-//
-//    if (sensorElement == null)
-//    {
-//      throw new NoSuchComponentException("Cannot find that sensor with id = " + sensorID);
-//    }
-//
-//    Component component = componentFactory.getComponent(sensorElement, Command.STATUS_COMMAND);
-//
-//    return component.getStatusCommand();
-//  }
+  private StatusCache statusCache;
+  private Deployer deployer;
+  
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  public StatusCommandServiceImpl(Deployer deployer, StatusCache statusCache)
+  {
+    this.deployer = deployer;
+    this.statusCache = statusCache;
+  }
+
+
+  // Implements StatusCommandService --------------------------------------------------------------
 
   @Override public String readFromCache(String unParsedSensorIDs)
   {
-    if (controllerXMLListenSharingData.getIsControllerXMLChanged())
+    if (deployer.isPaused())
     {
       throw new ControllerXMLChangedException("The content of controller.xml had changed.");
     }
 
     Set<Integer> statusSensorIDs = parseStatusSensorIDsStrToSet(unParsedSensorIDs);
-    Map<Integer, String> latestStatuses = statusCacheService.queryStatuses(statusSensorIDs);
+    Map<Integer, String> latestStatuses = statusCache.queryStatuses(statusSensorIDs);
 
     StringBuffer sb = new StringBuffer();
     sb.append(Constants.STATUS_XML_HEADER);
@@ -138,7 +95,10 @@ public class StatusCommandServiceImpl implements StatusCommandService
 
     return sb.toString();
   }
-   
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+  
   private Set<Integer> parseStatusSensorIDsStrToSet(String unParsedSensorIDs)
   {
     String[] parsedSensorIDs = unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
@@ -159,25 +119,5 @@ public class StatusCommandServiceImpl implements StatusCommandService
 
     return statusSensorIDs;
   }
-   
-//  public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser)
-//  {
-//     this.remoteActionXMLParser = remoteActionXMLParser;
-//  }
 
-  public void setStatusCacheService(StatusCacheService statusCacheService)
-  {
-    this.statusCacheService = statusCacheService;
-  }
-
-//  public void setComponentFactory(ComponentFactory componentFactory)
-//  {
-//    this.componentFactory = componentFactory;
-//  }
-
-  public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData)
-  {
-    this.controllerXMLListenSharingData = controllerXMLListenSharingData;
-  }
-   
 }
