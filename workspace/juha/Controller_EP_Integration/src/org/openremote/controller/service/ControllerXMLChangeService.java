@@ -23,22 +23,23 @@ package org.openremote.controller.service;
  * 
  * @author handy.wang 2010-03-19
  *
+ * @deprecated as part of ORCJAVA-115, see impl. for more details
  */
-public interface ControllerXMLChangeService {
+@Deprecated public interface ControllerXMLChangeService {
    
-   /** 
-    * do series of operations when controller.xml file changed.<br />
-    * 
-    * These operations include :<br />
-    * <ol>
-    * <li>Set the BOOL tag named controllerXMLChanged to TRUE</li>
-    * <li>killAndClearPollingMachineThreads</li>
-    * <li>Clear StatusCache and ChangedStatusTable</li>
-    * <li>clearAndReloadSensors</li>
-    * <li>Restart pollingMachinesThreads</li>
-    * <li>Reset the BOOL tag named controllerXMLChanged to FALSE</li>
-    * </ol>
-    */
-   public boolean refreshController();
+//   /**
+//    * do series of operations when controller.xml file changed.<br />
+//    *
+//    * These operations include :<br />
+//    * <ol>
+//    * <li>Set the BOOL tag named controllerXMLChanged to TRUE</li>
+//    * <li>killAndClearPollingMachineThreads</li>
+//    * <li>Clear StatusCache and ChangedStatusTable</li>
+//    * <li>clearAndReloadSensors</li>
+//    * <li>Restart pollingMachinesThreads</li>
+//    * <li>Reset the BOOL tag named controllerXMLChanged to FALSE</li>
+//    * </ol>
+//    */
+//   public boolean refreshController();
 
 }
