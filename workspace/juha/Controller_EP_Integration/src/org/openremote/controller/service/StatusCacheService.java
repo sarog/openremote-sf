@@ -26,19 +26,17 @@ import java.util.Set;
 /**
  * TODO : Deprecate and remove, see ORCJAVA-122 (http://jira.openremote.org/browse/ORCJAVA-122)
  *
- * This service does *nothing*. Everything is delegated to status cache implementation. Completely
- * useless.
- * 
+ *
  * @author Javen
  *
  */
 @Deprecated public interface StatusCacheService {
    
-   void saveOrUpdateStatus(Integer sensorId,String newStatus);
+   //void saveOrUpdateStatus(Integer sensorId,String newStatus);
    
    String getStatusBySensorId(Integer sensorId);
    
-   Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
+   //Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
    
-   void clearAllStatusCache();
+   //void clearAllStatusCache();
 }
