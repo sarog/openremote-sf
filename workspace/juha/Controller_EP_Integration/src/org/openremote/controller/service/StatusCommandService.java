@@ -21,28 +21,19 @@
 package org.openremote.controller.service;
 
 /**
- * The service for status Command from remote.
+ * TODO
  * 
  * @author Handy.Wang 2009-10-15
  */
 public interface StatusCommandService
 {
 
-//  TODO : looks like dead code [JPL]
-//
-//   /**
-//    * Trigger command .
-//    *
-//    */
-//   String trigger(String unParsedSensorIDs);
-
-
-   /**
-    * Read statuses of sensor ids from statuscache.
-    *
-    * @param  unParsedSensorIDs TODO
-    * @return TODO
-    */
-   String readFromCache(String unParsedSensorIDs);
+  /**
+   * Read statuses of sensor ids from statuscache.
+   *
+   * @param  unParsedSensorIDs TODO
+   * @return TODO
+   */
+  String readFromCache(String unParsedSensorIDs);
 
 }
