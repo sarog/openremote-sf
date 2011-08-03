@@ -25,6 +25,7 @@
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
 #import "ClippedUIImage.h"
+#import "ControllerButtonAPI_v2_1.h"
 
 @interface ButtonView ()
 
@@ -38,11 +39,7 @@
 - (void)controlButtonUp:(id)sender;
 - (void)controlButtonDown:(id)sender;
 - (void)longPress:(NSTimer *)timer;
-
-- (void)sendPressCommand:(id)sender;
-- (void)sendShortReleaseCommand:(id)sender;
-- (void)sendLongPressCommand:(id)sender;
-- (void)sendLongReleaseCommand:(id)sender;
+- (void)press:(NSTimer *)timer;
 
 @end
 
@@ -50,6 +47,7 @@
 
 @synthesize uiButton, uiImage, uiImagePressed;
 @synthesize buttonRepeatTimer, longPressTimer, longPress;
+@synthesize controllerButtonAPI;
 
 #pragma mark Private methods
 
@@ -73,10 +71,10 @@
 	Button *button = (Button *)self.component;
     
     if (button.hasShortReleaseCommand && !self.isLongPress) {
-        [self sendShortReleaseCommand:nil];
+        [self.controllerButtonAPI sendShortReleaseCommand:self];
     }
     if (button.hasLongReleaseCommand && self.isLongPress) {
-        [self sendLongReleaseCommand:nil];        
+        [self.controllerButtonAPI sendLongReleaseCommand:self];        
     }
     
 	if (button.navigate) {
@@ -90,9 +88,9 @@
     
 	Button *button = (Button *)self.component;
 	if (button.hasPressCommand == YES) {
-		[self sendPressCommand:nil];
+		[self.controllerButtonAPI sendPressCommand:self];
 	 	if (button.repeat == YES ) {			
-			self.buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:(button.repeatDelay / 1000.0) target:self selector:@selector(sendPressCommand:) userInfo:nil repeats:YES];
+			self.buttonRepeatTimer = [NSTimer scheduledTimerWithTimeInterval:(button.repeatDelay / 1000.0) target:self selector:@selector(press:) userInfo:nil repeats:YES];
 		}
 	}
     if (button.hasLongPressCommand || button.hasLongReleaseCommand) {
@@ -101,26 +99,15 @@
     }
 }
 
+- (void)press:(NSTimer *)timer
+{
+    [self.controllerButtonAPI sendPressCommand:self];
+}
+
 - (void)longPress:(NSTimer *)timer
 {
     self.longPress = YES;
-    [self sendLongPressCommand:nil];
-}
-
-- (void)sendPressCommand:(id)sender {
-	[self sendCommandRequest:@"press"];
-}
-
-- (void)sendShortReleaseCommand:(id)sender {
-    [self sendCommandRequest:@"shortRelease"];
-}
-
-- (void)sendLongPressCommand:(id)sender {
-    [self sendCommandRequest:@"longPress"];
-}
-
-- (void)sendLongReleaseCommand:(id)sender {
-    [self sendCommandRequest:@"longRelease"];
+    [self.controllerButtonAPI sendLongPressCommand:self];
 }
 
 - (void)cancelTimers {
@@ -161,7 +148,10 @@
 	
 	uiButton.titleLabel.font = [UIFont boldSystemFontOfSize:13];
 	uiButton.titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
-	[uiButton setTitle:button.name forState:UIControlStateNormal];	
+	[uiButton setTitle:button.name forState:UIControlStateNormal];
+    
+    // TODO: creating this here for backwards compatibility but should be injected from somewhere depending on controller capability
+    self.controllerButtonAPI = [[[ControllerButtonAPI_v2_1 alloc] init] autorelease];    
 }
 
 #pragma mark dealloc
@@ -170,6 +160,7 @@
 	[uiImage  release];
 	[uiImagePressed release];
 	[uiButton release];
+    self.controllerButtonAPI = nil;
     [self cancelTimers];
 
     [super dealloc];
