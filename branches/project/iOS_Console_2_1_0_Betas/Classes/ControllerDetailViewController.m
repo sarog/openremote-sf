@@ -21,16 +21,19 @@
 
 #import "ControllerDetailViewController.h"
 #import "ORController.h"
+#import "ORGroupMember.h"
 #import "TextFieldCell.h"
 
 // TODO: customize keyboard with keys such as http://, https://, /controller, 8080,  and other std ports to help text entry
 // EBR : not sure we really want the above ?
 
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
+#define kGroupMemberCellIdentifier @"kGroupMemberCellIdentifier"
 
 @interface ControllerDetailViewController()
 
 @property (nonatomic, retain) ORController *controller;
+@property (nonatomic, retain) NSArray *groupMembers;
 @property (nonatomic, retain) UITextField *urlField;
 
 @end
@@ -40,6 +43,7 @@
 @synthesize delegate;
 
 @synthesize controller;
+@synthesize groupMembers;
 @synthesize urlField;
 
 - (id)initWithController:(ORController *)aController
@@ -47,12 +51,15 @@
 	self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         self.controller = aController;
+        self.groupMembers = [self.controller.groupMembers allObjects];
+        [self.controller addObserver:self forKeyPath:@"groupMembers" options:0 context:NULL];
     }
 	return self;
 }
 
 - (void)dealloc
 {
+    [self.controller removeObserver:self forKeyPath:@"groupMembers"];
     self.controller = nil;
     self.urlField.delegate = nil;
     self.urlField = nil;
@@ -125,24 +132,45 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 1;
+    switch (section) {
+        case 0:
+            return 1;
+        case 1:
+            return [self.groupMembers count];
+        default:
+            return 0;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kControllerUrlCellIdentifier];
-    if (cell == nil) {
-		cell = [[[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kControllerUrlCellIdentifier] autorelease];
-        self.urlField = ((TextFieldCell *)cell).textField;
-        self.urlField.delegate = self;
+    UITableViewCell *cell = nil;
+    switch (indexPath.section) {
+        case 0:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kControllerUrlCellIdentifier];
+            if (cell == nil) {
+                cell = [[[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kControllerUrlCellIdentifier] autorelease];
+                self.urlField = ((TextFieldCell *)cell).textField;
+                self.urlField.delegate = self;
+            }
+            self.urlField.text = self.controller.primaryURL;
+            break;
+        }
+        case 1:
+        {
+            cell = [tableView dequeueReusableCellWithIdentifier:kGroupMemberCellIdentifier];
+            if (cell == nil) {
+                cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGroupMemberCellIdentifier] autorelease];
+            }            
+            cell.textLabel.text = ((ORGroupMember *)[self.groupMembers objectAtIndex:indexPath.row]).url;
+        }
     }
-    self.urlField.text = self.controller.primaryURL;
-    
     return cell;
 }
 
@@ -153,12 +181,19 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
-	return @"Sample:192.168.1.2:8080/controller";
+	return (section == 0)?@"Sample:192.168.1.2:8080/controller":@"";
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-	return @"Controller URL:";
+    switch (section) {
+        case 0:
+            return @"Controller URL:";
+        case 1:
+            return @"Roundrobin group members:";
+        default:
+            return nil;
+    }
 }
 
 #pragma mark - Table view delegate
@@ -166,6 +201,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    // Only observing one value, no need to check
+    self.groupMembers = [self.controller.groupMembers allObjects];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 @end
