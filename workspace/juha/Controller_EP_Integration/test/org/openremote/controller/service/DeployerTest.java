@@ -22,12 +22,14 @@ package org.openremote.controller.service;
 
 import java.util.Properties;
 import java.util.Iterator;
+import java.net.URI;
 
 import org.junit.Test;
 import org.junit.Assert;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.RangeSensor;
@@ -49,6 +51,8 @@ import org.jdom.Element;
 public class DeployerTest
 {
 
+  private final static String deployerName = "Deployer for " + DeployerTest.class.getSimpleName();
+
 
   // Constructor Tests ----------------------------------------------------------------------------
 
@@ -61,7 +65,7 @@ public class DeployerTest
     StatusCache sc = new StatusCache();
     ControllerConfiguration cc = new ControllerConfiguration();
 
-    new Deployer(sc, cc);
+    new Deployer(deployerName, sc, cc);
   }
 
   /**
@@ -70,7 +74,7 @@ public class DeployerTest
   @Test (expected = IllegalArgumentException.class)
   public void constructionNullArgs()
   {
-    new Deployer(null, null);
+    new Deployer(null, null, null);
   }
 
   /**
@@ -79,7 +83,7 @@ public class DeployerTest
   @Test (expected = IllegalArgumentException.class)
   public void constructionNullArgs2()
   {
-    new Deployer(new StatusCache(), null);
+    new Deployer(null, new StatusCache(), null);
   }
 
   /**
@@ -88,9 +92,16 @@ public class DeployerTest
   @Test (expected = IllegalArgumentException.class)
   public void constructionNullArgs3()
   {
-    new Deployer(null, new ControllerConfiguration());
+    new Deployer(null, null, new ControllerConfiguration());
   }
 
+  /**
+   * Test construction with null name
+   */
+  public void constructionNullArgs4()
+  {
+    new Deployer(null, new StatusCache(), new ControllerConfiguration());
+  }
 
 
   // RegisterObjectBuilder Tests ------------------------------------------------------------------
@@ -100,7 +111,7 @@ public class DeployerTest
     StatusCache sc = new StatusCache();
     ControllerConfiguration cc = new ControllerConfiguration();
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer(deployerName, sc, cc);
 
     ObjectBuilder ob = new TestOB(d);
     
@@ -112,7 +123,7 @@ public class DeployerTest
     StatusCache sc = new StatusCache();
     ControllerConfiguration cc = new ControllerConfiguration();
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer(deployerName, sc, cc);
 
     ObjectBuilder ob = new BrokenOB(d);
   }
@@ -139,7 +150,7 @@ public class DeployerTest
 
     ControllerConfiguration cc = new ControllerConfiguration();
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer(deployerName, sc, cc);
 
     Sensor sensor1 = d.getSensor(1);
 
@@ -191,7 +202,7 @@ public class DeployerTest
     StatusCache sc = new StatusCache();
     ControllerConfiguration cc = new ControllerConfiguration();
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer(deployerName, sc, cc);
 
     Sensor s = d.getSensor(0);
 
@@ -205,17 +216,20 @@ public class DeployerTest
 
   /**
    * Use softRestart to load new controller definition once.
+   *
+   * @throws Exception if test fails
    */
   @Test public void testSoftRestart() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
     StatusCache sc = new StatusCache();
     sc.setChangedStatusTable(cst);
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
@@ -280,17 +294,20 @@ public class DeployerTest
   /**
    * Test soft restart to load one controller definition and then override it with
    * a new one.
+   *
+   * @throws Exception if test fails
    */
   @Test public void testSoftRestart2() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
     StatusCache sc = new StatusCache();
     sc.setChangedStatusTable(cst);
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer("Deployer2 for " + deploymentURI, sc, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
@@ -352,7 +369,8 @@ public class DeployerTest
 
     // do the change...
 
-    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly2/");
+    deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly2");
+    cc.setResourcePath(deploymentURI.getPath());
 
     d.softRestart();
 
@@ -426,10 +444,20 @@ public class DeployerTest
 
     // finish by deploying empty...
 
-    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/doesnotexist/");
+    deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/doesnotexist");
+    cc.setResourcePath(deploymentURI.getPath());
 
-    d.softRestart();
+    try
+    {
+      d.softRestart();
 
+      Assert.fail("Expected an exception here.");
+    }
+
+    catch (ControllerDefinitionNotFoundException e)
+    {
+      // expected...
+    }
 
     Assert.assertFalse(sensor5.isRunning());
     Assert.assertFalse(sensor6.isRunning());
@@ -461,17 +489,20 @@ public class DeployerTest
 
   /**
    * Test restart with redeploying the same controller definition over itself.
+   *
+   * @throws Exception if test fails
    */
   @Test public void redeployItself() throws Exception
   {
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/sensorsonly/");
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
     StatusCache sc = new StatusCache();
     sc.setChangedStatusTable(cst);
 
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer("Deployer3 for " + deploymentURI, sc, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
@@ -595,19 +626,71 @@ public class DeployerTest
    * At the moment, no exception is propagated, the error is logged but the runtime
    * stays operational although not executing any functions.
    */
-  @Test public void testSoftRestartNoXMLDoc() throws Exception
+  @Test public void testSoftRestartNoXMLDoc()
   {
     ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath("../../classes/" + AllTests.FIXTURE_DIR + "deployment/doesntexist/");
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/doesntexist");
+    cc.setResourcePath(deploymentURI.getPath());
 
+    
     ChangedStatusTable cst = new ChangedStatusTable();
     StatusCache sc = new StatusCache();
     sc.setChangedStatusTable(cst);
     
-    Deployer d = new Deployer(sc, cc);
+    Deployer d = new Deployer("Deployer4 for " + deploymentURI, sc, cc);
 
-    d.softRestart();
+    try
+    {
+      d.softRestart();
+
+      Assert.fail("Expected an exception here..");
+    }
+
+    catch (ControllerDefinitionNotFoundException e)
+    {
+      // expected...
+    }
   }
+
+
+  // TODO : check test API usage of startController() vs softRestart()
+  // TODO : test URI/abs file/relative file support in controllerconfiguration.getResource()
+
+
+  @Test public void testStartController()
+  {
+    Assert.fail("Not Yet Implemented. See ORCJAVA-160");
+  }
+
+  @Test public void testIsPaused()
+  {
+    Assert.fail("Not Yet Implemented. See ORCJAVA-161");  
+  }
+
+  @Test public void testAutoAndRedeployment()
+  {
+    // These should be integration tests with external test container
+
+    Assert.fail("Not Yet Implemented. See ORCJAVA-162");  
+  }
+
+  @Test public void testSlowUnresponsiveSensorOnStop()
+  {
+    // test deployer behavior when stopping and sensor won't respond to request to stop
+
+    Assert.fail("Not Yet Implemented. See ORCJAVA-163");
+  }
+
+  @Test public void testRestartOnIncorrectXML()
+  {
+    // test restart behavior when the xml is structurally correct but
+    // semantically broken (such as linking to non-existent elements, etc).
+
+    Assert.fail("Not Yet Implemented. See ORCJAVA-164");   
+  }
+
+
+
 
 
   // Nested Classes -------------------------------------------------------------------------------
