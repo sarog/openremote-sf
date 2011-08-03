@@ -490,7 +490,8 @@
 
 
 - (void)populateSettingsView:(id)sender {
-	AppSettingController *settingController = [[AppSettingController alloc]init];
+	AppSettingController *settingController = [[AppSettingController alloc] init];
+    settingController.needsControllerRefresh = YES;
 	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
 	[self presentModalViewController:settingNavController animated:YES];
 	[settingController release];
