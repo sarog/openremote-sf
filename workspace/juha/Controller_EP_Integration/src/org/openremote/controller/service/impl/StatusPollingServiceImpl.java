@@ -24,36 +24,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.config.ControllerXMLChangedException;
 import org.openremote.controller.config.ControllerXMLListenSharingData;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.statuscache.ChangedStatusRecord;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.PollingData;
+import org.openremote.controller.statuscache.StatusCache;
 
 /**
- * Implementation of controlStatusPollingService.
+ * TODO :
+ *  - this needs a thorough review and testing, much of the code doesn't make sense when read
+ *    (ORCJAVA-165 -- http://jira.openremote.org/browse/ORCJAVA-165)
  * 
  * @author Handy.Wang 2009-10-21
  */
 public class StatusPollingServiceImpl implements StatusPollingService {
-   
-   private ChangedStatusTable changedStatusTable;
-   
-   private StatusCacheService statusCacheService;
-   
-   private ControllerXMLListenSharingData controllerXMLListenSharingData;
-   
-   public void setStatusCacheService(StatusCacheService statusCacheService) {
-      this.statusCacheService = statusCacheService;
-   }
 
-   private Logger logger = Logger.getLogger(this.getClass().getName());
-   
+  // TODO : use one of the controller runtime categories
+  private final static Logger logger = Logger.getLogger(StatusPollingService.class.getName());
+
+   private ChangedStatusTable changedStatusTable;
+   private Deployer deployer;
+   private StatusCache statusCache;
+
+
    /* (non-Javadoc)
     * @see org.openremote.controller.service.ControlStatusPollingService#querySkipState(java.lang.String)
     */
@@ -67,7 +67,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
     */
    @Override
    public String queryChangedState(String deviceID, String unParsedSensorIDs) {
-      if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+      if (deployer.isPaused()) {
          throw new ControllerXMLChangedException("The content of controller.xml had changed.");
       }
       
@@ -107,7 +107,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
                logger.info(changedStateRecord + "Waiting...");
                changedStateRecord.wait(50000);
                
-               if (controllerXMLListenSharingData.getIsControllerXMLChanged()) {
+               if (deployer.isPaused()) {
                   throw new ControllerXMLChangedException("The content of controller.xml had changed.");
                }
                
@@ -133,7 +133,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
    private String queryChangedStatusesFromCachedStatusTable(Set<Integer> statusChangedIDs) {
       logger.info("Querying changed data from StatusCache...");
       PollingData pollingData = new PollingData(statusChangedIDs);
-      Map<Integer, String> changedStatuses = statusCacheService.queryStatuses(pollingData.getSensorIDs());
+      Map<Integer, String> changedStatuses = statusCache.queryStatuses(pollingData.getSensorIDs());
       pollingData.setChangedStatuses(changedStatuses);
       logger.info("Have queried changed data from StatusCache.");
       return composePollingResult(pollingData);
@@ -161,12 +161,20 @@ public class StatusPollingServiceImpl implements StatusPollingService {
       return sb.toString();
    }
 
+
+  // Service Dependencies -------------------------------------------------------------------------
+
    public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
       this.changedStatusTable = changedStatusTable;
    }
 
-   public void setControllerXMLListenSharingData(ControllerXMLListenSharingData controllerXMLListenSharingData) {
-      this.controllerXMLListenSharingData = controllerXMLListenSharingData;
-   }
+  public void setDeployer(Deployer deployer)
+  {
+    this.deployer = deployer;
+  }
+
+  public void setStatusCache(StatusCache statusCache) {
+     this.statusCache = statusCache;
+  }
 
 }
