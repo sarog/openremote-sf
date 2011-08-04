@@ -1,23 +1,24 @@
-/* OpenRemote, the Home of the Digital Home.
-* Copyright 2008-2011, OpenRemote Inc.
-*
-* See the contributors.txt file in the distribution for a
-* full listing of individual contributors.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-package org.openremote.controller.utils;
+/*
+ * OpenRemote, the Home of the Digital Home.
+ * Copyright 2008-2011, OpenRemote Inc.
+ *
+ * See the contributors.txt file in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.openremote.controller.command;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,7 +30,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.command.RemoteActionXMLParser;
+import org.openremote.controller.utils.SpringTestContext;
+import org.openremote.controller.utils.XMLUtil;
 
 
 /**
@@ -51,7 +53,6 @@ public class RemoteActionXMLParserTest {
       doc = XMLUtil.getControllerDocument(controllerXMLPath);
    }
    
-   @SuppressWarnings("unchecked")
    @Test
    public void testqueryElementFromXMLById(){
       Element s = remoteActionXMLParser.queryElementFromXMLById(doc, "1");
@@ -70,7 +71,7 @@ public class RemoteActionXMLParserTest {
       }
       
    }
-   @SuppressWarnings("unchecked")
+
    @Test
    public void testqueryElementFromXMLByName(){
       Element s = remoteActionXMLParser.queryElementFromXMLByName(doc, "commands");
@@ -83,25 +84,28 @@ public class RemoteActionXMLParserTest {
       }
       
    }
+
+
    @Test
    public void testqueryElementFromXMLByNameNotFound(){
       Element s = remoteActionXMLParser.queryElementFromXMLByName(doc, "xxx");
-      
+
       Assert.assertNull(s);
-      
+
    }
-   @Test
-   public void testqueryElementFromXMLByIdNotFound(){
-      Element s = remoteActionXMLParser.queryElementFromXMLById(doc, "1111111111");
-      
-      Assert.assertNull(s);
-      
-   }
-   
-   @Test
-   public void testqueryElementFromDefaultXMLByIdNotFound(){
-      Assert.assertNull( remoteActionXMLParser.queryElementFromXMLById(doc, "1111111111"));
-   }
+
+//   @Test
+//   public void testqueryElementFromXMLByIdNotFound(){
+//      Element s = remoteActionXMLParser.queryElementFromXMLById(doc, "1111111111");
+//
+//      Assert.assertNull(s);
+//
+//   }
+//
+//   @Test
+//   public void testqueryElementFromDefaultXMLByIdNotFound(){
+//      Assert.assertNull( remoteActionXMLParser.queryElementFromXMLById(doc, "1111111111"));
+//   }
    
    
    
