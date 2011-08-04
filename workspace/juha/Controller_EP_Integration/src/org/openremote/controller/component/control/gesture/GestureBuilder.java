@@ -27,29 +27,65 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.service.Deployer;
 
 /**
- * This class is used to build a Gesture from controller.xml
- * @author Javen
+ * TODO
+ *
+ *  - see related tasks
+ *     ORCJAVA-158  (http://jira.openremote.org/browse/ORCJAVA-158)
+ *     ORCJAVA-159  (http://jira.openremote.org/browse/ORCJAVA-159)
  *
  */
-public class GestureBuilder extends ComponentBuilder {
+public class GestureBuilder extends ComponentBuilder
+{
 
-   @SuppressWarnings("unchecked")
-   @Override
-   public Component build(Element componentElement, String commandParam) throws ConfigurationException {
-      Gesture gesture = new Gesture();
-      if (!gesture.isValidActionWith(commandParam)) {
-         return gesture;
-      }
-      List<Element> commandRefElements = componentElement.getChildren();
-      for (Element commandRefElement : commandRefElements) {
-         String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
-         Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
-         ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
-         gesture.addExecutableCommand(command);
-      }
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Deployer deployer;
+
+
+
+  // Implements ComponentBuilder ------------------------------------------------------------------
+
+  @Override public Component build(Element componentElement, String commandParam)
+      throws InitializationException
+  {
+    Gesture gesture = new Gesture();
+
+    if (!gesture.isValidActionWith(commandParam))
+    {
       return gesture;
-   }
+    }
+
+    List<Element> commandRefElements = componentElement.getChildren();
+
+    for (Element commandRefElement : commandRefElements)
+    {
+      String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
+      Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
+      ExecutableCommand command = (ExecutableCommand) commandFactory.getCommand(commandElement);
+      gesture.addExecutableCommand(command);
+    }
+
+    return gesture;
+  }
+
+
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  /**
+   * TODO : this dependency can/will be satisfied by ObjectBuilder implementation (see ORCJAVA-158)
+   *
+   * @param deployer
+   */
+  public void setDeployer(Deployer deployer)
+  {
+    this.deployer = deployer;
+  }
+
+
 }
