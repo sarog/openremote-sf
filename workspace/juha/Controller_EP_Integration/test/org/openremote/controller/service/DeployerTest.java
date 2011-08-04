@@ -30,6 +30,7 @@ import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
+import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.RangeSensor;
@@ -687,6 +688,39 @@ public class DeployerTest
     // semantically broken (such as linking to non-existent elements, etc).
 
     Assert.fail("Not Yet Implemented. See ORCJAVA-164");   
+  }
+
+
+  /**
+   * TODO :
+   *   The method may yet move away from deployer API, so this is a temp test moved here
+   *   from elsewhere. It documents a contract change from return a null to raising a checked
+   *   exception. Since it's a checked exception, should be a relatively easy contract change
+   *   to track due to compiler checks.
+   */
+  @Test public void testqueryElementFromXMLByIdNotFound()
+  {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc = new ControllerConfiguration();
+
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
+
+    Deployer d = new Deployer("Deployer6 for " + deploymentURI, sc, cc);
+
+    d.startController();
+
+    try
+    {
+      Element s = d.queryElementById(11111);
+
+      Assert.fail("should not get here...");
+    }
+
+    catch (InitializationException e)
+    {
+      // expected
+    }
   }
 
 
