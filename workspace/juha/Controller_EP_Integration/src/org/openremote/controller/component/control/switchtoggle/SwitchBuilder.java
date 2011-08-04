@@ -23,17 +23,15 @@ package org.openremote.controller.component.control.switchtoggle;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
-import org.openremote.controller.Constants;
-import org.openremote.controller.service.ServiceContext;
 
 /**
  * TODO :
@@ -58,10 +56,15 @@ public class SwitchBuilder extends ComponentBuilder
 
 
 
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Deployer deployer;
+
+
   // Implements ComponentBuilder ------------------------------------------------------------------
 
   @Override public Control build(Element componentElement, String commandParam)
-      throws ConfigurationException
+      throws InitializationException
   {
     Switch switchToggle = new Switch();
 
@@ -78,9 +81,7 @@ public class SwitchBuilder extends ComponentBuilder
       {
         try
         {
-          //Sensor sensor = parseSensor(componentElement, operationElement);
-          SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-          Sensor sensor = builder.buildFromComponentInclude(operationElement);
+          Sensor sensor = deployer.getSensorFromComponentInclude(operationElement);
           
           switchToggle.setSensor(sensor);
         }
@@ -100,7 +101,7 @@ public class SwitchBuilder extends ComponentBuilder
         for (Element commandRefElement : commandRefElements)
         {
           String commandID = commandRefElement.getAttributeValue(Control.REF_ATTRIBUTE_NAME);
-          Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
+          Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
           Command command = commandFactory.getCommand(commandElement);
           switchToggle.addExecutableCommand((ExecutableCommand) command);
         }
@@ -110,4 +111,17 @@ public class SwitchBuilder extends ComponentBuilder
     return switchToggle;
   }
 
+
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  /**
+   * TODO : this dependency can/will be satisfied by ObjectBuilder implementation (see ORCJAVA-147)
+   *
+   * @param deployer
+   */
+  public void setDeployer(Deployer deployer)
+  {
+    this.deployer = deployer;
+  }
 }
