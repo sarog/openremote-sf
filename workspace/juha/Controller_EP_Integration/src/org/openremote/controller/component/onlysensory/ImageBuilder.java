@@ -23,17 +23,20 @@ package org.openremote.controller.component.onlysensory;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
-import org.openremote.controller.Constants;
-import org.openremote.controller.service.ServiceContext;
 
 /**
- * TODO : This class is used to build a Image by parse controll.xml
+ * TODO :
+ *
+ *  * relevant tasks :
+ *   - ORCJAVA-153 : http://jira.openremote.org/browse/ORCJAVA-153
+ *   - ORCJAVA-167 : http://jira.openremote.org/browse/ORCJAVA-167
  * 
  * @author Handy
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -47,6 +50,11 @@ public class ImageBuilder extends ComponentBuilder
    * Common log category for all XML parsing related issues.
    */
   private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Deployer deployer;
 
 
 
@@ -69,9 +77,7 @@ public class ImageBuilder extends ComponentBuilder
       {
         try
         {
-          //Sensor sensor = parseSensor(componentElement, operationElement);
-          SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-          Sensor sensor = builder.buildFromComponentInclude(operationElement);
+          Sensor sensor = deployer.getSensorFromComponentInclude(operationElement);
           
           image.setSensor(sensor);
         }
@@ -88,4 +94,18 @@ public class ImageBuilder extends ComponentBuilder
     return image;
   }
 
+
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  /**
+   * TODO : this dependency can/will be satisfied by ObjectBuilder implementation (see ORCJAVA-153)
+   *
+   * @param deployer
+   */
+  public void setDeployer(Deployer deployer)
+  {
+    this.deployer = deployer;
+  }
+  
 }
