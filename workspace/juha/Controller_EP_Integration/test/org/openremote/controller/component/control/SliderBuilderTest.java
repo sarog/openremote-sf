@@ -23,6 +23,7 @@ package org.openremote.controller.component.control;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Properties;
 
 import junit.framework.Assert;
 
@@ -34,92 +35,126 @@ import org.jdom.xpath.XPath;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.ExecutableCommand;
+import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.control.slider.Slider;
 import org.openremote.controller.component.control.slider.SliderBuilder;
-//import org.openremote.controller.exception.InvalidElementException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.utils.SpringTestContext;
 
 /**
- * Test cases for SliderBuilder.
+ * TODO:
+ *    - see ORCJAVA-166 (http://jira.openremote.org/browse/ORCJAVA-166)
  * 
- * @author Handy.Wang 2009-11-10
  */
 public class SliderBuilderTest {
+
+  private Deployer deployer;
+  private SliderBuilder sliderBuilder;
+
+
+  // Test Lifecycle -------------------------------------------------------------------------------
+
+  @Before public void setUp() throws Exception
+  {
+    CommandFactory cf = new CommandFactory();
+    Properties p = new Properties();
+    p.put("virtual", VirtualCommandBuilder.class.getName());
+    cf.setCommandBuilders(p);
+
+    StatusCache sc = new StatusCache();
+
+    ControllerConfiguration cc = new ControllerConfiguration();
+    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/slider").getPath());
+
+    deployer = new Deployer("Deployer for " + getClass().getSimpleName(), sc, cc);
+
+    SensorBuilder sb = new SensorBuilder(deployer);
+    sb.setCommandFactory(cf);
+    
+    deployer.startController();
+
+    sliderBuilder = new SliderBuilder();
+    sliderBuilder.setDeployer(deployer);
+    sliderBuilder.setCommandFactory(cf);
+  }
+
+
+  // Tests ----------------------------------------------------------------------------------------
+
+  
+  /** Get invalid slider with control id from controller.xml. */
+  @Test public void testGetInvalidSlider() throws Exception
+  {
+    try
+    {
+      getSliderByID("555");
+
+      fail("should not get here...");
+    }
+
+    catch (XMLParsingException e)
+    {
+      // expected
+    }
+  }
    
-   private String controllerXMLPath = null;
-   
-   private Document doc = null;
-   
-   private SliderBuilder sliderBuilder = (SliderBuilder) SpringTestContext.getInstance().getBean("sliderBuilder");
-   
-   @Before
-   public void setUp() throws Exception {
-      controllerXMLPath = this.getClass().getClassLoader().getResource(AllTests.FIXTURE_DIR + "controller.xml").getFile();
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(controllerXMLPath);
-   }
-   
-   /** Get invalid slider with control id from controller.xml. */
-   @Test
-   public void testGetInvalidSlider() throws Exception{
-      try {
-         getSliderByID("1");
-         fail("Valid slider");
-      } catch (XMLParsingException e) {
-      }
-   }
-   
-   /** Get a non-null slider and it's valid. */
-   @Test
-   public void testGetSliderNotNull() throws Exception{
-      Slider slider = getSliderByID("8");
-      Assert.assertNotNull(slider);
-   }
-   
-   /** Get slider with control id from controller.xml but the control don't exsit in controller.xml.  */
-   @Test
-   public void testGetSliderNoSuchID() throws Exception{
-      Slider slider  = null;
-      try{
-         slider = getSliderByID("13");
-      }catch(Exception e){
-         
-      }
-      Assert.assertNull(slider);
-   }
-   
-   /** Get the slider and check whether the executable commands are null. */
-   @Test
-   public void testGetExecutableCommandsOfSlider() throws Exception {
-      Slider slider = getSliderByID("8");
-      Assert.assertNotNull(slider.getExecutableCommands());
-      Assert.assertTrue(slider.getExecutableCommands().size() > 0);
-      for (ExecutableCommand executableCommand : slider.getExecutableCommands()) {
-         executableCommand.send();
-      }
-   }
-   
-   @SuppressWarnings("unchecked")
-   private Element getElementByID(String id) throws JDOMException {
-      String xpath = "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']";
-      XPath xPath = XPath.newInstance(xpath);
-      xPath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-      List<Element> elements = xPath.selectNodes(doc);
-      if (elements.size() > 1) {
-         throw new RuntimeException("duplicated id :" + id);
-      } else if (elements.size() == 0) {
-         throw new NoSuchComponentException();
-      }
-      return elements.get(0);
-   }
-   
-   private Slider getSliderByID(String sliderID) throws Exception
-   {
-      Element controlElement = getElementByID(sliderID);
-      return (Slider) sliderBuilder.build(controlElement, "20");
-   }
+  /** Get a non-null slider and it's valid. */
+  @Test public void testGetSliderNotNull() throws Exception
+  {
+    Slider slider = getSliderByID("1");
+
+    Assert.assertNotNull(slider);
+    Assert.assertTrue(slider.fetchSensorID() == 101);
+
+    slider = getSliderByID("2");
+
+    Assert.assertNotNull(slider);
+    Assert.assertTrue(slider.fetchSensorID() == 101);
+
+    slider = getSliderByID("3");
+
+    Assert.assertNotNull(slider);
+    Assert.assertTrue(slider.fetchSensorID() == 103);
+
+    slider = getSliderByID("4");
+
+    Assert.assertNotNull(slider);
+    Assert.assertTrue(slider.fetchSensorID() == 103);
+
+  }
+
+
+
+  /** Get the slider and check whether the executable commands are null. */
+  @Test public void testGetExecutableCommandsOfSlider() throws Exception
+  {
+    Slider slider = getSliderByID("1");
+    Assert.assertNotNull(slider.getExecutableCommands());
+    Assert.assertTrue(slider.getExecutableCommands().size() > 0);
+
+    for (ExecutableCommand executableCommand : slider.getExecutableCommands())
+    {
+       executableCommand.send();
+    }
+  }
+
+
+
+  // Helpers --------------------------------------------------------------------------------------
+
+
+  private Slider getSliderByID(String sliderID) throws Exception
+  {
+    Element controlElement = deployer.queryElementById(Integer.parseInt(sliderID));
+
+    return (Slider) sliderBuilder.build(controlElement, "20");
+  }
 }
