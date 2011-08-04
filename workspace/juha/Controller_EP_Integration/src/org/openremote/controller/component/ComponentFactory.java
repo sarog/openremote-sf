@@ -20,33 +20,30 @@
  */
 package org.openremote.controller.component;
 
-import java.util.Properties;
+import java.util.Map;
 
 import org.jdom.Element;
-import org.openremote.controller.exception.NoSuchCommandBuilderException;
-import org.openremote.controller.exception.ConfigurationException;
-import org.openremote.controller.exception.XMLParsingException;
-import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.Constants;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.InitializationException;
+
 
 /**
  * TODO : A factory for creating Component objects.
  * 
  * @author Handy.Wang 2009-10-15
  */
-public class ComponentFactory extends ApplicationObjectSupport
+public class ComponentFactory
 {
 
-  private Properties componentBuilders;
+  private Map<String, ComponentBuilder> componentBuilders;
 
   public Component getComponent(Element componentElement, String commandParam)
       throws InitializationException
   {
     String componentType = componentElement.getName();
-    String componentBuilderName = componentBuilders.getProperty(componentType);
 
-    if(componentBuilderName == null || componentBuilderName.equals(""))
+    if(!componentBuilders.keySet().contains(componentType))
     {
       throw new ConfigurationException(
           "Component builder in {0} was not found for component type <{1}>.",
@@ -54,12 +51,12 @@ public class ComponentFactory extends ApplicationObjectSupport
       );
     }
 
-    ComponentBuilder componentBuilder = (ComponentBuilder)getApplicationContext().getBean(componentBuilderName);
-
+    ComponentBuilder componentBuilder = componentBuilders.get(componentType);
+    
     return componentBuilder.build(componentElement, commandParam);
   }
 
-  public void setComponentBuilders(Properties componentBuilders) 
+  public void setComponentBuilders(Map<String, ComponentBuilder> componentBuilders)
   {
     this.componentBuilders = componentBuilders;
   }
