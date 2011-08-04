@@ -25,7 +25,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.openremote.controller.utils.ConfigFactoryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
-import org.openremote.controller.utils.RemoteActionXMLParserTest;
+import org.openremote.controller.command.RemoteActionXMLParserTest;
 import org.openremote.controller.utils.StringsTest;
 import org.openremote.controller.utils.LoggerTest;
 
