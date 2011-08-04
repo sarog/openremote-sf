@@ -23,21 +23,24 @@ package org.openremote.controller.component.control.slider;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.component.Component;
 import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.component.control.Control;
-import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.utils.Logger;
-import org.openremote.controller.Constants;
-import org.openremote.controller.service.ServiceContext;
 
 /**
- * TODO : XML parsing for the <slider> component in controller.xml
+ * TODO :
+ *
+ * relevant tasks :
+ *   - ORCJAVA-151 : http://jira.openremote.org/browse/ORCJAVA-151
+ *   - ORCJAVA-166 : http://jira.openremote.org/browse/ORCJAVA-166
  *
  * @author Handy.Wang 2009-11-10
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -53,6 +56,11 @@ public class SliderBuilder extends ComponentBuilder
    */
   private final static Logger log = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
 
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+  private Deployer deployer;
 
 
   // Implements ComponentBuilder ------------------------------------------------------------------
@@ -74,10 +82,7 @@ public class SliderBuilder extends ComponentBuilder
       /* sensor Element */
       if (hasIncludeSensorElement(operationElement))
       {
-        //Sensor sensor = parseSensor(componentElement, operationElement);
-
-        SensorBuilder builder = (SensorBuilder) ServiceContext.getXMLBinding("sensor");
-        Sensor sensor = builder.buildFromComponentInclude(operationElement);
+        Sensor sensor = deployer.getSensorFromComponentInclude(operationElement);
 
         slider.setSensor(sensor);
 
@@ -89,7 +94,7 @@ public class SliderBuilder extends ComponentBuilder
       {
         Element commandRefElement = (Element) operationElement.getChildren().get(0);
         String commandID = commandRefElement.getAttributeValue(Component.REF_ATTRIBUTE_NAME);
-        Element commandElement = remoteActionXMLParser.queryElementFromXMLById(componentElement.getDocument(),commandID);
+        Element commandElement = deployer.queryElementById(Integer.parseInt(commandID));
         commandElement.setAttribute(Command.DYNAMIC_VALUE_ATTR_NAME, commandParam);
         Command command = commandFactory.getCommand(commandElement);
         slider.addExecutableCommand((ExecutableCommand) command);
@@ -106,4 +111,16 @@ public class SliderBuilder extends ComponentBuilder
     return slider;
   }
 
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  /**
+   * TODO : this dependency can/will be satisfied by ObjectBuilder implementation (see ORCJAVA-151)
+   *
+   * @param deployer
+   */
+  public void setDeployer(Deployer deployer)
+  {
+    this.deployer = deployer;
+  }
 }
