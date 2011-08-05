@@ -814,44 +814,17 @@ public class DevicePanel extends ContentPanel {
     * Import Lutron command.
     */
    private void importLutronCommand() {    
-     /* From Marcus ETS import
-       final BeanModel deviceModel = getDeviceModel();
-       if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-          final ImportWizardWindow knxImportWindow = new ImportWizardWindow(deviceModel);
-          knxImportWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
-             @Override
-             public void afterSubmit(SubmitEvent be) {
-                List<BeanModel> deviceCommandModels = be.getData();
-                for (BeanModel deviceCommandModel : deviceCommandModels) {
-                   tree.getStore().add(deviceModel, deviceCommandModel, false);
-                }
-                tree.setExpanded(deviceModel, true);
-                knxImportWindow.hide();
-             }
-          });
-       }
-       */
-       
      final BeanModel deviceModel = getDeviceModel();
      if (deviceModel != null && deviceModel.getBean() instanceof Device) {       
        final ImportWizardWindow importWizardWindow = new ImportWizardWindow((Device) deviceModel.getBean());
        importWizardWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
          @Override
          public void afterSubmit(SubmitEvent be) {
-           Device createdDevice = be.getData();
-
-           for (DeviceCommand dc : createdDevice.getDeviceCommands()) {
-             tree.getStore().add(deviceModel, dc.getBeanModel(), false);
+           List<BeanModel> allModels = be.getData();
+           for (BeanModel model : allModels) {
+              tree.getStore().add(deviceModel, model, false);
            }
-
-           for (Sensor s : createdDevice.getSensors()) {
-             tree.getStore().add(deviceModel, s.getBeanModel(), false);
-           }
-           
-           for (Slider sl : createdDevice.getSliders()) {
-             tree.getStore().add(deviceModel, sl.getBeanModel(), false);
-           }
-           
+           tree.setExpanded(deviceModel, true);
            importWizardWindow.hide();
          }
        });
