@@ -1,11 +1,14 @@
 package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
+import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.domain.DeviceCommand;
@@ -17,6 +20,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.SliderCommandRef;
 import org.openremote.modeler.domain.SliderSensorRef;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
@@ -118,9 +122,6 @@ public class ImportWizardWindow extends FormWindow {
           return;
         }
 
-        Device aDevice = new Device();
-        aDevice.setName(jsonProject.get("name").isString().stringValue());
-
         try {
           if (jsonProject.get("areas") == null) {
             reportError("File does not contain any information");
@@ -139,45 +140,46 @@ public class ImportWizardWindow extends FormWindow {
                     JSONObject jsonOutput = jsonOutputs.get(k).isObject();
                     String outputType = jsonOutput.get("type").isString().stringValue();
                     if ("Dimmer".equals(outputType) || "QEDShade".equals(outputType)) {
-                      addDeviceCommand(aDevice, jsonOutput, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
-                      addDeviceCommand(aDevice, jsonOutput, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
-                      addDeviceCommand(aDevice, jsonOutput, "STOP", NoScene, NoLevel, NoKey, "_Stop");
-                      DeviceCommand sliderCommand = addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, NoLevel, NoKey, "_Fade");
+                      addDeviceCommand(device, jsonOutput, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
+                      addDeviceCommand(device, jsonOutput, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
+                      addDeviceCommand(device, jsonOutput, "STOP", NoScene, NoLevel, NoKey, "_Stop");
+                      DeviceCommand sliderCommand = addDeviceCommand(device, jsonOutput, "FADE", NoScene, NoLevel, NoKey, "_Fade");
 
-                      DeviceCommand levelReadCommand = addDeviceCommand(aDevice, jsonOutput, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
-                      Sensor sensor = addDeviceSensor(aDevice, jsonOutput, SensorType.LEVEL, levelReadCommand, "_Level");
+                      DeviceCommand levelReadCommand = addDeviceCommand(device, jsonOutput, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
+                      Sensor sensor = addDeviceSensor(device, jsonOutput, SensorType.LEVEL, levelReadCommand, "_Level");
 
                       Slider slider = new Slider();
                       slider.setName(jsonOutput.get("name").isString().stringValue() + "_Slider");
                       SliderCommandRef sliderCommandRef = new SliderCommandRef();
                       sliderCommandRef.setDeviceCommand(sliderCommand);
                       sliderCommandRef.setSlider(slider);
-                      sliderCommandRef.setDeviceName(aDevice.getName());
+                      sliderCommandRef.setDeviceName(device.getName());
                       slider.setSetValueCmd(sliderCommandRef);
                       SliderSensorRef sliderSensorRef = new SliderSensorRef();
                       sliderSensorRef.setSensor(sensor);
                       sliderSensorRef.setSlider(slider);
                       slider.setSliderSensorRef(sliderSensorRef);
-                      aDevice.getSliders().add(slider);
+                      slider.setDevice(device);
+                      device.getSliders().add(slider);
                     } else if ("GrafikEyeMainUnit".equals(outputType)) {
-                      addDeviceCommand(aDevice, jsonOutput, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
-                      DeviceCommand dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", "0", NoLevel, NoKey, "_OffRead");
+                      addDeviceCommand(device, jsonOutput, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
+                      DeviceCommand dc = addDeviceCommand(device, jsonOutput, "SCENE_STATUS", "0", NoLevel, NoKey, "_OffRead");
                       for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
-                        addDeviceCommand(aDevice, jsonOutput, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
-                        dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
-                        addDeviceSensor(aDevice, jsonOutput, SensorType.SWITCH, dc, "_Scene" + Integer.toString(sceneNumber) + "Selected");
+                        addDeviceCommand(device, jsonOutput, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
+                        dc = addDeviceCommand(device, jsonOutput, "SCENE_STATUS", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
+                        addDeviceSensor(device, jsonOutput, SensorType.SWITCH, dc, "_Scene" + Integer.toString(sceneNumber) + "Selected");
                       }
 
-                      dc = addDeviceCommand(aDevice, jsonOutput, "SCENE_STATUS", NoScene, NoLevel, NoKey, "_SceneRead");
-                      Sensor sensor = addDeviceSensor(aDevice, jsonOutput, SensorType.RANGE, dc, "_SelectedScene");
+                      dc = addDeviceCommand(device, jsonOutput, "SCENE_STATUS", NoScene, NoLevel, NoKey, "_SceneRead");
+                      Sensor sensor = addDeviceSensor(device, jsonOutput, SensorType.RANGE, dc, "_SelectedScene");
                       ((RangeSensor) sensor).setMin(0);
                       ((RangeSensor) sensor).setMax(8);
                     } else if ("Fan".equals(outputType)) {
-                      addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "0", NoKey, "_Off");
-                      addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "25", NoKey, "_Low");
-                      addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "50", NoKey, "_Medium");
-                      addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "75", NoKey, "_MediumHigh");
-                      addDeviceCommand(aDevice, jsonOutput, "FADE", NoScene, "100", NoKey, "_Full");
+                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "0", NoKey, "_Off");
+                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "25", NoKey, "_Low");
+                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "50", NoKey, "_Medium");
+                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "75", NoKey, "_MediumHigh");
+                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "100", NoKey, "_Full");
                     }
 
                     // TODO: handle other output types
@@ -199,9 +201,9 @@ public class ImportWizardWindow extends FormWindow {
                         if ("Keypad".equals(deviceType)) {
                           int buttonNumber = (int) jsonButton.get("number").isNumber().doubleValue();
                           String buttonName = jsonButton.get("name").isString().stringValue();
-                          addDeviceCommand(aDevice, controlStationName + "_" + buttonName + "_Press", address, "PRESS", NoScene, NoLevel, Integer.toString(buttonNumber));
-                          addDeviceCommand(aDevice, controlStationName + "_" + buttonName + "_Release", address, "RELEASE", NoScene, NoLevel, Integer.toString(buttonNumber));
-                          addDeviceCommand(aDevice, controlStationName + "_" + buttonName + "_Hold", address, "HOLD", NoScene, NoLevel, Integer.toString(buttonNumber));
+                          addDeviceCommand(device, controlStationName + "_" + buttonName + "_Press", address, "PRESS", NoScene, NoLevel, Integer.toString(buttonNumber));
+                          addDeviceCommand(device, controlStationName + "_" + buttonName + "_Release", address, "RELEASE", NoScene, NoLevel, Integer.toString(buttonNumber));
+                          addDeviceCommand(device, controlStationName + "_" + buttonName + "_Hold", address, "HOLD", NoScene, NoLevel, Integer.toString(buttonNumber));
 
                           // TODO: if defined as web keypad, generate UI
                         }
@@ -219,7 +221,7 @@ public class ImportWizardWindow extends FormWindow {
           return;
         }
 
-        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(aDevice));
+        fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(device));
       }
     });
 
@@ -242,6 +244,7 @@ public class ImportWizardWindow extends FormWindow {
     sensorCommandRef.setSensor(sensor);
     sensorCommandRef.setDeviceName(aDevice.getName());
     sensor.setSensorCommandRef(sensorCommandRef);
+    sensor.setDevice(aDevice);
     aDevice.getSensors().add(sensor);
     return sensor;
   }
@@ -267,6 +270,7 @@ public class ImportWizardWindow extends FormWindow {
     }
     dc.setProtocol(DeviceCommandBeanModelProxy.careateProtocol(attrMap, dc));
     dc.setName(name);
+    dc.setDevice(aDevice);
     aDevice.getDeviceCommands().add(dc);
     return dc;
   }
