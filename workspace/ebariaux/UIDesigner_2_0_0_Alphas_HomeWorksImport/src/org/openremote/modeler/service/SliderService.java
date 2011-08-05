@@ -21,6 +21,7 @@ package org.openremote.modeler.service;
 
 import java.util.List;
 
+import org.openremote.modeler.domain.Account;
 import org.openremote.modeler.domain.Slider;
 
 public interface SliderService {
@@ -29,4 +30,7 @@ public interface SliderService {
    void delete(long id);
    List<Slider> loadAll();
    List<Slider> loadSameSliders(Slider slider);
+   
+   List<Slider> saveAllSliders(List<Slider> sliderList, Account account);
+
 }
