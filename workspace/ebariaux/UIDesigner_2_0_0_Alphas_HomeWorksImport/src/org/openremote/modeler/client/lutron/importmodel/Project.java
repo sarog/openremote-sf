@@ -1,4 +1,4 @@
-package org.openremote.modeler.lutron.importmodel;
+package org.openremote.modeler.client.lutron.importmodel;
 
 import java.util.HashSet;
 import java.util.Set;

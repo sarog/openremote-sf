@@ -1,4 +1,4 @@
-package org.openremote.modeler.lutron.importmodel;
+package org.openremote.modeler.client.lutron.importmodel;
 
 public class Button {
 
