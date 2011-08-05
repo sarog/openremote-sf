@@ -32,11 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.openremote.modeler.client.lutron.importmodel.Project;
 import org.openremote.modeler.domain.KnxGroupAddress;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
-import org.openremote.modeler.lutron.importmodel.Project;
-import org.openremote.modeler.server.UtilsController;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;

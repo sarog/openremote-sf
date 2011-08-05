@@ -7,6 +7,10 @@ import java.util.Map;
 
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormSubmitListener;
+import org.openremote.modeler.client.lutron.importmodel.Area;
+import org.openremote.modeler.client.lutron.importmodel.ControlStation;
+import org.openremote.modeler.client.lutron.importmodel.Output;
+import org.openremote.modeler.client.lutron.importmodel.Room;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
 import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
@@ -28,6 +32,7 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
@@ -62,6 +67,10 @@ public class ImportWizardWindow extends FormWindow {
   }
 
   private void createUI() {
+    final String NoScene = null;
+    final String NoLevel = null;
+    final String NoKey = null;
+
     setWidth(380);
     setAutoHeight(true);
     setLayout(new FlowLayout());
@@ -113,9 +122,6 @@ public class ImportWizardWindow extends FormWindow {
 
       @Override
       public void handleEvent(FormEvent be) {
-        final String NoScene = null;
-        final String NoLevel = null;
-        final String NoKey = null;
 
         JSONObject jsonProject = JSONParser.parse(be.getResultHtml()).isObject();
 
@@ -123,94 +129,53 @@ public class ImportWizardWindow extends FormWindow {
           reportError(jsonProject.get("ERROR").isString().stringValue());
           return;
         }
+        List<Area> areas = new ArrayList<Area>();
 
         try {
           if (jsonProject.get("areas") == null) {
             reportError("File does not contain any information");
             return;
           }
+
+          // Start by re-building the Lutron import object model form JSON
+          // TODO: this should be handled by a deserializer and not done manually
           JSONArray jsonAreas = jsonProject.get("areas").isArray();
           for (int i = 0; i < jsonAreas.size(); i++) {
             JSONObject jsonArea = jsonAreas.get(i).isObject();
+            Area area = new Area(jsonArea.get("name").isString().stringValue());
+            areas.add(area);
             if (jsonArea.get("rooms") != null) {
               JSONArray jsonRooms = jsonArea.get("rooms").isArray();
               for (int j = 0; j < jsonRooms.size(); j++) {
                 JSONObject jsonRoom = jsonRooms.get(i).isObject();
+                Room room = new Room(jsonRoom.get("name").isString().stringValue());
+                area.addRoom(room);
                 if (jsonRoom.get("outputs") != null) {
                   JSONArray jsonOutputs = jsonRoom.get("outputs").isArray();
                   for (int k = 0; k < jsonOutputs.size(); k++) {
                     JSONObject jsonOutput = jsonOutputs.get(k).isObject();
-                    String outputType = jsonOutput.get("type").isString().stringValue();
-                    if ("Dimmer".equals(outputType) || "QEDShade".equals(outputType)) {
-                      addDeviceCommand(device, jsonOutput, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
-                      addDeviceCommand(device, jsonOutput, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
-                      addDeviceCommand(device, jsonOutput, "STOP", NoScene, NoLevel, NoKey, "_Stop");
-                      DeviceCommand sliderCommand = addDeviceCommand(device, jsonOutput, "FADE", NoScene, NoLevel, NoKey, "_Fade");
-
-                      DeviceCommand levelReadCommand = addDeviceCommand(device, jsonOutput, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
-                      Sensor sensor = addDeviceSensor(device, jsonOutput, SensorType.LEVEL, levelReadCommand, "_Level");
-
-                      Slider slider = new Slider();
-                      slider.setName(jsonOutput.get("name").isString().stringValue() + "_Slider");
-                      SliderCommandRef sliderCommandRef = new SliderCommandRef();
-                      sliderCommandRef.setDeviceCommand(sliderCommand);
-                      sliderCommandRef.setSlider(slider);
-                      sliderCommandRef.setDeviceName(device.getName());
-                      slider.setSetValueCmd(sliderCommandRef);
-                      SliderSensorRef sliderSensorRef = new SliderSensorRef();
-                      sliderSensorRef.setSensor(sensor);
-                      sliderSensorRef.setSlider(slider);
-                      slider.setSliderSensorRef(sliderSensorRef);
-                      slider.setDevice(device);
-                      device.getSliders().add(slider);
-/*                    } else if ("GrafikEyeMainUnit".equals(outputType)) {
-                      addDeviceCommand(device, jsonOutput, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
-                      DeviceCommand dc = addDeviceCommand(device, jsonOutput, "SCENE_STATUS", "0", NoLevel, NoKey, "_OffRead");
-                      for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
-                        addDeviceCommand(device, jsonOutput, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
-                        dc = addDeviceCommand(device, jsonOutput, "SCENE_STATUS", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
-                        addDeviceSensor(device, jsonOutput, SensorType.SWITCH, dc, "_Scene" + Integer.toString(sceneNumber) + "Selected");
-                      }
-
-                      dc = addDeviceCommand(device, jsonOutput, "SCENE_STATUS", NoScene, NoLevel, NoKey, "_SceneRead");
-                      Sensor sensor = addDeviceSensor(device, jsonOutput, SensorType.RANGE, dc, "_SelectedScene");
-                      ((RangeSensor) sensor).setMin(0);
-                      ((RangeSensor) sensor).setMax(8);
-  */                  } else if ("Fan".equals(outputType)) {
-                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "0", NoKey, "_Off");
-                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "25", NoKey, "_Low");
-                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "50", NoKey, "_Medium");
-                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "75", NoKey, "_MediumHigh");
-                      addDeviceCommand(device, jsonOutput, "FADE", NoScene, "100", NoKey, "_Full");
-                    }
-
-                    // TODO: handle other output types
+                    Info.display("Info", jsonOutput.get("type").isString().stringValue());
+                    Output output = new Output(jsonOutput.get("name").isString().stringValue(), Output.OutputType.valueOf(jsonOutput.get("type").isString().stringValue()), jsonOutput.get("address").isString().stringValue());
+                    room.addOutput(output);
                   }
                 }
                 if (jsonRoom.get("inputs") != null) {
                   JSONArray jsonInputs = jsonRoom.get("inputs").isArray();
                   for (int k = 0; k < jsonInputs.size(); k++) {
                     JSONObject jsonControlStation = jsonInputs.get(k).isObject();
-                    String controlStationName = jsonControlStation.get("name").isString().stringValue();
+                    ControlStation controlStation = new ControlStation(jsonControlStation.get("name").isString().stringValue());
+                    room.addInput(controlStation);
                     JSONArray jsonDevices = jsonControlStation.get("devices").isArray();
                     for (int l = 0; l < jsonDevices.size(); l++) {
                       JSONObject jsonDevice = jsonDevices.get(l).isObject();
-                      String deviceType = jsonDevice.get("type").isString().stringValue();
-                      String address = jsonDevice.get("address").isString().stringValue();
+                      org.openremote.modeler.client.lutron.importmodel.Device aDevice = new org.openremote.modeler.client.lutron.importmodel.Device(jsonDevice.get("type").isString().stringValue(), jsonDevice.get("address").isString().stringValue(),
+                              jsonDevice.get("webEnabled").isBoolean().booleanValue(), jsonDevice.get("webKeypadName").isString().stringValue());
+                      controlStation.addDevice(aDevice);
                       JSONArray jsonButtons = jsonDevice.get("buttons").isArray();
                       for (int m = 0; m < jsonButtons.size(); m++) {
                         JSONObject jsonButton = jsonButtons.get(m).isObject();
-                        if ("Keypad".equals(deviceType)) {
-                          int buttonNumber = (int) jsonButton.get("number").isNumber().doubleValue();
-                          String buttonName = jsonButton.get("name").isString().stringValue();
-                          addDeviceCommand(device, controlStationName + "_" + buttonName + "_Press", address, "PRESS", NoScene, NoLevel, Integer.toString(buttonNumber));
-//                          addDeviceCommand(device, controlStationName + "_" + buttonName + "_Release", address, "RELEASE", NoScene, NoLevel, Integer.toString(buttonNumber));
-  //                        addDeviceCommand(device, controlStationName + "_" + buttonName + "_Hold", address, "HOLD", NoScene, NoLevel, Integer.toString(buttonNumber));
-
-                          // TODO: if defined as web keypad, generate UI
-                        }
-
-                        // TODO: handle other input types
+                        org.openremote.modeler.client.lutron.importmodel.Button button = new org.openremote.modeler.client.lutron.importmodel.Button(jsonButton.get("name").isString().stringValue(), (int) jsonButton.get("number").isNumber().doubleValue());
+                        aDevice.addButton(button);
                       }
                     }
                   }
@@ -222,22 +187,93 @@ public class ImportWizardWindow extends FormWindow {
           reportError(PARSING_ERROR_MESSAGE);
           return;
         }
-        DeviceCommandBeanModelProxy.saveDeviceCommandList(device.getDeviceCommands(), new AsyncSuccessCallback<List<BeanModel>>() {
-            @Override
-            public void onSuccess(List<BeanModel> deviceCommandModels) {
-              SensorBeanModelProxy.saveSensorList(device.getSensors(), new AsyncSuccessCallback<List<BeanModel>>() {
-                @Override
-                public void onSuccess(List<BeanModel> sensorModels) {
-                  SliderBeanModelProxy.saveSliderList(device.getSliders(), new AsyncSuccessCallback<List<BeanModel>>() {
-                    public void onSuccess(List<BeanModel> sliderModels) {
-                      fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(device));
-                    }
-                  });
-                }
-             });
-            }
+        final List<BeanModel> allModels = new ArrayList<BeanModel>();
+        DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(areas), new AsyncSuccessCallback<List<BeanModel>>() {
+          @Override
+          public void onSuccess(List<BeanModel> deviceCommandModels) {
+            allModels.addAll(deviceCommandModels);
+            SensorBeanModelProxy.saveSensorList(createSensors(deviceCommandModels), new AsyncSuccessCallback<List<BeanModel>>() {
+              @Override
+              public void onSuccess(List<BeanModel> sensorModels) {
+                allModels.addAll(sensorModels);
+                SliderBeanModelProxy.saveSliderList(device.getSliders(), new AsyncSuccessCallback<List<BeanModel>>() {
+                  public void onSuccess(List<BeanModel> sliderModels) {
+                    allModels.addAll(sliderModels);
+                    fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
+                  }
+                });
+              }
+            });
+          }
         });
       }
+
+      private List<DeviceCommand> createDeviceCommands(final List<Area> areas) {
+        for (Area area : areas) {
+          for (Room room : area.getRooms()) {
+            for (Output output : room.getOutputs()) {
+              Info.display("Info", "Output " + output.getName() + " - " + output.getType());
+              if (Output.OutputType.Dimmer.equals(output.getType()) || Output.OutputType.QEDShade.equals(output.getType())) {
+                addDeviceCommand(device, output, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
+                addDeviceCommand(device, output, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
+                addDeviceCommand(device, output, "STOP", NoScene, NoLevel, NoKey, "_Stop");
+                addDeviceCommand(device, output, "FADE", NoScene, NoLevel, NoKey, "_Fade");
+                addDeviceCommand(device, output, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
+//                Sensor sensor = addDeviceSensor(device, output, SensorType.LEVEL, levelReadCommand, "_Level");
+//                addDeviceSlider(device, output, sliderCommand, sensor);
+              } else if (Output.OutputType.GrafikEyeMainUnit.equals(output.getType())) {
+                addDeviceCommand(device, output, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
+                DeviceCommand dc = addDeviceCommand(device, output, "SCENE_STATUS", "0", NoLevel, NoKey, "_OffRead");
+                for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
+                  addDeviceCommand(device, output, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
+                  dc = addDeviceCommand(device, output, "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
+//                  addDeviceSensor(device, output, SensorType.SWITCH, dc, "_Scene" + Integer.toString(sceneNumber) + "Selected");
+                }
+
+                dc = addDeviceCommand(device, output, "STATUS_SCENE", NoScene, NoLevel, NoKey, "_SceneRead");
+//                Sensor sensor = addDeviceSensor(device, output, SensorType.RANGE, dc, "_SelectedScene");
+//                ((RangeSensor) sensor).setMin(0);
+//                ((RangeSensor) sensor).setMax(8);
+              } else if (Output.OutputType.Fan.equals(output.getType())) {
+                addDeviceCommand(device, output, "FADE", NoScene, "0", NoKey, "_Off");
+                addDeviceCommand(device, output, "FADE", NoScene, "25", NoKey, "_Low");
+                addDeviceCommand(device, output, "FADE", NoScene, "50", NoKey, "_Medium");
+                addDeviceCommand(device, output, "FADE", NoScene, "75", NoKey, "_MediumHigh");
+                addDeviceCommand(device, output, "FADE", NoScene, "100", NoKey, "_Full");
+              }
+
+              // TODO: handle other output types
+            }
+            for (ControlStation controlStation : room.getInputs()) {
+              for (org.openremote.modeler.client.lutron.importmodel.Device roomDevice : controlStation.getDevices()) {
+                for (org.openremote.modeler.client.lutron.importmodel.Button button : roomDevice.getButtons()) {
+                  if (roomDevice.getType() == org.openremote.modeler.client.lutron.importmodel.Device.DeviceType.Keypad) {
+                    addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Press", roomDevice.getAddress(), "PRESS", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                    addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Release", roomDevice.getAddress(), "RELEASE", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                    addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Hold", roomDevice.getAddress(), "HOLD", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                    // TODO: if defined as web keypad, generate UI
+                  }
+                }
+              }
+              // TODO: handle other input types
+            }
+          }
+        }
+
+        return device.getDeviceCommands();
+      }
+      
+      private List<Sensor> createSensors(final List<BeanModel> deviceCommands) {
+        for (BeanModel commandBeanModel : deviceCommands) {
+          DeviceCommand deviceCommand = (DeviceCommand)commandBeanModel.getBean();
+          if ("SCENE_STATUS".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
+//          addDeviceSensor(device, output, SensorType.SWITCH, deviceCommand, "_Scene" + Integer.toString(sceneNumber) + "Selected");
+
+          }
+        }
+        return device.getSensors();
+      }
+
     });
 
     form.layout();
@@ -245,14 +281,14 @@ public class ImportWizardWindow extends FormWindow {
     add(form);
   }
 
-  private static Sensor addDeviceSensor(Device aDevice, JSONObject jsonOutput, SensorType sensorType, DeviceCommand readCommand, String nameSuffix) {
+  private static Sensor addDeviceSensor(Device aDevice, Output output, SensorType sensorType, DeviceCommand readCommand, String nameSuffix) {
     Sensor sensor = null;
     if (SensorType.RANGE == sensorType) {
       sensor = new RangeSensor();
     } else {
       sensor = new Sensor();
     }
-    sensor.setName(jsonOutput.get("name").isString().stringValue() + nameSuffix);
+    sensor.setName(output.getName() + nameSuffix);
     sensor.setType(sensorType);
     SensorCommandRef sensorCommandRef = new SensorCommandRef();
     sensorCommandRef.setDeviceCommand(readCommand);
@@ -264,8 +300,25 @@ public class ImportWizardWindow extends FormWindow {
     return sensor;
   }
 
-  private static DeviceCommand addDeviceCommand(Device aDevice, JSONObject output, String command, String scene, String level, String key, String nameSuffix) {
-    return addDeviceCommand(aDevice, output.get("name").isString().stringValue() + nameSuffix, output.get("address").isString().stringValue(), command, scene, level, key);
+  private static Slider addDeviceSlider(Device aDevice, Output output, DeviceCommand sliderCommand, Sensor readSensor) {
+    Slider slider = new Slider();
+    slider.setName(output.getName() + "_Slider");
+    SliderCommandRef sliderCommandRef = new SliderCommandRef();
+    sliderCommandRef.setDeviceCommand(sliderCommand);
+    sliderCommandRef.setSlider(slider);
+    sliderCommandRef.setDeviceName(aDevice.getName());
+    slider.setSetValueCmd(sliderCommandRef);
+    SliderSensorRef sliderSensorRef = new SliderSensorRef();
+    sliderSensorRef.setSensor(readSensor);
+    sliderSensorRef.setSlider(slider);
+    slider.setSliderSensorRef(sliderSensorRef);
+    slider.setDevice(aDevice);
+    aDevice.getSliders().add(slider);
+    return slider;
+  }
+
+  private static DeviceCommand addDeviceCommand(Device aDevice, Output output, String command, String scene, String level, String key, String nameSuffix) {
+    return addDeviceCommand(aDevice, output.getName() + nameSuffix, output.getAddress(), command, scene, level, key);
   }
 
   private static DeviceCommand addDeviceCommand(Device aDevice, String name, String address, String command, String scene, String level, String key) {

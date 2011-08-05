@@ -1,4 +1,4 @@
-package org.openremote.modeler.lutron.importmodel;
+package org.openremote.modeler.client.lutron.importmodel;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class Device {
 
-  enum DeviceType {
+  public enum DeviceType {
     Keypad("KEYPAD"),
     CCO("CCO"),
     CCI("CCI"),

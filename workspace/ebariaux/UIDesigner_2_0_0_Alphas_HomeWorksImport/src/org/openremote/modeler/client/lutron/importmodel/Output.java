@@ -1,4 +1,4 @@
-package org.openremote.modeler.lutron.importmodel;
+package org.openremote.modeler.client.lutron.importmodel;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Output {
 
-  enum OutputType {
+  public enum OutputType {
     Dimmer("DIMMER"),
     Switch("SWITCH"),
     Motor("MOTOR"),
@@ -51,6 +51,13 @@ public class Output {
     this.address = address;
   }
   
+  public Output(String name, OutputType type, String address) {
+    super();
+    this.name = name;
+    this.type = type;
+    this.address = address;
+  }
+
   public String getName() {
     return name;
   }

@@ -9,13 +9,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.openremote.modeler.lutron.importmodel.Area;
-import org.openremote.modeler.lutron.importmodel.Button;
-import org.openremote.modeler.lutron.importmodel.ControlStation;
-import org.openremote.modeler.lutron.importmodel.Device;
-import org.openremote.modeler.lutron.importmodel.Output;
-import org.openremote.modeler.lutron.importmodel.Project;
-import org.openremote.modeler.lutron.importmodel.Room;
+import org.openremote.modeler.client.lutron.importmodel.Area;
+import org.openremote.modeler.client.lutron.importmodel.Button;
+import org.openremote.modeler.client.lutron.importmodel.ControlStation;
+import org.openremote.modeler.client.lutron.importmodel.Device;
+import org.openremote.modeler.client.lutron.importmodel.Output;
+import org.openremote.modeler.client.lutron.importmodel.Project;
+import org.openremote.modeler.client.lutron.importmodel.Room;
 
 public class LutronHomeworksImporter {
 
