@@ -25,6 +25,7 @@ import java.util.List;
 import org.openremote.modeler.client.model.TreeFolderBean;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -94,4 +95,14 @@ public class SliderBeanModelProxy {
                });
       }
    }
+   
+   public static void saveSliderList(List<Slider> sliderList, final AsyncSuccessCallback<List<BeanModel>> asyncSuccessCallback) {
+     AsyncServiceFactory.getSliderRPCServiceAsync().saveAll(sliderList, new AsyncSuccessCallback<List<Slider>>() {
+         public void onSuccess(List<Slider> sliderList) {
+            List<BeanModel> sliderModels = Slider.createModels(sliderList);
+            BeanModelDataBase.sliderTable.insertAll(sliderModels);
+            asyncSuccessCallback.onSuccess(sliderModels);
+         }
+      });
+ }
 }

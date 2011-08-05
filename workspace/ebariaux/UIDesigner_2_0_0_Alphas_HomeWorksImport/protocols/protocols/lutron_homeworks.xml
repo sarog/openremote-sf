@@ -43,7 +43,7 @@
 			<validations>
 				<allowBlank>false</allowBlank>
 				<maxLength>16</maxLength>
-				<regex message="Command must be one of RAISE, LOWER, STOP, FADE, STATUS_DIMMER, SCENE, STATUS_SCENE, PRESS, RELEASE, HOLD, DOUBLE_TAP, SCENE_KEYPADLED.">RAISE|LOWER|STOP|FADE|STATUS_DIMMER|SCENE|STATUS_SCENE|PRESS|RELEASE|HOLD|DOUBLE_TAP|STATUS_KEYPADLED</regex>
+				<regex message="Command must be one of RAISE, LOWER, STOP, FADE, STATUS_DIMMER, SCENE, STATUS_SCENE, PRESS, RELEASE, HOLD, DOUBLE_TAP, STATUS_KEYPADLED.">RAISE|LOWER|STOP|FADE|STATUS_DIMMER|SCENE|STATUS_SCENE|PRESS|RELEASE|HOLD|DOUBLE_TAP|STATUS_KEYPADLED</regex>
 			</validations>
 		</attr>
 		<attr name="scene" label="Scene to select">

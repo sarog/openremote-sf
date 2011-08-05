@@ -21,6 +21,7 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
+import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.domain.Slider;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -63,4 +64,12 @@ public interface SliderRPCService extends RemoteService {
     * @return the list< slider>
     */
    List<Slider> loadAll();
+   
+   /**
+    * Saves all sliders in the database
+    * @param sliderList
+    * @return
+    */
+   List<Slider> saveAll(List<Slider> sliderList);
+
 }
