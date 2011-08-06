@@ -35,189 +35,103 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.Constants;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.exception.ControllerXMLNotFoundException;
 import org.openremote.controller.exception.InvalidControllerXMLException;
 import org.openremote.controller.utils.PathUtil;
 
 
 /**
- * TODO : The controller.xml Parser.
- * 
+ * TODO :
+ *
+ *   - to be removed, as per ORCJAVA-168
+ *
  * @author Dan 2009-4-3
  */
-public class RemoteActionXMLParser
+@Deprecated public class RemoteActionXMLParser
 {
 
   // Class Members --------------------------------------------------------------------------------
 
-  private static Logger logger = Logger.getLogger(RemoteActionXMLParser.class.getName());
+  //private static Logger logger =  Logger.getLogger(RemoteActionXMLParser.class.getName());
 
 
   // Instance Fields ------------------------------------------------------------------------------
 
-  private ControllerConfiguration configuration;
+  //private ControllerConfiguration configuration;
+
 
 
   // Instance Methods -----------------------------------------------------------------------------
-
-  /**
-   * Query element from default controller.xml by Id.
-   */
-  public Element queryElementFromXMLById(String id)
-  {
-    return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
-  }
-
-  /**
-   * TODO
-   * 
-   * @param doc
-   * @param id
-   * @return
-   */
-  public Element getElement(Document doc, int id)
-  {
-    return queryElementFromXMLById(doc, Integer.toString(id));
-  }
-
-
-   /**
-    * Query element from a specified controller.xml by Id.
-    * 
-    * @param doc
-    *           specified controller.xml doc
-    * @param id
-    *           element id
-    * @return element
-    */
-   public Element queryElementFromXMLById(Document doc, String id) {
-      return queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
-   }
-
-  public Element queryElementById(Document doc, int id)
-  {
-    if (doc == null)
-      return queryElementFromXMLById(Integer.toString(id));
-    else
-      return queryElementFromXMLById(doc, Integer.toString(id));
-  }
-
-  
-   public Element queryElementFromXMLByName(String elementName) {
-      return queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
-   }
-   
-   public List<Element> queryElementsFromXMLByName(Document doc, String elementName) {
-      String xPathStr = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
-      return queryElementsFromXML(doc, xPathStr);
-   }
-   
-   public List<Element> queryElementsFromXMLByName(String elementName) {
-	  String xPath = "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName;
-	  SAXBuilder sb = new SAXBuilder();
-      sb.setValidation(true);
-      try {
-         File xsdfile = new File(URLDecoder.decode(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath(), "UTF-8"));
-         sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
-      } catch (UnsupportedEncodingException e) {
-         logger.error("The controller xsd file path unsupported encoding.", e);
-      }
-
-      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
-      if (!new File(xmlPath).exists()) {
-         throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
-      }
-      try {
-         Document doc = sb.build(new File(xmlPath));
-         return queryElementsFromXML(doc, xPath);
-      } catch (JDOMException e) {
-         logger.error("JDOMException occurs when parsing controller.xml.", e);
-         throw new InvalidControllerXMLException(e.getMessage() + 
-               " check the version of schema or structure of controller.xml with "
-               + Constants.CONTROLLER_XSD_PATH);
-      } catch (IOException e) {
-         String msg = " An I/O error prevents a controller.xml from being fully parsed";
-         logger.error(msg, e);
-         throw new ControllerXMLNotFoundException(msg);
-      }
-   }   
-   /**
-    * Basic method for query element with document context and xPath string.
-    * @param doc
-    * @param xPath
-    * @return
-    */
-   @SuppressWarnings("unchecked")
-   private List<Element> queryElementsFromXML(Document doc, String xPath) {
-      try {
-         XPath xpath = XPath.newInstance(xPath);
-         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-         List<Element> elements = xpath.selectNodes(doc);
-         if (!elements.isEmpty()) {
-            return elements;
-         }
-      } catch (JDOMException e) {
-         logger.error("JDOMException occurs when parsing controller.xml.", e);
-         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
-               + Constants.CONTROLLER_XSD_PATH);
-      }
-      return null;
-   }
-   
-   public Element queryElementFromXMLByName(Document doc, String elementName) {
-      return queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
-   }
-   
-   private Element queryElementFromXML(String xPath) {
-      SAXBuilder sb = new SAXBuilder();
-      sb.setValidation(true);
-      try {
-         File xsdfile = new File(URLDecoder.decode(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath(), "UTF-8"));
-         sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
-      } catch (UnsupportedEncodingException e) {
-         logger.error("The controller xsd file path unsupported encoding.", e);
-      }
-      
-      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
-      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
-      if (!new File(xmlPath).exists()) {
-         throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
-      }
-      try {
-         Document doc = sb.build(new File(xmlPath));
-         return queryElementFromXML(doc, xPath);
-      } catch (JDOMException e) {
-         logger.error("JDOMException occurs when parsing controller.xml.", e);
-         throw new InvalidControllerXMLException(e.getMessage() + 
-               " check the version of schema or structure of controller.xml with "
-               + Constants.CONTROLLER_XSD_PATH);
-      } catch (IOException e) {
-         String msg = " An I/O error prevents a controller.xml from being fully parsed";
-         logger.error(msg, e);
-         throw new ControllerXMLNotFoundException(msg);
-      }
-   }
-   
-   @SuppressWarnings("unchecked")
-   private Element queryElementFromXML(Document doc, String xPath) {
-      try {
-         XPath xpath = XPath.newInstance(xPath);
-         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-         List<Element> elements = xpath.selectNodes(doc);
-         if (!elements.isEmpty()) {
-            return elements.get(0);
-         }
-      } catch (JDOMException e) {
-         logger.error("JDOMException occurs when parsing controller.xml.", e);
-         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
-               + Constants.CONTROLLER_XSD_PATH);
-      }
-      return null;
-   }
-   
-   public void setConfiguration(ControllerConfiguration configuration) {
-      this.configuration = configuration;
-   }
+//
+//   @Deprecated Element queryElementFromXMLById(Document doc, String id)
+//   {
+//      return Deployer.queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":*[@id='" + id + "']");
+//   }
+//
+//
+//
+//   @Deprecated public Element queryElementFromXMLByName(String elementName) {
+//      return Deployer.queryElementFromXML("//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
+//   }
+//
+//
+//   @Deprecated Element queryElementFromXMLByName(Document doc, String elementName) {
+//      return Deployer.queryElementFromXML(doc, "//" + Constants.OPENREMOTE_NAMESPACE + ":" + elementName);
+//   }
+//
+//   private Element queryElementFromXML(String xPath) {
+//      SAXBuilder sb = new SAXBuilder();
+//      sb.setValidation(true);
+//      try {
+//         File xsdfile = new File(URLDecoder.decode(getClass().getResource(Constants.CONTROLLER_XSD_PATH).getPath(), "UTF-8"));
+//         sb.setProperty(Constants.SCHEMA_SOURCE, xsdfile);
+//      } catch (UnsupportedEncodingException e) {
+//         logger.error("The controller xsd file path unsupported encoding.", e);
+//      }
+//
+//      sb.setProperty(Constants.SCHEMA_LANGUAGE, Constants.XML_SCHEMA);
+//      String xmlPath = PathUtil.addSlashSuffix(configuration.getResourcePath()) + Constants.CONTROLLER_XML;
+//      if (!new File(xmlPath).exists()) {
+//         throw new ControllerXMLNotFoundException(" Make sure it's in " + configuration.getResourcePath());
+//      }
+//      try {
+//         Document doc = sb.build(new File(xmlPath));
+//         return queryElementFromXML(doc, xPath);
+//      } catch (JDOMException e) {
+//         logger.error("JDOMException occurs when parsing controller.xml.", e);
+//         throw new InvalidControllerXMLException(e.getMessage() +
+//               " check the version of schema or structure of controller.xml with "
+//               + Constants.CONTROLLER_XSD_PATH);
+//      } catch (IOException e) {
+//         String msg = " An I/O error prevents a controller.xml from being fully parsed";
+//         logger.error(msg, e);
+//         throw new ControllerXMLNotFoundException(msg);
+//      }
+//   }
+//
+//   @SuppressWarnings("unchecked")
+//   private Element queryElementFromXML(Document doc, String xPath) {
+//      try {
+//         XPath xpath = XPath.newInstance(xPath);
+//         xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
+//         List<Element> elements = xpath.selectNodes(doc);
+//         if (!elements.isEmpty()) {
+//            return elements.get(0);
+//         }
+//      } catch (JDOMException e) {
+//         logger.error("JDOMException occurs when parsing controller.xml.", e);
+//         throw new InvalidControllerXMLException("check the version of schema or structure of controller.xml with "
+//               + Constants.CONTROLLER_XSD_PATH);
+//      }
+//
+//     // TODO : would be nice to avoid throwing null... less useless null checks on calling code
+//
+//      return null;
+//   }
+//
+//   public void setConfiguration(ControllerConfiguration configuration) {
+//      this.configuration = configuration;
+//   }
 
 }
