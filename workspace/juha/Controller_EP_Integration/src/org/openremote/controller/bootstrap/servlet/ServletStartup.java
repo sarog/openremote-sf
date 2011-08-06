@@ -28,7 +28,6 @@ import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.service.ServiceContext;
-import org.openremote.controller.service.PollingMachinesService;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.bootstrap.Startup;
@@ -108,21 +107,6 @@ public class ServletStartup implements ServletContextListener
       // The default service context in a servlet runtime is based on Spring library.
 
       initializeServiceContext(event.getServletContext());
-
- 
-      initializeStateCache();
-
-      new Thread(new IPAutoDiscoveryServer()).start();
-
-      Thread.sleep(10);
-
-      new Thread(new RoundRobinUDPServer()).start();
-
-      Thread.sleep(10);
-
-      new Thread(new RoundRobinTCPServer()).start();
-
-      Thread.sleep(10);
     }
 
     catch (InterruptedException e)
@@ -221,48 +205,6 @@ public class ServletStartup implements ServletContextListener
     }
 
     Startup.loadServiceContext(serviceContextImplementationClass.trim());
-
-  }
-
-
-  /**
-   * TODO
-   *
-   * @throws ControllerException
-   * @throws InterruptedException
-   */
-  private void initializeStateCache() throws ControllerException, InterruptedException
-  {
-    PollingMachinesService devicePollingService = ServiceContext.getDevicePollingService();
-
-    devicePollingService.initStatusCacheWithControllerXML(null);
-    devicePollingService.startPollingMachineMultiThread();
-
-    Thread t = new Thread(new Runnable()
-    {
-      @Override public void run()
-      {
-        while (true)
-        {
-          ServiceContext.getDeployer().refreshController();
-
-          try
-          {
-            Thread.sleep(5000);
-
-          }
-          catch (InterruptedException e)
-          {
-            Thread.currentThread().interrupt();
-
-            break;
-          }
-        }
-
-      }
-    });
-
-    t.start();
   }
 
 
