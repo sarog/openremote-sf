@@ -40,6 +40,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.OpenRemoteRuntime;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.exception.XMLParsingException;
@@ -127,7 +128,12 @@ public class Deployer
     /**
      * TODO
      */
-    SLIDER("slider");
+    SLIDER("slider"),
+
+    /**
+     * TODO
+     */
+    CONFIG("config");
 
 
     // Fields -------------------------------------------------------------------------------------
@@ -191,6 +197,8 @@ public class Deployer
    */
   private static Element queryElementFromXML(Document doc, String xPath) throws XMLParsingException
   {
+    // TODO : this method should probably be under the ModelBuilder hierarchy
+
     if (doc == null)
     {
       throw new XMLParsingException(
@@ -249,7 +257,6 @@ public class Deployer
       );
     }
   }
-
 
 
 
@@ -581,34 +588,6 @@ public class Deployer
 
 
 
-
-  /**
-   * TODO -
-   *   temporary, it is probably not necessary to expose the controller definition document outside
-   *   of this deployer once all the XML parsing refactoring is complete
-   *
-   * @return
-   */
-  public Document getControllerDocument()
-  {
-    if (modelBuilder == null)
-    {
-      throw new IllegalStateException("Runtime object model has not been initialized.");
-    }
-    
-    try
-    {
-      return modelBuilder.getControllerDocument();
-    }
-
-    catch (InitializationException e)
-    {
-      log.error("Unable to retrieve the controller's document instance : {0}", e, e.getMessage());
-
-      return null;
-    }
-  }
-
   /**
    * TODO : temporarly here, may be moved later, see above
    *
@@ -635,7 +614,33 @@ public class Deployer
     return element;
   }
 
+  /**
+   * TODO : temporarly here, may be moved later, see above
+   *
+   * @param xmls
+   * @return
+   * @throws InitializationException
+   */
+  public Element queryElementByName(XMLSegment xmls) throws InitializationException
+  {
+    if (modelBuilder == null)
+    {
+      throw new IllegalStateException("Runtime object model has not been initialized.");
+    }
 
+    Element element = queryElementFromXML(
+        modelBuilder.getControllerDocument(), "//" + Constants.OPENREMOTE_NAMESPACE + ":" + xmls.getName()
+    );
+
+    if (element == null)
+    {
+      throw new XMLParsingException("No XML elements found with name ''{0}''.", xmls.getName());
+    }
+
+    return element;
+  }
+
+  
   /**
    * TODO : Temporary -- Builds a sensor from XML element, see above
    *
@@ -921,13 +926,9 @@ public class Deployer
      */
     public void start()
     {
-      // TODO :
-      //   create deployer.createThread() that manages Thread properties (ThreadGroup, etc),
-      //   security manager, and can later be used for stats/admin view
-
-      watcherThread = new Thread(this);
-      watcherThread.setDaemon(true);
-      watcherThread.setName("Controller Definition File Watcher Thread for " + deployer.name);
+      watcherThread = OpenRemoteRuntime.createThread(
+          "Controller Definition File Watcher for " + deployer.name, this
+      );
 
       watcherThread.start();
 
