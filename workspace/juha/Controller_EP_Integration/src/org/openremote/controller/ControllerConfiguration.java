@@ -29,8 +29,11 @@ import org.openremote.controller.service.ServiceContext;
 
 
 /**
- *
  * TODO:
+ *   See relevant tasks:
+ *     - ORCJAVA-169 (http://jira.openremote.org/browse/ORCJAVA-169)
+ *     - ORCJAVA-170 (http://jira.openremote.org/browse/ORCJAVA-170)
+ *
  *
  * This class provides the Java bindings from config.properties file found in
  * <tt>WEB-INF/classes</tt> directory of the web archive.
@@ -48,7 +51,6 @@ public class ControllerConfiguration extends Configuration
 {
 
   // Constants ------------------------------------------------------------------------------------
-
 
   public final static String DEFAULT_LINE_SEPARATOR = "\n";
 
