@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.jdom.Element;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.service.Deployer;
 
 /**
  * Configuration class acts as a common superclass for various configuration segments. <p>
@@ -41,7 +42,11 @@ import org.openremote.controller.service.ServiceContext;
  *
  * Note that the functionality described above requires that the subclasses use the configuration
  * value methods of this superclass.
- * 
+ *
+ * TODO:
+ *  - this implementation still needs further re-structuring,
+ *    see ORCJAVA-169 (http://jira.openremote.org/browse/ORCJAVA-169)
+ *
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  *
  * @see ControllerConfiguration
@@ -53,13 +58,13 @@ public abstract class Configuration
   // Class Members --------------------------------------------------------------------------------
 
 
-  public static Map<String, String> parseControllerXMLConfiguration()
+  private static Map<String, String> parseControllerXMLConfiguration()
   {
     Element element = null;
 
     try
     {
-      element = ServiceContext.getControllerXMLParser().queryElementFromXMLByName("config");
+      element = ServiceContext.getDeployer().queryElementByName(Deployer.XMLSegment.CONFIG);
     }
 
     catch (Exception e)       // TODO : fix this exception handling
