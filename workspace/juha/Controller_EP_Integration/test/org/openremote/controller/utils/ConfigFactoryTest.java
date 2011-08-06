@@ -26,131 +26,178 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
+import java.net.URI;
 
-import org.jdom.Document;
 import org.jdom.Element;
-import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
-import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.suite.AllTests;
 
 /**
- * Test for config factory.
+ * TODO :
+ *  see relevant tasks:
+ *   - ORCJAVA-170 (http://jira.openremote.org/browse/ORCJAVA-170)
+ *   - ORCJAVA-169 (http://jira.openremote.org/browse/ORCJAVA-169)
+ * 
+ *  These tests need to be restructured, leaving them in their current state for now until
+ *  have more time for proper fixes.
+ *
  * 
  * @author Dan Cong
+ * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  *
  */
 public class ConfigFactoryTest
 {
-   
-  private Document doc;
 
-  // modified some attributes to simulate uploading new controller.xml
-  private Document doc2;
+  // TODO : test URI/abs file/relative file support in getResource()
 
-  @Before public void setup()
+
+  // Tests ----------------------------------------------------------------------------------------
+
+
+  @Test public void getBasicConfig() throws Exception
   {
-    String controllerXMLPath = AllTests.getFixtureFile("controller.xml");
-    String controllerXML2Path = AllTests.getFixtureFile("controller2.xml");
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc1 = new ControllerConfiguration();
 
-    doc = XMLUtil.getControllerDocument(controllerXMLPath);
-    doc2 = XMLUtil.getControllerDocument(controllerXML2Path);
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/configuration");
+    cc1.setResourcePath(deploymentURI.getPath());
+
+    Deployer deployer = new Deployer("Deployer for " + deploymentURI, sc, cc1);
+
+    deployer.startController();
+
+    overrideConfigFromControllerXML(deployer, cc1);
+
+    assertEquals("controller1", cc1.getWebappName());
+    assertEquals(false, cc1.isCopyLircdconf());
+
+    // TODO : resource path cannot be overridden from online editor, not really sure why it was excluded [JPL]
+    // assertEquals("/home/openremote/controller", cc1.getResourcePath());
+
+    assertEquals("/etc/lircd.conf", cc1.getLircdconfPath());
+    assertEquals("http://openremote.org/beehvie/rest/", cc1.getBeehiveRESTRootUrl());
+    assertEquals("192.168.4.63", cc1.getWebappIp());
+    assertEquals(8888, cc1.getWebappPort());
+    assertEquals("/usr/local/bin/irsend", cc1.getIrsendPath());
+    assertEquals(500, cc1.getMacroIRExecutionDelay());
+    assertEquals(3333, cc1.getMulticastPort());
+    assertEquals("224.0.1.100", cc1.getMulticastAddress());
   }
 
-  @Test public void getBasicConfig()
+  @Test public void getBasicConfig2() throws Exception
   {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc2 = new ControllerConfiguration();
 
-    ControllerConfiguration config = getCustomBasicConfigFromControllerXML(doc);
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/configuration2");
+    cc2.setResourcePath(deploymentURI.getPath());
 
-    assertEquals("controller1", config.getWebappName());
-    assertEquals(false, config.isCopyLircdconf());
-  //      assertEquals("/home/openremote/controller", config.getResourcePath());
-    assertEquals("/etc/lircd.conf", config.getLircdconfPath());
-    assertEquals("http://openremote.org/beehvie/rest/", config.getBeehiveRESTRootUrl());
-    assertEquals("192.168.4.63", config.getWebappIp());
-    assertEquals(8888, config.getWebappPort());
-    assertEquals("/usr/local/bin/irsend", config.getIrsendPath());
-    assertEquals(500, config.getMacroIRExecutionDelay());
-    assertEquals(3333, config.getMulticastPort());
-    assertEquals("224.0.1.100", config.getMulticastAddress());
+    Deployer deployer = new Deployer("Deployer for " + deploymentURI, sc, cc2);
+
+    deployer.startController();
+
+    overrideConfigFromControllerXML(deployer, cc2);
+
+    assertEquals("controller2", cc2.getWebappName());
+    assertEquals(true, cc2.isCopyLircdconf());
+
+    // TODO : resource path cannot be overridden from online editor, not really sure why it was excluded [JPL]
+    // assertEquals("/home/openremote/controller", cc2.getResourcePath());
+
+    assertEquals("/etc/lircd.conf", cc2.getLircdconfPath());
+    assertEquals("http://openremote.org/beehive/rest/", cc2.getBeehiveRESTRootUrl());
+    assertEquals("192.168.4.63", cc2.getWebappIp());
+    assertEquals(8888, cc2.getWebappPort());
+    assertEquals("/usr/local/bin/irsend", cc2.getIrsendPath());
+    assertEquals(500, cc2.getMacroIRExecutionDelay());
+    assertEquals(3333, cc2.getMulticastPort());
+    assertEquals("224.0.1.100", cc2.getMulticastAddress());
 
   }
 
-  @Test public void getBasicConfig2()
+  @Test public void getRoundRobinConfig() throws Exception
   {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc = new ControllerConfiguration();
 
-    ControllerConfiguration config = getCustomBasicConfigFromControllerXML(doc2);
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/roundrobin/configuration");
+    cc.setResourcePath(deploymentURI.getPath());
 
-    assertEquals("controller2", config.getWebappName());
-    assertEquals(true, config.isCopyLircdconf());
-  //      assertEquals("/home/openremote/controller", config.getResourcePath());
-    assertEquals("/etc/lircd.conf", config.getLircdconfPath());
-    assertEquals("http://openremote.org/beehvie/rest/", config.getBeehiveRESTRootUrl());
-    assertEquals("192.168.4.63", config.getWebappIp());
-    assertEquals(8888, config.getWebappPort());
-    assertEquals("/usr/local/bin/irsend", config.getIrsendPath());
-    assertEquals(500, config.getMacroIRExecutionDelay());
-    assertEquals(3333, config.getMulticastPort());
-    assertEquals("224.0.1.100", config.getMulticastAddress());
+    Deployer deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
-  }
+    deployer.startController();
 
-  @Test public void getRoundRobinConfig()
-  {
+    RoundRobinConfiguration rrc = new RoundRobinConfiguration();
 
-    RoundRobinConfiguration config = getCustomRoundRobinConfigFromControllerXML(doc);
-    assertEquals("controller1", config.getControllerApplicationName());
-    assertEquals(true, config.getIsGroupMemberAutoDetectOn());
-    assertEquals("openremote-office", config.getControllerGroupName());
-    assertEquals("224.0.1.200", config.getRoundRobinMulticastAddress());
-    assertEquals(20000, config.getRoundRobinMulticastPort());
-    assertEquals(10000, config.getRoundRobinTCPServerSocketPort());
+    overrideConfigFromControllerXML(deployer, rrc);
+
+    assertEquals("controller1", rrc.getControllerApplicationName());
+    assertEquals(true, rrc.getIsGroupMemberAutoDetectOn());
+    assertEquals("openremote-office", rrc.getControllerGroupName());
+    assertEquals("224.0.1.200", rrc.getRoundRobinMulticastAddress());
+    assertEquals(20000, rrc.getRoundRobinMulticastPort());
+    assertEquals(10000, rrc.getRoundRobinTCPServerSocketPort());
 
     String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
-    assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
+    assertTrue(Arrays.equals(urls, rrc.getGroupMemberCandidateURLs()));
   }
 
-  @Test public void getRoundRobinConfig2()
+  @Test public void getRoundRobinConfig2() throws Exception
   {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc = new ControllerConfiguration();
 
-    RoundRobinConfiguration config = getCustomRoundRobinConfigFromControllerXML(doc2);
-    assertEquals("controller2", config.getControllerApplicationName());
-    assertEquals(false, config.getIsGroupMemberAutoDetectOn());
-    assertEquals("openremote-home", config.getControllerGroupName());
-    assertEquals("224.0.1.200", config.getRoundRobinMulticastAddress());
-    assertEquals(20000, config.getRoundRobinMulticastPort());
-    assertEquals(10000, config.getRoundRobinTCPServerSocketPort());
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/roundrobin/configuration2");
+    cc.setResourcePath(deploymentURI.getPath());
+
+    Deployer deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
+
+    deployer.startController();
+
+    RoundRobinConfiguration rrc = new RoundRobinConfiguration();
+
+    overrideConfigFromControllerXML(deployer, rrc);
+
+    assertEquals("controller2", rrc.getControllerApplicationName());
+    assertEquals(false, rrc.getIsGroupMemberAutoDetectOn());
+    assertEquals("openremote-home", rrc.getControllerGroupName());
+    assertEquals("224.0.1.200", rrc.getRoundRobinMulticastAddress());
+    assertEquals(20000, rrc.getRoundRobinMulticastPort());
+    assertEquals(10000, rrc.getRoundRobinTCPServerSocketPort());
 
     String[] urls = "http://192.168.1.5:8080/controller/,http://192.168.1.100:8080/controller/,http://192.168.1.105:8080/controller/".split(",");
-    assertTrue(Arrays.equals(urls,config.getGroupMemberCandidateURLs()));
+    assertTrue(Arrays.equals(urls, rrc.getGroupMemberCandidateURLs()));
   }
 
 
 
   // Helpers --------------------------------------------------------------------------------------
 
-  private static ControllerConfiguration getCustomBasicConfigFromControllerXML(Document doc)
+  private void overrideConfigFromControllerXML(Deployer d, ControllerConfiguration cc) throws Exception
   {
-    Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    ControllerConfiguration config = ServiceContext.getControllerConfiguration();
-    config.setConfigurationProperties(attrMap);
+    Map<String, String> attrMap = parseCustomConfigAttrMap(d);
+    cc.setConfigurationProperties(attrMap);
 
-    return config;
   }
   
-  public static RoundRobinConfiguration getCustomRoundRobinConfigFromControllerXML(Document doc)
+  private void overrideConfigFromControllerXML(Deployer d, RoundRobinConfiguration rrc) throws Exception
   {
-    Map<String, String> attrMap = parseCustomConfigAttrMap(doc);
-    RoundRobinConfiguration config = ServiceContext.getRoundRobinConfiguration();
-    config.setConfigurationProperties(attrMap);
-    return config;
+    Map<String, String> attrMap = parseCustomConfigAttrMap(d);
+    rrc.setConfigurationProperties(attrMap);
   }
 
-  public static Map<String, String> parseCustomConfigAttrMap(Document doc)
+  private Map<String, String> parseCustomConfigAttrMap(Deployer d) throws Exception
   {
-    Element element = ServiceContext.getControllerXMLParser().queryElementFromXMLByName(doc, "config");
+    Element element = d.queryElementByName(Deployer.XMLSegment.CONFIG);
+
+    // TODO :
+    //   the test is kind of pointless when we implement the logic we are testing in the
+    //   tests themselves
 
     Map<String, String> attrMap = new HashMap<String, String>();
 
@@ -164,5 +211,5 @@ public class ConfigFactoryTest
 
     return attrMap;
   }
-  
+
 }
