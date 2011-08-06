@@ -25,7 +25,6 @@ import java.text.MessageFormat;
 
 import org.jdom.Element;
 import org.openremote.controller.command.CommandFactory;
-import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.component.control.Control;
 import org.openremote.controller.exception.XMLParsingException;
@@ -45,7 +44,6 @@ import org.openremote.controller.protocol.EventProducer;
  */
 @Deprecated public abstract class ComponentBuilder
 {
-  protected RemoteActionXMLParser remoteActionXMLParser;
   protected CommandFactory commandFactory;
 
 
@@ -76,11 +74,6 @@ import org.openremote.controller.protocol.EventProducer;
   public abstract Component build(Element componentElement, String commandParam)
       throws InitializationException;
 
-
-  public void setRemoteActionXMLParser(RemoteActionXMLParser remoteActionXMLParser)
-  {
-      this.remoteActionXMLParser = remoteActionXMLParser;
-  }
 
   public void setCommandFactory(CommandFactory commandFactory)
   {
