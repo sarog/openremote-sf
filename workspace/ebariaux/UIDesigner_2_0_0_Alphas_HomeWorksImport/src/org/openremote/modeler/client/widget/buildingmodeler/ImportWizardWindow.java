@@ -13,7 +13,6 @@ import org.openremote.modeler.client.lutron.importmodel.Output;
 import org.openremote.modeler.client.lutron.importmodel.Room;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
-import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
@@ -154,7 +153,6 @@ public class ImportWizardWindow extends FormWindow {
                   JSONArray jsonOutputs = jsonRoom.get("outputs").isArray();
                   for (int k = 0; k < jsonOutputs.size(); k++) {
                     JSONObject jsonOutput = jsonOutputs.get(k).isObject();
-                    Info.display("Info", jsonOutput.get("type").isString().stringValue());
                     Output output = new Output(jsonOutput.get("name").isString().stringValue(), Output.OutputType.valueOf(jsonOutput.get("type").isString().stringValue()), jsonOutput.get("address").isString().stringValue());
                     room.addOutput(output);
                   }
@@ -168,7 +166,9 @@ public class ImportWizardWindow extends FormWindow {
                     JSONArray jsonDevices = jsonControlStation.get("devices").isArray();
                     for (int l = 0; l < jsonDevices.size(); l++) {
                       JSONObject jsonDevice = jsonDevices.get(l).isObject();
-                      org.openremote.modeler.client.lutron.importmodel.Device aDevice = new org.openremote.modeler.client.lutron.importmodel.Device(jsonDevice.get("type").isString().stringValue(), jsonDevice.get("address").isString().stringValue(),
+                      org.openremote.modeler.client.lutron.importmodel.Device aDevice = new org.openremote.modeler.client.lutron.importmodel.Device(
+                              org.openremote.modeler.client.lutron.importmodel.Device.DeviceType.valueOf(jsonDevice.get("type").isString().stringValue()),
+                              jsonDevice.get("address").isString().stringValue(),
                               jsonDevice.get("webEnabled").isBoolean().booleanValue(), jsonDevice.get("webKeypadName").isString().stringValue());
                       controlStation.addDevice(aDevice);
                       JSONArray jsonButtons = jsonDevice.get("buttons").isArray();
@@ -196,12 +196,14 @@ public class ImportWizardWindow extends FormWindow {
               @Override
               public void onSuccess(List<BeanModel> sensorModels) {
                 allModels.addAll(sensorModels);
-                SliderBeanModelProxy.saveSliderList(device.getSliders(), new AsyncSuccessCallback<List<BeanModel>>() {
+                fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
+
+/*                SliderBeanModelProxy.saveSliderList(device.getSliders(), new AsyncSuccessCallback<List<BeanModel>>() {
                   public void onSuccess(List<BeanModel> sliderModels) {
                     allModels.addAll(sliderModels);
                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
                   }
-                });
+                });*/
               }
             });
           }
@@ -212,28 +214,22 @@ public class ImportWizardWindow extends FormWindow {
         for (Area area : areas) {
           for (Room room : area.getRooms()) {
             for (Output output : room.getOutputs()) {
-              Info.display("Info", "Output " + output.getName() + " - " + output.getType());
               if (Output.OutputType.Dimmer.equals(output.getType()) || Output.OutputType.QEDShade.equals(output.getType())) {
                 addDeviceCommand(device, output, "RAISE", NoScene, NoLevel, NoKey, "_Raise");
                 addDeviceCommand(device, output, "LOWER", NoScene, NoLevel, NoKey, "_Lower");
                 addDeviceCommand(device, output, "STOP", NoScene, NoLevel, NoKey, "_Stop");
                 addDeviceCommand(device, output, "FADE", NoScene, NoLevel, NoKey, "_Fade");
                 addDeviceCommand(device, output, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
-//                Sensor sensor = addDeviceSensor(device, output, SensorType.LEVEL, levelReadCommand, "_Level");
 //                addDeviceSlider(device, output, sliderCommand, sensor);
               } else if (Output.OutputType.GrafikEyeMainUnit.equals(output.getType())) {
                 addDeviceCommand(device, output, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
-                DeviceCommand dc = addDeviceCommand(device, output, "SCENE_STATUS", "0", NoLevel, NoKey, "_OffRead");
+                addDeviceCommand(device, output, "STATUS_SCENE", "0", NoLevel, NoKey, "_OffRead");
                 for (int sceneNumber = 1; sceneNumber <= 8; sceneNumber++) {
                   addDeviceCommand(device, output, "SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber));
-                  dc = addDeviceCommand(device, output, "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
-//                  addDeviceSensor(device, output, SensorType.SWITCH, dc, "_Scene" + Integer.toString(sceneNumber) + "Selected");
+                  addDeviceCommand(device, output, "STATUS_SCENE", Integer.toString(sceneNumber), NoLevel, NoKey, "_Scene" + Integer.toString(sceneNumber) + "Read");
                 }
 
-                dc = addDeviceCommand(device, output, "STATUS_SCENE", NoScene, NoLevel, NoKey, "_SceneRead");
-//                Sensor sensor = addDeviceSensor(device, output, SensorType.RANGE, dc, "_SelectedScene");
-//                ((RangeSensor) sensor).setMin(0);
-//                ((RangeSensor) sensor).setMax(8);
+                addDeviceCommand(device, output, "STATUS_SCENE", NoScene, NoLevel, NoKey, "_SceneRead");
               } else if (Output.OutputType.Fan.equals(output.getType())) {
                 addDeviceCommand(device, output, "FADE", NoScene, "0", NoKey, "_Off");
                 addDeviceCommand(device, output, "FADE", NoScene, "25", NoKey, "_Low");
@@ -247,10 +243,12 @@ public class ImportWizardWindow extends FormWindow {
             for (ControlStation controlStation : room.getInputs()) {
               for (org.openremote.modeler.client.lutron.importmodel.Device roomDevice : controlStation.getDevices()) {
                 for (org.openremote.modeler.client.lutron.importmodel.Button button : roomDevice.getButtons()) {
-                  if (roomDevice.getType() == org.openremote.modeler.client.lutron.importmodel.Device.DeviceType.Keypad) {
+                  if (org.openremote.modeler.client.lutron.importmodel.Device.DeviceType.Keypad.equals(roomDevice.getType())) {
+                    /*
                     addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Press", roomDevice.getAddress(), "PRESS", NoScene, NoLevel, Integer.toString(button.getNumber()));
                     addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Release", roomDevice.getAddress(), "RELEASE", NoScene, NoLevel, Integer.toString(button.getNumber()));
                     addDeviceCommand(device, controlStation.getName() + "_" + button.getName() + "_Hold", roomDevice.getAddress(), "HOLD", NoScene, NoLevel, Integer.toString(button.getNumber()));
+                    */
                     // TODO: if defined as web keypad, generate UI
                   }
                 }
@@ -266,9 +264,16 @@ public class ImportWizardWindow extends FormWindow {
       private List<Sensor> createSensors(final List<BeanModel> deviceCommands) {
         for (BeanModel commandBeanModel : deviceCommands) {
           DeviceCommand deviceCommand = (DeviceCommand)commandBeanModel.getBean();
-          if ("SCENE_STATUS".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
-//          addDeviceSensor(device, output, SensorType.SWITCH, deviceCommand, "_Scene" + Integer.toString(sceneNumber) + "Selected");
-
+          if ("STATUS_SCENE".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
+            if (deviceCommand.getProtocol().getAttributeValue("scene") != null) {
+//              addDeviceSensor(device, SensorType.SWITCH, deviceCommand, removeEnd(deviceCommand.getName(), 4) + "Selected");
+/*            } else {
+              Sensor sensor = addDeviceSensor(device, SensorType.RANGE, deviceCommand, removeEnd(deviceCommand.getName(), 4) + "_SelectedScene");
+              ((RangeSensor) sensor).setMin(0);
+              ((RangeSensor) sensor).setMax(8);*/
+            }
+/*          } else if ("STATUS_DIMMER".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
+            addDeviceSensor(device, SensorType.LEVEL, deviceCommand, removeEnd(deviceCommand.getName(), 4));*/
           }
         }
         return device.getSensors();
@@ -281,14 +286,14 @@ public class ImportWizardWindow extends FormWindow {
     add(form);
   }
 
-  private static Sensor addDeviceSensor(Device aDevice, Output output, SensorType sensorType, DeviceCommand readCommand, String nameSuffix) {
+  private static Sensor addDeviceSensor(Device aDevice, SensorType sensorType, DeviceCommand readCommand, String name) {
     Sensor sensor = null;
     if (SensorType.RANGE == sensorType) {
       sensor = new RangeSensor();
     } else {
       sensor = new Sensor();
     }
-    sensor.setName(output.getName() + nameSuffix);
+    sensor.setName(name);
     sensor.setType(sensorType);
     SensorCommandRef sensorCommandRef = new SensorCommandRef();
     sensorCommandRef.setDeviceCommand(readCommand);
@@ -341,5 +346,16 @@ public class ImportWizardWindow extends FormWindow {
     dc.setDevice(aDevice);
     aDevice.getDeviceCommands().add(dc);
     return dc;
+  }
+  
+  private static String removeEnd(String receiver, int length) {
+    if (receiver == null) {
+      return null;
+    }
+    int targetLength = receiver.length() - length;
+    if (targetLength <= 0) {
+      return "";
+    }
+    return receiver.substring(0, targetLength);
   }
 }

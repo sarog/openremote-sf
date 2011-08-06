@@ -60,6 +60,15 @@ public class Device {
     this.webKeypadName = webKeypadName;
     this.buttons = new HashSet<Button>();
   }
+  
+  public Device(DeviceType type, String address, boolean webEnabled, String webKeypadName) {
+    super();
+    this.type = type;
+    this.address = address;
+    this.webEnabled = webEnabled;
+    this.webKeypadName = webKeypadName;
+    this.buttons = new HashSet<Button>();
+  }
 
   public String getAddress() {
     return address;
