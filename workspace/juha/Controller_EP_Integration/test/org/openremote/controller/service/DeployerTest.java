@@ -22,6 +22,7 @@ package org.openremote.controller.service;
 
 import java.util.Properties;
 import java.util.Iterator;
+import java.util.List;
 import java.net.URI;
 
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
+import org.openremote.controller.exception.XMLParsingException;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.component.RangeSensor;
@@ -698,7 +700,7 @@ public class DeployerTest
    *   exception. Since it's a checked exception, should be a relatively easy contract change
    *   to track due to compiler checks.
    */
-  @Test public void testqueryElementFromXMLByIdNotFound()
+  @Test public void testQueryElementFromXMLByIdNotFound()
   {
     StatusCache sc = new StatusCache();
     ControllerConfiguration cc = new ControllerConfiguration();
@@ -723,6 +725,113 @@ public class DeployerTest
     }
   }
 
+
+  /**
+   * TODO :
+   *   test is temporarily moved here, the method being tested on the Deployer API
+   *   may still be moved elsewhere or made non-public
+   *
+   * @throws Exception      if test fails
+   */  
+  @Test public void testQueryElementFromXMLById() throws Exception
+  {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc = new ControllerConfiguration();
+
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
+
+    Deployer d = new Deployer("Deployer7 for " + deploymentURI, sc, cc);
+
+    d.startController();
+
+
+
+    Element sensor = d.queryElementById(1);
+
+    Assert.assertTrue("sensor".equals(sensor.getName()));
+    Assert.assertTrue(sensor.getAttributeValue("name").equals("Sensor 1"));
+    Assert.assertTrue(sensor.getAttributeValue("type").equals("switch"));
+    
+    List<Element> sensorChildren = sensor.getChildren();
+
+    Assert.assertTrue(sensorChildren.size() == 1);
+
+    Element include = sensorChildren.get(0);
+
+    Assert.assertTrue(include.getName().equals("include"));
+    Assert.assertTrue(include.getAttributeValue("type").equals("command"));
+    Assert.assertTrue(include.getAttributeValue("ref").equals("10"));
+  }
+
+
+  /**
+   * TODO :
+   *   test is temporarily moved here, the method being tested on the Deployer API
+   *   may still be moved elsewhere or made non-public
+   *
+   * @throws Exception      if test fails
+   */
+  @Test public void testQueryElementFromXMLByName() throws Exception
+  {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc = new ControllerConfiguration();
+
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
+
+    Deployer d = new Deployer("Deployer8 for " + deploymentURI, sc, cc);
+
+    d.startController();
+
+
+
+    Element sensors = d.queryElementByName(Deployer.XMLSegment.SENSORS);
+
+    Assert.assertTrue("sensors".equals(sensors.getName()));
+
+    List<Element> sensorsChildren = sensors.getChildren();
+
+    Assert.assertTrue(sensorsChildren.size() == 4);
+
+    Element sensor = sensorsChildren.get(0);
+
+    Assert.assertTrue(sensor.getName().equals("sensor"));
+    Assert.assertTrue(sensor.getAttributeValue("name").equals("Sensor 1"));
+    Assert.assertTrue(sensor.getAttributeValue("type").equals("switch"));
+  }
+
+
+  /**
+   * TODO :
+   *   test is temporarily moved here, the method being tested on the Deployer API
+   *   may still be moved elsewhere or made non-public
+   *
+   * @throws Exception      if test fails
+   */
+  @Test public void testQueryElementFromXMLByNameNotFound() throws Exception
+  {
+    StatusCache sc = new StatusCache();
+    ControllerConfiguration cc = new ControllerConfiguration();
+
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("deployment/sensorsonly");
+    cc.setResourcePath(deploymentURI.getPath());
+
+    Deployer d = new Deployer("Deployer9 for " + deploymentURI, sc, cc);
+
+    d.startController();
+
+    try
+    {
+      d.queryElementByName(Deployer.XMLSegment.SLIDER);
+
+      Assert.fail("should not get here");
+    }
+    catch (XMLParsingException e)
+    {
+      // expected
+    }
+  }
 
 
 
