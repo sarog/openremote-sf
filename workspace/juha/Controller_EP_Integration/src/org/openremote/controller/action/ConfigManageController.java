@@ -30,9 +30,9 @@ import org.openremote.controller.exception.BeehiveNotAvailableException;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ForbiddenException;
 import org.openremote.controller.exception.ResourceNotFoundException;
-import org.openremote.controller.service.ControllerXMLChangeService;
 import org.openremote.controller.service.FileService;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.spring.SpringContext;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -51,9 +51,6 @@ public class ConfigManageController extends MultiActionController {
    
    private ControllerConfiguration configuration;
    
-   /** MUST use <code>SpringContext</code> to keep the same context as <code>InitCachedStatusDBListener</code> */
-   private ControllerXMLChangeService controllerXMLChangeService = (ControllerXMLChangeService) SpringContext
-         .getInstance().getBean("controllerXMLChangeService");
 
    /**
     * Upload zip.
@@ -72,14 +69,11 @@ public class ConfigManageController extends MultiActionController {
          if (configuration.isResourceUpload()) {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             boolean success = fileService.uploadConfigZip(multipartRequest.getFile("zip_file").getInputStream());
-            if (success) {
-               controllerXMLChangeService.refreshController();
-            }
             response.getWriter().print(success ? Constants.OK : null);
          } else {
             response.getWriter().print("disabled");
          }
-      } catch (ControlCommandException e) {
+      } catch (Exception e) {
          response.getWriter().print(e.getMessage());
       }
       return null;
@@ -92,9 +86,6 @@ public class ConfigManageController extends MultiActionController {
       boolean success = false;
       try {
          success = ServiceContext.getFileResourceService().syncConfigurationWithModeler(username, password);
-         if (success) {
-            controllerXMLChangeService.refreshController();
-         }
          response.getWriter().print(success ? Constants.OK : null);
       } catch (ForbiddenException e) {
          response.getWriter().print("forbidden");
@@ -113,9 +104,11 @@ public class ConfigManageController extends MultiActionController {
    public ModelAndView refreshController(HttpServletRequest request, HttpServletResponse response) throws IOException,
          ServletRequestBindingException {
       try {
-         response.getWriter().print(controllerXMLChangeService.refreshController() ? Constants.OK : "failed");
-      } catch (ControlCommandException e) {
-         response.getWriter().print(e.getMessage());
+         Deployer deployer = ServiceContext.getDeployer();
+         deployer.softRestart();
+         response.getWriter().print(Constants.OK);
+      } catch (Exception e) {
+         response.getWriter().print("failed :" + e.getMessage());
       }
       return null;
    }
