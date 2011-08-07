@@ -30,12 +30,14 @@ import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 
 import org.openremote.controller.Constants;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.exception.InitializationException;
 
 /**
  * Generic startup implementation for controller. Depending on deployment environment (servlet,
  * stand-alone, etc.), particular server bootstrap mechanisms can delegate to this implementation.
- * It currently lacks a <tt>main()</tt> method of its own to provide a stand-alone bootstrap.
+ *
+ * TODO: It currently lacks a <tt>main()</tt> method of its own to provide a stand-alone bootstrap.
  *
  * @see org.openremote.controller.bootstrap.servlet.LogInitialization
  * @see org.openremote.controller.bootstrap.servlet.ServletStartup
@@ -75,7 +77,12 @@ public class Startup
 
       Class clazz = Thread.currentThread().getContextClassLoader()
           .loadClass(serviceContextClassName);
-      clazz.newInstance();
+
+      ServiceContext ctx = (ServiceContext)clazz.newInstance();
+
+      // Make an explicit call to initialize the controller...
+
+      ctx.init();
     }
 
     catch (SecurityException exception)
@@ -329,7 +336,7 @@ public class Startup
               "-----------------------------------------------------------------------------" +
               "\n\n" +
 
-              "  System is using custom log level (" + level.getName() + ")which has no \n" +
+              "  System is using custom log level (" + level.getName() + ") which has no \n" +
               "  defined mapping. Defaulting to INFO level." +
 
               "\n\n" +
