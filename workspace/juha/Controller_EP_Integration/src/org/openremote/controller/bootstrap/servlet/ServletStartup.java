@@ -109,23 +109,6 @@ public class ServletStartup implements ServletContextListener
       initializeServiceContext(event.getServletContext());
     }
 
-    catch (InterruptedException e)
-    {
-      // There's nothing for us to do -- mark the thread interrupted in case the servlet
-      // container wants to play nice...
-
-      Thread.currentThread().interrupt();
-
-      String msg =
-          "\n\n=============================================================================\n\n" +
-
-          " Application initialization was INTERRUPTED." +
-
-          "\n\n=============================================================================\n\n";
-
-
-      System.err.println(msg);
-    }
     catch (Throwable t)
     {
       // In case any initialization fails, wrap a clear message to user who is deploying the
