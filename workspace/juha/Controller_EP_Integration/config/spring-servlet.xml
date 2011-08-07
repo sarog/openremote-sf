@@ -41,16 +41,13 @@
         </property>
     </bean>
 
-  <!--
     <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
         <property name="exceptionMappings">
             <props>
-                <prop key="org.openremote.controller.exception.ButtonCommandException">exception/errorCode</prop>
             </props>
         </property>
         <property name="defaultErrorView" value="exception/defaultError"/>
     </bean>
-  -->
 
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">
