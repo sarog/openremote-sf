@@ -36,6 +36,8 @@ import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.net.ORNetworkCheck;
 
+import com.google.inject.Inject;
+
 /**
  * Tests for {@link org.openremote.android.console.net.ORNetworkCheck} class.
  *
@@ -64,6 +66,9 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
    * Reference to Android wifi manager shared between tests.
    */
   private WifiManager wifi;
+
+  @Inject
+  private ORNetworkCheck orNetworkCheck;
 
 
 
@@ -117,9 +122,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
       if (!wifi.isWifiEnabled())
         fail(wifiRequired());
 
-      HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, publicControllerUrl
-      );
+      HttpResponse response = orNetworkCheck.verifyControllerURL(publicControllerUrl);
 
       assertNotNull("Got null HTTP response, was expecting: " + HttpURLConnection.HTTP_OK, response);
 
@@ -152,9 +155,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
       if (!wifi.isWifiEnabled())
         fail(wifiRequired());
 
-      HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, publicControllerUrl
-      );
+      HttpResponse response = orNetworkCheck.verifyControllerURL(publicControllerUrl);
 
       assertNotNull("Was expecting error response 428, got null.", response);
 
@@ -186,9 +187,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
       //if (!wifi.isWifiEnabled())
       //  fail(wifiRequired());
 
-      HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, publicControllerUrl
-      );
+      HttpResponse response = orNetworkCheck.verifyControllerURL(publicControllerUrl);
 
       assertNotNull("Got null response, was expecting " + HttpURLConnection.HTTP_OK, response);
 
@@ -222,9 +221,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
       AppSettingsModel.setCurrentPanelIdentity(ctx, "something");
 
-      HttpResponse response = ORNetworkCheck.verifyControllerURL(
-          ctx, publicControllerUrl
-      );
+      HttpResponse response = orNetworkCheck.verifyControllerURL(publicControllerUrl);
 
       assertNotNull("Got null HTTP response, was expecting: " + HttpURLConnection.HTTP_NOT_FOUND,
                     response);
@@ -252,9 +249,7 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 
     try
     {
-      ORNetworkCheck.verifyControllerURL(
-          ctx, controllerUrlWithUnknownHost
-      );
+      orNetworkCheck.verifyControllerURL(controllerUrlWithUnknownHost);
 
       fail ("Should not get here...");
     }
@@ -287,8 +282,8 @@ public class ORNetworkCheckTest extends ActivityInstrumentationTestCase2<AppSett
 //      fail(noWifiWanted());
 //
 //
-//    HttpResponse response = ORNetworkCheck.verifyControllerURL(
-//        getInstrumentation().getTargetContext(), "http://controller.openremote.org/test/controller"
+//    HttpResponse response = orNetworkCheck.verifyControllerURL(
+//        "http://controller.openremote.org/test/controller"
 //    );
 //
 //    int status = response.getStatusLine().getStatusCode();
