@@ -29,6 +29,9 @@ import org.openremote.android.console.Constants;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.util.HTTPUtil;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import android.content.Context;
 import android.util.Log;
 import android.net.wifi.WifiManager;
@@ -42,15 +45,23 @@ import android.net.ConnectivityManager;
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author handy 2010-04-28
  */
+@Singleton
 public class ORNetworkCheck
 {
+  Context context;
+
+  @Inject
+  public ORNetworkCheck(Context context)
+  {
+    this.context = context;
+  }
 
   // Constants ------------------------------------------------------------------------------------
 
   /**
    * Log category name used by this class.
    */
-  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "WiFi";
+  private final static String LOG_CATEGORY = Constants.LOG_CATEGORY + "ORNetworkCheck";
 
 
 
@@ -67,13 +78,13 @@ public class ORNetworkCheck
    *
    * @throws IOException TODO
    */
-  public static HttpResponse verifyControllerURL(Context context, URL url) throws IOException
+  public HttpResponse verifyControllerURL(URL url) throws IOException
   {
     // TODO : modifying the settings probably doesn't belong here, as it is an undocumented side-effect
     AppSettingsModel.setCurrentServer(context, url);
 
 
-    HttpResponse response = isControllerAvailable(context);
+    HttpResponse response = isControllerAvailable();
 
     Log.d(LOG_CATEGORY, "HTTP Response: " + response);
 
@@ -115,17 +126,15 @@ public class ORNetworkCheck
   /**
    * Check if the Controller URL is available.
    *
-   * @param context   a global Android application context
-   *
    * @return  returns the HTTP response from the attempt to connect to the configured controller
    *          or null, in case of failure (note that the HTTP response code may also include
    *          an error code from connection attempt).
    *
    * @throws IOException TODO
    */
-  private static HttpResponse isControllerAvailable(Context context) throws IOException
+  private HttpResponse isControllerAvailable() throws IOException
   {
-    if (!hasWifiAndControllerConfig(context))
+    if (!hasWifiAndControllerConfig())
       return null;
 
     URL controllerURL = AppSettingsModel.getSecuredServer(context);
@@ -137,12 +146,10 @@ public class ORNetworkCheck
   /**
    * Checks availability of WiFi netowrk and whether we have a controller URL configured.
    *
-   * @param context   global Android application context
-   *
    * @return  true if we can reach wifi and controller URL has been configured in app's settings,
    *          false otherwise
    */
-  private static boolean hasWifiAndControllerConfig(Context context)
+  private boolean hasWifiAndControllerConfig()
   {
 
     if (!IPAutoDiscoveryClient.isNetworkTypeWIFI)     // TODO : questionable use of global static field
@@ -152,7 +159,7 @@ public class ORNetworkCheck
 
     // Do we have a WiFi connection? If not, give up...
 
-    if (!canReachWifiNetwork(context))
+    if (!canReachWifiNetwork())
     {
       // TODO : could ask user if they want to turn on WiFi at this point...
 
@@ -178,15 +185,13 @@ public class ORNetworkCheck
   /**
    * Detects the current WiFi status.
    *
-   * @param ctx     global Android application context
-   *
    * @return true if WiFi is available, false otherwise
    */
-  private static boolean canReachWifiNetwork(Context ctx)
+  private boolean canReachWifiNetwork()
   {
 
-    WifiManager wifiManager = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
-    ConnectivityManager connectivityManager = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+    WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
     if (!wifiManager.isWifiEnabled() || wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
     {
