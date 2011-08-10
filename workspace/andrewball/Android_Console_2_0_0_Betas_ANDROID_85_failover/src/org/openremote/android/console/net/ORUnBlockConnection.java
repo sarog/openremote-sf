@@ -27,9 +27,13 @@ import android.os.HandlerThread;
 import android.os.Message;
 
 /**
- * The every handler would have a different looper.
+ * Connection class that creates a thread for its message handler.
  *
- * TODO What is this? a non-blocking connection?
+ * The only significant difference between this an its parent class appears to be that
+ * a handler is created in a new thread, with a pseudo-random id.  Do we really
+ * need such a class?
+ *
+ * TODO Determine whether this class is needed.  If so, name it something more easily parseable.
  */
 public class ORUnBlockConnection extends ORConnection {
 
