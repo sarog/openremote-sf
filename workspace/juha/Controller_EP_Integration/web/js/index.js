@@ -45,13 +45,15 @@ $(document).ready(function() {
     // Manual Upload ----------------------------------------------------------
 
     var uploadFormOptions = {
+
+        dataType: "html",
         
         error: function(response) {
             error(response.responseText);
         },
 
-        success: function() {
-            message("Upload Complete.");
+        success: function(textStatus) {
+            message(textStatus);
         }
     };
 
@@ -107,6 +109,10 @@ $(document).ready(function() {
 		clearMessage();
 		showRefreshIndicator();
 
+        // TODO :
+        //   the target for this GET request should be an admin REST interface in the
+        //   controller -- See ORCJAVA-173
+        
         $.get("config.htm?method=refreshController",
 			function(msg) {
 
