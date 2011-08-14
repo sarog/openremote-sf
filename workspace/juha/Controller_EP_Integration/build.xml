@@ -318,7 +318,6 @@
       </fileset>
     </copy>
     
-    <property name="test.targetclasspath" value="${classes.dir}" />
 
     <parallel>
 
@@ -441,7 +440,6 @@
            logfailedtests = "true">
 
       <sysproperty key = "net.sourceforge.cobertura.datafile" file = "${cobertura.datafile}" />
-      <classpath location = "${test.targetclasspath}" />
 
       <sysproperty key = "ant.home" value = "${ant.home}" />
 
