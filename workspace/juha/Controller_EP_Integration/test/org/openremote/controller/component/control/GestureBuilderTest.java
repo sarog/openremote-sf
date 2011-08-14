@@ -59,9 +59,8 @@ public class GestureBuilderTest
 
   @Before public void setUp() throws Exception
   {
-    ChangedStatusTable sct = new ChangedStatusTable();
-    StatusCache sc = new StatusCache();
-    sc.setChangedStatusTable(sct);
+    ChangedStatusTable cst = new ChangedStatusTable();
+    StatusCache sc = new StatusCache(cst);
     
     ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/gesture");

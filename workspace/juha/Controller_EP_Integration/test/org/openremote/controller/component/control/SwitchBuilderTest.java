@@ -69,8 +69,7 @@ public class SwitchBuilderTest
   {
 
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache();
-    sc.setChangedStatusTable(cst);
+    StatusCache sc = new StatusCache(cst);
 
     ControllerConfiguration cc = new ControllerConfiguration();
 

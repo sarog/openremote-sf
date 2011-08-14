@@ -20,35 +20,26 @@
  */
 package org.openremote.controller.component;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.Before;
-import org.openremote.controller.service.ServiceContext;
-import org.openremote.controller.service.Deployer;
-import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.Constants;
-import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.model.xml.SensorBuilder;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.command.CommandFactory;
-
-import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.jdom.Attribute;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openremote.controller.Constants;
+import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.suite.AllTests;
 
 
 /**
@@ -90,8 +81,7 @@ public class ComponentBuilderTest
 
     ChangedStatusTable cst = new ChangedStatusTable();
 
-    StatusCache sc = new StatusCache();
-    sc.setChangedStatusTable(cst);
+    StatusCache sc = new StatusCache(cst);
 
     deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
 

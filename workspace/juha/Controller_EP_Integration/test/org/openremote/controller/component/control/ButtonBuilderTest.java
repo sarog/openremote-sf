@@ -64,8 +64,7 @@ public class ButtonBuilderTest
   @Before public void setUp() throws Exception
   {
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache();
-    sc.setChangedStatusTable(cst);
+    StatusCache sc = new StatusCache(cst);
 
     ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/button");

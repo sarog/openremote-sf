@@ -69,7 +69,7 @@ public class SliderBuilderTest {
     p.put("virtual", VirtualCommandBuilder.class.getName());
     cf.setCommandBuilders(p);
 
-    StatusCache sc = new StatusCache();
+    StatusCache sc = new StatusCache(null);
 
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/slider").getPath());
