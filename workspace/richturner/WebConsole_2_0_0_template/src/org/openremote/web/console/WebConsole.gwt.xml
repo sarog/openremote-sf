@@ -1,14 +1,14 @@
-<module>	
+<module rename-to='webconsole'>	
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name="com.google.gwt.user.theme.standard.Standard"/>
 	
   	<!-- Other module inherits                                      -->
   	<source path='client'/>
-  	<source path='components'/>
-  	<source path="types"/>
-  	<source path="utils"/>
-  	<source path="screens"/>
-  	<source path="events"/>
+  	<source path="type"/>
+  	<source path="util"/>
+  	<source path="screen"/>
+  	<source path="widget"/>
+  	<source path="event"/>
 	<entry-point class="org.openremote.web.console.client.WebConsole"/>
 	
 	

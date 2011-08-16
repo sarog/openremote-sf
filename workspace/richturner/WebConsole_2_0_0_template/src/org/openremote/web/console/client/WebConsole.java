@@ -1,9 +1,10 @@
 package org.openremote.web.console.client;
 
-import org.openremote.web.console.events.ConsoleUnitEventManager;
-import org.openremote.web.console.types.FullScreenUnit;
-import org.openremote.web.console.types.ResizableUnit;
-import org.openremote.web.console.utils.BrowserUtils;
+import org.openremote.web.console.client.unit.ConsoleUnit;
+import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.type.FullScreenUnit;
+import org.openremote.web.console.type.ResizableUnit;
+import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.shared.HandlerManager;
@@ -43,7 +44,6 @@ public class WebConsole implements EntryPoint {
 		// Fix body size as square to aid with orientation changes
 		RootPanel.getBodyElement().getStyle().setHeight(2000, Unit.PX);
 		RootPanel.getBodyElement().getStyle().setWidth(2000, Unit.PX);
-		
 		
 		// Create a timer to wait for window to be initialised
 		Timer initialisationTimer = new Timer() {
