@@ -14,7 +14,10 @@ body {
 	padding: 0;
 	color: black;
 	font-family: verdana, arial, sans-serif;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	-webkit-user-select: none;
+	tap-highlight-color: rgba(0,0,0,0);
+	user-select: none;
 }
 
 #consoleContainer {
@@ -121,4 +124,18 @@ body {
 
 .consoleDisplayBoss {
 	border: solid 2px #333333; 
+}
+
+
+/*
+SCREEN WIDGET CSS BELOW 
+*/
+
+.slider_bar {
+	background-color: #CED1E0;
+}
+  
+.slider_handle {
+   background-color: red;
+   border-color: #000;
 }
