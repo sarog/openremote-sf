@@ -162,6 +162,8 @@
 		60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
 		60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
 		60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
+		60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
+		60AA14C513E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
 		60AFCED01371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
@@ -746,6 +748,8 @@
 		60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2.m; sourceTree = "<group>"; };
 		60AA14BA13E9673E008ACE4A /* ControllerButtonAPI_v2_1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerButtonAPI_v2_1.h; sourceTree = "<group>"; };
 		60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerButtonAPI_v2_1.m; sourceTree = "<group>"; };
+		60AA14C213E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerGroupMembersFetchStatusIconProvider.h; sourceTree = "<group>"; };
+		60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerGroupMembersFetchStatusIconProvider.m; sourceTree = "<group>"; };
 		60AFCECE1371787200A811D4 /* ORControllerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerProxy.h; sourceTree = "<group>"; };
 		60AFCECF1371787300A811D4 /* ORControllerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerProxy.m; sourceTree = "<group>"; };
 		60AFCED3137180E400A811D4 /* ORControllerCommandSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerCommandSender.h; sourceTree = "<group>"; };
@@ -1875,6 +1879,8 @@
 				8C460E761095555500C7A686 /* ServerDefinition.m */,
 				6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */,
 				6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */,
+				60AA14C213E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.h */,
+				60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */,
 			);
 			name = config;
 			sourceTree = "<group>";
@@ -2221,6 +2227,7 @@
 				6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
 				60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
 				60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
+				60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2335,6 +2342,7 @@
 				6055688313CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
 				60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
 				60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
+				60AA14C513E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
