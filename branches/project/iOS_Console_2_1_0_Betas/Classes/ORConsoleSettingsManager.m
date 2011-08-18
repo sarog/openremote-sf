@@ -83,7 +83,7 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
 
 - (ORControllerProxy *)currentController
 {
-    return self.consoleSettings.selectedConfiguredController.proxy;
+    return self.consoleSettings.selectedController.proxy;
 }
 
 #pragma mark ORConsoleSettings management

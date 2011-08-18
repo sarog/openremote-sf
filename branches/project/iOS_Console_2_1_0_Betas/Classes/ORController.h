@@ -54,8 +54,8 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 @property (nonatomic, retain) NSString *userName;
 @property (nonatomic, retain) NSString *password;
 @property (nonatomic, retain) NSSet* groupMembers;
-@property (nonatomic, retain) ORConsoleSettings * settingsForConfiguredControllers;
-@property (nonatomic, retain) ORConsoleSettings * settingsForSelectedConfiguredController;
+@property (nonatomic, retain) ORConsoleSettings * settingsForControllers;
+@property (nonatomic, retain) ORConsoleSettings * settingsForSelectedController;
 
 @property (nonatomic, readonly) NSString *selectedPanelIdentityDisplayString;
 

@@ -93,7 +93,7 @@
 	NSLog(@"check config");
 
     // If there is a selected controller (auto-discovered or configured), try to use it
-	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedConfiguredController) {
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController) {
 		[self checkNetworkAndUpdate];
 	} else {
 		NSLog(@"No selected controller found in configuration");

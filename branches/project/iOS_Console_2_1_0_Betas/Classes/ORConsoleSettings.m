@@ -23,43 +23,43 @@
 
 @interface ORConsoleSettings ()
 
-- (void)addUnorderedConfiguredControllersObject:(ORController *)value;
-- (void)removeUnorderedConfiguredControllersObject:(ORController *)value;
-- (void)addUnorderedConfiguredControllers:(NSSet *)value;
-- (void)removeUnorderedConfiguredControllers:(NSSet *)value;
+- (void)addUnorderedControllersObject:(ORController *)value;
+- (void)removeUnorderedControllersObject:(ORController *)value;
+- (void)addUnorderedControllers:(NSSet *)value;
+- (void)removeUnorderedControllers:(NSSet *)value;
 
 @end
 
 @implementation ORConsoleSettings
 
-@dynamic unorderedConfiguredControllers;
-@dynamic selectedConfiguredController;
+@dynamic unorderedControllers;
+@dynamic selectedController;
 
 - (void)awakeFromFetch
 {
 	[super awakeFromFetch];
-	[self addObserver:self forKeyPath:@"unorderedConfiguredControllers" options:NSKeyValueObservingOptionNew context:nil];
+	[self addObserver:self forKeyPath:@"unorderedControllers" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)awakeFromInsert
 {
 	[super awakeFromInsert];
-	[self addObserver:self forKeyPath:@"unorderedConfiguredControllers" options:NSKeyValueObservingOptionNew context:nil];
+	[self addObserver:self forKeyPath:@"unorderedControllers" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	if ([keyPath isEqualToString:@"unorderedConfiguredControllers"]) {
-		[configuredController release];
-		configuredController = nil;
+	if ([keyPath isEqualToString:@"unorderedControllers"]) {
+		[controllers release];
+		controllers = nil;
 	}
 }
 
 - (void)didTurnInfoFault
 {
-	[configuredController dealloc]; // TODO: check that ???? should be release ???
-	configuredController = nil;
-    [self removeObserver:nil forKeyPath:@"unorderedConfiguredControllers"];
+	[controllers dealloc]; // TODO: check that ???? should be release ???
+	controllers = nil;
+    [self removeObserver:nil forKeyPath:@"unorderedControllers"];
 }
 
 - (BOOL)isAutoDiscovery
@@ -77,75 +77,75 @@
     [self didChangeValueForKey:@"autoDiscovery"];
 }
 
-- (NSArray *)configuredControllers
+- (NSArray *)controllers
 {
-    if (configuredController == nil) {
-        NSMutableArray *temp = [NSMutableArray arrayWithArray:[self.unorderedConfiguredControllers allObjects]];
+    if (controllers == nil) {
+        NSMutableArray *temp = [NSMutableArray arrayWithArray:[self.unorderedControllers allObjects]];
         NSSortDescriptor *indexSort = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
 		[temp sortUsingDescriptors:[NSArray arrayWithObject:indexSort]];
 		[indexSort release];
-        configuredController = [[NSArray alloc] initWithArray:temp];
+        controllers = [[NSArray alloc] initWithArray:temp];
     }
-    return configuredController;
+    return controllers;
 }
 
-- (void)addConfiguredController:(ORController *)controller
+- (void)addController:(ORController *)controller
 {
-    controller.index = [NSNumber numberWithInt:[((ORController *)[self.configuredControllers lastObject]).index intValue] + 1];
-    [self addUnorderedConfiguredControllersObject:controller];
+    controller.index = [NSNumber numberWithInt:[((ORController *)[self.controllers lastObject]).index intValue] + 1];
+    [self addUnorderedControllersObject:controller];
 }
 
-- (ORController *)addConfiguredControllerForURL:(NSString *)url
+- (ORController *)addControllerForURL:(NSString *)url
 {
     ORController *controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
     controller.primaryURL = url;
-    [self addConfiguredController:controller];
-    if (!self.selectedConfiguredController) {
-        self.selectedConfiguredController = controller;
+    [self addController:controller];
+    if (!self.selectedController) {
+        self.selectedController = controller;
     }
     return controller;
 }
 
-- (void)removeConfiguredControllerAtIndex:(NSUInteger)index
+- (void)removeControllerAtIndex:(NSUInteger)index
 {
-    ORController *controller = [self.configuredControllers objectAtIndex:index];
-    if (self.selectedConfiguredController == controller) {
-        self.selectedConfiguredController = nil;
+    ORController *controller = [self.controllers objectAtIndex:index];
+    if (self.selectedController == controller) {
+        self.selectedController = nil;
     }
-    [self removeUnorderedConfiguredControllersObject:controller];
+    [self removeUnorderedControllersObject:controller];
 }
 
 
-- (void)addUnorderedConfiguredControllersObject:(ORController *)value
+- (void)addUnorderedControllersObject:(ORController *)value
 {
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
-    [self willChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
-    [[self primitiveValueForKey:@"unorderedConfiguredControllers"] addObject:value];
-    [self didChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
+    [self willChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
+    [[self primitiveValueForKey:@"unorderedControllers"] addObject:value];
+    [self didChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:changedObjects];
     [changedObjects release];
 }
 
-- (void)removeUnorderedConfiguredControllersObject:(ORController *)value
+- (void)removeUnorderedControllersObject:(ORController *)value
 {
     NSSet *changedObjects = [[NSSet alloc] initWithObjects:&value count:1];
-    [self willChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
-    [[self primitiveValueForKey:@"unorderedConfiguredControllers"] removeObject:value];
-    [self didChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
+    [self willChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
+    [[self primitiveValueForKey:@"unorderedControllers"] removeObject:value];
+    [self didChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:changedObjects];
     [changedObjects release];
 }
 
-- (void)addUnorderedConfiguredControllers:(NSSet *)value
+- (void)addUnorderedControllers:(NSSet *)value
 {
-    [self willChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
-    [[self primitiveValueForKey:@"unorderedConfiguredControllers"] unionSet:value];
-    [self didChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
+    [self willChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
+    [[self primitiveValueForKey:@"unorderedControllers"] unionSet:value];
+    [self didChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueUnionSetMutation usingObjects:value];
 }
 
-- (void)removeUnorderedConfiguredControllers:(NSSet *)value
+- (void)removeUnorderedControllers:(NSSet *)value
 {
-    [self willChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
-    [[self primitiveValueForKey:@"unorderedConfiguredControllers"] minusSet:value];
-    [self didChangeValueForKey:@"unorderedConfiguredControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
+    [self willChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
+    [[self primitiveValueForKey:@"unorderedControllers"] minusSet:value];
+    [self didChangeValueForKey:@"unorderedControllers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
 }
 
 @end

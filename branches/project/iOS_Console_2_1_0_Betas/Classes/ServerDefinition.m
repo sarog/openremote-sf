@@ -34,12 +34,12 @@ NSString *const kControllerFetchGroupMembersPath = @"rest/servers";
 @implementation ServerDefinition
 
 + (NSString *)serverUrl {
-    return ((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController).primaryURL;
+    return ((ORController *)[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController).primaryURL;
 }
 
 + (NSString *)panelXmlRESTUrl {
 	NSString *panelUrl = [NSString stringWithFormat:@"rest/panel/%@",
-                          [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.selectedPanelIdentity];
+                          [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity];
 	NSString *panelXmlUrl = [[self securedOrRawServerUrl] stringByAppendingPathComponent:panelUrl];
 	return panelXmlUrl;
 }
@@ -64,7 +64,7 @@ NSString *const kControllerFetchGroupMembersPath = @"rest/servers";
 }
 
 + (NSString *)panelsRESTUrl {
-	NSString *url = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.primaryURL;
+	NSString *url = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL;
 	return [url stringByAppendingPathComponent:@"rest/panels"];
 }
 
