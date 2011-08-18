@@ -65,12 +65,6 @@
 // The section of table cell where clearCache table cell is in.
 #define CLEAR_CACHE_SECTION 3
 
-// The section of table cell where security table cells is in.
-#define SECURITY_SECTION 4
-
-// Default security port.
-#define SECURITY_PORT 8443
-
 @implementation AppSettingController
 
 @synthesize needsControllerRefresh;
@@ -385,8 +379,6 @@
 {
 	if (section == CONTROLLER_URLS_SECTION) {
 		return [settingsManager.consoleSettings.controllers count] + (settingsManager.consoleSettings.autoDiscovery?0:1); // custom URLs need extra cell 'Add url >'
-	} else if (section == SECURITY_SECTION) {
-		return 2;
 	}
 	return 1;
 }
