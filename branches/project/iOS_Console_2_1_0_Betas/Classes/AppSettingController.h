@@ -48,6 +48,4 @@
 	UITextField *portField;	
 }
 
-@property (nonatomic, assign) BOOL needsControllerRefresh;
-
 @end
