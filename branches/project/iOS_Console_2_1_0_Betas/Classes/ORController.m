@@ -46,9 +46,7 @@
 @dynamic userName;
 @dynamic password;
 @dynamic groupMembers;
-@dynamic settingsForAutoDiscoveredControllers;
 @dynamic settingsForConfiguredControllers;
-@dynamic settingsForSelectedDiscoveredController;
 @dynamic settingsForSelectedConfiguredController;
 
 

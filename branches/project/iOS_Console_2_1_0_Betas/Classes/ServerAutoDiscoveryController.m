@@ -100,7 +100,7 @@
 - (void)onFindServer:(NSString *)serverUrl
 {
 	isReceiveServerUrl = YES;
-    ORController *controller = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addAutoDiscoveredControllerForURL:serverUrl];
+    ORController *controller = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addConfiguredControllerForURL:serverUrl];
     
     //Disconnect all the tcp client received
 	for(int i = 0; i < [clients count]; i++)

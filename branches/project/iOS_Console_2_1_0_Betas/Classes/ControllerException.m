@@ -63,11 +63,11 @@
 				errorMessage = @"Invalid panel.xml.";
 				break;
 			case NO_SUCH_PANEL://428
-				if (![ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity) {
+				if (![ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.selectedPanelIdentity) {
 					errorMessage = @"Welcome, please choose your own panel identity in Settings";
 				} else {
 					errorMessage = [NSString stringWithFormat:@"Current panel identity ‘%@’ isn't available. Please choose again in Settings.", 
-                                        [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity];
+                                        [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.selectedPanelIdentity];
 				}				
 				break;
 			case INVALID_ELEMENT://429

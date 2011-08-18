@@ -25,7 +25,6 @@
 
 @interface ORConsoleSettings : NSManagedObject {
 @private
-    NSArray *autoDiscoveredControllers;
     NSArray *configuredController;
 }
 
@@ -33,20 +32,10 @@
 - (ORController *)addConfiguredControllerForURL:(NSString *)url;
 - (void)removeConfiguredControllerAtIndex:(NSUInteger)index;
 
-- (void)removeAllAutoDiscoveredControllers;
-- (void)addAutoDiscoveredController:(ORController *)controller;
-- (ORController *)addAutoDiscoveredControllerForURL:(NSString *)url;
-
 @property (nonatomic, assign, getter=isAutoDiscovery) BOOL autoDiscovery;
-@property (nonatomic, retain) NSSet *unorderedAutoDiscoveredControllers;
 @property (nonatomic, retain) NSSet *unorderedConfiguredControllers;
-@property (nonatomic, retain) ORController *selectedDiscoveredController;
 @property (nonatomic, retain) ORController *selectedConfiguredController;
 
-@property (readonly) NSArray *autoDiscoveredControllers;
 @property (readonly) NSArray *configuredControllers;
-
-@property (readonly) NSArray *controllers;
-@property (nonatomic, assign) ORController *selectedController;
 
 @end
