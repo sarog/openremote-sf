@@ -23,6 +23,7 @@
 #import "ORController.h"
 #import "ORGroupMember.h"
 #import "TextFieldCell.h"
+#import "ORControllerGroupMembersFetchStatusIconProvider.h"
 
 // TODO: customize keyboard with keys such as http://, https://, /controller, 8080,  and other std ports to help text entry
 // EBR : not sure we really want the above ?
@@ -35,6 +36,8 @@
 @property (nonatomic, retain) ORController *controller;
 @property (nonatomic, retain) NSArray *groupMembers;
 @property (nonatomic, retain) UITextField *urlField;
+
+- (void)updateTableViewHeaderForGroupMemberFetchStatus;
 
 @end
 
@@ -67,6 +70,25 @@
 }
 
 #pragma mark - View lifecycle
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+    
+    [self updateTableViewHeaderForGroupMemberFetchStatus];
+
+}
+
+- (void)viewDidUnload
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super viewDidUnload];
+}
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -210,6 +232,39 @@
     // Only observing one value, no need to check
     self.groupMembers = [self.controller.groupMembers allObjects];
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+#pragma mark - ORController group members fetch notifications
+
+- (void)orControllerGroupMembersFetchStatusChanged:(NSNotification *)notification
+{
+    [self updateTableViewHeaderForGroupMemberFetchStatus];
+}
+
+- (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
+{
+    [self orControllerGroupMembersFetchStatusChanged:notification];
+    
+    // TODO
+    /*
+    if (settingsManager.consoleSettings.selectedController == [notification object]) {
+        [self populateLoginView:self];
+    }
+     */
+}
+
+#pragma mark - Utility methods
+
+- (void)updateTableViewHeaderForGroupMemberFetchStatus
+{
+    UIView *statusView = [ORControllerGroupMembersFetchStatusIconProvider viewForGroupMembersFetchStatus:self.controller.groupMembersFetchStatus];
+    CGRect sectionBounds = [self.tableView rectForSection:0];
+    UIView *aView = [[UIView alloc] initWithFrame:CGRectMake(sectionBounds.origin.x, 0.0, sectionBounds.size.width, 40.0)];
+    // Status view is centered but with a 12 points offset from top. Also offset 44 from right border to align on rows' border
+    statusView.frame = CGRectMake(sectionBounds.size.width - statusView.frame.size.width - 44.0, (int)(12.0 + (aView.frame.size.height - statusView.frame.size.height)/ 2.0), statusView.frame.size.width, statusView.frame.size.height);
+    [aView addSubview:statusView];
+    self.tableView.tableHeaderView = aView;
+    [aView release];    
 }
 
 @end

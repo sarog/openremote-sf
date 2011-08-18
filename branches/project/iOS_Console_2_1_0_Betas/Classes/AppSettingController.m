@@ -31,6 +31,7 @@
 #import "ORController.h"
 #import "ORControllerProxy.h"
 #import "UIColor+ORAdditions.h"
+#import "ORControllerGroupMembersFetchStatusIconProvider.h"
 #import "TableViewCellWithSelectionAndIndicator.h"
 
 @interface AppSettingController ()
@@ -461,40 +462,7 @@
 			} else {
                 serverCell.entrySelected = NO;
 			}
-            switch (controller.groupMembersFetchStatus) {
-                case GroupMembersFetching:
-                {
-                    UIActivityIndicatorView *aiv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                    [aiv startAnimating];
-                    serverCell.indicatorView = aiv;
-                    [aiv release];
-                    break;
-                }
-                case GroupMembersFetchSucceeded:
-                {
-                    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerOK"]];
-                    serverCell.indicatorView = iv;
-                    [iv release];
-                    break;
-                }
-                case GroupMembersFetchFailed:
-                {
-                    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerNOK"]];
-                    serverCell.indicatorView = iv;
-                    [iv release];
-                    break;
-                }
-                case GroupMembersFetchRequiresAuthentication:
-                {
-                    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ControllerRequiresAuthentication"]];
-                    serverCell.indicatorView = iv;
-                    [iv release];
-                    break;
-                }
-                default:
-                    serverCell.indicatorView = nil;
-                    break;
-            }
+            serverCell.indicatorView = [ORControllerGroupMembersFetchStatusIconProvider viewForGroupMembersFetchStatus:controller.groupMembersFetchStatus];
 		}
 		return serverCell;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
