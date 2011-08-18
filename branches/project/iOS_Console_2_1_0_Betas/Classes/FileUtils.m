@@ -55,7 +55,7 @@ NSFileManager *fileManager;
     [encodedUrl release];
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:DOWNLOAD_TIMEOUT_INTERVAL];
     [url release];
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController;
 	[CredentialUtil addCredentialToNSMutableURLRequest:request forController:activeController];
     
     URLConnectionHelper *connectionHelper = [[URLConnectionHelper alloc] init];

@@ -89,7 +89,7 @@
     
     // TODO: All this should not be in here, we are just presenting username/password request, we should not be concerned about how this gets used
     // TODO: + should not use selectedController but controller for which credentials were requested -> pass it somehow
-    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+    ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController;
     activeController.userName = usernameField.text;
 	activeController.password = passwordField.text;
     
@@ -151,7 +151,7 @@
 			[textField becomeFirstResponder];
 			usernameField = textField;
             
-            ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
+            ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController;
 			usernameField.text = activeController.userName; 
 		} else if (indexPath.row == 1) {
 			loginCell.textLabel.text = @"Password";

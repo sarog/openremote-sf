@@ -83,13 +83,13 @@ extern void libmsamr_init();
 - (void)definitionDidUpdate
 {
     // EBR: temp, need to review settings load mechanism
-    NSLog(@"====> Current server URL %@", [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL);
-    NSLog(@"Host %@", [[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]);
+    NSLog(@"====> Current server URL %@", [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.primaryURL);
+    NSLog(@"Host %@", [[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.primaryURL] host]);
     
     // TODO: un-register ?
     
     [[NSUserDefaults standardUserDefaults]
-            setObject:[[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.primaryURL] host]
+            setObject:[[NSURL URLWithString:[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.primaryURL] host]
                forKey:@"proxy_preference"];
 
     [self doLinphoneConfiguration:nil];

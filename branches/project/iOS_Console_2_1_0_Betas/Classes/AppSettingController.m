@@ -120,7 +120,7 @@
 
 // Hide spinner
 - (void)forceHideSpinner:(BOOL)force {
-	if (spinner && ([settingsManager.consoleSettings.controllers count] > 0 || force)) {
+	if (spinner && ([settingsManager.consoleSettings.configuredControllers count] > 0 || force)) {
 		[spinner removeFromSuperview];
 		spinner = nil;
 	}
@@ -146,7 +146,7 @@
  */
 - (BOOL)isControllerRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return (indexPath.section == CONTROLLER_URLS_SECTION && indexPath.row < [settingsManager.consoleSettings.controllers count]);
+    return (indexPath.section == CONTROLLER_URLS_SECTION && indexPath.row < [settingsManager.consoleSettings.configuredControllers count]);
 }
 
 /**
@@ -154,7 +154,7 @@
  */
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath
 {
-	return (indexPath.row >= [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION);
+	return (indexPath.row >= [settingsManager.consoleSettings.configuredControllers count] && indexPath.section == CONTROLLER_URLS_SECTION);
 }
 
 
@@ -265,7 +265,7 @@
 
 // Persists settings info into appSettings.plist .
 - (void)saveSettings {
-	if ([settingsManager.consoleSettings.controllers count] == 0) {
+	if ([settingsManager.consoleSettings.configuredControllers count] == 0) {
 		[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"No Controller. Please configure Controller URL manually."];
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
@@ -334,7 +334,7 @@
 - (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
 {
     [self orControllerGroupMembersFetchStatusChanged:notification];
-    if (settingsManager.consoleSettings.selectedController == [notification object]) {
+    if (settingsManager.consoleSettings.selectedConfiguredController == [notification object]) {
         [self populateLoginView:self];
     }
 }
@@ -349,8 +349,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (section == CONTROLLER_URLS_SECTION) {
-        NSLog(@"Number of rows in table view controller section %d", [settingsManager.consoleSettings.controllers count] + (settingsManager.consoleSettings.autoDiscovery?0:1));
-		return [settingsManager.consoleSettings.controllers count] + (settingsManager.consoleSettings.autoDiscovery?0:1); // custom URLs need extra cell 'Add url >'
+        NSLog(@"Number of rows in table view controller section %d", [settingsManager.consoleSettings.configuredControllers count] + 1);
+		return [settingsManager.consoleSettings.configuredControllers count] + 1; // custom URLs need extra cell 'Add url >'
 	}
 	return 1;
 }
@@ -415,12 +415,12 @@
             serverCell.entrySelected = NO;
             serverCell.indicatorView = nil;
 		} else {
-            ORController *controller = (ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
+            ORController *controller = (ORController *)[settingsManager.consoleSettings.configuredControllers objectAtIndex:indexPath.row];
 			serverCell.textLabel.text = controller.primaryURL;
 			serverCell.selectionStyle = UITableViewCellSelectionStyleNone;
             serverCell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 
-			if (controller == settingsManager.consoleSettings.selectedController) {
+			if (controller == settingsManager.consoleSettings.selectedConfiguredController) {
 				currentSelectedServerIndex = indexPath;
                 serverCell.entrySelected = YES;
 			} else {
@@ -430,7 +430,7 @@
 		}
 		return serverCell;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		panelCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity?settingsManager.consoleSettings.selectedController.selectedPanelIdentity:@"None";
+		panelCell.textLabel.text = settingsManager.consoleSettings.selectedConfiguredController.selectedPanelIdentity?settingsManager.consoleSettings.selectedConfiguredController.selectedPanelIdentity:@"None";
 		panelCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		panelCell.selectionStyle = UITableViewCellSelectionStyleBlue;
 		return panelCell;
@@ -446,7 +446,7 @@
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == CONTROLLER_URLS_SECTION) {
-        ControllerDetailViewController *cdvc = [[ControllerDetailViewController alloc] initWithController:((ORController *)[settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row])];
+        ControllerDetailViewController *cdvc = [[ControllerDetailViewController alloc] initWithController:((ORController *)[settingsManager.consoleSettings.configuredControllers objectAtIndex:indexPath.row])];
         cdvc.delegate = self;
 		[[self navigationController] pushViewController:cdvc animated:YES];
 		[cdvc release];        
@@ -494,7 +494,7 @@
 		[cdvc release];
 		return;
 	} else if (indexPath.section == PANEL_IDENTITY_SECTION) {
-		if (!settingsManager.consoleSettings.selectedController) {
+		if (!settingsManager.consoleSettings.selectedConfiguredController) {
 			[ViewHelper showAlertViewWithTitle:@"Warning" Message:@"No Controller. Please configure Controller URL manually."];
 			cell.selected = NO;
 			return;
@@ -514,8 +514,8 @@
  		}
         ((TableViewCellWithSelectionAndIndicator *)cell).entrySelected = YES;
 
-        settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
-        [settingsManager.consoleSettings.selectedController fetchGroupMembers];
+        settingsManager.consoleSettings.selectedConfiguredController = [settingsManager.consoleSettings.configuredControllers objectAtIndex:indexPath.row];
+        [settingsManager.consoleSettings.selectedConfiguredController fetchGroupMembers];
         
 		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
 			[self updatePanelIdentityView];
@@ -558,7 +558,7 @@
 
 - (void)didSelectPanelIdentity:(NSString *)identity
 {
-    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentity = identity;
+    [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.selectedPanelIdentity = identity;
     [self.navigationController popViewControllerAnimated:YES];    
 }
 
@@ -570,10 +570,10 @@
     // If there is only one panel available, it is automatically selected.
 	UITableViewCell *identityCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:PANEL_IDENTITY_SECTION]];
 	if (panels.count == 1) {
-        settingsManager.consoleSettings.selectedController.selectedPanelIdentity = [panels objectAtIndex:0];
-        identityCell.textLabel.text = settingsManager.consoleSettings.selectedController.selectedPanelIdentity;
+        settingsManager.consoleSettings.selectedConfiguredController.selectedPanelIdentity = [panels objectAtIndex:0];
+        identityCell.textLabel.text = settingsManager.consoleSettings.selectedConfiguredController.selectedPanelIdentity;
 	} else {
-		settingsManager.consoleSettings.selectedController.selectedPanelIdentity = nil;
+		settingsManager.consoleSettings.selectedConfiguredController.selectedPanelIdentity = nil;
         identityCell.textLabel.text = @"None";
 	}
 }
@@ -593,20 +593,20 @@
     // TODO: double check fetchGroupMember is the only source that can trigger this
     
     // TODO: the controller should be passed back in the message
-    [settingsManager.consoleSettings.selectedController fetchGroupMembers];
+    [settingsManager.consoleSettings.selectedConfiguredController fetchGroupMembers];
 }
 
 #pragma mark -
 
 - (void)fetchGroupMembersForAllControllers
 {
-    NSLog(@">>fetchGroupMembersForAllControllers -> settingsManager.consoleSettings.controllers: %d", [settingsManager.consoleSettings.controllers count]);
-    [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(fetchGroupMembers)];
+    NSLog(@">>fetchGroupMembersForAllControllers -> settingsManager.consoleSettings.controllers: %d", [settingsManager.consoleSettings.configuredControllers count]);
+    [settingsManager.consoleSettings.configuredControllers makeObjectsPerformSelector:@selector(fetchGroupMembers)];
 }
 
 - (void)cancelFetchGroupMembers
 {
-    [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(cancelGroupMembersFetch)];
+    [settingsManager.consoleSettings.configuredControllers makeObjectsPerformSelector:@selector(cancelGroupMembersFetch)];
 }
 
 @end

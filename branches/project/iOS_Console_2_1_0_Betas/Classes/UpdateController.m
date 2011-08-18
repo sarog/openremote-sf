@@ -93,7 +93,7 @@
 	NSLog(@"check config");
 
     // If there is a selected controller (auto-discovered or configured), try to use it
-	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController) {
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedConfiguredController) {
 		[self checkNetworkAndUpdate];
 	} else {
 		NSLog(@"No selected controller found in configuration");
@@ -109,9 +109,6 @@
 - (void)findServer {
 	NSLog(@"findServer");
 	NSLog(@"retry time %d <= %d", retryTimes, MAX_RETRY_TIMES);
-    
-    // Start auto-discovery from a clean slate
-    [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings removeAllAutoDiscoveredControllers];
     
 	if (retryTimes <= MAX_RETRY_TIMES) {		
 		retryTimes++;
@@ -195,7 +192,6 @@
 #pragma mark delegate method of ServerAutoDiscoveryController
 - (void)onFindServer:(ORController *)aController {
 	NSLog(@"onFindServer %@", aController.primaryURL);
-	NSLog(@"after find server, find auto server %d",[[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.autoDiscoveredControllers count]);
 	[self checkNetworkAndUpdate];
 }
 

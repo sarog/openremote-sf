@@ -51,7 +51,7 @@
     self = [super initWithStyle:UITableViewStyleGrouped];
 	if (self) {
 		[self setTitle:@"Panel List"];
-		chosenPanel = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.selectedPanelIdentityDisplayString retain];
+		chosenPanel = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.selectedPanelIdentityDisplayString retain];
 		[self requestPanelList];
 	}
 	return self;
