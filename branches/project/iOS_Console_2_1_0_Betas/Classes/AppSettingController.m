@@ -43,8 +43,8 @@
 - (void)saveSettings;
 - (void)updatePanelIdentityView;
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath;
-- (BOOL)isAutoServerSection:(NSIndexPath *)indexPath;
-- (BOOL)isCustomServerSection:(NSIndexPath *)indexPath;
+- (BOOL)isControllerRowAtIndexPath:(NSIndexPath *)indexPath;
+
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 - (void)cancelView:(id)sender;
 
@@ -120,10 +120,10 @@
 
 // Hide spinner
 - (void)forceHideSpinner:(BOOL)force {
-	if (spinner && [settingsManager.consoleSettings.controllers count] > 0 || force) {
+	if (spinner && ([settingsManager.consoleSettings.controllers count] > 0 || force)) {
 		[spinner removeFromSuperview];
 		spinner = nil;
-	}	
+	}
 }
 
 //prompts the user to enter a valid user name and password
@@ -140,67 +140,35 @@
 	return indexPath.section == AUTO_DISCOVERY_SWITCH_SECTION;
 }
 
-// Check if the section parameter indexPath specified is servers section by auto discovery.
-- (BOOL)isAutoServerSection:(NSIndexPath *)indexPath {
-	if (settingsManager.consoleSettings.isAutoDiscovery && indexPath.section == CONTROLLER_URLS_SECTION) {
-		return YES;
-	}
-	return NO;
+/**
+ * Indicates if the row at the given index path represents a controller entry,
+ * i.e. is in the controllers section and is not the "Add" entry.
+ */
+- (BOOL)isControllerRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return (indexPath.section == CONTROLLER_URLS_SECTION && indexPath.row < [settingsManager.consoleSettings.controllers count]);
 }
 
-// Check if the section parameter indexPath specified is servers section by customizing.
-- (BOOL)isCustomServerSection:(NSIndexPath *)indexPath {
-	if (!settingsManager.consoleSettings.autoDiscovery && indexPath.row < [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION) {
-		if (indexPath.row == 0) {
-			return YES;
-		}
-		return YES;
-	}
-	return NO;
+/**
+ * Indicates if the row at the given index path is the "Add" controller one.
+ */
+- (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath
+{
+	return (indexPath.row >= [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION);
 }
 
-// Check if the row parameter indexPath specified is the cell row of add customized controller server.
-- (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath {
-	if (!settingsManager.consoleSettings.autoDiscovery && indexPath.row >= [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION) {
-		return YES;
-	}
-	return NO;
-}
+
+
+
+
+
+
+
 
 // The method will be called if auto discovery switch is triggered.
 - (void)autoDiscoverChanged:(id)sender {
-    // Collect the rows that are present now and should get deleted
-    NSMutableArray *deleteIndexPaths = [[NSMutableArray alloc] init];
-	for (int i = 0; i < [settingsManager.consoleSettings.controllers count]; i++){
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:CONTROLLER_URLS_SECTION]];
-	}
-	if (!settingsManager.consoleSettings.autoDiscovery) {
-		[deleteIndexPaths addObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] inSection:CONTROLLER_URLS_SECTION]];
-	}
-    
+
     settingsManager.consoleSettings.autoDiscovery = ((UISwitch *)sender).on;
-
-    // Collect the rows that will be inserted
-	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
-	if (!settingsManager.consoleSettings.autoDiscovery) {
-        for (int i = 0; i < [settingsManager.consoleSettings.controllers count]; i++){
-            [insertIndexPaths addObject:[NSIndexPath indexPathForRow:i inSection:CONTROLLER_URLS_SECTION]];
-        }
-		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] inSection:CONTROLLER_URLS_SECTION]];
-    }
-
-	if (settingsManager.consoleSettings.autoDiscovery) {
-        [settingsManager.consoleSettings removeAllAutoDiscoveredControllers];
-    }    
-    
-    // Model is up to date, apply changes to GUI
-	[self.tableView beginUpdates];    
-	[self.tableView deleteRowsAtIndexPaths:deleteIndexPaths withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView endUpdates];
-	
-	[deleteIndexPaths release];
-	[insertIndexPaths release];
 
     if (autoDiscoverController) {
         [autoDiscoverController setDelegate:nil];
@@ -208,6 +176,7 @@
         autoDiscoverController = nil;
     }
 	
+    // TODO: review, should not be modal + auto-discovery should be launched when entering this screen
     if (settingsManager.consoleSettings.autoDiscovery) {
 		[self showSpinner];
 		self.navigationItem.leftBarButtonItem = nil;
@@ -254,6 +223,10 @@
 
 // Updates controller server list in tableview, and updates panel identity view in tableview.
 - (void)updateTableView {
+    /*
+    This is not what we need to do anymore, we should just add the one controller we discovered.
+    Also see IPHONE-107
+     
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
 	for (int j = 0; j < [settingsManager.consoleSettings.controllers count]; j++) {
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:CONTROLLER_URLS_SECTION]];
@@ -264,6 +237,9 @@
 	[self.tableView endUpdates];
 	
 	[insertIndexPaths release];
+    
+    */
+    [self.tableView reloadData];
 
     [self updatePanelIdentityView];	
 	
@@ -310,6 +286,9 @@
 #pragma mark Delegate method of ServerAutoDiscoveryController
 
 - (void)onFindServer:(ORController *)aController {
+    
+    
+    // TODO: aController has already been added to the ORConsoleSettings collection of controller by the ServerAutoDiscoveryController but the MOC hasn't been saved. Is this OK ? Should we add here ? I think not
     [aController fetchGroupMembers];
 	[self updateTableView];
 }
@@ -474,11 +453,9 @@
     }
 }
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if ([self isCustomServerSection:indexPath]) {
-		return UITableViewCellEditingStyleDelete;
-	} 
-	return UITableViewCellEditingStyleNone;
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	return [self isControllerRowAtIndexPath:indexPath]?UITableViewCellEditingStyleDelete:UITableViewCellEditingStyleNone;
 }
 
 - (void)tableView:(UITableView *)tv commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -488,15 +465,9 @@
 	}
 }
 
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (settingsManager.consoleSettings.autoDiscovery) {
-		return NO;
-	}
-	if ([self isCustomServerSection:indexPath]) {
-		return YES;
-	} 
-	return NO;
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self isControllerRowAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
