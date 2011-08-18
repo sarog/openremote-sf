@@ -59,7 +59,7 @@
 		switch (statusCode) {
 			case UNAUTHORIZED://logout succuessful
             {
-                ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController;
+                ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
 				NSLog(@"%@ logged out successfully", activeController.userName);
 				[ViewHelper showAlertViewWithTitle:@"" Message:[NSString stringWithFormat:@"%@ logged out successfully", activeController.userName]];
                 activeController.password = nil;

@@ -449,7 +449,7 @@
 
 //logout only when password is saved.
 - (void)logout {
-	if ([ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedConfiguredController.password) {
+	if ([ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password) {
 		LogoutHelper *logout = [[LogoutHelper alloc] init];
 		[logout requestLogout];
 		[logout release];

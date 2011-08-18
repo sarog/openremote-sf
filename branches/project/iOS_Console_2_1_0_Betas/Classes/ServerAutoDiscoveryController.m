@@ -119,13 +119,13 @@
 
     // Only add the server (and report) if not yet known
     ORConsoleSettings *consoleSettings = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings;
-    for (ORController *controller in consoleSettings.configuredControllers) {
+    for (ORController *controller in consoleSettings.controllers) {
         if ([controller.primaryURL isEqualToString:serverUrl]) {
             return;
         }
     }
     
-    ORController *controller = [consoleSettings addConfiguredControllerForURL:serverUrl];
+    ORController *controller = [consoleSettings addControllerForURL:serverUrl];
     
 	// Call the delegate method delegate implemented
 	if (self.delegate && [self.delegate respondsToSelector:@selector(onFindServer:)]) {

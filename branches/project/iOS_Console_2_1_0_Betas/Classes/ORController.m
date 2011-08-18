@@ -46,8 +46,8 @@
 @dynamic userName;
 @dynamic password;
 @dynamic groupMembers;
-@dynamic settingsForConfiguredControllers;
-@dynamic settingsForSelectedConfiguredController;
+@dynamic settingsForControllers;
+@dynamic settingsForSelectedController;
 
 
 // TODO EBR watch groupMembers change and reset activeGroupMember if required
