@@ -102,6 +102,7 @@
 			<xsd:element ref="label" />
 			<xsd:element ref="gesture" />
 			<xsd:element ref="image"/>
+			<xsd:element ref="web" />			
 		</xsd:choice>
 	</xsd:group>
 	
@@ -353,6 +354,16 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<!-- ###############  web  ################ -->
+	
+	<xsd:element name="web">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required" />
+		</xsd:complexType>
+	</xsd:element>	
 	<!-- ###############  gesture  ################ -->
 	
 	<xsd:element name="gesture">
