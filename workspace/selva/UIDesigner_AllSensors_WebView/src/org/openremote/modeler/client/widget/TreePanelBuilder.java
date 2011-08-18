@@ -83,6 +83,7 @@ import org.openremote.modeler.domain.component.UISlider;
 import org.openremote.modeler.domain.component.UISwitch;
 import org.openremote.modeler.domain.component.UITabbar;
 import org.openremote.modeler.domain.component.UITabbarItem;
+import org.openremote.modeler.domain.component.UIWebView;
 
 import com.extjs.gxt.ui.client.data.BaseTreeLoader;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -426,6 +427,7 @@ public class TreePanelBuilder {
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
       widgetTreeStore.add(new UITabbar().getBeanModel(), true);
       widgetTreeStore.add(new UITabbarItem().getBeanModel(), true);
+      widgetTreeStore.add(new UIWebView().getBeanModel(), true);
 
       widgetTree.setIconProvider(new ModelIconProvider<BeanModel>() {
          public AbstractImagePrototype getIcon(BeanModel thisModel) {
@@ -445,7 +447,10 @@ public class TreePanelBuilder {
                return ICON.tabbarConfigIcon();
             } else if (thisModel.getBean() instanceof UITabbarItem) {
                return ICON.tabbarItemIcon();
-            } else {
+               //Added by Selva
+            }else if (thisModel.getBean() instanceof UIWebView) {           
+            	return ICON.webviewIcon();
+            }else {
                return ICON.buttonIcon();
             }
          }

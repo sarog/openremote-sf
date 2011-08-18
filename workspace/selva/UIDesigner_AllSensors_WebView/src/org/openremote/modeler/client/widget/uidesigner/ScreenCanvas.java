@@ -29,6 +29,7 @@ import org.openremote.modeler.client.widget.component.ScreenIndicator;
 import org.openremote.modeler.client.widget.component.ScreenLabel;
 import org.openremote.modeler.client.widget.component.ScreenSwitch;
 import org.openremote.modeler.client.widget.component.ScreenTabbar;
+import org.openremote.modeler.client.widget.component.ScreenWebView;
 import org.openremote.modeler.client.widget.propertyform.PropertyForm;
 import org.openremote.modeler.client.widget.propertyform.ScreenPropertyForm;
 import org.openremote.modeler.domain.Absolute;
@@ -491,7 +492,9 @@ public class ScreenCanvas extends ComponentContainer {
                   ((ScreenLabel) screenControl).onStateChange();
                } else if (screenControl instanceof ScreenImage) {
                   ((ScreenImage) screenControl).onStateChange();
-               }
+               }else if (screenControl instanceof ScreenWebView) {
+                  ((ScreenWebView)screenControl).onStateChange();
+               } 
             } else if (ce.getEventTypeInt() == Event.ONMOUSEUP) {
                if (screenControl instanceof ScreenButton) {
                   ((ScreenButton) screenControl).setDefaultImage();
