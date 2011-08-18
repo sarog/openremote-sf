@@ -78,9 +78,9 @@
         
 		[self setTitle:@"Settings"];
 		isEditing = NO;
-                         
-		done = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSettings)];		
-		cancel = [[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(cancelView:)];
+        
+		done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveSettings)];		
+		cancel = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelView:)];
 	}
 	return self;
 }
@@ -217,7 +217,6 @@
 	} else {
         [self updatePanelIdentityView];
 	}
-		
 }
 
 - (void)viewDidLoad
@@ -244,6 +243,8 @@
     [super viewWillAppear:animated];
 	self.navigationItem.rightBarButtonItem = done;
 	self.navigationItem.leftBarButtonItem = cancel;
+    
+    [self.tableView reloadData]; // IPHONE-107, should not be required otherwise
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -253,7 +254,7 @@
     // We only trigger the fetch of group members if requested to
     // This is required because we can't do this when coming back from the controller detail view controller
     // otherwise there is some violation of the assertions on the table view number of rows
-    // TODO: when moving to iOS 5, there is a way to know "where" we're coming from, use that instead of the flag    
+    // TODO: when moving to iOS 5, there is a way to know "where" we're coming from, use that instead of the flag
     if (self.needsControllerRefresh) {
         [self fetchGroupMembersForAllControllers];
         self.needsControllerRefresh = NO;
@@ -356,7 +357,8 @@
 
 - (void)orControllerGroupMembersFetchStatusChanged:(NSNotification *)notification
 {
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationNone];
+// IPHONE-107    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers indexOfObject:[notification object]] inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView reloadData];
 }
 
 - (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
@@ -373,11 +375,11 @@
 	return [[AppSettingsDefinition sharedAppSettingsDefinition].settingsDefinition count] - 1;
 }
 
-
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (section == CONTROLLER_URLS_SECTION) {
+        NSLog(@"Number of rows in table view controller section %d", [settingsManager.consoleSettings.controllers count] + (settingsManager.consoleSettings.autoDiscovery?0:1));
 		return [settingsManager.consoleSettings.controllers count] + (settingsManager.consoleSettings.autoDiscovery?0:1); // custom URLs need extra cell 'Add url >'
 	}
 	return 1;
@@ -578,7 +580,7 @@
 {
     ORController *controller = [settingsManager.consoleSettings addConfiguredControllerForURL:serverURL];
     [self.navigationController popViewControllerAnimated:YES];
-    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] - 1 inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationFade];
+//IPHONE-107    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] - 1 inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationFade];
     
     [controller fetchGroupMembers];
 }
@@ -586,6 +588,7 @@
 - (void)didEditController:(ORController *)controller
 {
     [self.navigationController popViewControllerAnimated:YES];
+//IPHONE-107 : was not there but if there is no reloadData in viewWillAppear, there should be a reload of the updated row here
     [controller fetchGroupMembers];
 }
 
@@ -635,6 +638,7 @@
 
 - (void)fetchGroupMembersForAllControllers
 {
+    NSLog(@">>fetchGroupMembersForAllControllers -> settingsManager.consoleSettings.controllers: %d", [settingsManager.consoleSettings.controllers count]);
     [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(fetchGroupMembers)];
 }
 
