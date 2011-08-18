@@ -27,6 +27,7 @@
 #import "CheckNetwork.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface ServerAutoDiscoveryController ()
 
@@ -100,7 +101,6 @@
 - (void)onFindServer:(NSString *)serverUrl
 {
 	isReceiveServerUrl = YES;
-    ORController *controller = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings addConfiguredControllerForURL:serverUrl];
     
     //Disconnect all the tcp client received
 	for(int i = 0; i < [clients count]; i++)
@@ -116,9 +116,19 @@
 	
 	[tcpSever disconnectAfterReading];
 	[tcpTimer invalidate];
-			
+
+    // Only add the server (and report) if not yet known
+    ORConsoleSettings *consoleSettings = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings;
+    for (ORController *controller in consoleSettings.configuredControllers) {
+        if ([controller.primaryURL isEqualToString:serverUrl]) {
+            return;
+        }
+    }
+    
+    ORController *controller = [consoleSettings addConfiguredControllerForURL:serverUrl];
+    
 	// Call the delegate method delegate implemented
-	if (self.delegate && [self.delegate  respondsToSelector:@selector(onFindServer:)]) {
+	if (self.delegate && [self.delegate respondsToSelector:@selector(onFindServer:)]) {
         [self.delegate onFindServer:controller];
 	}
 }
