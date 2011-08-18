@@ -34,8 +34,15 @@
 @interface ControllerDetailViewController()
 
 @property (nonatomic, retain) ORController *controller;
-@property (nonatomic, retain) NSArray *groupMembers;
 @property (nonatomic, retain) UITextField *urlField;
+// We're using this group member property instead of accessing controller.groupMembers directly
+// because we want an array to have an order to display in table view
+// We observe controller.groupMembers to keep this on in sync
+@property (nonatomic, retain) NSArray *groupMembers;
+
+// TODO: this should not exist anymore once there always is a controller object (even when creating new one)
+@property (nonatomic, retain) NSString *url;
+
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
 
@@ -48,6 +55,7 @@
 @synthesize controller;
 @synthesize groupMembers;
 @synthesize urlField;
+@synthesize url;
 
 - (id)initWithController:(ORController *)aController
 {
@@ -66,6 +74,7 @@
     self.controller = nil;
     self.urlField.delegate = nil;
     self.urlField = nil;
+    self.url = nil;
     [super dealloc];
 }
 
@@ -80,8 +89,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
     
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)] autorelease];
+    
     [self updateTableViewHeaderForGroupMemberFetchStatus];
-
 }
 
 - (void)viewDidUnload
@@ -120,34 +130,48 @@
     return YES;
 }
 
+#pragma mark - Actions
+
+- (void)done:(id)sender
+{
+    [urlField resignFirstResponder];
+    if (self.controller) {
+        [delegate didEditController:self.controller];
+    } else {
+        [delegate didAddServerURL:self.url];        
+    }
+}
+
 #pragma mark - UITextField delegate
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{   
-    NSString *url = nil;
-    
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
     if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
-        url = textField.text;
+        self.url = textField.text;
     } else {
-        url = [NSString stringWithFormat:@"http://%@", textField.text];
+        self.url = [NSString stringWithFormat:@"http://%@", textField.text];
     }
     
     // TODO: have better validation and non intrusive error messages
     // following test will never fail as we set the scheme above
     
-	NSURL *nsUrl = [NSURL URLWithString:url];
+	NSURL *nsUrl = [NSURL URLWithString:self.url];
 	if ([nsUrl scheme] == nil) {
 //		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
 		return NO;
 	}
+    self.urlField.text = self.url;
     
     if (self.controller) {
-        self.controller.primaryURL = url;
-        [delegate didEditController:self.controller];
-    } else {
-        [delegate didAddServerURL:url];        
+        self.controller.primaryURL = self.url;
     }
 	return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 #pragma mark - Table view data source
