@@ -39,7 +39,6 @@
 @property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
 
 - (void)autoDiscoverChanged:(id)sender;
-- (void)updateTableView;
 - (void)saveSettings;
 - (void)updatePanelIdentityView;
 - (BOOL)isAutoDiscoverySection:(NSIndexPath *)indexPath;
@@ -48,6 +47,7 @@
 - (BOOL)isAddCustomServerRow:(NSIndexPath *)indexPath;
 - (void)cancelView:(id)sender;
 
+- (void)autodiscoverControllersIfRequired;
 - (void)fetchGroupMembersForAllControllers;
 - (void)cancelFetchGroupMembers;
 
@@ -157,34 +157,18 @@
 	return (indexPath.row >= [settingsManager.consoleSettings.controllers count] && indexPath.section == CONTROLLER_URLS_SECTION);
 }
 
-
-
-
-
-
-
-
-
-// The method will be called if auto discovery switch is triggered.
-- (void)autoDiscoverChanged:(id)sender {
-
+- (void)autoDiscoverChanged:(id)sender
+{
     settingsManager.consoleSettings.autoDiscovery = ((UISwitch *)sender).on;
 
+    // Irrelevant of the choice, first cancel the current auto-discovery process
     if (autoDiscoverController) {
         [autoDiscoverController setDelegate:nil];
-        [autoDiscoverController release];
+        [autoDiscoverController release]; // This will cancel connections if any
         autoDiscoverController = nil;
     }
-	
-    // TODO: review, should not be modal + auto-discovery should be launched when entering this screen
-    if (settingsManager.consoleSettings.autoDiscovery) {
-		[self showSpinner];
-		self.navigationItem.leftBarButtonItem = nil;
-		autoDiscoverController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
-		self.navigationItem.leftBarButtonItem = cancel;
-	} else {
-        [self updatePanelIdentityView];
-	}
+
+    [self autodiscoverControllersIfRequired];
 }
 
 - (void)viewDidLoad
@@ -217,33 +201,9 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [self autodiscoverControllersIfRequired];
     [self fetchGroupMembersForAllControllers];
     [super viewDidAppear:animated];
-}
-
-// Updates controller server list in tableview, and updates panel identity view in tableview.
-- (void)updateTableView {
-    /*
-    This is not what we need to do anymore, we should just add the one controller we discovered.
-    Also see IPHONE-107
-     
-	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
-	for (int j = 0; j < [settingsManager.consoleSettings.controllers count]; j++) {
-		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:CONTROLLER_URLS_SECTION]];
-	}
-	
-	[self.tableView beginUpdates];
-	[self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationFade];
-	[self.tableView endUpdates];
-	
-	[insertIndexPaths release];
-    
-    */
-    [self.tableView reloadData];
-
-    [self updatePanelIdentityView];	
-	
-	[self forceHideSpinner:NO];
 }
 
 // Updates panel identity view, but not persistes identity data into appSettings.plist.
@@ -286,14 +246,21 @@
 #pragma mark Delegate method of ServerAutoDiscoveryController
 
 - (void)onFindServer:(ORController *)aController {
-    
+    // TODO: check what happens when multiple controllers are discovered
     
     // TODO: aController has already been added to the ORConsoleSettings collection of controller by the ServerAutoDiscoveryController but the MOC hasn't been saved. Is this OK ? Should we add here ? I think not
     [aController fetchGroupMembers];
-	[self updateTableView];
+
+    [self.tableView reloadData];
+    
+    // TODO: review spinner
+	[self forceHideSpinner:NO];
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {
+    
+    // TODO: check when this is reported
+    // TODO: there should be a way to get notified when the auto-discovery process is finished, not an error if nothing is found
 	[self forceHideSpinner:YES];
 	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];	
 }
@@ -597,6 +564,24 @@
 }
 
 #pragma mark -
+
+/**
+ * Launch an auto-discovery process in the background.
+ * The process is only conducted if the consoleSettings.isAutoDiscovery is true.
+ */
+- (void)autodiscoverControllersIfRequired
+{
+    if (settingsManager.consoleSettings.autoDiscovery) {
+		[self showSpinner]; // TODO: have spinner some place else
+
+        if (autoDiscoverController) {
+            [autoDiscoverController setDelegate:nil];
+            [autoDiscoverController release]; // This will cancel connections if any
+            autoDiscoverController = nil;
+        }
+		autoDiscoverController = [[ServerAutoDiscoveryController alloc] initWithDelegate:self];
+	}
+}
 
 - (void)fetchGroupMembersForAllControllers
 {
