@@ -37,6 +37,8 @@
 @interface AppSettingController ()
 
 @property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
+// Indicates if a login window must be presented to user for entering credentials when a controller says authentication is required
+@property (nonatomic, assign) BOOL askUserForCredentials;
 
 - (void)autoDiscoverChanged:(id)sender;
 - (void)saveSettings;
@@ -68,6 +70,7 @@
 @implementation AppSettingController
 
 @synthesize panelsFetcher;
+@synthesize askUserForCredentials;
 
 - (id)init
 {
@@ -299,9 +302,10 @@
 - (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
 {
     [self orControllerGroupMembersFetchStatusChanged:notification];
-    if (settingsManager.consoleSettings.selectedController == [notification object]) {
+    if (askUserForCredentials) {
         [self populateLoginView:self];
     }
+    askUserForCredentials = NO;
 }
 
 #pragma mark Table view methods
@@ -480,9 +484,14 @@
         ((TableViewCellWithSelectionAndIndicator *)cell).entrySelected = YES;
 
         settingsManager.consoleSettings.selectedController = [settingsManager.consoleSettings.controllers objectAtIndex:indexPath.row];
+        
+        self.askUserForCredentials = YES;
+        
+        // TODO: might not be required if update of panel identities trigger this
         [settingsManager.consoleSettings.selectedController fetchGroupMembers];
         
-		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {
+		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {            
+            // TODO: review how this gets updated
 			[self updatePanelIdentityView];
 		}
 		currentSelectedServerIndex = indexPath;
