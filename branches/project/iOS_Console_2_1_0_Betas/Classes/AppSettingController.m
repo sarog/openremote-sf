@@ -252,16 +252,14 @@
     [aController fetchGroupMembers];
 
     [self.tableView reloadData];
-    
-    // TODO: review spinner
-	[self forceHideSpinner:NO];
+	// TODO: Disabled for now, see IPHONE-111 [self forceHideSpinner:NO];
 }
 
 - (void)onFindServerFail:(NSString *)errorMessage {
-    
     // TODO: check when this is reported
     // TODO: there should be a way to get notified when the auto-discovery process is finished, not an error if nothing is found
-	[self forceHideSpinner:YES];
+    
+	// TODO: Disabled for now, see IPHONE-111 [self forceHideSpinner:YES];
 	[ViewHelper showAlertViewWithTitle:@"Auto Discovery" Message:errorMessage];	
 }
 
@@ -572,7 +570,7 @@
 - (void)autodiscoverControllersIfRequired
 {
     if (settingsManager.consoleSettings.autoDiscovery) {
-		[self showSpinner]; // TODO: have spinner some place else
+        // TODO: Disabled for now, see IPHONE-111 [self showSpinner];
 
         if (autoDiscoverController) {
             [autoDiscoverController setDelegate:nil];
