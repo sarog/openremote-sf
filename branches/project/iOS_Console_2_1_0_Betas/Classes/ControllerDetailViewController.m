@@ -23,6 +23,7 @@
 #import "ORController.h"
 #import "ORGroupMember.h"
 #import "TextFieldCell.h"
+#import "StyleValue1TextEntryCell.h"
 #import "ORControllerGroupMembersFetchStatusIconProvider.h"
 
 // TODO: customize keyboard with keys such as http://, https://, /controller, 8080,  and other std ports to help text entry
@@ -30,10 +31,14 @@
 
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
 #define kGroupMemberCellIdentifier @"kGroupMemberCellIdentifier"
+#define kUsernameCellIdentifier @"kUsernameCellIdentifier"
+#define kPasswordCellIdentifier @"kPasswordCellIdentifier"
 
 @interface ControllerDetailViewController()
 
 @property (nonatomic, retain) ORController *controller;
+@property (nonatomic, retain) UITextField *usernameField;
+@property (nonatomic, retain) UITextField *passwordField;
 @property (nonatomic, retain) UITextField *urlField;
 // We're using this group member property instead of accessing controller.groupMembers directly
 // because we want an array to have an order to display in table view
@@ -54,6 +59,8 @@
 
 @synthesize controller;
 @synthesize groupMembers;
+@synthesize usernameField;
+@synthesize passwordField;
 @synthesize urlField;
 @synthesize url;
 
@@ -75,6 +82,10 @@
     self.urlField.delegate = nil;
     self.urlField = nil;
     self.url = nil;
+    self.usernameField.delegate = nil;
+    self.usernameField = nil;
+    self.passwordField.delegate = nil;
+    self.passwordField = nil;
     [super dealloc];
 }
 
@@ -146,26 +157,37 @@
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
-    if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
-        self.url = textField.text;
-    } else {
-        self.url = [NSString stringWithFormat:@"http://%@", textField.text];
+    if (textField == urlField) {
+        if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
+            self.url = textField.text;
+        } else {
+            self.url = [NSString stringWithFormat:@"http://%@", textField.text];
+        }
+        
+        // TODO: have better validation and non intrusive error messages
+        // following test will never fail as we set the scheme above
+        
+        NSURL *nsUrl = [NSURL URLWithString:self.url];
+        if ([nsUrl scheme] == nil) {
+    //		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
+            return NO;
+        }
+        self.urlField.text = self.url;
+        
+        if (self.controller) {
+            self.controller.primaryURL = self.url;
+        }
+        return YES;
+    } else if (textField == usernameField) {
+        self.controller.userName = textField.text;
+        // TODO: won't work for creation of new controller -> fix when passing object for creation
+        // TODO: retry login -> tackle in IPHONE-112
+    } else if (textField == passwordField) {
+        self.controller.password = textField.text;
+        // TODO: won't work for creation of new controller -> fix when passing object for creation
+        // TODO: retry login -> tackle in IPHONE-112
     }
-    
-    // TODO: have better validation and non intrusive error messages
-    // following test will never fail as we set the scheme above
-    
-	NSURL *nsUrl = [NSURL URLWithString:self.url];
-	if ([nsUrl scheme] == nil) {
-//		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
-		return NO;
-	}
-    self.urlField.text = self.url;
-    
-    if (self.controller) {
-        self.controller.primaryURL = self.url;
-    }
-	return YES;
+    return YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -178,7 +200,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -188,6 +210,8 @@
             return 1;
         case 1:
             return [self.groupMembers count];
+        case 2:
+            return 2;
         default:
             return 0;
     }
@@ -215,6 +239,35 @@
                 cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGroupMemberCellIdentifier] autorelease];
             }            
             cell.textLabel.text = ((ORGroupMember *)[self.groupMembers objectAtIndex:indexPath.row]).url;
+            break;
+        }
+        case 2:
+        {
+            switch (indexPath.row) {
+                case 0:
+                    cell = [tableView dequeueReusableCellWithIdentifier:kUsernameCellIdentifier];
+                    if (cell == nil) {
+                        cell = [[[StyleValue1TextEntryCell alloc] initWithReuseIdentifier:kUsernameCellIdentifier] autorelease];
+                        self.usernameField = ((TextFieldCell *)cell).textField;
+                        self.usernameField.delegate = self;
+                    }
+                    cell.textLabel.text = @"User name";
+                    ((TextFieldCell *)cell).textField.text = self.controller.userName;
+                    break;
+                case 1:
+                    cell = [tableView dequeueReusableCellWithIdentifier:kPasswordCellIdentifier];
+                    if (cell == nil) {
+                        cell = [[[StyleValue1TextEntryCell alloc] initWithReuseIdentifier:kPasswordCellIdentifier] autorelease];
+                        self.passwordField = ((TextFieldCell *)cell).textField;
+                        self.passwordField.secureTextEntry = YES;
+
+                        self.passwordField.delegate = self;
+                    }
+                    cell.textLabel.text = @"Password";
+                    ((TextFieldCell *)cell).textField.text = self.controller.password;
+                    ((TextFieldCell *)cell).textField.secureTextEntry = YES;
+                    break;
+            }
         }
     }
     return cell;
@@ -237,6 +290,8 @@
             return @"Controller URL:";
         case 1:
             return @"Roundrobin group members:";
+        case 2:
+            return @"Login:";
         default:
             return nil;
     }
