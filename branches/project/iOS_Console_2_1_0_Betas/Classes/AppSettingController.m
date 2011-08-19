@@ -453,7 +453,7 @@
 	}
 	
 	if ([self isAddCustomServerRow:indexPath]) {
-        ControllerDetailViewController *cdvc = [[ControllerDetailViewController alloc] initWithController:nil];
+        ControllerDetailViewController *cdvc = [[ControllerDetailViewController alloc] initWithManagedObjectContext:settingsManager.managedObjectContext];
         cdvc.delegate = self;
 		[[self navigationController] pushViewController:cdvc animated:YES];
 		[cdvc release];
@@ -503,9 +503,9 @@
 
 #pragma mark ControllerDetailViewControllerDelegate implementation
 
-- (void)didAddServerURL:(NSString *)serverURL
+- (void)didAddController:(ORController *)controller
 {
-    ORController *controller = [settingsManager.consoleSettings addControllerForURL:serverURL];
+    [settingsManager.consoleSettings addController:controller];
     [self.navigationController popViewControllerAnimated:YES];
 //IPHONE-107    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[settingsManager.consoleSettings.controllers count] - 1 inSection:CONTROLLER_URLS_SECTION]] withRowAnimation:UITableViewRowAnimationFade];
     

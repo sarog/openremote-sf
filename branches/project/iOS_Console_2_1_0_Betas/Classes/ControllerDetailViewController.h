@@ -20,12 +20,13 @@
  */
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
 
 @class ORController;
 
 @protocol ControllerDetailViewControllerDelegate <NSObject>
 
-- (void)didAddServerURL:(NSString *)serverURL;
+- (void)didAddController:(ORController *)controller;
 - (void)didEditController:(ORController *)controller;
 
 @end
@@ -37,5 +38,6 @@
 @property (nonatomic, retain) NSObject<ControllerDetailViewControllerDelegate> *delegate;
 
 - (id)initWithController:(ORController *)aController;
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)moc;
 
 @end

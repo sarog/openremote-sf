@@ -36,6 +36,7 @@
 
 @interface ControllerDetailViewController()
 
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain) ORController *controller;
 @property (nonatomic, retain) UITextField *usernameField;
 @property (nonatomic, retain) UITextField *passwordField;
@@ -44,10 +45,10 @@
 // because we want an array to have an order to display in table view
 // We observe controller.groupMembers to keep this on in sync
 @property (nonatomic, retain) NSArray *groupMembers;
-
-// TODO: this should not exist anymore once there always is a controller object (even when creating new one)
-@property (nonatomic, retain) NSString *url;
-
+// Used to indicate that the done button has been clicked -> cancel management because no target/action on back button
+@property (nonatomic, assign) BOOL doneAction;
+@property (nonatomic, assign) BOOL creating;
+@property (nonatomic, retain) NSUndoManager *previousUndoManager;
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
 
@@ -57,35 +58,42 @@
 
 @synthesize delegate;
 
+@synthesize managedObjectContext;
 @synthesize controller;
 @synthesize groupMembers;
 @synthesize usernameField;
 @synthesize passwordField;
 @synthesize urlField;
-@synthesize url;
+@synthesize doneAction;
+@synthesize creating;
+@synthesize previousUndoManager;
 
 - (id)initWithController:(ORController *)aController
 {
 	self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         self.controller = aController;
-        self.groupMembers = [self.controller.groupMembers allObjects];
-        [self.controller addObserver:self forKeyPath:@"groupMembers" options:0 context:NULL];
+    }
+	return self;
+}
+
+- (id)initWithManagedObjectContext:(NSManagedObjectContext *)moc
+{
+	self = [super initWithStyle:UITableViewStyleGrouped];
+    if (self) {
+        self.managedObjectContext = moc;
     }
 	return self;
 }
 
 - (void)dealloc
 {
-    [self.controller removeObserver:self forKeyPath:@"groupMembers"];
     self.controller = nil;
-    self.urlField.delegate = nil;
+    self.managedObjectContext = nil;
     self.urlField = nil;
-    self.url = nil;
-    self.usernameField.delegate = nil;
     self.usernameField = nil;
-    self.passwordField.delegate = nil;
     self.passwordField = nil;
+    self.previousUndoManager = nil;
     [super dealloc];
 }
 
@@ -108,31 +116,74 @@
 - (void)viewDidUnload
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.urlField = nil;
+    self.usernameField = nil;
+    self.passwordField = nil;
+
     [super viewDidUnload];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.urlField resignFirstResponder];
+    [self.managedObjectContext.undoManager endUndoGrouping];
+
+    // Prevents update of values when text field looses 1st responder
+    self.urlField.delegate = nil;
+    self.usernameField.delegate = nil;
+    self.passwordField.delegate = nil;
+
+    if (!doneAction) {
+        [self.controller.managedObjectContext undo];        
+    }
+    self.controller.managedObjectContext.undoManager = previousUndoManager;
+    self.previousUndoManager = nil;
+
+    [self.controller removeObserver:self forKeyPath:@"groupMembers"];
+
     [super viewWillDisappear:animated];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    doneAction = NO;
+    
+    // Make sure we're delegate of text fields if they exist so we get values update
+    if (self.urlField) {
+        self.urlField.delegate = self;
+    }
+    if (self.usernameField) {
+        self.usernameField.delegate = self;
+    }
+    if (self.passwordField) {
+        self.passwordField.delegate = self;
+    }
+
     if (self.controller) {
+        self.managedObjectContext = self.controller.managedObjectContext;
+        self.creating = NO;
 		self.title = [NSString stringWithFormat:@"Editing %@", self.controller.primaryURL];
 	} else {
-        
-        // TODO: should create a temporary object, but CoreData -> need managed object context, ...
-        
+        NSAssert(self.managedObjectContext, @"If no controller was specified, a managed object context must be");
+        self.controller = [NSEntityDescription insertNewObjectForEntityForName:@"ORController" inManagedObjectContext:self.managedObjectContext];
+        self.creating = YES;
 		self.title = @"Add a Controller";
 	}
+    self.previousUndoManager = self.managedObjectContext.undoManager;
+    self.managedObjectContext.undoManager = [[[NSUndoManager alloc] init] autorelease];
+    [self.managedObjectContext.undoManager beginUndoGrouping];
+    
+    self.groupMembers = [self.controller.groupMembers allObjects];
+    [self.controller addObserver:self forKeyPath:@"groupMembers" options:0 context:NULL];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    [self.urlField becomeFirstResponder];
+    if (creating) {
+        [self.urlField becomeFirstResponder];
+    }
     [super viewDidAppear:animated];
 }
 
@@ -145,11 +196,15 @@
 
 - (void)done:(id)sender
 {
-    [urlField resignFirstResponder];
-    if (self.controller) {
-        [delegate didEditController:self.controller];
+    doneAction = YES;
+
+    [self.urlField resignFirstResponder];
+    [self.usernameField resignFirstResponder];
+    [self.passwordField resignFirstResponder];
+    if (self.creating) {
+        [delegate didAddController:self.controller];      
     } else {
-        [delegate didAddServerURL:self.url];        
+        [delegate didEditController:self.controller];
     }
 }
 
@@ -157,34 +212,30 @@
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
+    NSString *url;
     if (textField == urlField) {
         if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
-            self.url = textField.text;
+            url = textField.text;
         } else {
-            self.url = [NSString stringWithFormat:@"http://%@", textField.text];
+            url = [NSString stringWithFormat:@"http://%@", textField.text];
         }
         
         // TODO: have better validation and non intrusive error messages
         // following test will never fail as we set the scheme above
         
-        NSURL *nsUrl = [NSURL URLWithString:self.url];
+        NSURL *nsUrl = [NSURL URLWithString:url];
         if ([nsUrl scheme] == nil) {
     //		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
             return NO;
         }
-        self.urlField.text = self.url;
-        
-        if (self.controller) {
-            self.controller.primaryURL = self.url;
-        }
+        self.urlField.text = url;
+        self.controller.primaryURL = url;
         return YES;
     } else if (textField == usernameField) {
         self.controller.userName = textField.text;
-        // TODO: won't work for creation of new controller -> fix when passing object for creation
         // TODO: retry login -> tackle in IPHONE-112
     } else if (textField == passwordField) {
         self.controller.password = textField.text;
-        // TODO: won't work for creation of new controller -> fix when passing object for creation
         // TODO: retry login -> tackle in IPHONE-112
     }
     return YES;
