@@ -21,6 +21,8 @@
 		33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
+		6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
+		6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -468,6 +470,8 @@
 		33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryControlView.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
+		6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; path = StyleValue1TextEntryCell.h; sourceTree = "<group>"; };
+		6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StyleValue1TextEntryCell.m; sourceTree = "<group>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
 		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
@@ -1797,8 +1801,6 @@
 				3338CDB610C5036C0067C94D /* LabelView.m */,
 				3322882F10BFC03F00D94163 /* SliderView.h */,
 				3322883010BFC03F00D94163 /* SliderView.m */,
-				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
-				8C460F0F1095628C00C7A686 /* TextFieldCell.m */,
 				8C460E891095563A00C7A686 /* AbsoluteLayoutContainerView.h */,
 				8C460E8A1095563A00C7A686 /* AbsoluteLayoutContainerView.m */,
 				8C460E8B1095563A00C7A686 /* ButtonView.h */,
@@ -1823,8 +1825,12 @@
 				338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */,
 				60A85C94131F972000C7918A /* ORWebView.h */,
 				60A85C95131F972000C7918A /* ORWebView.m */,
+				8C460F0E1095628C00C7A686 /* TextFieldCell.h */,
+				8C460F0F1095628C00C7A686 /* TextFieldCell.m */,
 				6079C2B713CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.h */,
 				6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */,
+				6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */,
+				6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -2228,6 +2234,7 @@
 				60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
 				60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 				60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
+				6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2343,6 +2350,7 @@
 				60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
 				60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 				60AA14C513E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
+				6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
