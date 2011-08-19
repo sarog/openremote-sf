@@ -26,9 +26,6 @@
 #import "StyleValue1TextEntryCell.h"
 #import "ORControllerGroupMembersFetchStatusIconProvider.h"
 
-// TODO: customize keyboard with keys such as http://, https://, /controller, 8080,  and other std ports to help text entry
-// EBR : not sure we really want the above ?
-
 #define kControllerUrlCellIdentifier @"kControllerUrlCellIdentifier"
 #define kGroupMemberCellIdentifier @"kGroupMemberCellIdentifier"
 #define kUsernameCellIdentifier @"kUsernameCellIdentifier"
@@ -57,7 +54,6 @@
 @implementation ControllerDetailViewController
 
 @synthesize delegate;
-
 @synthesize managedObjectContext;
 @synthesize controller;
 @synthesize groupMembers;
@@ -176,7 +172,6 @@
     
     self.groupMembers = [self.controller.groupMembers allObjects];
     [self.controller addObserver:self forKeyPath:@"groupMembers" options:0 context:NULL];
-
 }
 
 - (void)viewDidAppear:(BOOL)animated
