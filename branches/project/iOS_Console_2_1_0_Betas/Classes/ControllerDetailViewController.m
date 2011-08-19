@@ -102,7 +102,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchingNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchFailedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchSucceededNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchRequiresAuthentication:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
+    // We don't present a login panel when on this page, user can use "regular" fields to enter credentials
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orControllerGroupMembersFetchStatusChanged:) name:kORControllerGroupMembersFetchRequiresAuthenticationNotification object:nil];
     
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)] autorelease];
     
@@ -225,14 +226,14 @@
         }
         self.urlField.text = url;
         self.controller.primaryURL = url;
-        return YES;
     } else if (textField == usernameField) {
         self.controller.userName = textField.text;
-        // TODO: retry login -> tackle in IPHONE-112
     } else if (textField == passwordField) {
         self.controller.password = textField.text;
-        // TODO: retry login -> tackle in IPHONE-112
     }
+    [self.controller cancelGroupMembersFetch];
+    self.groupMembers = nil;
+    [self.controller fetchGroupMembers];
     return YES;
 }
 
@@ -350,13 +351,23 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+#pragma mark - Setter/Getter
+
+- (void)setGroupMembers:(NSArray *)theGroupMembers
+{
+    if (groupMembers != theGroupMembers) {
+        [groupMembers release];
+        groupMembers = [theGroupMembers retain];
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+    }
+}
+
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     // Only observing one value, no need to check
     self.groupMembers = [self.controller.groupMembers allObjects];
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 #pragma mark - ORController group members fetch notifications
@@ -364,18 +375,6 @@
 - (void)orControllerGroupMembersFetchStatusChanged:(NSNotification *)notification
 {
     [self updateTableViewHeaderForGroupMemberFetchStatus];
-}
-
-- (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
-{
-    [self orControllerGroupMembersFetchStatusChanged:notification];
-    
-    // TODO
-    /*
-    if (settingsManager.consoleSettings.selectedController == [notification object]) {
-        [self populateLoginView:self];
-    }
-     */
 }
 
 #pragma mark - Utility methods

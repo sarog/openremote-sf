@@ -66,6 +66,7 @@
 - (void)cancelGroupMembersFetch
 {
     [self.groupMembersFetcher cancelFetch];
+    self.groupMembersFetcher = nil;
 }
 
 - (void)controller:(ORController *)aController fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers
