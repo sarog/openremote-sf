@@ -40,25 +40,6 @@ public class TwoOctetFloat implements DataType
 
   // Class Members --------------------------------------------------------------------------------
 
-  private final static BigDecimal[] basevalues = new BigDecimal[]
-      {
-          new BigDecimal(0.0 + 20.47 * Math.pow(2, 0)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(20.47 + 20.47 * Math.pow(2, 1)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(61.41 + 20.47 * Math.pow(2, 2)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(143.29 + 20.47 * Math.pow(2, 3)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(307.05 + 20.47 * Math.pow(2, 4)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(634.57 + 20.47 * Math.pow(2, 5)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(1289.61 + 20.47 * Math.pow(2, 6)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(2599.69 + 20.47 * Math.pow(2, 7)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(5219.85 + 20.47 * Math.pow(2, 8)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(10460.17 + 20.47 * Math.pow(2, 9)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(20940.81 + 20.47 * Math.pow(2, 10)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(41902.09 + 20.47 * Math.pow(2, 11)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(83824.65 + 20.47 * Math.pow(2, 12)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(167669.77 + 20.47 * Math.pow(2, 13)).setScale(2, RoundingMode.HALF_UP),
-          new BigDecimal(335360.01 + 20.47 * Math.pow(2, 14)).setScale(2, RoundingMode.HALF_UP)
-      };
-
 
   // Instance Fields ------------------------------------------------------------------------------
 
@@ -111,14 +92,12 @@ public class TwoOctetFloat implements DataType
     mantissa += (data[0] & 0x7) << 8;
 
 
-    double d = (exponent == 0)
-        ? mantissa * 0.01
-        : 20.47 * Math.pow(2, exponent - 1) + 0.01 * mantissa * Math.pow(2, exponent);
+    double d = 0.01 * mantissa * Math.pow(2, exponent);
 
     BigDecimal bigD = new BigDecimal(d).setScale(2, RoundingMode.HALF_UP);
 
     return (((data[0]) & 0x80) == 0x80) ? bigD.negate() : bigD;
-    
+
 //    BigDecimal sign = ((data[0] & 0x80) == 0x80)
 //        ? BigDecimal.ONE.negate()
 //        : BigDecimal.ONE;
@@ -142,6 +121,7 @@ public class TwoOctetFloat implements DataType
   // Private Instance Methods ---------------------------------------------------------------------
 
 
+
   private byte[] convertToKNXFloat(BigDecimal value)
   {
     value = value.setScale(2, RoundingMode.HALF_UP);
@@ -155,53 +135,28 @@ public class TwoOctetFloat implements DataType
       sign = 0x8000;
     }
 
-    for (int i = 13; i >= 0; --i)
-    {
-//      BigDecimal precision = (i < 14)
-//          ? new BigDecimal(0.01*Math.pow(2, i+1)).setScale(2, RoundingMode.HALF_UP)
-//          : BigDecimal.ZERO;
-//
-//      BigDecimal boundary = basevalues[i].add(precision);
+    int exponent = 0;
 
-      BigDecimal boundary = new BigDecimal(20.47 * Math.pow(2, i) + 20.47 * Math.pow(2, i+1)).setScale(2, RoundingMode.HALF_UP);
-      
-      if (boundary.compareTo(value) < 0)
+    for (int i = 0 ; i < 16; ++i)
+    {
+      BigDecimal boundary = new BigDecimal(20.47*Math.pow(2, i)).setScale(2, RoundingMode.HALF_UP);
+
+      if (boundary.compareTo(value) >= 0)
       {
-        bits = getBits(value, i + 2);
+        exponent = i;
         break;
       }
     }
 
-    if (bits == 0)
-      bits = (value.floatValue() > 20.47)
-        ? getBits(value, 1)
-        : getBits(value, 0);
-
+    bits = (value.floatValue() > 20.47)
+        ? (int)Math.round((value.doubleValue() / Math.pow(2, exponent))*100)
+        : Math.round(value.multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).floatValue());
+    
+    bits += exponent << 11;
+    
     return new byte[] { (byte)(((bits + sign) & 0xFF00) >> 8), (byte)(bits & 0xFF) };
   }
 
-
-  private int getBits(BigDecimal decimal, int exponent)
-  {
-//    if (decimal.compareTo(basevalues[exponent]) > 0)
-//      decimal = basevalues[exponent];
-
-    if (exponent == 0)
-    {
-      return Math.round(decimal.divide(KNX_FLOAT_MAXIMUM_PRECISION).floatValue()) & 0x7FF;
-    }
-    else
-    {
-//      BigDecimal precision = new BigDecimal(0.01*Math.pow(2, exponent)).setScale(2, RoundingMode.HALF_UP);
-//      int mantissa = Math.round(decimal.subtract(basevalues[exponent-1]).divide(precision).floatValue()) & 0x7FF;
-
-      double base = 20.47 * Math.pow(2, exponent - 1);
-      double val = decimal.doubleValue();
-      int mantissa = (int)Math.round((val - base) / (0.01 * Math.pow(2, exponent)));
-      
-      return mantissa += exponent << 11;
-    }
-  }
 
 }
 
