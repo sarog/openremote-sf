@@ -20,12 +20,13 @@
  */
 package org.openremote.controller.command;
 
+import java.math.BigDecimal;
+
 import org.openremote.controller.exception.ConversionException;
 
 /**
  * Encapsulates command parameters passed through REST interface to protocol command builders. <p>
  *
- * This is currently a very simplistic implementation that only deals with single integer values.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -37,7 +38,7 @@ public class CommandParameter
   /**
    * Command parameter value.
    */
-  private int value;
+  private BigDecimal value;
 
 
   // Constructors ---------------------------------------------------------------------------------
@@ -45,22 +46,22 @@ public class CommandParameter
   /**
    * Constructs a new command parameter with a given integer value.
    *
-   * @param integerValue    value of the parameter
+   * @param number    value of the parameter
    *
    * @throws ConversionException  if the conversion from the string representation of command
    *                              parameter cannot be parsed and converted to integer for any
    *                              reason
    */
-  public CommandParameter(String integerValue) throws ConversionException
+  public CommandParameter(String number) throws ConversionException
   {
     try
     {
-      value = Integer.parseInt(integerValue);
+      value = new BigDecimal(number);
     }
     catch (NumberFormatException exception)
     {
       throw new ConversionException(
-          "Failed to parse " + integerValue + " to integer : " + exception.getMessage(), exception
+          "Failed to parse " + number + " to integer : " + exception.getMessage(), exception
       );
     }
   }
@@ -73,7 +74,7 @@ public class CommandParameter
    *
    * @return  value of integer command parameter
    */
-  public int getValue()
+  public BigDecimal getValue()
   {
     return value;
   }
