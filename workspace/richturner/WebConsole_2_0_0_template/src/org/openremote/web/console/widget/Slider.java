@@ -2,10 +2,14 @@ package org.openremote.web.console.widget;
 
 import java.awt.Event;
 
+import org.openremote.web.console.event.drag.DragCancelEvent;
+import org.openremote.web.console.event.drag.DragEndEvent;
+import org.openremote.web.console.event.drag.DragMoveEvent;
 import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.event.press.PressStartHandler;
+import org.openremote.web.console.event.tap.TapEvent;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -37,6 +41,7 @@ public class Slider extends ConsoleWidget {
 	private int maxValue = 100;
 	private int pixelRange = 0;
 	private double pixelValueDensity = 0;
+	private int lastValue = 0;
 	private int value = 0;
 	private int halfHandle = 0;
 	private int stepSize = 5;
@@ -46,7 +51,6 @@ public class Slider extends ConsoleWidget {
 		protected static final int BORDER_WIDTH = 1;
 		private int height;
 		private int width;
-		private boolean draggable = true;
 		private Element element;
 		
 		public Handle(int size) {
@@ -60,22 +64,47 @@ public class Slider extends ConsoleWidget {
 			DOM.setStyleAttribute(element, "WebkitBorderRadius", height + "px");
 			DOM.setStyleAttribute(element, "MozBorderRadius", height + "px");
 			DOM.setStyleAttribute(element, "borderRadius", height + "px");
-		   DOM.setStyleAttribute(element, "borderWidth", BORDER_WIDTH + "px");
-		   DOM.setStyleAttribute(element, "borderStyle", "solid");
-		   setStylePrimaryName("slider_handle");
-		   
-		   this.addHandler(this, DragStartEvent.getType());
+			DOM.setStyleAttribute(element, "borderWidth", BORDER_WIDTH + "px");
+			DOM.setStyleAttribute(element, "borderStyle", "solid");
+			setStylePrimaryName("slider_handle");
+		   	
+			this.addHandler(this, DragStartEvent.getType());
+			this.addHandler(this, DragMoveEvent.getType());
+			this.addHandler(this, DragEndEvent.getType());
+			this.addHandler(this, DragCancelEvent.getType());
 		}
 		
 		/**
 		 * React to drag event only if 
 		 */
 		public void onDragStart(DragStartEvent event) {
+			// TODO
+			// Record current handle position
+		}
+
+		@Override
+		public void onDragMove(DragMoveEvent event) {
 			doHandleDrag(event.getXPos());
+		}
+
+		@Override
+		public void onDragEnd(DragEndEvent event) {
+			// TODO Auto-generated method stub
+			doValueChange();
+			// Fire value change event
+			// Clear cached drag info
+		}
+
+		@Override
+		public void onDragCancel(DragCancelEvent event) {
+			// This event occurs when press moves off the console display
+			// Going to treat this as a 
+			// Undo drag and put handle back where it was
+			Window.alert("CANCEL DRAG");
 		}
 	}
 	
-	class SlideBar extends SimplePanel {
+	class SlideBar extends SimplePanel implements Tappable {
 		protected static final double HEIGHT_RATIO = 0.3;
 		protected static final double WIDTH_RATIO = 1.0;
 		private boolean clickable = true;
@@ -83,13 +112,22 @@ public class Slider extends ConsoleWidget {
 		public SlideBar(long width, long height) {
 			Element element = getElement();
 			
-		   setStylePrimaryName("slider_bar");
-		   setHeight(height + "px");
-		   setWidth(width + "px");
+			setStylePrimaryName("slider_bar");
+			setHeight(height + "px");
+			setWidth(width + "px");
 			DOM.setStyleAttribute(element, "MozBorderRadius", "4px");
 			DOM.setStyleAttribute(element, "WebkitBorderRadius", "4px");
 			DOM.setStyleAttribute(element, "borderRadius", "4px");
 			DOM.setStyleAttribute(element, "WebkitUserSelect", "none");
+		}
+
+		@Override
+		public void onTap(TapEvent event) {
+			if (!clickable) {
+				return;
+			}
+			doHandleDrag(event.getXPos());
+			doValueChange();			
 		}
 	}
 	
@@ -174,5 +212,13 @@ public class Slider extends ConsoleWidget {
 		pixelRange = pixelMax-pixelMin;
 		pixelValueDensity = (double) (maxValue - minValue) / pixelRange;
 		isInitialised = true;
+	}
+	
+	private void doValueChange() {
+		if (value != lastValue) {
+			// Fire value change event on console unit event bus
+			Window.alert("TELL THE WORLD NEW VALUE IS: " + value);
+			lastValue = value;
+		}
 	}
 }

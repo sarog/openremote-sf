@@ -1,19 +1,17 @@
 package org.openremote.web.console.client;
 
 import org.openremote.web.console.client.unit.ConsoleUnit;
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.type.FullScreenUnit;
-import org.openremote.web.console.type.ResizableUnit;
+import org.openremote.web.console.client.unit.type.FullScreenUnit;
+import org.openremote.web.console.client.unit.type.ResizableUnit;
+import org.openremote.web.console.event.WindowResizeHandlerImpl;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -26,6 +24,7 @@ public class WebConsole implements EntryPoint {
 	public static final String CONSOLE_UNIT_CONTAINER_ID = "consoleContainer";
 	VerticalPanel mainPanel;
 	private ConsoleUnit consoleUnit;
+	private WindowResizeHandlerImpl resizeHandler;
 	int windowHeightPortrait = 2000;
 	int windowWidthPortrait = 2000;
 	int windowHeightLandscape = 2000;
@@ -38,12 +37,14 @@ public class WebConsole implements EntryPoint {
 	Timer addressBarMonitor;
 	boolean isPortraitInitialised = false;
 	boolean isLandscapeInitialised = false;
-	private ConsoleUnitEventManager eventManager;
 	
 	public void onModuleLoad() {
 		// Fix body size as square to aid with orientation changes
 		RootPanel.getBodyElement().getStyle().setHeight(2000, Unit.PX);
 		RootPanel.getBodyElement().getStyle().setWidth(2000, Unit.PX);
+		
+		// Create Window Resize handler
+		resizeHandler = new WindowResizeHandlerImpl(this);
 		
 		// Create a timer to wait for window to be initialised
 		Timer initialisationTimer = new Timer() {
@@ -55,10 +56,7 @@ public class WebConsole implements EntryPoint {
 					this.cancel();
 					
 					// Update window
-					updateWindow();
-					
-					// Create Event Manager
-					createEventManager();
+					updateWindow();				
 					
 					// Create the Console Unit
 					createConsoleUnit();
@@ -105,7 +103,7 @@ public class WebConsole implements EntryPoint {
 				
 				// Call resize event if window now fully initialised
 				if (isMobileWindowFullyInitialised()) {
-					eventManager.getResizeHandler().processResize();
+					resizeHandler.processResize();
 				}
 		  }
 		};
@@ -117,10 +115,6 @@ public class WebConsole implements EntryPoint {
 	   addressBarMonitor.schedule(1000);
 	}
 	
-	public void createEventManager() {
-		eventManager = new ConsoleUnitEventManager(this);
-	}
-	
 	/**
 	 * Create the console unit and add it to the page
 	 * Vertically align the console unit in the middle
@@ -130,9 +124,9 @@ public class WebConsole implements EntryPoint {
 		ConsoleUnit console;
 		
 		if(BrowserUtils.isMobile || windowWidthPortrait < ResizableUnit.requiredConsoleWidth() || windowHeightPortrait < ResizableUnit.requiredConsoleHeight()) {
-			console = new FullScreenUnit(eventManager, getWindowWidth("portrait"), getWindowHeight("portrait"));
+			console = new FullScreenUnit(getWindowWidth("portrait"), getWindowHeight("portrait"));
 		} else {
-			console = new ResizableUnit(eventManager);
+			console = new ResizableUnit();
 		}
 		consoleUnit = console;
 	}
@@ -249,9 +243,5 @@ public class WebConsole implements EntryPoint {
 	
 	public boolean isMobileWindowFullyInitialised() {
 		return (isPortraitInitialised && isLandscapeInitialised);
-	}
-	
-	public HandlerManager getEventBus() {
-		return eventManager.getEventBus();
 	}
 }

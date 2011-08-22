@@ -1,21 +1,32 @@
 package org.openremote.web.console.event.swipe;
 
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
- * This event provides an amalgamation of touchstart and mousedown events
- * so it can be used for mobile and desktop human interaction detection
+ * This is a Swipe event and has an axis (horizontal, vertical) and direction (up, down, left, right)
  * @author rich
- *
  */
 public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	private static final Type<SwipeHandler> TYPE = new Type<SwipeHandler>();
-	public static final int MIN_X_TOLERANCE = 200;
-	public static final int MAX_Y_TOLERANCE = 80;
-	String direction;
+	public SwipeDirection direction;
+	public SwipeAxis axis;
 	
-	public SwipeEvent(String direction) {
-			this.direction = direction;
+	public static enum SwipeAxis {
+		HORIZONTAL,
+		VERTICAL;
+	}
+	
+	public static enum SwipeDirection {
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN;
+	}
+	
+	public SwipeEvent(SwipeAxis axis, SwipeDirection direction) {
+		this.axis = axis;
+		this.direction = direction;
 	}
 	
 	@Override
@@ -32,7 +43,41 @@ public class SwipeEvent extends GwtEvent<SwipeHandler> {
 		return TYPE;
 	}
 
-	public String getDirection() {
+	public SwipeDirection getDirection() {
 		return direction;
+	}
+	
+	public SwipeAxis getAxis() {
+		return axis;
+	}
+	
+	public static final class SwipeLimits {
+		private static final double PRIMARY_DISTANCE_RATIO = 0.8;
+		private static final double SECONDARY_DISTANCE_RATIO = 0.3;
+		private static final int MIN_SECONDARY_DISTANCE_PIXELS = 30;
+		private static final int MAX_SECONDARY_DISTANCE_PIXELS = 80;
+		public int primaryAxisMinDistance;
+		public int secondaryAxisMaxDistance;
+		
+		public SwipeLimits(Widget sourceWidget, SwipeAxis axis) {
+			int widgetWidth = sourceWidget.getOffsetWidth();
+			int widgetHeight = sourceWidget.getOffsetHeight();
+			int widgetPrimary = 0;
+			int widgetSecondary = 0;
+			
+			switch(axis) {
+				case HORIZONTAL:
+					widgetPrimary = widgetWidth;
+					widgetSecondary = widgetHeight;
+					break;
+				case VERTICAL:
+					widgetPrimary = widgetHeight;
+					widgetSecondary = widgetWidth;
+			}
+			primaryAxisMinDistance = (int)(PRIMARY_DISTANCE_RATIO * widgetPrimary);
+			secondaryAxisMaxDistance = (int)(SECONDARY_DISTANCE_RATIO * widgetSecondary);
+			secondaryAxisMaxDistance = secondaryAxisMaxDistance < MIN_SECONDARY_DISTANCE_PIXELS ? MIN_SECONDARY_DISTANCE_PIXELS : secondaryAxisMaxDistance;
+			secondaryAxisMaxDistance = secondaryAxisMaxDistance > MAX_SECONDARY_DISTANCE_PIXELS ? MAX_SECONDARY_DISTANCE_PIXELS : secondaryAxisMaxDistance;
+		}
 	}
 }
