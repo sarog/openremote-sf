@@ -61,7 +61,6 @@ public abstract class ScreenComponent extends ComponentContainer {
          return new ScreenImage(canvas, (UIImage) uiComponent);
       } else if (uiComponent instanceof UITabbar) {
          return new ScreenTabbar(canvas,(UITabbar)uiComponent);
-         //Added by Selva
       }else if (uiComponent instanceof UIWebView) {
          return new ScreenWebView(canvas,(UIWebView)uiComponent);
       }

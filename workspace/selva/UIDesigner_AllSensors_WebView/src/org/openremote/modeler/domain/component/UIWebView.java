@@ -6,14 +6,17 @@ import org.openremote.modeler.client.utils.SensorLink;
 import org.openremote.modeler.domain.Sensor;
 import org.openremote.modeler.utils.StringUtils;
 
-//Added by Selva
+/**
+ * WebView component
+ * 
+ * @author Selvakkumar Palaniyappan
+ *
+ */
 public class UIWebView extends UIComponent implements SensorOwner {
 	
-   	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4815544266807672921L;;
-	private String url = "URL";
+   	
+	   private static final long serialVersionUID = -4815544266807672921L;;
+	   private String url = "URL";
 	   private String userid = "";
 	   private String password = "";
 	

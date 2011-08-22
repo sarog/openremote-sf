@@ -117,8 +117,7 @@ public abstract class UIComponent extends BusinessEntity {
             return new UIImage((UIImage) uiComponent);
          }  else if (uiComponent instanceof UITabbar) {
             return new UITabbar((UITabbar)uiComponent);
-         }//Added by Selva
-         else if (uiComponent instanceof UIWebView) {
+         } else if (uiComponent instanceof UIWebView) {
              return new UIWebView((UIWebView)uiComponent);
           }
       }
