@@ -446,8 +446,7 @@ public class TreePanelBuilder {
             } else if (thisModel.getBean() instanceof UITabbar) {
                return ICON.tabbarConfigIcon();
             } else if (thisModel.getBean() instanceof UITabbarItem) {
-               return ICON.tabbarItemIcon();
-               //Added by Selva
+               return ICON.tabbarItemIcon();             
             }else if (thisModel.getBean() instanceof UIWebView) {           
             	return ICON.webviewIcon();
             }else {
