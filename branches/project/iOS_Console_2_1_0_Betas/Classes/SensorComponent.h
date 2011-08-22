@@ -29,6 +29,6 @@
 	Sensor *sensor;
 }
 
-@property(nonatomic,readonly)Sensor *sensor;
+@property(nonatomic, retain) Sensor *sensor;
 
 @end

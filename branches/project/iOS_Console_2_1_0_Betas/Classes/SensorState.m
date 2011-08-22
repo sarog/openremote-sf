@@ -29,6 +29,16 @@
 	return STATE;
 }
 
+- (id)initWithName:(NSString *)sensorName value:(NSString *)sensorValue
+{
+    self = [super init];
+    if (self) {
+        name = [sensorName copy];
+        value = [sensorValue copy];
+    }
+    return self;
+}
+
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		name = [[attributeDict objectForKey:NAME] copy];

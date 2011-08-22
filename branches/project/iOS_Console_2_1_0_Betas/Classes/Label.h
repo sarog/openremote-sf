@@ -38,7 +38,9 @@
 }
 
 @property(nonatomic, assign) int fontSize;
-@property(nonatomic, retain) NSString *color;
-@property(nonatomic, retain) NSString *text;
+@property(nonatomic, copy) NSString *color;
+@property(nonatomic, copy) NSString *text;
+
+- (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue;
 
 @end

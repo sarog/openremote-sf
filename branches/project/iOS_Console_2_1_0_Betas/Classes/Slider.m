@@ -25,6 +25,22 @@
 
 @synthesize thumbImage, vertical, passive, minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
 
+- (id)initWithId:(int)anId vertical:(BOOL)verticalFlag passive:(BOOL)passiveFlag thumbImageSrc:(NSString *)thumbImageSrc
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+        vertical = verticalFlag;
+        passive = passiveFlag;
+        thumbImage = [[Image alloc] init];
+		thumbImage.src = thumbImageSrc;
+		// Set default values for bounds, in case they're not provided in panel.xml
+		minValue = 0.0;
+		maxValue = 100.0;
+    }
+    return self;
+}
+
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
 - (NSString *) elementName {

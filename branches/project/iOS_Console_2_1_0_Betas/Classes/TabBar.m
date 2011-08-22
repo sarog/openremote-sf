@@ -30,6 +30,14 @@
 	return TABBAR;
 }
 
+- (id)init {
+    self = [super init];
+    if (self) {
+		tabBarItems = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 #pragma mark Delegate methods of NSXMLParser
 /**
  * Initialize according to the XML parser.

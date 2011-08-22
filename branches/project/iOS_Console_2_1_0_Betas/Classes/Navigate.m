@@ -25,9 +25,17 @@
 
 @synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout, fromGroup, fromScreen;
 
-- (id)init {
+- (id)initWithToScreen:(int)screenId toGroup:(int)groupId isPreviousScreen:(BOOL)isPreviousScreenFlag isNextScreen:(BOOL)isNextScreenFlag isSetting:(BOOL)isSettingFlag isBack:(BOOL)isBackFlag isLogin:(BOOL)isLoginFlag isLogout:(BOOL)isLogoutFlag
+{
 	if (self = [super init]) {
-		
+		toScreen = screenId;
+        toGroup = groupId;
+        isPreviousScreen = isPreviousScreenFlag;
+        isNextScreen = isNextScreenFlag;
+        isSetting = isSettingFlag;
+        isBack = isBackFlag;
+        isLogin = isLoginFlag;
+        isLogout = isLogoutFlag;
 	}
 	return self;
 }

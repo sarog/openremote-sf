@@ -30,6 +30,17 @@
 	return LOCALLOGIC;
 }
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+		sensors = [[NSMutableDictionary alloc] init];
+		commands = [[NSMutableDictionary alloc] init];
+		tasks = [[NSMutableDictionary alloc] init];
+    }
+    return self;
+}
+
 #pragma mark Delegate methods of NSXMLParser
 /**
  * Initialize according to the XML parser.
@@ -53,18 +64,33 @@
 	if ([elementName isEqualToString:SENSOR]) {
 		NSLog(@"start sensor in locallogic");
 		LocalSensor *sensor = [[LocalSensor alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[sensors setObject:sensor forKey:[NSNumber numberWithInt:sensor.componentId]];
+        [self addSensor:sensor];
 		[sensor release];
 		NSLog(@"end sensor in locallogic");
 	} else if ([elementName isEqualToString:COMMAND]) {
 		LocalCommand *command = [[LocalCommand alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[commands setObject:command forKey:[NSNumber numberWithInt:command.componentId]];
+        [self addCommand:command];
 		[command release];
 	} else if ([elementName isEqualToString:TASK]) {
 		LocalTask *task = [[LocalTask alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[tasks setObject:task forKey:[NSNumber numberWithInt:task.componentId]];
+        [self addTask:task];
 		[task release];
 	}	
+}
+
+- (void)addSensor:(LocalSensor *)sensor
+{
+    [sensors setObject:sensor forKey:[NSNumber numberWithInt:sensor.componentId]];
+}
+
+- (void)addCommand:(LocalCommand *)command
+{
+    [commands setObject:command forKey:[NSNumber numberWithInt:command.componentId]];
+}
+
+- (void)addTask:(LocalTask *)task
+{
+    [tasks setObject:task forKey:[NSNumber numberWithInt:task.componentId]];
 }
 
 - (LocalSensor *)sensorForId:(NSUInteger)anId {

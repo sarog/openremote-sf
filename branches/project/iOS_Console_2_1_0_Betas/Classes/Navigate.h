@@ -52,4 +52,6 @@
 @property (nonatomic, readwrite, assign) int fromGroup;
 @property (nonatomic, readwrite, assign) int fromScreen;
 
+- (id)initWithToScreen:(int)screenId toGroup:(int)groupId isPreviousScreen:(BOOL)isPreviousScreenFlag isNextScreen:(BOOL)isNextScreenFlag isSetting:(BOOL)isSettingFlag isBack:(BOOL)isBackFlag isLogin:(BOOL)isLoginFlag isLogout:(BOOL)isLogoutFlag;
+
 @end

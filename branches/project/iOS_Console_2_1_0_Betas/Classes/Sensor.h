@@ -39,4 +39,6 @@
 @property(nonatomic, readonly)int sensorId;
 @property(nonatomic, readonly)NSMutableArray *states;
 
+- (id)initWithId:(int)anId;
+
 @end

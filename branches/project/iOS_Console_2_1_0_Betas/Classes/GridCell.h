@@ -43,6 +43,8 @@
 @property (nonatomic, readonly) int y;
 @property (nonatomic, readonly) int rowspan;
 @property (nonatomic, readonly) int colspan;
-@property (nonatomic, readonly) Component *component;
+@property (nonatomic, retain) Component *component;
+
+- (id)initWithX:(int)xPos y:(int)yPos rowspan:(int)rowspanValue colspan:(int)colspanValue;
 
 @end

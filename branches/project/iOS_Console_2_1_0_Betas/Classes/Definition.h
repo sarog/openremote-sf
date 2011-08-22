@@ -117,7 +117,7 @@
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,retain) NSMutableArray *labels;
 @property (nonatomic,retain) TabBar *tabBar;
-@property (nonatomic, readonly) LocalLogic *localLogic;
+@property (nonatomic, retain) LocalLogic *localLogic;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
 @property (nonatomic,retain) UILabel *loading;
 

@@ -55,8 +55,8 @@
 }
 
 @property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) Image *defaultImage;
-@property (nonatomic, readonly) Image *pressedImage;
+@property (nonatomic, retain) Image *defaultImage;
+@property (nonatomic, retain) Image *pressedImage;
 @property (nonatomic, readonly) BOOL repeat;
 @property (nonatomic, readonly) NSUInteger repeatDelay;
 @property (nonatomic, readonly) BOOL hasPressCommand;
@@ -64,7 +64,9 @@
 @property (nonatomic, readonly) BOOL hasLongPressCommand;
 @property (nonatomic, readonly) BOOL hasLongReleaseCommand;
 @property (nonatomic, readonly) NSUInteger longPressDelay;
-@property (nonatomic, readonly) Navigate *navigate;
+@property (nonatomic, retain) Navigate *navigate;
 @property (nonatomic, readonly) NSString *subElememntNameOfBackground;
+
+- (id)initWithId:(int)anId name:(NSString *)aName repeat:(BOOL)repeatFlag repeatDelay:(int)aRepeatDelay hasPressCommand:(BOOL)hasPressCommandFlag hasShortReleaseCommand:(BOOL)hasShortReleaseCommandFlag hasLongPressCommand:(BOOL)hasLongPressCommandFlag hasLongReleaseCommand:(BOOL)hasLongReleaseCommandFlag longPressDelay:(int)aLongPressDelay;
 
 @end

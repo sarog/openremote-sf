@@ -29,6 +29,21 @@
  
 @synthesize screenId,name,background,layouts,gestures,landscape,inverseScreenId;
 
+- (id)initWithScreenId:(int)anId name:(NSString *)aName landscape:(BOOL)landscapeFlag inverseScreenId:(int)anInverseScreenId
+{
+    if (self = [super init]) {
+		screenId = anId;
+		name = [aName copy];
+		layouts = [[NSMutableArray alloc] init];
+		gestures = [[NSMutableArray alloc] init];
+		
+		landscape = landscapeFlag;
+		inverseScreenId = anInverseScreenId;
+	}
+	return self;
+}
+
+
 #pragma mark constructor
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {

@@ -39,8 +39,10 @@
 	Label *label;
 }
 
-@property (nonatomic, readwrite, retain) NSString *src;
-@property (nonatomic, readwrite, retain) NSString *style;
+@property (nonatomic, readwrite, copy) NSString *src;
+@property (nonatomic, readwrite, copy) NSString *style;
 @property (nonatomic, readwrite, retain) Label *label;
+
+- (id)initWithId:(int)anId src:(NSString *)srcValue style:(NSString *)styleValue;
 
 @end

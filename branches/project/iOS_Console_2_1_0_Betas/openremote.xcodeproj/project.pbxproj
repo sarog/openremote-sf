@@ -23,6 +23,10 @@
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
+		6010DE7A13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
+		6010DE7B13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
+		6010DE8E13FEB8D3001E6AA9 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
+		6010DE8F13FEB8D3001E6AA9 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
@@ -126,6 +130,62 @@
 		60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
 		6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
+		60987E4913FF071E00967DEA /* DefinitionElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4813FF071E00967DEA /* DefinitionElementParser.m */; };
+		60987E4A13FF071E00967DEA /* DefinitionElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4813FF071E00967DEA /* DefinitionElementParser.m */; };
+		60987E4D13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */; };
+		60987E4E13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */; };
+		60987E5113FF0DA000967DEA /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
+		60987E5213FF0DA000967DEA /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
+		60987E5513FF8DA400967DEA /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
+		60987E5613FF8DA400967DEA /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
+		60987E5913FF8DBD00967DEA /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
+		60987E5A13FF8DBD00967DEA /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
+		60987E5D13FF8DD100967DEA /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
+		60987E5E13FF8DD100967DEA /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
+		60987E6113FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
+		60987E6213FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
+		60987E6513FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
+		60987E6613FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
+		60987E6913FF8E1300967DEA /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
+		60987E6A13FF8E1300967DEA /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
+		60987E6D13FF8E2700967DEA /* BackgroundParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6C13FF8E2200967DEA /* BackgroundParser.m */; };
+		60987E6E13FF8E2700967DEA /* BackgroundParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6C13FF8E2200967DEA /* BackgroundParser.m */; };
+		60987E71140157A500967DEA /* LayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E70140157A300967DEA /* LayoutContainerParser.m */; };
+		60987E72140157A500967DEA /* LayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E70140157A300967DEA /* LayoutContainerParser.m */; };
+		60987E761401796F00967DEA /* GridCellParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E751401796D00967DEA /* GridCellParser.m */; };
+		60987E771401796F00967DEA /* GridCellParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E751401796D00967DEA /* GridCellParser.m */; };
+		60987E7A14017B4D00967DEA /* LabelParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7914017B3A00967DEA /* LabelParser.m */; };
+		60987E7B14017B4D00967DEA /* LabelParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7914017B3A00967DEA /* LabelParser.m */; };
+		60987E7E14017B6E00967DEA /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
+		60987E7F14017B6E00967DEA /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
+		60987E8214017B7B00967DEA /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
+		60987E8314017B7B00967DEA /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
+		60987E8614017BC000967DEA /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParser.m */; };
+		60987E8714017BC000967DEA /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParser.m */; };
+		60987E8A14017BD400967DEA /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
+		60987E8B14017BD400967DEA /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
+		60987E8E14017BE500967DEA /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
+		60987E8F14017BE500967DEA /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
+		60987E9214017BF400967DEA /* ColorPickerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9114017BF100967DEA /* ColorPickerParser.m */; };
+		60987E9314017BF400967DEA /* ColorPickerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9114017BF100967DEA /* ColorPickerParser.m */; };
+		60987E961402538E00967DEA /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
+		60987E971402538E00967DEA /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
+		60987E9A14025B8400967DEA /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
+		60987E9B14025B8400967DEA /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
+		60987E9E14025DC000967DEA /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
+		60987E9F14025DC000967DEA /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
+		60987EA31402667600967DEA /* LabelStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelStandby.m */; };
+		60987EA41402667600967DEA /* LabelStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelStandby.m */; };
+		60987EB41402AA0E00967DEA /* ScreenStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenStandby.m */; };
+		60987EB51402AA0E00967DEA /* ScreenStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenStandby.m */; };
+		60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
+		60987EB91402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
+		60987EBC1402B0C000967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
+		60987EBD1402B0C100967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
+		60987EC01402B11F00967DEA /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
+		60987EC11402B12000967DEA /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
+		60987EC41402B15800967DEA /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
+		60987EC51402B15800967DEA /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
 		609C57DC137430F60093C03A /* StringUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */; };
 		609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */; };
@@ -470,8 +530,12 @@
 		33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryControlView.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
-		6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; path = StyleValue1TextEntryCell.h; sourceTree = "<group>"; };
+		6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StyleValue1TextEntryCell.h; sourceTree = "<group>"; };
 		6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StyleValue1TextEntryCell.m; sourceTree = "<group>"; };
+		6010DE7813FEB389001E6AA9 /* DefinitionParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionParser.h; sourceTree = "<group>"; };
+		6010DE7913FEB389001E6AA9 /* DefinitionParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionParser.m; sourceTree = "<group>"; };
+		6010DE8C13FEB8D3001E6AA9 /* ScreenParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenParser.h; sourceTree = "<group>"; };
+		6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenParser.m; sourceTree = "<group>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
 		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
@@ -518,6 +582,63 @@
 		60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerDetailViewController.m; sourceTree = "<group>"; };
 		6097DAEE1378099D00E22AA8 /* ORControllerPollingSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORControllerPollingSender.h; sourceTree = "<group>"; };
 		6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORControllerPollingSender.m; sourceTree = "<group>"; };
+		60987E4313FF048B00967DEA /* DefinitionElementParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionElementParser.h; sourceTree = "<group>"; };
+		60987E4813FF071E00967DEA /* DefinitionElementParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionElementParser.m; sourceTree = "<group>"; };
+		60987E4B13FF0D7300967DEA /* DefinitionElementParserRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionElementParserRegister.h; sourceTree = "<group>"; };
+		60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionElementParserRegister.m; sourceTree = "<group>"; };
+		60987E4F13FF0DA000967DEA /* PanelDefinitionParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelDefinitionParser.h; sourceTree = "<group>"; };
+		60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanelDefinitionParser.m; sourceTree = "<group>"; };
+		60987E5313FF8DA300967DEA /* GroupParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupParser.h; sourceTree = "<group>"; };
+		60987E5413FF8DA300967DEA /* GroupParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupParser.m; sourceTree = "<group>"; };
+		60987E5713FF8DBC00967DEA /* TabBarParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarParser.h; sourceTree = "<group>"; };
+		60987E5813FF8DBC00967DEA /* TabBarParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarParser.m; sourceTree = "<group>"; };
+		60987E5B13FF8DD000967DEA /* LocalLogicParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalLogicParser.h; sourceTree = "<group>"; };
+		60987E5C13FF8DD100967DEA /* LocalLogicParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalLogicParser.m; sourceTree = "<group>"; };
+		60987E5F13FF8DE600967DEA /* AbsoluteLayoutContainerParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbsoluteLayoutContainerParser.h; sourceTree = "<group>"; };
+		60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbsoluteLayoutContainerParser.m; sourceTree = "<group>"; };
+		60987E6313FF8E0300967DEA /* GridLayoutContainerParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayoutContainerParser.h; sourceTree = "<group>"; };
+		60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayoutContainerParser.m; sourceTree = "<group>"; };
+		60987E6713FF8E1200967DEA /* GestureParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GestureParser.h; sourceTree = "<group>"; };
+		60987E6813FF8E1300967DEA /* GestureParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GestureParser.m; sourceTree = "<group>"; };
+		60987E6B13FF8E2000967DEA /* BackgroundParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundParser.h; sourceTree = "<group>"; };
+		60987E6C13FF8E2200967DEA /* BackgroundParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundParser.m; sourceTree = "<group>"; };
+		60987E6F140157A200967DEA /* LayoutContainerParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutContainerParser.h; sourceTree = "<group>"; };
+		60987E70140157A300967DEA /* LayoutContainerParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutContainerParser.m; sourceTree = "<group>"; };
+		60987E741401796B00967DEA /* GridCellParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridCellParser.h; sourceTree = "<group>"; };
+		60987E751401796D00967DEA /* GridCellParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridCellParser.m; sourceTree = "<group>"; };
+		60987E7814017B3100967DEA /* LabelParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelParser.h; sourceTree = "<group>"; };
+		60987E7914017B3A00967DEA /* LabelParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelParser.m; sourceTree = "<group>"; };
+		60987E7C14017B6B00967DEA /* ImageParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageParser.h; sourceTree = "<group>"; };
+		60987E7D14017B6C00967DEA /* ImageParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageParser.m; sourceTree = "<group>"; };
+		60987E8014017B7800967DEA /* WebParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebParser.h; sourceTree = "<group>"; };
+		60987E8114017B7900967DEA /* WebParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebParser.m; sourceTree = "<group>"; };
+		60987E8414017BBC00967DEA /* ButtonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParser.h; sourceTree = "<group>"; };
+		60987E8514017BBE00967DEA /* ButtonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParser.m; sourceTree = "<group>"; };
+		60987E8814017BCE00967DEA /* SwitchParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchParser.h; sourceTree = "<group>"; };
+		60987E8914017BCF00967DEA /* SwitchParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchParser.m; sourceTree = "<group>"; };
+		60987E8C14017BDE00967DEA /* SliderParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderParser.h; sourceTree = "<group>"; };
+		60987E8D14017BE100967DEA /* SliderParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderParser.m; sourceTree = "<group>"; };
+		60987E9014017BEE00967DEA /* ColorPickerParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerParser.h; sourceTree = "<group>"; };
+		60987E9114017BF100967DEA /* ColorPickerParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPickerParser.m; sourceTree = "<group>"; };
+		60987E941402538500967DEA /* NavigateParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigateParser.h; sourceTree = "<group>"; };
+		60987E951402538800967DEA /* NavigateParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigateParser.m; sourceTree = "<group>"; };
+		60987E9814025B7800967DEA /* SensorLinkParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorLinkParser.h; sourceTree = "<group>"; };
+		60987E9914025B7E00967DEA /* SensorLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorLinkParser.m; sourceTree = "<group>"; };
+		60987E9C14025DB300967DEA /* SensorStateParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorStateParser.h; sourceTree = "<group>"; };
+		60987E9D14025DB800967DEA /* SensorStateParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorStateParser.m; sourceTree = "<group>"; };
+		60987EA11402667600967DEA /* LabelStandby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelStandby.h; sourceTree = "<group>"; };
+		60987EA21402667600967DEA /* LabelStandby.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelStandby.m; sourceTree = "<group>"; };
+		60987EA914027F0200967DEA /* Standby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Standby.h; sourceTree = "<group>"; };
+		60987EB21402AA0E00967DEA /* ScreenStandby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenStandby.h; sourceTree = "<group>"; };
+		60987EB31402AA0E00967DEA /* ScreenStandby.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenStandby.m; sourceTree = "<group>"; };
+		60987EB61402ACFC00967DEA /* TabBarItemParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItemParser.h; sourceTree = "<group>"; };
+		60987EB71402AD0600967DEA /* TabBarItemParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarItemParser.m; sourceTree = "<group>"; };
+		60987EBA1402B08D00967DEA /* SensorParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorParser.h; sourceTree = "<group>"; };
+		60987EBB1402B09500967DEA /* SensorParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorParser.m; sourceTree = "<group>"; };
+		60987EBE1402B0FE00967DEA /* CommandParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandParser.h; sourceTree = "<group>"; };
+		60987EBF1402B10600967DEA /* CommandParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandParser.m; sourceTree = "<group>"; };
+		60987EC21402B14500967DEA /* TaskParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskParser.h; sourceTree = "<group>"; };
+		60987EC31402B14C00967DEA /* TaskParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskParser.m; sourceTree = "<group>"; };
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60A619591354A24900A7C87E /* NSString+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+ORAdditions.h"; sourceTree = "<group>"; };
 		60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+ORAdditions.m"; sourceTree = "<group>"; };
@@ -1222,6 +1343,70 @@
 			name = viewbase;
 			sourceTree = "<group>";
 		};
+		6010DE7713FEB35B001E6AA9 /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				60987EA01402658C00967DEA /* Standbys */,
+				60987E4F13FF0DA000967DEA /* PanelDefinitionParser.h */,
+				60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */,
+				60987E4B13FF0D7300967DEA /* DefinitionElementParserRegister.h */,
+				60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */,
+				60987E4313FF048B00967DEA /* DefinitionElementParser.h */,
+				60987E4813FF071E00967DEA /* DefinitionElementParser.m */,
+				6010DE7813FEB389001E6AA9 /* DefinitionParser.h */,
+				6010DE7913FEB389001E6AA9 /* DefinitionParser.m */,
+				6010DE8C13FEB8D3001E6AA9 /* ScreenParser.h */,
+				6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */,
+				60987E6F140157A200967DEA /* LayoutContainerParser.h */,
+				60987E70140157A300967DEA /* LayoutContainerParser.m */,
+				60987E5F13FF8DE600967DEA /* AbsoluteLayoutContainerParser.h */,
+				60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */,
+				60987E6313FF8E0300967DEA /* GridLayoutContainerParser.h */,
+				60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */,
+				60987E741401796B00967DEA /* GridCellParser.h */,
+				60987E751401796D00967DEA /* GridCellParser.m */,
+				60987E7814017B3100967DEA /* LabelParser.h */,
+				60987E7914017B3A00967DEA /* LabelParser.m */,
+				60987E7C14017B6B00967DEA /* ImageParser.h */,
+				60987E7D14017B6C00967DEA /* ImageParser.m */,
+				60987E8014017B7800967DEA /* WebParser.h */,
+				60987E8114017B7900967DEA /* WebParser.m */,
+				60987E8414017BBC00967DEA /* ButtonParser.h */,
+				60987E8514017BBE00967DEA /* ButtonParser.m */,
+				60987E8814017BCE00967DEA /* SwitchParser.h */,
+				60987E8914017BCF00967DEA /* SwitchParser.m */,
+				60987E8C14017BDE00967DEA /* SliderParser.h */,
+				60987E8D14017BE100967DEA /* SliderParser.m */,
+				60987E9014017BEE00967DEA /* ColorPickerParser.h */,
+				60987E9114017BF100967DEA /* ColorPickerParser.m */,
+				60987E6713FF8E1200967DEA /* GestureParser.h */,
+				60987E6813FF8E1300967DEA /* GestureParser.m */,
+				60987E6B13FF8E2000967DEA /* BackgroundParser.h */,
+				60987E6C13FF8E2200967DEA /* BackgroundParser.m */,
+				60987E5313FF8DA300967DEA /* GroupParser.h */,
+				60987E5413FF8DA300967DEA /* GroupParser.m */,
+				60987E5713FF8DBC00967DEA /* TabBarParser.h */,
+				60987E5813FF8DBC00967DEA /* TabBarParser.m */,
+				60987EB61402ACFC00967DEA /* TabBarItemParser.h */,
+				60987EB71402AD0600967DEA /* TabBarItemParser.m */,
+				60987E5B13FF8DD000967DEA /* LocalLogicParser.h */,
+				60987E5C13FF8DD100967DEA /* LocalLogicParser.m */,
+				60987E941402538500967DEA /* NavigateParser.h */,
+				60987E951402538800967DEA /* NavigateParser.m */,
+				60987E9814025B7800967DEA /* SensorLinkParser.h */,
+				60987E9914025B7E00967DEA /* SensorLinkParser.m */,
+				60987E9C14025DB300967DEA /* SensorStateParser.h */,
+				60987E9D14025DB800967DEA /* SensorStateParser.m */,
+				60987EBA1402B08D00967DEA /* SensorParser.h */,
+				60987EBB1402B09500967DEA /* SensorParser.m */,
+				60987EBE1402B0FE00967DEA /* CommandParser.h */,
+				60987EBF1402B10600967DEA /* CommandParser.m */,
+				60987EC21402B14500967DEA /* TaskParser.h */,
+				60987EC31402B14C00967DEA /* TaskParser.m */,
+			);
+			name = Parser;
+			sourceTree = "<group>";
+		};
 		605393F51383FED200F3F5FC /* Local logic */ = {
 			isa = PBXGroup;
 			children = (
@@ -1240,6 +1425,18 @@
 				608FBB76131FF90500C9089F /* SipController.m */,
 			);
 			name = SIP;
+			sourceTree = "<group>";
+		};
+		60987EA01402658C00967DEA /* Standbys */ = {
+			isa = PBXGroup;
+			children = (
+				60987EA914027F0200967DEA /* Standby.h */,
+				60987EA11402667600967DEA /* LabelStandby.h */,
+				60987EA21402667600967DEA /* LabelStandby.m */,
+				60987EB21402AA0E00967DEA /* ScreenStandby.h */,
+				60987EB31402AA0E00967DEA /* ScreenStandby.m */,
+			);
+			name = Standbys;
 			sourceTree = "<group>";
 		};
 		60A6199B1355EDAF00A7C87E /* include */ = {
@@ -1730,6 +1927,7 @@
 		8CFEE27F0F558C2900DF8759 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				6010DE7713FEB35B001E6AA9 /* Parser */,
 				8CECF85010EB6E3200C0E1BB /* AbsoluteLayoutContainer.h */,
 				8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */,
 				8CECF85210EB6E3200C0E1BB /* Background.h */,
@@ -2235,6 +2433,36 @@
 				60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 				60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
 				6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */,
+				6010DE7A13FEB389001E6AA9 /* DefinitionParser.m in Sources */,
+				6010DE8E13FEB8D3001E6AA9 /* ScreenParser.m in Sources */,
+				60987E4913FF071E00967DEA /* DefinitionElementParser.m in Sources */,
+				60987E4D13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */,
+				60987E5113FF0DA000967DEA /* PanelDefinitionParser.m in Sources */,
+				60987E5513FF8DA400967DEA /* GroupParser.m in Sources */,
+				60987E5913FF8DBD00967DEA /* TabBarParser.m in Sources */,
+				60987E5D13FF8DD100967DEA /* LocalLogicParser.m in Sources */,
+				60987E6113FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */,
+				60987E6513FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */,
+				60987E6913FF8E1300967DEA /* GestureParser.m in Sources */,
+				60987E6D13FF8E2700967DEA /* BackgroundParser.m in Sources */,
+				60987E71140157A500967DEA /* LayoutContainerParser.m in Sources */,
+				60987E761401796F00967DEA /* GridCellParser.m in Sources */,
+				60987E7A14017B4D00967DEA /* LabelParser.m in Sources */,
+				60987E7E14017B6E00967DEA /* ImageParser.m in Sources */,
+				60987E8214017B7B00967DEA /* WebParser.m in Sources */,
+				60987E8614017BC000967DEA /* ButtonParser.m in Sources */,
+				60987E8A14017BD400967DEA /* SwitchParser.m in Sources */,
+				60987E8E14017BE500967DEA /* SliderParser.m in Sources */,
+				60987E9214017BF400967DEA /* ColorPickerParser.m in Sources */,
+				60987E961402538E00967DEA /* NavigateParser.m in Sources */,
+				60987E9A14025B8400967DEA /* SensorLinkParser.m in Sources */,
+				60987E9E14025DC000967DEA /* SensorStateParser.m in Sources */,
+				60987EA31402667600967DEA /* LabelStandby.m in Sources */,
+				60987EB41402AA0E00967DEA /* ScreenStandby.m in Sources */,
+				60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */,
+				60987EBC1402B0C000967DEA /* SensorParser.m in Sources */,
+				60987EC01402B11F00967DEA /* CommandParser.m in Sources */,
+				60987EC41402B15800967DEA /* TaskParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2351,6 +2579,36 @@
 				60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
 				60AA14C513E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
 				6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */,
+				6010DE7B13FEB389001E6AA9 /* DefinitionParser.m in Sources */,
+				6010DE8F13FEB8D3001E6AA9 /* ScreenParser.m in Sources */,
+				60987E4A13FF071E00967DEA /* DefinitionElementParser.m in Sources */,
+				60987E4E13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */,
+				60987E5213FF0DA000967DEA /* PanelDefinitionParser.m in Sources */,
+				60987E5613FF8DA400967DEA /* GroupParser.m in Sources */,
+				60987E5A13FF8DBD00967DEA /* TabBarParser.m in Sources */,
+				60987E5E13FF8DD100967DEA /* LocalLogicParser.m in Sources */,
+				60987E6213FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */,
+				60987E6613FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */,
+				60987E6A13FF8E1300967DEA /* GestureParser.m in Sources */,
+				60987E6E13FF8E2700967DEA /* BackgroundParser.m in Sources */,
+				60987E72140157A500967DEA /* LayoutContainerParser.m in Sources */,
+				60987E771401796F00967DEA /* GridCellParser.m in Sources */,
+				60987E7B14017B4D00967DEA /* LabelParser.m in Sources */,
+				60987E7F14017B6E00967DEA /* ImageParser.m in Sources */,
+				60987E8314017B7B00967DEA /* WebParser.m in Sources */,
+				60987E8714017BC000967DEA /* ButtonParser.m in Sources */,
+				60987E8B14017BD400967DEA /* SwitchParser.m in Sources */,
+				60987E8F14017BE500967DEA /* SliderParser.m in Sources */,
+				60987E9314017BF400967DEA /* ColorPickerParser.m in Sources */,
+				60987E971402538E00967DEA /* NavigateParser.m in Sources */,
+				60987E9B14025B8400967DEA /* SensorLinkParser.m in Sources */,
+				60987E9F14025DC000967DEA /* SensorStateParser.m in Sources */,
+				60987EA41402667600967DEA /* LabelStandby.m in Sources */,
+				60987EB51402AA0E00967DEA /* ScreenStandby.m in Sources */,
+				60987EB91402AD0E00967DEA /* TabBarItemParser.m in Sources */,
+				60987EBD1402B0C100967DEA /* SensorParser.m in Sources */,
+				60987EC11402B12000967DEA /* CommandParser.m in Sources */,
+				60987EC51402B15800967DEA /* TaskParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

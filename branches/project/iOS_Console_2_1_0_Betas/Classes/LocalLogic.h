@@ -47,6 +47,10 @@
 	NSMutableDictionary *tasks;
 }
 
+- (void)addSensor:(LocalSensor *)sensor;
+- (void)addCommand:(LocalCommand *)command;
+- (void)addTask:(LocalTask *)task;
+
 - (LocalSensor *)sensorForId:(NSUInteger)anId;
 - (LocalCommand *)commandForId:(NSUInteger)anId;
 - (LocalTask *)taskForId:(NSUInteger)anId;

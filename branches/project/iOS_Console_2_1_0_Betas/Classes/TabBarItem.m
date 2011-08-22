@@ -24,6 +24,15 @@
 
 @synthesize tabBarItemName, navigate, tabBarItemImage;
 
+- (id)initWithName:(NSString *)aName
+{
+    self = [super init];
+    if (self) {
+        tabBarItemName = [aName copy];
+    }
+    return self;
+}
+
 // This method is abstract method of XMLEntity, must be overriden in it's subclass.
 - (NSString *) elementName {
 	return ITEM;

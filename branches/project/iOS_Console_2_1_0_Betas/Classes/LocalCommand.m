@@ -25,6 +25,17 @@
 
 @synthesize className, methodName;
 
+- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+        className = [aClassName retain];
+        methodName = [aMethodName retain];
+    }
+    return self;
+}
+
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {
 		componentId = [[attributeDict objectForKey:ID] intValue];

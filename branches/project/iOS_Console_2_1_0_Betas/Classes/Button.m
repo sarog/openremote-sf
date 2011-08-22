@@ -25,6 +25,26 @@
 @synthesize defaultImage, pressedImage, name, navigate, subElememntNameOfBackground;
 @synthesize repeat, repeatDelay, hasPressCommand, hasShortReleaseCommand, hasLongPressCommand, hasLongReleaseCommand, longPressDelay;
 
+- (id)initWithId:(int)anId name:(NSString *)aName repeat:(BOOL)repeatFlag repeatDelay:(int)aRepeatDelay hasPressCommand:(BOOL)hasPressCommandFlag hasShortReleaseCommand:(BOOL)hasShortReleaseCommandFlag hasLongPressCommand:(BOOL)hasLongPressCommandFlag hasLongReleaseCommand:(BOOL)hasLongReleaseCommandFlag longPressDelay:(int)aLongPressDelay
+{
+    self = [super init];
+	if (self) {
+        componentId = anId;
+        name = [aName copy];
+        repeat = repeatFlag;
+        repeatDelay = MAX(100, aRepeatDelay);
+        hasPressCommand = hasPressCommandFlag;
+        hasShortReleaseCommand = hasShortReleaseCommandFlag;
+        hasLongPressCommand = hasLongPressCommandFlag;
+        hasLongReleaseCommand = hasLongReleaseCommandFlag;
+        longPressDelay = MAX(250, aLongPressDelay);
+        if (hasLongPressCommand || hasLongReleaseCommand) {
+            repeat = NO;
+        }
+    }
+    return self;
+}
+
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent
 {
     self = [super init];

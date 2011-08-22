@@ -43,7 +43,10 @@
 @property (nonatomic,readonly) int groupId;
 @property (nonatomic,readonly) NSString *name;
 @property (nonatomic,readonly) NSMutableArray *screens;
-@property (nonatomic,readonly) TabBar *tabBar;
+@property (nonatomic, retain) TabBar *tabBar;
+
+
+- (id)initWithGroupId:(int)anId name:(NSString *)aName;
 
 /**
  * Get all screens whose orientation is portrait.

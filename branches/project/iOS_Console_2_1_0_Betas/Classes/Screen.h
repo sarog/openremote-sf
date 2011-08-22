@@ -50,6 +50,10 @@
 
 }
 
+
+
+- (id)initWithScreenId:(int)anId name:(NSString *)aName landscape:(BOOL)landscapeFlag inverseScreenId:(int)anInverseScreenId;
+
 /**
  * Get all polling id of sensory components in screen.
  */
@@ -72,7 +76,7 @@
 
 @property (nonatomic,readonly) int screenId;
 @property (nonatomic,readonly) NSString *name;
-@property (nonatomic,readonly) Background *background;
+@property (nonatomic, retain) Background *background;
 @property (nonatomic,readonly) NSMutableArray *layouts;
 @property (nonatomic,readonly) NSMutableArray *gestures;
 @property (nonatomic,readonly) BOOL landscape;

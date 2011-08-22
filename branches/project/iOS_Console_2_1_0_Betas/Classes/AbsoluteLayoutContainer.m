@@ -25,6 +25,18 @@
 
 @synthesize component;
 
+- (id)initWithLeft:(int)leftPos top:(int)topPos width:(int)widthDim height:(int)heightDim
+{
+    self = [super init];
+    if (self) {
+        left = leftPos;
+        top = topPos;
+        width = widthDim;
+        height = heightDim;
+    }
+    return self;
+}
+
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		left = [[attributeDict objectForKey:@"left"] intValue];		

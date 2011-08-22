@@ -24,6 +24,18 @@
 
 @synthesize className, methodName, frequency;
 
+- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName frequency:(NSNumber *)aFrequency
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+        className = [aClassName retain];
+        methodName = [aMethodName retain];
+        frequency  = (aFrequency?[aFrequency intValue]:5000); // Default to 5 sec
+    }
+    return self;
+}
+
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {
 		componentId = [[attributeDict objectForKey:ID] intValue];

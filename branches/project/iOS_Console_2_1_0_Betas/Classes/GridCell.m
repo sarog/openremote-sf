@@ -25,6 +25,18 @@
 
 @synthesize x,y,rowspan,colspan,component;
 
+- (id)initWithX:(int)xPos y:(int)yPos rowspan:(int)rowspanValue colspan:(int)colspanValue
+{
+    self = [super init];
+    if (self) {
+        x = xPos;
+        y = yPos;
+        rowspan = MAX(1, rowspanValue);
+        colspanValue = MAX(1, colspanValue);
+    }
+    return self;    
+}
+
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {		
 		x = [[attributeDict objectForKey:@"x"] intValue];		
