@@ -30,4 +30,6 @@
 @property (readonly) NSString *className;
 @property (readonly) NSString *methodName;
 
+- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName;
+
 @end

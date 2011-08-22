@@ -32,6 +32,18 @@
 	return WEB;
 }
 
+- (id)initWithId:(int)anId src:(NSString *)aSrc username:(NSString *)aUsername password:(NSString *)aPassword
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+        src = [aSrc copy];
+        username = [aUsername copy];
+        password = [aPassword copy];
+    }
+    return self;
+}
+
 // init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
 	if (self = [super init]) {

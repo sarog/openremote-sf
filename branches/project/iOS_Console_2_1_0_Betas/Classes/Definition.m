@@ -55,7 +55,7 @@ static Definition *myInstance = nil;
 		[self release];
 		[NSException raise:@"singletonClassError" format:@" Don't init singleton class %@"];
 	} else if (self = [super init]) {
-		myInstance = self; 
+		myInstance = self;
 		groups = [[NSMutableArray alloc] init];
 		screens = [[NSMutableArray alloc] init];
 		labels = [[NSMutableArray alloc] init];
@@ -240,6 +240,9 @@ static Definition *myInstance = nil;
 	[self clearPanelXMLData];
 	
     // TODO EBR : try figure out why parsing is done twice
+    // Think it might be because of references (e.g. see how Label reference is parsed by Image element).
+    // All elements are registered on 1st parse and thus references can be set correctly on 2nd pass.
+    // Not 100% this is full proof + performance hit
 
 	for(int i = 1; i <= TWICE; i++) {
 		NSData *data = [[NSData alloc] initWithContentsOfFile:configurationFilePath];

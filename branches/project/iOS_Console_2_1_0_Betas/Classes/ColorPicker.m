@@ -25,6 +25,15 @@
 
 @synthesize image;
 
+- (id)initWithId:(int)anId
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+    }
+    return self;
+}
+
 // NOTE: This is an abstract method, must be implemented in subclass
 - (NSString *) elementName {
 	return COLORPICKER;

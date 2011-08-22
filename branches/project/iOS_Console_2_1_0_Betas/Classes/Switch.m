@@ -26,6 +26,15 @@
 
 @synthesize onImage, offImage;
 
+- (id)initWithId:(int)anId
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+    }
+    return self;
+}
+
 //get element name, must be overriden in subclass
 - (NSString *) elementName
 {

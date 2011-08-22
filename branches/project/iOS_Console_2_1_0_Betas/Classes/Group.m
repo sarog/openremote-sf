@@ -27,6 +27,17 @@
 @synthesize groupId, name, screens, tabBar;
 
 
+- (id)initWithGroupId:(int)anId name:(NSString *)aName
+{
+    self = [super init];
+    if (self) {
+        groupId = anId;
+        name = [aName copy];
+		screens = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 #pragma mark Initializers
 
 /**

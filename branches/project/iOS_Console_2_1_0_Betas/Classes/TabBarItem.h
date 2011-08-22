@@ -51,4 +51,6 @@
 @property (nonatomic, retain) Navigate *navigate;
 @property (nonatomic, retain) Image *tabBarItemImage;
 
+- (id)initWithName:(NSString *)aName;
+
 @end

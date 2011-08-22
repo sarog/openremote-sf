@@ -45,4 +45,7 @@
 @property(nonatomic, readwrite) BOOL fillScreen;
 @property(nonatomic, retain) Image *backgroundImage;
 
+- (id)initWithRelativePosition:(NSString *)relativePositionString fillScreen:(BOOL)fillScreenTag;
+- (id)initWithAbsolutePositionLeft:(int)leftPos top:(int)topPos fillScreen:(BOOL)fillScreenTag;
+
 @end

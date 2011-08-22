@@ -33,6 +33,8 @@
 	Image *image;
 }
 
-@property (nonatomic,readonly)Image *image; 
+@property (nonatomic, retain) Image *image; 
+
+- (id)initWithId:(int)anId;
 
 @end

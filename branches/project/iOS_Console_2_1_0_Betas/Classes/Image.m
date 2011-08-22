@@ -27,6 +27,21 @@
 
 @synthesize src, style, label;
 
+- (id)initWithId:(int)anId src:(NSString *)srcValue style:(NSString *)styleValue
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+        src = [srcValue copy];
+        style = [styleValue copy];
+        
+        // TODO: must reference the correct Definition instance
+        // Maybe move out of here
+        [[Definition sharedDefinition] addImageName:src];
+    }
+    return self;
+}
+
 // get element name, must be overriden in subclass
 - (NSString *) elementName {
 	return IMAGE;

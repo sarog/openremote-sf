@@ -36,8 +36,9 @@
 	
 }
 
-@property(nonatomic,readonly)NSString *name;
-@property(nonatomic,readonly)NSString *value;
+@property(nonatomic,readonly) NSString *name;
+@property(nonatomic,readonly) NSString *value;
 
+- (id)initWithName:(NSString *)sensorName value:(NSString *)sensorValue;
 
 @end

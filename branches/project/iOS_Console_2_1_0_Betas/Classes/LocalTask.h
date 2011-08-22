@@ -33,4 +33,6 @@
 @property (readonly) NSString *methodName;
 @property (readonly) NSUInteger frequency;
 
+- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName frequency:(NSNumber *)aFrequency;
+
 @end

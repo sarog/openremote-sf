@@ -32,4 +32,6 @@
 @property (nonatomic, readonly) NSString *username;
 @property (nonatomic, readonly) NSString *password;
 
+- (id)initWithId:(int)anId src:(NSString *)aSrc username:(NSString *)aUsername password:(NSString *)aPassword;
+
 @end

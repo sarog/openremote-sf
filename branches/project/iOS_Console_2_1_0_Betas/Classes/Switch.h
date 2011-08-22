@@ -38,8 +38,9 @@
 
 }
 
-@property (nonatomic,readonly)Image *onImage; 
-@property (nonatomic,readonly)Image *offImage; 
+@property (nonatomic, retain) Image *onImage; 
+@property (nonatomic, retain) Image *offImage; 
 
+- (id)initWithId:(int)anId;
 
 @end

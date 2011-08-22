@@ -31,6 +31,17 @@
 	return LABEL;
 }
 
+- (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue
+{
+    self = [super init];
+    if (self) {
+        componentId = anId;
+        fontSize = fontSizeValue;
+        color = [colorValue copy];
+        text = [textValue copy];
+    }
+    return self;
+}
 
 #pragma mark Delegate methods of NSXMLParser  
 

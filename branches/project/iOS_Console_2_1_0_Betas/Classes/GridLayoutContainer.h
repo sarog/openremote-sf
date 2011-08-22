@@ -39,4 +39,6 @@
 @property (nonatomic, readonly) int rows;
 @property (nonatomic, readonly) int cols;
 
+- (id)initWithLeft:(int)leftPos top:(int)topPos width:(int)widthDim height:(int)heightDim rows:(int)rowsNum cols:(int)colsNum;
+
 @end

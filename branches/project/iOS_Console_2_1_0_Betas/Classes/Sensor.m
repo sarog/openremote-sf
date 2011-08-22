@@ -21,13 +21,22 @@
 #import "Sensor.h"
 #import "SensorState.h"
 
-
 @implementation Sensor
 
 @synthesize sensorId, states;
 
 - (NSString *) elementName {
 	return LINK;
+}
+
+- (id)initWithId:(int)anId
+{
+    self = [super init];
+    if (self) {
+        sensorId = anId;
+        states = [[NSMutableArray alloc] init];
+    }
+    return self;
 }
 
 /**

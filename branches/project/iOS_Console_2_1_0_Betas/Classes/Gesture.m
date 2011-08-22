@@ -25,6 +25,16 @@
 
 @synthesize swipeType, hasControlCommand, navigate;
 
+- (id)initWithId:(int)anId swipeType:(GestureSwipeType)type hasControlCommand:(BOOL)hasControlCommandFlag
+{
+    self = [self initWithGestureSwipeType:type];
+    if (self) {
+        componentId = anId;
+        hasControlCommand = hasControlCommandFlag;
+    }
+    return self;
+}
+
 // This method is abstract method of indirectclass XMLEntity.
 // So, this method must be overridden in subclass.
 - (NSString *) elementName {

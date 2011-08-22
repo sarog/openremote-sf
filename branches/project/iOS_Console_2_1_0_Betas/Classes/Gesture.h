@@ -57,7 +57,10 @@ typedef enum {
 
 @property (nonatomic, readonly)GestureSwipeType swipeType;
 @property (nonatomic, readonly)BOOL hasControlCommand;
-@property (nonatomic, readonly)Navigate *navigate;
+@property (nonatomic, retain) Navigate *navigate;
+
+
+- (id)initWithId:(int)anId swipeType:(GestureSwipeType)type hasControlCommand:(BOOL)hasControlCommandFlag;
 
 /**
  * Construct a gesture instance with swipe type.

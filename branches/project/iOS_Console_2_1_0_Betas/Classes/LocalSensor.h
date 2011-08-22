@@ -33,4 +33,6 @@
 @property (readonly) NSString *methodName;
 @property (readonly) NSUInteger refreshRate;
 
+- (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName refreshRate:(NSNumber *)aRefreshRate;
+
 @end

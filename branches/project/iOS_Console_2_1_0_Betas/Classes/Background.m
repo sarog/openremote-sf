@@ -26,6 +26,29 @@
 
 @synthesize backgroundImageAbsolutePositionLeft, backgroundImageAbsolutePositionTop, isBackgroundImageAbsolutePosition, backgroundImageRelativePosition, fillScreen, backgroundImage;
 
+- (id)initWithRelativePosition:(NSString *)relativePositionString fillScreen:(BOOL)fillScreenTag
+{
+    self = [super init];
+    if (self) {
+        backgroundImageRelativePosition = relativePositionString;
+        isBackgroundImageAbsolutePosition = NO;
+        fillScreen = fillScreenTag;
+    }
+    return self;
+}
+
+- (id)initWithAbsolutePositionLeft:(int)leftPos top:(int)topPos fillScreen:(BOOL)fillScreenTag
+{
+    self = [super init];
+    if (self) {
+        backgroundImageAbsolutePositionLeft = leftPos;
+        backgroundImageAbsolutePositionTop = topPos;
+        isBackgroundImageAbsolutePosition = YES;
+        fillScreen = fillScreenTag;
+    }
+    return self;
+}
+
 #pragma mark constructor
 //Initialize itself accoding to xml parser
 - (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {

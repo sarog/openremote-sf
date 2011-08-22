@@ -46,11 +46,13 @@
 @property(nonatomic, readonly) Image *thumbImage;
 @property(nonatomic, readonly) BOOL vertical;
 @property(nonatomic, readonly) BOOL passive;
-@property(nonatomic, readonly) float minValue;
-@property(nonatomic, readonly) float maxValue;
-@property(nonatomic, readonly) Image *minImage;
-@property(nonatomic, readonly) Image *minTrackImage;
-@property(nonatomic, readonly) Image *maxImage;
-@property(nonatomic, readonly) Image *maxTrackImage;
+@property(nonatomic, assign) float minValue;
+@property(nonatomic, assign) float maxValue;
+@property(nonatomic, retain) Image *minImage;
+@property(nonatomic, retain) Image *minTrackImage;
+@property(nonatomic, retain) Image *maxImage;
+@property(nonatomic, retain) Image *maxTrackImage;
+
+- (id)initWithId:(int)anId vertical:(BOOL)verticalFlag passive:(BOOL)passiveFlag thumbImageSrc:(NSString *)thumbImageSrc;
 
 @end
