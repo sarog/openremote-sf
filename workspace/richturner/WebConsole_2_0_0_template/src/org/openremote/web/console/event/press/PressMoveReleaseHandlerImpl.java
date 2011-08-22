@@ -3,15 +3,19 @@ package org.openremote.web.console.event.press;
 import java.util.Date;
 
 import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.client.unit.ConsoleDisplay;
+import org.openremote.web.console.client.unit.*;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.event.drag.DragCancelEvent;
+import org.openremote.web.console.event.drag.DragEndEvent;
+import org.openremote.web.console.event.drag.DragMoveEvent;
 import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent;
+import org.openremote.web.console.event.swipe.SwipeEvent.*;
+import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.Draggable;
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -19,28 +23,20 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	public boolean pressStarted = false;
 	private PressStartEvent pressStartEvent;
 	private PressMoveEvent pressMoveEvent;
-	private ConsoleUnitEventManager eventManager;
-	private WebConsole consoleModule;
+	private ConsoleUnit consoleUnit;
 	private Widget sourceComponent;
 	private boolean eventHandled;
-	private long lastPressTime;
+	private long lastTapTime;
+	private Widget lastTapWidget;
 	
-	public PressMoveReleaseHandlerImpl(ConsoleUnitEventManager eventManager) {
-		this.eventManager = eventManager;
-		consoleModule = this.eventManager.getConsoleModule();
+	public PressMoveReleaseHandlerImpl(ConsoleUnit consoleUnit) {
+		this.consoleUnit = consoleUnit;
 	}
 
 	public void onPressStart(PressStartEvent event) {
 		pressStarted = true;
 		pressStartEvent = event;
 		sourceComponent = event.getSource();
-	}
-	
-	public void onPressEnd(PressEndEvent event) {
-		if (!eventHandled) {
-			processPressRelease(event);
-		}
-		reset();
 	}
 
 	public void onPressMove(PressMoveEvent event) {
@@ -50,12 +46,27 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		pressMoveEvent = event;
 		if (sourceComponent instanceof Draggable) {
 			eventHandled = true;
-			sourceComponent.fireEvent(new DragStartEvent(event));
+			sourceComponent.fireEvent(new DragMoveEvent(event));
 		}
+	}
+	
+	public void onPressEnd(PressEndEvent event) {
+		if (pressStarted) {
+			if (sourceComponent instanceof Draggable) {
+				sourceComponent.fireEvent(new DragEndEvent(event));
+			}		
+			if (!eventHandled) {
+				processPressRelease(event);
+			}
+		}
+		reset();
 	}
 
 	public void onPressCancel(PressCancelEvent event) {
-		// TODO Auto-generated method stub
+		if (sourceComponent instanceof Draggable) {
+			sourceComponent.fireEvent(new DragCancelEvent(event));
+		}
+		reset();
 	}
 	
 	/*
@@ -63,19 +74,26 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	 * fire the appropriate gesture event
 	 */
 	private void processPressRelease(PressEndEvent event) {
-		double duration = (event.getTime() - pressStartEvent.getTime()) / 1000;
-		double moveDistanceX = 0;
-		double moveDistanceY = 0;
+		double duration = (event.getTime() - pressStartEvent.getTime());
+		int moveDistanceX = 0;
+		int moveDistanceY = 0;
 		boolean moveOccurred = false;
 		Widget pressedWidget = null;
-		Widget releasedWidget = null;
+		Widget releasedWidget = null; 
+		boolean tapOccurred = false;
+		boolean sameWidgetPressedAndReleased = false;
 		
 		// Determine what objects were involved
 		if (pressStartEvent.getSource() instanceof Widget) {
 			pressedWidget = (Widget)pressStartEvent.getSource();
 		}
+		
 		if (event.getSource() instanceof Widget) {
 			releasedWidget = (Widget)event.getSource();
+		}
+		
+		if (pressedWidget == releasedWidget) {
+			sameWidgetPressedAndReleased = true;
 		}
 		
 		// Check if we have movement
@@ -85,35 +103,46 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			moveOccurred = true;
 		}
 		
-		// Check for left right swipe gesture
+		// If movement occurred determine if there is correct movement for a swipe event
+		// and whether swipe was on specific widget or entire display
 		if (moveOccurred) {
-			if (Math.abs(moveDistanceX) >= SwipeEvent.MIN_X_TOLERANCE && Math.abs(moveDistanceY) < SwipeEvent.MAX_Y_TOLERANCE) {
-				String swipeDir = "RIGHT";
-				if (moveDistanceX < 0) {
-					swipeDir = "LEFT";
-				}
-				consoleModule.getConsoleUnit().fireEvent(new SwipeEvent(swipeDir));
-				return;
+			SwipeEvent swipeEvent = null;
+			
+			// Check for swipe gesture on pressed widget
+			if (sameWidgetPressedAndReleased && isMovementWithinWidgetBounds(pressedWidget)) {
+				swipeEvent = checkAndCreateSwipeEvent(pressedWidget, moveDistanceX, moveDistanceY);				
+			}
+			//Check for swipe gesture on the console display
+			if (swipeEvent == null) {
+				swipeEvent = checkAndCreateSwipeEvent(consoleUnit.getConsoleDisplay(), moveDistanceX, moveDistanceY);
+			}
+			
+			if (swipeEvent != null) {
+				
 			}
 		}
 		
+		
 		// Check for hold gesture
-		if (duration >= HoldEvent.HOLD_TIME_TOLERANCE) {
-			consoleModule.getConsoleUnit().fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
+		if (duration >= HoldEvent.MIN_HOLD_TIME_MILLISECONDS) {
+			consoleUnit.getEventBus().fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
 			return;
 		}
 
 		// Check for tap gesture
-		boolean tapOccurred = false;
 		if (pressMoveEvent != null) {
 			if (Math.abs(pressMoveEvent.getClientX() - pressStartEvent.getClientX()) < TapEvent.TAP_X_TOLERANCE || Math.abs(pressMoveEvent.getClientY() - pressStartEvent.getClientY()) < TapEvent.TAP_Y_TOLERANCE) {
 				tapOccurred = true;
 			}
 		} else {
 			tapOccurred = true;
-		}
-		
-		if (tapOccurred) { 
+		}		
+		if (tapOccurred) {
+			if (event.getTime() - lastTapTime < DoubleTapEvent.MAX_TIME_BETWEEN_TAPS_MILLISECONDS) {
+				// TODO Double Tap event
+			}
+			lastTapTime = event.getTime();
+			lastTapWidget = pressedWidget;
 			// TODO Do something with tap event
 		}
 	}
@@ -124,5 +153,51 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		sourceComponent = null;
 		pressStarted = false;
 		eventHandled = false;
+	}
+	
+	public boolean isMovementWithinWidgetBounds(Widget pressedWidget) {
+		boolean result = true;
+		
+		//Check horizontal limits
+		result = pressedWidget.getAbsoluteLeft() > pressStartEvent.getClientX() ? false : true;
+		result = (pressedWidget.getAbsoluteLeft() + pressedWidget.getOffsetWidth()) < pressStartEvent.getClientX() ? false : true;
+		result = pressedWidget.getAbsoluteLeft() > pressMoveEvent.getClientX() ? false : true;
+		result = (pressedWidget.getAbsoluteLeft() + pressedWidget.getOffsetWidth()) < pressMoveEvent.getClientX() ? false : true;
+		
+		// Check vertical limits
+		result = pressedWidget.getAbsoluteTop() > pressStartEvent.getClientY() ? false : true;
+		result = (pressedWidget.getAbsoluteTop() + pressedWidget.getOffsetHeight()) < pressStartEvent.getClientY() ? false : true;
+		result = pressedWidget.getAbsoluteTop() > pressMoveEvent.getClientY() ? false : true;
+		result = (pressedWidget.getAbsoluteTop() + pressedWidget.getOffsetHeight()) < pressMoveEvent.getClientY() ? false : true;
+		
+		return result;
+	}
+	
+	public SwipeEvent checkAndCreateSwipeEvent(Widget widget, int moveDistanceX, int moveDistanceY) {	
+		SwipeDirection direction = null;
+		SwipeAxis axis = null;
+		boolean swipeOccurred = false;
+		SwipeEvent swipeEvent = null;
+		
+		SwipeLimits horizontalLimits = new SwipeEvent.SwipeLimits(widget, SwipeAxis.HORIZONTAL);
+		SwipeLimits verticalLimits = new SwipeEvent.SwipeLimits(widget, SwipeAxis.VERTICAL);
+		
+		if (moveDistanceX > horizontalLimits.primaryAxisMinDistance && moveDistanceY < horizontalLimits.secondaryAxisMaxDistance) {
+			// Horizontal swipe occurred
+			direction = moveDistanceX > 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT;
+			axis = SwipeAxis.HORIZONTAL;
+			swipeOccurred = true;
+		} else if (moveDistanceY > verticalLimits.primaryAxisMinDistance && moveDistanceX < verticalLimits.secondaryAxisMaxDistance) {
+			// Vertical swipe occurred
+			direction = moveDistanceX > 0 ? SwipeDirection.DOWN : SwipeDirection.UP;
+			axis = SwipeAxis.VERTICAL;
+			swipeOccurred = true;
+		}
+		
+		if (swipeOccurred) {
+			swipeEvent = new SwipeEvent(axis, direction);
+		}
+		
+		return swipeEvent;
 	}
 }

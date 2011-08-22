@@ -14,6 +14,8 @@ import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeHandler;
 import org.openremote.web.console.screen.ConsoleScreen;
 import org.openremote.web.console.screen.TestScreen;
+
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -23,7 +25,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler {
-	private WebConsole consoleModule;
 	private ConsoleUnitEventManager eventManager;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
@@ -34,12 +35,12 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	protected int height;
 	private ConsoleScreen loadingScreen;
 	
-	public ConsoleUnit(ConsoleUnitEventManager eventManager) {
-		this(eventManager, ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
+	public ConsoleUnit() {
+		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
 	}
 	
-	public ConsoleUnit(ConsoleUnitEventManager eventManager, int width, int height) {
-		this.eventManager = eventManager;
+	public ConsoleUnit(int width, int height) {
+		eventManager = new ConsoleUnitEventManager(this);
 		
 		// Create console container to store display and possibly logo for resizable units
 		componentContainer = new VerticalPanel();
@@ -158,6 +159,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		this.addHandler(this, RotationEvent.getType());
 		this.addHandler(this, SwipeEvent.getType());
 		this.addHandler(this, HoldEvent.getType());
+	}
+	
+	public HandlerManager getEventBus() {
+		return eventManager.getEventBus();
 	}
 	
 //	/*

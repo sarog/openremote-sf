@@ -1,7 +1,7 @@
 package org.openremote.web.console.event.drag;
 
 import org.openremote.web.console.event.press.PressEvent;
-import org.openremote.web.console.event.press.PressMoveHandler;
+import org.openremote.web.console.event.press.PressStartHandler;
 
 /**
  * This event defines press move event
@@ -11,7 +11,7 @@ import org.openremote.web.console.event.press.PressMoveHandler;
 public class DragStartEvent extends DragEvent<DragStartHandler> {
 	private static final Type<DragStartHandler> TYPE = new Type<DragStartHandler>();
 
-	public DragStartEvent(PressEvent<PressMoveHandler> sourceEvent) {
+	public DragStartEvent(PressEvent<PressStartHandler> sourceEvent) {
 		xPos = sourceEvent.getClientX();
 		yPos = sourceEvent.getClientY();
 		source = sourceEvent.getSource();

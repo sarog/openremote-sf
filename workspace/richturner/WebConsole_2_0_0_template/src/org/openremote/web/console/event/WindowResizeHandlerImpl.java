@@ -6,16 +6,23 @@ import org.openremote.web.console.util.BrowserUtils;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Window;
 
 public class WindowResizeHandlerImpl implements ResizeHandler {
 	boolean resizeOccurred = false;
 	ResizeEvent event = null;
-	private ConsoleUnitEventManager eventManager;
 	private WebConsole consoleModule;
 	
-	public WindowResizeHandlerImpl(ConsoleUnitEventManager eventManager) {
-		this.eventManager = eventManager;
-		consoleModule = this.eventManager.getConsoleModule();
+	public WindowResizeHandlerImpl(WebConsole consoleModule) {
+		this.consoleModule = consoleModule;
+		
+		// Add window resize handler
+		Window.addResizeHandler(this);
+		
+		// Add native orientation handler for mobiles
+		if (BrowserUtils.isMobile) {
+			addNativeOrientationHandler(this);
+		}
 	}
 	
 	@Override
@@ -82,4 +89,14 @@ public class WindowResizeHandlerImpl implements ResizeHandler {
 		event = null;
 		resizeOccurred = false;
 	}
+	
+	// Create a native orientation change handler as resize handler isn't reliable on iOS 3.x
+	public native void addNativeOrientationHandler(WindowResizeHandlerImpl resizeHandler) /*-{
+	   	if (typeof window.onorientationchange != 'undefined') {
+		   	function eventHandler(e) {
+					resizeHandler.@org.openremote.web.console.event.WindowResizeHandlerImpl::onResize()();
+		   	}
+		   	$wnd.addEventListener("orientationchange", eventHandler, false);
+	   	}
+	}-*/;
 }
