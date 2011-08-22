@@ -74,12 +74,7 @@ public class Slider extends ConsoleWidget {
 			this.addHandler(this, DragCancelEvent.getType());
 		}
 		
-		/**
-		 * React to drag event only if 
-		 */
 		public void onDragStart(DragStartEvent event) {
-			// TODO
-			// Record current handle position
 		}
 
 		@Override
@@ -89,18 +84,13 @@ public class Slider extends ConsoleWidget {
 
 		@Override
 		public void onDragEnd(DragEndEvent event) {
-			// TODO Auto-generated method stub
 			doValueChange();
-			// Fire value change event
-			// Clear cached drag info
 		}
 
 		@Override
 		public void onDragCancel(DragCancelEvent event) {
 			// This event occurs when press moves off the console display
-			// Going to treat this as a 
-			// Undo drag and put handle back where it was
-			Window.alert("CANCEL DRAG");
+			doValueChange();
 		}
 	}
 	
