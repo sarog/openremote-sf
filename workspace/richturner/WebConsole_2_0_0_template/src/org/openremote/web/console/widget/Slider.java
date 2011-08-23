@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class Slider extends ConsoleWidget {
 	public static final int DEFAULT_WIDTH = 300;
-	public static final int DEFAULT_HEIGHT = 30;
+	public static final int DEFAULT_HEIGHT = 40;
 	private Handle handle;
 	private SlideBar slideBar;
 	private int width;
@@ -46,7 +46,7 @@ public class Slider extends ConsoleWidget {
 	private int lastValue = 0;
 	private int value = 0;
 	private int halfHandle = 0;
-	private int stepSize = 5;
+	private int stepSize = 1;
 	private boolean isInitialised = false;
 	
 	class Handle extends SimplePanel implements Draggable {
@@ -97,7 +97,7 @@ public class Slider extends ConsoleWidget {
 	}
 	
 	class SlideBar extends SimplePanel implements Tappable {
-		protected static final double HEIGHT_RATIO = 0.3;
+		protected static final double HEIGHT_RATIO = 0.4;
 		protected static final double WIDTH_RATIO = 1.0;
 		private boolean clickable = true;
 		
