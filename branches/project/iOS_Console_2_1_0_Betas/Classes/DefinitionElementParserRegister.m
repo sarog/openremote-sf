@@ -33,6 +33,7 @@
 @synthesize parserRegister;
 @synthesize endSelectorRegister;
 @synthesize standbys;
+@synthesize definition;
 
 - (id)init
 {
@@ -51,6 +52,7 @@
     self.parserRegister = nil;
     self.endSelectorRegister = nil;
     self.standbys = nil;
+    self.definition = nil;
     [super dealloc];
 }
 

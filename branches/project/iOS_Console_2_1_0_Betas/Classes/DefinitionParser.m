@@ -24,6 +24,7 @@
 #import "TabBarParser.h"
 #import "LocalLogicParser.h"
 #import "Definition.h"
+#import "DefinitionElementParserRegister.h"
 
 @implementation DefinitionParser
 
@@ -44,6 +45,7 @@
         [self addKnownTag:@"tabbar"];
         [self addKnownTag:@"locallogic"];
         definition = [[Definition alloc] init];
+        aRegister.definition = definition;
     }
     return self;
 }
