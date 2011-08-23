@@ -21,9 +21,6 @@
 #import "SwitchParser.h"
 #import "Switch.h"
 #import "SensorLinkParser.h"
-
-// TODO: should go later, see below
-#import "Definition.h"
 #import "SensorState.h"
 
 @implementation SwitchParser

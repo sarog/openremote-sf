@@ -27,8 +27,7 @@
 #import "SwitchParser.h"
 #import "SliderParser.h"
 #import "ColorPickerParser.h"
-
-// TODO: should go when addLabelElement: fixed
+#import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 
 @implementation GridCellParser
@@ -63,9 +62,7 @@
 - (void)endLabelElement:(LabelParser *)parser
 {
     gridCell.component = parser.label;
-    
-    // TODO: review that to access the appropriate Definition instance
-    [[Definition sharedDefinition] addLabel:parser.label];
+    [self.depRegister.definition addLabel:parser.label];
 }
 
 - (void)endImageElement:(ImageParser *)parser

@@ -21,8 +21,7 @@
 #import "WebParser.h"
 #import "Web.h"
 #import "SensorLinkParser.h"
-
-// TODO: should go later, see below
+#import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "SensorState.h"
 
@@ -52,11 +51,9 @@
         web.sensor = parser.sensor;
         
         
-        // TODO: review that
-        // - for reference to correct instance of Definition
-        // - why is this done (here ? maybe in SensorState itself ?) 
+        // TODO: why is this done (here ? maybe in SensorState itself ?) 
         for (SensorState *state in web.sensor.states) {
-			[[Definition sharedDefinition] addImageName:state.value];
+			[self.depRegister.definition addImageName:state.value];
 		}
     }
 }

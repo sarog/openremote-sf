@@ -27,8 +27,7 @@
 #import "SwitchParser.h"
 #import "SliderParser.h"
 #import "ColorPickerParser.h"
-
-// TODO: should go when addLabelElement: fixed
+#import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 
 @implementation AbsoluteLayoutContainerParser
@@ -54,10 +53,8 @@
 
 - (void)endLabelElement:(LabelParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.label;
-    
-    // TODO: review that to access the appropriate Definition instance
-    [[Definition sharedDefinition] addLabel:parser.label];
+    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.label;    
+    [self.depRegister.definition addLabel:parser.label];
 }
 
 - (void)endImageElement:(ImageParser *)parser

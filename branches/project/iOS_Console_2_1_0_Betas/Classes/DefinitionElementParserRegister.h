@@ -21,6 +21,8 @@
 #import <Foundation/Foundation.h>
 #import "Standby.h"
 
+@class Definition;
+
 @interface DefinitionElementParserRegister : NSObject
 
 - (void)registerParserClass:(Class)parserClass endSelector:(SEL)selector forTag:(NSString *)tag;
@@ -30,5 +32,7 @@
 
 - (void)addStandbyToResolve:(id <Standby>)labelStandby;
 - (void)resolveStandbys;
+
+@property (nonatomic, retain) Definition *definition;
 
 @end
