@@ -29,9 +29,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleComponent extends Composite implements MouseDownHandler, TouchStartHandler, MouseMoveHandler, TouchMoveHandler, MouseUpHandler, TouchEndHandler, MouseOutHandler {
+public class ConsoleComponent extends Composite implements MouseDownHandler, TouchStartHandler, MouseUpHandler, TouchEndHandler {
 	PressStartEvent startEvent = null;
-	PressMoveEvent lastMoveEvent = null;
+	protected PressMoveEvent lastMoveEvent = null;
 	
 	public ConsoleComponent() {
 	}
@@ -50,20 +50,20 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 		this.fireEvent(startEvent);
 	}
 
-	@Override
-	public void onTouchMove(TouchMoveEvent event) {
-		event.stopPropagation();
-		event.preventDefault();
-		lastMoveEvent = new PressMoveEvent(event);
-		this.fireEvent(lastMoveEvent);
-	}
-
-	@Override
-	public void onMouseMove(MouseMoveEvent event) {
-		event.stopPropagation();
-		lastMoveEvent = new PressMoveEvent(event);
-		this.fireEvent(lastMoveEvent);
-	}
+//	@Override
+//	public void onTouchMove(TouchMoveEvent event) {
+//		event.stopPropagation();
+//		event.preventDefault();
+//		lastMoveEvent = new PressMoveEvent(event);
+//		this.fireEvent(lastMoveEvent);
+//	}
+//
+//	@Override
+//	public void onMouseMove(MouseMoveEvent event) {
+//		event.stopPropagation();
+//		lastMoveEvent = new PressMoveEvent(event);
+//		this.fireEvent(lastMoveEvent);
+//	}
 
 	@Override
 	public void onTouchEnd(TouchEndEvent event) {
@@ -83,16 +83,7 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 		reset();
 	}
 
-	@Override
-	public void onMouseOut(MouseOutEvent event) {
-		event.stopPropagation();
-		if (this instanceof ConsoleDisplay) {
-			this.fireEvent(new PressCancelEvent(event));
-		}
-		reset();
-	}
-
-	private void reset() {
+	protected void reset() {
 		startEvent = null;
 		lastMoveEvent = null;
 	}
@@ -104,10 +95,9 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 	public void registerPressHandlers(Widget component) {
 		component.addDomHandler(this, MouseDownEvent.getType());
 		component.addDomHandler(this, TouchStartEvent.getType());
-		component.addDomHandler(this, MouseMoveEvent.getType());
-		component.addDomHandler(this, TouchMoveEvent.getType());
+		//component.addDomHandler(this, MouseMoveEvent.getType());
+		//component.addDomHandler(this, TouchMoveEvent.getType());
 		component.addDomHandler(this, MouseUpEvent.getType());
 		component.addDomHandler(this, TouchEndEvent.getType());
-		component.addDomHandler(this, MouseOutEvent.getType());
 	}
 }

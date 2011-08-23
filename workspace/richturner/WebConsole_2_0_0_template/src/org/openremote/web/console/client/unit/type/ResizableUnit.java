@@ -1,8 +1,7 @@
-package org.openremote.web.console.type;
+package org.openremote.web.console.client.unit.type;
 
 import org.openremote.web.console.client.unit.ConsoleDisplay;
 import org.openremote.web.console.client.unit.ConsoleUnit;
-import org.openremote.web.console.event.ConsoleUnitEventManager;
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -22,13 +21,13 @@ public class ResizableUnit extends ConsoleUnit {
 	public static final int FRAME_WIDTH_RIGHT = 20;
 	public static final int BOSS_WIDTH = 2;
 	
-	public ResizableUnit(ConsoleUnitEventManager eventManager) {
-		super(eventManager);
+	public ResizableUnit() {
+		super();
 		initialiseUnit();
 	}
 	
-	public ResizableUnit(ConsoleUnitEventManager eventManager, int displayWidth, int displayHeight) {
-		super(eventManager, displayWidth, displayHeight);
+	public ResizableUnit(int displayWidth, int displayHeight) {
+		super(displayWidth, displayHeight);
 		initialiseUnit();
 	}
 	

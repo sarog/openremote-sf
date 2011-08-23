@@ -9,13 +9,13 @@ import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
 import org.openremote.web.console.event.drag.DragStartEvent;
+import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent.*;
 import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.widget.ConsoleComponent;
-import org.openremote.web.console.widget.Draggable;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -24,10 +24,10 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	private PressStartEvent pressStartEvent;
 	private PressMoveEvent pressMoveEvent;
 	private ConsoleUnit consoleUnit;
-	private Widget sourceComponent;
 	private boolean eventHandled;
 	private long lastTapTime;
-	private Widget lastTapWidget;
+	private Widget lastTapWidget = null;
+	private Widget pressedWidget = null;
 	
 	public PressMoveReleaseHandlerImpl(ConsoleUnit consoleUnit) {
 		this.consoleUnit = consoleUnit;
@@ -36,7 +36,8 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	public void onPressStart(PressStartEvent event) {
 		pressStarted = true;
 		pressStartEvent = event;
-		sourceComponent = event.getSource();
+		pressedWidget = event.getSource();
+		//consoleUnit.getConsoleDisplay().addTempHandlers();
 	}
 
 	public void onPressMove(PressMoveEvent event) {
@@ -44,17 +45,19 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			return;
 		}
 		pressMoveEvent = event;
-		if (sourceComponent instanceof Draggable) {
-			eventHandled = true;
-			sourceComponent.fireEvent(new DragMoveEvent(event));
-		}
+		pressedWidget.fireEvent(new DragMoveEvent(event));
+//		if (sourceComponent instanceof Draggable) {
+//			eventHandled = true;
+//			sourceComponent.fireEvent(new DragMoveEvent(event));
+//		}
 	}
 	
 	public void onPressEnd(PressEndEvent event) {
 		if (pressStarted) {
-			if (sourceComponent instanceof Draggable) {
-				sourceComponent.fireEvent(new DragEndEvent(event));
-			}		
+			pressedWidget.fireEvent(new DragEndEvent(event));
+//			if (pressedWidget instanceof Draggable) {
+//				pressedWidget.fireEvent(new DragEndEvent(event));
+//			}		
 			if (!eventHandled) {
 				processPressRelease(event);
 			}
@@ -63,10 +66,13 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	}
 
 	public void onPressCancel(PressCancelEvent event) {
-		if (sourceComponent instanceof Draggable) {
-			sourceComponent.fireEvent(new DragCancelEvent(event));
+//		if (pressedWidget instanceof Draggable) {
+//			pressedWidget.fireEvent(new DragCancelEvent(event));
+//		}
+		if (pressStarted) {
+			pressedWidget.fireEvent(new DragCancelEvent(event));
+			reset();
 		}
-		reset();
 	}
 	
 	/*
@@ -78,7 +84,6 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		int moveDistanceX = 0;
 		int moveDistanceY = 0;
 		boolean moveOccurred = false;
-		Widget pressedWidget = null;
 		Widget releasedWidget = null; 
 		boolean tapOccurred = false;
 		boolean sameWidgetPressedAndReleased = false;
@@ -143,16 +148,17 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			}
 			lastTapTime = event.getTime();
 			lastTapWidget = pressedWidget;
-			// TODO Do something with tap event
+			pressedWidget.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
 		}
 	}
 	
 	public void reset() {
+		pressedWidget = null;
 		pressStartEvent = null;
 		pressMoveEvent = null;
-		sourceComponent = null;
 		pressStarted = false;
 		eventHandled = false;
+		//consoleUnit.getConsoleDisplay().removeTempHandlers();
 	}
 	
 	public boolean isMovementWithinWidgetBounds(Widget pressedWidget) {

@@ -1,8 +1,21 @@
 package org.openremote.web.console.client.unit;
 
+import java.awt.List;
+import java.util.ArrayList;
+
 import org.openremote.web.console.event.ConsoleUnitEventManager;
+import org.openremote.web.console.event.press.PressCancelEvent;
+import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.screen.ConsoleScreen;
 import org.openremote.web.console.widget.ConsoleComponent;
+
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -13,7 +26,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author rich
  *
  */
-public class ConsoleDisplay extends ConsoleComponent {
+public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
@@ -25,6 +38,7 @@ public class ConsoleDisplay extends ConsoleComponent {
 	public String colour;
 	private ConsoleUnitEventManager eventManager;
 	private AbsolutePanel container = new AbsolutePanel();
+	private ArrayList<HandlerRegistration> moveHandlers = new ArrayList<HandlerRegistration>();
 	
 	public ConsoleDisplay(ConsoleUnitEventManager eventManager, int width, int height) {
 		this.eventManager = eventManager;
@@ -50,8 +64,13 @@ public class ConsoleDisplay extends ConsoleComponent {
 		// Set default colour
 		setColour(DEFAULT_DISPLAY_COLOUR);
 		
-		// Register press handlers on entire widget
+		// Add press handlers on entire widget
 		registerPressHandlers();
+		
+		// Add move handlers
+		this.addDomHandler(this, MouseMoveEvent.getType());
+		this.addDomHandler(this, TouchMoveEvent.getType());
+		this.addDomHandler(this, MouseOutEvent.getType());
 		
 		// Init widget
 		this.initWidget(container);
@@ -104,4 +123,38 @@ public class ConsoleDisplay extends ConsoleComponent {
 	public void clearScreen() {
 		setScreen(null);
 	}
+	
+	@Override
+	public void onTouchMove(TouchMoveEvent event) {
+		event.preventDefault();
+		event.stopPropagation();
+		lastMoveEvent = new PressMoveEvent(event);
+		this.fireEvent(lastMoveEvent);
+	}
+
+	@Override
+	public void onMouseMove(MouseMoveEvent event) {
+		event.stopPropagation();
+		lastMoveEvent = new PressMoveEvent(event);
+		this.fireEvent(lastMoveEvent);
+	}
+	
+	@Override
+	public void onMouseOut(MouseOutEvent event) {
+		event.stopPropagation();
+		this.fireEvent(new PressCancelEvent(event));
+		reset();
+	}
+	
+//	public void addTempHandlers() {
+//		moveHandlers.add(this.addDomHandler(this, MouseMoveEvent.getType()));
+//		moveHandlers.add(this.addDomHandler(this, TouchMoveEvent.getType()));
+//		moveHandlers.add(this.addDomHandler(this, MouseOutEvent.getType()));
+//	}
+//	
+//	public void removeTempHandlers() {
+//		for (HandlerRegistration handler : moveHandlers) {
+//			handler.removeHandler();
+//		}
+//	}
 }
