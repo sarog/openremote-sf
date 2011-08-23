@@ -6,10 +6,12 @@ import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
 import org.openremote.web.console.event.drag.DragStartEvent;
+import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.event.press.PressStartHandler;
 import org.openremote.web.console.event.tap.TapEvent;
+import org.openremote.web.console.event.tap.Tappable;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -109,6 +111,8 @@ public class Slider extends ConsoleWidget {
 			DOM.setStyleAttribute(element, "WebkitBorderRadius", "4px");
 			DOM.setStyleAttribute(element, "borderRadius", "4px");
 			DOM.setStyleAttribute(element, "WebkitUserSelect", "none");
+			
+			this.addHandler(this, TapEvent.getType());
 		}
 
 		@Override
