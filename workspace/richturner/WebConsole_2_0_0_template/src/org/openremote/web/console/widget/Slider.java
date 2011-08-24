@@ -25,7 +25,6 @@ public class Slider extends ConsoleWidgetImpl {
 	private boolean isVertical = false;
 	private int minValue = 0;
 	private int maxValue = 100;
-	private int pixelRange = 0;
 	private double pixelValueDensity = 0;
 	private int lastValue = 0;
 	private int value = 0;
@@ -153,12 +152,13 @@ public class Slider extends ConsoleWidgetImpl {
 		int slideBarXPos = 0;
 		int slideBarYPos = 0;
 		
+		this.width = width;
+		this.height = height;
+		
+		// Determine the orientation of the slider
 		if (height > width) {
 			this.isVertical = true;
 		}
-		
-		this.width = width;
-		this.height = height;
 		
 		container = new AbsolutePanel();
 		container.setWidth(width + "px");
@@ -170,7 +170,6 @@ public class Slider extends ConsoleWidgetImpl {
 			slideBarHeight = (int)Math.round(SlideBar.HEIGHT_RATIO * height);
 		} else {
 			handleSize = width;
-			handleXPos = 0;
 			slideBarWidth = (int)Math.round(SlideBar.HEIGHT_RATIO * width);
 			slideBarHeight = (int)Math.round(SlideBar.WIDTH_RATIO * height);
 		}
