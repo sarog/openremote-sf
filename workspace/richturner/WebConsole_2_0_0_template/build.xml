@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="WebConsole" default="build" basedir=".">
   <!-- Arguments to gwtc and devmode targets -->
+  <property file="build.properties"/>
   <property name="gwt.args" value="" />
+  <property name="project.name" value="webconsole2" />
+  <property name="output.dir" value="output" />
 
-  <!-- Configure path to GWT SDK -->
-  <property name="gwt.sdk" location="/home/rich/eclipse/plugins/com.google.gwt.eclipse.sdkbundle_2.3.0.r37v201106211634/gwt-2.3.0" />
-
+  
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
@@ -82,6 +83,24 @@
     </java>
   </target>
 
+  <target name="war" depends="gwtc" description="Create a war file">
+    <echo message="--------------------------------------------------------------------" />
+    <echo message=" Packing war..." />
+    <echo message="--------------------------------------------------------------------" />
+    <echo message="" />
+    <zip destfile="${output.dir}/${project.name}.war" basedir="war"/>
+  </target>
+
+  <target name="deploy" depends="war" description="Deploy the project">
+    <echo message="--------------------------------------------------------------------" />
+    <echo message=" Deploying project..." />
+    <echo message="--------------------------------------------------------------------" />
+    <echo message="" />
+    <delete file="${deploy.dir}/${project.name}.war"/>
+    <delete dir="${deploy.dir}/${project.name}"/>
+    <copy todir="${deploy.dir}" file="${output.dir}/${project.name}.war"/>
+  </target>
+
 <!--
 Test targets suppressed because -junit argument was not specified when running webAppCreator.
 
@@ -150,12 +169,6 @@ Test targets suppressed because -junit argument was not specified when running w
 -->
 
   <target name="hosted" depends="devmode" description="Run development mode (NOTE: the 'hosted' target is deprecated)" />
-
-  <target name="build" depends="gwtc" description="Build this project" />
-
-  <target name="war" depends="build" description="Create a war file">
-    <zip destfile="WebConsole.war" basedir="war"/>
-  </target>
 
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />
