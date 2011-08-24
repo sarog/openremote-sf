@@ -65,7 +65,11 @@ public class Slider extends ConsoleWidgetImpl {
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
-			doHandleDrag(event.getXPos());
+			if (isVertical) {
+				doHandleDrag(event.getYPos());
+			} else {
+				doHandleDrag(event.getXPos());
+			}
 		}
 
 		@Override
@@ -88,15 +92,18 @@ public class Slider extends ConsoleWidgetImpl {
 		protected static final double HEIGHT_RATIO = 0.4;
 		protected static final double WIDTH_RATIO = 1.0;
 		private boolean clickable = true;
-		private int height;
 		private int width;
+		private int height;
 		
-		public SlideBar(long width, long height) {
+		public SlideBar(int width, int height) {
+			this.width = width;
+			this.height = height;
 			Element element = getElement();
 			
 			setStylePrimaryName("slider_bar");
 			setHeight(height + "px");
 			setWidth(width + "px");
+			
 			DOM.setStyleAttribute(element, "MozBorderRadius", height + "px");
 			DOM.setStyleAttribute(element, "WebkitBorderRadius", height + "px");
 			DOM.setStyleAttribute(element, "borderRadius", height + "px");
@@ -110,11 +117,23 @@ public class Slider extends ConsoleWidgetImpl {
 			if (!clickable) {
 				return;
 			}
-			doHandleDrag(event.getXPos());
+			if (isVertical) {
+				doHandleDrag(event.getYPos());
+			} else {
+				doHandleDrag(event.getXPos());
+			}
 			doValueChange();			
 		}
 		
-		public int getLength() {
+		public int getHeight() {
+			if (isVertical) {
+				return width;
+			} else {
+				return height;
+			}
+		}
+		
+		public int getWidth() {
 			if (isVertical) {
 				return height;
 			} else {
@@ -187,7 +206,7 @@ public class Slider extends ConsoleWidgetImpl {
 	
 	private void doHandleDrag(int absPos) {
 		int relPos = calculateRelativePixelValue(absPos);
-		int value = (int)Math.round(relPos * pixelValueDensity);
+		int value = (int)(relPos * pixelValueDensity);
 		setValue(value);
 	}
 	
@@ -199,7 +218,7 @@ public class Slider extends ConsoleWidgetImpl {
 			pixelMin = (int)(slideBar.getAbsoluteLeft() + halfHandle);
 			value = value - pixelMin;
 		} else {
-			pixelMin = (int)(slideBar.getAbsoluteTop() + slideBar.getLength() - halfHandle);
+			pixelMin = (int)( slideBar.getAbsoluteTop() + slideBar.getWidth() - halfHandle);
 			value = pixelMin - value;
 		}
 		return value;
@@ -209,12 +228,12 @@ public class Slider extends ConsoleWidgetImpl {
 		if (!isVertical) {
 			DOM.setStyleAttribute(handle.getElement(), "left", pixelPos + "px");
 		} else {
-			DOM.setStyleAttribute(handle.getElement(), "bottom", pixelPos + "px");
+			DOM.setStyleAttribute(handle.getElement(), "top", pixelPos + "px");
 		}
 	}
 	
 	public void configure() {
-		int pixelRange = (int)(slideBar.getLength() - (2 * halfHandle));
+		int pixelRange = (int)(slideBar.getWidth() - (2 * halfHandle));
 		pixelValueDensity = (double) (maxValue - minValue) / pixelRange;
 	}
 	
@@ -240,6 +259,7 @@ public class Slider extends ConsoleWidgetImpl {
 		
 		if (value != this.value) {
 			int relPos = (int)Math.round(value/pixelValueDensity);
+			relPos = isVertical ? slideBar.getWidth() - relPos - handle.getSize() : relPos; 
 			setHandlePosition(relPos);
 			this.value = value;
 		}
