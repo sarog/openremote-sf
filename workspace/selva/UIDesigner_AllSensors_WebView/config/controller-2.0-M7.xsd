@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.openremote.org" targetNamespace="http://www.openremote.org">
 
     <xsd:annotation>
@@ -103,6 +102,7 @@
 			<xsd:element ref="gesture" />
 			<xsd:element ref="image"/>
 			<xsd:element ref="web" />			
+			<xsd:element ref="colorpicker"/>
 		</xsd:choice>
 	</xsd:group>
 	
@@ -343,8 +343,19 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<!-- ###############  image  ################ -->
+	<!-- ###############  color picker  ################ -->
 	
+	<xsd:element name="colorpicker">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="idType" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+	
+
+        <!-- ###############  image  ################ -->	
 	<xsd:element name="image">
 		<xsd:complexType>
 			<xsd:sequence>

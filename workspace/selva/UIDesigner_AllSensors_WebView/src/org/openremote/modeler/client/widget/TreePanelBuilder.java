@@ -75,6 +75,7 @@ import org.openremote.modeler.domain.Slider;
 import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.domain.Template;
 import org.openremote.modeler.domain.UICommand;
+import org.openremote.modeler.domain.component.ColorPicker;
 import org.openremote.modeler.domain.component.UIButton;
 import org.openremote.modeler.domain.component.UIGrid;
 import org.openremote.modeler.domain.component.UIImage;
@@ -425,6 +426,7 @@ public class TreePanelBuilder {
       widgetTreeStore.add(new UIButton().getBeanModel(), true);
       widgetTreeStore.add(new UISwitch().getBeanModel(), true);
       widgetTreeStore.add(new UISlider().getBeanModel(), true);
+      widgetTreeStore.add(new ColorPicker().getBeanModel(), true);
       widgetTreeStore.add(new UITabbar().getBeanModel(), true);
       widgetTreeStore.add(new UITabbarItem().getBeanModel(), true);
       widgetTreeStore.add(new UIWebView().getBeanModel(), true);
@@ -441,6 +443,8 @@ public class TreePanelBuilder {
                return ICON.imageIcon();
             } else if (thisModel.getBean() instanceof UISlider) {
                return ICON.sliderIcon();
+            } else if (thisModel.getBean() instanceof ColorPicker) {
+               return ICON.colorpickerIcon();
             } else if (thisModel.getBean() instanceof UIGrid) {
                return ICON.gridIcon();
             } else if (thisModel.getBean() instanceof UITabbar) {
