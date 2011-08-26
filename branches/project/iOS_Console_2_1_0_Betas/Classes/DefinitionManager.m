@@ -52,7 +52,7 @@
 @synthesize isUpdating, lastUpdateTime, loading;
 
 // For now, take all the functionality that is about loading / triggering parsing / caching ... the definition
-// from the Definition class and brind it here
+// from the Definition class and bring it here
 
 - (BOOL)isDataReady {
 	//need to implement
@@ -151,52 +151,22 @@
 	}
 }
 
-- (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath {
-	NSLog(@"start parse xml");
-	
+- (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath
+{
     PanelDefinitionParser *parser = [[PanelDefinitionParser alloc] init];
     NSData *data = [[NSData alloc] initWithContentsOfFile:configurationFilePath];
     [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition = [parser parseDefinitionFromXML:data];
     [data release];
-    /*
-    
-	[self clearPanelXMLData];
-	
-    // TODO EBR : try figure out why parsing is done twice
-    // Think it might be because of references (e.g. see how Label reference is parsed by Image element).
-    // All elements are registered on 1st parse and thus references can be set correctly on 2nd pass.
-    // Not 100% this is full proof + performance hit
-    
-	for(int i = 1; i <= TWICE; i++) {
-		NSData *data = [[NSData alloc] initWithContentsOfFile:configurationFilePath];
-		NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-		NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		NSLog(@"%@", dataStr);
-		[dataStr release];
-		
-		//Set delegate to self in order to parse next elements by itself
-		[xmlParser setDelegate:self];
-		
-		//Calls parse method to start parse xml
-		[xmlParser parse];
-        
-		NSLog(@"groups count = %d", [groups count]);
-		NSLog(@"screens count = %d", [screens count]);
-		NSLog(@"xml parse done");
-		[data release];
-		[xmlParser release];        
-	}
-    
-    */    
+    [parser release];
 }
 
-- (void)parseXml {
+- (void)parseXml
+{
     [self parsePanelConfigurationFileAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
 }
 
 //Parses xml
 - (void)parseXMLData {	
-	
 	[self parseXml];
 	[self downloadImages];
 	NSLog(@"images download done");

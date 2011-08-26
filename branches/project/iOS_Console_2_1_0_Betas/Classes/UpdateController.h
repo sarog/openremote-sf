@@ -21,6 +21,8 @@
 #import <Foundation/Foundation.h>
 #import "ServerAutoDiscoveryController.h"
 
+@class DefinitionManager;
+
 @protocol UpdateControllerDelegate <NSObject>
 
 /**
@@ -47,6 +49,7 @@
 	NSObject <UpdateControllerDelegate> *delegate;
 	ServerAutoDiscoveryController *serverAutoDiscoveryController;
 	int retryTimes;
+    DefinitionManager *definitionManager;
 }
 
 // TODO EBR : should this be assign instead of retain

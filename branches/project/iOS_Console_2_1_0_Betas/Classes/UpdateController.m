@@ -58,7 +58,6 @@
 
 @end
 
-
 @implementation UpdateController
 
 @synthesize delegate;
@@ -67,7 +66,7 @@
 {
     self = [super init];
 	if (self) {
-		// Set retryTime to 1
+        definitionManager = [[DefinitionManager alloc] init];
 		retryTimes = 1;
 	}
 	return self;
@@ -75,7 +74,7 @@
 
 - (id)initWithDelegate:(id)aDelegate
 {
-    self = [super init];
+    self = [self init];
 	if (self) {
 		self.delegate = aDelegate;
 	}
@@ -140,11 +139,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdate) name:DefinitionUpdateDidFinishNotification object:nil];
 		// If all the check success, it will call Definition's update method to update resouces.
         
-        // TODO EBR: review
-        DefinitionManager *mgr = [[DefinitionManager alloc] init];
-        [mgr update];
-        // TODO this is a leak, fix
-//		[[Definition sharedDefinition] update];
+        [definitionManager update];
 	}
 	@catch (CheckNetworkException *e) {
 		NSLog(@"CheckNetworkException occured %@",e.message);
@@ -181,12 +176,7 @@
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
-    // TODO EBR: review
-    DefinitionManager *mgr = [[DefinitionManager alloc] init];
-    [mgr useLocalCacheDirectly];
-    // TODO this is a leak, fix
-//	[[Definition sharedDefinition] useLocalCacheDirectly];
-    
+    [definitionManager useLocalCacheDirectly];
     
 	if (delegate && [delegate respondsToSelector:@selector(didUseLocalCache:)]) {
 		[delegate performSelector:@selector(didUseLocalCache:) withObject:errorMessage];
@@ -216,6 +206,7 @@
 {
 	[delegate release];
 	[serverAutoDiscoveryController release];
+    [definitionManager release];
 	[super dealloc];
 }
 
