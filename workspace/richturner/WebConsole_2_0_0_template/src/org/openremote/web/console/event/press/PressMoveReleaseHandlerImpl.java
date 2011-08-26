@@ -26,7 +26,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	private ConsoleUnit consoleUnit;
 	private boolean eventHandled;
 	private long lastTapTime;
-	private Widget lastTapWidget = null;
+	private Widget lastTappedWidget = null;
 	private Widget pressedWidget = null;
 	
 	public PressMoveReleaseHandlerImpl(ConsoleUnit consoleUnit) {
@@ -45,19 +45,15 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			return;
 		}
 		pressMoveEvent = event;
-		pressedWidget.fireEvent(new DragMoveEvent(event));
-//		if (sourceComponent instanceof Draggable) {
-//			eventHandled = true;
-//			sourceComponent.fireEvent(new DragMoveEvent(event));
-//		}
+		if (pressedWidget instanceof Draggable) {
+			pressedWidget.fireEvent(new DragMoveEvent(event));
+			eventHandled = true;
+		}
 	}
 	
 	public void onPressEnd(PressEndEvent event) {
 		if (pressStarted) {
 			pressedWidget.fireEvent(new DragEndEvent(event));
-//			if (pressedWidget instanceof Draggable) {
-//				pressedWidget.fireEvent(new DragEndEvent(event));
-//			}		
 			if (!eventHandled) {
 				processPressRelease(event);
 			}
@@ -122,19 +118,25 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 				swipeEvent = checkAndCreateSwipeEvent(consoleUnit.getConsoleDisplay(), moveDistanceX, moveDistanceY);
 			}
 			
+			// If a swipe event has been created then fire it
 			if (swipeEvent != null) {
-				
+				consoleUnit.fireEvent(swipeEvent);
+				return;
 			}
 		}
 		
+		// Gestures below can only be performed if same widget pressed and released
+		if (!sameWidgetPressedAndReleased) {
+			return;
+		}
 		
 		// Check for hold gesture
 		if (duration >= HoldEvent.MIN_HOLD_TIME_MILLISECONDS) {
-			consoleUnit.getEventBus().fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
+			consoleUnit.fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
 			return;
 		}
 
-		// Check for tap gesture
+		// Check for tap or double tap gesture
 		if (pressMoveEvent != null) {
 			if (Math.abs(pressMoveEvent.getClientX() - pressStartEvent.getClientX()) < TapEvent.TAP_X_TOLERANCE || Math.abs(pressMoveEvent.getClientY() - pressStartEvent.getClientY()) < TapEvent.TAP_Y_TOLERANCE) {
 				tapOccurred = true;
@@ -144,11 +146,13 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		}		
 		if (tapOccurred) {
 			if (event.getTime() - lastTapTime < DoubleTapEvent.MAX_TIME_BETWEEN_TAPS_MILLISECONDS) {
-				// TODO Double Tap event
+				consoleUnit.fireEvent(new DoubleTapEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
+			} else {
+				pressedWidget.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
 			}
 			lastTapTime = event.getTime();
-			lastTapWidget = pressedWidget;
-			pressedWidget.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
+			lastTappedWidget = pressedWidget;
+			return;
 		}
 	}
 	
@@ -188,12 +192,12 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		SwipeLimits horizontalLimits = new SwipeEvent.SwipeLimits(widget, SwipeAxis.HORIZONTAL);
 		SwipeLimits verticalLimits = new SwipeEvent.SwipeLimits(widget, SwipeAxis.VERTICAL);
 		
-		if (moveDistanceX > horizontalLimits.primaryAxisMinDistance && moveDistanceY < horizontalLimits.secondaryAxisMaxDistance) {
+		if (Math.abs(moveDistanceX) > horizontalLimits.primaryAxisMinDistance && Math.abs(moveDistanceY) < horizontalLimits.secondaryAxisMaxDistance) {
 			// Horizontal swipe occurred
 			direction = moveDistanceX > 0 ? SwipeDirection.RIGHT : SwipeDirection.LEFT;
 			axis = SwipeAxis.HORIZONTAL;
 			swipeOccurred = true;
-		} else if (moveDistanceY > verticalLimits.primaryAxisMinDistance && moveDistanceX < verticalLimits.secondaryAxisMaxDistance) {
+		} else if (Math.abs(moveDistanceY) > verticalLimits.primaryAxisMinDistance && Math.abs(moveDistanceX) < verticalLimits.secondaryAxisMaxDistance) {
 			// Vertical swipe occurred
 			direction = moveDistanceX > 0 ? SwipeDirection.DOWN : SwipeDirection.UP;
 			axis = SwipeAxis.VERTICAL;

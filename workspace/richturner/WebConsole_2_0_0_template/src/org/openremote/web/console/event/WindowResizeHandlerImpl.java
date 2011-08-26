@@ -10,7 +10,6 @@ import com.google.gwt.user.client.Window;
 
 public class WindowResizeHandlerImpl implements ResizeHandler {
 	boolean resizeOccurred = false;
-	ResizeEvent event = null;
 	private WebConsole consoleModule;
 	
 	public WindowResizeHandlerImpl(WebConsole consoleModule) {
@@ -48,7 +47,6 @@ public class WindowResizeHandlerImpl implements ResizeHandler {
 			}
 			
 			resizeOccurred = true;
-			this.event = event;
 			
 			processResize();
 		}
@@ -69,7 +67,7 @@ public class WindowResizeHandlerImpl implements ResizeHandler {
 	 */
 	public void processResize() {	
 		// Update window
-		consoleModule.updateWindow();
+		consoleModule.updateWindowInfo();
 	
 		// If mobile then this is actually a rotation event so fire console unit rotation event
 		if (BrowserUtils.isMobile) {
@@ -86,7 +84,6 @@ public class WindowResizeHandlerImpl implements ResizeHandler {
 	}
 	
 	public void reset() {
-		event = null;
 		resizeOccurred = false;
 	}
 	
