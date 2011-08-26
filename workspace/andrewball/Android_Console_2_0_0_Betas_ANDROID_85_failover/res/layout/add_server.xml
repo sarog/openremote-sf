@@ -15,10 +15,19 @@
 	          android:layout_width="fill_parent"
 	          android:layout_height="wrap_content" />
 
-	<Button android:id="@+id/add_server_save_button"
-	        android:text="@string/save"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/button_bar_add_server" android:layout_width="fill_parent"
+	android:layout_height="wrap_content" android:orientation="horizontal"
+	android:background="@color/dark_gray" android:layout_gravity="bottom">
 
+	<Button android:id="@+id/add_server_save_button" android:text="@string/save"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_weight="1" android:layout_margin="3px" />
+
+	<Button android:id="@+id/add_server_cancel_button"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_weight="1" android:layout_margin="3px" android:text="@string/cancel" />
+</LinearLayout>
+
+	
 </LinearLayout>
