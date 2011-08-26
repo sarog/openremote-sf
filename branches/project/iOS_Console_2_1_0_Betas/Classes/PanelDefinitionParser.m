@@ -47,9 +47,7 @@
 #import "TaskParser.h"
 #import "XMLEntity.h"
 
-// TODO: for now definition is a singleton, will have to change to accomodate this logic
-// the parsing "factory" should be injected based on the configuration retrieved from the controller
-// definition should be set on controller as this is the "central point"
+// TODO: the parsing "factory" should be injected based on the configuration retrieved from the controller
 // TODO: note: the openremote tag presence is not checked, is this an issue ?
 
 @interface PanelDefinitionParser()
@@ -62,7 +60,8 @@
 
 @synthesize depRegistry;
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         self.depRegistry = [[[DefinitionElementParserRegister alloc] init] autorelease];
