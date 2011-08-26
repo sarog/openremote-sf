@@ -41,24 +41,6 @@
     return self;
 }
 
-// get element name, must be overriden in subclass
-- (NSString *) elementName {
-	return IMAGE;
-}
-
-// init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:ID] intValue];
-		src = [[attributeDict objectForKey:SRC] copy];
-		style = [[attributeDict objectForKey:STYLE] copy];
-//		[[Definition sharedDefinition] addImageName:src];
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
-}
-
 - (void)setSrc:(NSString *)imgSrc {
     if (imgSrc != src) {
         [src release];
@@ -66,34 +48,6 @@
         // TODO EBR review
 //        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition addImageName:src];
     }
-}
-
-/**
- * Parse the image sub element : sensor link and include.
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
-//		int labelRefId = [[attributeDict objectForKey:REF] intValue];
-// TODO : method will go away later		label = [[Definition sharedDefinition] findLabelById:labelRefId];
-	}
-	[super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
-	
-}
-
-/**
- * Fill the image's sensorImages .
- */
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-	if ([elementName isEqualToString:[self elementName]]) {	
-		
-		for (SensorState *state in sensor.states) {
-// TODO : method will go away later					[[Definition sharedDefinition] addImageName:state.value];
-		}
-		
- 		[parser setDelegate:xmlParserParentDelegate];
-		[xmlParserParentDelegate release];
-		xmlParserParentDelegate = nil;
-	}
 }
 
 - (void)dealloc {

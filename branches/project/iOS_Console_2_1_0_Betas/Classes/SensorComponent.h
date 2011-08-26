@@ -25,7 +25,7 @@
 /**
  * This is super class of components which can polling status.
  */
-@interface SensorComponent : Component <NSXMLParserDelegate> {
+@interface SensorComponent : Component {
 	Sensor *sensor;
 }
 

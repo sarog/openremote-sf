@@ -21,6 +21,7 @@
 #import "ColorPickerParser.h"
 #import "ColorPicker.h"
 #import "ImageParser.h"
+#import "XMLEntity.h"
 
 @implementation ColorPickerParser
 

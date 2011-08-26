@@ -24,6 +24,7 @@
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
 #import "ClippedUIImage.h"
+#import "Image.h"
 
 
 @interface SwitchView (Private)

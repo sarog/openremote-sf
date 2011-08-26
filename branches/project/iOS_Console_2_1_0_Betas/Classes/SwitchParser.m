@@ -24,6 +24,8 @@
 #import "SensorState.h"
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
+#import "XMLEntity.h"
+#import "Image.h"
 
 @implementation SwitchParser
 

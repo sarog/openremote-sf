@@ -25,6 +25,7 @@
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "SensorState.h"
+#import "XMLEntity.h"
 
 @implementation ImageParser
 

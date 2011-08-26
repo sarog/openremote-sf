@@ -21,6 +21,7 @@
 #import "GestureParser.h"
 #import "Gesture.h"
 #import "NavigateParser.h"
+#import "XMLEntity.h"
 
 @implementation GestureParser
 

@@ -20,14 +20,9 @@
  */
 #import "SensorState.h"
 
-
 @implementation SensorState
 
-@synthesize name,value;
-
-- (NSString *) elementName {
-	return STATE;
-}
+@synthesize name, value;
 
 - (id)initWithName:(NSString *)sensorName value:(NSString *)sensorValue
 {
@@ -37,17 +32,6 @@
         value = [sensorValue copy];
     }
     return self;
-}
-
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {		
-		name = [[attributeDict objectForKey:NAME] copy];
-		value = [[attributeDict objectForKey:VALUE] copy];
-		
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
 }
 
 - (void)dealloc {

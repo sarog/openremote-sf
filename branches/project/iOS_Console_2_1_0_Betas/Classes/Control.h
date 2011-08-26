@@ -27,10 +27,5 @@
 @interface Control : Component {	
 }
 
-/**
- * Build controls with parameters.
- */
-+ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent;
-
 
 @end

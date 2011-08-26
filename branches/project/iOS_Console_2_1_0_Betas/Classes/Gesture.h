@@ -48,7 +48,7 @@ typedef enum {
  *    <navigate to="setting" />
  * </gesture>
  */
-@interface Gesture : Control <NSXMLParserDelegate> {
+@interface Gesture : Control {
 	GestureSwipeType swipeType;
 	BOOL hasControlCommand;
 	Navigate *navigate;

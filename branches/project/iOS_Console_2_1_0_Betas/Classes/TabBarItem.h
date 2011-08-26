@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 #import "Navigate.h"
 #import "Image.h"
 
@@ -41,7 +40,7 @@
  *    </item>                
  * </tabbar>
  */
-@interface TabBarItem : XMLEntity <NSXMLParserDelegate> {
+@interface TabBarItem : NSObject {
 	NSString *tabBarItemName;
 	Navigate *navigate;
 	Image *tabBarItemImage;

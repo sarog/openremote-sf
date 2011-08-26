@@ -36,7 +36,7 @@
  *    <navigate toScreen="19" />
  * </button>
  */
-@interface Button : Control <NSXMLParserDelegate> {
+@interface Button : Control {
 	
 	NSString *name;
 	Image *defaultImage;

@@ -22,6 +22,7 @@
 #import "Button.h"
 #import "NavigateParser.h"
 #import "ImageParser.h"
+#import "XMLEntity.h"
 
 typedef enum {
     ImageNone  = 0,

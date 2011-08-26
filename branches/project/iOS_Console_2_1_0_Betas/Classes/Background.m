@@ -50,53 +50,6 @@
 }
 
 #pragma mark constructor
-//Initialize itself accoding to xml parser
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	NSLog(@"Begin Constructed background");
-	if (self = [super init]) {
-		NSString *relativeStr = [[attributeDict objectForKey:@"relative"] copy];
-		if (relativeStr) {
-			backgroundImageRelativePosition = relativeStr;
-			isBackgroundImageAbsolutePosition = NO;
-		}
-		
-		NSString *absoluteStr = [attributeDict objectForKey:@"absolute"];
-		if (absoluteStr) {
-			// Devide the absolute string by comma
-			NSRange rangeOfComma = [absoluteStr rangeOfString:@","];
-			int indexOfComma = rangeOfComma.location;
-			backgroundImageAbsolutePositionLeft = [[absoluteStr substringToIndex:indexOfComma] intValue];
-			backgroundImageAbsolutePositionTop = [[absoluteStr substringFromIndex:indexOfComma+1] intValue];
-			isBackgroundImageAbsolutePosition = YES;
-		}
-		
-		NSString *fillScreenStr = [attributeDict objectForKey:@"fillScreen"];
-		fillScreen = (fillScreenStr) ? ([@"true" isEqualToString:[fillScreenStr lowercaseString]]) : NO;
-		
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	NSLog(@"End Constructed background");
-	return self;
-}
-
-// get element name, must be overriden in subclass
-- (NSString *) elementName {
-	return @"background";
-}
-
-#pragma mark deleget method of NSXMLParser
-
-/**
- * Parse the image sub element .
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	
-	if ([elementName isEqualToString:@"image"]) {
-		backgroundImage = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	}
-}
-
 #pragma mark dealloc
 
 -(void) dealloc {

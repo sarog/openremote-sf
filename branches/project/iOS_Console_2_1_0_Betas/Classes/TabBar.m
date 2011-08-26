@@ -25,45 +25,12 @@
 
 @synthesize tabBarItems;
 
-// This method is abstract method of XMLEntity, must be overriden in it's subclass.
-- (NSString *) elementName {
-	return TABBAR;
-}
-
 - (id)init {
     self = [super init];
     if (self) {
 		tabBarItems = [[NSMutableArray alloc] init];
     }
     return self;
-}
-
-#pragma mark Delegate methods of NSXMLParser
-/**
- * Initialize according to the XML parser.
- */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		tabBarItems = [[NSMutableArray alloc] init];
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	
-	return self;
-}    
-
-/**
- * Parse the tabbaritem reference elements .
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{	
-	if ([elementName isEqualToString:ITEM]) {
-		NSLog(@"start item in tabbar");		
-		TabBarItem *tabBarItem = [[TabBarItem alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		NSLog(@"find item %@", tabBarItem.tabBarItemName);
-		[tabBarItems addObject:tabBarItem];
-		NSLog(@"end item in tabbar");
-        [tabBarItem release];
-	}
 }
 
 - (void)dealloc {

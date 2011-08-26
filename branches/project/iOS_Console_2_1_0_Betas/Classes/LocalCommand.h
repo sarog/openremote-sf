@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 #import "Component.h"
 
-@interface LocalCommand : Component <NSXMLParserDelegate> {
+@interface LocalCommand : Component {
 
 	NSString *className;
 	NSString *methodName;

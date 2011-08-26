@@ -34,29 +34,6 @@
     return self;
 }
 
-// NOTE: This is an abstract method, must be implemented in subclass
-- (NSString *) elementName {
-	return COLORPICKER;
-}
-
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	if (self = [super init]) {		
-		componentId = [[attributeDict objectForKey:@"id"] intValue];
-		
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
-}
-
-// parse Image in colorpicer elememnt.
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:IMAGE]) {		
-		image = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];		
-	}	
-}
-
-
 - (void) dealloc {
 	[image release];
 	

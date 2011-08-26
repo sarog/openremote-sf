@@ -21,6 +21,7 @@
 #import "BackgroundParser.h"
 #import "Background.h"
 #import "ImageParser.h"
+#import "XMLEntity.h"
 
 @implementation BackgroundParser
 

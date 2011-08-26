@@ -23,6 +23,7 @@
 #import "SensorParser.h"
 #import "CommandParser.h"
 #import "TaskParser.h"
+#import "XMLEntity.h"
 
 @implementation LocalLogicParser
 

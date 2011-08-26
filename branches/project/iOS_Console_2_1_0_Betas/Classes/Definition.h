@@ -19,18 +19,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <UIKit/UIKit.h>
-#import "Screen.h"
-#import "Group.h"
-#import "Tabbar.h"
-
-#define TWICE 2 // Constant of parsing panel.xml .
 
 @class LocalLogic;
+@class TabBar;
+@class Label;
+@class Group;
+@class Screen;
 
 /**
  * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
  */
-@interface Definition : NSObject <NSXMLParserDelegate> {		
+@interface Definition : NSObject {		
 	NSMutableArray *groups;
 	NSMutableArray *screens;
 	NSMutableArray *labels;

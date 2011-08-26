@@ -25,11 +25,6 @@
 
 @implementation LocalLogic
 
-// This method is abstract method of XMLEntity, must be overriden in it's subclass.
-- (NSString *) elementName {
-	return LOCALLOGIC;
-}
-
 - (id)init
 {
     self = [super init];
@@ -39,43 +34,6 @@
 		tasks = [[NSMutableDictionary alloc] init];
     }
     return self;
-}
-
-#pragma mark Delegate methods of NSXMLParser
-/**
- * Initialize according to the XML parser.
- */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		sensors = [[NSMutableDictionary alloc] init];
-		commands = [[NSMutableDictionary alloc] init];
-		tasks = [[NSMutableDictionary alloc] init];
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	
-	return self;
-}    
-
-/**
- * Parse the tabbaritem reference elements .
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{	
-	if ([elementName isEqualToString:SENSOR]) {
-		NSLog(@"start sensor in locallogic");
-		LocalSensor *sensor = [[LocalSensor alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-        [self addSensor:sensor];
-		[sensor release];
-		NSLog(@"end sensor in locallogic");
-	} else if ([elementName isEqualToString:COMMAND]) {
-		LocalCommand *command = [[LocalCommand alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-        [self addCommand:command];
-		[command release];
-	} else if ([elementName isEqualToString:TASK]) {
-		LocalTask *task = [[LocalTask alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-        [self addTask:task];
-		[task release];
-	}	
 }
 
 - (void)addSensor:(LocalSensor *)sensor

@@ -33,37 +33,6 @@
     return self;
 }
 
-// This method is abstract method of XMLEntity, must be overriden in it's subclass.
-- (NSString *) elementName {
-	return ITEM;
-}
-
-#pragma mark Delegate methods of NSXMLParser
-/**
- * Initialize according to the XML parser.
- */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		tabBarItemName = [[attributeDict objectForKey:NAME] copy];
-		NSLog(@"TabbarItem name is %@ in parsing", tabBarItemName);
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	
-	return self;
-}
-
-/**
- * Parse the switch navigate/image sub elements .
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:NAVIGATE]) {
-		navigate = [[Navigate alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	} else if ([elementName isEqualToString:IMAGE]) {
-		tabBarItemImage = [[Image alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	}
-}
-
 - (void)dealloc {
 	[navigate release];
 	[tabBarItemImage release];

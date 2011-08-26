@@ -20,7 +20,6 @@
  */
 #import <Foundation/Foundation.h>
 #import "Component.h"
-#import "XMLEntity.h"
 
 /**
  * Store model data of components and parsed from element cell in panel.xml.
@@ -30,7 +29,7 @@
  *    </cell>
  * </grid>
  */
-@interface GridCell : XMLEntity <NSXMLParserDelegate> {
+@interface GridCell : NSObject {
 	int x;
 	int y;
 	int rowspan;

@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
-#import "Image.h"
+
+@class Image;
 
 /**
  * Background stores informations parsed from background element in panel.xml.
@@ -29,7 +29,7 @@
  *    <image src="living_colors_320.png" />
  * </background>
  */
-@interface Background : XMLEntity <NSXMLParserDelegate> {
+@interface Background : NSObject {
 	int backgroundImageAbsolutePositionLeft;
 	int backgroundImageAbsolutePositionTop;
 	BOOL isBackgroundImageAbsolutePosition;

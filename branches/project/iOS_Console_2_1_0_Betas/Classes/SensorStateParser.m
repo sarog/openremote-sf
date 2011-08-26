@@ -20,6 +20,7 @@
  */
 #import "SensorStateParser.h"
 #import "SensorState.h"
+#import "XMLEntity.h"
 
 @implementation SensorStateParser
 

@@ -29,6 +29,7 @@
 #import "ColorPickerParser.h"
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
+#import "XMLEntity.h"
 
 @implementation AbsoluteLayoutContainerParser
 

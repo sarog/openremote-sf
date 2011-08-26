@@ -36,20 +36,6 @@
     return self;
 }
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:ID] intValue];
-		className = [[attributeDict objectForKey:CLASS] retain];
-		methodName = [[attributeDict objectForKey:METHOD] retain];
-		if ([attributeDict objectForKey:FREQUENCY]) {
-			frequency = [[attributeDict objectForKey:FREQUENCY] intValue];
-		} else {
-			frequency = 5000; // Default to 5 sec
-		}
-	}
-	return self;
-}
-
 - (void)dealloc {
 	[className release];
 	[methodName release];
