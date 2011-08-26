@@ -21,6 +21,7 @@
 #import "GridLayoutContainer.h"
 #import "GridCell.h"
 #import "SensorComponent.h"
+#import "Sensor.h"
 
 @implementation GridLayoutContainer
 

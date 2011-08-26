@@ -20,12 +20,23 @@
  */
 #import "SliderParser.h"
 #import "Slider.h"
+#import "Image.h"
+#import "Sensor.h"
 #import "SensorLinkParser.h"
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "SensorState.h"
 #import "XMLEntity.h"
 
+/**
+ * Stores model data about slider parsed from "slider" element in panel.xml.
+ * XML fragment example:
+ * <slider id="60" thumbImage="thumbImage.png">
+ *    <min value="0" image="mute.png" trackImage="red.png"/>
+ *    <max value="100" image="loud.png" trackImage="green.png"/>
+ *    <link type="sensor" ref="60" />
+ * </slider>
+ */
 @implementation SliderParser
 
 @synthesize slider;

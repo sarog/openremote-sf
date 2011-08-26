@@ -31,6 +31,14 @@
 #import "Definition.h"
 #import "XMLEntity.h"
 
+/**
+ * Store model data of components and parsed from element cell in panel.xml.
+ * XML fragment example:
+ * <grid left="20" top="20" width="300" height="400" rows="2" cols="2">
+ *    <cell x="0" y="0" rowspan="1" colspan="1">
+ *    </cell>
+ * </grid>
+ */
 @implementation GridCellParser
 
 @synthesize gridCell;

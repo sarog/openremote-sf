@@ -25,7 +25,18 @@
 #import "Definition.h"
 #import "SensorState.h"
 #import "XMLEntity.h"
+#import "Sensor.h"
 
+/**
+ * Stores text, textcolor, font size and parsed from element label in panel.xml.
+ * XML fragment example:
+ * <label id="59" fontSize="14" color="#AAAAAA" text="AWaiting">
+ *    <link type="sensor" ref="1001">
+ *       <state name="on" value="LAMP_ON" />
+ *       <state name="off" value="LAMP_OFF" />
+ *    </link>
+ * </label>
+ */
 @implementation LabelParser
 
 @synthesize label;

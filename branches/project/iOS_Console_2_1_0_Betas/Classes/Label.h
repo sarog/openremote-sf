@@ -18,19 +18,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
 #import "SensorComponent.h"
 
-/**
- * Stores text, textcolor, font size and parsed from element label in panel.xml.
- * XML fragment example:
- * <label id="59" fontSize="14" color="#AAAAAA" text="AWaiting">
- *    <link type="sensor" ref="1001">
- *       <state name="on" value="LAMP_ON" />
- *       <state name="off" value="LAMP_OFF" />
- *    </link>
- * </label>
- */
 @interface Label : SensorComponent {
 	int fontSize;
 	NSString *color;

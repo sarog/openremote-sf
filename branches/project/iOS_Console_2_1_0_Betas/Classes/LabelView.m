@@ -20,6 +20,7 @@
  */
 #import "LabelView.h"
 #import "Label.h"
+#import "Sensor.h"
 #import "NotificationConstant.h"
 #import "SensorState.h"
 #import "PollingStatusParserDelegate.h"

@@ -23,7 +23,24 @@
 #import "TabBarItemParser.h"
 #import "XMLEntity.h"
 
-
+/**
+ * Stores model data about tabbar parsed from "tabbar" element in panel.xml.
+ * XML fragment example:
+ * <tabbar>
+ *    <item name="previous">
+ *       <navigate to="PreviousScreen" />
+ *       <image src="previous.png" />
+ *    </item>
+ *    <item name="next">
+ *	     <navigate to="NextScreen" />
+ *		 <image src="next.png" />
+ *    </item>
+ *	  <item name="setting">
+ *       <navigate to="Setting" />
+ *       <image src="setting.png" />
+ *    </item>                
+ * </tabbar>
+ */
 @implementation TabBarParser
 
 @synthesize tabBar;

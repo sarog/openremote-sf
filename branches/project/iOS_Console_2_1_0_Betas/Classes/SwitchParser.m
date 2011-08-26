@@ -22,11 +22,22 @@
 #import "Switch.h"
 #import "SensorLinkParser.h"
 #import "SensorState.h"
+#import "Sensor.h"
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "XMLEntity.h"
 #import "Image.h"
 
+/**
+ * Stores model data about switch parsed from "swith" element in panel.xml.
+ * XML fragment example:
+ * <switch id="60" >
+ *    <link type="sensor" ref="60">
+ *       <state name="on" value="c.png" />
+ *       <state name="off" value="d.png" />
+ *    </link>
+ * </switch>
+ */
 @implementation SwitchParser
 
 @synthesize sswitch;

@@ -25,8 +25,20 @@
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "SensorState.h"
+#import "Sensor.h"
 #import "XMLEntity.h"
 
+/**
+ * Stores image src and label model and parsed from element image in panel.xml.
+ * XML fragment example:
+ * <image id="60"  src = "b.png" style="">
+ *    <link type="sensor" ref="1001">
+ *       <state name="on" value="on.png" />
+ *       <state name="off" value="off.png" />
+ *    </link>
+ *    <include type="label" ref="64" />
+ * </image>
+ */
 @implementation ImageParser
 
 @synthesize image;

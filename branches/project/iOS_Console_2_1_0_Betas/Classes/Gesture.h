@@ -18,9 +18,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
 #import "Control.h"
-#import "Navigate.h"
+
+@class Navigate;
 
 //CW rotate: +1 % 4
 //CCW rotate: (-1+4) % 4
@@ -32,22 +32,6 @@ typedef enum {
 	GestureSwipeTypeRightToLeft  = 3
 } GestureSwipeType;
 
-/**
- * Gesture model stores swipeType, hasControlCommand and navigate data, parsed from element gesture in panel.xml.
- * XML fragment example:
- * <gesture id="514" hasControlCommand="true" type="swipe-bottom-to-top">
- *    <navigate to="setting" />
- * </gesture>
- * <gesture id="515" hasControlCommand="true" type="swipe-top-to-bottom">
- *    <navigate to="setting" />
- * </gesture>
- * <gesture id="516" hasControlCommand="true" type="swipe-left-to-right">
- *    <navigate to="setting" />
- * </gesture>
- * <gesture id="517" hasControlCommand="true" type="swipe-right-to-left">
- *    <navigate to="setting" />
- * </gesture>
- */
 @interface Gesture : Control {
 	GestureSwipeType swipeType;
 	BOOL hasControlCommand;

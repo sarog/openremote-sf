@@ -22,6 +22,14 @@
 #import "GridLayoutContainer.h"
 #import "GridCellParser.h"
 
+/**
+ * Store gridcell model and parsed from element grid in panel.xml.
+ * XML fragment example:
+ * <grid left="20" top="20" width="300" height="400" rows="2" cols="2">
+ *    <cell x="0" y="0" rowspan="1" colspan="1">
+ *    </cell>
+ * </grid>
+ */
 @implementation GridLayoutContainerParser
 
 - (id)initWithRegister:(DefinitionElementParserRegister *)aRegister attributes:(NSDictionary *)attributeDict

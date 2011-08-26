@@ -23,6 +23,7 @@
 #import "NSStringAdditions.h"
 #import "PollingStatusParserDelegate.h"
 #import "Web.h"
+#import "Sensor.h"
 
 @interface ORWebView ()
 

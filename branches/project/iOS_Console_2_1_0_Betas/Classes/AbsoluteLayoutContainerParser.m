@@ -31,6 +31,13 @@
 #import "Definition.h"
 #import "XMLEntity.h"
 
+/**
+ * AbsoluteLayoutContainer model, it stores one kind of all component models data, its frame and parsed from element absolute in panel.xml.
+ * XML fragment example:
+ * <absolute left="10" top="10" width="320" height="300">
+ * ......
+ * </absolute>
+ */
 @implementation AbsoluteLayoutContainerParser
 
 - (id)initWithRegister:(DefinitionElementParserRegister *)aRegister attributes:(NSDictionary *)attributeDict

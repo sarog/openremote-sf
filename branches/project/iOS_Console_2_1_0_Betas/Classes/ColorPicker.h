@@ -18,17 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
 #import "Control.h"
-#import "Image.h"
 
-/**
- * ColorPicker mainly stores image model data and parsed from element colorpicker.
- * XML fragment example:
- * <colorpicker id="40" >
- *    <image src="colorWheel1.png" />
- * </colorpicker>
- */
+@class Image;
+
 @interface ColorPicker : Control {
 	Image *image;
 }

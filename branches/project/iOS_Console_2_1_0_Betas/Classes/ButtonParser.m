@@ -36,6 +36,19 @@ typedef enum {
 
 @end
 
+/**
+ * Button stores informations parsed from button element in panel.xml.
+ * XML fragment example:
+ * <button id="59" name="A" repeat="false" hasControlCommand="false">
+ *    <default>
+ *       <image src="a.png" />
+ *    </default>
+ *    <pressed>
+ *       <image src="b.png" />
+ *    </pressed>
+ *    <navigate toScreen="19" />
+ * </button>
+ */
 @implementation ButtonParser
 
 @synthesize button;

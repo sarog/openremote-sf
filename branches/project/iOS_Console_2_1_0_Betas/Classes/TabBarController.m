@@ -23,7 +23,8 @@
 #import "Definition.h"
 #import "NotificationConstant.h"
 #import "DirectoryDefinition.h"
-
+#import "Image.h"
+#import "Navigate.h"
 
 @interface TabBarController (Private)
 

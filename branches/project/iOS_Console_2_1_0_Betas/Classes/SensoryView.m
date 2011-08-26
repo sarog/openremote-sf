@@ -23,6 +23,7 @@
 #import "Label.h"
 #import "Image.h"
 #import "Web.h"
+#import "Sensor.h"
 
 @implementation SensoryView
 

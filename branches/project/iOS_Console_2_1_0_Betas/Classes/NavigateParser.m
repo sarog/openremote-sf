@@ -21,6 +21,12 @@
 #import "NavigateParser.h"
 #import "Navigate.h"
 
+/**
+ * Stores data about navigation and parsed from element navigate in panel.xml.
+ * XML fragment example:
+ * <navigate toGroup="491" toScreen="493" />
+ * <navigate to="setting" />
+ */
 @implementation NavigateParser
 
 @synthesize navigate;

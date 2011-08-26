@@ -25,7 +25,8 @@
 #import "DirectoryDefinition.h"
 #import	"AbsoluteLayoutContainerView.h"
 #import "GridCellView.h"
-
+#import "Image.h"
+#import "Sensor.h"
 
 @interface UIImage (RotateAdditions)
 - (UIImage *)imageRotatedByDegrees:(CGFloat)degrees;

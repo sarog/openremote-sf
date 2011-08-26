@@ -20,14 +20,6 @@
  */
 #import <Foundation/Foundation.h>
 
-/**
- * Stores model data about state parsed from element "state" in panel.xml.
- * XML fragment example:
- * ......
- * <state name="off" value="light is off" />
- * <state name="on" value="light is on" />
- * ......
- */
 @interface SensorState : NSObject {
 
 	NSString *name;

@@ -19,11 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "Component.h"
-#import "Control.h"
-#import "Label.h"
-#import "Web.h"
-#import "Image.h"
-#import "Definition.h"
 
 @implementation Component
 
