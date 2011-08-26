@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "Standby.h"
 
+@class DeferredBinding;
 @class Definition;
 
 @interface DefinitionElementParserRegister : NSObject
@@ -30,8 +30,8 @@
 - (Class)parserClassForTag:(NSString *)tag;
 - (SEL)endSelectorForTag:(NSString *)tag;
 
-- (void)addStandbyToResolve:(id <Standby>)labelStandby;
-- (void)resolveStandbys;
+- (void)addDeferredBinding:(DeferredBinding *)deferredBinding;
+- (void)performDeferredBindings;
 
 @property (nonatomic, retain) Definition *definition;
 

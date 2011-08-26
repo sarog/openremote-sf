@@ -18,19 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "Screen.h"
-#import "Standby.h"
+#import "LabelDeferredBinding.h"
+#import "Definition.h"
+#import "Image.h"
 
-@class Group;
-@class Definition;
+@implementation LabelDeferredBinding
 
-@interface ScreenStandby : Screen <Standby>
-
-@property (nonatomic, assign) int theScreenId;
-@property (nonatomic, readonly) Group *enclosingGroup;
-@property (nonatomic, assign) Definition *definition;
-
-- (id)initWithScreenId:(int)anId enclosingGroup:(Group *)aGroup;
-
+- (void)bind
+{
+    ((Image *)self.enclosingObject).label = [self.definition findLabelById:self.boundComponentId];
+}
 
 @end

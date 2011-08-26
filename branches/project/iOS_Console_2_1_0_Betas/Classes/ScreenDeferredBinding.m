@@ -18,30 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "LabelStandby.h"
-#import "Image.h"
+#import "ScreenDeferredBinding.h"
 #import "Definition.h"
+#import "Group.h"
 
-@implementation LabelStandby
+@implementation ScreenDeferredBinding
 
-@synthesize labelId;
-@synthesize enclosingImage;
-@synthesize definition;
-
-- (id)initWithLabelId:(int)anId enclosingImage:(Image *)anImage
+- (void)bind
 {
-    self = [super init];
-    if (self) {
-        self.labelId = anId;
-        enclosingImage = anImage; // assign, to avoid retain cycles
-    }
-    return self;
-}
-
-- (void)resolveStandby
-{
-    // TODO: fix usage of correct Definition instance
-    self.enclosingImage.label = [self.definition findLabelById:self.labelId];
+    [((Group *)self.enclosingObject).screens addObject:[self.definition findScreenById:self.boundComponentId]];
 }
 
 @end
