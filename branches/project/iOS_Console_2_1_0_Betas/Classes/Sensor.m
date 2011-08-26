@@ -25,10 +25,6 @@
 
 @synthesize sensorId, states;
 
-- (NSString *) elementName {
-	return LINK;
-}
-
 - (id)initWithId:(int)anId
 {
     self = [super init];
@@ -37,30 +33,6 @@
         states = [[NSMutableArray alloc] init];
     }
     return self;
-}
-
-/**
- * Construct sensor instance.
- */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {		
-		sensorId = [[attributeDict objectForKey:REF] intValue];
-		NSLog(@"sensor ref id=%d",sensorId);
-		states = [[NSMutableArray alloc] init];
-		
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
-}
-
-// parse sensor state.
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	if ([elementName isEqualToString:STATE]) {
-		SensorState *state = [[SensorState alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[states addObject:state];
-		[state release];
-	} 	
 }
 
 - (void)dealloc {

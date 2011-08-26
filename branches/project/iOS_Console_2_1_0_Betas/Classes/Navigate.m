@@ -40,28 +40,4 @@
 	return self;
 }
 
-//Initialize itself accoding to xml parser
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		toScreen = [[attributeDict objectForKey:@"toScreen"] intValue];
-		toGroup = [[attributeDict objectForKey:@"toGroup"] intValue];
-		NSString *to = [[attributeDict objectForKey:@"to"] lowercaseString];
-		isPreviousScreen = [@"previousscreen" isEqualToString:to] ? YES : NO;
-		isNextScreen = [@"nextscreen" isEqualToString:to] ? YES : NO;
-		isSetting = [@"setting" isEqualToString:to] ? YES : NO;
-		isBack = [@"back" isEqualToString:to] ? YES : NO;
-		isLogin = [@"login" isEqualToString:to] ? YES : NO;
-		isLogout = [@"logout" isEqualToString:to] ? YES : NO;
-		
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
-}
-
-// get element name, must be overriden in subclass
-- (NSString *) elementName {
-	return NAVIGATE;
-}
-
 @end

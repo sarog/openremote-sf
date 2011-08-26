@@ -23,6 +23,8 @@
 #import "TabBarParser.h"
 #import "ScreenStandby.h"
 #import "DefinitionElementParserRegister.h"
+#import "XMLEntity.h"
+
 
 @implementation GroupParser
 

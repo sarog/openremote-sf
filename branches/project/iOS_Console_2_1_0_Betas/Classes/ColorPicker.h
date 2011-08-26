@@ -29,7 +29,7 @@
  *    <image src="colorWheel1.png" />
  * </colorpicker>
  */
-@interface ColorPicker : Control<NSXMLParserDelegate> {
+@interface ColorPicker : Control {
 	Image *image;
 }
 

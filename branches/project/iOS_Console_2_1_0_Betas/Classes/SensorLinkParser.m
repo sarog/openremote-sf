@@ -21,6 +21,7 @@
 #import "SensorLinkParser.h"
 #import "Sensor.h"
 #import "SensorStateParser.h"
+#import "XMLEntity.h"
 
 @implementation SensorLinkParser
 

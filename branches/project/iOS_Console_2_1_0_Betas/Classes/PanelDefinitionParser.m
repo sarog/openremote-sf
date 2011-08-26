@@ -45,6 +45,7 @@
 #import "SensorParser.h"
 #import "CommandParser.h"
 #import "TaskParser.h"
+#import "XMLEntity.h"
 
 // TODO: for now definition is a singleton, will have to change to accomodate this logic
 // the parsing "factory" should be injected based on the configuration retrieved from the controller

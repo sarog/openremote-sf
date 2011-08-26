@@ -31,7 +31,7 @@
  *    </link>
  * </label>
  */
-@interface Label : SensorComponent <NSXMLParserDelegate> {
+@interface Label : SensorComponent {
 	int fontSize;
 	NSString *color;
 	NSString *text;

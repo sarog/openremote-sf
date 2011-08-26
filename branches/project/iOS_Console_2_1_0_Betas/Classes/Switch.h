@@ -19,7 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "SensorComponent.h"
-#import "Image.h"
+
+@class Image;
 
 /**
  * Stores model data about switch parsed from "swith" element in panel.xml.
@@ -31,7 +32,7 @@
  *    </link>
  * </switch>
  */
-@interface Switch : SensorComponent <NSXMLParserDelegate> {
+@interface Switch : SensorComponent {
 
 	Image *onImage;
 	Image *offImage;

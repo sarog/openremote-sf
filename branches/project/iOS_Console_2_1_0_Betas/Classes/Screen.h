@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <UIKit/UIKit.h>
-#import "XMLEntity.h"
 #import "Gesture.h"
 #import "Background.h"
 
@@ -38,7 +37,7 @@
  *    </absolute>
  * </screen>
  */
-@interface Screen : XMLEntity <NSXMLParserDelegate> {
+@interface Screen : NSObject {
 	
 	int screenId;
 	NSString *name;

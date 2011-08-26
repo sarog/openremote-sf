@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 #import "Component.h"
 
-@interface LocalSensor : Component <NSXMLParserDelegate> {
+@interface LocalSensor : Component {
 
 	NSString *className;
 	NSString *methodName;

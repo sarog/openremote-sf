@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 #import "TabBar.h"
 #import "Screen.h"
 
@@ -31,7 +30,7 @@
  *    <include type="screen" ref="45" />
  * </group>
  */
-@interface Group : XMLEntity <NSXMLParserDelegate> {
+@interface Group : NSObject {
 	
 	int groupId;
 	NSString *name;

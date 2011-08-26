@@ -36,15 +36,6 @@
     return self;
 }
 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:ID] intValue];
-		className = [[attributeDict objectForKey:CLASS] retain];
-		methodName = [[attributeDict objectForKey:METHOD] retain];
-	}
-	return self;
-}
-
 - (void)dealloc {
 	[className release];
 	[methodName release];

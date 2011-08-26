@@ -29,26 +29,4 @@
 
 @synthesize componentId;
 
-+ (id)buildWithXMLParser:(NSString *) componentType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent
-{
-	Component *newComponent;
-	if ([componentType isEqualToString:LABEL]) {
-		newComponent = [Label alloc];
-	} else if ([componentType isEqualToString:IMAGE]) {
-		newComponent = [Image alloc];
-	} else if ([componentType isEqualToString:WEB]) {
-		newComponent = [Web alloc];
-	} else {
-		return [Control buildWithXMLParser:componentType parser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
-	}
-	newComponent = [newComponent initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent];
-
-	// Cache labels
-	if ([newComponent isKindOfClass:[Label class]]) {
-// EBR : this class will go away anyway		[[Definition sharedDefinition] addLabel:(Label *)newComponent];
-	}
-	
-	return [newComponent autorelease];
-}
-
 @end

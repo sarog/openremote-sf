@@ -27,11 +27,6 @@
 
 @synthesize src, username, password;
 
-// get element name, must be overriden in subclass
-- (NSString *) elementName {
-	return WEB;
-}
-
 - (id)initWithId:(int)anId src:(NSString *)aSrc username:(NSString *)aUsername password:(NSString *)aPassword
 {
     self = [super init];
@@ -42,19 +37,6 @@
         password = [aPassword copy];
     }
     return self;
-}
-
-// init a xml entity with NSXMLParser and remember its xmlparser parent delegate 
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:ID] intValue];
-		src = [[attributeDict objectForKey:SRC] copy];
-		username = [[attributeDict objectForKey:USERNAME] copy];
-		password = [[attributeDict objectForKey:PASSWORD] copy];
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
 }
 
 - (void)dealloc {

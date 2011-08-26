@@ -19,29 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "Control.h"
-#import "Button.h"
-#import "Switch.h"
-#import "Slider.h"
-#import "ColorPicker.h"
 
-@implementation Control
-
-+ (id)buildWithXMLParser:(NSString *) controlType parser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject *)parent {
-	Control *newControl;
-	if ([controlType isEqualToString:BUTTON]) {
-		newControl = [Button alloc];
-	} else if ([controlType isEqualToString:SWITCH]) {
-		newControl = [Switch alloc];
-	} else if ([controlType isEqualToString:SLIDER]) {
-		newControl = [Slider alloc];
-	} else if ([controlType isEqualToString:COLORPICKER]) {
-		newControl = [ColorPicker alloc];
-	} else {
-		return nil;
-	}
-
-	return [[newControl initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:parent] autorelease];
-}
-	
+@implementation Control	
 	
 @end

@@ -18,8 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
-
 extern NSString *const ID;
 extern NSString *const REF;
 
@@ -95,27 +93,3 @@ extern NSString *const COLORPICKER;
 
 extern NSString *const COMMAND;
 extern NSString *const TASK;
-
-
-/* This is an abstract class for all entities (element) in panel.xml.
- * Objective-C doesn't have the abstract compiler construct like Java at 
- * this time.
- * 
- * So all you do is define the abstract class as any other normal class 
- * and implement methods stubs for the abstract methods that report NotRecognize for selector.
- */
-@interface XMLEntity : NSObject {
-	
-	NSObject<NSXMLParserDelegate> *xmlParserParentDelegate;
-
-}
- 
-// NOTE: This is an abstract method, must be implemented in subclass
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent;
-
-
-// NOTE: This is an abstract method, must be implemented in subclass
-- (NSString *) elementName;
-
-
-@end

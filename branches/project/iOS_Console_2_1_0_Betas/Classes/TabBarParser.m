@@ -21,6 +21,8 @@
 #import "TabBarParser.h"
 #import "TabBar.h"
 #import "TabBarItemParser.h"
+#import "XMLEntity.h"
+
 
 @implementation TabBarParser
 

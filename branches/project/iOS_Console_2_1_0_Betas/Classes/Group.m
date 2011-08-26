@@ -38,29 +38,6 @@
     return self;
 }
 
-#pragma mark Initializers
-
-/**
- * Initialize according to the XML parser.
- */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		groupId = [[attributeDict objectForKey:ID] intValue];					
-		name = [[attributeDict objectForKey:NAME] copy];		
-		screens = [[NSMutableArray alloc] init];
-		
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	
-	return self;
-}
-
-// get element name, must be overriden in subclass
-- (NSString *) elementName {
-	return GROUP;
-}
-
 - (void)dealloc {
 	[name release];
 	[screens release];
@@ -69,21 +46,6 @@
 }
 
 
-#pragma mark Delegate methods of NSXMLParser      
-
-/**
- * Parse the screen reference elements .
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	NSLog(@"start at screen ref");
-	if ([elementName isEqualToString:INCLUDE] && [SCREEN isEqualToString:[attributeDict objectForKey:TYPE]]) {
-//		int screenRefId = [[attributeDict objectForKey:REF] intValue];
-        Screen *existedScreen = nil; // TODO: method will go away anyway		[[Definition sharedDefinition] findScreenById:screenRefId];
-		[self.screens addObject:existedScreen];
-	} else if ([elementName isEqualToString:TABBAR]) {
-		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	}
-}
 
 // Get all portrait screens in group.
 - (NSArray *) getPortraitScreens {

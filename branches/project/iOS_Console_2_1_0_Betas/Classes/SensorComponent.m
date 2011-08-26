@@ -25,17 +25,6 @@
 
 @synthesize sensor;
 
-/**
- * Parse the sub element : sensor link.
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	
-	if ([elementName isEqualToString:LINK] && [SENSOR isEqualToString:[attributeDict objectForKey:TYPE]]) {
-		sensor = [[Sensor alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	}
-	
-}
-
 - (void)dealloc {
 	[sensor release];
 	[super dealloc];

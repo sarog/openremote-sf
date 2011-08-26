@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 
 @class LocalSensor;
 @class LocalCommand;
@@ -41,7 +40,7 @@
  *   </tasks>
  * </locallogic>
  */
-@interface LocalLogic : XMLEntity <NSXMLParserDelegate> {
+@interface LocalLogic : NSObject {
 	NSMutableDictionary *sensors;
 	NSMutableDictionary *commands;
 	NSMutableDictionary *tasks;

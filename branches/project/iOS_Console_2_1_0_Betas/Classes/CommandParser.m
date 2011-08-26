@@ -20,6 +20,7 @@
  */
 #import "CommandParser.h"
 #import "LocalCommand.h"
+#import "XMLEntity.h"
 
 @implementation CommandParser
 

@@ -25,12 +25,6 @@
 
 @synthesize fontSize, color, text;
 
-// This method is abstract method of indirectclass XMLEntity.
-// So, this method must be overridden in subclass.
-- (NSString *) elementName {
-	return LABEL;
-}
-
 - (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue
 {
     self = [super init];
@@ -41,20 +35,6 @@
         text = [textValue copy];
     }
     return self;
-}
-
-#pragma mark Delegate methods of NSXMLParser  
-
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	if (self = [super init]) {
-		componentId = [[attributeDict objectForKey:ID] intValue];
-		fontSize = [[attributeDict objectForKey:FONT_SIZE] intValue];
-		color = [[attributeDict objectForKey:COLOR] copy];
-		text = [[attributeDict objectForKey:TEXT] copy];
-		xmlParserParentDelegate = [parent retain];
-		[parser setDelegate:self];
-	}
-	return self;
 }
 
 - (void)dealloc {

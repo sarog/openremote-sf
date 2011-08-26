@@ -20,15 +20,6 @@
  */
 #import "XMLEntity.h"
 
-/* This is an abstract class for all entities (element) in panel.xml.
- * Objective-C doesn't have the abstract compiler construct like Java at 
- * this time.
- * 
- * So all you do is define the abstract class as any other normal class 
- * and implement methods stubs for the abstract methods that report NotRecognize for selector.
- */
-@implementation XMLEntity
-
 NSString *const ID = @"id";
 NSString *const REF = @"ref";
 
@@ -105,45 +96,3 @@ NSString *const FREQUENCY = @"frequency";
 
 NSString *const COMMAND = @"command";
 NSString *const TASK = @"task";
-
-
-// NOTE: This is an abstract method, must be implemented in subclass
-- (NSString *) elementName {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-#pragma mark Delegate methods of NSXMLParser
-
-/* init a xml entity with NSXMLParser and remember its xmlparser parent delegate
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-- (id)initWithXMLParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict parentDelegate:(NSObject<NSXMLParserDelegate> *)parent {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-/**
- * Parse the start element and create XMLEntity instance.
- * Should be overriden in subclass.
- * NOTE: This is an abstract method, must be implemented in subclass
- */
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	[self doesNotRecognizeSelector:_cmd];
-}
-
-/**
- * When we find a end element, restore the original (parent) XML parser delegate.
- * most subclass does the same action, needn't be overriden.
- * This is an instance method.
- */
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-	if ([elementName isEqualToString:[self elementName]]) {	
-		//NSLog(@"end %@",[self elementName]);
- 		[parser setDelegate:xmlParserParentDelegate];
-		[xmlParserParentDelegate release];
-		xmlParserParentDelegate = nil;
-	}
-}
-
-@end

@@ -19,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "Definition.h"
+#import "Label.h"
+#import "Group.h"
+#import "Screen.h"
 
 @implementation Definition
 

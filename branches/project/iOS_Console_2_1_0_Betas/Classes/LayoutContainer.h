@@ -19,14 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 
 /**
  * It's super class of all layoutContainer model(such as absoluteLayoutCotainer, gridLayoutContainer).
  * The layoutContainer can be located in screen by position info left and top.
  * The layoutContainer's size is described by width and height.
  */
-@interface LayoutContainer : XMLEntity {
+@interface LayoutContainer : NSObject {
 	
 	int left;
 	int top;

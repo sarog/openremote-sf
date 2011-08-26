@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 
 /**
  * Stores model data about sensor parsed from "include" element in panel.xml.
@@ -28,7 +27,7 @@
  * ......
  * </link>
  */
-@interface Sensor : XMLEntity <NSXMLParserDelegate> {
+@interface Sensor : NSObject {
 	
 	int sensorId;
 	

@@ -22,6 +22,7 @@
 #import "TabBarItem.h"
 #import "ImageParser.h"
 #import "NavigateParser.h"
+#import "XMLEntity.h"
 
 @implementation TabBarItemParser
 

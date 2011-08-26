@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 
 /**
  * Stores model data about state parsed from element "state" in panel.xml.
@@ -29,7 +28,7 @@
  * <state name="on" value="light is on" />
  * ......
  */
-@interface SensorState : XMLEntity <NSXMLParserDelegate> {
+@interface SensorState : NSObject {
 
 	NSString *name;
 	NSString *value;

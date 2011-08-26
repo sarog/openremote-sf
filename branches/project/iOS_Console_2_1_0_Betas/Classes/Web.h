@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 #import "SensorComponent.h"
 
-@interface Web : SensorComponent <NSXMLParserDelegate> {
+@interface Web : SensorComponent {
 
 	NSString *src;
 	NSString *username;

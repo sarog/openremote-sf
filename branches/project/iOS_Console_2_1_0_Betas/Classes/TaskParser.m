@@ -20,6 +20,7 @@
  */
 #import "TaskParser.h"
 #import "LocalTask.h"
+#import "XMLEntity.h"
 
 @implementation TaskParser
 

@@ -23,6 +23,7 @@
 #import "LayoutContainerParser.h"
 #import "GestureParser.h"
 #import "BackgroundParser.h"
+#import "XMLEntity.h"
 
 @implementation ScreenParser
 

@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "XMLEntity.h"
 
 /**
  * Stores model data about tabbar parsed from "tabbar" element in panel.xml.
@@ -39,7 +38,7 @@
  *    </item>                
  * </tabbar>
  */
-@interface TabBar : XMLEntity <NSXMLParserDelegate> {
+@interface TabBar : NSObject {
 	NSMutableArray *tabBarItems;
 }
 
