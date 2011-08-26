@@ -21,7 +21,7 @@
 #import "GroupParser.h"
 #import "Group.h"
 #import "TabBarParser.h"
-#import "ScreenStandby.h"
+#import "ScreenDeferredBinding.h"
 #import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
 
@@ -57,9 +57,9 @@
 {
 	if ([elementName isEqualToString:INCLUDE] && [SCREEN isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
-        ScreenStandby *standby = [[ScreenStandby alloc] initWithScreenId:[[attributeDict objectForKey:REF] intValue] enclosingGroup:group];
+        ScreenDeferredBinding *standby = [[ScreenDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:group];
         standby.definition = self.depRegister.definition;
-        [self.depRegister addStandbyToResolve:standby];
+        [self.depRegister addDeferredBinding:standby];
         [standby release];
 	}
     [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];

@@ -21,7 +21,7 @@
 #import "ImageParser.h"
 #import "Image.h"
 #import "SensorLinkParser.h"
-#import "LabelStandby.h"
+#import "LabelDeferredBinding.h"
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "SensorState.h"
@@ -64,9 +64,9 @@
 {
 	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
-        LabelStandby *standby = [[LabelStandby alloc] initWithLabelId:[[attributeDict objectForKey:REF] intValue] enclosingImage:image];
+        LabelDeferredBinding *standby = [[LabelDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:image];
         standby.definition = self.depRegister.definition;
-        [self.depRegister addStandbyToResolve:standby];
+        [self.depRegister addDeferredBinding:standby];
         [standby release];
 	}
     [super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];

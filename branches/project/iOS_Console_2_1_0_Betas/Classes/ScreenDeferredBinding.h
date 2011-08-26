@@ -18,31 +18,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "ScreenStandby.h"
-#import "Group.h"
-#import "Definition.h"
+#import "DeferredBinding.h"
 
-@implementation ScreenStandby
-
-@synthesize theScreenId;
-@synthesize enclosingGroup;
-@synthesize definition;
-
-- (id)initWithScreenId:(int)anId enclosingGroup:(Group *)aGroup
-{
-    self = [super init];
-    if (self) {
-        self.theScreenId = anId;
-        enclosingGroup = aGroup; // assign, to avoid retain cycles
-    }
-    return self;
-}
-
-- (void)resolveStandby
-{
-    // TODO: review how definition is accessed
-    [self.enclosingGroup.screens addObject:[self.definition findScreenById:self.theScreenId]];
-}
-
+@interface ScreenDeferredBinding : DeferredBinding
 
 @end

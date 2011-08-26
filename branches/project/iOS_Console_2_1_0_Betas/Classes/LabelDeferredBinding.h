@@ -18,13 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-@protocol Standby <NSObject>
+#import "DeferredBinding.h"
 
+@class Image;
 
-// TODO: review all this, no need to inherit the original object or to set it
-// This is not a standby but a mechanism for future reference
-
-// TODO: check if possible to use KVC and have this generic, it's a delayed setter mechanism
-- (void)resolveStandby;
+@interface LabelDeferredBinding : DeferredBinding
 
 @end

@@ -108,7 +108,7 @@
     [xmlParser release];
     Definition *definition = [((DefinitionParser *)parser).definition retain];
     [parser release];
-    [depRegistry resolveStandbys];
+    [depRegistry performDeferredBindings];
     return [definition autorelease];
 }
 

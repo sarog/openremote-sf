@@ -19,12 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "DefinitionElementParserRegister.h"
+#import "DeferredBinding.h"
 
 @interface DefinitionElementParserRegister()
 
 @property (nonatomic, retain) NSMutableDictionary *parserRegister;
 @property (nonatomic, retain) NSMutableDictionary *endSelectorRegister;
-@property (nonatomic, retain) NSMutableArray *standbys;
+@property (nonatomic, retain) NSMutableArray *deferredBindings;
 
 @end
 
@@ -32,7 +33,7 @@
 
 @synthesize parserRegister;
 @synthesize endSelectorRegister;
-@synthesize standbys;
+@synthesize deferredBindings;
 @synthesize definition;
 
 - (id)init
@@ -41,7 +42,7 @@
     if (self) {
         self.parserRegister = [NSMutableDictionary dictionary];
         self.endSelectorRegister = [NSMutableDictionary dictionary];
-        self.standbys = [NSMutableSet set];
+        self.deferredBindings = [NSMutableSet set];
     }
     
     return self;
@@ -51,7 +52,7 @@
 {
     self.parserRegister = nil;
     self.endSelectorRegister = nil;
-    self.standbys = nil;
+    self.deferredBindings = nil;
     self.definition = nil;
     [super dealloc];
 }
@@ -74,15 +75,15 @@
     return retValue;
 }
 
-- (void)addStandbyToResolve:(id <Standby>)labelStandby
+- (void)addDeferredBinding:(DeferredBinding *)deferredBinding
 {
-    [self.standbys addObject:labelStandby];
+    [self.deferredBindings addObject:deferredBinding];
 }
 
-- (void)resolveStandbys
+- (void)performDeferredBindings
 {
-    [self.standbys makeObjectsPerformSelector:@selector(resolveStandby)];
-    [self.standbys removeAllObjects];
+    [self.deferredBindings makeObjectsPerformSelector:@selector(bind)];
+    [self.deferredBindings removeAllObjects];
 }
 
 @end

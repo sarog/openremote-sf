@@ -174,10 +174,10 @@
 		60987E9B14025B8400967DEA /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
 		60987E9E14025DC000967DEA /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
 		60987E9F14025DC000967DEA /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
-		60987EA31402667600967DEA /* LabelStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelStandby.m */; };
-		60987EA41402667600967DEA /* LabelStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelStandby.m */; };
-		60987EB41402AA0E00967DEA /* ScreenStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenStandby.m */; };
-		60987EB51402AA0E00967DEA /* ScreenStandby.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenStandby.m */; };
+		60987EA31402667600967DEA /* LabelDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelDeferredBinding.m */; };
+		60987EA41402667600967DEA /* LabelDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelDeferredBinding.m */; };
+		60987EB41402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */; };
+		60987EB51402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */; };
 		60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
 		60987EB91402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
 		60987EBC1402B0C000967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
@@ -198,6 +198,8 @@
 		60A2D2271403A92100A529ED /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
 		60A2D264140662C600A529ED /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
 		60A2D265140662C600A529ED /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
+		60A2D2681407BE4F00A529ED /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
+		60A2D2691407BE4F00A529ED /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
 		60A6195B1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
 		60A6198D1355ED9900A7C87E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6197F1355ED9900A7C87E /* libcrypto.a */; };
 		60A6198E1355ED9900A7C87E /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619801355ED9900A7C87E /* libeXosip2.a */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -630,11 +632,10 @@
 		60987E9914025B7E00967DEA /* SensorLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorLinkParser.m; sourceTree = "<group>"; };
 		60987E9C14025DB300967DEA /* SensorStateParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorStateParser.h; sourceTree = "<group>"; };
 		60987E9D14025DB800967DEA /* SensorStateParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorStateParser.m; sourceTree = "<group>"; };
-		60987EA11402667600967DEA /* LabelStandby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelStandby.h; sourceTree = "<group>"; };
-		60987EA21402667600967DEA /* LabelStandby.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelStandby.m; sourceTree = "<group>"; };
-		60987EA914027F0200967DEA /* Standby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Standby.h; sourceTree = "<group>"; };
-		60987EB21402AA0E00967DEA /* ScreenStandby.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenStandby.h; sourceTree = "<group>"; };
-		60987EB31402AA0E00967DEA /* ScreenStandby.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenStandby.m; sourceTree = "<group>"; };
+		60987EA11402667600967DEA /* LabelDeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelDeferredBinding.h; sourceTree = "<group>"; };
+		60987EA21402667600967DEA /* LabelDeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelDeferredBinding.m; sourceTree = "<group>"; };
+		60987EB21402AA0E00967DEA /* ScreenDeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenDeferredBinding.h; sourceTree = "<group>"; };
+		60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenDeferredBinding.m; sourceTree = "<group>"; };
 		60987EB61402ACFC00967DEA /* TabBarItemParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarItemParser.h; sourceTree = "<group>"; };
 		60987EB71402AD0600967DEA /* TabBarItemParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarItemParser.m; sourceTree = "<group>"; };
 		60987EBA1402B08D00967DEA /* SensorParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorParser.h; sourceTree = "<group>"; };
@@ -646,6 +647,8 @@
 		609C57D313742EC50093C03A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60A2D262140662B500A529ED /* DefinitionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionManager.h; sourceTree = "<group>"; };
 		60A2D263140662BA00A529ED /* DefinitionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionManager.m; sourceTree = "<group>"; };
+		60A2D2661407BE4C00A529ED /* DeferredBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeferredBinding.h; sourceTree = "<group>"; };
+		60A2D2671407BE4D00A529ED /* DeferredBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeferredBinding.m; sourceTree = "<group>"; };
 		60A619591354A24900A7C87E /* NSString+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+ORAdditions.h"; sourceTree = "<group>"; };
 		60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+ORAdditions.m"; sourceTree = "<group>"; };
 		60A619601354A92600A7C87E /* NSString+ORAdditionsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+ORAdditionsTest.h"; path = "Test/NSString+ORAdditionsTest.h"; sourceTree = "<group>"; };
@@ -1352,7 +1355,7 @@
 		6010DE7713FEB35B001E6AA9 /* Parser */ = {
 			isa = PBXGroup;
 			children = (
-				60987EA01402658C00967DEA /* Standbys */,
+				60987EA01402658C00967DEA /* DeferredBinding */,
 				60987E4F13FF0DA000967DEA /* PanelDefinitionParser.h */,
 				60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */,
 				60987E4B13FF0D7300967DEA /* DefinitionElementParserRegister.h */,
@@ -1433,16 +1436,17 @@
 			name = SIP;
 			sourceTree = "<group>";
 		};
-		60987EA01402658C00967DEA /* Standbys */ = {
+		60987EA01402658C00967DEA /* DeferredBinding */ = {
 			isa = PBXGroup;
 			children = (
-				60987EA914027F0200967DEA /* Standby.h */,
-				60987EA11402667600967DEA /* LabelStandby.h */,
-				60987EA21402667600967DEA /* LabelStandby.m */,
-				60987EB21402AA0E00967DEA /* ScreenStandby.h */,
-				60987EB31402AA0E00967DEA /* ScreenStandby.m */,
+				60A2D2661407BE4C00A529ED /* DeferredBinding.h */,
+				60A2D2671407BE4D00A529ED /* DeferredBinding.m */,
+				60987EA11402667600967DEA /* LabelDeferredBinding.h */,
+				60987EA21402667600967DEA /* LabelDeferredBinding.m */,
+				60987EB21402AA0E00967DEA /* ScreenDeferredBinding.h */,
+				60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */,
 			);
-			name = Standbys;
+			name = DeferredBinding;
 			sourceTree = "<group>";
 		};
 		60A6199B1355EDAF00A7C87E /* include */ = {
@@ -2465,13 +2469,14 @@
 				60987E961402538E00967DEA /* NavigateParser.m in Sources */,
 				60987E9A14025B8400967DEA /* SensorLinkParser.m in Sources */,
 				60987E9E14025DC000967DEA /* SensorStateParser.m in Sources */,
-				60987EA31402667600967DEA /* LabelStandby.m in Sources */,
-				60987EB41402AA0E00967DEA /* ScreenStandby.m in Sources */,
+				60987EA31402667600967DEA /* LabelDeferredBinding.m in Sources */,
+				60987EB41402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */,
 				60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */,
 				60987EBC1402B0C000967DEA /* SensorParser.m in Sources */,
 				60987EC01402B11F00967DEA /* CommandParser.m in Sources */,
 				60987EC41402B15800967DEA /* TaskParser.m in Sources */,
 				60A2D264140662C600A529ED /* DefinitionManager.m in Sources */,
+				60A2D2681407BE4F00A529ED /* DeferredBinding.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2612,13 +2617,14 @@
 				60987E971402538E00967DEA /* NavigateParser.m in Sources */,
 				60987E9B14025B8400967DEA /* SensorLinkParser.m in Sources */,
 				60987E9F14025DC000967DEA /* SensorStateParser.m in Sources */,
-				60987EA41402667600967DEA /* LabelStandby.m in Sources */,
-				60987EB51402AA0E00967DEA /* ScreenStandby.m in Sources */,
+				60987EA41402667600967DEA /* LabelDeferredBinding.m in Sources */,
+				60987EB51402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */,
 				60987EB91402AD0E00967DEA /* TabBarItemParser.m in Sources */,
 				60987EBD1402B0C100967DEA /* SensorParser.m in Sources */,
 				60987EC11402B12000967DEA /* CommandParser.m in Sources */,
 				60987EC51402B15800967DEA /* TaskParser.m in Sources */,
 				60A2D265140662C600A529ED /* DefinitionManager.m in Sources */,
+				60A2D2691407BE4F00A529ED /* DeferredBinding.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
