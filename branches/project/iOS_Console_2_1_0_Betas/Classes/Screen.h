@@ -18,25 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 #import "Gesture.h"
-#import "Background.h"
 
-/**
- * Stores model data about screen parsed from screen element of panel data and parsed from element screen in panel.xml.
- * XML fragment example:
- * <screen id="5" name="basement">
- *    <background absolute="100,100">
- *       <image src="basement1.png" />
- *    </background>
- *    <absolute left="20" top="320" width="100" height="100" >
- *       <image id="59" src = "a.png" />
- *    </absolute>
- *    <absolute left="20" top="320" width="100" height="100" >
- *       <image id="60" src = "b.png" />
- *    </absolute>
- * </screen>
- */
+@class Background;
+
 @interface Screen : NSObject {
 	
 	int screenId;

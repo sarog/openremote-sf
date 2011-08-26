@@ -23,6 +23,7 @@
 #import "DirectoryDefinition.h"
 #import "AbsoluteLayoutContainerView.h"
 #import "GridCellView.h"
+#import "Image.h"
 
 @interface ColorPickerView (Private)
 - (void) enableScrollView:(BOOL) booleanValue;

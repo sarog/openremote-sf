@@ -20,6 +20,7 @@
  */
 #import "ImageView.h"
 #import "Image.h"
+#import "Label.h"
 #import "DirectoryDefinition.h"
 #import "ClippedUIImage.h"
 #import "UIViewUtil.h"
@@ -27,6 +28,7 @@
 #import "PollingStatusParserDelegate.h"
 #import "NotificationConstant.h"
 #import "SensorState.h"
+#import "Sensor.h"
 #import "UIColor+ORAdditions.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"

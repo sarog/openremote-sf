@@ -24,6 +24,7 @@
 #import "DefinitionElementParserRegister.h"
 #import "Definition.h"
 #import "SensorState.h"
+#import "Sensor.h"
 #import "XMLEntity.h"
 
 @implementation WebParser

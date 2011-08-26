@@ -18,19 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
 #import "SensorComponent.h"
-#import "Image.h"
 
-/**
- * Stores model data about slider parsed from "slider" element in panel.xml.
- * XML fragment example:
- * <slider id="60" thumbImage="thumbImage.png">
- *    <min value="0" image="mute.png" trackImage="red.png"/>
- *    <max value="100" image="loud.png" trackImage="green.png"/>
- *    <link type="sensor" ref="60" />
- * </slider>
- */
+@class Image;
+
 @interface Slider : SensorComponent {
 	Image *thumbImage;
 	BOOL vertical;

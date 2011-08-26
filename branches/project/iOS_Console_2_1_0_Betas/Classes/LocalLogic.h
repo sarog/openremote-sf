@@ -24,22 +24,6 @@
 @class LocalCommand;
 @class LocalTask;
 
-/**
- * Example of panel.xml config for locallogic part
- *  <locallogic>
- *   <sensors>
- *     <sensor id="35" class="TimeManager" method="getDateTime" refreshRate="1000"/>
- *   </sensors>
- *
- *   <commands>
- *     <command id="21" class="ThermostatManager" method="increaseSetPointTemperature"/>
- *   </commands>
- *
- *   <tasks>
- *     <task id="1001" class="TemperatureManager" method="readTemperature" frequency="8000"/>
- *   </tasks>
- * </locallogic>
- */
 @interface LocalLogic : NSObject {
 	NSMutableDictionary *sensors;
 	NSMutableDictionary *commands;

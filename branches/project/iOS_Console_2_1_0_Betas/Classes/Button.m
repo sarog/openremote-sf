@@ -22,7 +22,7 @@
 
 @implementation Button
 
-@synthesize defaultImage, pressedImage, name, navigate, subElememntNameOfBackground;
+@synthesize defaultImage, pressedImage, name, navigate;
 @synthesize repeat, repeatDelay, hasPressCommand, hasShortReleaseCommand, hasLongPressCommand, hasLongReleaseCommand, longPressDelay;
 
 - (id)initWithId:(int)anId name:(NSString *)aName repeat:(BOOL)repeatFlag repeatDelay:(int)aRepeatDelay hasPressCommand:(BOOL)hasPressCommandFlag hasShortReleaseCommand:(BOOL)hasShortReleaseCommandFlag hasLongPressCommand:(BOOL)hasLongPressCommandFlag hasLongReleaseCommand:(BOOL)hasLongReleaseCommandFlag longPressDelay:(int)aLongPressDelay
@@ -51,8 +51,6 @@
 	[pressedImage release];
 	[navigate release];
 	[name release];
-	[subElememntNameOfBackground release];
-	
 	[super dealloc];
 }
 

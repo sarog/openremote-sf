@@ -25,6 +25,7 @@
 #import "ViewHelper.h"
 #import "NotificationConstant.h"
 #import "ClippedUIImage.h"
+#import "Image.h"
 #import "ControllerButtonAPI_v2_1.h"
 
 @interface ButtonView ()

@@ -25,7 +25,14 @@
 #import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
 
-
+/**
+ * Stores screens model data and parsed from element group in panel.xml.
+ * XML fragment example:
+ * <group id="27" name="Bedroom">
+ *    <include type="screen" ref="30" />
+ *    <include type="screen" ref="45" />
+ * </group>
+ */
 @implementation GroupParser
 
 @synthesize group;

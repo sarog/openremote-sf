@@ -25,7 +25,7 @@
 #import "NotificationConstant.h"
 #import "ClippedUIImage.h"
 #import "Image.h"
-
+#import "Sensor.h"
 
 @interface SwitchView (Private)
 - (void)createButton;

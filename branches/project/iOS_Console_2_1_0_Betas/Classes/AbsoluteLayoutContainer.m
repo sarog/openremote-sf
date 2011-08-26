@@ -20,6 +20,7 @@
  */
 #import "AbsoluteLayoutContainer.h"
 #import "SensorComponent.h"
+#import "Sensor.h"
 
 @implementation AbsoluteLayoutContainer
 

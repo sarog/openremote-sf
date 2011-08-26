@@ -22,13 +22,6 @@
 
 @class Image;
 
-/**
- * Background stores informations parsed from background element in panel.xml.
- * XML fragment example:
- * <background fillScreen="true">
- *    <image src="living_colors_320.png" />
- * </background>
- */
 @interface Background : NSObject {
 	int backgroundImageAbsolutePositionLeft;
 	int backgroundImageAbsolutePositionTop;

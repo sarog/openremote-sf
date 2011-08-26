@@ -18,24 +18,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
 #import "Control.h"
-#import "Navigate.h"
-#import "Image.h"
 
-/**
- * Button stores informations parsed from button element in panel.xml.
- * XML fragment example:
- * <button id="59" name="A" repeat="false" hasControlCommand="false">
- *    <default>
- *       <image src="a.png" />
- *    </default>
- *    <pressed>
- *       <image src="b.png" />
- *    </pressed>
- *    <navigate toScreen="19" />
- * </button>
- */
+@class Image;
+@class Navigate;
+
 @interface Button : Control {
 	
 	NSString *name;
@@ -49,9 +36,6 @@
     BOOL hasLongReleaseCommand;
     NSUInteger longPressDelay;
 	Navigate *navigate;
-	
-	NSString *subElememntNameOfBackground;
-
 }
 
 @property (nonatomic, readonly) NSString *name;
@@ -65,7 +49,6 @@
 @property (nonatomic, readonly) BOOL hasLongReleaseCommand;
 @property (nonatomic, readonly) NSUInteger longPressDelay;
 @property (nonatomic, retain) Navigate *navigate;
-@property (nonatomic, readonly) NSString *subElememntNameOfBackground;
 
 - (id)initWithId:(int)anId name:(NSString *)aName repeat:(BOOL)repeatFlag repeatDelay:(int)aRepeatDelay hasPressCommand:(BOOL)hasPressCommandFlag hasShortReleaseCommand:(BOOL)hasShortReleaseCommandFlag hasLongPressCommand:(BOOL)hasLongPressCommandFlag hasLongReleaseCommand:(BOOL)hasLongReleaseCommandFlag longPressDelay:(int)aLongPressDelay;
 

@@ -23,6 +23,13 @@
 #import "ImageParser.h"
 #import "XMLEntity.h"
 
+/**
+ * ColorPicker mainly stores image model data and parsed from element colorpicker.
+ * XML fragment example:
+ * <colorpicker id="40" >
+ *    <image src="colorWheel1.png" />
+ * </colorpicker>
+ */
 @implementation ColorPickerParser
 
 @synthesize colorPicker;

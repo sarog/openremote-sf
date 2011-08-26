@@ -18,21 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
 #import "SensorComponent.h"
-#import "Label.h"
 
-/**
- * Stores image src and label model and parsed from element image in panel.xml.
- * XML fragment example:
- * <image id="60"  src = "b.png" style="">
- *    <link type="sensor" ref="1001">
- *       <state name="on" value="on.png" />
- *       <state name="off" value="off.png" />
- *    </link>
- *    <include type="label" ref="64" />
- * </image>
- */
+@class Label;
+
 @interface Image : SensorComponent {
 	NSString *src;
 	NSString *style;

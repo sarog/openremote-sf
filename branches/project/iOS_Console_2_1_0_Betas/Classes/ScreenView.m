@@ -30,6 +30,7 @@
 #import "ClippedUIImage.h"
 #import "UIViewUtil.h"
 #import "Image.h"
+#import "Background.h"
 
 @interface ScreenView (Private) 
 - (void)createLayout;

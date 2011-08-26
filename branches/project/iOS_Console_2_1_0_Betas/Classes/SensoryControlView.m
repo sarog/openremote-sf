@@ -21,6 +21,7 @@
 #import "SensoryControlView.h"
 #import "Slider.h"
 #import "Switch.h"
+#import "Sensor.h"
 #import "NotificationConstant.h"
 
 @implementation SensoryControlView
