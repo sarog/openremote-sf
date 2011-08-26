@@ -79,6 +79,17 @@ public class AddServerActivity extends GenericActivity {
                }
             }
         });
+        
+        Button cancelButton = (Button) findViewById(R.id.add_server_cancel_button);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+              finish();
+               }            
+        });
+        
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
