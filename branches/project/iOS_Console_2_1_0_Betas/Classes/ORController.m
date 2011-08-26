@@ -22,6 +22,7 @@
 #import "ORGroupMember.h"
 #import "ORControllerProxy.h"
 #import "NotificationConstant.h"
+#import "Definition.h"
 
 @interface ORController ()
 
@@ -39,6 +40,7 @@
 @synthesize activeGroupMember;
 @synthesize groupMembersFetchStatus;
 @synthesize groupMembersFetcher;
+@synthesize definition;
 
 @dynamic primaryURL;
 @dynamic selectedPanelIdentity;
@@ -108,6 +110,7 @@
     [proxy release];
     proxy = nil;
     self.groupMembersFetcher = nil;
+    self.definition = nil;
     [super didTurnIntoFault];
 }
 

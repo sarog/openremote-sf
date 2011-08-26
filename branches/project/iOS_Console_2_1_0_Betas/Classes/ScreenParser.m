@@ -68,4 +68,9 @@
     screen.background = parser.background;
 }
 
+- (NSString *)handledTag
+{
+    return @"screen";
+}
+
 @end

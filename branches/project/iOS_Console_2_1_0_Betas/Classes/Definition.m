@@ -19,60 +19,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "Definition.h"
-#import "FileUtils.h"
-#import "ServerDefinition.h"
-#import "DirectoryDefinition.h"
-#import "StringUtils.h"
-#import "Control.h"
-#import "LayoutContainer.h"
-#import "AbsoluteLayoutContainer.h"
-#import "ViewHelper.h"
-#import "NotificationConstant.h"
-#import "CheckNetwork.h"
-#import "LocalLogic.h"
-
-@interface Definition (Private)
-- (void)postNotificationToMainThread:(NSString *)notificationName;
-- (void)downloadXml;
-- (void)parseXMLData;
-- (void)downloadImages;
-- (void)downloadImageWithName:(NSString *)imageName;
-- (void)addDownloadImageOperationWithImageName:(NSString *)imageName;
-- (BOOL)canUseLocalCache;
-- (void)parseXml;
-- (void)changeLoadingMessage:(NSString *)msg;
-@end
-
-static Definition *myInstance = nil;
 
 @implementation Definition
 
+@synthesize groups, screens, labels, tabBar, localLogic, imageNames;
 
-@synthesize isUpdating, lastUpdateTime, groups, screens, labels, tabBar, localLogic, imageNames, loading;
+- (void)dealloc
+{
+    [groups release];
+    [screens release];
+    [labels release];
+    [imageNames release];
+    [tabBar release];
+    [localLogic release];
+    [super dealloc];
+}
 
-- (id)init {			
-	if (myInstance != nil) {
-		[self release];
-		[NSException raise:@"singletonClassError" format:@" Don't init singleton class %@"];
-	} else if (self = [super init]) {
-		myInstance = self;
-		groups = [[NSMutableArray alloc] init];
+- (id)init
+{			
+    self = [super init];
+    if (self) {
+        groups = [[NSMutableArray alloc] init];
 		screens = [[NSMutableArray alloc] init];
 		labels = [[NSMutableArray alloc] init];
 		imageNames = [[NSMutableArray alloc] init];
-		//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:@"kNetworkReachabilityChangedNotification" object:nil];
-		
 	}
-	return myInstance;
-}
-
-+ (Definition *)sharedDefinition {
-	@synchronized (self) {
-		if (myInstance == nil) {
-			[[Definition alloc] init];
-		}
-	}
-	return myInstance;
+	return self;
 }
 
 - (Group *)findGroupById:(int)groupId {
@@ -136,186 +108,6 @@ static Definition *myInstance = nil;
 	return nil;
 }
 
-- (BOOL)isDataReady {
-	//need to implement
-	return YES;
-}
-
-- (BOOL)canUseLocalCache {
-	return [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
-}
-
-
-
-- (void)update {
-	if (updateOperationQueue) {
-		[updateOperationQueue release];
-	}
-	updateOperationQueue = [[NSOperationQueue alloc] init];
-	if (updateOperation) {
-		[updateOperation release];
-	}
-	updateOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(postNotificationToMainThread:) object:DefinitionUpdateDidFinishNotification];
-	isUpdating = NO;
-	
-	
-	if (isUpdating) {
-		return;
-	}
-	isUpdating = YES;
-	
-	if (lastUpdateTime) {
-		[lastUpdateTime release];
-	}
-	
-	lastUpdateTime = [[NSDate date] retain];
-	
-	//define Operations
-	NSInvocationOperation *downloadXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(downloadXml) object:nil];
-	NSInvocationOperation *parseXmlOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(parseXMLData) object:nil];
-	
-	//define Operation dependency and add it to OperationQueue
-	[parseXmlOperation addDependency:downloadXmlOperation];
-	[updateOperationQueue addOperation:downloadXmlOperation];
-	[updateOperationQueue addOperation:parseXmlOperation];
-	
-	[updateOperation addDependency:parseXmlOperation];
-	
-	[downloadXmlOperation release];
-	[parseXmlOperation release];
-    
-    // TODO - EBR : check what needs to be added to queue e.g. updateOperation is not here
-    // updateOperation added to queue in parseXMLData method, why ?
-}
-
-- (void)changeLoadingMessage:(NSString *)msg {
-	if (loading) {
-		//[loading setText:msg];
-	}
-}
-
-- (void)useLocalCacheDirectly {
-	if ([self canUseLocalCache]) {
-		[self parseXml];
-	} else {
-		//		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't find local cache, you need to connect network and retry."];
-		[[NSNotificationCenter defaultCenter] postNotificationName:DefinationNeedNotUpdate object:nil];
-	}
-	
-}
-
-#pragma mark Operation Tasks
-- (void)downloadXml {
-	NSLog(@"start download xml");
-	[self changeLoadingMessage:@"download panel.xml ..."];
-	NSLog(@"download panel.xml from %@",[ServerDefinition panelXmlRESTUrl]);
-	[FileUtils downloadFromURL:[ServerDefinition panelXmlRESTUrl]  path:[DirectoryDefinition xmlCacheFolder]];
-	NSLog(@"xml file downloaded.");
-}
-
-
-- (void)downloadImageIgnoreCacheWithName:(NSString *)imageName {
-	NSString *msg = [[NSMutableString alloc] initWithFormat:@"download %@...", imageName];
-	[self changeLoadingMessage:msg];
-	NSLog(@"%@", msg);
-	[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName]  path:[DirectoryDefinition imageCacheFolder]];
-	[imageName release];
-	[msg release];
-}
-
-- (void)downloadImageWithName:(NSString *)imageName {
-	NSString *path = [[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:imageName];
-	if ([FileUtils checkFileExistsWithPath:path] == NO) {
-		NSString *msg = [[NSMutableString alloc] initWithFormat:@"download %@...", imageName];
-		[self changeLoadingMessage:msg];
-		NSLog(@"%@", msg);
-		[FileUtils downloadFromURL:[[ServerDefinition imageUrl] stringByAppendingPathComponent:imageName] path:[DirectoryDefinition imageCacheFolder]];
-		[msg release];
-	}
-}
-
-- (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath {
-	NSLog(@"start parse xml");
-	
-	[self clearPanelXMLData];
-	
-    // TODO EBR : try figure out why parsing is done twice
-    // Think it might be because of references (e.g. see how Label reference is parsed by Image element).
-    // All elements are registered on 1st parse and thus references can be set correctly on 2nd pass.
-    // Not 100% this is full proof + performance hit
-
-	for(int i = 1; i <= TWICE; i++) {
-		NSData *data = [[NSData alloc] initWithContentsOfFile:configurationFilePath];
-		NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:data];
-		NSString *dataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		NSLog(@"%@", dataStr);
-		[dataStr release];
-		
-		//Set delegate to self in order to parse next elements by itself
-		[xmlParser setDelegate:self];
-		
-		//Calls parse method to start parse xml
-		[xmlParser parse];
-
-		NSLog(@"groups count = %d", [groups count]);
-		NSLog(@"screens count = %d", [screens count]);
-		NSLog(@"xml parse done");
-		[data release];
-		[xmlParser release];        
-	}
-}
-
-- (void)parseXml {
-    [self parsePanelConfigurationFileAtPath:[[DirectoryDefinition xmlCacheFolder] stringByAppendingPathComponent:[StringUtils parsefileNameFromString:[ServerDefinition panelXmlRESTUrl]]]];
-}
-    
-//Parses xml
-- (void)parseXMLData {	
-	
-	[self parseXml];
-	[self downloadImages];
-	NSLog(@"images download done");
-	
-	//after parse the xml all the Operation have already added to OperationQuere and addDependency to updateOperation
-	[updateOperationQueue addOperation:updateOperation];
-	NSLog(@"parse xml end element screens and add updateOperation to queue");
-}
-
-#pragma mark delegate method of NSXMLParser
-//Delegate method when find a element start
-- (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
-	
-	if ([elementName isEqualToString:@"screen"]) {
-		NSLog(@"start at screen");
-		Screen *screen = [[Screen alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[self addScreen:screen];
-        [screen release];
-	} else if ([elementName isEqualToString:@"group"]) {
-		NSLog(@"start at group");
-		Group *group = [[Group alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-		[self addGroup:group];
-        [group release];
-	} else if ([elementName isEqualToString:@"tabbar"]) {
-		NSLog(@"start at tabbar");
-        [tabBar release];
-		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	} else if ([elementName isEqualToString:@"locallogic"]) {
-		NSLog(@"start at locallogic");
-        [localLogic release];
-		localLogic = [[LocalLogic alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];
-	}
-}
-
-/**
- * When we find an openremote end element, restore the original XML parser delegate.
- */
-- (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-	if ([elementName isEqualToString:@"openremote"]) {
-		NSLog(@"End parse openremote");	
-	}
-}
-
-
 - (void)addImageName:(NSString *)imageName {
 	for (NSString *name in imageNames) {
 		// avoid duplicated
@@ -326,52 +118,6 @@ static Definition *myInstance = nil;
 	if (imageName) {
 		[[self imageNames] addObject:imageName];	
 	}
-}
-
-- (void)downloadImages {
-	@try {
-		[CheckNetwork checkWhetherNetworkAvailable];
-		
-		for (NSString *imageName in imageNames) {
-			if (imageName) {
-				[self addDownloadImageOperationWithImageName:imageName];
-			}				
-		}
-		
-	}
-	@catch (NSException * e) {
-		[ViewHelper showAlertViewWithTitle:@"Error" Message:@"Can't download image from Server, there is no network."];
-	}		
-}
-
-- (void)addDownloadImageOperationWithImageName:(NSString *)imageName {
-	NSInvocationOperation *downloadControlIconOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(downloadImageWithName:) object:imageName];
-	[updateOperation addDependency:downloadControlIconOperation];
-	[updateOperationQueue addOperation:downloadControlIconOperation];
-	[downloadControlIconOperation release];
-}
-
-
-//Shows alertView when url connection failtrue
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ERROR OCCUR" message:error.localizedDescription  delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
-	[alert release];
-}
-
-#pragma mark post notification 
-//post the notification to Main thread
-- (void) postNotificationToMainThread:(NSString *)notificationName {
-	NSLog(@"start post notification to main thread");
-	[self performSelectorOnMainThread:@selector(postNotification:) withObject:notificationName waitUntilDone:NO];
-	
-	isUpdating = NO;
-}
-
-//create a NSNotification and add it to NSNotificationQueue
-- (void) postNotification:(NSString *)notificationName {
-	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self ];
-	NSLog(@"post nofication done");
 }
 
 - (void)clearPanelXMLData {
@@ -391,25 +137,5 @@ static Definition *myInstance = nil;
 		tabBar = nil;
 	}
 }
-
-#pragma mark override methods to keep this class instance
-- (id)retain {
-	return self;
-}
-
-- (unsigned)retainCount
-{
-	return UINT_MAX;  //denotes an object that cannot be released	
-}
-
-- (void)release {
-	//do nothing
-}
-
-- (id)autorelease
-{
-	return self;
-}
-
 
 @end

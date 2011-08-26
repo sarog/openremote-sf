@@ -25,6 +25,7 @@
 @class ORConsoleSettings;
 @class ORGroupMember;
 @class ORControllerProxy;
+@class Definition;
 
 #define kORControllerGroupMembersFetchingNotification @"kORControllerGroupMembersFetchingNotification"
 #define kORControllerGroupMembersFetchSucceededNotification @"kORControllerGroupMembersFetchSucceededNotification"
@@ -68,5 +69,10 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 - (void)cancelGroupMembersFetch;
 
 - (void)addGroupMemberForURL:(NSString *)url;
+
+
+
+// TODO: re-check in model vs property
+@property (nonatomic, retain) Definition *definition;
 
 @end

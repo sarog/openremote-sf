@@ -22,6 +22,7 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORController.h"
+#import "Definition.h"
 
 #define degreesToRadian(x) (M_PI * (x) / 180.0)
 
@@ -142,7 +143,7 @@
  *    to the destination described by groupId and screenId.
  */
 - (GroupController *)recoverLastOrCreateGroup {
-	NSArray *groups = [[Definition sharedDefinition] groups];
+	NSArray *groups = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition groups];
 	NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 	GroupController *gc = nil;
 	if ([userDefaults objectForKey:@"lastGroupId"]) {
@@ -169,7 +170,8 @@
 	[errorViewController.view removeFromSuperview];
 	[initViewController.view removeFromSuperview];
 	
-	NSArray *groups = [[Definition sharedDefinition] groups];
+    Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
+	NSArray *groups = [definition groups];
 	NSLog(@"groups count is %d",groups.count);
 	
 	if (groups.count > 0) {
@@ -186,8 +188,8 @@
 			[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
 		}		
 		// global tabBar
-		else if ([[Definition sharedDefinition] tabBar]) {
-			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[[Definition sharedDefinition] tabBar]];
+		else if ([definition tabBar]) {
+			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[definition tabBar]];
 			[self.view addSubview:globalTabBarController.view];
 		} else {
 			[self.view addSubview:currentGroupController.view];
@@ -310,7 +312,7 @@
 - (void)rerenderTabbarWithNewOrientation {
 	if (currentGroupController.group.tabBar) {
 		[localTabBarController updateTabItems];
-	} else if ([[Definition sharedDefinition] tabBar]) {
+	} else if ([[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition tabBar]) {
 		[globalTabBarController updateTabItems];
 	}
 }
@@ -354,6 +356,8 @@
 	
 	UIView *v = targetGroupController.view;
 
+    Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
+    
 	//if local tabbar exists
 	if (targetGroupController.group.tabBar) {
 		BOOL findCachedLocalTabBarController = NO;
@@ -374,11 +378,11 @@
 		v = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
 	}
 	//if global tabbar exists
-	else if ([[Definition sharedDefinition] tabBar]) {
+	else if ([definition tabBar]) {
 		if (globalTabBarController) {
 			[globalTabBarController updateGroupController:targetGroupController];
 		} else {
-			globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[[Definition sharedDefinition] tabBar]];
+			globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[definition tabBar]];
 		}
 		v = globalTabBarController.view;
 	}
@@ -397,10 +401,13 @@
 	BOOL isAnotherGroup = groupId != [currentGroupController groupId];
 	BOOL isLastOrientationLandscape = [currentGroupController isOrientationLandscape];
 	
+    
+    Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
+
 	//if screenId is specified, and is not in current group, jump to that group
 	if (groupId > 0 && isAnotherGroup) {
 		if (targetGroupController == nil) {
-			Group *group = [[Definition sharedDefinition] findGroupById:groupId];
+			Group *group = [definition findGroupById:groupId];
 			if (group) {
 				targetGroupController = [[[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]] autorelease];
 			} else {

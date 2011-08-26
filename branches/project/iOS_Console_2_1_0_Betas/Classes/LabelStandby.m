@@ -26,6 +26,7 @@
 
 @synthesize labelId;
 @synthesize enclosingImage;
+@synthesize definition;
 
 - (id)initWithLabelId:(int)anId enclosingImage:(Image *)anImage
 {
@@ -40,7 +41,7 @@
 - (void)resolveStandby
 {
     // TODO: fix usage of correct Definition instance
-    self.enclosingImage.label = [[Definition sharedDefinition] findLabelById:self.labelId];
+    self.enclosingImage.label = [self.definition findLabelById:self.labelId];
 }
 
 @end

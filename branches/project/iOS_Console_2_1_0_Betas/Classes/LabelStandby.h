@@ -25,11 +25,13 @@
 // But this requires presence of an interface for the Label "behaviour" -> review later
 
 @class Image;
+@class Definition;
 
 @interface LabelStandby : Label <Standby>
 
 @property (nonatomic, assign) int labelId;
 @property (nonatomic, readonly) Image *enclosingImage;
+@property (nonatomic, assign) Definition *definition;
 
 - (id)initWithLabelId:(int)anId enclosingImage:(Image *)anImage;
 

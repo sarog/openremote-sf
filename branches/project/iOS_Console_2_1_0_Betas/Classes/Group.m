@@ -77,8 +77,8 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	NSLog(@"start at screen ref");
 	if ([elementName isEqualToString:INCLUDE] && [SCREEN isEqualToString:[attributeDict objectForKey:TYPE]]) {
-		int screenRefId = [[attributeDict objectForKey:REF] intValue];
-		Screen *existedScreen = [[Definition sharedDefinition] findScreenById:screenRefId];
+//		int screenRefId = [[attributeDict objectForKey:REF] intValue];
+        Screen *existedScreen = nil; // TODO: method will go away anyway		[[Definition sharedDefinition] findScreenById:screenRefId];
 		[self.screens addObject:existedScreen];
 	} else if ([elementName isEqualToString:TABBAR]) {
 		tabBar = [[TabBar alloc] initWithXMLParser:parser elementName:elementName attributes:attributeDict parentDelegate:self];

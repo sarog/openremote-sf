@@ -70,4 +70,9 @@
     self.definition.localLogic = localLogicParser.localLogic;
 }
 
+- (NSString *)handledTag
+{
+    return @"definition";
+}
+
 @end

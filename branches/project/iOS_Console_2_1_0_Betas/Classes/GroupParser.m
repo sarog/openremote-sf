@@ -46,9 +46,10 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
+	if ([elementName isEqualToString:INCLUDE] && [SCREEN isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
         ScreenStandby *standby = [[ScreenStandby alloc] initWithScreenId:[[attributeDict objectForKey:REF] intValue] enclosingGroup:group];
+        standby.definition = self.depRegister.definition;
         [self.depRegister addStandbyToResolve:standby];
         [standby release];
 	}

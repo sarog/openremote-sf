@@ -26,6 +26,8 @@
 #import "PollingStatusParserDelegate.h"
 #import "ORConsoleSettingsManager.h"
 #import "ORControllerProxy.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 //retry polling after half a second
 #define POLLING_RETRY_DELAY 0.5
@@ -59,7 +61,7 @@
 		NSMutableArray *remoteSensors = [NSMutableArray array];
 		NSMutableArray *tempLocalSensors = [NSMutableArray array];
 		for (NSString *anId in [ids componentsSeparatedByString:@","]) {
-			LocalSensor *sensor = [[Definition sharedDefinition].localLogic sensorForId:[anId intValue]];
+			LocalSensor *sensor = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localLogic sensorForId:[anId intValue]];
 			if (sensor) {
 				[tempLocalSensors addObject:sensor];
 			} else {
