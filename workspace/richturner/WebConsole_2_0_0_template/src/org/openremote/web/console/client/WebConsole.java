@@ -55,8 +55,8 @@ public class WebConsole implements EntryPoint {
 					// Cancel this timer
 					this.cancel();
 					
-					// Update window
-					updateWindow();				
+					// Update window info
+					updateWindowInfo();				
 					
 					// Create the Console Unit
 					createConsoleUnit();
@@ -184,7 +184,7 @@ public class WebConsole implements EntryPoint {
 		return windowOrientation;
 	}
 	
-	public void updateWindow() {
+	public void updateWindowInfo() {
 		// Determine window orientation on mobile devices
 		if (BrowserUtils.isMobile) {
 			updateWindowOrientation();

@@ -12,7 +12,12 @@ import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.rotate.RotationHandler;
 import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeHandler;
+import org.openremote.web.console.event.tap.DoubleTapEvent;
+import org.openremote.web.console.event.tap.DoubleTapHandler;
+import org.openremote.web.console.event.tap.TapEvent;
+import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.screen.ConsoleScreen;
+import org.openremote.web.console.screen.LoadingScreen;
 import org.openremote.web.console.screen.TestScreen;
 
 import com.google.gwt.event.shared.HandlerManager;
@@ -24,7 +29,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler {
+public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, TapHandler, DoubleTapHandler {
 	private ConsoleUnitEventManager eventManager;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
@@ -71,18 +76,19 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		// Register handlers
 		registerGestureHandlers();
 	
-		// Create loading screen
-		//loadingScreen = new LoadingScreen(eventManager);
-		loadingScreen = new TestScreen(eventManager);
-		
-		// Show loading screen
+		// Create and show loading screen
+		loadingScreen = new LoadingScreen(eventManager);
 		setScreen(loadingScreen);
+		//loadingScreen = new TestScreen(eventManager);
 	}
 	
 	@Override
 	public void onRotate(RotationEvent event) {
 		setOrientation(event.getOrientation());
 		setPosition(event.getWindowWidth(), event.getWindowHeight());
+		
+		// Load in the inverse screen to what is currently loaded
+		
 	}
 	
 	@Override
@@ -164,23 +170,14 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	public HandlerManager getEventBus() {
 		return eventManager.getEventBus();
 	}
-	
-//	/*
-//	 * Redraws the console unit when a change occurs to
-//	 * the window that allows/requires a different console
-//	 * type to be used
-//	 */
-//	public ConsoleUnit redraw(int windowWidth, int windowHeight) {
-//		ConsoleUnit newConsole;
-//		// Reset the body background colour
-//		RootPanel.get().removeStyleName("consoleDisplay");
-//		
-//		// Remove boss from console display
-//		consoleDisplay.removeStyleName("consoleDisplayBoss");
-//		
-//		// Create the new console and add display from old console
-//		newConsole = ConsoleUnit.create(windowWidth, windowHeight, this.displayWidth, this.displayHeight, this.consoleDisplay);
-//		newConsole.setConsoleDisplay(consoleDisplay);
-//		return newConsole;
-//	}
+
+	@Override
+	public void onDoubleTap(DoubleTapEvent event) {
+		Window.alert("DOUBLE TAP EVENT OCCURRED");		
+	}
+
+	@Override
+	public void onTap(TapEvent event) {
+		Window.alert("TAP EVENT OCCURRED");
+	}
 }
