@@ -31,6 +31,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
+import org.openremote.android.console.bindings.Screen;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
@@ -57,11 +58,14 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.view.View.OnClickListener;
@@ -71,10 +75,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -95,10 +101,19 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   /** The app settings view contains auto discovery, auto servers, custom servers,
    * select panel identity, clear image cache and security configuration. 
    */
+  
+  private DataHelper dh;
+  //private ControllerDBHelper dBHelper;
+  //private SQLiteDatabase liteDB;
+  
+  private int previousSelectedItem;
+  
+  private int currentSelectedItem;
+  
   private LinearLayout appSettingsView;
   
   /** The custom list view contains custom server list. */
-  private ListView customListView;
+  private ListView customAndAutoListView;
   private int currentCustomServerIndex = -1;
   
   /** The auto mode is to indicate if auto discovery servers. */
@@ -111,76 +126,109 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   /** The progress layout display auto discovery progress. */
   private LinearLayout progressLayout;
   
-  private ListView autoServersListView;
+ // private ListView autoServersListView;
   /** ListAdapter for automatically detected controllers */
-  private ArrayAdapter<String> autoServerListAdapter;
-  private LinearLayout customServersLayout;
+  private IconicAdapter serverListAdapter;
+  private LinearLayout serversLayout;
   
   private ProgressDialog loadingPanelProgress;
   
   private IPAutoDiscoveryServer autoDiscoveryServer;
+  
+  private boolean fullOptions=false;
+  public int selectedPosition=0;
+ 
+  
+
 
   @Inject
   private ORControllerServerSwitcher orControllerServerSwitcher;
 
   @Override
-  public void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) { 
     super.onCreate(savedInstanceState);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
     setTitle(R.string.settings);
     
     this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
+   
+    /*
+     * @yusha
+     * This is the layout that loads on this activity create
+     * Change xml screen based on device size
+     */
     
-    setContentView(R.layout.app_settings);
+    if(Screen.SCREEN_WIDTH < 100){
+    	setContentView(R.layout.app_settings);
+    	addOnclickListenerSecurityButton();
+   
+    Toast toast = Toast.makeText(getApplicationContext(), "Screen.SCREEN_WIDTH"+Screen.SCREEN_WIDTH, 1);
+        toast.show();      
+       }
     
-    autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
-    customServersLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
+    else{   
+    	fullOptions=true;
+        setContentView(R.layout.all_options_app_settings);
+         	
+    }
+    
+   // autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
+    serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
     
     loadingPanelProgress = new ProgressDialog(this);
     
-    ScrollView scrollView = (ScrollView) findViewById(R.id.settingsScrollView);
-    scrollView.setVerticalScrollBarEnabled(true);
+  // ScrollView scrollView = (ScrollView) findViewById(R.id.serversScrollView);
+    //scrollView.setVerticalScrollBarEnabled(true);
     
     appSettingsView = (LinearLayout) findViewById(R.id.appSettingsView);
     
-    createAutoLayout();
+    
+    serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
     
     currentServer = "";
     
-    constructAutoServersView();
-    constructCustomServersView();
-    if (autoMode) {
-      startControllerAutoDiscovery();
-    } else {
-      switchToCustomServersView();
-    }
+   
+    //constructAutoServersView();
+   
     
-    panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
-    
-    createClearImageCacheButton();
+ /*      //where i am wanting to create the database and tables
+       dBHelper = new ControllerDBHelper(this);
+       // open to read and write
+      // dBHelper.onCreate(liteDB);
+       liteDB=dBHelper.getWritableDatabase();
+       // or to read only
+       // dBHelper.getReadableDatabase();
+*/    
+    this.dh = new DataHelper(this);
+    //this.dh.deleteAll();
+   //dh.insert("http://controller.openremote.org/android/controller", "grp1");
+   // this.dh.insert("Foghorn Leghorn", "lake");
+    //this.dh.insert("Yosemite Sam");
 
-    initSSLState();
+
+    constructServersView();
+    
+    serversLayout.setVisibility(View.VISIBLE);
+   
+      startControllerAutoDiscovery();
+      Log.i(TAG,"startControllerAutoDiscovery at switch" );
+ 
+    panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
+    /*
+     * @yusha
+     */
+   createClearImageCacheButton();
+   if(fullOptions){
+   initSSLState(); 
+   }
+  
     addOnclickListenerOnDoneButton();
     addOnclickListenerOnCancelButton();
     progressLayout = (LinearLayout) findViewById(R.id.choose_controller_progress);
   }
   
-  /**
-   * Switches what gets displayed in the controller selection frame layout to auto-discovered controllers.
-   */
-  private void switchToAutoServersView() {
-    autoServersListView.setVisibility(View.VISIBLE);
-    customServersLayout.setVisibility(View.GONE);
-  }
-  
-  /**
-   * Switches what gets display in the controller selection frame layout to manually specified controllers.
-   */
-  private void switchToCustomServersView() {
-    autoServersListView.setVisibility(View.GONE);
-    customServersLayout.setVisibility(View.VISIBLE);
-  }
 
+	  
   /**
    * Initializes the SSL related UI widget properties and event handlers to deal with user
    * interactions.
@@ -280,8 +328,24 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     });
     
   }
+  
 
-
+/**
+ * Create onclick listener button to view
+ */
+  
+  private void addOnclickListenerSecurityButton() {
+    Button securityButton = (Button)findViewById(R.id.security);
+    securityButton.setOnClickListener(new OnClickListener() {
+        public void onClick(View v) {
+         Intent intent = new Intent();
+          intent.setClass(AppSettingsActivity.this, SecuritySettingsActivity.class);
+          startActivityForResult(intent, Constants.REQUEST_CODE);
+          //finish();
+         // wait for that activity to process and then finish();
+        }
+      });
+  }
 
 
   /**
@@ -346,68 +410,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     });
   }
 
-  /**
-   * Creates the auto layout.
-   * It contains toggle button to switch auto state, two text view to indicate auto messages.
-   *
-   * @return the relative layout
-   */
-  private RelativeLayout createAutoLayout() {
-    ToggleButton autoButton = (ToggleButton) findViewById(R.id.autoButton);
 
-    autoButton.setChecked(autoMode);
-    
-    autoButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        currentServer = "";
-        if (isChecked) {
-          IPAutoDiscoveryServer.isInterrupted = false;
-          switchToAutoServersView();
-          startControllerAutoDiscovery();
-        } else {
-          IPAutoDiscoveryServer.isInterrupted = true;
-          stopControllerAutoDiscovery();
-          switchToCustomServersView();
-        }
-        AppSettingsModel.setAutoMode(AppSettingsActivity.this, isChecked);
-      }
-    });
-    
-    return (RelativeLayout) findViewById(R.id.autoLayout);
-  }
-
-  /**
-   * Loads the custom server URL from customServers.xml, setting the current controller
-   * URL to the last entry that began with a plus sign if such an entry was found.
-   *
-   * @param customServers the custom servers
-   */
-  private void initCustomServersFromFile(ArrayList<String> customServers) {
-    String storedUrls = AppSettingsModel.getCustomServers(this);
-    if (! TextUtils.isEmpty(storedUrls)) {
-      String[] data = storedUrls.split(",");
-      int dataNum = data.length;
-      for (int i = 0; i < dataNum; i++) {
-        if (!data[i].startsWith("+")){
-          customServers.add(data[i]);
-        } else {
-          currentCustomServerIndex = i;
-          customServers.add(data[i].substring(1));
-          try {
-            URL controllerURL = new URL(data[i].substring(1));
-            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
-          } catch (MalformedURLException e) {
-            Log.e(TAG, "incorrect URL syntax in customServers.xml: \"" + data[i].substring(1) +
-                "\"");
-            Toast toast = Toast.makeText(getApplicationContext(),
-                getString(R.string.incorrect_url_syntax_from_saved_configuration), 1);
-            toast.show();
-          }
-        }
-      }
-    }
-  }
-   
   /**
    * It contains a list view to display custom servers,
    * "Add" button to add custom server, "Delete" button to delete custom server.
@@ -415,11 +418,13 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    *
    * @return the linear layout
    */
-  private void constructCustomServersView() {
-    ArrayList<String> customServers = new ArrayList<String>();
-    initCustomServersFromFile(customServers);
+  private void constructServersView() {
+    ArrayList<ControllerObject> customServers = new ArrayList<ControllerObject>();
+   // initCustomServersFromFile(customServers);
     
-    Button addServer = (Button) findViewById(R.id.add_server_button);
+    customServers = dh.getControllerData();
+    
+     Button addServer = (Button) findViewById(R.id.add_server_button);
     
     addServer.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
@@ -434,49 +439,99 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     deleteServer.setOnClickListener(new OnClickListener() {
       @SuppressWarnings("unchecked")
       public void onClick(View v) {
-        int checkedPosition = customListView.getCheckedItemPosition();
+        int checkedPosition = customAndAutoListView.getCheckedItemPosition();
         if (!(checkedPosition == ListView.INVALID_POSITION)) {
-          customListView.setItemChecked(checkedPosition, false);
-          ((ArrayAdapter<String>) customListView.getAdapter()).remove(customListView.getItemAtPosition(checkedPosition).toString());
+        	customAndAutoListView.setItemChecked(checkedPosition, false);
+        	
+        	ControllerObject toDelete = (ControllerObject)customAndAutoListView.getItemAtPosition(checkedPosition);
+          ((ArrayAdapter<ControllerObject>) customAndAutoListView.getAdapter()).remove(toDelete);
           currentServer = "";
           AppSettingsModel.setCurrentServer(AppSettingsActivity.this, null);
-          writeCustomServerToFile();
+          dh.delete(toDelete.getControllerName());
+          previousSelectedItem=-1;
         }
       }
     });
     
-    customListView = (ListView) findViewById(R.id.custom_server_list_view);
+   // serverListAdapter
     
-    final ArrayAdapter<String> serverListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
-        customServers);
-    customListView.setAdapter(serverListAdapter);
-    customListView.setItemsCanFocus(true);
+    //gets the layout length, padding etc
     
+    customAndAutoListView = (ListView) findViewById(R.id.custom_server_list_view);
+    
+    serverListAdapter = new IconicAdapter(appSettingsView.getContext(), R.layout.row, 
+      customServers);
+    
+  //  serverListAdapter = new
+    //customAndAutoListView.setChoiceMode(customAndAutoListView.CHOICE_MODE_SINGLE);
+    customAndAutoListView.setAdapter(serverListAdapter);
+    
+    customAndAutoListView.setItemsCanFocus(true);
+    Log.e("AppSettingsActivity", "currentCustomServerIndex"+currentCustomServerIndex);
+
     if (currentCustomServerIndex != -1) {
-       customListView.setItemChecked(currentCustomServerIndex, true);
-       currentServer = (String)customListView.getItemAtPosition(currentCustomServerIndex);
+
+    	customAndAutoListView.setItemChecked(currentCustomServerIndex, true);
+        currentServer = ((ControllerObject)customAndAutoListView.getItemAtPosition(currentCustomServerIndex)).getControllerName();
+     
     }
-    customListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+ 
+    customAndAutoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    	
        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-          String selectedController = (String) parent.getItemAtPosition(position);
+    	   
+    	  Log.e("ASA", "position"+position);
+    	 
+    	  
+    	   //selectedPosition = position;
+          ControllerObject selectedController =  (ControllerObject) parent.getItemAtPosition(position);
+          selectedController.setIs_Selected(true);
+          //TODO do the same in db
+          currentSelectedItem=position;
+          
+          if(previousSelectedItem < 0){
+        	  previousSelectedItem= currentSelectedItem;
+
+          }
+ 
+          else{
+              ControllerObject pselectedController =  (ControllerObject) parent.getItemAtPosition(previousSelectedItem);
+              pselectedController.setIs_Selected(false);
+            //TODO do the same in db
+          }
+          
+          Log.e("ASA", "previousSelectedItem"+previousSelectedItem);
+ 
+         
+          
+         // customAndAutoListView.getAdapter().getView(position, view, parent).set
+          //serverListAdapter.getView(position, view, parent).setBackgroundColor(R.drawable.list_bg);
+         // getSelectedView().setBackgroundColor(Color.GREEN);
+          //serverListAdapter.remove((ControllerObject) parent.getItemAtPosition(position));//there could be multiple ones
+         // serverListAdapter.add(selectedController);
+          
           try {
-            URL url = new URL(selectedController);
-            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, url);
-            currentServer = selectedController;
+            URL controllerURL = new URL(selectedController.getControllerName());
+            AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
+            currentServer = controllerURL.toString();
           } catch (MalformedURLException e) {
             Log.e(TAG, "incorrect URL syntax: \"" + selectedController + "\"");
             Toast toast = Toast.makeText(getApplicationContext(),
                 getString(R.string.incorrect_url_syntax) + ": " + selectedController, 1);
             toast.show();
           }
-          writeCustomServerToFile();
-          requestFailoverGroupUrls();
+          
+          //view.get
+          
+         // writeCustomServerToFile();
           requestPanelList();
+          serverListAdapter.notifyDataSetChanged();
+          previousSelectedItem = currentSelectedItem;
        }
     });
     
-    requestPanelList();
   }
+  
 
   /**
    * Received custom server from AddServerActivity, add prefix "http://" before it.
@@ -493,9 +548,14 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         if (Constants.RESULT_CONTROLLER_URL == resultCode) {
           String proposedServer = "http://" + result;
 
-          ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customListView.getAdapter();
-          customeListAdapter.add(proposedServer);
-          customListView.setItemChecked(customeListAdapter.getCount() - 1, true);
+          //ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customAndAutoListView.getAdapter();
+          serverListAdapter.add(new ControllerObject(proposedServer));
+  		  		
+          //dBHelper.insertRow(liteDB, proposedServer, "grp1");
+         this.dh.insert(proposedServer, "grp1", 0, 1, 1);
+  		
+          customAndAutoListView.setItemChecked(serverListAdapter.getCount() - 1, true);
+          
           try {
             URL url = new URL(proposedServer);
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, url);
@@ -506,45 +566,15 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
                 getString(R.string.incorrect_url_syntax) + ": " + proposedServer, 1);
             toast.show();
           }
-          writeCustomServerToFile();
+          
+          //writeCustomServerToFile();
           requestPanelList();
         }
       }
     }
   }
   
-  /**
-   * Do initialization that can't be done in XML for the ListView showing controllers
-   * discovered automatically.
-   */
-  private void constructAutoServersView() {
-    autoServersListView.setItemsCanFocus(true);
-    
-    autoServerListAdapter = new ArrayAdapter<String>(appSettingsView.getContext(), R.layout.server_list_item,
-        new ArrayList<String>());
-    autoServersListView.setAdapter(autoServerListAdapter);
-    
-    autoServersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String proposedServer = (String) parent.getItemAtPosition(position);
-        try {
-          URL controllerURL = new URL(proposedServer);
-          AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
-          currentServer = proposedServer;
-        } catch (MalformedURLException e) {
-          Log.e(TAG, "invalid URL syntax in selected auto-discovered controller URL: \"" +
-              proposedServer + "\"");
-          Toast toast = Toast.makeText(getApplicationContext(),
-              getString(R.string.incorrect_url_syntax) + ": \"" + proposedServer + "\"", 1);
-          toast.show();
-          return;
-        }
-        requestPanelList();
-      }
-    });
-  }
-
-  /**
+   /**
    * Starts a new {@link IPAutoDiscoveryServer} thread, which starts a server to receive
    * messages declaring the presence of controllers.  Once the server is started,
    * a message is sent via multicast over UDP to announce that such messages are desired.
@@ -556,7 +586,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    * panel list is requested.
    */
   private void startControllerAutoDiscovery() {
-    autoServerListAdapter.clear();
+    //autoServerListAdapter.clear();//may be not delete
     
     autoDiscoveryServer = new IPAutoDiscoveryServer() {
       @Override
@@ -573,12 +603,25 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         }
 
         int length = result.size();
+        
         for (int i = 0; i < length; i++) {
-          autoServerListAdapter.add(result.get(i));
+        	//add the icon+the text view somehow
+          serverListAdapter.add(new ControllerObject(result.get(i)));
+
+          //if not already autodiscovered, add otherwise isControllerUp field is true
+         // dBHelper.insertRow(liteDB, result.get(i), "grp1");
+          //these are auto discovered, so 1
+          //TODO before setting this to selected, unselect previously selected
+          
+          dh.insert(result.get(i), "grp1", 1,1,1);
+          
+          Log.i(TAG,"result.get(i): "+result.get(i) );
+          Toast toast=Toast.makeText(getApplicationContext(), "check your list view "+result.get(i), 1);
+        		  toast.show();
         }
         if (length > 0) {
-          autoServersListView.setItemChecked(0, true);
-          String proposedServer = autoServerListAdapter.getItem(0);
+        	customAndAutoListView.setItemChecked(0, true);
+          String proposedServer = serverListAdapter.getItem(0).getControllerName();
           try {
             URL controllerURL = new URL(proposedServer);
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
@@ -605,30 +648,6 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     }
   }
   
-  /**
-   *  Construct custom servers to a string which split by "," and write it to customServers.xml.
-   */
-  private void writeCustomServerToFile() {
-    int customServerCount = customListView.getCount();
-    if (customServerCount > 0) {
-      int checkedPosition = customListView.getCheckedItemPosition();
-      String customServerUrls = "";
-      for (int i = 0; i < customServerCount; i++) {
-        if (i != checkedPosition) {
-          customServerUrls = customServerUrls + customListView.getItemAtPosition(i).toString();
-        } else {
-          customServerUrls = customServerUrls + StringUtil.markControllerServerURLSelected(customListView.getItemAtPosition(i).toString());
-        }
-        if (i != customServerCount - 1) {
-          customServerUrls = customServerUrls + ",";
-        }
-      }
-      if (!TextUtils.isEmpty(customServerUrls)) {
-        AppSettingsModel.setCustomServers(customListView.getContext(), customServerUrls);
-      }
-    }
-  }
-
   /**
    * Request panel identity list from controller.
    */
