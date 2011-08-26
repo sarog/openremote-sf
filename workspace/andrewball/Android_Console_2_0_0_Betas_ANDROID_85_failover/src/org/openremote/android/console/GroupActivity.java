@@ -110,12 +110,17 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
+  
       // Only hide the title bar if we are not on Android 3.0, as all of the current
       // Android 3.0 devices are tablets without menu buttons and the action bar
       // doesn't appear without the title bar's being shown.
-      if (VERSION.SDK_INT != 11) {
+      Log.i("VERSION.SDK_INT ", ""+VERSION.SDK_INT );      
+     
+     if (VERSION.SDK_INT < 11) {
          getWindow().requestFeature(Window.FEATURE_NO_TITLE);
       }
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
       getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
@@ -381,10 +386,10 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
                   // to make handling errors like this simpler for other small
                   // RoboAsyncTasks?
                   Intent loginIntent = new Intent();
-                  loginIntent.setClass(context, LoginViewActivity.class);
+                  loginIntent.setClass(getBaseContext(), LoginViewActivity.class);
                   loginIntent.setData(Uri.parse(Main.LOAD_RESOURCE));
                   finish();
-                  context.startActivity(loginIntent);
+                  getBaseContext.startActivity(loginIntent);
                 }
 
                 // TODO This is what we used to do when a response was given that did not have
