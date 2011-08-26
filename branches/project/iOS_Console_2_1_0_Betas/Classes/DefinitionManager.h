@@ -20,15 +20,39 @@
  */
 #import <Foundation/Foundation.h>
 
-@class DefinitionElementParserRegister;
+@interface DefinitionManager : NSObject {
+    BOOL isUpdating;
+	NSDate *lastUpdateTime;
+	NSInvocationOperation *updateOperation;
+	NSOperationQueue *updateOperationQueue; 
+	UILabel *loading;
 
-@interface DefinitionElementParser : NSObject <NSXMLParserDelegate>
+}
 
-- (id)initWithRegister:(DefinitionElementParserRegister *)aRegister attributes:(NSDictionary *)attributeDict;
-- (void)addKnownTag:(NSString *)tag;
+/**
+ * Parses the XML panel configuration file at the provided path and populates the receiver with the parsed configuration.
+ *
+ * @param NSString * full path of the XML file containing the panel configuration to parse
+ */
+- (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath;
 
-@property (nonatomic, retain) DefinitionElementParserRegister *depRegister;
-@property (nonatomic, retain) NSString *handledTag;
-@property (nonatomic, assign) DefinitionElementParser *parentParser;
+/**
+ * Download and parse panel data.
+ */
+- (void)update;
+
+/**
+ * Check the downloaded data is ready.
+ */
+- (BOOL)isDataReady;
+
+/**
+ * Use local cache in handset side.
+ */
+- (void)useLocalCacheDirectly;
+
+@property (nonatomic,readonly) BOOL isUpdating;
+@property (nonatomic,readonly) NSDate *lastUpdateTime;
+@property (nonatomic,retain) UILabel *loading;
 
 @end

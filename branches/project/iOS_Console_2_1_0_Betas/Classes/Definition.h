@@ -31,45 +31,13 @@
  * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
  */
 @interface Definition : NSObject <NSXMLParserDelegate> {		
-	BOOL isUpdating;
-	NSDate *lastUpdateTime;
 	NSMutableArray *groups;
 	NSMutableArray *screens;
 	NSMutableArray *labels;
 	TabBar *tabBar;
 	LocalLogic *localLogic;
 	NSMutableArray *imageNames;
-	NSInvocationOperation *updateOperation;
-	NSOperationQueue *updateOperationQueue; 
-	UILabel *loading;
 }
-
-/**
- * Get Definition singleton instance.
- */
-+ (Definition *)sharedDefinition;
-
-/**
- * Parses the XML panel configuration file at the provided path and populates the receiver with the parsed configuration.
- *
- * @param NSString * full path of the XML file containing the panel configuration to parse
- */
-- (void)parsePanelConfigurationFileAtPath:(NSString *)configurationFilePath;
-
-/**
- * Download and parse panel data.
- */
-- (void)update;
-
-/**
- * Check the downloaded data is ready.
- */
-- (BOOL)isDataReady;
-
-/**
- * Use local cache in handset side.
- */
-- (void)useLocalCacheDirectly;
 
 /**
  * Clear stored models data(groups, screens, labels and tabBar).
@@ -111,14 +79,11 @@
  */
 - (Label *)findLabelById:(int)labelId;
 
-@property (nonatomic,readonly) BOOL isUpdating;
-@property (nonatomic,readonly) NSDate *lastUpdateTime;
 @property (nonatomic,readonly) NSMutableArray *groups;
 @property (nonatomic,readonly) NSMutableArray *screens;
 @property (nonatomic,retain) NSMutableArray *labels;
 @property (nonatomic,retain) TabBar *tabBar;
 @property (nonatomic, retain) LocalLogic *localLogic;
 @property (nonatomic,readonly) NSMutableArray *imageNames;
-@property (nonatomic,retain) UILabel *loading;
 
 @end

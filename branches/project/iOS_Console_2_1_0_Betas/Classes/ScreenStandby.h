@@ -22,11 +22,13 @@
 #import "Standby.h"
 
 @class Group;
+@class Definition;
 
 @interface ScreenStandby : Screen <Standby>
 
 @property (nonatomic, assign) int theScreenId;
 @property (nonatomic, readonly) Group *enclosingGroup;
+@property (nonatomic, assign) Definition *definition;
 
 - (id)initWithScreenId:(int)anId enclosingGroup:(Group *)aGroup;
 

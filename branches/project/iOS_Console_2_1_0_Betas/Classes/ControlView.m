@@ -38,7 +38,10 @@
 #import "ColorPicker.h"
 #import "ColorPickerView.h"
 #import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
 #import "ORControllerProxy.h"
+#import "Definition.h"
+#import "ORController.h"
 
 @implementation ControlView
 
@@ -81,7 +84,7 @@
 
 - (void)sendCommandRequest:(NSString *)commandType {
 	// Check for local command first
-	LocalCommand *localCommand = [[Definition sharedDefinition].localLogic commandForId:component.componentId];
+	LocalCommand *localCommand = [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.localLogic commandForId:component.componentId];
 	if (localCommand) {
 		Class clazz = NSClassFromString(localCommand.className);
 		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", localCommand.methodName]);

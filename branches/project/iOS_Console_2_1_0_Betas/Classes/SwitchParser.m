@@ -22,6 +22,8 @@
 #import "Switch.h"
 #import "SensorLinkParser.h"
 #import "SensorState.h"
+#import "DefinitionElementParserRegister.h"
+#import "Definition.h"
 
 @implementation SwitchParser
 
@@ -38,7 +40,7 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:LINK]; 
-        sswitch= [[Switch alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
+        sswitch = [[Switch alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
     }
     return self;
 }
@@ -54,6 +56,7 @@
         for (SensorState *state in sswitch.sensor.states) {
 			Image *img = [[Image alloc] init];
 			img.src = state.value;
+            [self.depRegister.definition addImageName:state.value];
 			if ([[state.name lowercaseString] isEqualToString:ON]) {
 				sswitch.onImage = img;
 			} else if ([[state.name lowercaseString] isEqualToString:OFF]) {

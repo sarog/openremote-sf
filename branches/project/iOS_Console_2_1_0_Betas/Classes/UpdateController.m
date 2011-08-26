@@ -42,6 +42,7 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 #import "ORGroupMember.h"
+#import "DefinitionManager.h"
 
 //Define the default max retry times. It should be set by user in later version.
 #define MAX_RETRY_TIMES 0
@@ -87,7 +88,7 @@
 // else if auto discovery is enable it will try to find another server url using auto discovery,
 // else it will check local cache or call didUpdateFail method.
 - (void)checkConfigAndUpdate {
-	if ([Definition sharedDefinition].groups.count > 0) {
+	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.groups.count > 0) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	}
 	NSLog(@"check config");
@@ -138,7 +139,12 @@
 		//Add an Observer to listern Definition's update behavior
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdate) name:DefinitionUpdateDidFinishNotification object:nil];
 		// If all the check success, it will call Definition's update method to update resouces.
-		[[Definition sharedDefinition] update];
+        
+        // TODO EBR: review
+        DefinitionManager *mgr = [[DefinitionManager alloc] init];
+        [mgr update];
+        // TODO this is a leak, fix
+//		[[Definition sharedDefinition] update];
 	}
 	@catch (CheckNetworkException *e) {
 		NSLog(@"CheckNetworkException occured %@",e.message);
@@ -175,7 +181,13 @@
 }
 
 - (void)didUseLocalCache:(NSString *)errorMessage {
-	[[Definition sharedDefinition] useLocalCacheDirectly];
+    // TODO EBR: review
+    DefinitionManager *mgr = [[DefinitionManager alloc] init];
+    [mgr useLocalCacheDirectly];
+    // TODO this is a leak, fix
+//	[[Definition sharedDefinition] useLocalCacheDirectly];
+    
+    
 	if (delegate && [delegate respondsToSelector:@selector(didUseLocalCache:)]) {
 		[delegate performSelector:@selector(didUseLocalCache:) withObject:errorMessage];
 	}

@@ -42,6 +42,7 @@
     if (self) {
         [self addKnownTag:LINK]; 
         image = [[Image alloc] initWithId:[[attributeDict objectForKey:ID] intValue] src:[attributeDict objectForKey:SRC] style:[attributeDict objectForKey:STYLE]];
+        [aRegister.definition addImageName:[attributeDict objectForKey:SRC]];
     }
     return self;
 }
@@ -51,6 +52,7 @@
 	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
         LabelStandby *standby = [[LabelStandby alloc] initWithLabelId:[[attributeDict objectForKey:REF] intValue] enclosingImage:image];
+        standby.definition = self.depRegister.definition;
         [self.depRegister addStandbyToResolve:standby];
         [standby release];
 	}

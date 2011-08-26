@@ -45,7 +45,7 @@
 
 	// Cache labels
 	if ([newComponent isKindOfClass:[Label class]]) {
-		[[Definition sharedDefinition] addLabel:(Label *)newComponent];
+// EBR : this class will go away anyway		[[Definition sharedDefinition] addLabel:(Label *)newComponent];
 	}
 	
 	return [newComponent autorelease];

@@ -21,6 +21,9 @@
 #import "Image.h"
 #import "Definition.h"
 #import "SensorState.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 #import "Definition.h"
 
 @implementation Image
@@ -34,10 +37,6 @@
         componentId = anId;
         src = [srcValue copy];
         style = [styleValue copy];
-        
-        // TODO: must reference the correct Definition instance
-        // Maybe move out of here
-        [[Definition sharedDefinition] addImageName:src];
     }
     return self;
 }
@@ -53,7 +52,7 @@
 		componentId = [[attributeDict objectForKey:ID] intValue];
 		src = [[attributeDict objectForKey:SRC] copy];
 		style = [[attributeDict objectForKey:STYLE] copy];
-		[[Definition sharedDefinition] addImageName:src];
+//		[[Definition sharedDefinition] addImageName:src];
 		xmlParserParentDelegate = [parent retain];
 		[parser setDelegate:self];
 	}
@@ -64,7 +63,8 @@
     if (imgSrc != src) {
         [src release];
         src = [imgSrc retain];
-        [[Definition sharedDefinition] addImageName:src];
+        // TODO EBR review
+//        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition addImageName:src];
     }
 }
 
@@ -73,8 +73,8 @@
  */
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict{
 	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
-		int labelRefId = [[attributeDict objectForKey:REF] intValue];
-		label = [[Definition sharedDefinition] findLabelById:labelRefId];
+//		int labelRefId = [[attributeDict objectForKey:REF] intValue];
+// TODO : method will go away later		label = [[Definition sharedDefinition] findLabelById:labelRefId];
 	}
 	[super parser:parser didStartElement:elementName namespaceURI:namespaceURI qualifiedName:qualifiedName attributes:attributeDict];
 	
@@ -87,7 +87,7 @@
 	if ([elementName isEqualToString:[self elementName]]) {	
 		
 		for (SensorState *state in sensor.states) {
-			[[Definition sharedDefinition] addImageName:state.value];
+// TODO : method will go away later					[[Definition sharedDefinition] addImageName:state.value];
 		}
 		
  		[parser setDelegate:xmlParserParentDelegate];

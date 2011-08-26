@@ -23,21 +23,25 @@
 
 @interface DefinitionElementParser()
 
-@property (nonatomic, retain) id currentParser;
 @property (nonatomic, retain) NSMutableSet *knownTags;
+@property (nonatomic, retain) DefinitionElementParser *childParser;
 
 @end
 
 @implementation DefinitionElementParser
 
-@synthesize currentParser;
+@synthesize parentParser;
+@synthesize childParser;
 @synthesize depRegister;
 @synthesize knownTags;
+@synthesize handledTag;
 
-- (void)dealloc {
+- (void)dealloc
+{
     self.depRegister = nil;
     self.knownTags = nil;
-    self.currentParser = nil;
+    self.childParser = nil;
+    self.handledTag = nil;
     [super dealloc];
 }
 
@@ -56,12 +60,20 @@
     [knownTags addObject:tag];
 }
 
-- (void)installParserClass:(Class)parserClass onParser:(NSXMLParser *)parser attributes:(NSDictionary *)attributeDict
+- (void)installParserClass:(Class)parserClass onParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict
 {
-    DefinitionElementParser *screenParser = [[parserClass alloc] initWithRegister:depRegister attributes:attributeDict];
-    parser.delegate = screenParser;
-    self.currentParser = screenParser;
-    [screenParser release];
+    DefinitionElementParser *aParser = [[parserClass alloc] initWithRegister:depRegister attributes:attributeDict];
+    aParser.handledTag = elementName;
+    aParser.parentParser = self;
+    self.childParser = aParser;
+    parser.delegate = aParser;
+    [aParser release];
+}
+
+- (void)restoreParserOnParser:(NSXMLParser *)parser
+{
+    parser.delegate = self.parentParser;
+    self.parentParser = nil;
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
@@ -69,22 +81,21 @@
     if ([knownTags containsObject:elementName]) {
         Class parserClass = [self.depRegister parserClassForTag:elementName];
         if (parserClass) {
-            [self installParserClass:parserClass onParser:parser attributes:attributeDict];
+            [self installParserClass:parserClass onParser:parser elementName:elementName attributes:attributeDict];
+            
         }
     }
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName
 {
-    if ([knownTags containsObject:elementName]) {
+    if ([[self handledTag] isEqualToString:elementName]) {
         SEL endSelector = [self.depRegister endSelectorForTag:elementName];
-        
         // TODO: what is returned in case of nil?
-        if ([self respondsToSelector:endSelector]) {
-            [self performSelector:endSelector withObject:self.currentParser];
-            parser.delegate = self;
-            self.currentParser = nil;
+        if ([self.parentParser respondsToSelector:endSelector]) {
+            [self.parentParser performSelector:endSelector withObject:self];
         }
+        [self restoreParserOnParser:parser];
     }
 }
 

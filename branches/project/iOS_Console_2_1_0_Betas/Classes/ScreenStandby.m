@@ -26,6 +26,7 @@
 
 @synthesize theScreenId;
 @synthesize enclosingGroup;
+@synthesize definition;
 
 - (id)initWithScreenId:(int)anId enclosingGroup:(Group *)aGroup
 {
@@ -39,8 +40,8 @@
 
 - (void)resolveStandby
 {
-    // TODO: fix usage of correct Definition instance
-    [self.enclosingGroup.screens addObject:[[Definition sharedDefinition] findScreenById:self.theScreenId]];
+    // TODO: review how definition is accessed
+    [self.enclosingGroup.screens addObject:[self.definition findScreenById:self.theScreenId]];
 }
 
 

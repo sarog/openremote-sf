@@ -20,6 +20,10 @@
  */
 #import <Foundation/Foundation.h>
 
+@class Definition;
+
 @interface PanelDefinitionParser : NSObject
+
+- (Definition *)parseDefinitionFromXML:(NSData *)definitionXMLData;
 
 @end

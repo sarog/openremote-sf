@@ -28,6 +28,9 @@
 #import "NotificationConstant.h"
 #import "SensorState.h"
 #import "UIColor+ORAdditions.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface ImageView(Private)
 -(Image *) initImageModelWithLabel;
@@ -101,7 +104,8 @@
 
 -(Image *) initImageModelWithLabel {
 	Image *tempImageModel = (Image *)component;
-	for (Label *tempLabel in [Definition sharedDefinition].labels) {
+    // TODO EBR review
+	for (Label *tempLabel in [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.labels) {
 		if (tempImageModel.label.componentId == tempLabel.componentId) {
 			tempImageModel.label = tempLabel;
 			break;
