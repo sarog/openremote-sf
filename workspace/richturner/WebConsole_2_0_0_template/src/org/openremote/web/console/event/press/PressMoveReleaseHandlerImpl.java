@@ -148,7 +148,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			if (event.getTime() - lastTapTime < DoubleTapEvent.MAX_TIME_BETWEEN_TAPS_MILLISECONDS) {
 				consoleUnit.fireEvent(new DoubleTapEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
 			} else {
-				pressedWidget.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
+				consoleUnit.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
 			}
 			lastTapTime = event.getTime();
 			lastTappedWidget = pressedWidget;
