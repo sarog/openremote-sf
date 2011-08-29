@@ -24,6 +24,7 @@
 #import "ImageParser.h"
 #import "WebParser.h"
 #import "ButtonParser.h"
+#import "Button.h"
 #import "SwitchParser.h"
 #import "SliderParser.h"
 #import "ColorPickerParser.h"

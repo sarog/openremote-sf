@@ -18,13 +18,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "DefinitionElementParser.h"
+#import "ButtonParser.h"
 
-@class Button;
-
-@interface ButtonParser : DefinitionElementParser {
-}
-
-@property (nonatomic, readonly) Button *button;
+@interface ButtonParserAPI_v2_1 : ButtonParser
 
 @end

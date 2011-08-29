@@ -26,7 +26,12 @@
 #import "NotificationConstant.h"
 #import "ClippedUIImage.h"
 #import "Image.h"
+#ifdef API_v2_1
 #import "ControllerButtonAPI_v2_1.h"
+#else
+#import "ControllerButtonAPI_v2.h"
+#endif
+
 
 @interface ButtonView ()
 
@@ -152,7 +157,11 @@
 	[uiButton setTitle:button.name forState:UIControlStateNormal];
     
     // TODO: creating this here for backwards compatibility but should be injected from somewhere depending on controller capability
+#ifdef API_v2_1
     self.controllerButtonAPI = [[[ControllerButtonAPI_v2_1 alloc] init] autorelease];    
+#else
+    self.controllerButtonAPI = [[[ControllerButtonAPI_v2 alloc] init] autorelease];    
+#endif
 }
 
 #pragma mark dealloc

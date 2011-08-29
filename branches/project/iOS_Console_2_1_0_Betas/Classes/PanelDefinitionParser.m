@@ -34,7 +34,6 @@
 #import "LabelParser.h"
 #import "ImageParser.h"
 #import "WebParser.h"
-#import "ButtonParser.h"
 #import "SwitchParser.h"
 #import "SliderParser.h"
 #import "ColorPickerParser.h"
@@ -46,6 +45,12 @@
 #import "CommandParser.h"
 #import "TaskParser.h"
 #import "XMLEntity.h"
+
+#ifdef API_v2_1
+#import "ButtonParserAPI_v2_1.h"
+#else
+#import "ButtonParserAPI_v2.h"
+#endif
 
 // TODO: the parsing "factory" should be injected based on the configuration retrieved from the controller
 // TODO: note: the openremote tag presence is not checked, is this an issue ?
@@ -81,7 +86,11 @@
         [self.depRegistry registerParserClass:[SensorLinkParser class] endSelector:@selector(endSensorLinkElement:) forTag:LINK];
         [self.depRegistry registerParserClass:[SensorStateParser class] endSelector:@selector(endSensorStateElement:) forTag:STATE];
         [self.depRegistry registerParserClass:[WebParser class] endSelector:@selector(endWebElement:) forTag:WEB];
-        [self.depRegistry registerParserClass:[ButtonParser class] endSelector:@selector(endButtonElement:) forTag:BUTTON];
+#ifdef API_v2_1
+        [self.depRegistry registerParserClass:[ButtonParserAPI_v2_1 class] endSelector:@selector(endButtonElement:) forTag:BUTTON];
+#else
+        [self.depRegistry registerParserClass:[ButtonParserAPI_v2 class] endSelector:@selector(endButtonElement:) forTag:BUTTON];
+#endif
         [self.depRegistry registerParserClass:[SwitchParser class] endSelector:@selector(endSwitchElement:) forTag:SWITCH];
         [self.depRegistry registerParserClass:[SliderParser class] endSelector:@selector(endSliderElement:) forTag:SLIDER];
         [self.depRegistry registerParserClass:[ColorPickerParser class] endSelector:@selector(endColorPickerElement:) forTag:COLORPICKER];

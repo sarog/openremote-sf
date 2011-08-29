@@ -21,6 +21,10 @@
 		33B8ED1310FCA5B700F3363D /* SensoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED1210FCA5B700F3363D /* SensoryView.m */; };
 		33B8ED5010FCAB4F00F3363D /* SensoryControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */; };
 		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
+		6001B9A3140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
+		6001B9A4140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
+		6001B9A8140B6F7A00B18E84 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
+		6001B9A9140B6F7A00B18E84 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
 		6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6010DE7A13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
@@ -160,8 +164,8 @@
 		60987E7F14017B6E00967DEA /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
 		60987E8214017B7B00967DEA /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
 		60987E8314017B7B00967DEA /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
-		60987E8614017BC000967DEA /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParser.m */; };
-		60987E8714017BC000967DEA /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParser.m */; };
+		60987E8614017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */; };
+		60987E8714017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */; };
 		60987E8A14017BD400967DEA /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
 		60987E8B14017BD400967DEA /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
 		60987E8E14017BE500967DEA /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
@@ -536,6 +540,10 @@
 		33B8ED4F10FCAB4F00F3363D /* SensoryControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensoryControlView.m; sourceTree = "<group>"; };
 		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
 		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
+		6001B9A1140B6A3400B18E84 /* ButtonParserAPI_v2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParserAPI_v2.h; sourceTree = "<group>"; };
+		6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParserAPI_v2.m; sourceTree = "<group>"; };
+		6001B9A6140B6F7900B18E84 /* ButtonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParser.h; sourceTree = "<group>"; };
+		6001B9A7140B6F7900B18E84 /* ButtonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParser.m; sourceTree = "<group>"; };
 		6010DE3813FE7B46001E6AA9 /* StyleValue1TextEntryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StyleValue1TextEntryCell.h; sourceTree = "<group>"; };
 		6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StyleValue1TextEntryCell.m; sourceTree = "<group>"; };
 		6010DE7813FEB389001E6AA9 /* DefinitionParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefinitionParser.h; sourceTree = "<group>"; };
@@ -618,8 +626,8 @@
 		60987E7D14017B6C00967DEA /* ImageParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageParser.m; sourceTree = "<group>"; };
 		60987E8014017B7800967DEA /* WebParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebParser.h; sourceTree = "<group>"; };
 		60987E8114017B7900967DEA /* WebParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebParser.m; sourceTree = "<group>"; };
-		60987E8414017BBC00967DEA /* ButtonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParser.h; sourceTree = "<group>"; };
-		60987E8514017BBE00967DEA /* ButtonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParser.m; sourceTree = "<group>"; };
+		60987E8414017BBC00967DEA /* ButtonParserAPI_v2_1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParserAPI_v2_1.h; sourceTree = "<group>"; };
+		60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParserAPI_v2_1.m; sourceTree = "<group>"; };
 		60987E8814017BCE00967DEA /* SwitchParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchParser.h; sourceTree = "<group>"; };
 		60987E8914017BCF00967DEA /* SwitchParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchParser.m; sourceTree = "<group>"; };
 		60987E8C14017BDE00967DEA /* SliderParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderParser.h; sourceTree = "<group>"; };
@@ -1380,8 +1388,12 @@
 				60987E7D14017B6C00967DEA /* ImageParser.m */,
 				60987E8014017B7800967DEA /* WebParser.h */,
 				60987E8114017B7900967DEA /* WebParser.m */,
-				60987E8414017BBC00967DEA /* ButtonParser.h */,
-				60987E8514017BBE00967DEA /* ButtonParser.m */,
+				6001B9A6140B6F7900B18E84 /* ButtonParser.h */,
+				6001B9A7140B6F7900B18E84 /* ButtonParser.m */,
+				60987E8414017BBC00967DEA /* ButtonParserAPI_v2_1.h */,
+				60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */,
+				6001B9A1140B6A3400B18E84 /* ButtonParserAPI_v2.h */,
+				6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */,
 				60987E8814017BCE00967DEA /* SwitchParser.h */,
 				60987E8914017BCF00967DEA /* SwitchParser.m */,
 				60987E8C14017BDE00967DEA /* SliderParser.h */,
@@ -2462,7 +2474,7 @@
 				60987E7A14017B4D00967DEA /* LabelParser.m in Sources */,
 				60987E7E14017B6E00967DEA /* ImageParser.m in Sources */,
 				60987E8214017B7B00967DEA /* WebParser.m in Sources */,
-				60987E8614017BC000967DEA /* ButtonParser.m in Sources */,
+				60987E8614017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */,
 				60987E8A14017BD400967DEA /* SwitchParser.m in Sources */,
 				60987E8E14017BE500967DEA /* SliderParser.m in Sources */,
 				60987E9214017BF400967DEA /* ColorPickerParser.m in Sources */,
@@ -2477,6 +2489,8 @@
 				60987EC41402B15800967DEA /* TaskParser.m in Sources */,
 				60A2D264140662C600A529ED /* DefinitionManager.m in Sources */,
 				60A2D2681407BE4F00A529ED /* DeferredBinding.m in Sources */,
+				6001B9A3140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */,
+				6001B9A8140B6F7A00B18E84 /* ButtonParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2610,7 +2624,7 @@
 				60987E7B14017B4D00967DEA /* LabelParser.m in Sources */,
 				60987E7F14017B6E00967DEA /* ImageParser.m in Sources */,
 				60987E8314017B7B00967DEA /* WebParser.m in Sources */,
-				60987E8714017BC000967DEA /* ButtonParser.m in Sources */,
+				60987E8714017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */,
 				60987E8B14017BD400967DEA /* SwitchParser.m in Sources */,
 				60987E8F14017BE500967DEA /* SliderParser.m in Sources */,
 				60987E9314017BF400967DEA /* ColorPickerParser.m in Sources */,
@@ -2625,6 +2639,8 @@
 				60987EC51402B15800967DEA /* TaskParser.m in Sources */,
 				60A2D265140662C600A529ED /* DefinitionManager.m in Sources */,
 				60A2D2691407BE4F00A529ED /* DeferredBinding.m in Sources */,
+				6001B9A4140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */,
+				6001B9A9140B6F7A00B18E84 /* ButtonParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2721,7 +2737,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = INCLUDE_SIP_SUPPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					API_v2_1,
+					INCLUDE_SIP_SUPPORT,
+				);
 				HEADER_SEARCH_PATHS = "include/**";
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
@@ -2757,6 +2776,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
@@ -2791,6 +2811,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
@@ -2823,6 +2844,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
@@ -2932,7 +2954,10 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = INCLUDE_SIP_SUPPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					API_v2_1,
+					INCLUDE_SIP_SUPPORT,
+				);
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
@@ -2983,7 +3008,10 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = INCLUDE_SIP_SUPPORT;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					API_v2_1,
+					INCLUDE_SIP_SUPPORT,
+				);
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
