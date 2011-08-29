@@ -165,6 +165,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		this.addHandler(this, RotationEvent.getType());
 		this.addHandler(this, SwipeEvent.getType());
 		this.addHandler(this, HoldEvent.getType());
+		this.addHandler(this, TapEvent.getType());
+		this.addHandler(this, DoubleTapEvent.getType());
 	}
 	
 	public HandlerManager getEventBus() {
