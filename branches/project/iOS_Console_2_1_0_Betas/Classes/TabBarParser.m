@@ -55,13 +55,13 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        [self addKnownTag:TABBAR];
+        [self addKnownTag:ITEM];
         tabBar = [[TabBar alloc] init];
     }
     return self;
 }
 
-- (void)endTabBarItemTag:(TabBarItemParser *)parser
+- (void)endTabBarItemElement:(TabBarItemParser *)parser
 {
     [tabBar.tabBarItems addObject:parser.tabBarItem];
 }
