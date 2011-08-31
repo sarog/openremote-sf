@@ -29,4 +29,9 @@
     [((Group *)self.enclosingObject).screens addObject:[self.definition findScreenById:self.boundComponentId]];
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ , bound component id %d", [super description], self.boundComponentId];
+}
+
 @end

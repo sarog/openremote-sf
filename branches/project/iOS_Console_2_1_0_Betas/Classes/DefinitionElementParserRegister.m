@@ -42,7 +42,7 @@
     if (self) {
         self.parserRegister = [NSMutableDictionary dictionary];
         self.endSelectorRegister = [NSMutableDictionary dictionary];
-        self.deferredBindings = [NSMutableSet set];
+        self.deferredBindings = [NSMutableArray array];
     }
     
     return self;
