@@ -64,7 +64,7 @@ public class SliderController extends BaseGWTSpringControllerWithHibernateSuppor
       this.sliderService = switchService;
    }
 
-   public void setUserService(UserServiceImpl userService) {
+   public void setUserService(UserService userService) {
       this.userService = userService;
    }
 

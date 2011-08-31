@@ -33,6 +33,7 @@ import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceService;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DeviceServiceImpl extends BaseAbstractService<Device> implements DeviceService {
 
@@ -51,7 +52,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public Device saveDevice(Device device) {
+   @Transactional public Device saveDevice(Device device) {
       genericDAO.save(device);
       Hibernate.initialize(device.getSensors());
       Hibernate.initialize(device.getSwitchs());
@@ -67,7 +68,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public void deleteDevice(long id) {
+   @Transactional public void deleteDevice(long id) {
       Device device = loadById(id);
       for (DeviceCommand deviceCommand : device.getDeviceCommands()) {
          deviceMacroItemService.deleteByDeviceCommand(deviceCommand);
@@ -86,7 +87,7 @@ public class DeviceServiceImpl extends BaseAbstractService<Device> implements De
    /**
     * {@inheritDoc}
     */
-   public void updateDevice(Device device) {
+   @Transactional public void updateDevice(Device device) {
       genericDAO.saveOrUpdate(device);
    }
 

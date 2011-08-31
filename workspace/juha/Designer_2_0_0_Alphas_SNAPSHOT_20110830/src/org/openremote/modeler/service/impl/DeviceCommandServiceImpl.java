@@ -32,6 +32,7 @@ import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceCommandService;
 import org.openremote.modeler.service.DeviceMacroItemService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The implementation for DeviceCommandService interface.
@@ -57,6 +58,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#saveAll(java.util.List)
     */
+   @Transactional
    public List<DeviceCommand> saveAll(List<DeviceCommand> deviceCommands) {
       for (DeviceCommand command : deviceCommands) {
          genericDAO.save(command);
@@ -68,6 +70,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#save(org.openremote.modeler.domain.DeviceCommand)
     */
+   @Transactional
    public DeviceCommand save(DeviceCommand deviceCommand) {
       genericDAO.save(deviceCommand);
       Hibernate.initialize(deviceCommand.getProtocol().getAttributes());
@@ -78,6 +81,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#deleteCommand(long)
     */
+   @Transactional
    public Boolean deleteCommand(long id) {
       DeviceCommand deviceCommand = loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(CommandRefItem.class);
@@ -95,6 +99,7 @@ public class DeviceCommandServiceImpl extends BaseAbstractService<DeviceCommand>
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceCommandService#update(org.openremote.modeler.domain.DeviceCommand)
     */
+   @Transactional
    public DeviceCommand update(DeviceCommand deviceCommand) {
       DeviceCommand old = loadById(deviceCommand.getOid());
       genericDAO.delete(old.getProtocol());
