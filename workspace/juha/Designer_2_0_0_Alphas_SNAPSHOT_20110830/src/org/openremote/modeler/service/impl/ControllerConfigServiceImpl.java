@@ -12,6 +12,7 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.ControllerConfigService;
 import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.utils.XmlParser;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerConfig> implements ControllerConfigService {
   /*
@@ -46,6 +47,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
    }
 
    @Override
+   @Transactional
    public ControllerConfig update(ControllerConfig config) {
       ControllerConfig cfg = genericDAO.loadById(ControllerConfig.class, config.getOid());
       cfg.setCategory(config.getCategory());
@@ -57,6 +59,7 @@ public class ControllerConfigServiceImpl extends BaseAbstractService<ControllerC
       return config;
    }
    
+   @Transactional
    public Set<ControllerConfig> saveAll(Set<ControllerConfig> configs) {
       Set<ControllerConfig> cfgs = new LinkedHashSet<ControllerConfig>();
       for (ControllerConfig cfg : configs) {

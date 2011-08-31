@@ -25,6 +25,7 @@ import org.openremote.modeler.client.rpc.DeviceMacroRPCService;
 import org.openremote.modeler.domain.DeviceMacro;
 import org.openremote.modeler.domain.DeviceMacroItem;
 import org.openremote.modeler.service.DeviceMacroService;
+import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 
 /**
@@ -37,7 +38,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
    private DeviceMacroService deviceMacroService;
    
    /** The user service. */
-   private UserServiceImpl userService;
+   private UserService userService;
 
 
     /**
@@ -99,7 +100,7 @@ public class DeviceMacroController extends BaseGWTSpringControllerWithHibernateS
     * 
     * @param userService the new user service
     */
-   public void setUserService(UserServiceImpl userService) {
+   public void setUserService(UserService userService) {
       this.userService = userService;
    }
     

@@ -30,11 +30,13 @@ import org.openremote.modeler.domain.Switch;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SwitchService;
 import org.openremote.modeler.service.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 public class SwitchServiceImpl extends BaseAbstractService<Switch> implements SwitchService {
    private UserService userService = null;
 
    @Override
+   @Transactional
    public void delete(long id) {
       Switch switchToggle = genericDAO.loadById(Switch.class, id);
       genericDAO.delete(switchToggle);
@@ -52,6 +54,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
 
 
    @Override
+   @Transactional
    public Switch save(Switch switchToggle) {
       genericDAO.save(switchToggle);
       if (switchToggle.getSwitchSensorRef() != null) {
@@ -61,6 +64,7 @@ public class SwitchServiceImpl extends BaseAbstractService<Switch> implements Sw
    }
 
    @Override
+   @Transactional
    public Switch update(Switch switchToggle) {
       Switch old = genericDAO.loadById(Switch.class, switchToggle.getOid());
       old.setName(switchToggle.getName());
