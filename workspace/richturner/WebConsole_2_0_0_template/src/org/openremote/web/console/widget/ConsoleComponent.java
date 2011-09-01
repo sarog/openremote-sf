@@ -1,5 +1,6 @@
 package org.openremote.web.console.widget;
 
+import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressEndEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressStartEvent;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ConsoleComponent extends Composite implements MouseDownHandler, TouchStartHandler, MouseUpHandler, TouchEndHandler {
 	PressStartEvent startEvent = null;
 	protected PressMoveEvent lastMoveEvent = null;
+	ConsoleUnitEventManager eventManager = ConsoleUnitEventManager.getInstance();
 	
 	public ConsoleComponent() {
 	}
@@ -25,23 +27,23 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 	public void onTouchStart(TouchStartEvent event) {
 		event.stopPropagation();
 		startEvent = new PressStartEvent(event);
-		this.fireEvent(startEvent);
+		eventManager.getEventBus().fireEvent(startEvent);
 	}
 
 	@Override
 	public void onMouseDown(MouseDownEvent event) {
 		event.stopPropagation();
 		startEvent = new PressStartEvent(event);
-		this.fireEvent(startEvent);
+		eventManager.getEventBus().fireEvent(startEvent);
 	}
 
 	@Override
 	public void onTouchEnd(TouchEndEvent event) {
 		event.stopPropagation();
 		if (lastMoveEvent != null) {
-			this.fireEvent(new PressEndEvent(lastMoveEvent));
+			eventManager.getEventBus().fireEvent(new PressEndEvent(lastMoveEvent));
 		} else if (startEvent != null) {
-			this.fireEvent(new PressEndEvent(startEvent));
+			eventManager.getEventBus().fireEvent(new PressEndEvent(startEvent));
 		}
 		reset();
 	}
@@ -49,7 +51,7 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 	@Override
 	public void onMouseUp(MouseUpEvent event) {
 		event.stopPropagation();
-		this.fireEvent(new PressEndEvent(event));
+		eventManager.getEventBus().fireEvent(new PressEndEvent(event));
 		reset();
 	}
 
@@ -58,15 +60,18 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 		lastMoveEvent = null;
 	}
 	
-	public void registerPressHandlers() {
-		registerPressHandlers(this);
+	
+	/**
+	 * Add Mouse and Touch Handlers to either entire console component or specified
+	 * child widget
+	 */
+	public void registerMouseAndTouchHandlers() {
+		registerMouseAndTouchHandlers(this);
 	}
 	
-	public void registerPressHandlers(Widget component) {
+	public void registerMouseAndTouchHandlers(Widget component) {
 		component.addDomHandler(this, MouseDownEvent.getType());
 		component.addDomHandler(this, TouchStartEvent.getType());
-		//component.addDomHandler(this, MouseMoveEvent.getType());
-		//component.addDomHandler(this, TouchMoveEvent.getType());
 		component.addDomHandler(this, MouseUpEvent.getType());
 		component.addDomHandler(this, TouchEndEvent.getType());
 	}

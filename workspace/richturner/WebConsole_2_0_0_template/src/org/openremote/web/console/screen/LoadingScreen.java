@@ -1,6 +1,5 @@
 package org.openremote.web.console.screen;
 
-import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTML;
@@ -27,11 +26,8 @@ public class LoadingScreen extends ConsoleScreen {
 		"<div class=\"bar11\"></div>" +
    	"<div class=\"bar12\"></div>" +
    	"</div>";
-
-		private ConsoleUnitEventManager eventManager;
 	
-	public LoadingScreen(ConsoleUnitEventManager eventManager) {
-		super(eventManager);
+	public LoadingScreen() {
 		this.setStylePrimaryName(CLASS_NAME);
 		
 		// Create Loading Message Widget and wrap in simple panel to align vertically

@@ -194,8 +194,8 @@ public class Slider extends ConsoleWidgetImpl {
 		
 		container.setVisible(false);
 		
-		registerPressHandlers(slideBar);
-		registerPressHandlers(handle);
+		registerMouseAndTouchHandlers(slideBar);
+		registerMouseAndTouchHandlers(handle);
 		
 		this.initWidget(container);
 		

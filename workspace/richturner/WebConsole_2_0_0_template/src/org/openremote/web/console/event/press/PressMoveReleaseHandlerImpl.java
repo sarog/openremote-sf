@@ -1,21 +1,18 @@
 package org.openremote.web.console.event.press;
 
-import java.util.Date;
-
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.client.unit.*;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
-import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent.*;
 import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.TapEvent;
-import org.openremote.web.console.widget.ConsoleComponent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -23,21 +20,18 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	public boolean pressStarted = false;
 	private PressStartEvent pressStartEvent;
 	private PressMoveEvent pressMoveEvent;
-	private ConsoleUnit consoleUnit;
 	private boolean eventHandled;
 	private long lastTapTime;
 	private Widget lastTappedWidget = null;
 	private Widget pressedWidget = null;
 	
-	public PressMoveReleaseHandlerImpl(ConsoleUnit consoleUnit) {
-		this.consoleUnit = consoleUnit;
+	public PressMoveReleaseHandlerImpl() {
 	}
 
 	public void onPressStart(PressStartEvent event) {
 		pressStarted = true;
 		pressStartEvent = event;
 		pressedWidget = event.getSource();
-		//consoleUnit.getConsoleDisplay().addTempHandlers();
 	}
 
 	public void onPressMove(PressMoveEvent event) {
@@ -62,9 +56,6 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	}
 
 	public void onPressCancel(PressCancelEvent event) {
-//		if (pressedWidget instanceof Draggable) {
-//			pressedWidget.fireEvent(new DragCancelEvent(event));
-//		}
 		if (pressStarted) {
 			pressedWidget.fireEvent(new DragCancelEvent(event));
 			reset();
@@ -76,6 +67,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	 * fire the appropriate gesture event
 	 */
 	private void processPressRelease(PressEndEvent event) {
+		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 		double duration = (event.getTime() - pressStartEvent.getTime());
 		int moveDistanceX = 0;
 		int moveDistanceY = 0;
@@ -115,12 +107,15 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			}
 			//Check for swipe gesture on the console display
 			if (swipeEvent == null) {
-				swipeEvent = checkAndCreateSwipeEvent(consoleUnit.getConsoleDisplay(), moveDistanceX, moveDistanceY);
+				ConsoleUnit consoleUnit = WebConsole.getConsoleUnit();
+				if (consoleUnit != null) {
+					swipeEvent = checkAndCreateSwipeEvent(consoleUnit.getConsoleDisplay(), moveDistanceX, moveDistanceY);
+				}
 			}
 			
 			// If a swipe event has been created then fire it
 			if (swipeEvent != null) {
-				consoleUnit.fireEvent(swipeEvent);
+				eventBus.fireEvent(swipeEvent);
 				return;
 			}
 		}
@@ -132,7 +127,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		
 		// Check for hold gesture
 		if (duration >= HoldEvent.MIN_HOLD_TIME_MILLISECONDS) {
-			consoleUnit.fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
+			eventBus.fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
 			return;
 		}
 
@@ -145,10 +140,10 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 			tapOccurred = true;
 		}		
 		if (tapOccurred) {
-			if (event.getTime() - lastTapTime < DoubleTapEvent.MAX_TIME_BETWEEN_TAPS_MILLISECONDS) {
-				consoleUnit.fireEvent(new DoubleTapEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
+			if (event.getTime() - lastTapTime < DoubleTapEvent.MAX_TIME_BETWEEN_TAPS_MILLISECONDS && lastTappedWidget == pressedWidget) {
+				eventBus.fireEvent(new DoubleTapEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
 			} else {
-				consoleUnit.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
+				eventBus.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
 			}
 			lastTapTime = event.getTime();
 			lastTappedWidget = pressedWidget;
@@ -162,7 +157,6 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		pressMoveEvent = null;
 		pressStarted = false;
 		eventHandled = false;
-		//consoleUnit.getConsoleDisplay().removeTempHandlers();
 	}
 	
 	public boolean isMovementWithinWidgetBounds(Widget pressedWidget) {

@@ -1,7 +1,5 @@
 package org.openremote.web.console.screen;
 
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
@@ -11,11 +9,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
  *
  */
 public class ConsoleScreen extends AbsolutePanel {
-	private ConsoleUnitEventManager eventManager;
-	
-	public ConsoleScreen(ConsoleUnitEventManager eventManager) {
-		super();
-		this.eventManager = eventManager;
+	public ConsoleScreen() {
 		this.setWidth("100%");
 		this.setHeight("100%");
 	}

@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class WebConsole implements EntryPoint {
 	public static final String CONSOLE_UNIT_CONTAINER_ID = "consoleContainer";
 	VerticalPanel mainPanel;
-	private ConsoleUnit consoleUnit;
+	private static ConsoleUnit consoleUnit;
 	private WindowResizeHandlerImpl resizeHandler;
 	int windowHeightPortrait = 2000;
 	int windowWidthPortrait = 2000;
@@ -58,12 +58,8 @@ public class WebConsole implements EntryPoint {
 					// Update window info
 					updateWindowInfo();				
 					
-					// Create the Console Unit
+					// Initialise the Console Unit
 					createConsoleUnit();
-					
-					// Set initial console orientation and position
-					consoleUnit.setOrientation(windowOrientation);
-					consoleUnit.setPosition(getWindowWidth(), getWindowHeight());
 				}
 			}
 		};
@@ -129,6 +125,10 @@ public class WebConsole implements EntryPoint {
 			console = new ResizableUnit();
 		}
 		consoleUnit = console;
+		
+		// Set initial console orientation and position
+		consoleUnit.setOrientation(windowOrientation);
+		consoleUnit.setPosition(getWindowWidth(), getWindowHeight());
 	}
 	
 	/*
@@ -237,7 +237,7 @@ public class WebConsole implements EntryPoint {
 		}
 	}
 	
-	public ConsoleUnit getConsoleUnit() {
+	public static ConsoleUnit getConsoleUnit() {
 		return consoleUnit;
 	}
 	
