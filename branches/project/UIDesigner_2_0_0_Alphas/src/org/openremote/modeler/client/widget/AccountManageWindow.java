@@ -346,7 +346,7 @@ public class AccountManageWindow extends Dialog {
          final TextField<String> emailField = new TextField<String>();
          emailField.setFieldLabel("Email address");
          emailField.setAllowBlank(false);
-         emailField.setRegex("^[a-zA-Z0-9_\\.]+@[a-zA-Z0-9-]+\\.[a-zA-Z]+$");
+         emailField.setRegex(Constants.REG_EMAIL);
          emailField.getMessages().setRegexText("Please input a correct email.");
          
          final ComboBoxExt roleList = new ComboBoxExt();
