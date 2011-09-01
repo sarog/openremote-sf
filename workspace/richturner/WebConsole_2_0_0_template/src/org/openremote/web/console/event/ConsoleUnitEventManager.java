@@ -1,7 +1,11 @@
 package org.openremote.web.console.event;
 
-import org.openremote.web.console.client.unit.ConsoleUnit;
+import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.event.press.PressCancelEvent;
+import org.openremote.web.console.event.press.PressEndEvent;
+import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressMoveReleaseHandlerImpl;
+import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
@@ -9,12 +13,13 @@ import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class ConsoleUnitEventManager {
-	private final HandlerManager eventBus;
+	private static ConsoleUnitEventManager instance;
+	private HandlerManager eventBus;
 	private PressMoveReleaseHandlerImpl pressMoveReleaseHandler;
 	
-	public ConsoleUnitEventManager(ConsoleUnit consoleUnit) {
-		eventBus = new HandlerManager(consoleUnit);
-		pressMoveReleaseHandler = new PressMoveReleaseHandlerImpl(consoleUnit);
+	public ConsoleUnitEventManager() {
+		eventBus = new HandlerManager(WebConsole.getConsoleUnit());
+		pressMoveReleaseHandler = new PressMoveReleaseHandlerImpl();
 		attachHandlers();
 	}
 	
@@ -28,6 +33,12 @@ public class ConsoleUnitEventManager {
 				}
 			}, TouchMoveEvent.getType());
 		}
+		
+		// Add Press handlers to capture Press Events
+		eventBus.addHandler(PressStartEvent.getType(), pressMoveReleaseHandler);
+		eventBus.addHandler(PressMoveEvent.getType(), pressMoveReleaseHandler);
+		eventBus.addHandler(PressEndEvent.getType(), pressMoveReleaseHandler);
+		eventBus.addHandler(PressCancelEvent.getType(), pressMoveReleaseHandler);
 	}
    
    public HandlerManager getEventBus() {
@@ -36,5 +47,12 @@ public class ConsoleUnitEventManager {
    
    public PressMoveReleaseHandlerImpl getPressMoveReleaseHandler() {
    	return pressMoveReleaseHandler;
+   }
+   
+   public static synchronized ConsoleUnitEventManager getInstance() {
+      if ( instance == null) {
+         instance = new ConsoleUnitEventManager();
+      }
+      return instance;
    }
 }

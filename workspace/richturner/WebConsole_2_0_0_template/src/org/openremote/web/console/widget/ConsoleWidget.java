@@ -1,10 +1,8 @@
 package org.openremote.web.console.widget;
 
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-
 public interface ConsoleWidget {
 	// Calls configure method and makes widget visible
-	public void initialise(ConsoleUnitEventManager eventManager);
+	public void initialise();
 	
 	// Configures the widget based on the values supplied
 	public void configure();

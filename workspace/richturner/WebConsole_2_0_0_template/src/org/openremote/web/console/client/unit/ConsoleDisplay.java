@@ -1,21 +1,16 @@
 package org.openremote.web.console.client.unit;
 
-import java.awt.List;
-import java.util.ArrayList;
-
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.screen.ConsoleScreen;
 import org.openremote.web.console.widget.ConsoleComponent;
-
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -31,17 +26,12 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
 	private SimplePanel display;
-	private String currentOrientation;
-	private ConsoleScreen currentScreen;
 	private int width;
 	private int height;
-	public String colour;
-	private ConsoleUnitEventManager eventManager;
+	private String colour;
 	private AbsolutePanel container = new AbsolutePanel();
-	private ArrayList<HandlerRegistration> moveHandlers = new ArrayList<HandlerRegistration>();
 	
-	public ConsoleDisplay(ConsoleUnitEventManager eventManager, int width, int height) {
-		this.eventManager = eventManager;
+	public ConsoleDisplay(int width, int height) {
 		this.width = width;
 		this.height = height;
 		container.setWidth(this.width + "px");
@@ -64,15 +54,15 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		// Set default colour
 		setColour(DEFAULT_DISPLAY_COLOUR);
 		
-		// Add press handlers on entire widget
-		registerPressHandlers();
+		// Add mouse and touch handlers on entire widget
+		registerMouseAndTouchHandlers();
 		
-		// Add move handlers
+		// Add move handlers which are only used on this display component
 		this.addDomHandler(this, MouseMoveEvent.getType());
 		this.addDomHandler(this, TouchMoveEvent.getType());
 		this.addDomHandler(this, MouseOutEvent.getType());
 		
-		// Init widget
+		// Initialise widget
 		this.initWidget(container);
 	}
 	
@@ -88,14 +78,12 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		   display.setStylePrimaryName("portraitDisplay");
 		   display.setWidth(width + "px");
 		   display.setHeight(height + "px");		   
-			currentOrientation = orientation;
 		}
 		if ("landscape".equals(orientation)) {
 			container.setWidgetPosition(display, (width/2)-(height/2), (height/2)-(width/2));
 			display.setStylePrimaryName("landscapeDisplay");
 		   display.setWidth(height + "px");
 		   display.setHeight(width + "px");
-			currentOrientation = orientation;
 		}
 	}
 	
@@ -113,7 +101,6 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	 * @param screen
 	 */
 	public void setScreen(ConsoleScreen screen) {
-		currentScreen = screen;
 		display.setWidget(screen);
 	}
 	
@@ -136,25 +123,13 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	public void onMouseMove(MouseMoveEvent event) {
 		event.stopPropagation();
 		lastMoveEvent = new PressMoveEvent(event);
-		this.fireEvent(lastMoveEvent);
+		ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(lastMoveEvent);
 	}
 	
 	@Override
 	public void onMouseOut(MouseOutEvent event) {
 		event.stopPropagation();
-		this.fireEvent(new PressCancelEvent(event));
+		ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new PressCancelEvent(event));
 		reset();
 	}
-	
-//	public void addTempHandlers() {
-//		moveHandlers.add(this.addDomHandler(this, MouseMoveEvent.getType()));
-//		moveHandlers.add(this.addDomHandler(this, TouchMoveEvent.getType()));
-//		moveHandlers.add(this.addDomHandler(this, MouseOutEvent.getType()));
-//	}
-//	
-//	public void removeTempHandlers() {
-//		for (HandlerRegistration handler : moveHandlers) {
-//			handler.removeHandler();
-//		}
-//	}
 }

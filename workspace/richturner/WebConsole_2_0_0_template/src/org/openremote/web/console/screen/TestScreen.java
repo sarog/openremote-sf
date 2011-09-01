@@ -5,11 +5,9 @@ import org.openremote.web.console.widget.Slider;
 
 public class TestScreen extends ConsoleScreen {
 
-	public TestScreen(ConsoleUnitEventManager eventManager) {
-		super(eventManager);
-
+	public TestScreen() {
 		Slider sliderWidget = new Slider(40, 300);
-		sliderWidget.initialise(eventManager);
+		sliderWidget.initialise();
 		
 		this.add(sliderWidget);
 		this.setWidgetPosition(sliderWidget, 50, 50);

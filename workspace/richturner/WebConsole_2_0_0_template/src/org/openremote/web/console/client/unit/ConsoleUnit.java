@@ -30,7 +30,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, TapHandler, DoubleTapHandler {
-	private ConsoleUnitEventManager eventManager;
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -45,8 +44,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	public ConsoleUnit(int width, int height) {
-		eventManager = new ConsoleUnitEventManager(this);
-		
 		// Create console container to store display and possibly logo for resizable units
 		componentContainer = new VerticalPanel();
 		componentContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -65,21 +62,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		this.addStyleName("consoleUnit");
 		
 		// Create a display and add to console container
-		consoleDisplay = new ConsoleDisplay(eventManager, width, height);
+		consoleDisplay = new ConsoleDisplay(width, height);
 		add(consoleDisplay);
-		
-		consoleDisplay.addHandler(eventManager.getPressMoveReleaseHandler(), PressStartEvent.getType());
-		consoleDisplay.addHandler(eventManager.getPressMoveReleaseHandler(), PressMoveEvent.getType());
-		consoleDisplay.addHandler(eventManager.getPressMoveReleaseHandler(), PressEndEvent.getType());
-		consoleDisplay.addHandler(eventManager.getPressMoveReleaseHandler(), PressCancelEvent.getType());
 		
 		// Register handlers
 		registerGestureHandlers();
 	
 		// Create and show loading screen
-		loadingScreen = new LoadingScreen(eventManager);
+		loadingScreen = new LoadingScreen();
+		loadingScreen = new TestScreen();
 		setScreen(loadingScreen);
-		//loadingScreen = new TestScreen(eventManager);
 	}
 	
 	@Override
@@ -167,10 +159,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		this.addHandler(this, HoldEvent.getType());
 		this.addHandler(this, TapEvent.getType());
 		this.addHandler(this, DoubleTapEvent.getType());
-	}
-	
-	public HandlerManager getEventBus() {
-		return eventManager.getEventBus();
 	}
 
 	@Override

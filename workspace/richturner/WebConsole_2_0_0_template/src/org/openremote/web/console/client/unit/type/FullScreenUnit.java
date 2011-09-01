@@ -22,6 +22,6 @@ public class FullScreenUnit extends ConsoleUnit {
 		super.addStyleName("fullscreenConsole");
 		
 		// Set document body colour the same as the console display
-		RootPanel.getBodyElement().getStyle().setBackgroundColor(consoleDisplay.colour);
+		RootPanel.getBodyElement().getStyle().setBackgroundColor(consoleDisplay.getColour());
 	}
 }
