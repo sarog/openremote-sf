@@ -6,7 +6,7 @@ OpenRemote is trademark of OpenRemote, Inc.
 See the contributors.txt file in the distribution for a
 full listing of individual contributors.
 
-OpenRemote Boss is free software: you can redistribute it and/or modify
+OpenRemote is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
@@ -705,12 +705,17 @@ OpenRemote Designer Sub-components:
 * dom4j library is licensed undre a BSD-like license which is included
   below.
 * FlexJSON library is licensed under Apache License, v2.0
+* Gilead 1.3.2 libraries are licensed under Apache License, v2.0
+* GWT 2.04 library is licensed under Apache License, v2.0
+* Hibernate Core 3.2.2, Hibernate Common Annotations 3.0.0 and
+  Hibernate Annotations 3.3.0 are licensed under GNU Lesser General Public 
+  License (LGPL), v2.1
 
-
-GPL v3 license and Apache License 2.0 are available from the following 
-locations:
+GNU GPL v3 license, GNU LGPL v2.1 license  and Apache License 2.0 
+are available from the following locations:
 
 http://www.gnu.org/licenses/gpl-3.0.html
+http://www.gnu.org/licenses/lgpl-2.1.html
 http://www.apache.org/licenses/LICENSE-2.0.txt
 
 
@@ -840,5 +845,19 @@ Terence Parr
 parrt@cs.usfca.edu
 parrt@antlr.org
 
+
+
+
+###########################################################################################
+#                                                                                         #
+#                                 N O T I C E S                                           #
+#                                                                                         #
+###########################################################################################
+
+Gilead NOTICE
+-------------
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
 
 
