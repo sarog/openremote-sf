@@ -33,10 +33,11 @@ import org.openremote.modeler.domain.SensorRefItem;
 import org.openremote.modeler.domain.SensorType;
 import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.SensorService;
+import org.springframework.transaction.annotation.Transactional;
 
 public class SensorServiceImpl extends BaseAbstractService<Sensor> implements SensorService {
 
-   public Boolean deleteSensor(long id) {
+   @Transactional public Boolean deleteSensor(long id) {
       Sensor sensor = super.loadById(id);
       DetachedCriteria criteria = DetachedCriteria.forClass(SensorRefItem.class);
       List<SensorRefItem> sensorRefItems = genericDAO.findByDetachedCriteria(criteria.add(Restrictions.eq("sensor",
@@ -59,12 +60,12 @@ public class SensorServiceImpl extends BaseAbstractService<Sensor> implements Se
       return sensors;
    }
 
-   public Sensor saveSensor(Sensor sensor) {
+   @Transactional public Sensor saveSensor(Sensor sensor) {
       genericDAO.save(sensor);
       return sensor;
    }
 
-   public Sensor updateSensor(Sensor sensor) {
+   @Transactional public Sensor updateSensor(Sensor sensor) {
       Sensor old = null;
       
       if (SensorType.RANGE == sensor.getType()) {

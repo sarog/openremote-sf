@@ -32,6 +32,7 @@ import org.openremote.modeler.service.BaseAbstractService;
 import org.openremote.modeler.service.DeviceMacroItemService;
 import org.openremote.modeler.service.DeviceMacroService;
 import org.openremote.modeler.service.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -91,6 +92,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#saveDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
+   @Transactional
    public DeviceMacro saveDeviceMacro(DeviceMacro deviceMacro) {
       deviceMacro.setAccount(userService.getAccount());
       genericDAO.save(deviceMacro);
@@ -101,6 +103,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#updateDeviceMacro(org.openremote.modeler.domain.DeviceMacro)
     */
+   @Transactional
    public DeviceMacro updateDeviceMacro(DeviceMacro deviceMacro) {
       DeviceMacro old = genericDAO.loadById(DeviceMacro.class, deviceMacro.getOid());
       if (old.getAccount() == null) {
@@ -123,6 +126,7 @@ public class DeviceMacroServiceImpl extends BaseAbstractService<DeviceMacro> imp
     * {@inheritDoc}
     * @see org.openremote.modeler.service.DeviceMacroService#deleteDeviceMacro(long)
     */
+   @Transactional
    public void deleteDeviceMacro(long id) {
       DeviceMacro deviceMacro = loadById(id);
       deviceMacroItemService.deleteByDeviceMacro(deviceMacro);

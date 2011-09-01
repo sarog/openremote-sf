@@ -32,6 +32,7 @@ import org.openremote.modeler.service.UserService;
 import org.openremote.modeler.service.impl.UserServiceImpl;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.openremote.modeler.client.Constants;
 
 /**
  * The Class is used for managing user and account.
@@ -94,7 +95,7 @@ public class AccountController extends MultiActionController {
          registerMav.addObject("email_blank", true);
          return registerMav;
       }
-      if (!email.matches("^[a-zA-Z0-9_\\.]+@[a-zA-Z0-9-]+\\.[a-zA-Z]+$")) {
+      if (!email.matches(Constants.REG_EMAIL)) {
          registerMav.addObject("email_invalid", true);
          return registerMav;
       }
@@ -220,7 +221,7 @@ public class AccountController extends MultiActionController {
          acceptMav.addObject("email_blank", true);
          return acceptMav;
       }
-      if (!email.matches("^[a-zA-Z0-9_\\.]+@[a-zA-Z0-9-]+\\.[a-zA-Z]+$")) {
+      if (!email.matches(Constants.REG_EMAIL)) {
          acceptMav.addObject("email_invalid", true);
          return acceptMav;
       }
@@ -365,7 +366,7 @@ public class AccountController extends MultiActionController {
       return resetMav;
    }
    
-   public void setUserService(UserServiceImpl userService) {
+   public void setUserService(UserService userService) {
       this.userService = userService;
    }
 
