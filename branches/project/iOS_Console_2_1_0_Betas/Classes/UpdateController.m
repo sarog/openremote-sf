@@ -87,6 +87,28 @@
 // else if auto discovery is enable it will try to find another server url using auto discovery,
 // else it will check local cache or call didUpdateFail method.
 - (void)checkConfigAndUpdate {
+
+    
+    /*
+     * EBR : proposal for startup sequence
+     * Is there a selected controller ?
+     *   YES 1.1 fetch group members (in background)
+     *       1.2 Is there a selected panel ?
+     *         YES 1.2.1 Is there a cache for the panel definition ?
+     *           YES 1.2.1.1.1 Load panel definition
+     *               1.2.1.1.1 Display panel
+     *           NO 1.2.1.2 Try to load panel definition from controller, progress bar displayed to user, cancel possibility -> go to Settings on cancel
+     *                      Note that you need to have the group members resolved to do this
+     *         NO 1.2.2 Display pop-up to user to select panel, then same as 1.1.2.2.1
+     *   NO 2. Go to Settings
+     *
+     *
+     *
+     * Note: 1.2.1.2 Should also be used when exiting from the Settings page
+     */
+    
+    // TODO EBR: On start-up, definition is nil as it's never been loaded from controller
+    // Should have this loaded from cache if present -> !time to parse, if too big, have some lazy loading
 	if ([[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.groups.count > 0) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	}
