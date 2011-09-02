@@ -117,7 +117,7 @@ public class RussoundCommand implements ExecutableCommand, StatusCommand
     {
       RussoundConfiguration conf = ServiceContext.getRussoundConfiguration();
 
-      ConnectionType connectionType = ConnectionType.valueOf(conf.getConnectionType());
+      ConnectionType connectionType = ConnectionType.valueOf(conf.getConnectionType().trim().toUpperCase());
 
       byte[] dataBytes = getCommandAsByteArray();
 
