@@ -32,7 +32,7 @@
         x = xPos;
         y = yPos;
         rowspan = MAX(1, rowspanValue);
-        colspanValue = MAX(1, colspanValue);
+        colspan = MAX(1, colspanValue);
     }
     return self;    
 }
