@@ -92,6 +92,7 @@
 	}
 	
 	self.viewControllers = viewControllers;
+    [viewControllers release];
 	
 	// no custom view, this disable 'Edit' button in 'More' table view
 	self.customizableViewControllers = nil; 
