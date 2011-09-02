@@ -22,19 +22,19 @@
 
 @implementation ControllerButtonAPI_v2_1
 
-- (void)sendPressCommand:(ButtonView *)sender {
+- (void)sendPressCommand:(ButtonSubController *)sender {
 	[sender sendCommandRequest:@"press"];
 }
 
-- (void)sendShortReleaseCommand:(ButtonView *)sender {
+- (void)sendShortReleaseCommand:(ButtonSubController *)sender {
     [sender sendCommandRequest:@"shortRelease"];
 }
 
-- (void)sendLongPressCommand:(ButtonView *)sender {
+- (void)sendLongPressCommand:(ButtonSubController *)sender {
     [sender sendCommandRequest:@"longPress"];
 }
 
-- (void)sendLongReleaseCommand:(ButtonView *)sender {
+- (void)sendLongReleaseCommand:(ButtonSubController *)sender {
     [sender sendCommandRequest:@"longRelease"];
 }
 

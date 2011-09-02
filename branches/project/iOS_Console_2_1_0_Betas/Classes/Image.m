@@ -25,6 +25,8 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 #import "Definition.h"
+#import "Sensor.h"
+#import "Label.h"
 
 @implementation Image
 
@@ -55,6 +57,12 @@
 	[style release];
 	[label release];
 	[super dealloc];
+}
+
+- (int)sensorId
+{
+    int sid = self.sensor.sensorId;
+    return (sid > 0)?sid:self.label.sensorId;
 }
 
 @end

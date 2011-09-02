@@ -22,19 +22,19 @@
 
 @implementation ControllerButtonAPI_v2
 
-- (void)sendPressCommand:(ButtonView *)sender {
+- (void)sendPressCommand:(ButtonSubController *)sender {
 	[sender sendCommandRequest:@"click"];
 }
 
-- (void)sendShortReleaseCommand:(ButtonView *)sender {
+- (void)sendShortReleaseCommand:(ButtonSubController *)sender {
     // TODO: log not supported
 }
 
-- (void)sendLongPressCommand:(ButtonView *)sender {
+- (void)sendLongPressCommand:(ButtonSubController *)sender {
     // TODO: log not supported
 }
 
-- (void)sendLongReleaseCommand:(ButtonView *)sender {
+- (void)sendLongReleaseCommand:(ButtonSubController *)sender {
     // TODO: log not supported
 }
 

@@ -21,6 +21,42 @@
 #import "ClippedUIImage.h"
 #import	"XMLEntity.h"
 
+// MyCreateBitmapContext: Source based on Apple Sample Code
+CGContextRef MyCreateBitmapContext (int pixelsWide,	int pixelsHigh) {
+    CGContextRef    context = NULL;
+    CGColorSpaceRef colorSpace;
+    void *          bitmapData;
+    int             bitmapByteCount;
+    int             bitmapBytesPerRow;
+	
+    bitmapBytesPerRow   = (pixelsWide * 4);
+    bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
+	
+    colorSpace = CGColorSpaceCreateDeviceRGB();
+    bitmapData = malloc( bitmapByteCount );
+    if (bitmapData == NULL) {
+        CGColorSpaceRelease( colorSpace );
+        fprintf (stderr, "Memory not allocated!");
+        return NULL;
+    }
+    context = CGBitmapContextCreate (bitmapData,
+									 pixelsWide,
+									 pixelsHigh,
+									 8,
+									 bitmapBytesPerRow,
+									 colorSpace,
+									 kCGImageAlphaPremultipliedLast);
+    if (context== NULL) {
+        free (bitmapData);
+        CGColorSpaceRelease( colorSpace );
+        fprintf (stderr, "Context not created!");
+        return NULL;
+    }
+    CGColorSpaceRelease( colorSpace );
+	
+    return context;
+}
+
 @interface ClippedUIImage(Private)
 - (CGPoint) clippedPointDependingOnUIView:(UIView *)uiView alignToViewPattern:(NSString *)align;
 - (CGSize) clippedSizeDependingOnUIView:(UIView *)uiView;
@@ -46,6 +82,39 @@ NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW = @"ABSOLUTE";
 	}
 	return self;
 }
+
+/**
+ * In addition to clipping the image within the view, also ensures that its "drawing area" has the same size as the view.
+ * Ensures that the image is not streched on display.
+ */
+- (id) initWithUIImage:(UIImage *)uiImage withinUIView:(UIView *)uiView imageAlignToView:(NSString *)align {
+	if (self = [super initWithCGImage:[uiImage CGImage]]) {
+		if (self && uiView) {
+            // Clip image first
+			CGPoint startAtImagePoint = [self clippedPointDependingOnUIView:uiView alignToViewPattern:align];
+			CGSize clipImageSize = [self clippedSizeDependingOnUIView:uiView];
+            CGRect aRect = CGRectMake(startAtImagePoint.x, startAtImagePoint.y, clipImageSize.width, clipImageSize.height);
+            CGImageRef image = CGImageCreateWithImageInRect([self CGImage], aRect);            
+
+            // Then draw within same region as view
+            CGContextRef context = MyCreateBitmapContext(uiView.bounds.size.width, uiView.bounds.size.height);
+            CGContextClearRect(context, uiView.bounds);
+            CGContextDrawImage(context, aRect, image);
+            CGImageRelease(image);
+            
+            CGImageRef myRef = CGBitmapContextCreateImage (context);
+            free(CGBitmapContextGetData(context));
+            CGContextRelease(context);
+            
+            [self initWithCGImage:myRef];
+            CGImageRelease(myRef);
+		} else {
+			return nil;
+		}
+	}
+	return self;
+}
+
 
 // Get the point position where to start clipping.
 - (CGPoint) clippedPointDependingOnUIView:(UIView *)uiView alignToViewPattern:(NSString *)align {

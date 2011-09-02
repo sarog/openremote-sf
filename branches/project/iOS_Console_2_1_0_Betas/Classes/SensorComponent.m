@@ -20,14 +20,19 @@
  */
 #import "SensorComponent.h"
 
-
 @implementation SensorComponent
 
 @synthesize sensor;
 
-- (void)dealloc {
+- (void)dealloc
+{
 	[sensor release];
 	[super dealloc];
+}
+
+- (int)sensorId
+{
+    return 0;
 }
 
 @end

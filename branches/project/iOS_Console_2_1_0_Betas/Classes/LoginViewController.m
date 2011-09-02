@@ -56,7 +56,7 @@
 {
     [super viewDidLoad];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
+	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc]initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)] autorelease];
 }
 
 - (void)viewDidUnload

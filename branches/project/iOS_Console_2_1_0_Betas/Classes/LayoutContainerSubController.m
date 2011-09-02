@@ -18,37 +18,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "Sensor.h"
-#import "SensorState.h"
+#import "LayoutContainerSubController.h"
+#import "LayoutContainer.h"
+#import "AbsoluteLayoutContainer.h"
+#import "AbsoluteLayoutContainerSubController.h"
+#import "GridLayoutContainer.h"
+#import "GridLayoutContainerSubController.h"
 
-@implementation Sensor
+@interface LayoutContainerSubController()
 
-@synthesize sensorId, states;
+@property (nonatomic, retain) LayoutContainer *layoutContainer;
 
-- (id)initWithId:(int)anId
+@end
+
+@implementation LayoutContainerSubController
+
+@synthesize layoutContainer;
+
+- (id)initWithLayoutContainer:(LayoutContainer *)aLayoutContainer
 {
     self = [super init];
     if (self) {
-        sensorId = anId;
-        states = [[NSMutableArray alloc] init];
-    }
+        self.layoutContainer = aLayoutContainer;
+    }    
     return self;
 }
 
 - (void)dealloc
 {
-	[states release];
-	[super dealloc];
+    self.layoutContainer = nil;
+    [super dealloc];
 }
 
-- (NSString *)stateValueForName:(NSString *)stateName
++ (Class)subControllerClassForModelObject:(id)modelObject
 {
-    for (SensorState *sensorState in self.states) {
-		if ([[sensorState.name lowercaseString] isEqualToString:[stateName lowercaseString]]) {
-            return sensorState.value;
-        }
+    if ([modelObject isKindOfClass:[AbsoluteLayoutContainer class]]) {
+        return [AbsoluteLayoutContainerSubController class];
+    } else if ([modelObject isKindOfClass:[GridLayoutContainer class]]) {
+        return [GridLayoutContainerSubController class];
     }
-    return nil;
+    return self;
 }
 
 @end

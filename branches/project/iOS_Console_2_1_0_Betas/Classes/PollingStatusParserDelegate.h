@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "ControlView.h"
 
 /* 
  NSXMLParser delegate: Parse the returned status XML from polling REST API

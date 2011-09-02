@@ -33,4 +33,6 @@
 
 - (id)initWithId:(int)anId;
 
+- (NSString *)stateValueForName:(NSString *)stateName;
+
 @end

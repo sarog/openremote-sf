@@ -18,34 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "Label.h"
-#import "Sensor.h"
+#import "SubController.h"
 
-@implementation Label
+@class LayoutContainer;
 
-@synthesize fontSize, color, text;
+@interface LayoutContainerSubController : SubController
 
-- (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue
-{
-    self = [super init];
-    if (self) {
-        componentId = anId;
-        fontSize = fontSizeValue;
-        color = [colorValue copy];
-        text = [textValue copy];
-    }
-    return self;
-}
++ (Class)subControllerClassForModelObject:(id)modelObject;
 
-- (void)dealloc {
-	[color release];
-	[text release];
-	[super dealloc];
-}
-
-- (int)sensorId
-{
-    return self.sensor.sensorId;
-}
+- (id)initWithLayoutContainer:(LayoutContainer *)aLayoutContainer;
 
 @end
