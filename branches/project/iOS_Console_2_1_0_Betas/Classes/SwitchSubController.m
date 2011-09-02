@@ -60,7 +60,7 @@
         if (canUseImage) {
             self.onUIImage = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:onImage]] autorelease];
             self.offUIImage = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:offImage]] autorelease];
-            [button.imageView setContentMode:UIViewContentModeTopLeft];
+            [button.imageView setContentMode:UIViewContentModeCenter];
         } else {
             UIImage *buttonImage = [[UIImage imageNamed:@"button.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:29];
             [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
