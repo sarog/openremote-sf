@@ -61,7 +61,7 @@ typedef enum {
         [self addKnownTag:NAVIGATE];
         [self addKnownTag:IMAGE];
 
-        int repeatDelay, longPressDelay;
+        int repeatDelay = 0, longPressDelay = 0;
         NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
         [formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
         NSNumber *result = nil;
@@ -82,6 +82,7 @@ typedef enum {
                 longPressDelay = [result intValue];
             }
         }
+        [formatter release];
 
         _button = [[Button alloc] initWithId:[[attributeDict objectForKey:@"id"] intValue]
                                        name:[attributeDict objectForKey:@"name"]
