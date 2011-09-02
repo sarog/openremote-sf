@@ -156,6 +156,7 @@ NSString *const IMAGE_ABSOLUTE_ALIGN_TO_VIEW = @"ABSOLUTE";
 - (void) clipWithRect:(CGRect)clipRect {
 	CGImageRef uiImageRef = CGImageCreateWithImageInRect([self CGImage], clipRect);
 	[self initWithCGImage:uiImageRef];
+    CGImageRelease(uiImageRef);
 }
 
 @end
