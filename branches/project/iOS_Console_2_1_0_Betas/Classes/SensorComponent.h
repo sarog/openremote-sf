@@ -29,6 +29,10 @@
 	Sensor *sensor;
 }
 
-@property(nonatomic, retain) Sensor *sensor;
+@property (nonatomic, retain) Sensor *sensor;
+/**
+ * id of the Sensor to poll, 0 if none
+ */
+@property (nonatomic, readonly) int sensorId;
 
 @end

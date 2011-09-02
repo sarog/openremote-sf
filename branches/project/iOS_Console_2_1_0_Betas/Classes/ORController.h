@@ -73,6 +73,7 @@ typedef NSInteger ORControllerGroupMembersFetchStatus;
 
 
 // TODO: re-check in model vs property
+// TODO: this is not persisted but should be lazy loaded (! parsing is required -> we want to be able to notifiy user of progress and let him cancel)
 @property (nonatomic, retain) Definition *definition;
 
 @end

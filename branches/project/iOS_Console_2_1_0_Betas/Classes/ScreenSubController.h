@@ -18,34 +18,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "Label.h"
-#import "Sensor.h"
+#import "SubController.h"
 
-@implementation Label
+@class Screen;
 
-@synthesize fontSize, color, text;
+@interface ScreenSubController : SubController
 
-- (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue
-{
-    self = [super init];
-    if (self) {
-        componentId = anId;
-        fontSize = fontSizeValue;
-        color = [colorValue copy];
-        text = [textValue copy];
-    }
-    return self;
-}
-
-- (void)dealloc {
-	[color release];
-	[text release];
-	[super dealloc];
-}
-
-- (int)sensorId
-{
-    return self.sensor.sensorId;
-}
+- (id)initWithScreen:(Screen *)aScreen;
 
 @end

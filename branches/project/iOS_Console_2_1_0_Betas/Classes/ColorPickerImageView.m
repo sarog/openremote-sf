@@ -10,25 +10,74 @@
 //
 
 #import "ColorPickerImageView.h"
-//#import "ColorPickerViewController.h"
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/CoreAnimation.h>
 
-@interface ColorPickerImageView(Private)
-- (void) pickColorWithTouches:(NSSet *)touches andEvent:(UIEvent*)event;
+#define MIN_VALID_MOVE_DISTANCE 2
+
+@interface ColorPickerImageView()
+
+@property (nonatomic, assign) CGPoint touchBeginPoint;
+@property (nonatomic, assign) BOOL movingTag;
+
+- (void)pickColorWithTouches:(NSSet *)touches andEvent:(UIEvent*)event;
+- (CGFloat)distanceBetweenTwoPoints:(CGPoint)fromPoint toPoint:(CGPoint)toPoint;
+
 @end
 
 @implementation ColorPickerImageView
 
 @synthesize lastColor;
 @synthesize pickedColorDelegate;
+@synthesize touchBeginPoint;
+@synthesize movingTag;
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-	[self pickColorWithTouches:touches andEvent:event];
+- (id)initWithImage:(UIImage *)image
+{
+    self = [super initWithImage:image];
+    if (self) {
+        self.userInteractionEnabled = YES;
+    }
+    return self;
+}
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	NSLog(@"ColorPikcerView began event......");
+//	[self enableScrollView:NO];
+	
+	UITouch* touch = [touches anyObject];
+	touchBeginPoint = [touch previousLocationInView:self];
+}
+
+- (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	NSLog(@"ColorPikcerView moving event......");
+	
+	self.movingTag = YES;
+	UITouch* touch = [touches anyObject];
+	CGPoint currentPoint = [touch locationInView:self];
+	CGFloat distance = [self distanceBetweenTwoPoints:touchBeginPoint toPoint:currentPoint];
+	if (distance > MIN_VALID_MOVE_DISTANCE) {
+		[self pickColorWithTouches:touches andEvent:event];
+		touchBeginPoint = currentPoint;
+		NSLog(@"The distance %f of moving is greater than %d, so command will be sent.", distance, MIN_VALID_MOVE_DISTANCE);
+	} else {
+		NSLog(@"The distance %f of moving is less than %d, so command won't be sent.", distance, MIN_VALID_MOVE_DISTANCE);
+	}
 }
 
 - (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-	[self pickColorWithTouches:touches andEvent:event];
+	NSLog(@"ColorPikcerView end event......");
+	if (movingTag == NO) {
+		[self pickColorWithTouches:touches andEvent:event];
+	}
+	movingTag = NO;
+//	[self enableScrollView:YES];
+}
+
+- (CGFloat)distanceBetweenTwoPoints:(CGPoint)fromPoint toPoint:(CGPoint)toPoint {
+	float x = toPoint.x - fromPoint.x;
+	float y = toPoint.y - fromPoint.y;
+	return sqrt(x * x + y * y);
 }
 
 - (void) pickColorWithTouches:(NSSet *)touches andEvent:(UIEvent*)event {
@@ -79,8 +128,6 @@
 	
 	return color;
 }
-
-
 
 - (CGContextRef) createARGBBitmapContextFromImage:(CGImageRef) inImage {
 	
@@ -141,7 +188,5 @@
 	
 	return context;
 }
-
-
 
 @end

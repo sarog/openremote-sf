@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "Web.h"
+#import "Sensor.h"
 
 /**
  * The Web class represents an element displaying web content on the panel. 
@@ -44,6 +45,11 @@
 	[username release];
 	[password release];
     [super dealloc];
+}
+
+- (int)sensorId
+{
+    return self.sensor.sensorId;
 }
 
 @end

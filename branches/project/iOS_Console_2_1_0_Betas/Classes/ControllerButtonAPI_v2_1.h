@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "ButtonView.h"
+#import "ButtonSubController.h"
 
 @interface ControllerButtonAPI_v2_1 : NSObject<ControllerButtonAPI>
 

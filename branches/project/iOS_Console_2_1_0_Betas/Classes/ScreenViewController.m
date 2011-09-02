@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "ScreenViewController.h"
-#import "ScreenView.h"
 #import "ViewHelper.h"
 #import "Definition.h"
 #import "NotificationConstant.h"
@@ -29,17 +28,21 @@
 #import "ORConsoleSettingsManager.h"
 #import "ORConsoleSettings.h"
 #import "ORControllerProxy.h"
+#import "ScreenSubController.h"
 
 @interface ScreenViewController ()
 
 - (void)sendCommandRequest:(Component *)component;
 - (void)doNavigate:(Navigate *)navi;
 
+@property (nonatomic, retain) ScreenSubController *screenSubController;
+
 @end
 
 @implementation ScreenViewController
 
 @synthesize screen, polling;
+@synthesize screenSubController;
 
 /**
  * Assign parameter screen model data to screenViewController.
@@ -70,14 +73,15 @@
 
 // Implement loadView to create a view hierarchy programmatically.
 - (void)loadView {
-	ScreenView *v = [[ScreenView alloc] init];
+    self.screenSubController = [[[ScreenSubController alloc] initWithScreen:screen] autorelease];
+    self.view = screenSubController.view;    
+}
 
-	//set Screen in ScreenView
-	[v setScreen:screen];
-	
-	[self setView:v];
-	[v setBackgroundColor:[UIColor blackColor]];
-	[v release];
+- (void)viewDidUnload
+{
+    self.screenSubController = nil;
+    self.view = nil;
+    [super viewDidUnload];
 }
 
 - (void)startPolling {
@@ -100,7 +104,7 @@
 - (void)dealoc {
     [polling release];
 	//[screen release];
-	
+	self.screenSubController = nil;
 	[super dealloc];
 }
 

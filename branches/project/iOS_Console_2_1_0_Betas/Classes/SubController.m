@@ -18,34 +18,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "Label.h"
-#import "Sensor.h"
+#import "SubController.h"
 
-@implementation Label
+@interface SubController()
 
-@synthesize fontSize, color, text;
+@property (nonatomic, readwrite, retain) UIView *view;
 
-- (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue
+@end
+
+@implementation SubController
+
+@synthesize view;
+
+- (void)dealloc
 {
-    self = [super init];
-    if (self) {
-        componentId = anId;
-        fontSize = fontSizeValue;
-        color = [colorValue copy];
-        text = [textValue copy];
-    }
-    return self;
-}
-
-- (void)dealloc {
-	[color release];
-	[text release];
-	[super dealloc];
-}
-
-- (int)sensorId
-{
-    return self.sensor.sensorId;
+    self.view = nil;
+    [super dealloc];
 }
 
 @end
