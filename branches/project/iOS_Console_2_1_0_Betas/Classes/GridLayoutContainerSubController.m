@@ -26,12 +26,14 @@
 
 @interface GridLayoutContainerSubController()
 
+@property (nonatomic, readwrite, retain) UIView *view;
 @property (nonatomic, retain) NSMutableArray *cells;
 
 @end
 
 @implementation GridLayoutContainerSubController
 
+@synthesize view;
 @synthesize cells;
 
 - (id)initWithLayoutContainer:(LayoutContainer *)aLayoutContainer
@@ -39,6 +41,8 @@
     self = [super initWithLayoutContainer:aLayoutContainer];
     if (self) {
         GridLayoutContainer *container = (GridLayoutContainer *)aLayoutContainer;
+        self.view = [[[UIView alloc] initWithFrame:CGRectMake(container.left, container.top, container.width, container.height)] autorelease];
+        self.view.backgroundColor = [UIColor clearColor];
         cells = [[NSMutableArray alloc] initWithCapacity:[container.cells count]];
         int h = container.width / container.rows;				
         int w = container.height / container.cols;
@@ -46,8 +50,9 @@
             Component *aComponent = cell.component;
             ComponentSubController *ctrl;
             ctrl = [[[ComponentSubController subControllerClassForModelObject:aComponent] alloc] initWithComponent:aComponent];
-            ctrl.view.frame = CGRectMake(container.left + cell.x * w, container.top + cell.y * h, w * cell.colspan, h * cell.rowspan);
             [cells addObject:ctrl];
+            ctrl.view.frame = CGRectMake(cell.x * w, cell.y * h, w * cell.colspan, h * cell.rowspan);
+            [self.view addSubview:ctrl.view];
             [ctrl release];
         }
     }
