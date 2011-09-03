@@ -1,13 +1,6 @@
 package org.openremote.web.console.event.press;
 
 import java.util.Date;
-
-import org.openremote.web.console.widget.ConsoleComponent;
-
-import com.google.gwt.dom.client.Touch;
-import com.google.gwt.event.dom.client.HumanInputEvent;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;

@@ -13,7 +13,6 @@ import org.openremote.web.console.event.swipe.SwipeEvent.*;
 import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.TapEvent;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndHandler, PressMoveHandler, PressCancelHandler { 
@@ -58,6 +57,9 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	public void onPressCancel(PressCancelEvent event) {
 		if (pressStarted) {
 			pressedWidget.fireEvent(new DragCancelEvent(event));
+			if (!eventHandled) {
+				processPressRelease(event);
+			}
 			reset();
 		}
 	}
@@ -66,7 +68,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 	 * Determine what type of interaction has occurred and
 	 * fire the appropriate gesture event
 	 */
-	private void processPressRelease(PressEndEvent event) {
+	private void processPressRelease(PressEvent<?> event) {
 		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 		double duration = (event.getTime() - pressStartEvent.getTime());
 		int moveDistanceX = 0;
@@ -127,7 +129,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		
 		// Check for hold gesture
 		if (duration >= HoldEvent.MIN_HOLD_TIME_MILLISECONDS) {
-			eventBus.fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY()));
+			eventBus.fireEvent(new HoldEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
 			return;
 		}
 
@@ -141,9 +143,9 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		}		
 		if (tapOccurred) {
 			if (event.getTime() - lastTapTime < DoubleTapEvent.MAX_TIME_BETWEEN_TAPS_MILLISECONDS && lastTappedWidget == pressedWidget) {
-				eventBus.fireEvent(new DoubleTapEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
+				pressedWidget.fireEvent(new DoubleTapEvent(pressStartEvent.getClientX(), pressStartEvent.getClientY(), pressedWidget));
 			} else {
-				eventBus.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressStartEvent.getSource()));
+				pressedWidget.fireEvent(new TapEvent(pressStartEvent.getClientX(),pressStartEvent.getClientY(), pressedWidget));
 			}
 			lastTapTime = event.getTime();
 			lastTappedWidget = pressedWidget;
@@ -199,7 +201,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 		}
 		
 		if (swipeOccurred) {
-			swipeEvent = new SwipeEvent(axis, direction);
+			swipeEvent = new SwipeEvent(axis, direction, widget);
 		}
 		
 		return swipeEvent;

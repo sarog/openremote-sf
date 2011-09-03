@@ -3,7 +3,9 @@ package org.openremote.web.console.client.unit;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
-import org.openremote.web.console.screen.ConsoleScreen;
+import org.openremote.web.console.event.rotate.RotationEvent;
+import org.openremote.web.console.screen.view.ScreenView;
+import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.widget.ConsoleComponent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
@@ -30,6 +32,7 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	private int height;
 	private String colour;
 	private AbsolutePanel container = new AbsolutePanel();
+	public boolean isVertical = true;
 	
 	public ConsoleDisplay(int width, int height) {
 		this.width = width;
@@ -43,13 +46,11 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		display = new SimplePanel();
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
+		display.setStylePrimaryName("portraitDisplay");
 		display.getElement().setId("consoleDisplay");
 		
 		// Add display to the wrapper
 		container.add(display, 0, 0);
-
-		// Set default display orientation to portrait
-		setOrientation("portrait");
 		
 		// Set default colour
 		setColour(DEFAULT_DISPLAY_COLOUR);
@@ -58,9 +59,12 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		registerMouseAndTouchHandlers();
 		
 		// Add move handlers which are only used on this display component
-		this.addDomHandler(this, MouseMoveEvent.getType());
-		this.addDomHandler(this, TouchMoveEvent.getType());
-		this.addDomHandler(this, MouseOutEvent.getType());
+		if(BrowserUtils.isMobile()) {
+			this.addDomHandler(this, TouchMoveEvent.getType());
+		} else {
+			this.addDomHandler(this, MouseMoveEvent.getType());
+			this.addDomHandler(this, MouseOutEvent.getType());
+		}
 		
 		// Initialise widget
 		this.initWidget(container);
@@ -72,14 +76,26 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	 * size and position within the wrapper
 	 * @param orientation
 	 */
-	public void setOrientation(String orientation) {
+	public void setOrientation(RotationEvent event, boolean rotateDisplay) {
+		String orientation = event.getOrientation();
+		
+		if ("portrait".equals(orientation)) {
+			isVertical = true;
+		} else {
+			isVertical = false;
+		}
+		
+		// Use same screen for portrait and landscape so don't rotate
+		if (!rotateDisplay) {
+			return;
+		}
+		
 		if ("portrait".equals(orientation)) {
 			container.setWidgetPosition(display,0,0);
 		   display.setStylePrimaryName("portraitDisplay");
 		   display.setWidth(width + "px");
-		   display.setHeight(height + "px");		   
-		}
-		if ("landscape".equals(orientation)) {
+		   display.setHeight(height + "px");
+		} else {
 			container.setWidgetPosition(display, (width/2)-(height/2), (height/2)-(width/2));
 			display.setStylePrimaryName("landscapeDisplay");
 		   display.setWidth(height + "px");
@@ -100,7 +116,7 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	 * Shows the specified screen on the display
 	 * @param screen
 	 */
-	public void setScreen(ConsoleScreen screen) {
+	public void setScreen(ScreenView screen) {
 		display.setWidget(screen);
 	}
 	
@@ -116,11 +132,12 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		event.preventDefault();
 		event.stopPropagation();
 		lastMoveEvent = new PressMoveEvent(event);
-		this.fireEvent(lastMoveEvent);
+		ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(lastMoveEvent);
 	}
 
 	@Override
 	public void onMouseMove(MouseMoveEvent event) {
+		event.preventDefault();
 		event.stopPropagation();
 		lastMoveEvent = new PressMoveEvent(event);
 		ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(lastMoveEvent);

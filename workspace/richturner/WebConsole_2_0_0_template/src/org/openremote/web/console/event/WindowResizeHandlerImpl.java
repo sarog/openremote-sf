@@ -38,7 +38,7 @@ public class WindowResizeHandlerImpl implements ResizeHandler {
 			}
 			
 			// Hide the console unit
-			consoleModule.getConsoleUnit().hide();
+			WebConsole.getConsoleUnit().hide();
 			
 			// If mobile then check window is fully initialised
 			if (BrowserUtils.isMobile && !consoleModule.isMobileWindowFullyInitialised()) {
@@ -71,14 +71,14 @@ public class WindowResizeHandlerImpl implements ResizeHandler {
 	
 		// If mobile then this is actually a rotation event so fire console unit rotation event
 		if (BrowserUtils.isMobile) {
-			consoleModule.getConsoleUnit().fireEvent(new RotationEvent(consoleModule.getWindowOrientation(), consoleModule.getWindowWidth(), consoleModule.getWindowHeight()));
+			ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(consoleModule.getWindowOrientation(), consoleModule.getWindowWidth(), consoleModule.getWindowHeight()));
 		} else {
 			// Reposition the console unit
-			consoleModule.getConsoleUnit().setPosition(consoleModule.getWindowWidth(), consoleModule.getWindowHeight());
+			WebConsole.getConsoleUnit().setPosition(consoleModule.getWindowWidth(), consoleModule.getWindowHeight());
 		}
 		
 		// Show the console unit again
-		consoleModule.getConsoleUnit().show();
+		WebConsole.getConsoleUnit().show();
 		
 		reset();
 	}

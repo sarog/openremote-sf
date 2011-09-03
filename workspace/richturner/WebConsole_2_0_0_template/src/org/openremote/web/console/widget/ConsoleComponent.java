@@ -4,6 +4,7 @@ import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressEndEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressStartEvent;
+import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -70,9 +71,12 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 	}
 	
 	public void registerMouseAndTouchHandlers(Widget component) {
-		component.addDomHandler(this, MouseDownEvent.getType());
-		component.addDomHandler(this, TouchStartEvent.getType());
-		component.addDomHandler(this, MouseUpEvent.getType());
-		component.addDomHandler(this, TouchEndEvent.getType());
+		if(BrowserUtils.isMobile()) {
+			component.addDomHandler(this, TouchStartEvent.getType());
+			component.addDomHandler(this, TouchEndEvent.getType());
+		} else {
+			component.addDomHandler(this, MouseDownEvent.getType());
+			component.addDomHandler(this, MouseUpEvent.getType());
+		}
 	}
 }
