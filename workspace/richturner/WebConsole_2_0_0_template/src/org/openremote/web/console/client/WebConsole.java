@@ -3,15 +3,19 @@ package org.openremote.web.console.client;
 import org.openremote.web.console.client.unit.ConsoleUnit;
 import org.openremote.web.console.client.unit.type.FullScreenUnit;
 import org.openremote.web.console.client.unit.type.ResizableUnit;
+import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.WindowResizeHandlerImpl;
+import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -22,26 +26,21 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class WebConsole implements EntryPoint {
 	public static final String CONSOLE_UNIT_CONTAINER_ID = "consoleContainer";
-	VerticalPanel mainPanel;
 	private static ConsoleUnit consoleUnit;
 	private WindowResizeHandlerImpl resizeHandler;
-	int windowHeightPortrait = 2000;
-	int windowWidthPortrait = 2000;
-	int windowHeightLandscape = 2000;
-	int windowWidthLandscape = 2000;
-	public boolean isInitialised = false;
-	String windowOrientation = "portrait";
-	int topMargin;
-	int bottomMargin;
-	HandlerRegistration scrollHandler;
-	Timer addressBarMonitor;
-	boolean isPortraitInitialised = false;
-	boolean isLandscapeInitialised = false;
+	private int windowHeightPortrait = 2000;
+	private int windowWidthPortrait = 2000;
+	private int windowHeightLandscape = 2000;
+	private int windowWidthLandscape = 2000;
+	private String windowOrientation = "portrait";
+	private boolean isInitialised = false;
+	private boolean isPortraitInitialised = false;
+	private boolean isLandscapeInitialised = false;
 	
 	public void onModuleLoad() {
 		// Fix body size as square to aid with orientation changes
 		RootPanel.getBodyElement().getStyle().setHeight(2000, Unit.PX);
-		RootPanel.getBodyElement().getStyle().setWidth(2000, Unit.PX);
+		RootPanel.getBodyElement().getStyle().setWidth(2000, Unit.PX);	
 		
 		// Create Window Resize handler
 		resizeHandler = new WindowResizeHandlerImpl(this);
@@ -126,9 +125,37 @@ public class WebConsole implements EntryPoint {
 		}
 		consoleUnit = console;
 		
+		
+		// Create a console wrapper to allow easy positioning of the console unit
+		AbsolutePanel consoleWrapper = new AbsolutePanel();
+		consoleWrapper.setWidth("100%");
+		consoleWrapper.setHeight("100%");
+		consoleWrapper.add(consoleUnit);
+		RootPanel.get(CONSOLE_UNIT_CONTAINER_ID).add(consoleWrapper);
+		
+		if (!BrowserUtils.isMobile()) {
+			Button test = new Button();
+			test.setWidth("200px");
+			test.setHeight("100px");
+			test.setText("ROTATE");
+			test.addClickHandler(new ClickHandler() {
+	
+				@Override
+				public void onClick(ClickEvent event) {
+					String eventOrientation = "landscape";
+					if (getConsoleUnit().getOrientation().equals("landscape")) {
+						eventOrientation = "portrait";
+					}
+					ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(eventOrientation, getWindowWidth(), getWindowHeight()));
+				}
+				
+			});
+			consoleWrapper.add(test);
+			consoleWrapper.setWidgetPosition(test, 20, 20);
+		}
+		
 		// Set initial console orientation and position
-		consoleUnit.setOrientation(windowOrientation);
-		consoleUnit.setPosition(getWindowWidth(), getWindowHeight());
+		ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new RotationEvent(windowOrientation, getWindowWidth(), getWindowHeight()));
 	}
 	
 	/*
@@ -244,4 +271,36 @@ public class WebConsole implements EntryPoint {
 	public boolean isMobileWindowFullyInitialised() {
 		return (isPortraitInitialised && isLandscapeInitialised);
 	}
+	
+//	public static void preventTouchAndClick(Widget widget) {
+//		widget.addDomHandler(new MouseDownHandler() {
+//			@Override
+//			public void onMouseDown(MouseDownEvent event) {
+//				event.preventDefault();				
+//			}}, MouseDownEvent.getType());
+//		
+//		widget.addDomHandler(new TouchStartHandler() {
+//			@Override
+//			public void onTouchStart(TouchStartEvent event) {
+//				event.preventDefault();				
+//			}}, TouchStartEvent.getType());
+//		
+//		widget.addDomHandler(new TouchEndHandler() {
+//			@Override
+//			public void onTouchEnd(TouchEndEvent event) {
+//				event.preventDefault();				
+//			}}, TouchEndEvent.getType());
+//		
+//		widget.addDomHandler(new MouseUpHandler() {
+//			@Override
+//			public void onMouseUp(MouseUpEvent event) {
+//				event.preventDefault();				
+//			}}, MouseUpEvent.getType());
+//		
+//		widget.addDomHandler(new DoubleClickHandler() {
+//			@Override
+//			public void onDoubleClick(DoubleClickEvent event) {
+//				event.preventDefault();				
+//			}}, DoubleClickEvent.getType());
+//	}
 }

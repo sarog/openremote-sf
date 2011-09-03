@@ -1,13 +1,8 @@
 package org.openremote.web.console.client.unit;
 
-import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.hold.HoldHandler;
-import org.openremote.web.console.event.press.PressCancelEvent;
-import org.openremote.web.console.event.press.PressEndEvent;
-import org.openremote.web.console.event.press.PressMoveEvent;
-import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.rotate.RotationHandler;
 import org.openremote.web.console.event.swipe.SwipeEvent;
@@ -16,15 +11,13 @@ import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
-import org.openremote.web.console.screen.ConsoleScreen;
-import org.openremote.web.console.screen.LoadingScreen;
-import org.openremote.web.console.screen.TestScreen;
+import org.openremote.web.console.screen.view.ScreenView;
+import org.openremote.web.console.screen.view.LoadingScreenView;
+import org.openremote.web.console.screen.view.TestScreenView;
 
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -37,7 +30,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	protected ConsoleDisplay consoleDisplay;
 	protected int width;
 	protected int height;
-	private ConsoleScreen loadingScreen;
+	private ScreenView loadingScreen;
+	private String orientation = "portrait";
 	
 	public ConsoleUnit() {
 		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
@@ -48,13 +42,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		componentContainer = new VerticalPanel();
 		componentContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		super.add(componentContainer);
-		
-		// Create a console wrapper to allow easy positioning of the console unit
-		AbsolutePanel consoleWrapper = new AbsolutePanel();
-		consoleWrapper.setWidth("100%");
-		consoleWrapper.setHeight("100%");
-		consoleWrapper.add(this);
-		RootPanel.get(WebConsole.CONSOLE_UNIT_CONTAINER_ID).add(consoleWrapper);
 		
 		// Set console unit properties
 		setSize(width, height);
@@ -69,28 +56,43 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		registerGestureHandlers();
 	
 		// Create and show loading screen
-		loadingScreen = new LoadingScreen();
-		loadingScreen = new TestScreen();
+		loadingScreen = new LoadingScreenView();
+		loadingScreen = new TestScreenView();
 		setScreen(loadingScreen);
 	}
 	
 	@Override
 	public void onRotate(RotationEvent event) {
-		setOrientation(event.getOrientation());
+		boolean rotateDisplay = false;
+		
+		setOrientation(event);
 		setPosition(event.getWindowWidth(), event.getWindowHeight());
 		
 		// Load in the inverse screen to what is currently loaded
 		
+		
+		// Adjust console display
+		consoleDisplay.setOrientation(event, rotateDisplay);
 	}
 	
 	@Override
 	public void onHold(HoldEvent event) {
-		Window.alert("HOLD");		
+		//TODO Handle Hold Event	
 	}
 
 	@Override
 	public void onSwipe(SwipeEvent event) {
-		Window.alert("SWIPE: " + event.getDirection());
+		//TODO Handle swipe Event
+	}
+
+	@Override
+	public void onTap(TapEvent event) {
+		//TODO Handle Tap Event
+	}
+	
+	@Override
+	public void onDoubleTap(DoubleTapEvent event) {
+		//TODO Handle Double Tap
 	}
 	
 	@Override
@@ -127,8 +129,9 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	 * Adjusts the CSS class to either landscape or portrait
 	 * @param orientation
 	 */
-	public void setOrientation(String orientation) {
-		//String orientation = consoleModule.getWindowOrientation();
+	public void setOrientation(RotationEvent event) {
+		String orientation = event.getOrientation();
+
 		if ("portrait".equals(orientation)) {
 			getElement().removeClassName("landscapeConsole");
 			getElement().addClassName("portraitConsole");
@@ -136,8 +139,12 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			getElement().removeClassName("portraitConsole");
 			getElement().addClassName("landscapeConsole");
 		}
-		// Set CSS to rotate the console display
-		consoleDisplay.setOrientation(orientation);
+
+		this.orientation = orientation;
+	}
+	
+	public String getOrientation() {
+		return orientation;
 	}
 	
 	public void hide() {
@@ -149,25 +156,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	// Display specified screen
-	public void setScreen(ConsoleScreen screen) {
+	public void setScreen(ScreenView screen) {
 		consoleDisplay.setScreen(loadingScreen);	
 	}
 	
 	public void registerGestureHandlers() {
-		this.addHandler(this, RotationEvent.getType());
-		this.addHandler(this, SwipeEvent.getType());
-		this.addHandler(this, HoldEvent.getType());
-		this.addHandler(this, TapEvent.getType());
-		this.addHandler(this, DoubleTapEvent.getType());
-	}
-
-	@Override
-	public void onDoubleTap(DoubleTapEvent event) {
-		Window.alert("DOUBLE TAP EVENT OCCURRED");		
-	}
-
-	@Override
-	public void onTap(TapEvent event) {
-		Window.alert("TAP EVENT OCCURRED");
+		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+		eventBus.addHandler(RotationEvent.getType(), this);
+		eventBus.addHandler(SwipeEvent.getType(), this);
+		eventBus.addHandler(HoldEvent.getType(), this);
+		eventBus.addHandler(TapEvent.getType(), this);
+		eventBus.addHandler(DoubleTapEvent.getType(), this);
 	}
 }

@@ -1,7 +1,5 @@
 package org.openremote.web.console.event.drag;
 
-import org.openremote.web.console.widget.ConsoleComponent;
-
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.user.client.ui.Widget;

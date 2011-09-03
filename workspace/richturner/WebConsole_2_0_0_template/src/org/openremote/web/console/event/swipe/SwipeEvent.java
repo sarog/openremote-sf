@@ -9,8 +9,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	private static final Type<SwipeHandler> TYPE = new Type<SwipeHandler>();
-	public SwipeDirection direction;
-	public SwipeAxis axis;
+	private SwipeDirection direction;
+	private SwipeAxis axis;
+	private Widget source;
 	
 	public static enum SwipeAxis {
 		HORIZONTAL,
@@ -24,7 +25,7 @@ public class SwipeEvent extends GwtEvent<SwipeHandler> {
 		DOWN;
 	}
 	
-	public SwipeEvent(SwipeAxis axis, SwipeDirection direction) {
+	public SwipeEvent(SwipeAxis axis, SwipeDirection direction, Widget source) {
 		this.axis = axis;
 		this.direction = direction;
 	}
@@ -49,6 +50,10 @@ public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	
 	public SwipeAxis getAxis() {
 		return axis;
+	}
+	
+	public Widget getSource() {
+		return source;
 	}
 	
 	public static final class SwipeLimits {

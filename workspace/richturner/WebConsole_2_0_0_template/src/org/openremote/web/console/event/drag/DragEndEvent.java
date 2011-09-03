@@ -1,8 +1,6 @@
 package org.openremote.web.console.event.drag;
 
-import org.openremote.web.console.event.press.PressCancelHandler;
 import org.openremote.web.console.event.press.PressEndEvent;
-import org.openremote.web.console.event.press.PressEvent;
 
 /**
  * This event defines a drag cancel event

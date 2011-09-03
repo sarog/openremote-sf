@@ -1,5 +1,6 @@
 package org.openremote.web.console.widget;
 
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
 import org.openremote.web.console.event.drag.DragMoveEvent;
@@ -34,7 +35,7 @@ public class Slider extends ConsoleWidgetImpl {
 	private int slideBarHeight = 0;
 	
 	class Handle extends SimplePanel implements Draggable {
-		protected static final int BORDER_WIDTH = 1;
+		protected static final int BORDER_WIDTH = 2;
 		private int size;
 		private Element element;
 		
@@ -64,10 +65,13 @@ public class Slider extends ConsoleWidgetImpl {
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
-			if (isVertical) {
-				doHandleDrag(event.getYPos());
-			} else {
+			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().isVertical;
+			boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
+			
+			if (!sliderAppearsVertical) {
 				doHandleDrag(event.getXPos());
+			} else {
+				doHandleDrag(event.getYPos());
 			}
 		}
 
@@ -116,12 +120,15 @@ public class Slider extends ConsoleWidgetImpl {
 			if (!clickable) {
 				return;
 			}
-			if (isVertical) {
-				doHandleDrag(event.getYPos());
-			} else {
+			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().isVertical;
+			boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
+			
+			if (!sliderAppearsVertical) {
 				doHandleDrag(event.getXPos());
+			} else {
+				doHandleDrag(event.getYPos());
 			}
-			doValueChange();			
+			doValueChange();
 		}
 		
 		public int getHeight() {
@@ -206,16 +213,24 @@ public class Slider extends ConsoleWidgetImpl {
 	private void doHandleDrag(int absPos) {
 		int relPos = calculateRelativePixelValue(absPos);
 		int value = (int)(relPos * pixelValueDensity);
+		//Window.alert(absPos + " : " + relPos + " : " + value);
 		setValue(value);
 	}
 	
 	private int calculateRelativePixelValue(int absValue) {
 		int value = absValue;
 		int pixelMin = 0;
+		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().isVertical;
+		boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
 		
-		if (!isVertical) {
-			pixelMin = (int)(slideBar.getAbsoluteLeft() + halfHandle);
-			value = value - pixelMin;
+		if (!sliderAppearsVertical) {		
+			if (!isVertical) {
+					pixelMin = (int)(slideBar.getAbsoluteLeft() + halfHandle);
+					value = value - pixelMin;
+			} else {
+				pixelMin = (int)(slideBar.getAbsoluteLeft() + slideBar.getWidth() - halfHandle);
+				value = pixelMin - value;
+			}
 		} else {
 			pixelMin = (int)( slideBar.getAbsoluteTop() + slideBar.getWidth() - halfHandle);
 			value = pixelMin - value;
@@ -268,5 +283,13 @@ public class Slider extends ConsoleWidgetImpl {
 		if (!isInitialised) {
 			stepSize = size;
 		}
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public int getWidth() {
+		return width;
 	}
 }

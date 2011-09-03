@@ -21,14 +21,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 	      "176x220","320x320","160x160","webos",
 	      "palm","sagem","samsung","sgh",
 	      "sie","sonyericsson","mmp","ucweb","ipod", "ipad"};
-		
+	
 		static {
 			isMobile = isMobile();
 			isWebkit = isWebkit();
 			isApple = isApple();
 		}
 		
-		private static boolean isMobile() {
+		public static boolean isMobile() {
 			for (String mobile: MOBILE_SPECIFIC_SUBSTRING) {
 				if (userAgent.toLowerCase().contains(mobile)) {
 					return true;
