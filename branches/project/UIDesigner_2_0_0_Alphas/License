@@ -717,6 +717,17 @@ OpenRemote Designer Sub-components:
   GPL v2 with 'Classpath' linking exception. For the purpose of this
   distribution, GPL v2 with 'Classpath' exception is used. The text
   of the linking exception is included below.
+* MySQL Java Connector JDBC driver is licensed under GPL v2 with
+  a 'FLOSS' linking exception for GPL v3 license. The text of
+  the linking exception is included below. MySQL Java Connector
+  may include sub-components Ant-Contrib, 
+  c3p0:JDBC DataSources/Resource Pools and 
+  jboss-common-jdbc-wrapper.jar which are licensed under Apache 
+  License 2.0 (Ant-Contrib) and GNU LGPL v2.1 license (c3p0,
+  JBoss). See the README for additional details.
+* SimpleCaptcha 1.1.1 library is licensed under BSD-like license
+  which is included below.
+
 
 GNU GPL v3 license, GNU GPL v2 license, GNU LGPL v2.1 license and 
 Apache License 2.0 are available from the following locations:
@@ -762,6 +773,69 @@ If you modify this library, you may extend this exception to your version
 of the library, but you are not obligated to do so.? If you do not wish 
 to do so, delete this exception statement from your version.
 
+
+
+---------------------------------------------------------------------------
+
+  MYSQL JAVA CONNECTOR LINKING EXCEPTION
+
+---------------------------------------------------------------------------
+
+MySQL FOSS License Exception
+
+We want free and open source software applications under 
+certain licenses to be able to use the GPL-licensed MySQL 
+Connector/J (specified GPL-licensed MySQL client libraries)
+despite the fact that not all such FOSS licenses are 
+compatible with version 2 of the GNU General Public License.
+Therefore there are special exceptions to the terms and
+conditions of the GPLv2 as applied to these client libraries, 
+which are identified and described in more detail in the 
+FOSS License Exception at 
+<http://www.mysql.com/about/legal/licensing/foss-exception.html>
+
+
+---------------------------------------------------------------------------
+
+  SIMPLE CAPTCHA LICENSE
+
+---------------------------------------------------------------------------
+
+Copyright (c) 2008, James Childers
+All rights reserved.
+
+Redistribution and use in source and binary forms, with 
+or without modification, are permitted provided that the 
+following conditions are met:
+
+ o Redistributions of source code must retain the above 
+   copyright notice, this list of conditions and the 
+   following disclaimer.
+
+ o Redistributions in binary form must reproduce the 
+   above copyright notice, this list of conditions and 
+   the following disclaimer in the documentation and/or 
+   other materials provided with the distribution.
+
+ o Neither the name of SimpleCaptcha nor the names of 
+   its contributors may be used to endorse or promote 
+   products derived from this software without specific 
+   prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR 
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+SUCH DAMAGE.
 
 
 ---------------------------------------------------------------------------
