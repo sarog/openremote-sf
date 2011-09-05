@@ -725,8 +725,12 @@ OpenRemote Designer Sub-components:
   jboss-common-jdbc-wrapper.jar which are licensed under Apache 
   License 2.0 (Ant-Contrib) and GNU LGPL v2.1 license (c3p0,
   JBoss). See the README for additional details.
-* SimpleCaptcha 1.1.1 library is licensed under BSD-like license
+* SimpleCaptcha 1.1.1 library is licensed under a BSD-like license
   which is included below.
+* SLF4J 1.5 library is licensed under a BSD-like license which
+  is included below.
+* Spring Framework 2.0.8 and Spring Security 2.0.4 are licensed 
+  under Apache License 2.0
 
 
 GNU GPL v3 license, GNU GPL v2 license, GNU LGPL v2.1 license and 
@@ -793,6 +797,36 @@ conditions of the GPLv2 as applied to these client libraries,
 which are identified and described in more detail in the 
 FOSS License Exception at 
 <http://www.mysql.com/about/legal/licensing/foss-exception.html>
+
+
+---------------------------------------------------------------------------
+
+  SLF4J LICENSE
+
+---------------------------------------------------------------------------
+
+Copyright (c) 2004-2008 QOS.ch
+All rights reserved.
+
+Permission is hereby granted, free  of charge, to any person obtaining
+a  copy  of this  software  and  associated  documentation files  (the
+"Software"), to  deal in  the Software without  restriction, including
+without limitation  the rights to  use, copy, modify,  merge, publish,
+distribute,  sublicense, and/or sell  copies of  the Software,  and to
+permit persons to whom the Software  is furnished to do so, subject to
+the following conditions:
+
+The  above  copyright  notice  and  this permission  notice  shall  be
+included in all copies or substantial portions of the Software.
+
+THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
+EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
+MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 
 ---------------------------------------------------------------------------
@@ -970,6 +1004,58 @@ parrt@antlr.org
 #                                 N O T I C E S                                           #
 #                                                                                         #
 ###########################################################################################
+
+
+Spring Framework NOTICE
+-----------------------
+
+   ======================================================================
+   == NOTICE file corresponding to section 4 d of the Apache License,  ==
+   == Version 2.0, in this case for the Spring Framework distribution. ==
+   ======================================================================
+
+   This product includes software developed by
+   the Apache Software Foundation (http://www.apache.org).
+
+   The end-user documentation included with a redistribution, if any,
+   must include the following acknowledgement:
+
+     "This product includes software developed by the Spring Framework
+      Project (http://www.springframework.org)."
+
+   Alternatively, this acknowledgement may appear in the software itself,
+   if and wherever such third-party acknowledgements normally appear.
+
+   The names "Spring" and "Spring Framework" must not be used to
+   endorse or promote products derived from this software without
+   prior written permission. For written permission, please contact
+   rod.johnson@interface21.com or juergen.hoeller@interface21.com.
+
+
+Spring Security NOTICE
+----------------------
+
+   ======================================================================
+   == NOTICE file corresponding to section 4(d) of the Apache License, ==
+   == Version 2.0, in this case for the Spring Security distribution.  ==
+   ======================================================================
+
+   The end-user documentation included with a redistribution, if any,
+   must include the following acknowledgement:
+
+     "This product includes software developed by Spring Security
+      Project (http://www.springframework.org/security)."
+
+   Alternately, this acknowledgement may appear in the software itself,
+   if and wherever such third-party acknowledgements normally appear.
+
+   The names "Spring", "Spring Security", "Spring Security System",
+   "SpringSource", "Acegi", "Acegi Security", "Acegi Security System",
+   "Acegi" or any derivatives thereof may not be used to endorse or
+   promote products derived from this software without prior written
+   permission. For written permission, please contact 
+   ben.alex@springsource.com.
+
 
 Gilead NOTICE
 -------------
