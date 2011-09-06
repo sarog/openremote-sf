@@ -7,7 +7,7 @@ import org.openremote.web.console.event.drag.DragMoveEvent;
 import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.tap.TapEvent;
-import org.openremote.web.console.event.tap.Tappable;
+import org.openremote.web.console.event.tap.TapHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -91,7 +91,7 @@ public class Slider extends ConsoleWidgetImpl {
 		}
 	}
 	
-	class SlideBar extends SimplePanel implements Tappable {
+	class SlideBar extends SimplePanel implements TapHandler {
 		protected static final double HEIGHT_RATIO = 0.4;
 		protected static final double WIDTH_RATIO = 1.0;
 		private boolean clickable = true;
