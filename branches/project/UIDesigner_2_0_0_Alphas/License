@@ -713,10 +713,12 @@ OpenRemote Designer Sub-components:
 * Http Core, Http Client 4.0.1, Http Mime 4.0.1 and Apache JAMES Mime4j
   libraries are licensed under Apache License, v2.0
 * Log4j 1.2.12 is licensed under Apache License, v2.0
-* Java Mail 1.4.3 implementation is dual licensed with CDDL 1.0 and
-  GPL v2 with 'Classpath' linking exception. For the purpose of this
-  distribution, GPL v2 with 'Classpath' exception is used. The text
-  of the linking exception is included below.
+* Java Mail 1.4.3, JavaBeans Activation framework 1.1.1,
+  javax.transaction API 1.1 and javax.persistence API 1.0 are 
+  dual licensed with CDDL 1.0 and GPL v2 with 'Classpath' linking 
+  exception. For the purpose of this distribution, GPL v2 with 
+  'Classpath' exception is used. The text of the linking exception 
+  is included below.
 * MySQL Java Connector JDBC driver is licensed under GPL v2 with
   a 'FLOSS' linking exception for GPL v3 license. The text of
   the linking exception is included below. MySQL Java Connector
@@ -731,7 +733,11 @@ OpenRemote Designer Sub-components:
   is included below.
 * Spring Framework 2.0.8 and Spring Security 2.0.4 are licensed 
   under Apache License 2.0
-
+* Trove 1.0.2 library is licensed under GNU LGPL v2.1 license
+  (or later version). For the purpose of this distribution,
+  GNU LGPL v3 is used. Two classes in the trove library are
+  distributed under a license from CERN. The license text
+  is included below.
 
 GNU GPL v3 license, GNU GPL v2 license, GNU LGPL v2.1 license and 
 Apache License 2.0 are available from the following locations:
@@ -747,7 +753,8 @@ http://www.apache.org/licenses/LICENSE-2.0.txt
 
 ---------------------------------------------------------------------------
 
-  JAVAMAIL LINKING EXCEPTION
+  JAVAMAIL, JAVABEAN ACTIVATION FRAMEWORK, JAVAX.PERSISTENCE AND
+  JAVAX.TRANSACTION LINKING EXCEPTIONS
 
 ---------------------------------------------------------------------------
 
@@ -957,6 +964,24 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 
+
+---------------------------------------------------------------------------
+
+  TROVE HASHFUNCTIONS AND PRIMEFINDER LICENSE
+
+---------------------------------------------------------------------------
+
+Two classes (HashFunctions and PrimeFinder) included in Trove are 
+licensed under the following terms:
+
+    Copyright (c) 1999 CERN - European Organization for Nuclear Research. 
+    Permission to use, copy, modify, distribute and sell this software and 
+    its documentation for any purpose is hereby granted without fee, 
+    provided that the above copyright notice appear in all copies and that 
+    both that copyright notice and this permission notice appear in 
+    supporting documentation. CERN makes no representations about the 
+    suitability of this software for any purpose. It is provided "as is" 
+    without expressed or implied warranty.
 
 
 ---------------------------------------------------------------------------
