@@ -30,7 +30,7 @@
 {
     self = [super init];
     if (self) {
-        backgroundImageRelativePosition = relativePositionString;
+        backgroundImageRelativePosition = [relativePositionString retain];
         isBackgroundImageAbsolutePosition = NO;
         fillScreen = fillScreenTag;
     }

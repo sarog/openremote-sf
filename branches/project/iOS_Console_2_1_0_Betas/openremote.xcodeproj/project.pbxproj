@@ -109,6 +109,40 @@
 		6079C2B913CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
 		6079C2BA13CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
 		6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6082FEA9139643C4005A75C2 /* ButtonTest.m */; };
+		608D985B1419091E001A7534 /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
+		608D985C1419091E001A7534 /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
+		608D985D14190956001A7534 /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
+		608D985E14190956001A7534 /* LabelDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelDeferredBinding.m */; };
+		608D985F14190956001A7534 /* ScreenDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */; };
+		608D986014190956001A7534 /* DefinitionElementParserRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */; };
+		608D986114190956001A7534 /* DefinitionElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4813FF071E00967DEA /* DefinitionElementParser.m */; };
+		608D986214190956001A7534 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
+		608D986314190956001A7534 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
+		608D986414190956001A7534 /* LayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E70140157A300967DEA /* LayoutContainerParser.m */; };
+		608D986514190956001A7534 /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
+		608D986614190956001A7534 /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
+		608D986714190956001A7534 /* GridCellParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E751401796D00967DEA /* GridCellParser.m */; };
+		608D986814190956001A7534 /* LabelParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7914017B3A00967DEA /* LabelParser.m */; };
+		608D986914190956001A7534 /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
+		608D986A14190956001A7534 /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
+		608D986B14190956001A7534 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
+		608D986C14190956001A7534 /* ButtonParserAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */; };
+		608D986D14190956001A7534 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
+		608D986E14190956001A7534 /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
+		608D986F14190956001A7534 /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
+		608D987014190956001A7534 /* ColorPickerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9114017BF100967DEA /* ColorPickerParser.m */; };
+		608D987114190956001A7534 /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
+		608D987214190956001A7534 /* BackgroundParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6C13FF8E2200967DEA /* BackgroundParser.m */; };
+		608D987314190956001A7534 /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
+		608D987414190956001A7534 /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
+		608D987514190956001A7534 /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
+		608D987614190956001A7534 /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
+		608D987714190956001A7534 /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
+		608D987814190956001A7534 /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
+		608D987914190956001A7534 /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
+		608D987A14190956001A7534 /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
+		608D987B14190956001A7534 /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
+		608D987C14190956001A7534 /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
 		608FBB77131FF90500C9089F /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
 		608FBB9E131FF9C300C9089F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
 		608FBDD113211DED00C9089F /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
@@ -2644,6 +2678,40 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				608D985D14190956001A7534 /* DeferredBinding.m in Sources */,
+				608D985E14190956001A7534 /* LabelDeferredBinding.m in Sources */,
+				608D985F14190956001A7534 /* ScreenDeferredBinding.m in Sources */,
+				608D986014190956001A7534 /* DefinitionElementParserRegister.m in Sources */,
+				608D986114190956001A7534 /* DefinitionElementParser.m in Sources */,
+				608D986214190956001A7534 /* DefinitionParser.m in Sources */,
+				608D986314190956001A7534 /* ScreenParser.m in Sources */,
+				608D986414190956001A7534 /* LayoutContainerParser.m in Sources */,
+				608D986514190956001A7534 /* AbsoluteLayoutContainerParser.m in Sources */,
+				608D986614190956001A7534 /* GridLayoutContainerParser.m in Sources */,
+				608D986714190956001A7534 /* GridCellParser.m in Sources */,
+				608D986814190956001A7534 /* LabelParser.m in Sources */,
+				608D986914190956001A7534 /* ImageParser.m in Sources */,
+				608D986A14190956001A7534 /* WebParser.m in Sources */,
+				608D986B14190956001A7534 /* ButtonParser.m in Sources */,
+				608D986C14190956001A7534 /* ButtonParserAPI_v2_1.m in Sources */,
+				608D986D14190956001A7534 /* ButtonParserAPI_v2.m in Sources */,
+				608D986E14190956001A7534 /* SwitchParser.m in Sources */,
+				608D986F14190956001A7534 /* SliderParser.m in Sources */,
+				608D987014190956001A7534 /* ColorPickerParser.m in Sources */,
+				608D987114190956001A7534 /* GestureParser.m in Sources */,
+				608D987214190956001A7534 /* BackgroundParser.m in Sources */,
+				608D987314190956001A7534 /* GroupParser.m in Sources */,
+				608D987414190956001A7534 /* TabBarParser.m in Sources */,
+				608D987514190956001A7534 /* TabBarItemParser.m in Sources */,
+				608D987614190956001A7534 /* LocalLogicParser.m in Sources */,
+				608D987714190956001A7534 /* NavigateParser.m in Sources */,
+				608D987814190956001A7534 /* SensorLinkParser.m in Sources */,
+				608D987914190956001A7534 /* SensorStateParser.m in Sources */,
+				608D987A14190956001A7534 /* SensorParser.m in Sources */,
+				608D987B14190956001A7534 /* CommandParser.m in Sources */,
+				608D987C14190956001A7534 /* TaskParser.m in Sources */,
+				608D985B1419091E001A7534 /* DefinitionManager.m in Sources */,
+				608D985C1419091E001A7534 /* PanelDefinitionParser.m in Sources */,
 				60A2D2271403A92100A529ED /* ORControllerGroupMembersFetcher.m in Sources */,
 				60A2D2251403A90E00A529ED /* DataCapturingNSURLConnectionDelegate.m in Sources */,
 				6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */,
@@ -2869,6 +2937,9 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -2897,6 +2968,9 @@
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -3033,6 +3107,9 @@
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 				);
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = openremote_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
 				OTHER_LDFLAGS = (
 					"-framework",

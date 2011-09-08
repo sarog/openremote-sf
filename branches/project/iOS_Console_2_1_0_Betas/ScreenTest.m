@@ -20,6 +20,8 @@
  */
 #import "ScreenTest.h"
 #import "Definition.h"
+#import "Screen.h"
+#import "PanelDefinitionParser.h"
 
 @implementation ScreenTest
 
@@ -29,8 +31,9 @@
 }
 
 - (void)testScreenIdForOrientation {
-    Definition *definition = [Definition sharedDefinition];
-    [definition parsePanelConfigurationFileAtPath:[self pathForXMLFile:@"panel_screenIdForOrientation"]];
+    PanelDefinitionParser *parser = [[PanelDefinitionParser alloc] init];
+    NSData *data = [[NSData alloc] initWithContentsOfFile:[self pathForXMLFile:@"panel_screenIdForOrientation"]];
+    Definition *definition = [parser parseDefinitionFromXML:data];
     Screen *portraitScreen = [definition findScreenById:3];
     STAssertNotNil(portraitScreen, @"Portrait screen should exist");
     STAssertEquals(portraitScreen.screenId, 3, @"id of portrait screen should be 3");
@@ -62,6 +65,8 @@
     STAssertEquals([dualScreenLandscapeVersion screenIdForOrientation:UIInterfaceOrientationLandscapeRight], 6, @"Landscape version (6) should be used for landscape orientations");
     STAssertEquals([dualScreenLandscapeVersion screenIdForOrientation:UIInterfaceOrientationPortrait], 5, @"Portrait version (5) should be used for portrait orientations");
     STAssertEquals([dualScreenLandscapeVersion screenIdForOrientation:UIInterfaceOrientationPortraitUpsideDown], 5, @"Portrait version (5) should be used for portrait orientations");
+    [data release];
+    [parser release];
 }
 
 @end
