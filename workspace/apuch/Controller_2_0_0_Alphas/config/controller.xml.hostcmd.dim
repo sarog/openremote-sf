@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
+  <components>
+    <switch id="1">
+      <on>
+        <include type="command" ref="95" />
+      </on>
+      <off>
+        <include type="command" ref="96" />
+      </off>
+      <include type="sensor" ref="94" />
+    </switch>
+    <!-- dimmer --> 
+    <slider id = "100">
+      <setValue><include type = "command" ref = "101"/></setValue>
+      <include type = "sensor" ref = "101"/>
+    </slider>
+
+    <label id="85" />
+    <label id="87" />
+    <label id="81" />
+    <label id="83" />
+    <label id="93" />
+    <label id="89" />
+    <label id="91" />
+  </components>
+  <sensors>
+    <sensor id="94" name="sensor" type="switch">
+      <include type="command" ref="97" />
+      <state name="on" />
+      <state name="off" />
+    </sensor>
+    <sensor id = "101" name = "Range Sensor for Slider 1" type = "range">
+      <include type = "command" ref = "102" />
+      <min value = "1"/>
+<!--      <max value = "100"/>  --> 
+     <max value = "255"/> 
+    </sensor>
+  </sensors>
+  <commands>
+<!-- switch cmd to fire when dimming --> 
+
+<!--Write  --> 
+    <command id = "101" protocol = "isy99">
+	<property name="host" value="192.168.41.12"/>
+	<property name="username" value = "admin"/>
+	<property name="password" value = "admin"/>
+	<property name="revOfXml" value = "1"/>
+	<property name="address" value = "17%205B%2083%201" />
+	<property name="command" value = "DON"/>
+    </command>
+
+    <command id="95" protocol="isy99">
+	<!-- simple switch --> 
+	<property name="host" value="192.168.41.12"/>
+	<property name="username" value = "admin"/>
+	<property name="password" value = "admin"/>
+	<property name="revOfXml" value = "1"/>
+	<property name="address" value="17%2054%20AE%201" />
+	<property name="command" value="DON" />
+    </command>
+    <command id="96" protocol="isy99">
+	<!-- simple switch --> 
+	<property name="host" value="192.168.41.12"/>
+	<property name="username" value = "admin"/>
+	<property name="password" value = "admin"/>
+	<property name="revOfXml" value = "1"/>
+	<property name="address" value="17%2054%20AE%201" />
+	<property name="command" value="DOF" />
+    </command>
+<!--READ --> 
+
+    <command id="97" protocol="isy99">
+	<!-- simple switch --> 
+	<property name="host" value="192.168.41.12"/>
+	<property name="username" value = "admin"/>
+	<property name="password" value = "admin"/>
+	<property name="revOfXml" value = "1"/>
+	<property name="address" value="17%2054%20AE%201" />
+	<property name="command" value="read" />
+    </command>
+
+    <command id="102" protocol="isy99">
+	<!-- simple switch --> 
+	<property name="host" value="192.168.41.12"/>
+	<property name="username" value = "admin"/>
+	<property name="password" value = "admin"/>
+	<property name="revOfXml" value = "1"/>
+	<property name="address" value = "17%205B%2083%201" />
+	<property name="command" value="read" />
+    </command>
+  </commands>
+  <config>
+    <property name="controller.roundrobin.tcpserver.port" value="20000" />
+    <property name="multicast.address" value="224.0.1.100" />
+    <property name="controller.roundrobin.multicast.port" value="10000" />
+    <property name="multicast.port" value="3333" />
+    <property name="controller.groupname" value="osil" />
+    <property name="Macro.IR.Execution.Delay" value="500" />
+    <property name="controller.roundrobin.multicast.address" value="224.0.1.200" />
+    <property name="lircd.conf.path" value="/etc/lircd.conf" />
+    <property name="controller.groupmember.autodetect.on" value="false" />
+    <property name="webapp.port" value="8080" />
+    <property name="copy.lircd.conf.on" value="true" />
+    <property name="irsend.path" value="/usr/local/bin/irsend" />
+    <property name="resource.upload.enable" value="true" />
+    <property name="controller.applicationname" value="controller" />
+  </config>
+</openremote>
+

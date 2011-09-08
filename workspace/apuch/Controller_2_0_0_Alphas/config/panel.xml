@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/panel.xsd">
+  <panels>
+    <panel id="74" name="SwitchDemo" autoscale="true">
+      <include type="group" ref="75" />
+    </panel>
+  </panels>
+  <screens>
+    <screen id="76" name="Starting Screen">
+      <absolute left="112" top="113" width="50" height="50">
+        <switch id="79">
+          <link type="sensor" ref="94">
+            <state name="on" value="pause.png" />
+            <state name="off" value="play.png" />
+          </link>
+        </switch>
+      </absolute>
+      <absolute left="76" top="-7" width="150" height="50">
+        <label id="81" fontSize="14" color="#FFFFFF" text="top" />
+      </absolute>
+      <absolute left="77" top="420" width="150" height="50">
+        <label id="83" fontSize="14" color="#FFFFFF" text="bottom" />
+      </absolute>
+      <absolute left="74" top="208" width="150" height="50">
+        <label id="85" fontSize="14" color="#FFFFFF" text="middle" />
+      </absolute>
+      <absolute left="207" top="-6" width="150" height="50">
+        <label id="87" fontSize="14" color="#FFFFFF" text="top-right" />
+      </absolute>
+      <absolute left="195" top="423" width="150" height="50">
+        <label id="89" fontSize="14" color="#FFFFFF" text="bottom-right" />
+      </absolute>
+      <absolute left="-43" top="-9" width="150" height="50">
+        <label id="91" fontSize="14" color="#FFFFFF" text="top-left" />
+      </absolute>
+      <absolute left="-37" top="418" width="150" height="50">
+        <label id="93" fontSize="14" color="#FFFFFF" text="bottom-left" />
+      </absolute>
+    </screen>
+  </screens>
+  <groups>
+    <group id="75" name="Default Group">
+      <include type="screen" ref="76" />
+    </group>
+  </groups>
+</openremote>
+
