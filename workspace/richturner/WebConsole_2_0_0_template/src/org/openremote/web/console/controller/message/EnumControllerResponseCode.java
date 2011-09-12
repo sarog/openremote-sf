@@ -14,7 +14,8 @@ public enum EnumControllerResponseCode {
 	PANEL_XML_NOT_FOUND (426, "Panel XML Not Found"),
 	PANEL_XML_INVALID (427, "Panel XML is Invalid"),
 	XML_ERROR (429, "Invalid Controller XML Elemnt"),
-	UNKNOWN (9999, "Unkown Response");	
+	NO_RESPONSE (430, "No Response from Controller"),
+	UNKNOWN_ERROR (9999, "Unkown Response");	
 	
 	private final int code;
 	private final String description;
@@ -32,8 +33,8 @@ public enum EnumControllerResponseCode {
 		return description;
 	}
 	
-	public static EnumControllerResponseCode getMessage(int code) {
-		EnumControllerResponseCode result = EnumControllerResponseCode.UNKNOWN;
+	public static EnumControllerResponseCode getResponseCode(int code) {
+		EnumControllerResponseCode result = EnumControllerResponseCode.UNKNOWN_ERROR;
 		for (EnumControllerResponseCode message : EnumControllerResponseCode.values()) {
 			if (message.getCode() == code) {
 				result = message;

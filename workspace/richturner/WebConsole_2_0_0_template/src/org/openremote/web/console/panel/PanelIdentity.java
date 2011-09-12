@@ -1,19 +1,7 @@
 package org.openremote.web.console.panel;
 
-public class PanelIdentity {
-	private int id;
-	private String name;
+public interface PanelIdentity {
+	public int getId();
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}	
+	public String getName();
 }

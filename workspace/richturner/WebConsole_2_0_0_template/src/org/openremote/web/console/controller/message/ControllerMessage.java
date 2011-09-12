@@ -1,15 +1,23 @@
 package org.openremote.web.console.controller.message;
 
-import org.openremote.web.console.controller.EnumControllerCommand;
-
-public class ControllerMessage {
-	private Type messageType;
+public abstract class ControllerMessage {
+	private Type type;
 	
-	public ControllerMessage() {
+	protected ControllerMessage(Type type) {
+		this.type = type;
 	}
 	
 	public static enum Type {
+		COMMAND_REQUEST,
 		COMMAND_RESPONSE,
 		SENSOR_VALUE_CHANGE;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
 	}
 }

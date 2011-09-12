@@ -1,6 +1,6 @@
 package org.openremote.web.console.controller;
 
-public class ControllerCredentials {
+public class Controller {
 	private boolean isAlive;
 	private boolean isSecure;
 	private boolean supportsJson;
