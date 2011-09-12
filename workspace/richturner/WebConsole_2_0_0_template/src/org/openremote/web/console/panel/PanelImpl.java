@@ -17,24 +17,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.panel.entity;
+package org.openremote.web.console.panel;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import org.openremote.web.console.panel.entity.Group;
+import org.openremote.web.console.panel.entity.Screen;
 
 /**
- * The Class PanelXmlEntity is for store the groups,screens,global tabbar and labels.
- * It is used by client codes to display views.
+ * Implementation of Panel
  */
-@SuppressWarnings("serial")
-public class Panel extends Entity {
+public class PanelImpl implements Panel {
    private Map<Integer, Group> groups;
    private Map<Integer, Screen> screens;
    
-   public Panel() {
-      groups = new LinkedHashMap<Integer, Group>();
-      screens = new HashMap<Integer, Screen>();
+   public PanelImpl(Map<Integer, Group> groups, Map<Integer, Screen> screens) {
+      this.groups = groups;
+      this.screens = screens;
    }
 
    public Map<Integer, Group> getGroups() {

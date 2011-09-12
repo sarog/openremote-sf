@@ -1,14 +1,15 @@
 package org.openremote.web.console.controller;
 
-import org.openremote.web.console.service.ControllerServiceImpl;
+import org.openremote.web.console.controller.message.ControllerRequestMessage;
+import org.openremote.web.console.service.ControllerService;
 
-public abstract class ControllerConnector {
+public interface ControllerConnector {
 	
-	public abstract void getData(String controllerUrl, EnumControllerCommand command, String[] params, ControllerServiceImpl handler);
+	void getData(int requestId, String controllerUrl, ControllerRequestMessage message, ControllerCallBackHandler handler);
 	
-	public void getData(String controllerUrl, EnumControllerCommand command, ControllerServiceImpl handler) {
-		getData(controllerUrl, command, new String[0], handler);
-	}
+	void sendData();
 	
-	public abstract void sendData();
+	boolean isAlive(int requestId, String controllerUrl);
+	
+	boolean isSecure(int requestId, String controllerUrl);
 }

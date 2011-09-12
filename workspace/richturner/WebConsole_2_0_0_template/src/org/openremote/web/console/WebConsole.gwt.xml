@@ -1,6 +1,8 @@
 <module rename-to='webconsole'>	
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name="com.google.gwt.user.theme.standard.Standard"/>
+	<inherits name="org.w3c.dom.DOM"/>
+	<inherits name="com.google.gwt.json.JSON" />
 	
   	<!-- Other module inherits                                      -->
   	<source path='client'/>
@@ -9,6 +11,10 @@
   	<source path="screen"/>
   	<source path="widget"/>
   	<source path="event"/>
+  	<source path="panel"/>
+  	<source path="service"/>
+  	<source path="rpc"/>
+  	<source path="controller"/>
 	<entry-point class="org.openremote.web.console.client.WebConsole"/>
 	
 	

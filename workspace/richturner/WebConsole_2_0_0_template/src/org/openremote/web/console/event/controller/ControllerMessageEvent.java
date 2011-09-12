@@ -1,8 +1,6 @@
 package org.openremote.web.console.event.controller;
 
-import org.openremote.web.console.controller.EnumControllerCommand;
 import org.openremote.web.console.controller.message.ControllerMessage;
-
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
@@ -15,15 +13,10 @@ public class ControllerMessageEvent extends GwtEvent<ControllerMessageHandler> {
 	private static final Type<ControllerMessageHandler> TYPE = new Type<ControllerMessageHandler>();
 	private ControllerMessage message;
 	
-	private ControllerMessageEvent() {
-		
+	public ControllerMessageEvent(ControllerMessage message) {
+		this.message = message;
 	}
-	
-	public static ControllerMessageEvent create(ControllerMessage.Type messageType, EnumControllerCommand command, Object obj) {
-		
-		return null;
-	}
-	
+
 	@Override
 	public com.google.gwt.event.shared.GwtEvent.Type<ControllerMessageHandler> getAssociatedType() {
 		return TYPE;
@@ -36,5 +29,9 @@ public class ControllerMessageEvent extends GwtEvent<ControllerMessageHandler> {
 
 	public static Type<ControllerMessageHandler> getType() {
 		return TYPE;
+	}
+	
+	public ControllerMessage getMessage() {
+		return message;
 	}
 }
