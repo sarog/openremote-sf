@@ -33,8 +33,6 @@
 
 @implementation ColorPickerSubController
 
-@synthesize view;
-
 - (id)initWithComponent:(Component *)aComponent
 {
     self = [super initWithComponent:aComponent];
@@ -64,5 +62,7 @@
 	NSLog(@"color B=%0.0f",c[2]*255);
 	[self sendCommandRequest:[NSString stringWithFormat:@"%02x%02x%02x", (int)(c[0]*255), (int)(c[1]*255), (int)(c[2]*255)]];
 }
+
+@synthesize view;
 
 @end

@@ -24,6 +24,6 @@
 
 @interface TabBarItemParser : DefinitionElementParser
 
-@property (nonatomic, readonly) TabBarItem *tabBarItem;
+@property (nonatomic, retain, readonly) TabBarItem *tabBarItem;
 
 @end

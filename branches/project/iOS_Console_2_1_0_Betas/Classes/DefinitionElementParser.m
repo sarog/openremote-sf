@@ -30,12 +30,6 @@
 
 @implementation DefinitionElementParser
 
-@synthesize parentParser;
-@synthesize childParser;
-@synthesize depRegister;
-@synthesize knownTags;
-@synthesize handledTag;
-
 - (void)dealloc
 {
     self.depRegister = nil;
@@ -57,12 +51,12 @@
 
 - (void)addKnownTag:(NSString *)tag
 {
-    [knownTags addObject:tag];
+    [self.knownTags addObject:tag];
 }
 
 - (void)installParserClass:(Class)parserClass onParser:(NSXMLParser *)parser elementName:(NSString *)elementName attributes:(NSDictionary *)attributeDict
 {
-    DefinitionElementParser *aParser = [[parserClass alloc] initWithRegister:depRegister attributes:attributeDict];
+    DefinitionElementParser *aParser = [[parserClass alloc] initWithRegister:self.depRegister attributes:attributeDict];
     aParser.handledTag = elementName;
     aParser.parentParser = self;
     self.childParser = aParser;
@@ -78,7 +72,7 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName attributes:(NSDictionary *)attributeDict
 {
-    if ([knownTags containsObject:elementName]) {
+    if ([self.knownTags containsObject:elementName]) {
         Class parserClass = [self.depRegister parserClassForTag:elementName];
         if (parserClass) {
             [self installParserClass:parserClass onParser:parser elementName:elementName attributes:attributeDict];
@@ -98,5 +92,11 @@
         [self restoreParserOnParser:parser];
     }
 }
+
+@synthesize parentParser;
+@synthesize childParser;
+@synthesize depRegister;
+@synthesize knownTags;
+@synthesize handledTag;
 
 @end

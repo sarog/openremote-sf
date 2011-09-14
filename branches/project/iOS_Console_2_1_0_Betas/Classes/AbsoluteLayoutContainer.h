@@ -22,9 +22,7 @@
 
 @class Component;
 
-@interface AbsoluteLayoutContainer : LayoutContainer {
-	Component *component;
-}
+@interface AbsoluteLayoutContainer : LayoutContainer
 
 - (id)initWithLeft:(int)leftPos top:(int)topPos width:(int)widthDim height:(int)heightDim;
 

@@ -60,8 +60,6 @@
 
 @implementation UpdateController
 
-@synthesize delegate;
-
 - (id)init
 {
     self = [super init];
@@ -231,5 +229,7 @@
     [definitionManager release];
 	[super dealloc];
 }
+
+@synthesize delegate;
 
 @end

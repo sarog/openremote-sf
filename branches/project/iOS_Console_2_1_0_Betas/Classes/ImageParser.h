@@ -23,6 +23,6 @@
 
 @interface ImageParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Image *image;
+@property (nonatomic, retain, readonly) Image *image;
 
 @end

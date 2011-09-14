@@ -23,11 +23,7 @@
 @class Navigate;
 @class Image;
 
-@interface TabBarItem : NSObject {
-	NSString *tabBarItemName;
-	Navigate *navigate;
-	Image *tabBarItemImage;
-}
+@interface TabBarItem : NSObject
 
 @property (nonatomic, retain) NSString *tabBarItemName;
 @property (nonatomic, retain) Navigate *navigate;

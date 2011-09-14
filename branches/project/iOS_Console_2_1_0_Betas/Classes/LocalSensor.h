@@ -20,17 +20,11 @@
  */
 #import "Component.h"
 
-@interface LocalSensor : Component {
+@interface LocalSensor : Component
 
-	NSString *className;
-	NSString *methodName;
-	NSUInteger refreshRate;
-
-}
-
-@property (readonly) NSString *className;
-@property (readonly) NSString *methodName;
-@property (readonly) NSUInteger refreshRate;
+@property (nonatomic, copy, readonly) NSString *className;
+@property (nonatomic, copy, readonly) NSString *methodName;
+@property (nonatomic, readonly) NSUInteger refreshRate;
 
 - (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName refreshRate:(NSNumber *)aRefreshRate;
 

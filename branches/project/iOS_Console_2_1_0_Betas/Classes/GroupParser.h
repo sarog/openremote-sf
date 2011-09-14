@@ -24,6 +24,6 @@
 
 @interface GroupParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Group *group;
+@property (nonatomic, retain, readonly) Group *group;
 
 @end

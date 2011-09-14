@@ -20,11 +20,7 @@
  */
 #import "SensorComponent.h"
 
-@interface Label : SensorComponent {
-	int fontSize;
-	NSString *color;
-	NSString *text;
-}
+@interface Label : SensorComponent
 
 @property(nonatomic, assign) int fontSize;
 @property(nonatomic, copy) NSString *color;

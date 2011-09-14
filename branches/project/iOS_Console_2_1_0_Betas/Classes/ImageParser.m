@@ -28,6 +28,11 @@
 #import "Sensor.h"
 #import "XMLEntity.h"
 
+@interface ImageParser ()
+
+@property (nonatomic, retain, readwrite) Image *image;
+
+@end
 /**
  * Stores image src and label model and parsed from element image in panel.xml.
  * XML fragment example:
@@ -41,11 +46,9 @@
  */
 @implementation ImageParser
 
-@synthesize image;
-
 - (void)dealloc
 {
-    [image release];
+    self.image = nil;
     [super dealloc];
 }
 
@@ -54,7 +57,9 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:LINK]; 
-        image = [[Image alloc] initWithId:[[attributeDict objectForKey:ID] intValue] src:[attributeDict objectForKey:SRC] style:[attributeDict objectForKey:STYLE]];
+        Image *tmp = [[Image alloc] initWithId:[[attributeDict objectForKey:ID] intValue] src:[attributeDict objectForKey:SRC] style:[attributeDict objectForKey:STYLE]];
+        self.image = tmp;
+        [tmp release];
         [aRegister.definition addImageName:[attributeDict objectForKey:SRC]];
     }
     return self;
@@ -64,7 +69,7 @@
 {
 	if ([elementName isEqualToString:INCLUDE] && [LABEL isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
-        LabelDeferredBinding *standby = [[LabelDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:image];
+        LabelDeferredBinding *standby = [[LabelDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.image];
         standby.definition = self.depRegister.definition;
         [self.depRegister addDeferredBinding:standby];
         [standby release];
@@ -75,14 +80,16 @@
 - (void)endSensorLinkElement:(SensorLinkParser *)parser
 {
     if (parser.sensor) {
-        image.sensor = parser.sensor;
+        self.image.sensor = parser.sensor;
         
         
         // TODO: why is this done (here ? maybe in SensorState itself ?) 
-        for (SensorState *state in image.sensor.states) {
+        for (SensorState *state in self.image.sensor.states) {
 			[self.depRegister.definition addImageName:state.value];
 		}
     }
 }
+
+@synthesize image;
 
 @end

@@ -23,6 +23,6 @@
 
 @interface SwitchParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Switch *sswitch;
+@property (nonatomic, retain, readonly) Switch *sswitch;
 
 @end

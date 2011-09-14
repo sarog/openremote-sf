@@ -33,9 +33,6 @@
 
 @implementation ControllerRequest
 
-@synthesize controller;
-@synthesize delegate, usedGroupMember;
-
 - (id)initWithController:(ORController *)aController
 {
     self = [super init];
@@ -207,5 +204,8 @@
 		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
 	}
 }
+
+@synthesize controller;
+@synthesize delegate, usedGroupMember;
 
 @end

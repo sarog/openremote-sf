@@ -23,6 +23,6 @@
 
 @interface SliderParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Slider *slider;
+@property (nonatomic, retain, readonly) Slider *slider;
 
 @end

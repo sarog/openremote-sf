@@ -24,6 +24,12 @@
 #import "NavigateParser.h"
 #import "XMLEntity.h"
 
+@interface TabBarItemParser ()
+
+@property (nonatomic, retain, readwrite) TabBarItem *tabBarItem;
+
+@end
+
 /**
  * Store model data about tabbar item parsed from element "item" in element "tabbar" in panel.xml.
  * XML fragment example:
@@ -41,13 +47,12 @@
  *       <image src="setting.png" />
  *    </item>                
  * </tabbar>
- */@implementation TabBarItemParser
-
-@synthesize tabBarItem;
+ */
+@implementation TabBarItemParser
 
 - (void)dealloc
 {
-    [tabBarItem release];
+    self.tabBarItem = nil;
     [super dealloc];
 }
 
@@ -57,19 +62,23 @@
     if (self) {
         [self addKnownTag:NAVIGATE];
         [self addKnownTag:IMAGE];
-        tabBarItem = [[TabBarItem alloc] initWithName:[attributeDict objectForKey:NAME]];
+        TabBarItem *tmp = [[TabBarItem alloc] initWithName:[attributeDict objectForKey:NAME]];
+        self.tabBarItem = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endImageElement:(ImageParser *)parser
 {
-    tabBarItem.tabBarItemImage = parser.image;
+    self.tabBarItem.tabBarItemImage = parser.image;
 }
 
 - (void)endNavigateElement:(NavigateParser *)parser
 {
-    tabBarItem.navigate = parser.navigate;
+    self.tabBarItem.navigate = parser.navigate;
 }
+
+@synthesize tabBarItem;
 
 @end

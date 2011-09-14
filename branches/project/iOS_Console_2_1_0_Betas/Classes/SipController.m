@@ -46,8 +46,6 @@ extern void libmsamr_init();
 
 @implementation SipController
 
-@synthesize connectivity;
-
 - (id)init
 {
     self = [super init];
@@ -691,5 +689,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 		mReadStream=nil;
 	}
 }
+
+@synthesize connectivity;
 
 @end

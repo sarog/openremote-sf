@@ -21,33 +21,44 @@
 #import "Slider.h"
 #import "Image.h"
 
-@implementation Slider
+@interface Slider ()
 
-@synthesize thumbImage, vertical, passive, minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
+@property(nonatomic, retain, readwrite) Image *thumbImage;
+@property(nonatomic, readwrite) BOOL vertical;
+@property(nonatomic, readwrite) BOOL passive;
+
+@end
+
+@implementation Slider
 
 - (id)initWithId:(int)anId vertical:(BOOL)verticalFlag passive:(BOOL)passiveFlag thumbImageSrc:(NSString *)thumbImageSrc
 {
     self = [super init];
     if (self) {
-        componentId = anId;
-        vertical = verticalFlag;
-        passive = passiveFlag;
-        thumbImage = [[Image alloc] init];
-		thumbImage.src = thumbImageSrc;
+        self.componentId = anId;
+        self.vertical = verticalFlag;
+        self.passive = passiveFlag;
+        Image *tmp = [[Image alloc] init];
+        self.thumbImage = tmp;
+        [tmp release];
+		self.thumbImage.src = thumbImageSrc;
 		// Set default values for bounds, in case they're not provided in panel.xml
-		minValue = 0.0;
-		maxValue = 100.0;
+		self.minValue = 0.0;
+		self.maxValue = 100.0;
     }
     return self;
 }
 
-- (void)dealloc {
-    [thumbImage release];
-    [minImage release];
-    [minTrackImage release];
-    [maxImage release];
-    [maxTrackImage release];
+- (void)dealloc
+{
+    self.thumbImage = nil;
+    self.minImage = nil;
+    self.minTrackImage = nil;
+    self.maxImage = nil;
+    self.maxTrackImage = nil;
 	[super dealloc];
 }
+
+@synthesize thumbImage, vertical, passive, minValue, maxValue, minImage, minTrackImage, maxImage, maxTrackImage;
 
 @end

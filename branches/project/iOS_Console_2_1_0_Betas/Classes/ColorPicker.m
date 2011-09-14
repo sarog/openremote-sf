@@ -20,25 +20,23 @@
  */
 #import "ColorPicker.h"
 
-
 @implementation ColorPicker
-
-@synthesize image;
 
 - (id)initWithId:(int)anId
 {
     self = [super init];
     if (self) {
-        componentId = anId;
+        self.componentId = anId;
     }
     return self;
 }
 
-- (void) dealloc {
-	[image release];
-	
+- (void) dealloc
+{
+	self.image = nil;	
 	[super dealloc];
 }
 
+@synthesize image;
 
 @end

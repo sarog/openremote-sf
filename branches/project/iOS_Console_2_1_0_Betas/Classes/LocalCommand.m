@@ -20,26 +20,33 @@
  */
 #import "LocalCommand.h"
 
+@interface LocalCommand ()
+
+@property (nonatomic, copy, readwrite) NSString *className;
+@property (nonatomic, copy, readwrite) NSString *methodName;
+
+@end
 
 @implementation LocalCommand
-
-@synthesize className, methodName;
 
 - (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName
 {
     self = [super init];
     if (self) {
-        componentId = anId;
-        className = [aClassName retain];
-        methodName = [aMethodName retain];
+        self.componentId = anId;
+        self.className = aClassName;
+        self.methodName = aMethodName;
     }
     return self;
 }
 
-- (void)dealloc {
-	[className release];
-	[methodName release];
+- (void)dealloc
+{
+    self.className = nil;
+    self.methodName = nil;
 	[super dealloc];
 }
+
+@synthesize className, methodName;
 
 @end

@@ -36,9 +36,6 @@
 
 @implementation WebSubController
 
-@synthesize view;
-@synthesize oldStatus;
-
 - (id)initWithComponent:(Component *)aComponent
 {
     self = [super initWithComponent:aComponent];
@@ -89,5 +86,8 @@
         [self loadRequestForURL:newStatus];
     }
 }
+
+@synthesize view;
+@synthesize oldStatus;
 
 @end

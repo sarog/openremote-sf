@@ -63,8 +63,6 @@
 
 @implementation PanelDefinitionParser
 
-@synthesize depRegistry;
-
 - (id)init
 {
     self = [super init];
@@ -117,8 +115,10 @@
     [xmlParser release];
     Definition *definition = [((DefinitionParser *)parser).definition retain];
     [parser release];
-    [depRegistry performDeferredBindings];
+    [self.depRegistry performDeferredBindings];
     return [definition autorelease];
 }
+
+@synthesize depRegistry;
 
 @end

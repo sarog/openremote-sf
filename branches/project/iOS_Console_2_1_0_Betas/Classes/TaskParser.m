@@ -22,13 +22,17 @@
 #import "LocalTask.h"
 #import "XMLEntity.h"
 
-@implementation TaskParser
+@interface TaskParser ()
 
-@synthesize task;
+@property (nonatomic, retain, readwrite) LocalTask *task;
+
+@end
+
+@implementation TaskParser
 
 - (void)dealloc
 {
-    [task release];
+    self.task = nil;
     [super dealloc];
 }
 
@@ -36,12 +40,16 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        task = [[LocalTask alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
+        LocalTask *tmp = [[LocalTask alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
                                        className:[attributeDict objectForKey:CLASS]
                                       methodName:[attributeDict objectForKey:METHOD]
                                      frequency:([attributeDict objectForKey:FREQUENCY]?[NSNumber numberWithInt:[[attributeDict objectForKey:FREQUENCY] intValue]]:nil)];
+        self.task = tmp;
+        [tmp release];
     }
     return self;
 }
+
+@synthesize task;
 
 @end

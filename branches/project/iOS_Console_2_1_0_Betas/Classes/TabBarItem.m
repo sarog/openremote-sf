@@ -22,22 +22,23 @@
 
 @implementation TabBarItem
 
-@synthesize tabBarItemName, navigate, tabBarItemImage;
-
 - (id)initWithName:(NSString *)aName
 {
     self = [super init];
     if (self) {
-        tabBarItemName = [aName copy];
+        self.tabBarItemName = aName;
     }
     return self;
 }
 
-- (void)dealloc {
-	[navigate release];
-	[tabBarItemImage release];
-	[tabBarItemName release];
+- (void)dealloc
+{
+    self.navigate = nil;
+    self.tabBarItemName = nil;
+    self.tabBarItemImage = nil;
 	[super dealloc];
 }
+
+@synthesize tabBarItemName, navigate, tabBarItemImage;
 
 @end

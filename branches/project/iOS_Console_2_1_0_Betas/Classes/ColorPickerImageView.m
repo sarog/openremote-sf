@@ -27,11 +27,6 @@
 
 @implementation ColorPickerImageView
 
-@synthesize lastColor;
-@synthesize pickedColorDelegate;
-@synthesize touchBeginPoint;
-@synthesize movingTag;
-
 - (id)initWithImage:(UIImage *)image
 {
     self = [super initWithImage:image];
@@ -46,7 +41,7 @@
 //	[self enableScrollView:NO];
 	
 	UITouch* touch = [touches anyObject];
-	touchBeginPoint = [touch previousLocationInView:self];
+	self.touchBeginPoint = [touch previousLocationInView:self];
 }
 
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -55,10 +50,10 @@
 	self.movingTag = YES;
 	UITouch* touch = [touches anyObject];
 	CGPoint currentPoint = [touch locationInView:self];
-	CGFloat distance = [self distanceBetweenTwoPoints:touchBeginPoint toPoint:currentPoint];
+	CGFloat distance = [self distanceBetweenTwoPoints:self.touchBeginPoint toPoint:currentPoint];
 	if (distance > MIN_VALID_MOVE_DISTANCE) {
 		[self pickColorWithTouches:touches andEvent:event];
-		touchBeginPoint = currentPoint;
+		self.touchBeginPoint = currentPoint;
 		NSLog(@"The distance %f of moving is greater than %d, so command will be sent.", distance, MIN_VALID_MOVE_DISTANCE);
 	} else {
 		NSLog(@"The distance %f of moving is less than %d, so command won't be sent.", distance, MIN_VALID_MOVE_DISTANCE);
@@ -67,10 +62,10 @@
 
 - (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
 	NSLog(@"ColorPikcerView end event......");
-	if (movingTag == NO) {
+	if (self.movingTag == NO) {
 		[self pickColorWithTouches:touches andEvent:event];
 	}
-	movingTag = NO;
+	self.movingTag = NO;
 //	[self enableScrollView:YES];
 }
 
@@ -188,5 +183,10 @@
 	
 	return context;
 }
+
+@synthesize lastColor;
+@synthesize pickedColorDelegate;
+@synthesize touchBeginPoint;
+@synthesize movingTag;
 
 @end

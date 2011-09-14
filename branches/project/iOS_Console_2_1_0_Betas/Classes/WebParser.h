@@ -23,6 +23,6 @@
 
 @interface WebParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Web *web;
+@property (nonatomic, retain, readonly) Web *web;
 
 @end

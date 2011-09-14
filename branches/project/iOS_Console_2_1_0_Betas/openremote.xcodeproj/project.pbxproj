@@ -2802,7 +2802,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					API_v2_1,
+					NO_API_v2_1,
 					INCLUDE_SIP_SUPPORT,
 				);
 				HEADER_SEARCH_PATHS = "include/**";
@@ -3025,7 +3025,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					API_v2_1,
+					NO_API_v2_1,
 					INCLUDE_SIP_SUPPORT,
 				);
 				INFOPLIST_FILE = Info.plist;
@@ -3079,7 +3079,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					API_v2_1,
+					NO_API_v2_1,
 					INCLUDE_SIP_SUPPORT,
 				);
 				INFOPLIST_FILE = Info.plist;

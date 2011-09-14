@@ -20,26 +20,36 @@
  */
 #import "Button.h" 
 
-@implementation Button
+@interface Button ()
 
-@synthesize defaultImage, pressedImage, name, navigate;
-@synthesize repeat, repeatDelay, hasPressCommand, hasShortReleaseCommand, hasLongPressCommand, hasLongReleaseCommand, longPressDelay;
+@property (nonatomic, copy, readwrite) NSString *name;
+@property (nonatomic, readwrite) BOOL repeat;
+@property (nonatomic, readwrite) NSUInteger repeatDelay;
+@property (nonatomic, readwrite) BOOL hasPressCommand;
+@property (nonatomic, readwrite) BOOL hasShortReleaseCommand;
+@property (nonatomic, readwrite) BOOL hasLongPressCommand;
+@property (nonatomic, readwrite) BOOL hasLongReleaseCommand;
+@property (nonatomic, readwrite) NSUInteger longPressDelay;
+
+@end
+
+@implementation Button
 
 - (id)initWithId:(int)anId name:(NSString *)aName repeat:(BOOL)repeatFlag repeatDelay:(int)aRepeatDelay hasPressCommand:(BOOL)hasPressCommandFlag hasShortReleaseCommand:(BOOL)hasShortReleaseCommandFlag hasLongPressCommand:(BOOL)hasLongPressCommandFlag hasLongReleaseCommand:(BOOL)hasLongReleaseCommandFlag longPressDelay:(int)aLongPressDelay
 {
     self = [super init];
 	if (self) {
-        componentId = anId;
-        name = [aName copy];
-        repeat = repeatFlag;
-        repeatDelay = MAX(100, aRepeatDelay);
-        hasPressCommand = hasPressCommandFlag;
-        hasShortReleaseCommand = hasShortReleaseCommandFlag;
-        hasLongPressCommand = hasLongPressCommandFlag;
-        hasLongReleaseCommand = hasLongReleaseCommandFlag;
-        longPressDelay = MAX(250, aLongPressDelay);
-        if (hasLongPressCommand || hasLongReleaseCommand) {
-            repeat = NO;
+        self.componentId = anId;
+        self.name = aName;
+        self.repeat = repeatFlag;
+        self.repeatDelay = MAX(100, aRepeatDelay);
+        self.hasPressCommand = hasPressCommandFlag;
+        self.hasShortReleaseCommand = hasShortReleaseCommandFlag;
+        self.hasLongPressCommand = hasLongPressCommandFlag;
+        self.hasLongReleaseCommand = hasLongReleaseCommandFlag;
+        self.longPressDelay = MAX(250, aLongPressDelay);
+        if (self.hasLongPressCommand || self.hasLongReleaseCommand) {
+            self.repeat = NO;
         }
     }
     return self;
@@ -47,11 +57,14 @@
 
 - (void)dealloc
 {
-	[defaultImage release];
-	[pressedImage release];
-	[navigate release];
-	[name release];
+	self.defaultImage = nil;
+    self.pressedImage = nil;
+    self.navigate = nil;
+    self.name = nil;
 	[super dealloc];
 }
+
+@synthesize defaultImage, pressedImage, name, navigate;
+@synthesize repeat, repeatDelay, hasPressCommand, hasShortReleaseCommand, hasLongPressCommand, hasLongReleaseCommand, longPressDelay;
 
 @end

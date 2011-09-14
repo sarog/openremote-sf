@@ -37,11 +37,6 @@
 
 @implementation ORController
 
-@synthesize activeGroupMember;
-@synthesize groupMembersFetchStatus;
-@synthesize groupMembersFetcher;
-@synthesize definition;
-
 @dynamic primaryURL;
 @dynamic selectedPanelIdentity;
 @dynamic index;
@@ -164,5 +159,11 @@
     [[self primitiveValueForKey:@"groupMembers"] minusSet:value];
     [self didChangeValueForKey:@"groupMembers" withSetMutation:NSKeyValueMinusSetMutation usingObjects:value];
 }
+
+
+@synthesize activeGroupMember;
+@synthesize groupMembersFetchStatus;
+@synthesize groupMembersFetcher;
+@synthesize definition;
 
 @end

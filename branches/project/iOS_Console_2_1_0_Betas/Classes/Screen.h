@@ -23,19 +23,7 @@
 
 @class Background;
 
-@interface Screen : NSObject {
-	
-	int screenId;
-	NSString *name;
-	Background *background;
-	NSMutableArray *layouts;
-	NSMutableArray *gestures;
-	BOOL landscape;
-	int inverseScreenId;// portrait vs landscape screen id
-
-}
-
-
+@interface Screen : NSObject
 
 - (id)initWithScreenId:(int)anId name:(NSString *)aName landscape:(BOOL)landscapeFlag inverseScreenId:(int)anInverseScreenId;
 
@@ -59,12 +47,12 @@
  */
 - (int)screenIdForOrientation:(UIInterfaceOrientation)orientation;
 
-@property (nonatomic,readonly) int screenId;
-@property (nonatomic,readonly) NSString *name;
+@property (nonatomic, readonly) int screenId;
+@property (nonatomic, retain, readonly) NSString *name;
 @property (nonatomic, retain) Background *background;
-@property (nonatomic,readonly) NSMutableArray *layouts;
-@property (nonatomic,readonly) NSMutableArray *gestures;
-@property (nonatomic,readonly) BOOL landscape;
-@property (nonatomic,readonly) int inverseScreenId;
+@property (nonatomic, retain, readonly) NSMutableArray *layouts;
+@property (nonatomic, retain, readonly) NSMutableArray *gestures;
+@property (nonatomic, readonly) BOOL landscape;
+@property (nonatomic, readonly) int inverseScreenId; // portrait vs landscape screen id
 
 @end

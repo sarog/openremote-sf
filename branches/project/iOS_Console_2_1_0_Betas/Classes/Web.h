@@ -20,16 +20,11 @@
  */
 #import "SensorComponent.h"
 
-@interface Web : SensorComponent {
+@interface Web : SensorComponent
 
-	NSString *src;
-	NSString *username;
-	NSString *password;
-}
-
-@property (nonatomic, readonly) NSString *src;
-@property (nonatomic, readonly) NSString *username;
-@property (nonatomic, readonly) NSString *password;
+@property (nonatomic, copy, readonly) NSString *src;
+@property (nonatomic, copy, readonly) NSString *username;
+@property (nonatomic, copy, readonly) NSString *password;
 
 - (id)initWithId:(int)anId src:(NSString *)aSrc username:(NSString *)aUsername password:(NSString *)aPassword;
 

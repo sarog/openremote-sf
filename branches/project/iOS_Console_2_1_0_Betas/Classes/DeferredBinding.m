@@ -8,25 +8,28 @@
 
 #import "DeferredBinding.h"
 
-@implementation DeferredBinding
+@interface DeferredBinding()
 
-@synthesize boundComponentId;
-@synthesize enclosingObject;
-@synthesize definition;
+@property (nonatomic, retain, readwrite) id enclosingObject;
+@property (nonatomic, assign, readwrite) int boundComponentId;
+
+@end
+
+@implementation DeferredBinding
 
 - (id)initWithBoundComponentId:(int)anId enclosingObject:(id)anEnclosingObject
 {
     self = [super init];
     if (self) {
-        boundComponentId = anId;
-        enclosingObject = [anEnclosingObject retain];
+        self.boundComponentId = anId;
+        self.enclosingObject = [anEnclosingObject retain];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [enclosingObject release];
+    self.enclosingObject = nil;
     self.definition = nil;
     [super dealloc];
 }
@@ -35,5 +38,9 @@
 {
     [self doesNotRecognizeSelector:_cmd];
 }
+
+@synthesize boundComponentId;
+@synthesize enclosingObject;
+@synthesize definition;
 
 @end

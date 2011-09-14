@@ -21,6 +21,12 @@
 #import "NavigateParser.h"
 #import "Navigate.h"
 
+@interface NavigateParser ()
+
+@property (nonatomic, retain, readwrite) Navigate *navigate;
+
+@end
+
 /**
  * Stores data about navigation and parsed from element navigate in panel.xml.
  * XML fragment example:
@@ -29,11 +35,9 @@
  */
 @implementation NavigateParser
 
-@synthesize navigate;
-
 - (void)dealloc
 {
-    [navigate release];
+    self.navigate = nil;
     [super dealloc];
 }
 
@@ -42,7 +46,7 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         NSString *to = [[attributeDict objectForKey:@"to"] lowercaseString];
-        navigate = [[Navigate alloc] initWithToScreen:[[attributeDict objectForKey:@"toScreen"] intValue]
+        Navigate *tmp = [[Navigate alloc] initWithToScreen:[[attributeDict objectForKey:@"toScreen"] intValue]
                                               toGroup:[[attributeDict objectForKey:@"toGroup"] intValue]
                                      isPreviousScreen:[@"previousscreen" isEqualToString:to]
                                          isNextScreen:[@"nextscreen" isEqualToString:to]
@@ -50,8 +54,12 @@
                                                isBack:[@"back" isEqualToString:to]
                                               isLogin:[@"login" isEqualToString:to]
                                              isLogout:[@"logout" isEqualToString:to]];
+        self.navigate = tmp;
+        [tmp release];
     }
     return self;
 }
+
+@synthesize navigate;
 
 @end

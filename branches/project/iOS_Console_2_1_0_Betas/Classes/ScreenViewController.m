@@ -41,9 +41,6 @@
 
 @implementation ScreenViewController
 
-@synthesize screen, polling;
-@synthesize screenSubController;
-
 /**
  * Assign parameter screen model data to screenViewController.
  */
@@ -74,7 +71,7 @@
 // Implement loadView to create a view hierarchy programmatically.
 - (void)loadView {
     self.screenSubController = [[[ScreenSubController alloc] initWithScreen:screen] autorelease];
-    self.view = screenSubController.view;    
+    self.view = self.screenSubController.view;    
 }
 
 - (void)viewDidUnload
@@ -113,5 +110,8 @@
 - (void)commandSendFailed
 {
 }
+
+@synthesize screen, polling;
+@synthesize screenSubController;
 
 @end

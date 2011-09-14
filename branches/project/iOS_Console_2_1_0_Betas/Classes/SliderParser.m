@@ -28,6 +28,12 @@
 #import "SensorState.h"
 #import "XMLEntity.h"
 
+@interface SliderParser ()
+
+@property (nonatomic, retain, readwrite) Slider *slider;
+
+@end
+
 /**
  * Stores model data about slider parsed from "slider" element in panel.xml.
  * XML fragment example:
@@ -39,11 +45,9 @@
  */
 @implementation SliderParser
 
-@synthesize slider;
-
 - (void)dealloc
 {
-    [slider release];
+    self.slider;
     [super dealloc];
 }
 
@@ -52,10 +56,12 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:LINK]; 
-        slider = [[Slider alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
+        Slider *tmp = [[Slider alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
                                    vertical:[@"true" isEqualToString:[[attributeDict objectForKey:VERTICAL] lowercaseString]]
                                     passive:[@"true" isEqualToString:[[attributeDict objectForKey:PASSIVE] lowercaseString]]
                               thumbImageSrc:[attributeDict objectForKey:THUMB_IMAGE]];
+        self.slider = tmp;
+        [tmp release];
     }
     return self;
 }
@@ -68,13 +74,13 @@
 	trackImg.src = [attributeDict objectForKey:TRACK_IMAGE];
 	
 	if ([elementName isEqualToString:MIN_VALUE]) {
-		slider.minValue = [[attributeDict objectForKey:VALUE] floatValue];				
-		slider.minImage = img;
-		slider.minTrackImage = trackImg;
+		self.slider.minValue = [[attributeDict objectForKey:VALUE] floatValue];				
+		self.slider.minImage = img;
+		self.slider.minTrackImage = trackImg;
 	} else if ([elementName isEqualToString:MAX_VALUE]) {
-		slider.maxValue = [[attributeDict objectForKey:VALUE] floatValue];
-		slider.maxImage = img;
-		slider.maxTrackImage = trackImg;
+		self.slider.maxValue = [[attributeDict objectForKey:VALUE] floatValue];
+		self.slider.maxImage = img;
+		self.slider.maxTrackImage = trackImg;
 	}
     [img release];
     [trackImg release];
@@ -85,14 +91,16 @@
 - (void)endSensorLinkElement:(SensorLinkParser *)parser
 {
     if (parser.sensor) {
-        slider.sensor = parser.sensor;
+        self.slider.sensor = parser.sensor;
         
         
         // TODO: why is this done (here ? maybe in SensorState itself ?) 
-        for (SensorState *state in slider.sensor.states) {
+        for (SensorState *state in self.slider.sensor.states) {
 			[self.depRegister.definition addImageName:state.value];
 		}
     }
 }
+
+@synthesize slider;
 
 @end

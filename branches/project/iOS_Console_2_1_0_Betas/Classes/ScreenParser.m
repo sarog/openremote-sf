@@ -25,6 +25,12 @@
 #import "BackgroundParser.h"
 #import "XMLEntity.h"
 
+@interface ScreenParser()
+
+@property (nonatomic, retain, readwrite) Screen *screen;
+
+@end
+
 /**
  * Stores model data about screen parsed from screen element of panel data and parsed from element screen in panel.xml.
  * XML fragment example:
@@ -42,11 +48,9 @@
  */
 @implementation ScreenParser
 
-@synthesize screen;
-
 - (void)dealloc
 {
-    [screen release];
+    self.screen = nil;
     [super dealloc];
 }
 
@@ -58,10 +62,12 @@
         [self addKnownTag:GRID];
         [self addKnownTag:GESTURE];
         [self addKnownTag:BACKGROUND];
-        screen = [[Screen alloc] initWithScreenId:[[attributeDict objectForKey:ID] intValue]
+        Screen * tmp = [[Screen alloc] initWithScreenId:[[attributeDict objectForKey:ID] intValue]
                                     name:[attributeDict objectForKey:NAME]
                                     landscape:[@"TRUE" isEqualToString:[[attributeDict objectForKey:LANDSCAPE] uppercaseString]]
                                     inverseScreenId:[[attributeDict objectForKey:INVERSE_SCREEN_ID] intValue]];
+        self.screen = tmp;
+        [tmp release];
     }
     
     // TODO: check how to report error ?
@@ -71,22 +77,24 @@
 
 - (void)endLayoutElement:(LayoutContainerParser *)parser
 {
-    [screen.layouts addObject:parser.layoutContainer];
+    [self.screen.layouts addObject:parser.layoutContainer];
 }
 
 - (void)endGestureElement:(GestureParser *)parser
 {
-    [screen.gestures addObject:parser.gesture];
+    [self.screen.gestures addObject:parser.gesture];
 }
 
 - (void)endBackgroundElement:(BackgroundParser *)parser
 {
-    screen.background = parser.background;
+    self.screen.background = parser.background;
 }
 
 - (NSString *)handledTag
 {
     return @"screen";
 }
+
+@synthesize screen;
 
 @end

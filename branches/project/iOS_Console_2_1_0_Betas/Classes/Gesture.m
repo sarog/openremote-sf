@@ -20,24 +20,28 @@
  */
 #import "Gesture.h"
 
+@interface Gesture ()
+
+@property (nonatomic, readwrite) GestureSwipeType swipeType;
+@property (nonatomic, readwrite) BOOL hasControlCommand;
+
+@end
 
 @implementation Gesture
-
-@synthesize swipeType, hasControlCommand, navigate;
 
 - (id)initWithId:(int)anId swipeType:(GestureSwipeType)type hasControlCommand:(BOOL)hasControlCommandFlag
 {
     self = [self initWithGestureSwipeType:type];
     if (self) {
-        componentId = anId;
-        hasControlCommand = hasControlCommandFlag;
+        self.componentId = anId;
+        self.hasControlCommand = hasControlCommandFlag;
     }
     return self;
 }
 
 - (id)initWithGestureSwipeType:(GestureSwipeType)type {
 	if (self = [super init]) {
-		swipeType = type;
+		self.swipeType = type;
 	}
 	return self;
 }
@@ -46,28 +50,27 @@
 	if (self = [super init]) {
 		switch (orientation) {
 			case UIInterfaceOrientationPortrait:
-				swipeType = type;
+				self.swipeType = type;
 				break;
 			case UIInterfaceOrientationLandscapeLeft:
-				swipeType = (type + 1) % 4;
+				self.swipeType = (type + 1) % 4;
 				break;
 			case UIInterfaceOrientationLandscapeRight:
-				swipeType = (type - 1 + 4)  % 4;
+				self.swipeType = (type - 1 + 4)  % 4;
 				break;
 			case UIInterfaceOrientationPortraitUpsideDown:
-				swipeType = (type + 2) % 4;
+				self.swipeType = (type + 2) % 4;
 				break;	
 			default:
-				swipeType = type;
+				self.swipeType = type;
 				break;
 		}		
 	}
 	return self;
 }
 
-
 - (NSString *)toString {
-	switch (swipeType) {
+	switch (self.swipeType) {
 		case GestureSwipeTypeTopToBottom:
 			return @"top to bottom";
 		case GestureSwipeTypeBottomToTop:
@@ -79,5 +82,7 @@
 	}
 	return nil;
 }
+
+@synthesize swipeType, hasControlCommand, navigate;
 
 @end

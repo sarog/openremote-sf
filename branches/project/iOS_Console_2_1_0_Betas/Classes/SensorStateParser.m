@@ -22,6 +22,12 @@
 #import "SensorState.h"
 #import "XMLEntity.h"
 
+@interface SensorStateParser ()
+
+@property (nonatomic, retain, readwrite) SensorState *sensorState;
+
+@end
+
 /**
  * Stores model data about state parsed from element "state" in panel.xml.
  * XML fragment example:
@@ -32,11 +38,9 @@
  */
 @implementation SensorStateParser
 
-@synthesize sensorState;
-
 - (void)dealloc
 {
-    [sensorState release];
+    self.sensorState = nil;
     [super dealloc];
 }
 
@@ -44,9 +48,13 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        sensorState = [[SensorState alloc] initWithName:[attributeDict objectForKey:NAME] value:[attributeDict objectForKey:VALUE]];
+        SensorState *tmp = [[SensorState alloc] initWithName:[attributeDict objectForKey:NAME] value:[attributeDict objectForKey:VALUE]];
+        self.sensorState = tmp;
+        [tmp release];
     }
     return self;
 }
+
+@synthesize sensorState;
 
 @end

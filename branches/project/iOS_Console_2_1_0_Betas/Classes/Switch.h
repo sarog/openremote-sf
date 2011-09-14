@@ -22,12 +22,7 @@
 
 @class Image;
 
-@interface Switch : SensorComponent {
-
-	Image *onImage;
-	Image *offImage;
-
-}
+@interface Switch : SensorComponent
 
 @property (nonatomic, retain) Image *onImage; 
 @property (nonatomic, retain) Image *offImage; 

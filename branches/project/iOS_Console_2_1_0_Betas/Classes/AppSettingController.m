@@ -37,6 +37,7 @@
 @interface AppSettingController ()
 
 @property (nonatomic, retain) ORControllerPanelsFetcher *panelsFetcher;
+
 // Indicates if a login window must be presented to user for entering credentials when a controller says authentication is required
 @property (nonatomic, assign) BOOL askUserForCredentials;
 
@@ -69,9 +70,6 @@
 
 @implementation AppSettingController
 
-@synthesize panelsFetcher;
-@synthesize askUserForCredentials;
-
 - (id)init
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
@@ -98,15 +96,6 @@
     self.panelsFetcher = nil;
 	
 	[super dealloc];
-}
-
-- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
-{
-    if (panelsFetcher != aPanelsFetcher) {
-        panelsFetcher.delegate = nil;
-        [panelsFetcher release];
-        panelsFetcher = [aPanelsFetcher retain];
-    }
 }
 
 // Show spinner after title of "Choose Controller" while auto discovery running.
@@ -302,10 +291,10 @@
 - (void)orControllerGroupMembersFetchRequiresAuthentication:(NSNotification *)notification
 {
     [self orControllerGroupMembersFetchStatusChanged:notification];
-    if (askUserForCredentials) {
+    if (self.askUserForCredentials) {
         [self populateLoginView:self];
     }
-    askUserForCredentials = NO;
+    self.askUserForCredentials = NO;
 }
 
 #pragma mark Table view methods
@@ -599,6 +588,18 @@
 - (void)cancelFetchGroupMembers
 {
     [settingsManager.consoleSettings.controllers makeObjectsPerformSelector:@selector(cancelGroupMembersFetch)];
+}
+
+@synthesize panelsFetcher;
+@synthesize askUserForCredentials;
+
+- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
+{
+    if (panelsFetcher != aPanelsFetcher) {
+        panelsFetcher.delegate = nil;
+        [panelsFetcher release];
+        panelsFetcher = [aPanelsFetcher retain];
+    }
 }
 
 @end

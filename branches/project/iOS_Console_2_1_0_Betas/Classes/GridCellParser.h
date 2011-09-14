@@ -24,6 +24,6 @@
 
 @interface GridCellParser : DefinitionElementParser
 
-@property (nonatomic, readonly) GridCell *gridCell;
+@property (nonatomic, retain, readonly) GridCell *gridCell;
 
 @end

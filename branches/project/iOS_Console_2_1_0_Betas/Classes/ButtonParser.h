@@ -25,6 +25,6 @@
 @interface ButtonParser : DefinitionElementParser {
 }
 
-@property (nonatomic, readonly) Button *button;
+@property (nonatomic, retain, readonly) Button *button;
 
 @end

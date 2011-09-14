@@ -24,6 +24,6 @@
 
 @interface BackgroundParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Background *background;
+@property (nonatomic, retain, readonly) Background *background;
 
 @end

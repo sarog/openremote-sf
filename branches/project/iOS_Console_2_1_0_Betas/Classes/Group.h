@@ -23,18 +23,11 @@
 @class TabBar;
 @class Screen;
 
-@interface Group : NSObject {
-	
-	int groupId;
-	NSString *name;
-	NSMutableArray *screens;
-	TabBar *tabBar;
-	
-}
+@interface Group : NSObject
 
-@property (nonatomic,readonly) int groupId;
-@property (nonatomic,readonly) NSString *name;
-@property (nonatomic,readonly) NSMutableArray *screens;
+@property (nonatomic, readonly) int groupId;
+@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, retain, readonly) NSMutableArray *screens;
 @property (nonatomic, retain) TabBar *tabBar;
 
 

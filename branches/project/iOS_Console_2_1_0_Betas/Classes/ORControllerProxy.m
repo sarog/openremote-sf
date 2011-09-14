@@ -30,8 +30,6 @@
 
 @implementation ORControllerProxy
 
-@synthesize controller;
-
 - (id)initWithController:(ORController *)aController
 {
     self = [super init];
@@ -82,5 +80,7 @@
     [groupMembersFetcher fetch];
     return [groupMembersFetcher autorelease];
 }
+
+@synthesize controller;
 
 @end

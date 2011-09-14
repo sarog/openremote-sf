@@ -32,9 +32,6 @@
 
 @implementation AbsoluteLayoutContainerSubController
 
-@synthesize layoutContainer;
-@synthesize componentSubController;
-
 - (id)initWithLayoutContainer:(LayoutContainer *)aLayoutContainer
 {
     self = [super initWithLayoutContainer:aLayoutContainer];
@@ -58,5 +55,8 @@
 {
     return self.componentSubController.view;
 }
+
+@synthesize layoutContainer;
+@synthesize componentSubController;
 
 @end

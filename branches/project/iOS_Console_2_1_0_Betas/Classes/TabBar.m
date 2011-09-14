@@ -21,21 +21,27 @@
 #import "TabBar.h"
 #import "TabBarItem.h"
 
-@implementation TabBar
+@interface TabBar ()
 
-@synthesize tabBarItems;
+@property (nonatomic, retain, readwrite) NSMutableArray *tabBarItems;
+
+@end
+
+@implementation TabBar
 
 - (id)init {
     self = [super init];
     if (self) {
-		tabBarItems = [[NSMutableArray alloc] init];
+		self.tabBarItems = [NSMutableArray array];
     }
     return self;
 }
 
 - (void)dealloc {
-	[tabBarItems release];
+	self.tabBarItems = nil;;
 	[super dealloc];
 }
+
+@synthesize tabBarItems;
 
 @end

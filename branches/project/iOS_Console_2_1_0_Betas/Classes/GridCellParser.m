@@ -32,6 +32,11 @@
 #import "Definition.h"
 #import "XMLEntity.h"
 
+@interface GridCellParser()
+
+@property (nonatomic, retain, readwrite) GridCell *gridCell;
+
+@end
 /**
  * Store model data of components and parsed from element cell in panel.xml.
  * XML fragment example:
@@ -42,11 +47,9 @@
  */
 @implementation GridCellParser
 
-@synthesize gridCell;
-
 - (void)dealloc
 {
-    [gridCell release];
+    self.gridCell = nil;;
     [super dealloc];
 }
 
@@ -61,48 +64,52 @@
         [self addKnownTag:SWITCH];
         [self addKnownTag:SLIDER];
         [self addKnownTag:COLORPICKER];
-        gridCell = [[GridCell alloc] initWithX:[[attributeDict objectForKey:@"x"] intValue]
+        GridCell *tmp = [[GridCell alloc] initWithX:[[attributeDict objectForKey:@"x"] intValue]
                                              y:[[attributeDict objectForKey:@"y"] intValue]
                                        rowspan:[[attributeDict objectForKey:@"rowspan"] intValue]
                                        colspan:[[attributeDict objectForKey:@"colspan"] intValue]];
+        self.gridCell = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endLabelElement:(LabelParser *)parser
 {
-    gridCell.component = parser.label;
+    self.gridCell.component = parser.label;
     [self.depRegister.definition addLabel:parser.label];
 }
 
 - (void)endImageElement:(ImageParser *)parser
 {
-    gridCell.component = parser.image;
+    self.gridCell.component = parser.image;
 }
 
 - (void)endWebElement:(WebParser *)parser
 {
-    gridCell.component = parser.web;
+    self.gridCell.component = parser.web;
 }
 
 - (void)endButtonElement:(ButtonParser *)parser
 {
-    gridCell.component = parser.button;
+    self.gridCell.component = parser.button;
 }
 
 - (void)endSwitchElement:(SwitchParser *)parser
 {
-    gridCell.component = parser.sswitch;
+    self.gridCell.component = parser.sswitch;
 }
 
 - (void)endSliderElement:(SliderParser *)parser
 {
-    gridCell.component = parser.slider;
+    self.gridCell.component = parser.slider;
 }
 
 - (void)endColorPickerElement:(ColorPickerParser *)parser
 {
-    gridCell.component = parser.colorPicker;
+    self.gridCell.component = parser.colorPicker;
 }
+
+@synthesize gridCell;
 
 @end

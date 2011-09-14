@@ -38,11 +38,6 @@
 
 @implementation ORControllerGroupMembersFetcher
 
-@synthesize controller;
-@synthesize delegate;
-@synthesize connection;
-@synthesize lastRequestWasError;
-
 - (id)initWithController:(ORController *)aController
 {
     self = [super init];
@@ -67,7 +62,7 @@
     NSAssert(!self.connection, @"ORControllerGroupMembersFetcher can only be used to send a request once");
     self.lastRequestWasError = NO;
     NSURLRequest *request = [NSURLRequest or_requestWithURLString:[self.controller.primaryURL stringByAppendingFormat:@"/%@", kControllerFetchGroupMembersPath]
-                                                           method:@"GET" userName:controller.userName password:controller.password];
+                                                           method:@"GET" userName:self.controller.userName password:self.controller.password];
     self.connection = [[[NSURLConnection alloc] initWithRequest:request delegate:[[[DataCapturingNSURLConnectionDelegate alloc] initWithNSURLConnectionDelegate:self] autorelease]] autorelease];
 }
 
@@ -85,7 +80,7 @@
         [xmlParser setDelegate:self];
         [xmlParser parse];
         [xmlParser release];
-        [delegate controller:self.controller fetchGroupMembersDidSucceedWithMembers:[NSArray arrayWithArray:members]];
+        [self.delegate controller:self.controller fetchGroupMembersDidSucceedWithMembers:[NSArray arrayWithArray:members]];
     }
 }
 
@@ -93,8 +88,8 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    if ([delegate respondsToSelector:@selector(controller:fetchGroupMembersDidFailWithError:)]) {
-        [delegate controller:self.controller fetchGroupMembersDidFailWithError:error];
+    if ([self.delegate respondsToSelector:@selector(controller:fetchGroupMembersDidFailWithError:)]) {
+        [self.delegate controller:self.controller fetchGroupMembersDidFailWithError:error];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
@@ -107,8 +102,8 @@
     int statusCode = ((NSHTTPURLResponse *)response).statusCode;
 	if (statusCode != 200) {
         if (statusCode == UNAUTHORIZED) {
-            if ([delegate respondsToSelector:@selector(fetchGroupMembersRequiresAuthenticationForController:)]) {
-                [delegate fetchGroupMembersRequiresAuthenticationForController:self.controller];
+            if ([self.delegate respondsToSelector:@selector(fetchGroupMembersRequiresAuthenticationForController:)]) {
+                [self.delegate fetchGroupMembersRequiresAuthenticationForController:self.controller];
             }
         }
         self.lastRequestWasError = YES;
@@ -142,5 +137,10 @@
         [members addObject:[attributeDict valueForKey:@"url"]];
     }
 }
+
+@synthesize controller;
+@synthesize delegate;
+@synthesize connection;
+@synthesize lastRequestWasError;
 
 @end

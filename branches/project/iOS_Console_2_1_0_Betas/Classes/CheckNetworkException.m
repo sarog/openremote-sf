@@ -23,8 +23,6 @@
 
 @implementation CheckNetworkException
 
-@synthesize title,message;
-
 +(CheckNetworkException *)exceptionWithTitle:(NSString *)t message:(NSString *)msg {
 	CheckNetworkException *e = [[CheckNetworkException alloc] initWithName:@"checkNetworkException" reason:@"Check Network Fail" userInfo:nil];
 	e.title = t;
@@ -32,4 +30,7 @@
 	[e autorelease];
 	return e;
 }
+
+@synthesize title,message;
+
 @end

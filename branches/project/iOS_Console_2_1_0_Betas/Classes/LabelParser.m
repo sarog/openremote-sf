@@ -27,6 +27,11 @@
 #import "XMLEntity.h"
 #import "Sensor.h"
 
+@interface LabelParser ()
+
+@property (nonatomic, retain, readwrite) Label *label;
+
+@end
 /**
  * Stores text, textcolor, font size and parsed from element label in panel.xml.
  * XML fragment example:
@@ -39,11 +44,9 @@
  */
 @implementation LabelParser
 
-@synthesize label;
-
 - (void)dealloc
 {
-    [label release];
+    self.label = nil;
     [super dealloc];
 }
 
@@ -51,11 +54,13 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        [self addKnownTag:LINK]; 
-        label = [[Label alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
+        [self addKnownTag:LINK];
+        Label *tmp = [[Label alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
                                  fontSize:[[attributeDict objectForKey:FONT_SIZE] intValue]
                                     color:[attributeDict objectForKey:COLOR]
                                      text:[attributeDict objectForKey:TEXT]];
+        self.label = tmp;
+        [tmp release];
     }
     return self;
 }
@@ -63,14 +68,16 @@
 - (void)endSensorLinkElement:(SensorLinkParser *)parser
 {
     if (parser.sensor) {
-        label.sensor = parser.sensor;
+        self.label.sensor = parser.sensor;
         
         
         // TODO: why is this done (here ? maybe in SensorState itself ?) 
-        for (SensorState *state in label.sensor.states) {
+        for (SensorState *state in self.label.sensor.states) {
 			[self.depRegister.definition addImageName:state.value];
 		}
     }
 }
+
+@synthesize label;
 
 @end

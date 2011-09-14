@@ -24,6 +24,6 @@
 
 @interface CommandParser : DefinitionElementParser
 
-@property (nonatomic, readonly) LocalCommand *command;
+@property (nonatomic, retain, readonly) LocalCommand *command;
 
 @end

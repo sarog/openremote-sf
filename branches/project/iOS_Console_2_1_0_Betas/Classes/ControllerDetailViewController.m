@@ -53,17 +53,6 @@
 
 @implementation ControllerDetailViewController
 
-@synthesize delegate;
-@synthesize managedObjectContext;
-@synthesize controller;
-@synthesize groupMembers;
-@synthesize usernameField;
-@synthesize passwordField;
-@synthesize urlField;
-@synthesize doneAction;
-@synthesize creating;
-@synthesize previousUndoManager;
-
 - (id)initWithController:(ORController *)aController
 {
 	self = [super initWithStyle:UITableViewStyleGrouped];
@@ -129,10 +118,10 @@
     self.usernameField.delegate = nil;
     self.passwordField.delegate = nil;
 
-    if (!doneAction) {
+    if (!self.doneAction) {
         [self.controller.managedObjectContext undo];        
     }
-    self.controller.managedObjectContext.undoManager = previousUndoManager;
+    self.controller.managedObjectContext.undoManager = self.previousUndoManager;
     self.previousUndoManager = nil;
 
     [self.controller removeObserver:self forKeyPath:@"groupMembers"];
@@ -144,7 +133,7 @@
 {
     [super viewWillAppear:animated];
     
-    doneAction = NO;
+    self.doneAction = NO;
     
     // Make sure we're delegate of text fields if they exist so we get values update
     if (self.urlField) {
@@ -177,7 +166,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (creating) {
+    if (self.creating) {
         [self.urlField becomeFirstResponder];
     }
     [super viewDidAppear:animated];
@@ -192,15 +181,15 @@
 
 - (void)done:(id)sender
 {
-    doneAction = YES;
+    self.doneAction = YES;
 
     [self.urlField resignFirstResponder];
     [self.usernameField resignFirstResponder];
     [self.passwordField resignFirstResponder];
     if (self.creating) {
-        [delegate didAddController:self.controller];      
+        [self.delegate didAddController:self.controller];      
     } else {
-        [delegate didEditController:self.controller];
+        [self.delegate didEditController:self.controller];
     }
 }
 
@@ -209,7 +198,7 @@
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
     NSString *url;
-    if (textField == urlField) {
+    if (textField == self.urlField) {
         if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
             url = textField.text;
         } else {
@@ -226,9 +215,9 @@
         }
         self.urlField.text = url;
         self.controller.primaryURL = url;
-    } else if (textField == usernameField) {
+    } else if (textField == self.usernameField) {
         self.controller.userName = textField.text;
-    } else if (textField == passwordField) {
+    } else if (textField == self.passwordField) {
         self.controller.password = textField.text;
     }
     [self.controller cancelGroupMembersFetch];
@@ -351,17 +340,6 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
-#pragma mark - Setter/Getter
-
-- (void)setGroupMembers:(NSArray *)theGroupMembers
-{
-    if (groupMembers != theGroupMembers) {
-        [groupMembers release];
-        groupMembers = [theGroupMembers retain];
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
-    }
-}
-
 #pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -389,6 +367,26 @@
     [aView addSubview:statusView];
     self.tableView.tableHeaderView = aView;
     [aView release];    
+}
+
+@synthesize delegate;
+@synthesize managedObjectContext;
+@synthesize controller;
+@synthesize groupMembers;
+@synthesize usernameField;
+@synthesize passwordField;
+@synthesize urlField;
+@synthesize doneAction;
+@synthesize creating;
+@synthesize previousUndoManager;
+
+- (void)setGroupMembers:(NSArray *)theGroupMembers
+{
+    if (groupMembers != theGroupMembers) {
+        [groupMembers release];
+        groupMembers = [theGroupMembers retain];
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+    }
 }
 
 @end

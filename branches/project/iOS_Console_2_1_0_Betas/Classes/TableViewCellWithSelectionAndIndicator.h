@@ -26,10 +26,7 @@
  * It provides a selection checkmark in front of the cell and an activity / status indicator
  * just in front of accessory view.
  */
-@interface TableViewCellWithSelectionAndIndicator : UITableViewCell {
-@private 
-    UIView *indicatorView;
-}
+@interface TableViewCellWithSelectionAndIndicator : UITableViewCell
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier;
 

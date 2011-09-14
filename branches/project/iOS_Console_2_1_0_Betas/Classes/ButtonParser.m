@@ -21,14 +21,20 @@
 #import "ButtonParser.h"
 #import "Button.h"
 
-@implementation ButtonParser
+@interface ButtonParser ()
 
-@synthesize button = _button;
+@property (nonatomic, retain, readwrite) Button *button;
+
+@end
+
+@implementation ButtonParser
 
 - (void)dealloc
 {
-    [_button release];
+    self.button = nil;
     [super dealloc];
 }
+
+@synthesize button;
 
 @end

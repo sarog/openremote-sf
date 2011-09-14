@@ -24,6 +24,6 @@
 
 @interface NavigateParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Navigate *navigate;
+@property (nonatomic, retain, readonly) Navigate *navigate;
 
 @end

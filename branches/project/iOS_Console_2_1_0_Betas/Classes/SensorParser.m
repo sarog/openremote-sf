@@ -22,6 +22,12 @@
 #import "LocalSensor.h"
 #import "XMLEntity.h"
 
+@interface SensorParser ()
+
+@property (nonatomic, retain, readwrite) LocalSensor *sensor;
+
+@end
+
 /**
  * Stores model data about sensor parsed from "include" element in panel.xml.
  * XML fragment example:
@@ -31,11 +37,9 @@
  */
 @implementation SensorParser
 
-@synthesize sensor;
-
 - (void)dealloc
 {
-    [sensor release];
+    self.sensor = nil;
     [super dealloc];
 }
 
@@ -43,12 +47,16 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        sensor = [[LocalSensor alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
+        LocalSensor *tmp = [[LocalSensor alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
                                        className:[attributeDict objectForKey:CLASS]
                                       methodName:[attributeDict objectForKey:METHOD]
                                      refreshRate:([attributeDict objectForKey:REFRESH_RATE]?[NSNumber numberWithInt:[[attributeDict objectForKey:REFRESH_RATE] intValue]]:nil)];
+        self.sensor = tmp;
+        [tmp release];
     }
     return self;
 }
+
+@synthesize sensor;
 
 @end

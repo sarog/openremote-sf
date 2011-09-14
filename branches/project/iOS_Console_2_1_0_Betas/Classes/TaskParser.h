@@ -24,6 +24,6 @@
 
 @interface TaskParser : DefinitionElementParser
 
-@property (nonatomic, readonly) LocalTask *task;
+@property (nonatomic, retain, readonly) LocalTask *task;
 
 @end

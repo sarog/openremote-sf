@@ -20,16 +20,10 @@
  */
 #import <Foundation/Foundation.h>
 
-@interface Sensor : NSObject {
-	
-	int sensorId;
-	
-	NSMutableArray *states;
+@interface Sensor : NSObject
 
-}
-
-@property(nonatomic, readonly)int sensorId;
-@property(nonatomic, readonly)NSMutableArray *states;
+@property (nonatomic, readonly) int sensorId;
+@property (nonatomic, retain, readonly) NSMutableArray *states;
 
 - (id)initWithId:(int)anId;
 

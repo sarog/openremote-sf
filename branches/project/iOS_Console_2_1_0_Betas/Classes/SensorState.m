@@ -20,25 +20,32 @@
  */
 #import "SensorState.h"
 
-@implementation SensorState
+@interface SensorState ()
 
-@synthesize name, value;
+@property (nonatomic, copy, readwrite) NSString *name;
+@property (nonatomic, copy, readwrite) NSString *value;
+
+@end
+
+@implementation SensorState
 
 - (id)initWithName:(NSString *)sensorName value:(NSString *)sensorValue
 {
     self = [super init];
     if (self) {
-        name = [sensorName copy];
-        value = [sensorValue copy];
+        self.name = sensorName;
+        self.value = sensorValue;
     }
     return self;
 }
 
-- (void)dealloc {
-	[name release];
-	[value release];
-	
+- (void)dealloc
+{
+    self.name = nil;
+    self.value = nil;
 	[super dealloc];
 }
+
+@synthesize name, value;
 
 @end

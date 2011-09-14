@@ -23,28 +23,39 @@
 #import "SensorComponent.h"
 #import "Sensor.h"
 
-@implementation GridLayoutContainer
+@interface GridLayoutContainer ()
 
-@synthesize cells, rows, cols;
+@property (nonatomic, retain, readwrite) NSMutableArray *cells;
+@property (nonatomic, readwrite) int rows;
+@property (nonatomic, readwrite) int cols;
+
+@property (nonatomic, readwrite) int left;
+@property (nonatomic, readwrite) int top;
+@property (nonatomic, readwrite) int width;
+@property (nonatomic, readwrite) int height;
+
+@end
+
+@implementation GridLayoutContainer
 
 - (id)initWithLeft:(int)leftPos top:(int)topPos width:(int)widthDim height:(int)heightDim rows:(int)rowsNum cols:(int)colsNum
 {
     self = [super init];
     if (self) {
-        left = leftPos;
-        top = topPos;
-        width = widthDim;
-        height = heightDim;
-        rows = rowsNum;
-        cols = colsNum;
-		cells = [[NSMutableArray alloc] init];
+        self.left = leftPos;
+        self.top = topPos;
+        self.width = widthDim;
+        self.height = heightDim;
+        self.rows = rowsNum;
+        self.cols = colsNum;
+		self.cells = [NSMutableArray array];
     }
     return self;
 }
 
 - (NSArray *)pollingComponentsIds {
 	NSMutableArray *ids = [[[NSMutableArray alloc] init] autorelease];
-	for (GridCell *cell in cells) {
+	for (GridCell *cell in self.cells) {
 		if ([cell.component isKindOfClass:SensorComponent.class]){
 			Sensor *sensor = ((SensorComponent *)cell.component).sensor;
 			if (sensor) {
@@ -56,11 +67,13 @@
 	return ids;
 }
 
-
-- (void)dealloc {
-	[cells release];
-	
+- (void)dealloc
+{
+	self.cells = nil;
 	[super dealloc];
 }
+
+@synthesize cells, rows, cols;
+@synthesize left,top,width,height;
 
 @end

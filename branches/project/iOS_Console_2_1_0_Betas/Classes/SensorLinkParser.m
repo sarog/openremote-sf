@@ -23,13 +23,17 @@
 #import "SensorStateParser.h"
 #import "XMLEntity.h"
 
-@implementation SensorLinkParser
+@interface SensorLinkParser ()
 
-@synthesize sensor;
+@property (nonatomic, retain, readwrite) Sensor *sensor;
+
+@end
+
+@implementation SensorLinkParser
 
 - (void)dealloc
 {
-    [sensor release];
+    self.sensor = nil;
     [super dealloc];
 }
 
@@ -39,7 +43,9 @@
     if (self) {
         [self addKnownTag:STATE];
         if ([SENSOR isEqualToString:[attributeDict objectForKey:TYPE]]) {
-            sensor = [[Sensor alloc] initWithId:[[attributeDict objectForKey:REF] intValue]];
+            Sensor *tmp = [[Sensor alloc] initWithId:[[attributeDict objectForKey:REF] intValue]];
+            self.sensor = tmp;
+            [tmp release];
             
             // TODO: check semantic on this, this is a duplication of the sensor, not a link
         }
@@ -49,7 +55,9 @@
 
 - (void)endSensorStateElement:(SensorStateParser *)parser
 {
-    [sensor.states addObject:parser.sensorState];
+    [self.sensor.states addObject:parser.sensorState];
 }
+
+@synthesize sensor;
 
 @end

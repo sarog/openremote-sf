@@ -30,8 +30,6 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
 
 @implementation ORConsoleSettingsManager
 
-@synthesize currentController;
-
 + (ORConsoleSettingsManager *)sharedORConsoleSettingsManager
 {
     if (sharedORConsoleSettingsManager == nil) {
@@ -200,5 +198,6 @@ static ORConsoleSettingsManager *sharedORConsoleSettingsManager = nil;
     return persistentStoreCoordinator;
 }
 
+@synthesize currentController;
 
 @end

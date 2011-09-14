@@ -22,23 +22,22 @@
 
 @implementation Switch
 
-@synthesize onImage, offImage;
-
 - (id)initWithId:(int)anId
 {
     self = [super init];
     if (self) {
-        componentId = anId;
+        self.componentId = anId;
     }
     return self;
 }
 
 - (void)dealloc
 {
-	[onImage release];
-	[offImage release];
+    self.onImage = nil;
+    self.offImage = nil;
 	[super dealloc];
 }
 
+@synthesize onImage, offImage;
 
 @end

@@ -23,6 +23,6 @@
 
 @interface ColorPickerParser : DefinitionElementParser
 
-@property (nonatomic, readonly) ColorPicker *colorPicker;
+@property (nonatomic, retain, readonly) ColorPicker *colorPicker;
 
 @end

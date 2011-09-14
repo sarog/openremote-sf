@@ -20,26 +20,35 @@
  */
 #import "LocalTask.h"
 
-@implementation LocalTask
+@interface LocalTask ()
 
-@synthesize className, methodName, frequency;
+@property (nonatomic, copy, readwrite) NSString *className;
+@property (nonatomic, copy, readwrite) NSString *methodName;
+@property (nonatomic, readwrite) NSUInteger frequency;
+
+@end
+
+@implementation LocalTask
 
 - (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName frequency:(NSNumber *)aFrequency
 {
     self = [super init];
     if (self) {
-        componentId = anId;
-        className = [aClassName retain];
-        methodName = [aMethodName retain];
-        frequency  = (aFrequency?[aFrequency intValue]:5000); // Default to 5 sec
+        self.componentId = anId;
+        self.className = aClassName;
+        self.methodName = aMethodName;
+        self.frequency  = (aFrequency?[aFrequency intValue]:5000); // Default to 5 sec
     }
     return self;
 }
 
-- (void)dealloc {
-	[className release];
-	[methodName release];
+- (void)dealloc
+{
+    self.className = nil;
+    self.methodName = nil;
 	[super dealloc];
 }
+
+@synthesize className, methodName, frequency;
 
 @end

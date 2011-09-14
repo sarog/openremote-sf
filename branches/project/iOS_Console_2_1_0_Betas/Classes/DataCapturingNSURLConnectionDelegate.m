@@ -31,9 +31,6 @@
 
 @implementation DataCapturingNSURLConnectionDelegate
 
-@synthesize delegate;
-@synthesize receiveData;
-
 static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
 
 + (void)initialize
@@ -82,71 +79,74 @@ static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
 - (BOOL)respondsToSelector:(SEL)aSelector
 {
     if ([self isDelegateSelector:aSelector]) {
-        return [delegate respondsToSelector:aSelector];
+        return [self.delegate respondsToSelector:aSelector];
     }
     return [super respondsToSelector:aSelector];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    [receiveData appendData:data];
+    [self.receiveData appendData:data];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    [delegate connectionDidFinishLoading:connection receivedData:receiveData];
+    [self.delegate connectionDidFinishLoading:connection receivedData:self.receiveData];
 }
 
 #pragma mark - Forwarded delegate methods
 
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
 {
-    return [delegate connection:connection willSendRequest:request redirectResponse:response];
+    return [self.delegate connection:connection willSendRequest:request redirectResponse:response];
 }
 
 - (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request
 {
-    return [delegate connection:connection needNewBodyStream:request];
+    return [self.delegate connection:connection needNewBodyStream:request];
 }
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
-    return [delegate connection:connection canAuthenticateAgainstProtectionSpace:protectionSpace];
+    return [self.delegate connection:connection canAuthenticateAgainstProtectionSpace:protectionSpace];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    [delegate connection:connection didReceiveAuthenticationChallenge:challenge];
+    [self.delegate connection:connection didReceiveAuthenticationChallenge:challenge];
 }
 
 - (void)connection:(NSURLConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    [delegate connection:connection didCancelAuthenticationChallenge:challenge];
+    [self.delegate connection:connection didCancelAuthenticationChallenge:challenge];
 }
 
 - (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection
 {
-    return [delegate connectionShouldUseCredentialStorage:connection];
+    return [self.delegate connectionShouldUseCredentialStorage:connection];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    return [delegate connection:connection didReceiveResponse:response];
+    return [self.delegate connection:connection didReceiveResponse:response];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
-    [delegate connection:connection didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
+    [self.delegate connection:connection didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    [delegate connection:connection didFailWithError:error];
+    [self.delegate connection:connection didFailWithError:error];
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse *)cachedResponse
 {
-    return [delegate connection:connection willCacheResponse:cachedResponse];
+    return [self.delegate connection:connection willCacheResponse:cachedResponse];
 }
+
+@synthesize delegate;
+@synthesize receiveData;
 
 @end

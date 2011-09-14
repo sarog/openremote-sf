@@ -21,18 +21,15 @@
 #import "Background.h"
 #import "XMLEntity.h"
 
-
 @implementation Background
-
-@synthesize backgroundImageAbsolutePositionLeft, backgroundImageAbsolutePositionTop, isBackgroundImageAbsolutePosition, backgroundImageRelativePosition, fillScreen, backgroundImage;
 
 - (id)initWithRelativePosition:(NSString *)relativePositionString fillScreen:(BOOL)fillScreenTag
 {
     self = [super init];
     if (self) {
-        backgroundImageRelativePosition = [relativePositionString retain];
-        isBackgroundImageAbsolutePosition = NO;
-        fillScreen = fillScreenTag;
+        self.backgroundImageRelativePosition = relativePositionString;
+        self.isBackgroundImageAbsolutePosition = NO;
+        self.fillScreen = fillScreenTag;
     }
     return self;
 }
@@ -41,10 +38,10 @@
 {
     self = [super init];
     if (self) {
-        backgroundImageAbsolutePositionLeft = leftPos;
-        backgroundImageAbsolutePositionTop = topPos;
-        isBackgroundImageAbsolutePosition = YES;
-        fillScreen = fillScreenTag;
+        self.backgroundImageAbsolutePositionLeft = leftPos;
+        self.backgroundImageAbsolutePositionTop = topPos;
+        self.isBackgroundImageAbsolutePosition = YES;
+        self.fillScreen = fillScreenTag;
     }
     return self;
 }
@@ -53,9 +50,11 @@
 #pragma mark dealloc
 
 -(void) dealloc {
-	[backgroundImageRelativePosition release];
-	[backgroundImage release];
+	self.backgroundImageRelativePosition = nil;
+	self.backgroundImage = nil;
 	[super dealloc];
 }
+
+@synthesize backgroundImageAbsolutePositionLeft, backgroundImageAbsolutePositionTop, isBackgroundImageAbsolutePosition, backgroundImageRelativePosition, fillScreen, backgroundImage;
 
 @end

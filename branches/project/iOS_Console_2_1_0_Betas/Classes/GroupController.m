@@ -27,7 +27,7 @@
 
 @interface GroupController (Private)
 
-- (NSMutableArray *)initScreenViewControllers:(NSArray *)screens;
+- (NSArray *)viewControllersForScreens:(NSArray *)screens;
 - (void)showErrorView;
 - (void)detectDeviceOrientation;
 - (void)printOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
@@ -139,9 +139,9 @@
 	return group.groupId;
 }
 
-// Initializes screenViewController array of groupController with screen model array.
-- (NSMutableArray *)initScreenViewControllers:(NSArray *)screens {
-	NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
+// Returns an array of ScreenViewControllers for the given Screen objects
+- (NSArray *)viewControllersForScreens:(NSArray *)screens {
+	NSMutableArray *viewControllers = [NSMutableArray arrayWithCapacity:[screens count]];
 	
 	for (Screen *screen in screens) {
 		NSLog(@"init screen = %@", screen.name);
@@ -150,7 +150,7 @@
 		[viewControllers addObject:viewController];
 		[viewController release];
 	}
-	return [viewControllers autorelease];
+	return [NSArray arrayWithArray:viewControllers];
 }
 
 // Get the paginationController of groupController.
@@ -170,8 +170,7 @@
 	if (isLandscape) {
 		if (landscapePaginationController == nil) {
 			landscapePaginationController = [[PaginationController alloc] init];
-			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
-			[landscapePaginationController setViewControllers:viewControllers isLandscape:isLandscape];
+			[landscapePaginationController setViewControllers:[self viewControllersForScreens:screens] isLandscape:isLandscape];
 		}
 		[self setView:landscapePaginationController.view];
 		[[portraitPaginationController currentScreenViewController] stopPolling];
@@ -179,14 +178,12 @@
 	} else {
 		if (portraitPaginationController == nil) {
 			portraitPaginationController = [[PaginationController alloc] init];
-			NSMutableArray *viewControllers = [self initScreenViewControllers:screens];
-			[portraitPaginationController setViewControllers:viewControllers isLandscape:isLandscape];
+			[portraitPaginationController setViewControllers:[self viewControllersForScreens:screens] isLandscape:isLandscape];
 		}
 		[self setView:portraitPaginationController.view];
 		[[landscapePaginationController currentScreenViewController] stopPolling];
 		[[portraitPaginationController currentScreenViewController] startPolling];
 	}
-	
 }
 
 // Show portrait orientation view.

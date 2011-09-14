@@ -20,14 +20,13 @@
  */
 #import "LayoutContainer.h"
 
-
 @implementation LayoutContainer
-
-@synthesize left,top,width,height;
 
 - (NSArray *)pollingComponentsIds {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }
+
+@synthesize left,top,width,height;
 
 @end

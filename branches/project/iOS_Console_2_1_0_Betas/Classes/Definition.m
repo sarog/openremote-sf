@@ -23,18 +23,24 @@
 #import "Group.h"
 #import "Screen.h"
 
-@implementation Definition
+@interface Definition ()
 
-@synthesize groups, screens, labels, tabBar, localLogic, imageNames;
+@property (nonatomic, retain, readwrite) NSMutableArray *groups;
+@property (nonatomic, retain, readwrite) NSMutableArray *screens;
+@property (nonatomic, retain, readwrite) NSMutableArray *imageNames;
+
+@end
+
+@implementation Definition
 
 - (void)dealloc
 {
-    [groups release];
-    [screens release];
-    [labels release];
-    [imageNames release];
-    [tabBar release];
-    [localLogic release];
+    self.groups = nil;
+    self.screens = nil;
+    self.labels = nil;
+    self.imageNames = nil;
+    self.tabBar = nil;
+    self.localLogic = nil;
     [super dealloc];
 }
 
@@ -42,16 +48,16 @@
 {			
     self = [super init];
     if (self) {
-        groups = [[NSMutableArray alloc] init];
-		screens = [[NSMutableArray alloc] init];
-		labels = [[NSMutableArray alloc] init];
-		imageNames = [[NSMutableArray alloc] init];
+        self.groups = [NSMutableArray array];
+		self.screens = [NSMutableArray array];
+		self.labels = [NSMutableArray array];
+		self.imageNames = [NSMutableArray array];
 	}
 	return self;
 }
 
 - (Group *)findGroupById:(int)groupId {
-	for (Group *g in groups) {
+	for (Group *g in self.groups) {
 		if (g.groupId == groupId) {
 			return g;			
 		}
@@ -112,7 +118,7 @@
 }
 
 - (void)addImageName:(NSString *)imageName {
-	for (NSString *name in imageNames) {
+	for (NSString *name in self.imageNames) {
 		// avoid duplicated
 		if ([name isEqualToString:imageName]) {
 			return;
@@ -123,22 +129,15 @@
 	}
 }
 
-- (void)clearPanelXMLData {
-	if (groups) {
-		[groups removeAllObjects];
-	}
-	if (screens) {
-		[screens removeAllObjects];
-	}
-	if (labels) {
-		[labels removeAllObjects];
-	}
-	if (imageNames) {
-		[imageNames removeAllObjects];
-	}
-	if (tabBar) {
-		tabBar = nil;
-	}
+- (void)clearPanelXMLData
+{
+    [self.groups removeAllObjects];
+    [self.screens removeAllObjects];
+    [self.labels removeAllObjects];
+    [self.imageNames removeAllObjects];
+    self.tabBar = nil;
 }
+
+@synthesize groups, screens, labels, tabBar, localLogic, imageNames;
 
 @end

@@ -22,14 +22,7 @@
 
 @class Component;
 
-@interface GridCell : NSObject {
-	int x;
-	int y;
-	int rowspan;
-	int colspan;
-	Component *component;
-	
-}
+@interface GridCell : NSObject
 
 @property (nonatomic, readonly) int x;
 @property (nonatomic, readonly) int y;

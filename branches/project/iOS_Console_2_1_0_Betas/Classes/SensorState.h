@@ -20,15 +20,10 @@
  */
 #import <Foundation/Foundation.h>
 
-@interface SensorState : NSObject {
+@interface SensorState : NSObject
 
-	NSString *name;
-	NSString *value;
-	
-}
-
-@property(nonatomic,readonly) NSString *name;
-@property(nonatomic,readonly) NSString *value;
+@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, copy, readonly) NSString *value;
 
 - (id)initWithName:(NSString *)sensorName value:(NSString *)sensorValue;
 

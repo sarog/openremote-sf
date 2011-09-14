@@ -22,19 +22,9 @@
 
 @class Image;
 
-@interface Slider : SensorComponent {
-	Image *thumbImage;
-	BOOL vertical;
-	BOOL passive;
-	float minValue;
-	float maxValue;
-	Image *minImage;
-	Image *minTrackImage;
-	Image *maxImage;
-	Image *maxTrackImage;
-}
+@interface Slider : SensorComponent
 
-@property(nonatomic, readonly) Image *thumbImage;
+@property(nonatomic, retain, readonly) Image *thumbImage;
 @property(nonatomic, readonly) BOOL vertical;
 @property(nonatomic, readonly) BOOL passive;
 @property(nonatomic, assign) float minValue;

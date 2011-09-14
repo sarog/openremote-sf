@@ -45,8 +45,6 @@
 
 @implementation AppDelegate
 
-@synthesize localContext;
-
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 	
     // EBR : This is currently used as a shared "memory" for local logic
@@ -152,5 +150,7 @@
 	[localContext release];
 	[super dealloc];
 }
+
+@synthesize localContext;
 
 @end
