@@ -22,6 +22,12 @@
 #import "GridLayoutContainer.h"
 #import "GridCellParser.h"
 
+@interface GridLayoutContainerParser()
+
+@property (nonatomic, retain, readwrite) LayoutContainer *layoutContainer;
+
+@end
+
 /**
  * Store gridcell model and parsed from element grid in panel.xml.
  * XML fragment example:
@@ -37,19 +43,23 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:@"cell"];
-        layoutContainer = [[GridLayoutContainer alloc] initWithLeft:[[attributeDict objectForKey:@"left"] intValue]
+        LayoutContainer *tmp = [[GridLayoutContainer alloc] initWithLeft:[[attributeDict objectForKey:@"left"] intValue]
                                                                     top:[[attributeDict objectForKey:@"top"] intValue]
                                                                   width:[[attributeDict objectForKey:@"width"] intValue]
                                                                  height:[[attributeDict objectForKey:@"height"] intValue]
                                                                rows:[[attributeDict objectForKey:@"rows"] intValue]
                                                                cols:[[attributeDict objectForKey:@"cols"] intValue]];
+        self.layoutContainer = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endCellElement:(GridCellParser *)parser
 {
-    [((GridLayoutContainer *)layoutContainer).cells addObject:parser.gridCell];
+    [((GridLayoutContainer *)self.layoutContainer).cells addObject:parser.gridCell];
 }
+
+@synthesize layoutContainer;
 
 @end

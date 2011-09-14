@@ -20,26 +20,35 @@
  */
 #import "GridCell.h"
 
+@interface GridCell ()
+
+@property (nonatomic, readwrite) int x;
+@property (nonatomic, readwrite) int y;
+@property (nonatomic, readwrite) int rowspan;
+@property (nonatomic, readwrite) int colspan;
+
+@end
 
 @implementation GridCell
-
-@synthesize x,y,rowspan,colspan,component;
 
 - (id)initWithX:(int)xPos y:(int)yPos rowspan:(int)rowspanValue colspan:(int)colspanValue
 {
     self = [super init];
     if (self) {
-        x = xPos;
-        y = yPos;
-        rowspan = MAX(1, rowspanValue);
-        colspan = MAX(1, colspanValue);
+        self.x = xPos;
+        self.y = yPos;
+        self.rowspan = MAX(1, rowspanValue);
+        self.colspan = MAX(1, colspanValue);
     }
     return self;    
 }
 
-- (void)dealloc {
-	[component release];
+- (void)dealloc
+{
+	self.component = nil;
 	[super dealloc];
 }
+
+@synthesize x,y,rowspan,colspan,component;
 
 @end

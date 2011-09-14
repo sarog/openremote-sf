@@ -21,29 +21,35 @@
 #import "Web.h"
 #import "Sensor.h"
 
+@interface Web ()
+
+@property (nonatomic, copy, readwrite) NSString *src;
+@property (nonatomic, copy, readwrite) NSString *username;
+@property (nonatomic, copy, readwrite) NSString *password;
+
+@end
 /**
  * The Web class represents an element displaying web content on the panel. 
  */
 @implementation Web
 
-@synthesize src, username, password;
-
 - (id)initWithId:(int)anId src:(NSString *)aSrc username:(NSString *)aUsername password:(NSString *)aPassword
 {
     self = [super init];
     if (self) {
-        componentId = anId;
-        src = [aSrc copy];
-        username = [aUsername copy];
-        password = [aPassword copy];
+        self.componentId = anId;
+        self.src = aSrc;
+        self.username = aUsername;
+        self.password = aPassword;
     }
     return self;
 }
 
-- (void)dealloc {
-	[src release];
-	[username release];
-	[password release];
+- (void)dealloc
+{
+    self.src = nil;
+    self.username = nil;
+    self.password = nil;
     [super dealloc];
 }
 
@@ -51,5 +57,7 @@
 {
     return self.sensor.sensorId;
 }
+
+@synthesize src, username, password;
 
 @end

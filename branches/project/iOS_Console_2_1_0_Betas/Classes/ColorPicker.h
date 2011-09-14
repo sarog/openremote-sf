@@ -22,9 +22,7 @@
 
 @class Image;
 
-@interface ColorPicker : Control {
-	Image *image;
-}
+@interface ColorPicker : Control
 
 @property (nonatomic, retain) Image *image; 
 

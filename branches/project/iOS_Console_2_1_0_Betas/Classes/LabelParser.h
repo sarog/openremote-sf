@@ -23,6 +23,6 @@
 
 @interface LabelParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Label *label;
+@property (nonatomic, retain, readonly) Label *label;
 
 @end

@@ -20,17 +20,11 @@
  */
 #import "Component.h"
 
-@interface LocalTask : Component {
+@interface LocalTask : Component
 
-	NSString *className;
-	NSString *methodName;
-	NSUInteger frequency;
-	
-}
-
-@property (readonly) NSString *className;
-@property (readonly) NSString *methodName;
-@property (readonly) NSUInteger frequency;
+@property (nonatomic, copy, readonly) NSString *className;
+@property (nonatomic, copy, readonly) NSString *methodName;
+@property (nonatomic, readonly) NSUInteger frequency;
 
 - (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName frequency:(NSNumber *)aFrequency;
 

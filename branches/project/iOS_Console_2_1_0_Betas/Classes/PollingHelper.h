@@ -26,14 +26,7 @@
  * notificate the new status to component on screen.
  */
 
-@interface PollingHelper : NSObject <ORControllerPollingSenderDelegate> {
-	
-	NSString *pollingStatusIds;
-	NSArray *localSensors;
-	NSMutableDictionary *localSensorTimers;
-	BOOL isPolling;
-	BOOL isError;
-}
+@interface PollingHelper : NSObject <ORControllerPollingSenderDelegate>
 
 /**
  * Construct polling helper with sensor ids.
@@ -50,8 +43,8 @@
  */
 - (void)cancelPolling;
 
-@property(nonatomic,readonly) BOOL isPolling;
-@property(nonatomic,readonly) BOOL isError;
-@property(nonatomic,readonly) NSString *pollingStatusIds;
+@property(nonatomic, readonly) BOOL isPolling;
+@property(nonatomic, readonly) BOOL isError;
+@property(nonatomic, retain, readonly) NSString *pollingStatusIds;
 
 @end

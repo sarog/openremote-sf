@@ -24,6 +24,6 @@
 
 @interface LocalLogicParser : DefinitionElementParser
 
-@property (nonatomic, readonly) LocalLogic *localLogic;
+@property (nonatomic, retain, readonly) LocalLogic *localLogic;
 
 @end

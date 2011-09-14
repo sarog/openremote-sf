@@ -25,6 +25,11 @@
 #import "DefinitionElementParserRegister.h"
 #import "XMLEntity.h"
 
+@interface GroupParser ()
+
+@property (nonatomic, retain, readwrite) Group *group;
+
+@end
 /**
  * Stores screens model data and parsed from element group in panel.xml.
  * XML fragment example:
@@ -35,11 +40,9 @@
  */
 @implementation GroupParser
 
-@synthesize group;
-
 - (void)dealloc
 {
-    [group release];
+    self.group = nil;
     [super dealloc];
 }
 
@@ -48,7 +51,9 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:TABBAR];
-        group = [[Group alloc] initWithGroupId:[[attributeDict objectForKey:ID] intValue] name:[attributeDict objectForKey:NAME]];
+        Group *tmp = [[Group alloc] initWithGroupId:[[attributeDict objectForKey:ID] intValue] name:[attributeDict objectForKey:NAME]];
+        self.group = tmp;
+        [tmp release];
     }
     return self;
 }
@@ -57,7 +62,7 @@
 {
 	if ([elementName isEqualToString:INCLUDE] && [SCREEN isEqualToString:[attributeDict objectForKey:TYPE]]) {
         // This is a reference to another element, will be resolved later, put a standby in place for now
-        ScreenDeferredBinding *standby = [[ScreenDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:group];
+        ScreenDeferredBinding *standby = [[ScreenDeferredBinding alloc] initWithBoundComponentId:[[attributeDict objectForKey:REF] intValue] enclosingObject:self.group];
         standby.definition = self.depRegister.definition;
         [self.depRegister addDeferredBinding:standby];
         [standby release];
@@ -67,7 +72,9 @@
 
 - (void)endTabBarElement:(TabBarParser *)parser
 {
-    group.tabBar = parser.tabBar;
+    self.group.tabBar = parser.tabBar;
 }
+
+@synthesize group;
 
 @end

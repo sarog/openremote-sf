@@ -37,9 +37,6 @@
 
 @implementation ORControllerCommandSender
 
-@synthesize controller;
-@synthesize delegate;
-
 - (id)initWithController:(ORController *)aController command:(NSString *)aCommand component:(Component *)aComponent
 {
     self = [super init];
@@ -110,5 +107,8 @@
         [delegate commandSendFailed];
     }
 }
+
+@synthesize controller;
+@synthesize delegate;
 
 @end

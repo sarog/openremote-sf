@@ -20,24 +20,34 @@
  */
 #import "Navigate.h"
 
+@interface Navigate ()
+
+@property (nonatomic, readwrite) BOOL isPreviousScreen;
+@property (nonatomic, readwrite) BOOL isNextScreen;
+@property (nonatomic, readwrite) BOOL isBack;
+@property (nonatomic, readwrite) BOOL isSetting;
+@property (nonatomic, readwrite) BOOL isLogin;
+@property (nonatomic, readwrite) BOOL isLogout;
+
+@end
 
 @implementation Navigate
-
-@synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout, fromGroup, fromScreen;
 
 - (id)initWithToScreen:(int)screenId toGroup:(int)groupId isPreviousScreen:(BOOL)isPreviousScreenFlag isNextScreen:(BOOL)isNextScreenFlag isSetting:(BOOL)isSettingFlag isBack:(BOOL)isBackFlag isLogin:(BOOL)isLoginFlag isLogout:(BOOL)isLogoutFlag
 {
 	if (self = [super init]) {
-		toScreen = screenId;
-        toGroup = groupId;
-        isPreviousScreen = isPreviousScreenFlag;
-        isNextScreen = isNextScreenFlag;
-        isSetting = isSettingFlag;
-        isBack = isBackFlag;
-        isLogin = isLoginFlag;
-        isLogout = isLogoutFlag;
+		self.toScreen = screenId;
+        self.toGroup = groupId;
+        self.isPreviousScreen = isPreviousScreenFlag;
+        self.isNextScreen = isNextScreenFlag;
+        self.isSetting = isSettingFlag;
+        self.isBack = isBackFlag;
+        self.isLogin = isLoginFlag;
+        self.isLogout = isLogoutFlag;
 	}
 	return self;
 }
+
+@synthesize toScreen, toGroup, isPreviousScreen, isNextScreen, isSetting, isBack, isLogin, isLogout, fromGroup, fromScreen;
 
 @end

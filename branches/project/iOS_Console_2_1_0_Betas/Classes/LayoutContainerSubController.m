@@ -33,8 +33,6 @@
 
 @implementation LayoutContainerSubController
 
-@synthesize layoutContainer;
-
 - (id)initWithLayoutContainer:(LayoutContainer *)aLayoutContainer
 {
     self = [super init];
@@ -59,5 +57,7 @@
     }
     return self;
 }
+
+@synthesize layoutContainer;
 
 @end

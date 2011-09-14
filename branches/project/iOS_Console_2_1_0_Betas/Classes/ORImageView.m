@@ -20,52 +20,59 @@
  */
 #import "ORImageView.h"
 
-@implementation ORImageView
+@interface ORImageView()
 
-@synthesize image;
-@synthesize label;
+@property (nonatomic, readwrite, retain) UIImageView *image;
+@property (nonatomic, readwrite, retain) UILabel *label;
+
+@end
+
+@implementation ORImageView
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        image = [[UIImageView alloc] initWithFrame:frame];
-        image.contentMode = UIViewContentModeTopLeft;
-        [self addSubview:image];
+        self.image = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.image.contentMode = UIViewContentModeTopLeft;
+        [self addSubview:self.image];
         
-        label = [[UILabel alloc] initWithFrame:frame];
-        label.hidden = YES;
-        label.backgroundColor = [UIColor clearColor];
-        label.textAlignment = UITextAlignmentCenter;
-        [self addSubview:label];
+        self.label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.label.hidden = YES;
+        self.label.backgroundColor = [UIColor clearColor];
+        self.label.textAlignment = UITextAlignmentCenter;
+        [self addSubview:self.label];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [image release];
-    [label release];
+    self.image = nil;
+    self.label = nil;
     [super dealloc];
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    image.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
-    label.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+    self.image.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
+    self.label.frame = CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height);
 }
 
 - (void)showImage
 {
-    image.hidden = NO;
-    label.hidden = YES;
+    self.image.hidden = NO;
+    self.label.hidden = YES;
 }
 
 - (void)showLabel
 {
-    image.hidden = YES;
-    label.hidden = NO;
+    self.image.hidden = YES;
+    self.label.hidden = NO;
 }
+
+@synthesize image;
+@synthesize label;
 
 @end

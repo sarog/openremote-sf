@@ -23,23 +23,22 @@
 
 @implementation Label
 
-@synthesize fontSize, color, text;
-
 - (id)initWithId:(int)anId fontSize:(int)fontSizeValue color:(NSString *)colorValue text:(NSString *)textValue
 {
     self = [super init];
     if (self) {
-        componentId = anId;
-        fontSize = fontSizeValue;
-        color = [colorValue copy];
-        text = [textValue copy];
+        self.componentId = anId;
+        self.fontSize = fontSizeValue;
+        self.color = colorValue;
+        self.text = textValue;
     }
     return self;
 }
 
-- (void)dealloc {
-	[color release];
-	[text release];
+- (void)dealloc
+{
+    self.color = nil;
+    self.text = nil;
 	[super dealloc];
 }
 
@@ -47,5 +46,7 @@
 {
     return self.sensor.sensorId;
 }
+
+@synthesize fontSize, color, text;
 
 @end

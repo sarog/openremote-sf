@@ -28,12 +28,12 @@
 
 @implementation SubController
 
-@synthesize view;
-
 - (void)dealloc
 {
     self.view = nil;
     [super dealloc];
 }
+
+@synthesize view;
 
 @end

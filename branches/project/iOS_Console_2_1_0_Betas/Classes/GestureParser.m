@@ -23,6 +23,12 @@
 #import "NavigateParser.h"
 #import "XMLEntity.h"
 
+@interface GestureParser ()
+
+@property (nonatomic, retain, readwrite) Gesture *gesture;
+
+@end
+
 /**
  * Gesture model stores swipeType, hasControlCommand and navigate data, parsed from element gesture in panel.xml.
  * XML fragment example:
@@ -41,11 +47,9 @@
  */
 @implementation GestureParser
 
-@synthesize gesture;
-
 - (void)dealloc
 {
-    [gesture release];
+    self.gesture = nil;
     [super dealloc];
 }
 
@@ -66,16 +70,20 @@
             swipeType = GestureSwipeTypeRightToLeft;
         }
         
-        gesture = [[Gesture alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
+        Gesture *tmp = [[Gesture alloc] initWithId:[[attributeDict objectForKey:ID] intValue]
                                     swipeType:swipeType
                             hasControlCommand:[@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasControlCommand"] uppercaseString]]];
+        self.gesture = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endNavigateElement:(NavigateParser *)parser
 {
-    gesture.navigate = parser.navigate;
+    self.gesture.navigate = parser.navigate;
 }
+
+@synthesize gesture;
 
 @end

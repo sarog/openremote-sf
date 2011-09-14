@@ -22,8 +22,6 @@
 
 @implementation StyleValue1TextEntryCell
 
-@synthesize textField;
-
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:reuseIdentifier];
@@ -47,5 +45,7 @@
     int offset = 300;
     textField.frame = CGRectMake(self.textLabel.frame.origin.x + offset, self.textLabel.frame.origin.y, self.contentView.bounds.size.width - offset - self.textLabel.frame.origin.x, self.textLabel.frame.size.height);
 }
+
+@synthesize textField;
 
 @end

@@ -36,9 +36,6 @@
 
 @implementation ORControllerPanelsFetcher
 
-@synthesize controller;
-@synthesize delegate;
-
 - (id)initWithController:(ORController *)aController
 {
     self = [super init];
@@ -107,5 +104,8 @@
 		}
 	} 
 }
+
+@synthesize controller;
+@synthesize delegate;
 
 @end

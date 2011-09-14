@@ -22,49 +22,52 @@
 #import "Screen.h"
 #import "Definition.h"
 
+@interface Group ()
+
+@property (nonatomic, readwrite) int groupId;
+@property (nonatomic, copy, readwrite) NSString *name;
+@property (nonatomic, retain, readwrite) NSMutableArray *screens;
+
+@end
+
 @implementation Group
-
-@synthesize groupId, name, screens, tabBar;
-
 
 - (id)initWithGroupId:(int)anId name:(NSString *)aName
 {
     self = [super init];
     if (self) {
-        groupId = anId;
-        name = [aName copy];
-		screens = [[NSMutableArray alloc] init];
+        self.groupId = anId;
+        self.name = aName;
+		self.screens = [NSMutableArray array];
     }
     return self;
 }
 
-- (void)dealloc {
-	[name release];
-	[screens release];
-	[tabBar release];
+- (void)dealloc
+{
+	self.name = nil;
+	self.screens = nil;
+	self.tabBar = nil;
 	[super dealloc];
 }
 
-
-
 // Get all portrait screens in group.
 - (NSArray *) getPortraitScreens {
-	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", NO]]; 
+	return [self.screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", NO]]; 
 }
 
 // Get all landscape screens in group.
 - (NSArray *) getLandscapeScreens {
-	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", YES]]; 
+	return [self.screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d", YES]]; 
 }
 
 // Find screen model in specified orientation screens of group containing by screen id.
 - (BOOL)canFindScreenById:(int)screenId inOrientation:(BOOL)isLandscape {
-	return [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d && screenId == %d", isLandscape, screenId]].count > 0; 
+	return [self.screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"landscape == %d && screenId == %d", isLandscape, screenId]].count > 0; 
 }
 
-
 - (Screen *) findScreenByScreenId:(int)screenId {
-	NSArray *ss = [screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"screenId == %d", screenId]];
+	NSArray *ss = [self.screens filteredArrayUsingPredicate:[NSPredicate predicateWithFormat: @"screenId == %d", screenId]];
 	if (ss.count > 0) {
 		Screen *screen = [ss objectAtIndex:0];
 		return screen;
@@ -72,5 +75,6 @@
 	return nil;
 }
 
+@synthesize groupId, name, screens, tabBar;
 
 @end

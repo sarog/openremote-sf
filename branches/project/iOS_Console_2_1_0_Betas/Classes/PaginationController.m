@@ -39,8 +39,6 @@
 
 @implementation PaginationController
 
-@synthesize viewControllers, selectedIndex;
-
 - (void)dealloc {
 	[viewControllers release];
 	
@@ -324,5 +322,7 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[self initView];
 }
+
+@synthesize viewControllers, selectedIndex;
 
 @end

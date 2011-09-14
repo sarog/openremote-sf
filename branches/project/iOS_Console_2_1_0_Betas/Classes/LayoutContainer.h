@@ -25,14 +25,7 @@
  * The layoutContainer can be located in screen by position info left and top.
  * The layoutContainer's size is described by width and height.
  */
-@interface LayoutContainer : NSObject {
-	
-	int left;
-	int top;
-	int width;
-	int height;
-	
-}
+@interface LayoutContainer : NSObject
 
 @property (nonatomic, readonly) int left;
 @property (nonatomic, readonly) int top;

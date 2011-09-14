@@ -49,8 +49,6 @@
 
 @implementation DefinitionManager
 
-@synthesize isUpdating, lastUpdateTime, loading;
-
 // For now, take all the functionality that is about loading / triggering parsing / caching ... the definition
 // from the Definition class and bring it here
 
@@ -221,5 +219,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self ];
 	NSLog(@"post nofication done");
 }
+
+@synthesize isUpdating, lastUpdateTime, loading;
 
 @end

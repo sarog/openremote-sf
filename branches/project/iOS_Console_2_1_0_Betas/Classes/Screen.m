@@ -25,42 +25,50 @@
 #import "Definition.h"
 #import "Gesture.h"
 
+@interface Screen ()
+
+@property (nonatomic, readwrite) int screenId;
+@property (nonatomic, retain, readwrite) NSString *name;
+@property (nonatomic, retain, readwrite) NSMutableArray *layouts;
+@property (nonatomic, retain, readwrite) NSMutableArray *gestures;
+@property (nonatomic, readwrite) BOOL landscape;
+@property (nonatomic, readwrite) int inverseScreenId;
+
+@end
+
 @implementation Screen
  
-@synthesize screenId,name,background,layouts,gestures,landscape,inverseScreenId;
-
 - (id)initWithScreenId:(int)anId name:(NSString *)aName landscape:(BOOL)landscapeFlag inverseScreenId:(int)anInverseScreenId
 {
     if (self = [super init]) {
-		screenId = anId;
-		name = [aName copy];
-		layouts = [[NSMutableArray alloc] init];
-		gestures = [[NSMutableArray alloc] init];
-		
-		landscape = landscapeFlag;
-		inverseScreenId = anInverseScreenId;
+		self.screenId = anId;
+		self.name = aName;
+		self.layouts = [NSMutableArray array];
+		self.gestures = [NSMutableArray array];
+		self.landscape = landscapeFlag;
+		self.inverseScreenId = anInverseScreenId;
 	}
 	return self;
 }
 
 - (NSArray *)pollingComponentsIds {
 	NSMutableArray *ids = [[[NSMutableArray alloc] init] autorelease];
-	for (LayoutContainer *layout in layouts) {		
+	for (LayoutContainer *layout in self.layouts) {		
 		[ids addObjectsFromArray:[layout pollingComponentsIds]];
 	}
 	return ids;
 }
 
 - (int)screenIdForOrientation:(UIInterfaceOrientation)orientation {
-    if (inverseScreenId == 0) {
-        return screenId;
+    if (self.inverseScreenId == 0) {
+        return self.screenId;
     }
-    return (self.landscape == UIInterfaceOrientationIsLandscape(orientation))?screenId:inverseScreenId;
+    return (self.landscape == UIInterfaceOrientationIsLandscape(orientation))?self.screenId:self.inverseScreenId;
 }
 
 
 - (Gesture *)getGestureIdByGestureSwipeType:(GestureSwipeType)type {
-	for (Gesture *g in gestures) {
+	for (Gesture *g in self.gestures) {
 		if (g.swipeType == type) {
 			return g;
 		}
@@ -68,12 +76,15 @@
 	return nil;
 }
 
-- (void)dealloc {
-	[name release];
-	[background release];
-	[layouts release];
-	[gestures release];
+- (void)dealloc
+{
+    self.name = nil;
+    self.background = nil;
+    self.layouts = nil;
+    self.gestures = nil;
 	[super dealloc];
 }
+
+@synthesize screenId,name,background,layouts,gestures,landscape,inverseScreenId;
 
 @end

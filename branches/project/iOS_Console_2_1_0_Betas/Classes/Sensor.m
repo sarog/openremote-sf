@@ -21,23 +21,28 @@
 #import "Sensor.h"
 #import "SensorState.h"
 
-@implementation Sensor
+@interface Sensor ()
 
-@synthesize sensorId, states;
+@property (nonatomic, readwrite) int sensorId;
+@property (nonatomic, retain, readwrite) NSMutableArray *states;
+
+@end
+
+@implementation Sensor
 
 - (id)initWithId:(int)anId
 {
     self = [super init];
     if (self) {
-        sensorId = anId;
-        states = [[NSMutableArray alloc] init];
+        self.sensorId = anId;
+        self.states = [NSMutableArray array];
     }
     return self;
 }
 
 - (void)dealloc
 {
-	[states release];
+    self.states = nil;
 	[super dealloc];
 }
 
@@ -50,5 +55,7 @@
     }
     return nil;
 }
+
+@synthesize sensorId, states;
 
 @end

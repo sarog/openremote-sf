@@ -22,11 +22,7 @@
 
 @class Label;
 
-@interface Image : SensorComponent {
-	NSString *src;
-	NSString *style;
-	Label *label;
-}
+@interface Image : SensorComponent
 
 @property (nonatomic, readwrite, copy) NSString *src;
 @property (nonatomic, readwrite, copy) NSString *style;

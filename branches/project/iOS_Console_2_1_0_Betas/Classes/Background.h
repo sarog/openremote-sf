@@ -22,14 +22,7 @@
 
 @class Image;
 
-@interface Background : NSObject {
-	int backgroundImageAbsolutePositionLeft;
-	int backgroundImageAbsolutePositionTop;
-	BOOL isBackgroundImageAbsolutePosition;
-	NSString *backgroundImageRelativePosition;
-	BOOL fillScreen;
-	Image *backgroundImage;
-}
+@interface Background : NSObject
 
 @property(nonatomic, readwrite) int backgroundImageAbsolutePositionLeft;
 @property(nonatomic, readwrite) int backgroundImageAbsolutePositionTop;

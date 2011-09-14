@@ -23,8 +23,6 @@
 
 @implementation TextFieldCell
 
-@synthesize textField;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         textField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -61,5 +59,7 @@
 		textField.textColor = [UIColor darkGrayColor];
 	}
 }
+
+@synthesize textField;
 
 @end

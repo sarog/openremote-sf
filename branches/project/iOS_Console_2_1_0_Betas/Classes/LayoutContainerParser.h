@@ -23,11 +23,7 @@
 @class LayoutContainer;
 
 @interface LayoutContainerParser : DefinitionElementParser
-{
-    @protected    
-    LayoutContainer *layoutContainer;
-}
 
-@property (nonatomic, readonly) LayoutContainer *layoutContainer;
+@property (nonatomic, retain, readonly) LayoutContainer *layoutContainer;
 
 @end

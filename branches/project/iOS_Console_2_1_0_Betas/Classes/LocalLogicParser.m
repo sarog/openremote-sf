@@ -25,6 +25,11 @@
 #import "TaskParser.h"
 #import "XMLEntity.h"
 
+@interface LocalLogicParser ()
+
+@property (nonatomic, retain, readwrite) LocalLogic *localLogic;
+
+@end
 /**
  * Example of panel.xml config for locallogic part
  *  <locallogic>
@@ -43,11 +48,9 @@
  */
 @implementation LocalLogicParser
 
-@synthesize localLogic;
-
 - (void)dealloc
 {
-    [localLogic release];
+    self.localLogic = nil;
     [super dealloc];
 }
 
@@ -58,24 +61,28 @@
         [self addKnownTag:SENSOR];
         [self addKnownTag:COMMAND];
         [self addKnownTag:TASK];
-        localLogic = [[LocalLogic alloc] init];
+        LocalLogic *tmp = [[LocalLogic alloc] init];
+        self.localLogic = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endSensorElement:(SensorParser *)parser
 {
-    [localLogic addSensor:parser.sensor];
+    [self.localLogic addSensor:parser.sensor];
 }
 
 - (void)endCommandElement:(CommandParser *)parser
 {
-    [localLogic addCommand:parser.command];
+    [self.localLogic addCommand:parser.command];
 }
 
 - (void)endTaskElement:(TaskParser *)parser
 {
-    [localLogic addTask:parser.task];
+    [self.localLogic addTask:parser.task];
 }
+
+@synthesize localLogic;
 
 @end

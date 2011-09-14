@@ -24,6 +24,6 @@
 
 @interface GestureParser : DefinitionElementParser
 
-@property (nonatomic, readonly) Gesture *gesture;
+@property (nonatomic, retain, readonly) Gesture *gesture;
 
 @end

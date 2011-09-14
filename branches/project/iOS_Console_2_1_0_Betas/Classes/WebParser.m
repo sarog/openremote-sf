@@ -27,13 +27,17 @@
 #import "Sensor.h"
 #import "XMLEntity.h"
 
-@implementation WebParser
+@interface WebParser ()
 
-@synthesize web;
+@property (nonatomic, retain, readwrite) Web *web;
+
+@end
+
+@implementation WebParser
 
 - (void)dealloc
 {
-    [web release];
+    self.web = nil;
     [super dealloc];
 }
 
@@ -41,8 +45,10 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        [self addKnownTag:LINK]; 
-        web = [[Web alloc] initWithId:[[attributeDict objectForKey:ID] intValue] src:[attributeDict objectForKey:SRC] username:[attributeDict objectForKey:USERNAME] password:[attributeDict objectForKey:PASSWORD]];
+        [self addKnownTag:LINK];
+        Web *tmp = [[Web alloc] initWithId:[[attributeDict objectForKey:ID] intValue] src:[attributeDict objectForKey:SRC] username:[attributeDict objectForKey:USERNAME] password:[attributeDict objectForKey:PASSWORD]];
+        self.web = tmp;
+        [tmp release];
     }
     return self;
 }
@@ -50,14 +56,16 @@
 - (void)endSensorLinkElement:(SensorLinkParser *)parser
 {
     if (parser.sensor) {
-        web.sensor = parser.sensor;
+        self.web.sensor = parser.sensor;
         
         
         // TODO: why is this done (here ? maybe in SensorState itself ?) 
-        for (SensorState *state in web.sensor.states) {
+        for (SensorState *state in self.web.sensor.states) {
 			[self.depRegister.definition addImageName:state.value];
 		}
     }
 }
+
+@synthesize web;
 
 @end

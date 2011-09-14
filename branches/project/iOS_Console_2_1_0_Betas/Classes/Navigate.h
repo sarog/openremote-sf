@@ -20,19 +20,7 @@
  */
 #import <Foundation/Foundation.h>
 
-@interface Navigate : NSObject {
-	
-	int toScreen;
-	int toGroup;
-	BOOL isPreviousScreen;
-	BOOL isNextScreen;
-	BOOL isBack;
-	BOOL isSetting;
-	BOOL isLogin;
-	BOOL isLogout;
-	int fromGroup;
-	int fromScreen;
-}
+@interface Navigate : NSObject
 
 @property (nonatomic, readwrite, assign) int toScreen;
 @property (nonatomic, readwrite, assign) int toGroup;

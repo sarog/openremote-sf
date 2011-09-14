@@ -35,9 +35,6 @@
 
 @implementation ORControllerPollingSender
 
-@synthesize controller;
-@synthesize delegate;
-
 - (id)initWithController:(ORController *)aController ids:(NSString *)someIds
 {
     self = [super init];
@@ -169,5 +166,8 @@
 		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
 	}
 }
+
+@synthesize controller;
+@synthesize delegate;
 
 @end

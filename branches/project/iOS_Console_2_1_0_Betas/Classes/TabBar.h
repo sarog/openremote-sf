@@ -20,10 +20,8 @@
  */
 #import <Foundation/Foundation.h>
 
-@interface TabBar : NSObject {
-	NSMutableArray *tabBarItems;
-}
+@interface TabBar : NSObject
 
-@property (nonatomic, readonly) NSMutableArray *tabBarItems;
+@property (nonatomic, retain, readonly) NSMutableArray *tabBarItems;
 
 @end

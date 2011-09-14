@@ -37,8 +37,6 @@
 
 @implementation ServerAutoDiscoveryController
 
-@synthesize delegate;
-
 //Setup autodiscovery and start. 
 // Needn't call annother method to send upd and start tcp server.
 - (id)initWithDelegate:(id)aDelegate
@@ -190,5 +188,7 @@
 {
 	NSLog(@"receive socket host %@ port %d", host, port);
 }
+
+@synthesize delegate;
 
 @end

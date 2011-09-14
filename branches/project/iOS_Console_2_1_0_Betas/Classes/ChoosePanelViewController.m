@@ -42,10 +42,6 @@
 
 @implementation ChoosePanelViewController
 
-@synthesize delegate;
-@synthesize panelsFetcher;
-@synthesize panels;
-
 - (id)init
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
@@ -64,15 +60,6 @@
     self.panelsFetcher = nil;
 	
 	[super dealloc];
-}
-
-- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
-{
-    if (panelsFetcher != aPanelsFetcher) {
-        panelsFetcher.delegate = nil;
-        [panelsFetcher release];
-        panelsFetcher = [aPanelsFetcher retain];
-    }
 }
 
 - (void)viewDidLoad
@@ -111,7 +98,7 @@
 
 // Customize the number of rows in the table view.
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return panels.count;
+	return self.panels.count;
 }
 
 // Customize the appearance of table view cells.
@@ -123,7 +110,7 @@
 		panelCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:panelCellIdentifier] autorelease];
 	}
 	
-	panelCell.textLabel.text = [panels objectAtIndex:indexPath.row];
+	panelCell.textLabel.text = [self.panels objectAtIndex:indexPath.row];
 	panelCell.selectionStyle = UITableViewCellSelectionStyleNone;
 	
 	if ([panelCell.textLabel.text isEqualToString:chosenPanel]) {
@@ -159,7 +146,7 @@
 
 - (void)updateTableView {
 	NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
-	for (int j = 0; j < [panels count]; j++) {
+	for (int j = 0; j < [self.panels count]; j++) {
 		[insertIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:0]];
 	}
 
@@ -191,6 +178,18 @@
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
     [ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[error localizedDescription]];
+}
+
+@synthesize delegate;
+@synthesize panelsFetcher;
+@synthesize panels;
+
+- (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
+{
+    if (panelsFetcher != aPanelsFetcher) {
+        panelsFetcher.delegate = nil;
+        panelsFetcher = [aPanelsFetcher retain];
+    }
 }
 
 @end

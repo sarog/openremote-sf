@@ -22,13 +22,17 @@
 #import "LocalCommand.h"
 #import "XMLEntity.h"
 
-@implementation CommandParser
+@interface CommandParser ()
 
-@synthesize command;
+@property (nonatomic, retain, readwrite) LocalCommand *command;
+
+@end
+
+@implementation CommandParser
 
 - (void)dealloc
 {
-    [command release];
+    self.command = nil;
     [super dealloc];
 }
 
@@ -36,9 +40,13 @@
 {
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
-        command = [[LocalCommand alloc] initWithId:[[attributeDict objectForKey:ID] intValue] className:[attributeDict objectForKey:CLASS] methodName:[attributeDict objectForKey:METHOD]];
+        LocalCommand *tmp = [[LocalCommand alloc] initWithId:[[attributeDict objectForKey:ID] intValue] className:[attributeDict objectForKey:CLASS] methodName:[attributeDict objectForKey:METHOD]];
+        self.command = tmp;
+        [tmp release];
     }
     return self;
 }
+
+@synthesize command;
 
 @end

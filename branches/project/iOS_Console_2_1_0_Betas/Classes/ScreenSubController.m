@@ -42,10 +42,6 @@
 
 @implementation ScreenSubController
 
-@synthesize view;
-@synthesize screen;
-@synthesize layoutContainers;
-
 - (id)initWithScreen:(Screen *)aScreen
 {
     self = [super init];
@@ -80,7 +76,7 @@
     int screenBackgroundImageViewWidth = 0;
     int screenBackgroundImageViewHeight = 0;
     
-    if (screen.landscape) {
+    if (self.screen.landscape) {
         screenBackgroundImageViewWidth = [UIScreen mainScreen].bounds.size.height;
         screenBackgroundImageViewHeight = [UIScreen mainScreen].bounds.size.width;
     } else {
@@ -88,19 +84,19 @@
         screenBackgroundImageViewHeight = [UIScreen mainScreen].bounds.size.height;
     }
 
-	if ([[[self.screen background] backgroundImage] src] && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[screen background] backgroundImage] src]]]) {
-		UIImage *backgroundImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[screen background] backgroundImage] src]]];
+	if ([[[self.screen background] backgroundImage] src] && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[self.screen background] backgroundImage] src]]]) {
+		UIImage *backgroundImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[self.screen background] backgroundImage] src]]];
         
 		UIImageView *backgroundImageView = [[UIImageView alloc] init];
 		// fillscreen is false
-		if (![[screen background] fillScreen]) {
+		if (![[self.screen background] fillScreen]) {
 			NSLog(@"BackgroundImage isn't fillScreen");
 			NSLog(@"BackgroundImage's original width:%f, height:%f", backgroundImage.size.width, backgroundImage.size.height);
 			
 			// absolute position of screen background.
-			if ([[screen background] isBackgroundImageAbsolutePosition]) {
-				int left = [[screen background] backgroundImageAbsolutePositionLeft];
-				int top = [[screen background] backgroundImageAbsolutePositionTop];
+			if ([[self.screen background] isBackgroundImageAbsolutePosition]) {
+				int left = [[self.screen background] backgroundImageAbsolutePositionLeft];
+				int top = [[self.screen background] backgroundImageAbsolutePositionTop];
 				if (left > 0) {
 					screenBackgroundImageViewWidth = screenBackgroundImageViewWidth-left;
 				}
@@ -124,7 +120,7 @@
 			else {
 				// relative position
 				[backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
-				NSString *backgroundImageRelativePosition = [[screen background] backgroundImageRelativePosition];
+				NSString *backgroundImageRelativePosition = [[self.screen background] backgroundImageRelativePosition];
 				backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:backgroundImageRelativePosition isUIImageFillUIView:NO];
 			}
 		}
@@ -145,5 +141,9 @@
         [aView release];
     }
 }
+
+@synthesize view;
+@synthesize screen;
+@synthesize layoutContainers;
 
 @end

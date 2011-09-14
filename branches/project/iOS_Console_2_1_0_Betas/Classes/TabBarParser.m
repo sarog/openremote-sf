@@ -23,6 +23,12 @@
 #import "TabBarItemParser.h"
 #import "XMLEntity.h"
 
+@interface TabBarParser ()
+
+@property (nonatomic, retain, readwrite) TabBar *tabBar;
+
+@end
+
 /**
  * Stores model data about tabbar parsed from "tabbar" element in panel.xml.
  * XML fragment example:
@@ -43,11 +49,9 @@
  */
 @implementation TabBarParser
 
-@synthesize tabBar;
-
 - (void)dealloc
 {
-    [tabBar release];
+    self.tabBar = nil;
     [super dealloc];
 }
 
@@ -56,14 +60,18 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:ITEM];
-        tabBar = [[TabBar alloc] init];
+        TabBar *tmp = [[TabBar alloc] init];
+        self.tabBar = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endTabBarItemElement:(TabBarItemParser *)parser
 {
-    [tabBar.tabBarItems addObject:parser.tabBarItem];
+    [self.tabBar.tabBarItems addObject:parser.tabBarItem];
 }
+
+@synthesize tabBar;
 
 @end

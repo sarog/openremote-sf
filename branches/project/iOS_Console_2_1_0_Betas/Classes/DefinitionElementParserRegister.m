@@ -31,11 +31,6 @@
 
 @implementation DefinitionElementParserRegister
 
-@synthesize parserRegister;
-@synthesize endSelectorRegister;
-@synthesize deferredBindings;
-@synthesize definition;
-
 - (id)init
 {
     self = [super init];
@@ -59,19 +54,19 @@
 
 - (void)registerParserClass:(Class)parserClass endSelector:(SEL)selector forTag:(NSString *)tag
 {
-    [parserRegister setObject:parserClass forKey:tag];
-    [endSelectorRegister setObject:[NSValue valueWithBytes:&selector objCType:@encode(SEL)] forKey:tag];
+    [self.parserRegister setObject:parserClass forKey:tag];
+    [self.endSelectorRegister setObject:[NSValue valueWithBytes:&selector objCType:@encode(SEL)] forKey:tag];
 }
 
 - (Class)parserClassForTag:(NSString *)tag
 {
-    return [parserRegister objectForKey:tag];
+    return [self.parserRegister objectForKey:tag];
 }
 
 - (SEL)endSelectorForTag:(NSString *)tag
 {
     SEL retValue;
-    [[endSelectorRegister objectForKey:tag] getValue:&retValue];
+    [[self.endSelectorRegister objectForKey:tag] getValue:&retValue];
     return retValue;
 }
 
@@ -85,5 +80,10 @@
     [self.deferredBindings makeObjectsPerformSelector:@selector(bind)];
     [self.deferredBindings removeAllObjects];
 }
+
+@synthesize parserRegister;
+@synthesize endSelectorRegister;
+@synthesize deferredBindings;
+@synthesize definition;
 
 @end

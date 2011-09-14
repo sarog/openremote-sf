@@ -30,32 +30,22 @@
 
 @implementation Image
 
-@synthesize src, style, label;
-
 - (id)initWithId:(int)anId src:(NSString *)srcValue style:(NSString *)styleValue
 {
     self = [super init];
     if (self) {
-        componentId = anId;
-        src = [srcValue copy];
-        style = [styleValue copy];
+        self.componentId = anId;
+        self.src = srcValue;
+        self.style = styleValue;
     }
     return self;
 }
 
-- (void)setSrc:(NSString *)imgSrc {
-    if (imgSrc != src) {
-        [src release];
-        src = [imgSrc retain];
-        // TODO EBR review
-//        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition addImageName:src];
-    }
-}
-
-- (void)dealloc {
-	[src release];
-	[style release];
-	[label release];
+- (void)dealloc
+{
+	self.src = nil;
+    self.style = nil;
+    self.label = nil;
 	[super dealloc];
 }
 
@@ -63,6 +53,18 @@
 {
     int sid = self.sensor.sensorId;
     return (sid > 0)?sid:self.label.sensorId;
+}
+
+@synthesize src, style, label;
+
+- (void)setSrc:(NSString *)imgSrc
+{
+    if (imgSrc != src) {
+        [src release];
+        src = [imgSrc retain];
+        // TODO EBR review, if we don't need that, we can use the synthesized setter, no need for this
+        //        [[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition addImageName:src];
+    }
 }
 
 @end

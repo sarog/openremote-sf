@@ -26,13 +26,17 @@
 #import "Definition.h"
 #import "DefinitionElementParserRegister.h"
 
-@implementation DefinitionParser
+@interface DefinitionParser()
 
-@synthesize definition;
+@property (nonatomic, retain, readwrite) Definition *definition;
+
+@end
+
+@implementation DefinitionParser
 
 - (void)dealloc
 {
-    [definition release];
+    self.definition = nil;
     [super dealloc];
 }
 
@@ -44,8 +48,11 @@
         [self addKnownTag:@"group"];
         [self addKnownTag:@"tabbar"];
         [self addKnownTag:@"locallogic"];
-        definition = [[Definition alloc] init];
-        aRegister.definition = definition;
+        Definition *tmp;
+        tmp = [[Definition alloc] init];
+        self.definition = tmp;
+        [tmp release];
+        aRegister.definition = self.definition;
     }
     return self;
 }
@@ -74,5 +81,7 @@
 {
     return @"definition";
 }
+
+@synthesize definition;
 
 @end

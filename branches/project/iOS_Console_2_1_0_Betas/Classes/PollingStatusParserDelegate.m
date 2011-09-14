@@ -23,8 +23,6 @@
 
 @implementation PollingStatusParserDelegate
 
-@synthesize lastId, statusMap;
-
 - (id)init {
 	if (self = [super init]) {
 		statusMap = [[NSMutableDictionary alloc] init];
@@ -67,5 +65,7 @@
 
 	[super dealloc];	
 }
+
+@synthesize lastId, statusMap;
 
 @end

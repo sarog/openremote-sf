@@ -23,6 +23,11 @@
 #import "ImageParser.h"
 #import "XMLEntity.h"
 
+@interface ColorPickerParser ()
+
+@property (nonatomic, retain, readwrite) ColorPicker *colorPicker;
+
+@end
 /**
  * ColorPicker mainly stores image model data and parsed from element colorpicker.
  * XML fragment example:
@@ -32,11 +37,9 @@
  */
 @implementation ColorPickerParser
 
-@synthesize colorPicker;
-
 - (void)dealloc
 {
-    [colorPicker release];
+    self.colorPicker = nil;
     [super dealloc];
 }
 
@@ -45,14 +48,18 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:IMAGE];
-        colorPicker = [[ColorPicker alloc] initWithId:[[attributeDict objectForKey:@"id"] intValue]];
+        ColorPicker *tmp = [[ColorPicker alloc] initWithId:[[attributeDict objectForKey:@"id"] intValue]];
+        self.colorPicker = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endImageElement:(ImageParser *)parser
 {
-    colorPicker.image = parser.image;
+    self.colorPicker.image = parser.image;
 }
+
+@synthesize colorPicker;
 
 @end

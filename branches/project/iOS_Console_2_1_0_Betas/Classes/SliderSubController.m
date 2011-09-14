@@ -87,10 +87,6 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 @implementation SliderSubController
 
-@synthesize view;
-@synthesize currentValue;
-@synthesize sliderTip;
-
 - (id)initWithComponent:(Component *)aComponent
 {
     self = [super initWithComponent:aComponent];
@@ -146,7 +142,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
         
         //	uiSlider.continuous = YES;
         uiSlider.value = 0.0;
-        currentValue = 0.0;
+        self.currentValue = 0.0;
         
         if (self.slider.vertical) {
             uiSlider.transform = CGAffineTransformMakeRotation(270.0/180*M_PI);
@@ -197,7 +193,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	int sensorId = self.slider.sensor.sensorId;
 	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
 	((UISlider *)self.view).value = newStatus;
-	currentValue = (int)newStatus;
+	self.currentValue = (int)newStatus;
 }
 
 #pragma mark Private methods
@@ -205,7 +201,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 // This method will be executed after slide action finished.
 - (void) afterSlide:(UISlider *)sender {
 	int afterSlideValue = (int)[sender value];
-	if (currentValue >= 0 && abs(currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
+	if (self.currentValue >= 0 && abs(self.currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		//NSLog(@"The value sent is : %d", afterSlideValue);
 		[self refreshTip]; // showTip:sliderTip ofSlider:uiSlider withSender:sender];
 		//[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
@@ -216,11 +212,11 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 -(void) releaseSlider:(UISlider *)sender {
 	int afterSlideValue = (int)[sender value];
-	if (currentValue >= 0 && abs(currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
+	if (self.currentValue >= 0 && abs(self.currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
 	}
-	sliderTip.hidden = YES;
-	[self clearSliderTipSubviews:sliderTip];
+	self.sliderTip.hidden = YES;
+	[self clearSliderTipSubviews:self.sliderTip];
 }
 
 -(void) touchDownSlider:(UISlider *)sender {
@@ -280,5 +276,9 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 		[aView removeFromSuperview];
 	}
 }
+
+@synthesize view;
+@synthesize currentValue;
+@synthesize sliderTip;
 
 @end

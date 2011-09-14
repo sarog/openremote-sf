@@ -25,9 +25,7 @@
 /**
  * This is super class of components which can polling status.
  */
-@interface SensorComponent : Component {
-	Sensor *sensor;
-}
+@interface SensorComponent : Component
 
 @property (nonatomic, retain) Sensor *sensor;
 /**

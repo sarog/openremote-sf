@@ -35,8 +35,6 @@
 
 @implementation TabBarController
 
-@synthesize customziedTabBar, groupController;
-
 - (id) initWithGroupController:(GroupController *)groupControllerParam tabBar:(TabBar *)tabBar {
 	if (self = [super initWithNibName:nil bundle:nil]) {
 		if (tabBar) {
@@ -166,5 +164,6 @@
 	[super dealloc];
 }
 
+@synthesize customziedTabBar, groupController;
 
 @end

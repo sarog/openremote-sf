@@ -23,6 +23,12 @@
 #import "ImageParser.h"
 #import "XMLEntity.h"
 
+@interface BackgroundParser ()
+
+@property (nonatomic, retain, readwrite) Background *background;
+
+@end
+
 /**
  * Background stores informations parsed from background element in panel.xml.
  * XML fragment example:
@@ -32,11 +38,9 @@
  */
 @implementation BackgroundParser
 
-@synthesize background;
-
 - (void)dealloc
 {
-    [background release];
+    self.background = nil;
     [super dealloc];
 }
 
@@ -46,23 +50,28 @@
     if (self) {
         [self addKnownTag:IMAGE];
         NSString *relativeStr = [attributeDict objectForKey:@"relative"];
+        Background *tmp = nil;
         if (relativeStr) {
-            background = [[Background alloc] initWithRelativePosition:relativeStr fillScreen:[@"true" isEqualToString:[[attributeDict objectForKey:@"fillScreen"] lowercaseString]]];
+            tmp = [[Background alloc] initWithRelativePosition:relativeStr fillScreen:[@"true" isEqualToString:[[attributeDict objectForKey:@"fillScreen"] lowercaseString]]];
         } else {
             NSString *absoluteStr = [attributeDict objectForKey:@"absolute"];
 			NSRange rangeOfComma = [absoluteStr rangeOfString:@","];
 			int indexOfComma = rangeOfComma.location;
-            background = [[Background alloc] initWithAbsolutePositionLeft:[[absoluteStr substringToIndex:indexOfComma] intValue]
+            tmp = [[Background alloc] initWithAbsolutePositionLeft:[[absoluteStr substringToIndex:indexOfComma] intValue]
                                                                       top:[[absoluteStr substringFromIndex:indexOfComma+1] intValue]
                                                                fillScreen:[@"true" isEqualToString:[[attributeDict objectForKey:@"fillScreen"] lowercaseString]]];
         }
+        self.background = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endImageElement:(ImageParser *)parser
 {
-    background.backgroundImage = parser.image;
+    self.background.backgroundImage = parser.image;
 }
+
+@synthesize background;
 
 @end

@@ -33,30 +33,24 @@
 #define POLLING_RETRY_DELAY 0.5
 
 @interface PollingHelper ()
-    
+
+@property(nonatomic, readwrite) BOOL isPolling;
+@property(nonatomic, readwrite) BOOL isError;
+@property(nonatomic, retain, readwrite) NSString *pollingStatusIds;
+@property (nonatomic, retain) NSArray *localSensors;
+@property (nonatomic, retain) NSMutableDictionary *localSensorTimers;
 @property (nonatomic, retain) ORControllerPollingSender *pollingSender;
     
 @end
     
 @implementation PollingHelper
 
-@synthesize isPolling, pollingStatusIds, isError, pollingSender;
-
-- (void)setPollingSender:(ORControllerPollingSender *)aPollingSender
-{
-    if (pollingSender != aPollingSender) {
-        pollingSender.delegate = nil;
-        [pollingSender release];
-        pollingSender = [aPollingSender retain];
-    }
-}
-
 - (id) initWithComponentIds:(NSString *)ids
 {
     self = [super init];
 	if (self) {
-		isPolling = NO;
-		isError = NO;
+		self.isPolling = NO;
+		self.isError = NO;
 		
 		NSMutableArray *remoteSensors = [NSMutableArray array];
 		NSMutableArray *tempLocalSensors = [NSMutableArray array];
@@ -69,48 +63,48 @@
 			}
 		}
 		if ([remoteSensors count] > 0) {
-			pollingStatusIds = [[remoteSensors componentsJoinedByString:@","] retain];
+			self.pollingStatusIds = [remoteSensors componentsJoinedByString:@","];
 		}
-		localSensors = [[NSArray arrayWithArray:tempLocalSensors] retain];
-		NSLog(@"pollingStatusIds %@", pollingStatusIds);
+		self.localSensors = [NSArray arrayWithArray:tempLocalSensors];
+		NSLog(@"pollingStatusIds %@", self.pollingStatusIds);
 	}
 	
 	return self;
 }
 
 - (void)requestCurrentStatusAndStartPolling {
-	if (isPolling) {
+	if (self.isPolling) {
 		return;
 	}
-	isPolling = YES;
+	self.isPolling = YES;
 	
 	// Only if remote sensors
-	if (pollingStatusIds) {
-        self.pollingSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController requestStatusForIds:pollingStatusIds delegate:self];
+	if (self.pollingStatusIds) {
+        self.pollingSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController requestStatusForIds:self.pollingStatusIds delegate:self];
 	}
 	
 	// For local sensors, schedule timers to handle calling the required method
-	localSensorTimers = [[NSMutableDictionary dictionaryWithCapacity:[localSensors count]] retain];
-	for (LocalSensor *sensor in localSensors) {
-		[localSensorTimers setObject:[NSTimer scheduledTimerWithTimeInterval:(sensor.refreshRate / 1000.0) target:self selector:@selector(handleLocalSensorForTimer:) userInfo:sensor repeats:YES]
+	self.localSensorTimers = [NSMutableDictionary dictionaryWithCapacity:[self.localSensors count]];
+	for (LocalSensor *sensor in self.localSensors) {
+		[self.localSensorTimers setObject:[NSTimer scheduledTimerWithTimeInterval:(sensor.refreshRate / 1000.0) target:self selector:@selector(handleLocalSensorForTimer:) userInfo:sensor repeats:YES]
 							  forKey:[NSNumber numberWithInt:sensor.componentId]];
 	}
 }
 
 - (void)doPolling {
-    self.pollingSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController requestPollingForIds:pollingStatusIds delegate:self];
+    self.pollingSender = [[ORConsoleSettingsManager sharedORConsoleSettingsManager].currentController requestPollingForIds:self.pollingStatusIds delegate:self];
 }
 
 - (void)cancelLocalSensors {
 	// Cancel local sensors
-	for (NSTimer *timer in [localSensorTimers allValues]) {
+	for (NSTimer *timer in [self.localSensorTimers allValues]) {
 		[timer invalidate];
 	}
-	[localSensorTimers removeAllObjects];	
+	[self.localSensorTimers removeAllObjects];	
 }
 
 - (void)cancelPolling {
-	isPolling = NO;
+	self.isPolling = NO;
     [self.pollingSender cancel];
     [self cancelLocalSensors];
 }
@@ -141,17 +135,17 @@
                                        selector:@selector(doPolling) 
                                        userInfo:nil 
                                         repeats:NO];
-	} else if (!isError) {
+	} else if (!self.isError) {
 		NSLog(@"Polling failed, %@",[error localizedDescription]);
-		isError = YES;
+		self.isError = YES;
 	}    
 }
 
 - (void)pollingDidSucceed
 {
     [URLConnectionHelper setWifiActive:YES];
-    isError = NO;
-    if (isPolling == YES) {
+    self.isError = NO;
+    if (self.isPolling == YES) {
         [self doPolling];
     }    
 }
@@ -159,28 +153,37 @@
 - (void)pollingDidTimeout
 {
     // Polling timed out, need to refresh
-    isError = NO;				
-    if (isPolling == YES) {
+    self.isError = NO;				
+    if (self.isPolling == YES) {
         [self doPolling];
     }
 }
 
 - (void)pollingDidReceiveErrorResponse
 {
-    isError = YES;
-    isPolling = NO;
+    self.isError = YES;
+    self.isPolling = NO;
 }
-
-
 
 - (void)dealloc
 {
-	[pollingSender release];
-	[pollingStatusIds release];
+	self.pollingSender = nil;
+    self.pollingStatusIds = nil;
 	[self cancelLocalSensors];
-	[localSensors release];
-	[localSensorTimers release];
+    self.localSensors = nil;
+    self.localSensorTimers = nil;
 	[super dealloc];
+}
+
+@synthesize isPolling, pollingStatusIds, isError, pollingSender, localSensors, localSensorTimers;
+
+- (void)setPollingSender:(ORControllerPollingSender *)aPollingSender
+{
+    if (pollingSender != aPollingSender) {
+        pollingSender.delegate = nil;
+        [pollingSender release];
+        pollingSender = [aPollingSender retain];
+    }
 }
 
 @end

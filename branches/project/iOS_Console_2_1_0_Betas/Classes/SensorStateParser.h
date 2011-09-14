@@ -24,6 +24,6 @@
 
 @interface SensorStateParser : DefinitionElementParser
 
-@property (nonatomic, readonly) SensorState *sensorState;
+@property (nonatomic, retain, readonly) SensorState *sensorState;
 
 @end

@@ -20,13 +20,9 @@
  */
 #import "LayoutContainer.h"
 
-@interface GridLayoutContainer : LayoutContainer {
-	NSMutableArray *cells;
-	int rows;
-	int cols;
-}
+@interface GridLayoutContainer : LayoutContainer
 
-@property (nonatomic, readonly) NSMutableArray *cells;
+@property (nonatomic, retain, readonly) NSMutableArray *cells;
 @property (nonatomic, readonly) int rows;
 @property (nonatomic, readonly) int cols;
 

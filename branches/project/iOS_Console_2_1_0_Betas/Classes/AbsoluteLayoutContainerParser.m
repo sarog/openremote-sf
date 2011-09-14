@@ -32,6 +32,12 @@
 #import "Definition.h"
 #import "XMLEntity.h"
 
+@interface AbsoluteLayoutContainerParser()
+
+@property (nonatomic, retain, readwrite) LayoutContainer *layoutContainer;
+
+@end
+
 /**
  * AbsoluteLayoutContainer model, it stores one kind of all component models data, its frame and parsed from element absolute in panel.xml.
  * XML fragment example:
@@ -52,48 +58,52 @@
         [self addKnownTag:SWITCH];
         [self addKnownTag:SLIDER];
         [self addKnownTag:COLORPICKER];
-        layoutContainer = [[AbsoluteLayoutContainer alloc] initWithLeft:[[attributeDict objectForKey:@"left"] intValue]
+        LayoutContainer *tmp = [[AbsoluteLayoutContainer alloc] initWithLeft:[[attributeDict objectForKey:@"left"] intValue]
                                                                     top:[[attributeDict objectForKey:@"top"] intValue]
                                                                   width:[[attributeDict objectForKey:@"width"] intValue]
                                                                  height:[[attributeDict objectForKey:@"height"] intValue]];
+        self.layoutContainer = tmp;
+        [tmp release];
     }
     return self;
 }
 
 - (void)endLabelElement:(LabelParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.label;    
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.label;    
     [self.depRegister.definition addLabel:parser.label];
 }
 
 - (void)endImageElement:(ImageParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.image;
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.image;
 }
 
 - (void)endWebElement:(WebParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.web;
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.web;
 }
 
 - (void)endButtonElement:(ButtonParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.button;
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.button;
 }
 
 - (void)endSwitchElement:(SwitchParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.sswitch;
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.sswitch;
 }
 
 - (void)endSliderElement:(SliderParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.slider;
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.slider;
 }
 
 - (void)endColorPickerElement:(ColorPickerParser *)parser
 {
-    ((AbsoluteLayoutContainer *)layoutContainer).component = parser.colorPicker;
+    ((AbsoluteLayoutContainer *)self.layoutContainer).component = parser.colorPicker;
 }
+
+@synthesize layoutContainer;
 
 @end

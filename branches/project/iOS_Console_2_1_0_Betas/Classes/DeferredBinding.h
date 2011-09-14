@@ -13,7 +13,7 @@
 @interface DeferredBinding : NSObject
 
 @property (nonatomic, assign, readonly) int boundComponentId;
-@property (nonatomic, readonly) id enclosingObject;
+@property (nonatomic, retain, readonly) id enclosingObject;
 @property (nonatomic, assign) Definition *definition;
 
 - (id)initWithBoundComponentId:(int)anId enclosingObject:(id)anEnclosingObject;

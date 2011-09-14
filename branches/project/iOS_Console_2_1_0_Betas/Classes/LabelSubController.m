@@ -35,8 +35,6 @@
 
 @implementation LabelSubController
 
-@synthesize view;
-
 - (id)initWithComponent:(Component *)aComponent
 {
     self = [super initWithComponent:aComponent];
@@ -79,5 +77,7 @@
         }
     }
 }
+
+@synthesize view;
 
 @end

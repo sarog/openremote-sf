@@ -52,10 +52,6 @@
 
 @implementation ButtonSubController
 
-@synthesize view;
-@synthesize controllerButtonAPI;
-@synthesize buttonRepeatTimer, longPressTimer, longPress;
-
 - (id)initWithComponent:(Component *)aComponent
 {
     self = [super initWithComponent:aComponent];
@@ -188,5 +184,9 @@
     [super commandSendFailed];
     [self cancelTimers];
 }
+
+@synthesize view;
+@synthesize controllerButtonAPI;
+@synthesize buttonRepeatTimer, longPressTimer, longPress;
 
 @end

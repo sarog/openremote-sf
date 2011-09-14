@@ -33,6 +33,7 @@ typedef enum {
 @interface ButtonParserAPI_v2_1 ()
 
 @property (nonatomic, assign) ButtonImageType currentImageType;
+@property (nonatomic, retain, readwrite) Button *button;
 
 @end
 
@@ -50,9 +51,6 @@ typedef enum {
  * </button>
  */
 @implementation ButtonParserAPI_v2_1
-
-@synthesize button = _button;
-@synthesize currentImageType;
 
 - (id)initWithRegister:(DefinitionElementParserRegister *)aRegister attributes:(NSDictionary *)attributeDict
 {
@@ -84,7 +82,7 @@ typedef enum {
         }
         [formatter release];
 
-        _button = [[Button alloc] initWithId:[[attributeDict objectForKey:@"id"] intValue]
+        Button *tmp = [[Button alloc] initWithId:[[attributeDict objectForKey:@"id"] intValue]
                                        name:[attributeDict objectForKey:@"name"]
                                      repeat:[@"TRUE" isEqualToString:[[attributeDict objectForKey:@"repeat"] uppercaseString]]
                                 repeatDelay:repeatDelay
@@ -93,6 +91,8 @@ typedef enum {
                         hasLongPressCommand:[@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasLongPressCommand"] uppercaseString]]
                       hasLongReleaseCommand:[@"TRUE" isEqualToString:[[attributeDict objectForKey:@"hasLongReleaseCommand"] uppercaseString]]
                              longPressDelay:longPressDelay];
+        self.button = tmp;
+        [tmp release];
     }
     return self;
 }
@@ -135,5 +135,8 @@ typedef enum {
             break;
     }
 }
+
+@synthesize button;
+@synthesize currentImageType;
 
 @end

@@ -23,10 +23,8 @@
 /**
  * Component is super class of all models in screen.
  */
-@interface Component : NSObject {
-	int componentId;
-}
+@interface Component : NSObject
 
-@property(nonatomic,readwrite)int componentId;
+@property (nonatomic, readwrite) int componentId;
 
 @end

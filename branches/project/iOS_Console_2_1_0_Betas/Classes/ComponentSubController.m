@@ -43,8 +43,6 @@
 
 @implementation ComponentSubController
 
-@synthesize component;
-
 static NSMutableDictionary *modelObjectToSubControllerClassMapping;
 
 + (void)initialize
@@ -81,5 +79,7 @@ static NSMutableDictionary *modelObjectToSubControllerClassMapping;
     Class clazz = [modelObjectToSubControllerClassMapping objectForKey:[modelObject class]];
     return clazz?clazz:self;
 }
+
+@synthesize component;
 
 @end

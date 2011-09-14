@@ -41,11 +41,6 @@
 
 @implementation SwitchSubController
 
-@synthesize view;
-@synthesize sswitch;
-@synthesize canUseImage, isOn;
-@synthesize onUIImage, offUIImage;
-
 - (id)initWithComponent:(Component *)aComponent
 {
     self = [super initWithComponent:aComponent];
@@ -57,7 +52,7 @@
         NSString *offImage = self.sswitch.offImage.src;
         self.canUseImage = onImage && offImage;
 
-        if (canUseImage) {
+        if (self.canUseImage) {
             self.onUIImage = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:onImage]] autorelease];
             self.offUIImage = [[[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:offImage]] autorelease];
             [button.imageView setContentMode:UIViewContentModeCenter];
@@ -101,7 +96,7 @@
 {
 	if (on) {
 		self.isOn = YES;
-		if (canUseImage) {
+		if (self.canUseImage) {
 			[(UIButton *)self.view setImage:self.onUIImage forState:UIControlStateNormal];		
 		} else {
 			[(UIButton *)self.view setTitle:@"ON" forState:UIControlStateNormal];			
@@ -109,7 +104,7 @@
 	} else {
         NSLog(@"%@", self.view);
 		self.isOn = NO;
-		if (canUseImage) {
+		if (self.canUseImage) {
 			[(UIButton *)self.view setImage:self.offUIImage forState:UIControlStateNormal];			
 		} else {
 			[(UIButton *)self.view setTitle:@"OFF" forState:UIControlStateNormal];
@@ -126,5 +121,10 @@
 		[self sendCommandRequest:@"ON"];
 	} 
 }
+
+@synthesize view;
+@synthesize sswitch;
+@synthesize canUseImage, isOn;
+@synthesize onUIImage, offUIImage;
 
 @end

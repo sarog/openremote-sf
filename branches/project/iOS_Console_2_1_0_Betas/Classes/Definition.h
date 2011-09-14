@@ -29,14 +29,7 @@
 /**
  * This class is responsible for downloading, parsing panel data and storing some models data(groups, screens, labels and tabBar)
  */
-@interface Definition : NSObject {		
-	NSMutableArray *groups;
-	NSMutableArray *screens;
-	NSMutableArray *labels;
-	TabBar *tabBar;
-	LocalLogic *localLogic;
-	NSMutableArray *imageNames;
-}
+@interface Definition : NSObject
 
 /**
  * Clear stored models data(groups, screens, labels and tabBar).
@@ -78,11 +71,11 @@
  */
 - (Label *)findLabelById:(int)labelId;
 
-@property (nonatomic,readonly) NSMutableArray *groups;
-@property (nonatomic,readonly) NSMutableArray *screens;
-@property (nonatomic,retain) NSMutableArray *labels;
-@property (nonatomic,retain) TabBar *tabBar;
+@property (nonatomic, retain, readonly) NSMutableArray *groups;
+@property (nonatomic, retain, readonly) NSMutableArray *screens;
+@property (nonatomic, retain) NSMutableArray *labels;
+@property (nonatomic, retain) TabBar *tabBar;
 @property (nonatomic, retain) LocalLogic *localLogic;
-@property (nonatomic,readonly) NSMutableArray *imageNames;
+@property (nonatomic, retain, readonly) NSMutableArray *imageNames;
 
 @end

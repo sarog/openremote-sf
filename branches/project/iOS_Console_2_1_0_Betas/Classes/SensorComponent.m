@@ -22,11 +22,9 @@
 
 @implementation SensorComponent
 
-@synthesize sensor;
-
 - (void)dealloc
 {
-	[sensor release];
+    self.sensor = nil;
 	[super dealloc];
 }
 
@@ -34,5 +32,7 @@
 {
     return 0;
 }
+
+@synthesize sensor;
 
 @end

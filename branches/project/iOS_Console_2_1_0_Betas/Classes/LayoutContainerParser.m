@@ -20,14 +20,20 @@
  */
 #import "LayoutContainerParser.h"
 
-@implementation LayoutContainerParser
+@interface LayoutContainerParser()
 
-@synthesize layoutContainer;
+@property (nonatomic, retain, readwrite) LayoutContainer *layoutContainer;
+
+@end
+
+@implementation LayoutContainerParser
 
 - (void)dealloc
 {
-    [layoutContainer release];
+    self.layoutContainer = nil;
     [super dealloc];
 }
+
+@synthesize layoutContainer;
 
 @end

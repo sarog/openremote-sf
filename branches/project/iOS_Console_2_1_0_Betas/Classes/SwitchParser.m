@@ -28,6 +28,11 @@
 #import "XMLEntity.h"
 #import "Image.h"
 
+@interface SwitchParser ()
+
+@property (nonatomic, retain, readwrite) Switch *sswitch;
+
+@end
 /**
  * Stores model data about switch parsed from "swith" element in panel.xml.
  * XML fragment example:
@@ -40,11 +45,9 @@
  */
 @implementation SwitchParser
 
-@synthesize sswitch;
-
 - (void)dealloc
 {
-    [sswitch release];
+    self.sswitch = nil;
     [super dealloc];
 }
 
@@ -53,7 +56,9 @@
     self = [super initWithRegister:aRegister attributes:attributeDict];
     if (self) {
         [self addKnownTag:LINK]; 
-        sswitch = [[Switch alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
+        Switch *tmp = [[Switch alloc] initWithId:[[attributeDict objectForKey:ID] intValue]];
+        self.sswitch = tmp;
+        [tmp release];
     }
     return self;
 }
@@ -61,23 +66,25 @@
 - (void)endSensorLinkElement:(SensorLinkParser *)parser
 {
     if (parser.sensor) {
-        sswitch.sensor = parser.sensor;
+        self.sswitch.sensor = parser.sensor;
         
         
         // TODO: review that
         // - why is this done (here ? maybe in SensorState itself ?) 
-        for (SensorState *state in sswitch.sensor.states) {
+        for (SensorState *state in self.sswitch.sensor.states) {
 			Image *img = [[Image alloc] init];
 			img.src = state.value;
             [self.depRegister.definition addImageName:state.value];
 			if ([[state.name lowercaseString] isEqualToString:ON]) {
-				sswitch.onImage = img;
+				self.sswitch.onImage = img;
 			} else if ([[state.name lowercaseString] isEqualToString:OFF]) {
-				sswitch.offImage = img;
+				self.sswitch.offImage = img;
 			}
 			[img release];
 		}
     }
 }
+
+@synthesize sswitch;
 
 @end

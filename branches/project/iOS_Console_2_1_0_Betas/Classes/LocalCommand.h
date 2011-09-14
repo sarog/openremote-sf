@@ -20,14 +20,10 @@
  */
 #import "Component.h"
 
-@interface LocalCommand : Component {
+@interface LocalCommand : Component
 
-	NSString *className;
-	NSString *methodName;
-}
-
-@property (readonly) NSString *className;
-@property (readonly) NSString *methodName;
+@property (nonatomic, copy, readonly) NSString *className;
+@property (nonatomic, copy, readonly) NSString *methodName;
 
 - (id)initWithId:(int)anId className:(NSString *)aClassName methodName:(NSString *)aMethodName;
 

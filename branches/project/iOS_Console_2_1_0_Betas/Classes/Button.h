@@ -23,22 +23,9 @@
 @class Image;
 @class Navigate;
 
-@interface Button : Control {
-	
-	NSString *name;
-	Image *defaultImage;
-	Image *pressedImage;
-	BOOL repeat;
-    NSUInteger repeatDelay;
-    BOOL hasPressCommand;
-    BOOL hasShortReleaseCommand;
-    BOOL hasLongPressCommand;
-    BOOL hasLongReleaseCommand;
-    NSUInteger longPressDelay;
-	Navigate *navigate;
-}
+@interface Button : Control
 
-@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, copy, readonly) NSString *name;
 @property (nonatomic, retain) Image *defaultImage;
 @property (nonatomic, retain) Image *pressedImage;
 @property (nonatomic, readonly) BOOL repeat;
