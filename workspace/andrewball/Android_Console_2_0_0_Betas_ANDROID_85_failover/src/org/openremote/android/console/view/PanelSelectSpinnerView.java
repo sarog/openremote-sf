@@ -21,6 +21,7 @@ package org.openremote.android.console.view;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,6 +35,7 @@ import org.openremote.android.console.R;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.AsyncPanelListReader;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
 import org.openremote.android.console.net.ORHttpMethod;
@@ -116,56 +118,53 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    
    @Override
    public void urlConnectionDidFailWithException(Exception e) {
-      ViewHelper.showAlertViewWithTitle(getContext(), "Error", "Can not get panel identity list.");
-      setDefaultAdapterContent();
+       AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+       alertDialog.setTitle("Invalid URL selected");
+       alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
+       alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int which) {
+             return;
+          }
+       });
+       alertDialog.show();
+       setDefaultAdapterContent();  
+      
       Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
    }
 
-   @Override
    public void urlConnectionDidReceiveData(InputStream data) {
-      arrayAdapter.clear();
-      try {
-         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-         DocumentBuilder builder = factory.newDocumentBuilder();
-         Document dom = builder.parse(data);
-         Element root = dom.getDocumentElement();
-
-         NodeList nodeList = root.getElementsByTagName("panel");
-         int nodeNums = nodeList.getLength();
-         for (int i = 0; i < nodeNums; i++) {
-            arrayAdapter.add(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue());
-         }
-      } catch (IOException e) {
-         Log.e("OpenRemote-PANEL LIST", "The data is from ORConnection is bad", e);
-         return;
-      } catch (ParserConfigurationException e) {
-         Log.e("OpenRemote-PANEL LIST", "Cant build new Document builder", e);
-         return;
-      } catch (SAXException e) {
-         Log.e("OpenRemote-PANEL LIST", "Parse data error", e);
-         return;
-      }
-      String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
-      int panelCount = arrayAdapter.getCount();
-      if (!TextUtils.isEmpty(panel)) {
-         if (panelCount == 0) {
-            arrayAdapter.add(panel);
-         } else {
-            for (int i = 0; i < panelCount; i++) {
-               if (panel.equals(arrayAdapter.getItem(i))) {
-                  this.setSelection(i, true);
-                  break;
-               }
-            }
-         }
-      } else if (panelCount == 0) {
-         arrayAdapter.add(CHOOSE_PANEL);
-      }
-   }
+	      AsyncPanelListReader asyncReader =  new AsyncPanelListReader() {
+	         protected void onPostExecute(List<String> panelList) {
+	            arrayAdapter.clear();
+	            for (int i = 0; i < panelList.size(); i++) {   
+	               arrayAdapter.add(panelList.get(i));
+	            }
+	            String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());
+	            int panelCount = arrayAdapter.getCount();
+	            if (!TextUtils.isEmpty(panel)) {
+	               if (panelCount == 0) {
+	                  arrayAdapter.add(panel);
+	               } else {
+	                  for (int i = 0; i < panelCount; i++) {
+	                     if (panel.equals(arrayAdapter.getItem(i))) {
+	                        PanelSelectSpinnerView.this.setSelection(i, true);
+	                        break;
+	                     }
+	                  }
+	               }
+	            } else if (panelCount == 0) {
+	               arrayAdapter.add(CHOOSE_PANEL);
+	            }
+	         }
+	      };
+	      asyncReader.execute(data);
+	   }
 
    @Override
+   //This method is for setting the error dialog in the spinner
    public void urlConnectionDidReceiveResponse(HttpResponse httpResponse) {
       int statusCode = httpResponse.getStatusLine().getStatusCode();
+      Log.e("PANEL", statusCode+"");
       if (statusCode != Constants.HTTP_SUCCESS) {
          if (statusCode == ControllerException.UNAUTHORIZED) {
             LoginDialog loginDialog = new LoginDialog(getContext());

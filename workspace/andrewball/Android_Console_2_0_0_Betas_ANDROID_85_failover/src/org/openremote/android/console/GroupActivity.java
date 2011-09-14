@@ -389,7 +389,7 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
                   loginIntent.setClass(getBaseContext(), LoginViewActivity.class);
                   loginIntent.setData(Uri.parse(Main.LOAD_RESOURCE));
                   finish();
-                  getBaseContext.startActivity(loginIntent);
+                  getBaseContext().startActivity(loginIntent);
                 }
 
                 // TODO This is what we used to do when a response was given that did not have

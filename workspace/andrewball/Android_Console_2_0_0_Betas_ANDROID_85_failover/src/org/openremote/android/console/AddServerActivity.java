@@ -36,6 +36,8 @@ import android.widget.Toast;
 
 import org.openremote.android.console.Constants;
 
+import com.google.inject.Inject;
+
 /**
  * This is the add custom server screen. Mainly it configures the URL of 
  * your device (which is assumed to be the root of controller.xml.
@@ -46,6 +48,11 @@ public class AddServerActivity extends GenericActivity {
     public static final String OPEN_REMOTE_PREFS = "openRemoteConfig";
 
     public static final String LOG_CATEGORY = Constants.LOG_CATEGORY + "AddServerActivity";
+   
+    //@Inject
+   private DataHelper dh;
+    // create a static DataHelper class
+    // DataHelper dh=new DataHelper(this);
 
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -54,6 +61,8 @@ public class AddServerActivity extends GenericActivity {
         
         setContentView(R.layout.add_server);
 
+        dh=new DataHelper(this);
+        
         final EditText controllerUrlEditText = (EditText) findViewById(R.id.add_server_controller_url_edit_text); 
 
         Button saveButton = (Button) findViewById(R.id.add_server_save_button);
@@ -67,14 +76,25 @@ public class AddServerActivity extends GenericActivity {
                    return;
                 }
                 try {
-                  String httpUrl = "http://" + noProtocolUrl;
+                  String httpUrl = "http://" + noProtocolUrl;	//to check the db
+                  
+                  //find if the controller already exists, if so, show toast. else go on
+                  
+                  if(dh.find(httpUrl) > 0){
+                	  Toast toast = Toast.makeText(getApplicationContext(), "Controller already exists.", 1);
+                      toast.show();
+                      return;
+                  }
+                  
+                 
                   new URI(httpUrl);
                   Intent intent = getIntent();
                   intent.setData(Uri.parse(noProtocolUrl));
+                  dh.closeConnection();
                   setResult(Constants.RESULT_CONTROLLER_URL, intent);
                   finish();
                } catch (URISyntaxException e) {
-                  Toast toast = Toast.makeText(getApplicationContext(), "URL format is not correct.", 1);
+                  Toast toast = Toast.makeText(getApplicationContext(),e.getReason()+ "URL format is not correct.", 1);
                   toast.show();
                }
             }
@@ -86,6 +106,7 @@ public class AddServerActivity extends GenericActivity {
 
             @Override
             public void onClick(View v) {
+            	dh.closeConnection();
               finish();
                }            
         });

@@ -32,15 +32,21 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.openremote.android.console.bindings.Screen;
+import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
+import org.openremote.android.console.net.AsyncPanelListReader;
 import org.openremote.android.console.net.ControllerService;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
+import org.openremote.android.console.net.NetworkCheckTestAsyncTask;
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
+import org.openremote.android.console.net.ORConnectionForPing;
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.ORHttpMethod;
+import org.openremote.android.console.net.ORNetworkCheck;
+import org.openremote.android.console.net.SavedServersNetworkCheckTestAsyncTask;
 import org.openremote.android.console.util.FileUtil;
 import org.openremote.android.console.util.StringUtil;
 import org.openremote.android.console.view.PanelSelectSpinnerView;
@@ -106,7 +112,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   //private ControllerDBHelper dBHelper;
   //private SQLiteDatabase liteDB;
   
-  private int previousSelectedItem;
+  private int previousSelectedItem=-1;
   
   private int currentSelectedItem;
   
@@ -135,6 +141,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   
   private IPAutoDiscoveryServer autoDiscoveryServer;
   
+  private NetworkCheckTestAsyncTask pingTest;
+  private SavedServersNetworkCheckTestAsyncTask checkedControllers;
+  
   private boolean fullOptions=false;
   public int selectedPosition=0;
  
@@ -158,7 +167,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
      * Change xml screen based on device size
      */
     
-    if(Screen.SCREEN_WIDTH < 100){
+  /*  if(Screen.SCREEN_WIDTH < 100){
     	setContentView(R.layout.app_settings);
     	addOnclickListenerSecurityButton();
    
@@ -170,8 +179,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     	fullOptions=true;
         setContentView(R.layout.all_options_app_settings);
          	
-    }
+    }*/
     
+    fullOptions=true;
+    setContentView(R.layout.all_options_app_settings);
    // autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
     serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
     
@@ -187,32 +198,18 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     currentServer = "";
     
-   
-    //constructAutoServersView();
-   
-    
- /*      //where i am wanting to create the database and tables
-       dBHelper = new ControllerDBHelper(this);
-       // open to read and write
-      // dBHelper.onCreate(liteDB);
-       liteDB=dBHelper.getWritableDatabase();
-       // or to read only
-       // dBHelper.getReadableDatabase();
-*/    
-    this.dh = new DataHelper(this);
-    //this.dh.deleteAll();
-   //dh.insert("http://controller.openremote.org/android/controller", "grp1");
-   // this.dh.insert("Foghorn Leghorn", "lake");
-    //this.dh.insert("Yosemite Sam");
+ 
+    this.dh = new DataHelper(this);   
 
 
     constructServersView();
     
     serversLayout.setVisibility(View.VISIBLE);
    
-      startControllerAutoDiscovery();
+      
       Log.i(TAG,"startControllerAutoDiscovery at switch" );
  
+      startControllerAutoDiscovery();
     panelSelectSpinnerView = (PanelSelectSpinnerView) findViewById(R.id.panel_select_spinner_view);
     /*
      * @yusha
@@ -385,6 +382,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     Button cancelButton = (Button)findViewById(R.id.setting_cancel);
     cancelButton.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
+    	  
+    	  dh.closeConnection();
         finish();
       }
     });
@@ -420,9 +419,57 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
    */
   private void constructServersView() {
     ArrayList<ControllerObject> customServers = new ArrayList<ControllerObject>();
-   // initCustomServersFromFile(customServers);
-    
-    customServers = dh.getControllerData();
+   
+	  checkedControllers = new SavedServersNetworkCheckTestAsyncTask(getApplicationContext()){
+	  
+			
+		 @Override
+			  protected void onPreExecute() {
+				  if (progressLayout != null) {
+					  progressLayout.setVisibility(View.VISIBLE);
+				  }
+			  }
+
+			  @Override
+			  protected void onPostExecute(ArrayList<ControllerObject> result) {
+				  
+			        if (progressLayout != null) {
+			            progressLayout.setVisibility(View.INVISIBLE);
+			          }
+
+
+				  Log.i("LOGGER", "Done...");
+
+				  if(result!=null){
+					// customServers=result.addAll(index, collection);
+					 // serverListAdapter.add(result.get(0));
+					  
+					//serverListAdapter.addAll(result); //2.1 update pphone doesnt have this method. tablet does
+					  
+					  for(int i=0;i<result.size();i++){
+					  serverListAdapter.add(result.get(i)); //this should work for 2.1 update
+					  }					   
+					  
+					  Toast toast= Toast.makeText(getApplicationContext(), "complete", Toast.LENGTH_LONG);
+					  toast.show();
+					  serverListAdapter.notifyDataSetChanged();
+					  
+				  }else{
+					  Toast.makeText(getApplicationContext(), "HttpResponse is null", Toast.LENGTH_LONG).show();
+				  }	
+				  
+				  //load the database first then autodiscover so duplicate entries wont try to add
+				//  startControllerAutoDiscovery();
+				  
+			  }
+		  };
+
+		  checkedControllers.execute();  //execute oes to doInBackground
+		  
+		
+		  serverListAdapter = new IconicAdapter(appSettingsView.getContext(), R.layout.row, 
+			      customServers);
+
     
      Button addServer = (Button) findViewById(R.id.add_server_button);
     
@@ -459,8 +506,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     customAndAutoListView = (ListView) findViewById(R.id.custom_server_list_view);
     
-    serverListAdapter = new IconicAdapter(appSettingsView.getContext(), R.layout.row, 
-      customServers);
+ 
     
   //  serverListAdapter = new
     //customAndAutoListView.setChoiceMode(customAndAutoListView.CHOICE_MODE_SINGLE);
@@ -493,6 +539,10 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         	  previousSelectedItem= currentSelectedItem;
 
           }
+          
+          else if(previousSelectedItem == currentSelectedItem){
+        	  //do nothing
+          }
  
           else{
               ControllerObject pselectedController =  (ControllerObject) parent.getItemAtPosition(previousSelectedItem);
@@ -502,14 +552,11 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
           
           Log.e("ASA", "previousSelectedItem"+previousSelectedItem);
  
-         
+          requestPanelList(selectedController.getControllerName());
           
-         // customAndAutoListView.getAdapter().getView(position, view, parent).set
-          //serverListAdapter.getView(position, view, parent).setBackgroundColor(R.drawable.list_bg);
-         // getSelectedView().setBackgroundColor(Color.GREEN);
-          //serverListAdapter.remove((ControllerObject) parent.getItemAtPosition(position));//there could be multiple ones
-         // serverListAdapter.add(selectedController);
           
+          //set the controller URL after panels can be found. Since Main will try to pull panels of a selected controller in AppSettingsModel
+      
           try {
             URL controllerURL = new URL(selectedController.getControllerName());
             AppSettingsModel.setCurrentServer(AppSettingsActivity.this, controllerURL);
@@ -520,13 +567,12 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
                 getString(R.string.incorrect_url_syntax) + ": " + selectedController, 1);
             toast.show();
           }
+
+         
           
-          //view.get
-          
-         // writeCustomServerToFile();
-          requestPanelList();
           serverListAdapter.notifyDataSetChanged();
           previousSelectedItem = currentSelectedItem;
+          
        }
     });
     
@@ -544,17 +590,23 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (data != null) {
       String result = data.getDataString();
+      String proposedServer = "http://" + result;
       if (Constants.REQUEST_CODE == requestCode && !TextUtils.isEmpty(result)) {
         if (Constants.RESULT_CONTROLLER_URL == resultCode) {
-          String proposedServer = "http://" + result;
+          
 
-          //ArrayAdapter<String> customeListAdapter = (ArrayAdapter<String>) customAndAutoListView.getAdapter();
-          serverListAdapter.add(new ControllerObject(proposedServer));
-  		  		
-          //dBHelper.insertRow(liteDB, proposedServer, "grp1");
-         this.dh.insert(proposedServer, "grp1", 0, 1, 1);
+         ControllerObject addController = new ControllerObject(proposedServer,"grp1",0,1,0);
+          
+         
+         if(this.dh.find(proposedServer)==0){
+         	  serverListAdapter.add(addController);
+              this.dh.insert(proposedServer, "grp1", 0, 1, 0);
+              Log.i(TAG,"inserted "+proposedServer+" in database");
+         }
+
+          }
   		
-          customAndAutoListView.setItemChecked(serverListAdapter.getCount() - 1, true);
+         // customAndAutoListView.setItemChecked(serverListAdapter.getCount() - 1, true);
           
           try {
             URL url = new URL(proposedServer);
@@ -568,11 +620,13 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
           }
           
           //writeCustomServerToFile();
-          requestPanelList();
+         // requestPanelList();
+          serverListAdapter.notifyDataSetChanged();
+          previousSelectedItem = currentSelectedItem;
         }
       }
     }
-  }
+  
   
    /**
    * Starts a new {@link IPAutoDiscoveryServer} thread, which starts a server to receive
@@ -606,21 +660,29 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         
         for (int i = 0; i < length; i++) {
         	//add the icon+the text view somehow
-          serverListAdapter.add(new ControllerObject(result.get(i)));
-
-          //if not already autodiscovered, add otherwise isControllerUp field is true
-         // dBHelper.insertRow(liteDB, result.get(i), "grp1");
-          //these are auto discovered, so 1
+//          serverListAdapter.add(new ControllerObject(result.get(i)));
+        	
+       
           //TODO before setting this to selected, unselect previously selected
-          
-          dh.insert(result.get(i), "grp1", 1,1,1);
+          //even if autodiscovered, first check that it is not a saved one
+        	
+        	if(dh.find(result.get(i))==0){
+        		
+        		//add to the adapter if doesnt exist in the list
+        		serverListAdapter.add(new ControllerObject(result.get(i), "grp1",1,1,0));
+        	
+          dh.insert(result.get(i), "grp1", 1,1,0);
+        	}
+        	else{
+        		length--;
+        	}
           
           Log.i(TAG,"result.get(i): "+result.get(i) );
           Toast toast=Toast.makeText(getApplicationContext(), "check your list view "+result.get(i), 1);
         		  toast.show();
         }
         if (length > 0) {
-        	customAndAutoListView.setItemChecked(0, true);
+        	//customAndAutoListView.setItemChecked(0, true);
           String proposedServer = serverListAdapter.getItem(0).getControllerName();
           try {
             URL controllerURL = new URL(proposedServer);
@@ -634,8 +696,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
             return;
           }
         }
-        requestFailoverGroupUrls();
-        requestPanelList();
+        //I dont think requestPanelList(); is needed after autodiscovery
+        serverListAdapter.notifyDataSetChanged();
+       
       }
     };
 
@@ -645,6 +708,19 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   public void stopControllerAutoDiscovery() {
     if (autoDiscoveryServer != null) {
       autoDiscoveryServer.cancel(true);
+    }
+  }
+   
+  
+  /**
+   * Request panel identity list from controller.
+   */
+  private void requestPanelList(String url) {
+    setEmptySpinnerContent();
+    if (!TextUtils.isEmpty(AppSettingsActivity.currentServer)) {
+      loadingPanelProgress.show();
+      new ORConnection(this.getApplicationContext(), ORHttpMethod.GET, true,
+          url + "/rest/panels", this);
     }
   }
   
@@ -693,32 +769,30 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   @Override
   public void urlConnectionDidFailWithException(Exception e) {
     loadingPanelProgress.dismiss();
+    AlertDialog alertDialog = new AlertDialog.Builder(getBaseContext()).create();
+    alertDialog.setTitle("Invalid URL selected");
+    alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
+    alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+       public void onClick(DialogInterface dialog, int which) {
+          return;
+       }
+    });
+    alertDialog.show();
+   
+   
+   Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
   }
 
   @Override
   public void urlConnectionDidReceiveData(InputStream data) {
-    loadingPanelProgress.dismiss();
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document dom = builder.parse(data);
-      Element root = dom.getDocumentElement();
-
-      NodeList nodeList = root.getElementsByTagName("panel");
-      int nodeNums = nodeList.getLength();
-      if (nodeNums == 1) {
-        panelSelectSpinnerView.setOnlyPanel(nodeList.item(0).getAttributes().getNamedItem("name").getNodeValue());
-      }
-    } catch (IOException e) {
-      Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "The data is from ORConnection is bad", e);
-      return;
-    } catch (ParserConfigurationException e) {
-      Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "Cant build new Document builder", e);
-      return;
-    } catch (SAXException e) {
-      Log.e(Constants.LOG_CATEGORY + "PANEL LIST", "Parse data error", e);
-      return;
-    }
+	    AsyncPanelListReader asyncReader = new AsyncPanelListReader() {
+	        protected void onPostExecute(List<String> panelList) {
+	          loadingPanelProgress.dismiss();
+	          if (!panelList.isEmpty())
+	            panelSelectSpinnerView.setOnlyPanel(panelList.get(0));
+	        }
+	      };
+	      asyncReader.execute(data);
   }
 
   @Override

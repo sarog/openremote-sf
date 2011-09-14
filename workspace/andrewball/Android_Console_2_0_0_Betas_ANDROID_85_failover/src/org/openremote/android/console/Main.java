@@ -27,6 +27,7 @@ import org.openremote.android.console.util.ImageUtil;
 
 import roboguice.inject.InjectView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -144,14 +145,20 @@ public class Main extends GenericActivity {
        }
        return false;
     }
+    
+    
+    public void setActivityToFinish(Activity activity){
+    	
+    }
 
     /**
      * Forward to settings view.
      */
-    private void doSettings() {
+    public void doSettings() {
         Intent i = new Intent();
         i.setClassName(this.getClass().getPackage().getName(),
               AppSettingsActivity.class.getName());
+      
         startActivity(i);
         finish();
     }
