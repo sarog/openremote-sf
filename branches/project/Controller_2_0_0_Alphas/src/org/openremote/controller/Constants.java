@@ -200,7 +200,7 @@ public class Constants
    */
   public final static String MIME_APPLICATION_JSON = "application/json";
 
-
+  public final static String MIME_TEXT_JAVASCRIPT = "text/javascript";
 
   // JSON API -------------------------------------------------------------------------------------
 
