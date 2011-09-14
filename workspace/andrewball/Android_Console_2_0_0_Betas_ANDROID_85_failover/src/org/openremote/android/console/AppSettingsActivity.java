@@ -39,10 +39,10 @@ import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.net.AsyncPanelListReader;
 import org.openremote.android.console.net.ControllerService;
 import org.openremote.android.console.net.IPAutoDiscoveryServer;
-import org.openremote.android.console.net.NetworkCheckTestAsyncTask;
+
 import org.openremote.android.console.net.ORConnection;
 import org.openremote.android.console.net.ORConnectionDelegate;
-import org.openremote.android.console.net.ORConnectionForPing;
+
 import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.ORHttpMethod;
 import org.openremote.android.console.net.ORNetworkCheck;
@@ -140,8 +140,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private ProgressDialog loadingPanelProgress;
   
   private IPAutoDiscoveryServer autoDiscoveryServer;
-  
-  private NetworkCheckTestAsyncTask pingTest;
+
   private SavedServersNetworkCheckTestAsyncTask checkedControllers;
   
   private boolean fullOptions=false;
