@@ -86,55 +86,58 @@
 
 	if ([[[self.screen background] backgroundImage] src] && [[NSFileManager defaultManager] fileExistsAtPath:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[self.screen background] backgroundImage] src]]]) {
 		UIImage *backgroundImage = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:[[[self.screen background] backgroundImage] src]]];
-        
-		UIImageView *backgroundImageView = [[UIImageView alloc] init];
-		// fillscreen is false
-		if (![[self.screen background] fillScreen]) {
-			NSLog(@"BackgroundImage isn't fillScreen");
-			NSLog(@"BackgroundImage's original width:%f, height:%f", backgroundImage.size.width, backgroundImage.size.height);
-			
-			// absolute position of screen background.
-			if ([[self.screen background] isBackgroundImageAbsolutePosition]) {
-				int left = [[self.screen background] backgroundImageAbsolutePositionLeft];
-				int top = [[self.screen background] backgroundImageAbsolutePositionTop];
-				if (left > 0) {
-					screenBackgroundImageViewWidth = screenBackgroundImageViewWidth-left;
-				}
-				if (top > 0) {
-					screenBackgroundImageViewHeight = screenBackgroundImageViewHeight-top;
-				}
-				[backgroundImageView setFrame:CGRectMake(left, top, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
-				backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:YES];
-				if (left < 0) {
-					left = 0;
-				}
-				if (top < 0) {
-					top = 0;
-				}
-				[backgroundImageView setFrame:CGRectMake(left, top, backgroundImageView.frame.size.width, backgroundImageView.frame.size.height)];
-				NSLog(@"Clipped BackgroundImage's width:%f, height:%f", backgroundImageView.image.size.width, backgroundImageView.image.size.height);
-				NSLog(@"BackgroundImageView's left is %d, top is %d", left, top);
-				NSLog(@"BackgroundImageView's width:%f, height:%f", backgroundImageView.frame.size.width, backgroundImageView.frame.size.height);
-			}
-			// relative position of screen background.
-			else {
-				// relative position
-				[backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
-				NSString *backgroundImageRelativePosition = [[self.screen background] backgroundImageRelativePosition];
-				backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:backgroundImageRelativePosition isUIImageFillUIView:NO];
-			}
-		}
-		// fillscreen is true
-		else {
-			[backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
-			backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:YES];
-		}
-		NSLog(@"Added width: %d, height: %d backgroundImageView", screenBackgroundImageViewWidth, screenBackgroundImageViewHeight);
-        [backgroundImageView setUserInteractionEnabled:YES];
-        self.view = backgroundImageView;
-        [backgroundImageView release];
-		[backgroundImage release];
-    } else {
+        if (backgroundImage) { // File might exist but not be an image, only proceed if we have an image
+            UIImageView *backgroundImageView = [[UIImageView alloc] init];
+            // fillscreen is false
+            if (![[self.screen background] fillScreen]) {
+                NSLog(@"BackgroundImage isn't fillScreen");
+                NSLog(@"BackgroundImage's original width:%f, height:%f", backgroundImage.size.width, backgroundImage.size.height);
+                
+                // absolute position of screen background.
+                if ([[self.screen background] isBackgroundImageAbsolutePosition]) {
+                    int left = [[self.screen background] backgroundImageAbsolutePositionLeft];
+                    int top = [[self.screen background] backgroundImageAbsolutePositionTop];
+                    if (left > 0) {
+                        screenBackgroundImageViewWidth = screenBackgroundImageViewWidth-left;
+                    }
+                    if (top > 0) {
+                        screenBackgroundImageViewHeight = screenBackgroundImageViewHeight-top;
+                    }
+                    [backgroundImageView setFrame:CGRectMake(left, top, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
+                    backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:YES];
+                    if (left < 0) {
+                        left = 0;
+                    }
+                    if (top < 0) {
+                        top = 0;
+                    }
+                    [backgroundImageView setFrame:CGRectMake(left, top, backgroundImageView.frame.size.width, backgroundImageView.frame.size.height)];
+                    NSLog(@"Clipped BackgroundImage's width:%f, height:%f", backgroundImageView.image.size.width, backgroundImageView.image.size.height);
+                    NSLog(@"BackgroundImageView's left is %d, top is %d", left, top);
+                    NSLog(@"BackgroundImageView's width:%f, height:%f", backgroundImageView.frame.size.width, backgroundImageView.frame.size.height);
+                }
+                // relative position of screen background.
+                else {
+                    // relative position
+                    [backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
+                    NSString *backgroundImageRelativePosition = [[self.screen background] backgroundImageRelativePosition];
+                    backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:backgroundImageRelativePosition isUIImageFillUIView:NO];
+                }
+            }
+            // fillscreen is true
+            else {
+                [backgroundImageView setFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
+                backgroundImageView = [UIViewUtil clippedUIImageViewWith:backgroundImage dependingOnUIView:backgroundImageView uiImageAlignToUIViewPattern:IMAGE_ABSOLUTE_ALIGN_TO_VIEW isUIImageFillUIView:YES];
+            }
+            NSLog(@"Added width: %d, height: %d backgroundImageView", screenBackgroundImageViewWidth, screenBackgroundImageViewHeight);
+            [backgroundImageView setUserInteractionEnabled:YES];
+            self.view = backgroundImageView;
+            [backgroundImageView release];
+            [backgroundImage release];
+        }
+    }
+    // If for some reason something went wrong in creating the background with the image, just add a view with requested dimensions
+    if (!self.view) {
         UIView *aView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenBackgroundImageViewWidth, screenBackgroundImageViewHeight)];
         aView.backgroundColor = [UIColor blackColor];
         self.view = aView;
