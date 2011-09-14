@@ -23,6 +23,8 @@ package org.openremote.android.console.util;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.openremote.android.console.AppSettingsActivity;
+import org.openremote.android.console.GenericActivity;
 import org.openremote.android.console.R;
 import org.openremote.android.console.Constants;
 import org.openremote.android.console.GroupActivity;
@@ -43,10 +45,13 @@ import roboguice.util.RoboAsyncTask;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 /**
@@ -169,7 +174,19 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
         Log.e(LOG_CATEGORY, logPrefix + "IO error when trying to parse panel.xml.  " +
             "not using local cache", e);
         result.setCanUseLocalCache(false);
-        throw ie;
+       throw ie;//throws exception but nothing happens when ok is clicked. Get back to Settings menu if controller is no longer avail
+        /**
+         * Forward to settings view.
+         */
+       /* private void doSettings() {
+            Intent i = new Intent();
+            i.setClassName(this.getClass().getPackage().getName(),
+                  AppSettingsActivity.class.getName());
+            startActivity(i);
+            finish();
+        }*/
+
+ 
       }
     }
 
@@ -197,11 +214,39 @@ public class AsyncResourceLoader extends RoboAsyncTask<AsyncResourceLoaderResult
     {
       // TODO make it easier to know exactly what went wrong here.  There are very many
       // places where IOException could be thrown in call().
+     
+ 
+          ViewHelper.showAlertViewWithTitleYesOrNo(context,
+                  context.getString(R.string.error),
+                  "IOException while loading resources",
+              new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                  FileUtil.clearImagesInCache(context);//&&
+                  
+                 //doSettingsOnMain;
+                  doSettingsOnMain: {
+                      AppSettingsModel.setCurrentServer(context, null);
+                      AppSettingsModel.setCurrentPanelIdentity(context, null);
+                     
+                      Intent intent = new Intent();
+
+                     
+                        intent.setClass(context, Main.class);
+                      
+
+                      if (activity != null)
+                      {
+                        activity.finish();
+                      }
+                      context.startActivity(intent);
+                  }
+                  
+                }
+              });
+  
       
-      Log.e(LOG_CATEGORY, logPrefix + "IOException while loading resources");
-      ViewHelper.showAlertViewWithTitle(context,
-          context.getString(R.string.error),
-          "IOException while loading resources");
+      
+ 
     }
   }
 

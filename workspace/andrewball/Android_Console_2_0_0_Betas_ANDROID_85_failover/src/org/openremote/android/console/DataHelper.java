@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openremote.android.console.net.SavedServersNetworkCheckTestAsyncTask;
 public class DataHelper {
    private static final String DATABASE_NAME = "example.db";
    private static final int DATABASE_VERSION = 1;
@@ -18,41 +20,70 @@ public class DataHelper {
    private SQLiteStatement deleteStmt;
    private SQLiteStatement selectStmt;
    private static final String INSERT = "insert into "
-      + TABLE_NAME + "(name,info, auto, up) values (?,?,?,?)";
+      + TABLE_NAME + "(name,info, auto, up,selected) values (?,?,?,?,?)";
    private static final String DELETE = "delete from "
 		      + TABLE_NAME + " where name = ?";
    private static final String SELECT = "select * from "
 		      + TABLE_NAME ;
    private static final String FIND = "select * from "
 		      + TABLE_NAME+" where name = ?" ;
-   
+   OpenHelper openHelper;
    public DataHelper(Context context) {
       this.context = context;
-      OpenHelper openHelper = new OpenHelper(this.context);
+      openHelper = new OpenHelper(this.context);
       this.db = openHelper.getWritableDatabase();
       this.insertStmt = this.db.compileStatement(INSERT);
       this.deleteStmt = this.db.compileStatement(DELETE);
       this.selectStmt = this.db.compileStatement(SELECT);
    }
-   public long insert(String name, String info) {
-	   //if(db.h)
+ 
+public long insert(String name, String info) {
+	   this.selectStmt.bindString(1, name);
+	   
+	  // if(this.selectStmt.e)
+	   String s[] = new String[1];
+	   s[0]=name;
+	   
+	   Cursor c=db.rawQuery(FIND, s);
+	   if(c.getColumnCount() > 0) return 0;
+	   c.close();
+	   
 	   
       this.insertStmt.bindString(1, name);
       this.insertStmt.bindString(2, info);
       return this.insertStmt.executeInsert();
+   }
+   
+   public long find(String name){
+	      String s[] = new String[1];
+	   s[0]=name;
+	   
+	   Cursor c = db.rawQuery(FIND, s);
+	   
+	   if(c.getCount() > 0) return 1 ;
+	   	
+	   return 0;	   
+   }
+   
+   public void closeConnection(){
+	   openHelper.close();
    }
    
    public long insert(String name, String info, int auto, int up, int selected) {
-	   //if(db.h)
-	   
+	
       this.insertStmt.bindString(1, name);
       this.insertStmt.bindString(2, info);
+      this.insertStmt.bindLong(3, auto);
+      this.insertStmt.bindLong(4, up);
+      this.insertStmt.bindLong(5, selected);
+    
       return this.insertStmt.executeInsert();
    }
    
-   public long delete(String name) {
+   public void delete(String name) {
 	      this.deleteStmt.bindString(1, name);
-	      return this.deleteStmt.executeUpdateDelete();
+	   //   return this.deleteStmt.executeUpdateDelete();//2.1 update doesnt have it
+	       this.deleteStmt.execute();
 	   }
    
    public void deleteAll() {
@@ -66,7 +97,7 @@ public class DataHelper {
 	    	        null, null, null, null, "name desc");
 	    	      if (cursor.moveToFirst()) {
 	    	         do {
-	    	            list.add(new ControllerObject(cursor.getString(0), cursor.getString(1),cursor.getInt(2),cursor.getInt(3),cursor.getInt(4)));//0 is id, 1 is name
+	    	            list.add(new ControllerObject(cursor.getString(0), cursor.getString(1),cursor.getInt(2),cursor.getInt(3),cursor.getInt(4)));//cannot tell if sth. is previously selected
 	    	         } while (cursor.moveToNext());
 	    	      }
 	    	      if (cursor != null && !cursor.isClosed()) {
@@ -90,8 +121,8 @@ public class DataHelper {
       return list;
    }
    private static class OpenHelper extends SQLiteOpenHelper {
-      OpenHelper(Context context) {
-         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+      OpenHelper(Context ctx) {
+         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
       }
       @Override
       public void onCreate(SQLiteDatabase db) {

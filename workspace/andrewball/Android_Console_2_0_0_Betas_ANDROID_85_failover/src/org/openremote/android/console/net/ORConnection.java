@@ -28,10 +28,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.commons.*;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.scheme.Scheme;
@@ -101,6 +104,7 @@ public class ORConnection
   {
     initHandler(context);
 
+    Log.e(LOG_CATEGORY, "after initHandler():" + url);
     delegate = delegateParam;
     this.context = context;
 
@@ -162,6 +166,7 @@ public class ORConnection
          public void handleMessage(Message msg) {
             int message = msg.what;
             if (message == ERROR) {
+            	Log.e(LOG_CATEGORY, "initHandler message ==ERROR:");
                connectionDidFailWithException(context, new ORConnectionException("Httpclient execute httprequest fail."));
             } else {
                dealWithResponse();
@@ -175,7 +180,9 @@ public class ORConnection
       new Thread(new Runnable() {
          public void run() {
             try {
+            	Log.e(LOG_CATEGORY, "execute() httpRequest: " + httpRequest);
                httpResponse = httpClient.execute(httpRequest);
+               Log.e(LOG_CATEGORY, "after execute() httpRequest: " + httpRequest);
                handler.sendEmptyMessage(SUCCESS);
             } catch (SocketTimeoutException e) {
                handler.sendEmptyMessage(ERROR);
@@ -201,6 +208,7 @@ public class ORConnection
     * and sends a notification to delegate with <b>urlConnectionDidFailWithException</b> method calling.
     */
    protected void connectionDidFailWithException(Context context, ORConnectionException e) {
+
       delegate.urlConnectionDidFailWithException(e);
    }
    
@@ -221,6 +229,7 @@ public class ORConnection
          if (httpResponse.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS) {
             delegate.urlConnectionDidReceiveData(httpResponse.getEntity().getContent());
          } else {
+        	 
             Log.e(LOG_CATEGORY, "Get the entity's content of httpresponse fail.");
          }
       } catch (IllegalStateException e) {
@@ -274,6 +283,7 @@ public class ORConnection
       // Not sure if we're ever going to hit this, but in case we do, just convert to
       // MalformedURLException...
 
+    	Log.e("checkURL", "Malformed URL exception");
       throw new MalformedURLException(
           "Could not convert " + targetURL + " to a compliant URI: " + e.getMessage()
       );
@@ -322,6 +332,16 @@ public class ORConnection
 
       client.getConnectionManager().getSchemeRegistry().register(sch);
     }
+    
+ /*   HttpHead method = new HttpHead("http://www.apache.org/");
+    // execute method and handle any error responses.
+    
+    Header[] in = method.getAllHeaders();
+    // Process the data from the input stream.
+    		 Log.e(LOG_CATEGORY, "in[0].getValue();:" + in[0].getValue());
+    	*/	
+
+    
 
     response = client.execute(request);
 

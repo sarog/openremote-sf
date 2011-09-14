@@ -22,7 +22,7 @@ public class ControllerObject {
     	this.group			=group;
     	this.auto			=(auto!=0);
     	this.isControllerUp	=(up!=0);
-    	//this.isSelected		=(selected!=0);
+    	this.isSelected		=(selected!=0);
     }
     
    public boolean isIs_Selected(){

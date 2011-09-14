@@ -118,6 +118,39 @@ public class ORNetworkCheck
     return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, restfulPanelURL, true);
   }
 
+//Public Class Methods -------------------------------------------------------------------------
+  
+ /**
+  * Verifies the network access to the currently configured controller URL by checking if
+  * REST API {controllerServerURL}/rest/panel/{panel identity} is available.
+  *
+  * @param context               global Android application context
+  * @param url                   an URL to a controller instance
+  *
+  * @return TODO: returns null or HttpResponse
+  *
+  * @throws IOException TODO
+  */
+ public static HttpResponse verifyControllerURLAvailable(URL url) throws IOException
+ {
+  
+
+  
+
+
+   URL controllerURL = url;
+
+   if (controllerURL == null)
+   {
+     return null;  // TODO : fix this, it is stupid - throw an exception
+   }
+return null;
+
+  
+   
+
+   //return ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET, controllerURL, false);
+ }
 
 
   // Private Class Methods ------------------------------------------------------------------------
