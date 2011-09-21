@@ -22,11 +22,11 @@ package org.openremote.controller.service;
 import java.io.InputStream;
 
 /**
- * The service for file system operation.
+ * TODO : to be deleted, see ORCJAVA-171
  * 
  * @author Dan 2009-5-14
  */
-public interface FileService {
+@Deprecated public interface FileService {
    
    /**
     * Unzip.
@@ -34,14 +34,14 @@ public interface FileService {
     * @param inputStream the input stream
     * @param targetDir the target dir
     */
-   boolean unzip(InputStream inputStream, String targetDir);
+   //boolean unzip(InputStream inputStream, String targetDir);
    
    /**
     * Upload config zip.
     * 
     * @param inputStream the input stream
     */
-   boolean uploadConfigZip(InputStream inputStream);
+   //boolean uploadConfigZip(InputStream inputStream);
    
    /**
     * Find resource.
@@ -50,7 +50,7 @@ public interface FileService {
     * 
     * @return the input stream
     */
-   InputStream findResource(String relativePath);
+   //InputStream findResource(String relativePath);
    
    /**
     * Sync configuration (openremote.zip) with Modeler.
@@ -61,6 +61,6 @@ public interface FileService {
     *           Modeler password
     * @return true if success.
     */
-   boolean syncConfigurationWithModeler(String username, String password);
+   //boolean syncConfigurationWithModeler(String username, String password);
 
 }
