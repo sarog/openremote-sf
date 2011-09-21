@@ -19,35 +19,43 @@
 */
 package org.openremote.web.console.panel;
 
-import java.util.Map;
-import org.openremote.web.console.panel.entity.Group;
-import org.openremote.web.console.panel.entity.Screen;
+import org.openremote.web.console.entity.Group;
+import org.openremote.web.console.entity.Screen;
+import org.openremote.web.console.entity.TabBar;
 
 /**
  * Implementation of Panel
  */
 public class PanelImpl implements Panel {
-   private Map<Integer, Group> groups;
-   private Map<Integer, Screen> screens;
+   private Group[] groups;
+   private Screen[] screens;
    
-   public PanelImpl(Map<Integer, Group> groups, Map<Integer, Screen> screens) {
+   public PanelImpl(Group[] groups, Screen[] screens) {
       this.groups = groups;
       this.screens = screens;
    }
 
-   public Map<Integer, Group> getGroups() {
-      return groups;
-   }
+   @Override
+	public Group[] getGroups() {
+		return groups;
+	}
 
-   public Map<Integer, Screen> getScreens() {
-      return screens;
-   }
+	public void setGroups(Group[] groups) {
+		this.groups = groups;
+	}
 
-   public void setGroups(Map<Integer, Group> groups) {
-      this.groups = groups;
-   }
+	@Override
+	public Screen[] getScreens() {
+		return screens;
+	}
 
-   public void setScreens(Map<Integer, Screen> screens) {
-      this.screens = screens;
-   }
+	public void setScreens(Screen[] screens) {
+		this.screens = screens;
+	}
+	
+	@Override
+	public TabBar getTabBar() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

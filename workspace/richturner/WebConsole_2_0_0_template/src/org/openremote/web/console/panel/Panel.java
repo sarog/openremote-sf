@@ -1,11 +1,13 @@
 package org.openremote.web.console.panel;
 
-import java.util.Map;
-import org.openremote.web.console.panel.entity.Group;
-import org.openremote.web.console.panel.entity.Screen;
+import org.openremote.web.console.entity.Group;
+import org.openremote.web.console.entity.Screen;
+import org.openremote.web.console.entity.TabBar;
 
 public interface Panel {
-   public Map<Integer, Group> getGroups();
+   public Group[] getGroups();
 
-   public Map<Integer, Screen> getScreens();
+   public Screen[] getScreens();
+   
+   public TabBar getTabBar();
 }

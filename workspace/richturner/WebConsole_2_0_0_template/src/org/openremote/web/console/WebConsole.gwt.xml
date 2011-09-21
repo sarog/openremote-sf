@@ -2,10 +2,12 @@
 	<inherits name="com.google.gwt.user.User"/>
 	<inherits name="com.google.gwt.user.theme.standard.Standard"/>
 	<inherits name="org.w3c.dom.DOM"/>
-	<inherits name="com.google.gwt.json.JSON" />
+	<inherits name="com.google.gwt.json.JSON"/>
+	<inherits name="com.google.web.bindery.autobean.AutoBean"/>
 	
   	<!-- Other module inherits                                      -->
-  	<source path='client'/>
+  	<source path="client"/>
+  	<source path="entity"/>
   	<source path="type"/>
   	<source path="util"/>
   	<source path="screen"/>
@@ -14,6 +16,7 @@
   	<source path="panel"/>
   	<source path="service"/>
   	<source path="rpc"/>
+  	<source path="view"/>
   	<source path="controller"/>
 	<entry-point class="org.openremote.web.console.client.WebConsole"/>
 	

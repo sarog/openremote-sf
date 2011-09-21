@@ -1,4 +1,4 @@
-package org.openremote.web.console.controller.message;
+package org.openremote.web.console.controller;
 
 public enum EnumControllerResponseCode {
 	OK (200,"OK"),
@@ -10,10 +10,10 @@ public enum EnumControllerResponseCode {
 	COMMAND_BUILDER_ERROR (420, "No Such Command Builder"),
 	CONTROLLER_XML_NOT_FOUND (422, "Controller XML Not Found"),
 	COMMAND_INVALID (423, "No Such Command"),
-	CONTROLLER_XML_INVALID (424, "Controller XML is Invalid"),
+	CONTROLLER_XML_INVALID (424, "Controller or Panel XML is Invalid"),
 	PANEL_XML_NOT_FOUND (426, "Panel XML Not Found"),
 	PANEL_XML_INVALID (427, "Panel XML is Invalid"),
-	XML_ERROR (429, "Invalid Controller XML Elemnt"),
+	XML_ERROR (429, "Invalid Controller XML Element"),
 	NO_RESPONSE (430, "No Response from Controller"),
 	UNKNOWN_ERROR (9999, "Unkown Response");	
 	

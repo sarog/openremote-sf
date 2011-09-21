@@ -139,3 +139,66 @@ SCREEN WIDGET CSS BELOW
    background-color: red;
    border-color: #000;
 }
+
+/*
+GENERIC SPINNER CSS BELOW HERE
+Code adapted from:
+http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webkit
+*/
+
+.spinner {
+	position: relative;
+	display: inline-block;
+}
+	
+.spinner div {
+	width: 12%;
+	height: 26%;
+	background: #245E36;
+	position: absolute;
+	left: 44.5%;
+	top: 37%;
+	opacity: 0;
+	-webkit-animation: fade 1s linear infinite;
+	-moz-animation: fade 1s linear infinite;
+	animation: fade 1s linear infinite;
+	-moz-border-radius: 50px;
+	border-radius: 50px;
+	-webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+.spinner div.bar1 {-webkit-transform:rotate(0deg) translate(0, -142%); -webkit-animation-delay: 0s;}    
+.spinner div.bar2 {-webkit-transform:rotate(30deg) translate(0, -142%); -webkit-animation-delay: -0.9167s;}
+.spinner div.bar3 {-webkit-transform:rotate(60deg) translate(0, -142%); -webkit-animation-delay: -0.833s;}
+.spinner div.bar4 {-webkit-transform:rotate(90deg) translate(0, -142%); -webkit-animation-delay: -0.75s;}
+.spinner div.bar5 {-webkit-transform:rotate(120deg) translate(0, -142%); -webkit-animation-delay: -0.667s;}
+.spinner div.bar6 {-webkit-transform:rotate(150deg) translate(0, -142%); -webkit-animation-delay: -0.5833s;}
+.spinner div.bar7 {-webkit-transform:rotate(180deg) translate(0, -142%); -webkit-animation-delay: -0.5s;}
+.spinner div.bar8 {-webkit-transform:rotate(210deg) translate(0, -142%); -webkit-animation-delay: -0.41667s;}
+.spinner div.bar9 {-webkit-transform:rotate(240deg) translate(0, -142%); -webkit-animation-delay: -0.333s;}
+.spinner div.bar10 {-webkit-transform:rotate(270deg) translate(0, -142%); -webkit-animation-delay: -0.25s;}
+.spinner div.bar11 {-webkit-transform:rotate(300deg) translate(0, -142%); -webkit-animation-delay: -0.1667s;}
+.spinner div.bar12 {-webkit-transform:rotate(330deg) translate(0, -142%); -webkit-animation-delay: -0.0833s;}
+ 
+@-webkit-keyframes fade {
+	from {opacity: 1;}
+	to {opacity: 0.25;}
+}
+
+/* Customisable Widget CSS below here */
+
+.tabBar {
+	background-image: linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
+	background-image: -o-linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
+	background-image: -moz-linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
+	background-image: -webkit-linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
+	background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
+	
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.05, rgb(0,0,0)),
+		color-stop(0.5, rgb(110,110,110))
+	);
+}

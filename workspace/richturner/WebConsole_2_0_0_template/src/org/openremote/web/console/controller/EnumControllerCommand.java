@@ -6,7 +6,9 @@ public enum EnumControllerCommand {
 	SEND_COMMAND,
 	GET_SENSOR_STATUS,
 	DO_SENSOR_POLLING,
-	GET_ROUND_ROBIN_LIST;
+	GET_ROUND_ROBIN_LIST,
+	IS_ALIVE,
+	IS_SECURE;
 	
    @Override
    public String toString() {

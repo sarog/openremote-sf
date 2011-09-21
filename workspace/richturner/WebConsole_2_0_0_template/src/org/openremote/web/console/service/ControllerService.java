@@ -1,58 +1,59 @@
 package org.openremote.web.console.service;
 
 import org.openremote.web.console.controller.Controller;
-import org.openremote.web.console.controller.ControllerCallBackHandler;
-import org.openremote.web.console.controller.ControllerConnector;
-import org.openremote.web.console.controller.message.ControllerRequestMessage;
-import org.openremote.web.console.controller.message.ControllerResponseMessage;
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.controller.ControllerMessageEvent;
-import org.openremote.web.console.event.value.UiValueChangeEvent;
-import org.openremote.web.console.event.value.UiValueChangeHandler;
-import org.openremote.web.console.rpc.json.ControllerJsonConnector;
+import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.PanelIdentity;
 
-import com.google.gwt.event.shared.HandlerManager;
-
-public class ControllerService implements UiValueChangeHandler, ControllerCallBackHandler {
-	private Controller controller;
-	private static ControllerConnector controllerConnector = new ControllerJsonConnector();
-	private static HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+/**
+ * Controller Service Interface for defining the communication with
+ * a controller, based along the lines of GWT RPC but controller service
+ * may use alternative communication mechanism (JSON, Socket, etc) but the
+ * idea is that it must be an Asynchronous service.
+ * @author rich
+ */
+public abstract class ControllerService {
+	Controller controller;
 	
-	public ControllerService(Controller controller) {
+	public void setController(Controller controller) {
 		this.controller = controller;
 	}
-
-	@Override
-	public void onUiValueChange(UiValueChangeEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void authenticate() {
-		// TODO Auto-generated method stub
-		
+	
+	public Controller getController() {
+		return controller;
 	}
 	
-	public void sendCommand(int requestId, ControllerRequestMessage message) {
+	/*
+	 * Method for retrieving panel identities for requested controller
+	 */
+	public void getPanelIdentities(AsyncControllerCallback<PanelIdentity[]> callback) {
 		if (controller != null) {
-			controllerConnector.getData(requestId, controller.getUrl(), message, this);
+			getPanelIdentities(controller.getUrl(), callback);
 		}
 	}
+	public abstract void getPanelIdentities(String controllerUrl, AsyncControllerCallback<PanelIdentity[]> callback);
 	
-	@Override
-	public void processControllerResponse(ControllerResponseMessage message) {
-		eventBus.fireEvent(new ControllerMessageEvent(message));
+	/*
+	 * Method for retrieving panel definition from requested controller
+	 */
+	public void getPanel(String panelName, AsyncControllerCallback<Panel> callback) {
+		if (controller != null) {
+			getPanel(controller.getUrl(), panelName, callback);
+		}
 	}
+	public abstract void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback);
 	
-	public static boolean isControllerAlive(int requestId, String controllerUrl) {
-		return controllerConnector.isAlive(requestId, controllerUrl);
+	/*
+	 * Method for retrieving controller security status
+	 */
+	public void isSecure(AsyncControllerCallback<Boolean> callback) {
+		if (controller != null) {
+			isSecure(controller.getUrl(), callback);
+		}
 	}
+	public abstract void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 	
-	public static boolean isControllerSecure(int requestId, String controllerUrl) {
-		return controllerConnector.isSecure(requestId, controllerUrl);
-	}
-	
-//	public void getSensorValue(int sensorId, AsyncControllerCallback<ControllerMessage> callback);
-//	
-//	public void monitorSensorValues(int[] sensorIds, AsyncControllerCallback<ControllerMessage> callback);
+	/*
+	 * Static Method for retrieving controller alive status
+	 */
+	public abstract void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 }

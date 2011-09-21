@@ -1,22 +1,11 @@
 package org.openremote.web.console.panel;
 
-public class PanelCredentials {
-	private String controllerUrl;
-	private String name;
+public interface PanelCredentials {
+	String getControllerUrl();	
+	int getId();
+	String getName();
 	
-	public String getControllerUrl() {
-		return controllerUrl;
-	}
-	
-	public void setControllerUrl(String controllerUrl) {
-		this.controllerUrl = controllerUrl;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
+	void setControllerUrl(String controllerUrl);
+	void setId(int id);
+	void setName(String name);
 }
