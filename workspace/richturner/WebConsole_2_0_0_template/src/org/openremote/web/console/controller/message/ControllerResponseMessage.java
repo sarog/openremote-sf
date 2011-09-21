@@ -1,5 +1,7 @@
 package org.openremote.web.console.controller.message;
 
+import org.openremote.web.console.controller.EnumControllerResponseCode;
+
 public class ControllerResponseMessage extends ControllerMessage {
 	private int requestId;
 	private EnumControllerResponseCode responseCode;

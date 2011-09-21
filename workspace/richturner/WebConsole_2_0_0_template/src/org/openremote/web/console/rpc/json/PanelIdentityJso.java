@@ -7,10 +7,12 @@ public class PanelIdentityJso extends JavaScriptObject implements PanelIdentity 
 	
 	protected PanelIdentityJso() {}
 	
+	@Override
 	public final native String getName() /*-{
    	return this.name;
  	}-*/;
 	
+	@Override
 	public final native int getId() /*-{
 		return this.id;
 	}-*/;

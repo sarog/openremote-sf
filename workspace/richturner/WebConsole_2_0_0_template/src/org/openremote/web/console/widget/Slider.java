@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 public class Slider extends ConsoleWidgetImpl {
 	public static final int DEFAULT_WIDTH = 300;
 	public static final int DEFAULT_HEIGHT = 40;
+	public static final int MIN_SLIDE_BAR_HEIGHT = 20;
 	public static final int MIN_HANDLE_SIZE = 40;
 	private Handle handle;
 	private SlideBar slideBar;
@@ -33,7 +34,7 @@ public class Slider extends ConsoleWidgetImpl {
 	private int stepSize = 1;
 	private int slideBarWidth = 0;
 	private int slideBarHeight = 0;
-	
+
 	class Handle extends SimplePanel implements Draggable {
 		protected static final int BORDER_WIDTH = 2;
 		private int size;
@@ -165,11 +166,18 @@ public class Slider extends ConsoleWidgetImpl {
 		// Determine the orientation of the slider
 		if (height > width) {
 			this.isVertical = true;
+			width = width < MIN_SLIDE_BAR_HEIGHT ? MIN_SLIDE_BAR_HEIGHT : width;
+		} else {
+			height = height < MIN_SLIDE_BAR_HEIGHT ? MIN_SLIDE_BAR_HEIGHT : height;
 		}
 		
 		container = new AbsolutePanel();
+		container.addStyleName("consoleWidget");
 		container.setWidth(width + "px");
 		container.setHeight(height + "px");
+		container.setVisible(false);
+		DOM.setStyleAttribute(container.getElement(), "WebkitUserSelect", "none");
+		DOM.setStyleAttribute(container.getElement(), "overflow", "visible");
 		
 		if (!isVertical) {
 			handleSize = height;
@@ -183,8 +191,6 @@ public class Slider extends ConsoleWidgetImpl {
 		
 		slideBarXPos = (int)(width - slideBarWidth) / 2;
 		slideBarYPos = (int)(height - slideBarHeight) / 2;
-		handleYPos = (slideBarHeight + slideBarYPos) - handleSize;
-		handleYPos = handleYPos < 0 ? 0 : handleYPos;
 		
 		slideBar = new SlideBar(slideBarWidth, slideBarHeight);
 		handle = new Handle(handleSize);
@@ -193,21 +199,23 @@ public class Slider extends ConsoleWidgetImpl {
 		handleSize = handle.getSize();
 		halfHandle = (double)(handleSize / 2);
 		
+		if (isVertical) {
+			handleXPos = (int)(((slideBarWidth/2) + slideBarXPos) - halfHandle);
+			handleYPos = slideBarHeight - handleSize;
+		} else {
+			handleYPos = (int)(((slideBarHeight/2) + slideBarYPos) - halfHandle);
+		}
+		
 		container.add(slideBar);
 		container.setWidgetPosition(slideBar, slideBarXPos, slideBarYPos);
 		
 		container.add(handle);
 		container.setWidgetPosition(handle, handleXPos, handleYPos);
 		
-		container.setVisible(false);
-		
 		registerMouseAndTouchHandlers(slideBar);
 		registerMouseAndTouchHandlers(handle);
 		
 		this.initWidget(container);
-		
-		DOM.setStyleAttribute(this.getElement(), "WebkitUserSelect", "none");
-		this.addStyleName("consoleWidget");
 	}
 	
 	private void doHandleDrag(int absPos) {
@@ -246,7 +254,7 @@ public class Slider extends ConsoleWidgetImpl {
 		}
 	}
 	
-	public void configure() {
+	public void onRender() {
 		int pixelRange = (int)(slideBar.getWidth() - (2 * halfHandle));
 		pixelValueDensity = (double) (maxValue - minValue) / pixelRange;
 	}

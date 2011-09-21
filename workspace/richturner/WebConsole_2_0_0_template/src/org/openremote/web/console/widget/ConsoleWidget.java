@@ -5,7 +5,7 @@ public interface ConsoleWidget {
 	public void initialise();
 	
 	// Configures the widget based on the values supplied
-	public void configure();
+	public void onRender();
 	
 	// Sets the visibility of the widget
 	public void setVisible(boolean visible);

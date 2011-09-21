@@ -1,16 +1,7 @@
 package org.openremote.web.console.client.unit;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.openremote.web.console.controller.Controller;
-import org.openremote.web.console.controller.EnumControllerCommand;
-import org.openremote.web.console.controller.message.ControllerMessage;
-import org.openremote.web.console.controller.message.ControllerRequestMessage;
-import org.openremote.web.console.controller.message.ControllerResponseMessage;
-import org.openremote.web.console.controller.message.EnumControllerResponseCode;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.controller.ControllerMessageEvent;
-import org.openremote.web.console.event.controller.ControllerMessageHandler;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.hold.HoldHandler;
 import org.openremote.web.console.event.rotate.RotationEvent;
@@ -21,13 +12,23 @@ import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.PanelCredentials;
+import org.openremote.web.console.panel.PanelCredentials;
+import org.openremote.web.console.panel.PanelCredentialsImpl;
 import org.openremote.web.console.panel.PanelIdentity;
-import org.openremote.web.console.rpc.json.PanelIdentityJso;
-import org.openremote.web.console.screen.view.ScreenView;
-import org.openremote.web.console.screen.view.LoadingScreenView;
-import org.openremote.web.console.screen.view.TestScreenView;
+import org.openremote.web.console.panel.PanelImpl;
+import org.openremote.web.console.rpc.json.JSONPControllerService;
+import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.ControllerService;
-import com.google.gwt.core.client.JsArray;
+import org.openremote.web.console.service.LocalDataService;
+import org.openremote.web.console.service.LocalDataServiceImpl;
+import org.openremote.web.console.service.PanelService;
+import org.openremote.web.console.service.PanelServiceImpl;
+import org.openremote.web.console.view.LoadingScreenView;
+import org.openremote.web.console.view.ScreenView;
+import org.openremote.web.console.view.TestScreenView;
+
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -36,7 +37,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, TapHandler, DoubleTapHandler, ControllerMessageHandler {
+public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, TapHandler, DoubleTapHandler {
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -44,11 +45,12 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	protected ConsoleDisplay consoleDisplay;
 	protected int width;
 	protected int height;
-	private ScreenView loadingScreen;
+	private ScreenView currentScreenView;
+	private ScreenView loadingScreenView;
 	private String orientation = "portrait";
-	private ControllerService controllerService;
-	private int requestId = 0;
-	private Map<Integer, EnumControllerCommand> requestMap = new HashMap<Integer, EnumControllerCommand>();
+	private ControllerService controllerService = new JSONPControllerService();
+	private PanelService panelService = new PanelServiceImpl();	
+	private LocalDataService dataService = new LocalDataServiceImpl();
 	
 	public ConsoleUnit() {
 		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
@@ -56,6 +58,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	public ConsoleUnit(int width, int height) {
 		// Create console container to store display and possibly logo for resizable units
+		//hide();
 		componentContainer = new VerticalPanel();
 		componentContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		super.add(componentContainer);
@@ -68,22 +71,13 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		// Create a display and add to console container
 		consoleDisplay = new ConsoleDisplay(width, height);
 		add(consoleDisplay);
+	
+		// Create and load loading screen
+		loadingScreenView = new LoadingScreenView();
+		loadScreenView(loadingScreenView);
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
-	
-		// Create and show loading screen
-		loadingScreen = new LoadingScreenView();
-		loadingScreen = new TestScreenView();
-		setScreen(loadingScreen);
-		
-		// Get Panel list
-		Controller controller = new Controller();
-		controller.setName("TEST");
-		controller.setUrl("http://192.168.1.68:8080/controller");
-		controllerService = new ControllerService(controller);
-		requestMap.put(requestId, EnumControllerCommand.GET_PANEL_LIST);
-		controllerService.sendCommand(requestId++, new ControllerRequestMessage(EnumControllerCommand.GET_PANEL_LIST, new String[0]));
 	}
 	
 	@Override
@@ -180,57 +174,78 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		 setVisible(true);
 	}
 	
-	// Display specified screen
-	public void setScreen(ScreenView screen) {
-		consoleDisplay.setScreen(loadingScreen);	
+	public void initialise() {
+		// Check for Last Panel in Cache
+		PanelCredentials lastPanelCredentials = dataService.getLastPanelCredentials();
+		
+		// If Panel Credentials found look for Controller and Panel if found then load that panel
+		// Otherwise go to the settings screen view
+		if (lastPanelCredentials != null) {
+			// Get Panel list and look for last panel name in list
+//			Controller controller = new Controller();
+//			controller.setName("TEST");
+//			controller.setUrl("http://192.168.1.68:8080/controller");
+//			controllerService.setController(controller);
+//			getPanelIdentities();
+		}
 	}
 	
 	public void registerHandlers() {
 		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-		// Gesture Handlers
 		eventBus.addHandler(RotationEvent.getType(), this);
 		eventBus.addHandler(SwipeEvent.getType(), this);
 		eventBus.addHandler(HoldEvent.getType(), this);
 		eventBus.addHandler(TapEvent.getType(), this);
 		eventBus.addHandler(DoubleTapEvent.getType(), this);
-		// Controller Handler
-		eventBus.addHandler(ControllerMessageEvent.getType(), this);
 	}
+	
+	public void getPanelIdentities() {
+		controllerService.getPanelIdentities(new AsyncControllerCallback<PanelIdentity[]>() {
 
-	/**
-	 * Need a cleaner way of identifying Controller Message payload type
-	 * the below implementation is dependent on the use of the JSON Controller
-	 * Connector, which is not the design intention
-	 */
-	@Override
-	public void onControllerMessage(ControllerMessageEvent event) {
-		// TODO Auto-generated method stub
-		ControllerMessage message = event.getMessage();
-		switch (message.getType())
-		{
-			case COMMAND_REQUEST:
-				
-				break;
-			case COMMAND_RESPONSE:
-				ControllerResponseMessage response = (ControllerResponseMessage)message;
-				int requestId = response.getRequestId();
-				EnumControllerResponseCode code = response.getResponseCode();
-				if (code != EnumControllerResponseCode.OK) {
-					Window.alert("HEUSTON WE HAVE A PROBLEM!");
-					break;
+			@Override
+			public void onSuccess(PanelIdentity[] result) {
+				setCurrentPanel(result[0].getName());
+			}
+			
+		});
+	}
+	
+	public void getIsSecure() {
+		controllerService.isSecure(new AsyncControllerCallback<Boolean>() {
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (result) {
+					Window.alert("I'm Secure!");
+				} else {
+					Window.alert("I'm not Secure");
 				}
-				// Determine the command that was initially sent
-				EnumControllerCommand requestedCommand = requestMap.get(requestId);
-				if (requestedCommand != null) {
-					requestMap.remove(requestId);
-					switch (requestedCommand) {
-						case GET_PANEL_LIST: 
-						JsArray<PanelIdentityJso> panels = (JsArray<PanelIdentityJso>)response.getResponseObject();
-						Window.alert("We Have Received: " + panels.length() + " Panel Identities");
-					}
-				}
-				break;
-			case SENSOR_VALUE_CHANGE:
+			}
+			
+		});
+	}
+	
+	public void setCurrentPanel(String panelName) {
+		controllerService.getPanel(panelName, new AsyncControllerCallback<Panel>() {
+
+			@Override
+			public void onSuccess(Panel result) {
+				panelService.setCurrentPanel(result);
+				Window.alert(result.getGroups()[0].getName());
+			}
+			
+		});
+	}
+	
+	public void loadScreenView(ScreenView screenView) {
+		if (screenView != loadingScreenView) {
+			this.currentScreenView = screenView;
 		}
+		consoleDisplay.setScreen(screenView);
+	}
+	
+	public void unloadScreenView() {
+		this.currentScreenView = null;
+		consoleDisplay.setScreen(loadingScreenView);
 	}
 }

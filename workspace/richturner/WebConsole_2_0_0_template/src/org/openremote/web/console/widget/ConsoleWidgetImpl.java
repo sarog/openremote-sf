@@ -6,7 +6,7 @@ public abstract class ConsoleWidgetImpl extends ConsoleComponent implements Cons
 	public void initialise() {
 		//this.addHandler(eventManager.getPressMoveReleaseHandler(), PressStartEvent.getType());
 		//this.addHandler(eventManager.getPressMoveReleaseHandler(), PressEndEvent.getType());
-		configure();
+		onRender();
 		setVisible(true);
 		isInitialised = true;
 	}

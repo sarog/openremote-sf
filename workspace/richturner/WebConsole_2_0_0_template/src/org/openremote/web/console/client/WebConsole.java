@@ -59,10 +59,18 @@ public class WebConsole implements EntryPoint {
 					
 					// Initialise the Console Unit
 					createConsoleUnit();
+					
+					// Hide the loading message
+					RootPanel.get("welcome-content").setVisible(false);
+					
+					// Show the console unit
+					getConsoleUnit().show();
+					
+					getConsoleUnit().initialise();
 				}
 			}
 		};
-		initialisationTimer.scheduleRepeating(100);
+		initialisationTimer.scheduleRepeating(200);
 		
 		// Get window sizes for mobile and desktop, also set window orientation for mobile
 		if (BrowserUtils.isMobile) {
