@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="IPbox" tagName="ipBox">
+		<attr name="command" label="Command">
+                        <validations />
+		</attr>
+
+                <attr name = "sensor" label = "SensorID">
+                        <validations />
+                </attr>
+	</protocol>
+</openremote>

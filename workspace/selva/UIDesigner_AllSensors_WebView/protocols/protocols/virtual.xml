@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="Virtual" tagName="virtual">
+		<attr name="command" label="Command">
+                        <validations />
+		</attr>
+
+                <attr name = "address" label = "address">
+                        <validations />
+                </attr>
+
+               <attr name = "sensor" label = "Sensor">
+                        <validations />
+               </attr>
+
+               <attr name = "min" label = "Min">
+                        <validations />
+               </attr>
+
+               <attr name = "max" label = "Max">
+                        <validations />
+               </attr>
+
+               <attr name = "cycling" label = "Cycling">
+                        <validations />
+               </attr>
+	</protocol>
+</openremote>

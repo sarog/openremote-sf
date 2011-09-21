@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+        <protocol displayName="Meta (aggregate)" tagName="meta">
+
+
+                <attr name="command" label="Command">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                                <maxLength>254</maxLength>
+                                <regex message="next, prev, on, off, brighter, darker">.*</regex>
+                        </validations>
+                </attr>
+
+                <attr name="meta_list" label="Button IDs">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                                <maxLength>254</maxLength>
+                                <regex message="Comma seperated list (you need to peek into controller.xml)">.*</regex>
+                        </validations>
+                </attr>
+
+
+        </protocol>
+</openremote>
