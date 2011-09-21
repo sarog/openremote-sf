@@ -22,35 +22,48 @@ package org.openremote.controller.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openremote.controller.service.FileService;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.utils.PathUtil;
+import org.openremote.controller.ControllerConfiguration;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * The Servlet to get the files in resource folder.
+ * TODO : The Servlet to get the files in resource folder.
+ *
+ * Relevant tasks:
+ *   ORCJAVA-175  (http://jira.openremote.org/browse/ORCJAVA-175)
+ *   ORCJAVA-176  (http://jira.openremote.org/browse/ORCJAVA-176)
+ *   ORCJAVA-177  (http://jira.openremote.org/browse/ORCJAVA-177)
  * 
  * @author Dan 2009-6-9
  */
-@SuppressWarnings("serial")
 public class ResourceServlet extends HttpServlet
 {
 
-  private static FileService fileService = ServiceContext.getFileResourceService();
+  // HttpServlet Implementation -------------------------------------------------------------------
 
   @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
                                                             throws ServletException, IOException
   {
+
+    // TODO : this part of the API needs proper integration tests (see ORCJAVA-175)
+
     String relativePath = request.getPathInfo();
-    InputStream is = fileService.findResource(relativePath);
+    InputStream is = findResource(relativePath);
 
     if (is != null)
     {
+      // TODO : inline stream copy (see ORCJAVA-177)
+      
       FileCopyUtils.copy(is, response.getOutputStream());
     }
 
@@ -58,6 +71,33 @@ public class ResourceServlet extends HttpServlet
     {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, relativePath);
     }
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+  private InputStream findResource(String relativePath)
+  {
+    ControllerConfiguration config = ServiceContext.getControllerConfiguration();
+
+    // TODO : review error handling, at minimum log the underlying IO errors (see ORCJAVA-176)
+
+    File file = new File(PathUtil.removeSlashSuffix(config.getResourcePath()) + relativePath);
+
+    if (file.exists() && file.isFile())
+    {
+      try
+      {
+         return new FileInputStream(file);
+      }
+
+      catch (FileNotFoundException e)
+      {
+         return null;
+      }
+    }
+
+    return null;
   }
 
 }
