@@ -35,6 +35,10 @@
 
     <protocol displayName="1-Wire Protocol" tagName="onewire">
 
+	<attr name="command" label="Command">
+		<validations/>
+	</attr>
+
         <attr name="hostname" label="Hostname">
             <validations>
                 <allowBlank>false</allowBlank>

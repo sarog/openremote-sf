@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="Dynalite" tagName="dynet">
+		<attr name="command" label="Command">
+                        <validations />
+		</attr>
+
+                <attr name = "area" label = "Area">
+                        <validations />
+                </attr>
+
+               <attr name = "preset" label = "Preset">
+                        <validations />
+               </attr>
+	</protocol>
+</openremote>

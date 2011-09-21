@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+	<protocol displayName="iBulb" tagName="iBulb">
+		<attr name="command" label="Command">
+                        <validations />
+		</attr>
+
+                <attr name = "panelId" label = "PanelID">
+                        <validations />
+                </attr>
+
+               <attr name = "sensor" label = "Sensor">
+                        <validations />
+               </attr>
+
+               <attr name = "url" label = "URL">
+                        <validations />
+               </attr>
+
+               <attr name = "RefreshTime" label = "RefreshTime">
+                        <validations />
+               </attr>
+	</protocol>
+</openremote>
