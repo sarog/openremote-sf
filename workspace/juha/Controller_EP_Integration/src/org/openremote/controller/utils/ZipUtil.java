@@ -33,85 +33,85 @@ import org.openremote.controller.exception.ExtractZipFileException;
 
 
 /**
- * The Utility for Zip.
+ * TODO : to be deleted, see ORCJAVA-171
  * 
  * @author Dan 2009-5-14
  */
-public class ZipUtil {
+@Deprecated public class ZipUtil {
    
-   /** The Constant logger. */
-   private static final Logger logger = Logger.getLogger(ZipUtil.class);
+//   /** The Constant logger. */
+//   private static final Logger logger = Logger.getLogger(ZipUtil.class);
+//
+//   /**
+//    * Unzip a zip.
+//    *
+//    * @param inputStream the input stream
+//    * @param targetDir the target dir
+//    *
+//    * @return true, if success
+//    */
+//   public static boolean unzip(InputStream inputStream, String targetDir){
+//      if (targetDir == null || "".equals(targetDir)) {
+//         throw new ExtractZipFileException("The resources path is null.");
+//      }
+//      File checkedTargetDir = new File(targetDir);
+//      if (!checkedTargetDir.exists()) {
+//         throw new ExtractZipFileException("The path " + targetDir + " doesn't exist.");
+//      }
+//
+//      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+//      ZipEntry zipEntry;
+//      FileOutputStream fileOutputStream = null;
+//      File zippedFile = null;
+//      try {
+//         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+//            if (!zipEntry.isDirectory()) {
+//               targetDir = targetDir.endsWith("/") || targetDir.endsWith("\\") ? targetDir : targetDir + "/";
+//               zippedFile = new File(targetDir, zipEntry.getName());
+//               FileUtils.deleteQuietly(zippedFile);
+//               FileUtils.touch(zippedFile);
+//               fileOutputStream = new FileOutputStream(zippedFile);
+//               int b;
+//               while ((b = zipInputStream.read()) != -1) {
+//                  fileOutputStream.write(b);
+//               }
+//               fileOutputStream.close();
+//            }
+//         }
+//      } catch (IOException e) {
+//         logger.error("Can't unzip file to " + zippedFile.getPath(), e);
+//         return false;
+//      } finally {
+//         try {
+//            zipInputStream.closeEntry();
+//            if (fileOutputStream != null) {
+//               fileOutputStream.close();
+//            }
+//         } catch (IOException e) {
+//            logger.error("Error while closing stream.", e);
+//         }
+//
+//      }
+//      return  true;
+//   }
    
-   /**
-    * Unzip a zip.
-    * 
-    * @param inputStream the input stream
-    * @param targetDir the target dir
-    * 
-    * @return true, if success
-    */
-   public static boolean unzip(InputStream inputStream, String targetDir){
-      if (targetDir == null || "".equals(targetDir)) {
-         throw new ExtractZipFileException("The resources path is null.");
-      }
-      File checkedTargetDir = new File(targetDir);
-      if (!checkedTargetDir.exists()) {
-         throw new ExtractZipFileException("The path " + targetDir + " doesn't exist.");
-      }
-      
-      ZipInputStream zipInputStream = new ZipInputStream(inputStream);
-      ZipEntry zipEntry;
-      FileOutputStream fileOutputStream = null;
-      File zippedFile = null;
-      try {
-         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            if (!zipEntry.isDirectory()) {
-               targetDir = targetDir.endsWith("/") || targetDir.endsWith("\\") ? targetDir : targetDir + "/";
-               zippedFile = new File(targetDir, zipEntry.getName());
-               FileUtils.deleteQuietly(zippedFile);
-               FileUtils.touch(zippedFile);
-               fileOutputStream = new FileOutputStream(zippedFile);
-               int b;
-               while ((b = zipInputStream.read()) != -1) {
-                  fileOutputStream.write(b);
-               }
-               fileOutputStream.close();
-            }
-         }
-      } catch (IOException e) {
-         logger.error("Can't unzip file to " + zippedFile.getPath(), e);
-         return false;
-      } finally {
-         try {
-            zipInputStream.closeEntry();
-            if (fileOutputStream != null) {
-               fileOutputStream.close();
-            }
-         } catch (IOException e) {
-            logger.error("Error while closing stream.", e);
-         }
-
-      }
-      return true;
-   }
-   
-   public static boolean unzip(File zipFile, String targetDir) {
-      InputStream inputStream = null;
-      try {
-         inputStream = new FileInputStream(zipFile);
-         return unzip(inputStream, targetDir);
-      } catch (Exception e) {
-         throw new RuntimeException("falied to unzip file" + zipFile.getName(), e);
-      } finally {
-         try {
-            if (inputStream != null) {
-               inputStream.close();
-            }
-         } catch (IOException e) {
-            logger.error("Error while closing stream.", e);
-         }
-
-      }
-   }
+//   public static boolean unzip(File zipFile, String targetDir) {
+//      InputStream inputStream = null;
+//      try {
+//         inputStream = new FileInputStream(zipFile);
+//         return unzip(inputStream, targetDir);
+//      } catch (Exception e) {
+//         throw new RuntimeException("falied to unzip file" + zipFile.getName(), e);
+//      } finally {
+//         try {
+//            if (inputStream != null) {
+//               inputStream.close();
+//            }
+//         } catch (IOException e) {
+//            logger.error("Error while closing stream.", e);
+//         }
+//
+//      }
+//   }
 
 }
