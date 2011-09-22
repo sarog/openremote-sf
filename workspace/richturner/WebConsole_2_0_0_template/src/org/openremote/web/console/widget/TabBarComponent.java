@@ -7,7 +7,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class TabBar extends ConsoleWidgetImpl {
+public class TabBarComponent extends InteractiveConsoleWidget {
 	public static final int TABBAR_HEIGHT = 50;
 	public static final String TABBAR_CLASSNAME = "tabBar";
 	private static TabBarItem[] items;
@@ -21,7 +21,7 @@ public class TabBar extends ConsoleWidgetImpl {
 		}
 	}
 	
-	public TabBar() {
+	public TabBarComponent() {
 		HorizontalPanel container = new HorizontalPanel();
 		container.setHeight(TABBAR_HEIGHT + "px");
 		container.setStylePrimaryName(TABBAR_CLASSNAME);

@@ -6,22 +6,18 @@ import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.TouchEndEvent;
-import com.google.gwt.event.dom.client.TouchEndHandler;
 import com.google.gwt.event.dom.client.TouchStartEvent;
-import com.google.gwt.event.dom.client.TouchStartHandler;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleComponent extends Composite implements MouseDownHandler, TouchStartHandler, MouseUpHandler, TouchEndHandler {
+public abstract class InteractiveConsoleWidget extends ConsoleWidgetImpl implements Interactive {
+	protected boolean handlersRegistered = false;
 	PressStartEvent startEvent = null;
 	protected PressMoveEvent lastMoveEvent = null;
 	ConsoleUnitEventManager eventManager = ConsoleUnitEventManager.getInstance();
 	
-	public ConsoleComponent() {
+	public InteractiveConsoleWidget() {
 	}
 	
 	@Override
@@ -78,5 +74,6 @@ public class ConsoleComponent extends Composite implements MouseDownHandler, Tou
 			component.addDomHandler(this, MouseDownEvent.getType());
 			component.addDomHandler(this, MouseUpEvent.getType());
 		}
+		handlersRegistered = true;
 	}
 }
