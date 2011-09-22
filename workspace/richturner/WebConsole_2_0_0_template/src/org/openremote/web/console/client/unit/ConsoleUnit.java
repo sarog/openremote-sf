@@ -1,5 +1,7 @@
 package org.openremote.web.console.client.unit;
 
+import java.util.List;
+
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.HoldEvent;
@@ -27,7 +29,9 @@ import org.openremote.web.console.service.PanelService;
 import org.openremote.web.console.service.PanelServiceImpl;
 import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenView;
+import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.view.TestScreenView;
+import org.openremote.web.console.widget.ConsoleWidget;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
@@ -237,15 +241,12 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		});
 	}
 	
-	public void loadScreenView(ScreenView screenView) {
-		if (screenView != loadingScreenView) {
-			this.currentScreenView = screenView;
+	public void loadScreenView(ScreenView screen) {
+		List<ConsoleWidget> widgets = screen.getConsoleWidgets();
+		int top = 0;
+		for (ConsoleWidget widget : widgets) {
+			consoleDisplay.addConsoleWidget(widget, 50, top);
+			top += 100;
 		}
-		consoleDisplay.setScreen(screenView);
-	}
-	
-	public void unloadScreenView() {
-		this.currentScreenView = null;
-		consoleDisplay.setScreen(loadingScreenView);
 	}
 }

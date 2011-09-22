@@ -1,8 +1,8 @@
 package org.openremote.web.console.widget;
 
 public interface ConsoleWidget {
-	// Calls configure method and makes widget visible
-	public void initialise();
+	// Called when widget added to console display
+	public void onAdd();
 	
 	// Configures the widget based on the values supplied
 	public void onRender();

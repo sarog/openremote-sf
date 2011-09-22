@@ -14,7 +14,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class Slider extends ConsoleWidgetImpl {
+public class SliderComponent extends InteractiveConsoleWidget {
 	public static final int DEFAULT_WIDTH = 300;
 	public static final int DEFAULT_HEIGHT = 40;
 	public static final int MIN_SLIDE_BAR_HEIGHT = 20;
@@ -149,11 +149,11 @@ public class Slider extends ConsoleWidgetImpl {
 		}
 	}
 
-	public Slider() {
-		this(Slider.DEFAULT_WIDTH, Slider.DEFAULT_HEIGHT);
+	public SliderComponent() {
+		this(SliderComponent.DEFAULT_WIDTH, SliderComponent.DEFAULT_HEIGHT);
 	}
 	
-	public Slider(int width, int height) {
+	public SliderComponent(int width, int height) {
 		int handleSize = 0;
 		int handleXPos = 0;
 		int handleYPos = 0;

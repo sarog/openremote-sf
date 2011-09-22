@@ -5,8 +5,8 @@ import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.util.BrowserUtils;
-import org.openremote.web.console.view.ScreenView;
-import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.ConsoleWidget;
+import org.openremote.web.console.widget.InteractiveConsoleWidget;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -14,7 +14,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This is the container where content will actually be displayed
@@ -23,11 +23,11 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author rich
  *
  */
-public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
+public class ConsoleDisplay extends InteractiveConsoleWidget implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
-	private SimplePanel display;
+	private AbsolutePanel display;
 	private int width;
 	private int height;
 	private String colour;
@@ -43,7 +43,7 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		container.setStylePrimaryName("consoleDisplay");
 		
 		// Create display panel where screen is actually loaded
-		display = new SimplePanel();
+		display = new AbsolutePanel();
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
 		display.setStylePrimaryName("portraitDisplay");
@@ -67,7 +67,7 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		}
 		
 		// Initialise widget
-		this.initWidget(container);
+		this.initWidget(display);
 	}
 	
 	/**
@@ -113,18 +113,19 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 	}
 	
 	/**
-	 * Shows the specified screen on the display
-	 * @param screen
+	 * Add specified component to the display
 	 */
-	public void setScreen(ScreenView screen) {
-		display.setWidget(screen);
+	public void addConsoleWidget(ConsoleWidget widget, int left, int top) {
+		display.add((Widget) widget, left, top);
 	}
 	
 	/**
 	 * Completely clear the display
 	 */
-	public void clearScreen() {
-		setScreen(null);
+	public void clearDisplay() {
+		for (int i=0; i<display.getWidgetCount(); i++) {
+			display.remove(i);
+		}
 	}
 	
 	@Override
@@ -149,4 +150,7 @@ public class ConsoleDisplay extends ConsoleComponent implements TouchMoveHandler
 		ConsoleUnitEventManager.getInstance().getEventBus().fireEvent(new PressCancelEvent(event));
 		reset();
 	}
+
+	@Override
+	public void onRender() {}
 }
