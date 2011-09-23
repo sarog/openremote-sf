@@ -1,7 +1,6 @@
 package org.openremote.web.console.event.press;
 
 import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.client.unit.*;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
@@ -12,6 +11,8 @@ import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent.*;
 import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.TapEvent;
+import org.openremote.web.console.unit.*;
+
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.ui.Widget;
 

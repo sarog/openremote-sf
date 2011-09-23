@@ -2,7 +2,7 @@ package org.openremote.web.console.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openremote.web.console.widget.ConsoleWidget;
+import org.openremote.web.console.widget.ConsoleComponent;
 
 /**
  * Defines a set of widgets that form a specific
@@ -11,17 +11,17 @@ import org.openremote.web.console.widget.ConsoleWidget;
  *
  */
 public class ScreenViewImpl implements ScreenView {
-	List<ConsoleWidget> consoleWidgets = new ArrayList<ConsoleWidget>();
+	List<ConsoleComponent> consoleWidgets = new ArrayList<ConsoleComponent>();
 	
 	public ScreenViewImpl() {
 	}
 	
-	public void addConsoleWidget(ConsoleWidget widget) {
+	public void addConsoleWidget(ConsoleComponent widget) {
 		consoleWidgets.add(widget);
 	}
 
 	@Override
-	public List<ConsoleWidget> getConsoleWidgets() {
+	public List<ConsoleComponent> getConsoleWidgets() {
 		return consoleWidgets;
 	}
 }

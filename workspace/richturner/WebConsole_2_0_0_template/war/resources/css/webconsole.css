@@ -101,7 +101,7 @@ body {
 	padding: 0;
 }
 
-.consoleDisplay {
+#consoleDisplay {
 	background-color: black;
 	overflow: hidden;
 	cursor: pointer;
@@ -145,11 +145,6 @@ GENERIC SPINNER CSS BELOW HERE
 Code adapted from:
 http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webkit
 */
-
-.spinner {
-	position: relative;
-	display: inline-block;
-}
 	
 .spinner div {
 	width: 12%;
@@ -185,9 +180,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	to {opacity: 0.25;}
 }
 
-/* Customisable Widget CSS below here */
-
-.tabBar {
+.tabBarComponent {
 	background-image: linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
 	background-image: -o-linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);
 	background-image: -moz-linear-gradient(bottom, rgb(0,0,0) 5%, rgb(110,110,110) 50%);

@@ -2,14 +2,15 @@ package org.openremote.web.console.widget;
 
 import com.google.gwt.user.client.ui.HTML;
 
-public class HTMLComponent extends PassiveConsoleWidget {
+public class HTMLComponent extends PassiveConsoleComponent {
+	public static final String CLASS_NAME = "htmlComponent";
 	private HTML container;
 	
 	public HTMLComponent() {
 		// Create HTML widget container
-		container = new HTML();
-		container.setStylePrimaryName("htmlComponent");
-		this.initWidget(container);
+		super(new HTML());
+		container = (HTML)this.getWidget();
+		container.setStylePrimaryName(CLASS_NAME);
 	}
 
 	@Override

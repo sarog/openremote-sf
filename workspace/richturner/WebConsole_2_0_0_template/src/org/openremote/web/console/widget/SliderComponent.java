@@ -13,8 +13,10 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class SliderComponent extends InteractiveConsoleWidget {
+public class SliderComponent extends InteractiveConsoleComponent {
+	public static final String CLASS_NAME = "sliderComponent";
 	public static final int DEFAULT_WIDTH = 300;
 	public static final int DEFAULT_HEIGHT = 40;
 	public static final int MIN_SLIDE_BAR_HEIGHT = 20;
@@ -154,6 +156,10 @@ public class SliderComponent extends InteractiveConsoleWidget {
 	}
 	
 	public SliderComponent(int width, int height) {
+		super(new AbsolutePanel());
+		container = (AbsolutePanel)this.getWidget();
+		container.setStylePrimaryName(CLASS_NAME);
+		
 		int handleSize = 0;
 		int handleXPos = 0;
 		int handleYPos = 0;
@@ -171,11 +177,8 @@ public class SliderComponent extends InteractiveConsoleWidget {
 			height = height < MIN_SLIDE_BAR_HEIGHT ? MIN_SLIDE_BAR_HEIGHT : height;
 		}
 		
-		container = new AbsolutePanel();
-		container.addStyleName("consoleWidget");
 		container.setWidth(width + "px");
 		container.setHeight(height + "px");
-		container.setVisible(false);
 		DOM.setStyleAttribute(container.getElement(), "WebkitUserSelect", "none");
 		DOM.setStyleAttribute(container.getElement(), "overflow", "visible");
 		
@@ -214,8 +217,6 @@ public class SliderComponent extends InteractiveConsoleWidget {
 		
 		registerMouseAndTouchHandlers(slideBar);
 		registerMouseAndTouchHandlers(handle);
-		
-		this.initWidget(container);
 	}
 	
 	private void doHandleDrag(int absPos) {

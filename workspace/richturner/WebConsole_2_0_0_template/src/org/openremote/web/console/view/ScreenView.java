@@ -1,8 +1,8 @@
 package org.openremote.web.console.view;
 
 import java.util.List;
-import org.openremote.web.console.widget.ConsoleWidget;
+import org.openremote.web.console.widget.ConsoleComponent;
 
 public interface ScreenView {
-	public List<ConsoleWidget> getConsoleWidgets();
+	public List<ConsoleComponent> getConsoleWidgets();
 }

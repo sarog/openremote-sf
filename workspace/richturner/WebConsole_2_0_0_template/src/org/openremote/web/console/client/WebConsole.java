@@ -1,11 +1,11 @@
 package org.openremote.web.console.client;
 
-import org.openremote.web.console.client.unit.ConsoleUnit;
-import org.openremote.web.console.client.unit.type.FullScreenUnit;
-import org.openremote.web.console.client.unit.type.ResizableUnit;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.WindowResizeHandlerImpl;
 import org.openremote.web.console.event.rotate.RotationEvent;
+import org.openremote.web.console.unit.ConsoleUnit;
+import org.openremote.web.console.unit.type.FullScreenUnit;
+import org.openremote.web.console.unit.type.ResizableUnit;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.dom.client.Style.Unit;

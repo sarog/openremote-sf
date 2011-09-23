@@ -1,6 +1,7 @@
-package org.openremote.web.console.client.unit.type;
+package org.openremote.web.console.unit.type;
 
-import org.openremote.web.console.client.unit.ConsoleUnit;
+import org.openremote.web.console.unit.ConsoleUnit;
+
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**

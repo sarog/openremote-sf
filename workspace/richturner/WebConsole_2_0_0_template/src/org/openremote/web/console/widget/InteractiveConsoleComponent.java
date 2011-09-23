@@ -11,13 +11,14 @@ import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class InteractiveConsoleWidget extends ConsoleWidgetImpl implements Interactive {
+public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive {
 	protected boolean handlersRegistered = false;
 	PressStartEvent startEvent = null;
 	protected PressMoveEvent lastMoveEvent = null;
 	ConsoleUnitEventManager eventManager = ConsoleUnitEventManager.getInstance();
 	
-	public InteractiveConsoleWidget() {
+	protected InteractiveConsoleComponent(Widget container) {
+		super(container);
 	}
 	
 	@Override

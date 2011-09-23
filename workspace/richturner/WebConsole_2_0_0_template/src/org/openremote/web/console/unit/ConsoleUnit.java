@@ -1,4 +1,4 @@
-package org.openremote.web.console.client.unit;
+package org.openremote.web.console.unit;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.view.TestScreenView;
-import org.openremote.web.console.widget.ConsoleWidget;
+import org.openremote.web.console.widget.ConsoleComponent;
 
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
@@ -75,10 +75,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		// Create a display and add to console container
 		consoleDisplay = new ConsoleDisplay(width, height);
 		add(consoleDisplay);
-	
-		// Create and load loading screen
-		loadingScreenView = new LoadingScreenView();
-		loadScreenView(loadingScreenView);
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
@@ -192,6 +188,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 //			controllerService.setController(controller);
 //			getPanelIdentities();
 		}
+		
+		// Create and load loading screen
+		loadingScreenView = new LoadingScreenView();
+		loadScreenView(loadingScreenView);
 	}
 	
 	public void registerHandlers() {
@@ -242,9 +242,9 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	public void loadScreenView(ScreenView screen) {
-		List<ConsoleWidget> widgets = screen.getConsoleWidgets();
+		List<ConsoleComponent> widgets = screen.getConsoleWidgets();
 		int top = 0;
-		for (ConsoleWidget widget : widgets) {
+		for (ConsoleComponent widget : widgets) {
 			consoleDisplay.addConsoleWidget(widget, 50, top);
 			top += 100;
 		}
