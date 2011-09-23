@@ -1,6 +1,6 @@
 package org.openremote.web.console.widget;
 
-public interface ConsoleWidget {
+public interface ConsoleComponent {
 	// Called when widget added to console display
 	public void onAdd();
 	

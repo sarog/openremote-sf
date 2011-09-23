@@ -1,12 +1,12 @@
-package org.openremote.web.console.client.unit;
+package org.openremote.web.console.unit;
 
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.util.BrowserUtils;
-import org.openremote.web.console.widget.ConsoleWidget;
-import org.openremote.web.console.widget.InteractiveConsoleWidget;
+import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.InteractiveConsoleComponent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author rich
  *
  */
-public class ConsoleDisplay extends InteractiveConsoleWidget implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
+public class ConsoleDisplay extends InteractiveConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 480;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
@@ -31,10 +31,13 @@ public class ConsoleDisplay extends InteractiveConsoleWidget implements TouchMov
 	private int width;
 	private int height;
 	private String colour;
-	private AbsolutePanel container = new AbsolutePanel();
+	private AbsolutePanel container;
 	public boolean isVertical = true;
 	
 	public ConsoleDisplay(int width, int height) {
+		super(new AbsolutePanel());
+		container = (AbsolutePanel)this.getWidget();
+		
 		this.width = width;
 		this.height = height;
 		container.setWidth(this.width + "px");
@@ -66,8 +69,7 @@ public class ConsoleDisplay extends InteractiveConsoleWidget implements TouchMov
 			this.addDomHandler(this, MouseOutEvent.getType());
 		}
 		
-		// Initialise widget
-		this.initWidget(display);
+		setVisible(true);
 	}
 	
 	/**
@@ -115,8 +117,21 @@ public class ConsoleDisplay extends InteractiveConsoleWidget implements TouchMov
 	/**
 	 * Add specified component to the display
 	 */
-	public void addConsoleWidget(ConsoleWidget widget, int left, int top) {
+	public void addConsoleWidget(ConsoleComponent widget, int left, int top) {
 		display.add((Widget) widget, left, top);
+		widget.onAdd();
+	}
+	
+	/**
+	 * Adjust specified widgets position
+	 * @param widget
+	 * @param left
+	 * @param top
+	 */
+	public void setConsoleWidgetPosition(ConsoleComponent widget, int left, int top) {
+		if (display.getWidgetIndex((Widget)widget) >= 0) {
+			display.setWidgetPosition((Widget)widget, left, top);
+		}		
 	}
 	
 	/**
@@ -153,4 +168,12 @@ public class ConsoleDisplay extends InteractiveConsoleWidget implements TouchMov
 
 	@Override
 	public void onRender() {}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public int getHeight() {
+		return this.height;
+	}
 }

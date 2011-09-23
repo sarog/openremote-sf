@@ -1,19 +1,28 @@
 package org.openremote.web.console.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.unit.ConsoleDisplay;
 
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class TabBarComponent extends InteractiveConsoleWidget {
+public class TabBarComponent extends InteractiveConsoleComponent {
+	public static final String CLASS_NAME = "tabBarComponent";
 	public static final int TABBAR_HEIGHT = 50;
-	public static final String TABBAR_CLASSNAME = "tabBar";
-	private static TabBarItem[] items;
+	private static List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
+	private HorizontalPanel container;
+	private boolean hasOverflow = false;
 	
-	public class TabBarItem extends VerticalPanel implements TapHandler {
-
+	public class TabBarItemComponent extends VerticalPanel implements TapHandler {
+		private static final int TAB_ITEM_MIN_WIDTH = 65;
+		
 		@Override
 		public void onTap(TapEvent event) {
 			// TODO Auto-generated method stub
@@ -22,33 +31,41 @@ public class TabBarComponent extends InteractiveConsoleWidget {
 	}
 	
 	public TabBarComponent() {
-		HorizontalPanel container = new HorizontalPanel();
+		super(new HorizontalPanel());
+		container = (HorizontalPanel)this.getWidget();
+		container.setStylePrimaryName(CLASS_NAME);
 		container.setHeight(TABBAR_HEIGHT + "px");
-		container.setStylePrimaryName(TABBAR_CLASSNAME);
-		DOM.setStyleAttribute(container.getElement(),"position", "fixed");
-		DOM.setStyleAttribute(container.getElement(),"bottom", "0");
-		
-		initWidget(container);
 	}
 	
 	@Override
 	public void onRender() {
-		// TODO Auto-generated method stub
+		/*
+		 * The position of this widget and the number of visible tab items
+		 * is dependent on the display size, get that from console display
+		 */
+		ConsoleDisplay display = WebConsole.getConsoleUnit().getConsoleDisplay();
 		
+		int displayWidth = display.getWidth();
+		int displayHeight = display.getHeight();
+		int itemCount = items.size();
+		if ((itemCount * TabBarItemComponent.TAB_ITEM_MIN_WIDTH) > displayWidth) {
+			hasOverflow = true;
+		}
+		this.setWidth(displayWidth+"px");
+		display.setConsoleWidgetPosition(this, 0, displayHeight-TABBAR_HEIGHT);
 	}
 	
-	public void addItem(TabBarItem tabItem) {
-		// TODO Auto-generated method stub
-		
+	public void addItem(TabBarItemComponent tabItem) {
+		if (!items.contains(tabItem)) {
+			items.add(tabItem);
+		}
 	}
 	
-	public void removeItem(TabBarItem tabItem) {
-		// TODO Auto-generated method stub
-		
+	public void removeItem(TabBarItemComponent tabItem) {
+		items.remove(tabItem);
 	}
 	
 	public void removeItem(int index) {
-		// TODO Auto-generated method stub
-		
+		items.remove(index);
 	}
 }

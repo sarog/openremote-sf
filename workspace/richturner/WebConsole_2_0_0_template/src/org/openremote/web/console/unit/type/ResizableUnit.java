@@ -1,7 +1,8 @@
-package org.openremote.web.console.client.unit.type;
+package org.openremote.web.console.unit.type;
 
-import org.openremote.web.console.client.unit.ConsoleDisplay;
-import org.openremote.web.console.client.unit.ConsoleUnit;
+import org.openremote.web.console.unit.ConsoleDisplay;
+import org.openremote.web.console.unit.ConsoleUnit;
+
 import com.google.gwt.dom.client.Style.BorderStyle;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.HorizontalPanel;
