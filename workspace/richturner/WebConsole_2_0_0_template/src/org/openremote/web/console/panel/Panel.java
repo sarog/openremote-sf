@@ -1,13 +1,16 @@
 package org.openremote.web.console.panel;
 
-import org.openremote.web.console.entity.Group;
-import org.openremote.web.console.entity.Screen;
-import org.openremote.web.console.entity.TabBar;
+import org.openremote.web.console.panel.entity.Groups;
+import org.openremote.web.console.panel.entity.Screens;
+import org.openremote.web.console.panel.entity.TabBar;
 
 public interface Panel {
-   public Group[] getGroups();
-
-   public Screen[] getScreens();
+   public Groups getGroups();
+   public void setGroups(Groups groups);
+   
+   public Screens getScreens();
+   public void setScreens(Screens screens);
    
    public TabBar getTabBar();
+   public void getTabBar(TabBar tabBar);
 }

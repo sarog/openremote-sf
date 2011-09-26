@@ -5,11 +5,13 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AbsolutePanelComponent extends PassiveConsoleComponent {
+public class AbsolutePanelComponent extends PassiveConsoleComponent implements Positional {
 	private static final String CLASS_NAME = "absolutePanelComponent";
 	private SimplePanel container;
 	private ConsoleComponent component;
 	private HorizontalPanel componentContainer;
+	private int left;
+	private int top;
 	
 	public AbsolutePanelComponent() {
 		super(new SimplePanel());
@@ -28,7 +30,6 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent {
 
 	@Override
 	public void onRender() {
-		// TODO Auto-generated method stub
 		if (component != null) {
 			component.onAdd();
 		}
@@ -41,5 +42,21 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent {
 	
 	public ConsoleComponent getComponent() {
 		return (ConsoleComponent)this.componentContainer.getWidget(0);
+	}
+
+	@Override
+	public void setPosition(int left, int top) {
+		this.left = left;
+		this.top = top;
+	}
+
+	@Override
+	public int getLeft() {
+		return this.left;
+	}
+
+	@Override
+	public int getTop() {
+		return this.top;
 	}
 }

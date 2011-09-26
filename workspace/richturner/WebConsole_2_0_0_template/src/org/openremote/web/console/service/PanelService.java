@@ -1,15 +1,15 @@
 package org.openremote.web.console.service;
 
-import org.openremote.web.console.entity.Group;
-import org.openremote.web.console.entity.Screen;
 import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.entity.Group;
+import org.openremote.web.console.panel.entity.Screen;
 
 public interface PanelService {
 	Screen getScreenById(int screenId);
 	
 	Screen getScreenByName(String name);
 	
-	Group getDefaultGroup();
+	Screen getDefaultScreen();
 	
 	Group getGroupById();
 	

@@ -17,24 +17,26 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
+package org.openremote.web.console.panel.entity;
 
-import java.util.ArrayList;
+import org.openremote.web.console.panel.entity.component.Image;
 
 /**
- * The tabBar contains tabBarItems, which displayed as toolbars.
+ * The background of screen, which contains background position in screen.
+ * The position include absolute position and relative position.
+ * 
  */
-@SuppressWarnings("serial")
-public class TabBar extends Entity {
+public interface Background {
 
-   private ArrayList<TabBarItem> tabBarItems;
-   
-   public TabBar() {
-   }
-   
-   public ArrayList<TabBarItem> getTabBarItems() {
-      return tabBarItems;
-   }
+   public void setFillScreen(boolean fillScreen);
 
+	public void setBackgroundImage(Image backgroundImage);
+	
+	public void setRelative(String relative);
+
+   public boolean getFillScreen();
    
+   public String getRelative();
+   
+   public Image getBackgroundImage();
 }

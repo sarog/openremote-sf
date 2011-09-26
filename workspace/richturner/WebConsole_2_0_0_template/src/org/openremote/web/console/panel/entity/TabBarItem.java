@@ -17,42 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
+package org.openremote.web.console.panel.entity;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import org.openremote.web.console.panel.entity.component.Image;
 
 /**
- * The label can set font size and color, change text by polling status.
+ * This class is responsible for storing data about tabBarItem.
  */
-@SuppressWarnings("serial")
-public class Link extends Entity {
+public interface TabBarItem {
 
-   private String type;
-   private String ref;
-   
-   public Link() {
-   }
-   
-   public Link(Node node) {
-      NamedNodeMap nodeMap = node.getAttributes();
-      setType(nodeMap.getNamedItem(TYPE).getNodeValue());
-      setRef(nodeMap.getNamedItem(REF).getNodeValue());
-   }
-   
-   public String getType() {
-      return type;
-   }
-   
-   public String getRef() {
-      return ref;
-   }
-   
-   public void setType(String type) {
-      this.type = type;
-   }
+   public void setName(String name);
 
-   public void setRef(String ref) {
-      this.ref = ref;
-   }
+	public void setNavigate(Navigate navigate);
+
+	public void setImage(Image image);
+
+   public String getName();
+
+   public Navigate getNavigate() ;
+
+   public Image getImage();
 }

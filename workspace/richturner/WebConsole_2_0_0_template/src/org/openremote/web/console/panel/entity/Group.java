@@ -17,17 +17,21 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
+package org.openremote.web.console.panel.entity;
 
 /**
  * Group is parsed by group node, which contains id, name, screens and tabBar.
  */
-public interface Group {   
+public interface Group {
    public int getGroupId();
-
+   public void setGroupId(int groupId);
+   
    public String getName();
-
+   public void setName(String name);
+   
    public Screen[] getScreens();
-
-   public TabBar getTabBar();   
+   public void setScreens(Screen[] screens);
+   
+   public TabBar getTabBar();
+   public void setTabBar(TabBar tabBar);
 }

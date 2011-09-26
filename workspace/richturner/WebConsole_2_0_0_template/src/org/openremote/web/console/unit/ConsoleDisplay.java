@@ -1,12 +1,19 @@
 package org.openremote.web.console.unit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.util.BrowserUtils;
+import org.openremote.web.console.view.ScreenView;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
+import org.openremote.web.console.widget.Positional;
+import org.openremote.web.console.widget.TabBarComponent;
+
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -14,6 +21,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -114,33 +122,24 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		return colour;
 	}
 	
-	/**
-	 * Add specified component to the display
-	 */
-	public void addConsoleWidget(ConsoleComponent widget, int left, int top) {
-		display.add((Widget) widget, left, top);
-		widget.onAdd();
-	}
-	
-	/**
-	 * Adjust specified widgets position
-	 * @param widget
-	 * @param left
-	 * @param top
-	 */
-	public void setConsoleWidgetPosition(ConsoleComponent widget, int left, int top) {
-		if (display.getWidgetIndex((Widget)widget) >= 0) {
-			display.setWidgetPosition((Widget)widget, left, top);
-		}		
+	protected void setScreenView(ScreenView screenView) {
+		if (screenView != null) {
+			clearDisplay();
+			display.add((Widget)screenView, 0, 0);
+			screenView.onAdd();
+		}
 	}
 	
 	/**
 	 * Completely clear the display
 	 */
-	public void clearDisplay() {
-		for (int i=0; i<display.getWidgetCount(); i++) {
-			display.remove(i);
-		}
+	private void clearDisplay() {
+		display.clear();
+	}
+	
+	protected void setTabBar(TabBarComponent tabBar) {
+		display.add(tabBar, 0, height- TabBarComponent.TABBAR_HEIGHT);
+		tabBar.onAdd();
 	}
 	
 	@Override

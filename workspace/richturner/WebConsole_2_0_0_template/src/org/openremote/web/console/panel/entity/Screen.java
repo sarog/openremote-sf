@@ -17,28 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
-
-import org.openremote.web.console.entity.component.Component;
+package org.openremote.web.console.panel.entity;
 
 /**
- * The subclass of LayoutContainer which includes a component.
- * It parse the absolute node, contains size and position info.
- * 
+ * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
  */
-@SuppressWarnings("serial")
-public class AbsoluteLayoutContainer extends LayoutContainer {
+public interface Screen {
+   public int getScreenId();
+   public void setScreenId(int screenId);
+   
+   public String getName();
+   public void setName(String name);
+   
+   public Absolute[] getLayouts();
+   public void setLayouts(Absolute[] layouts);
 
-   private Component component;
-   
-   public AbsoluteLayoutContainer() {
-   }
-   
-   public Component getComponent() {
-      return component;
-   }
-   
-   public void setComponent(Component component) {
-      this.component = component;
-   }
+   public Background getBackground();
+   public void setBackground(Background background);
+
+   public Gesture[] getGestures();
+   public void setGestures(Gesture[] gestures);
 }

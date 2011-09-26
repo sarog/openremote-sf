@@ -23,8 +23,15 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		}
 		
 		// Call Widgets onRender Method and then display it
-		onRender();
 		setVisible(true);
+		onRender();
 		isInitialised = true;
+	}
+	
+	public void onRemove() {
+		if (this instanceof InteractiveConsoleComponent) {
+			InteractiveConsoleComponent thisWidget = (InteractiveConsoleComponent) this;
+			thisWidget.unRegisterMouseAndTouchHandlers();		
+		}
 	}
 }

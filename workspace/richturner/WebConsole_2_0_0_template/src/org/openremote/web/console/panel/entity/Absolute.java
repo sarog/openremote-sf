@@ -17,44 +17,32 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
+package org.openremote.web.console.panel.entity;
 
-import java.util.HashSet;
 
 /**
- * The super class of AbsoluteLayoutContainer and GridLayoutContainer.
- * It contains the absolute position and size information.
+ * The subclass of LayoutContainer which includes a component.
+ * It parse the absolute node, contains size and position info.
+ * 
  */
-@SuppressWarnings("serial")
-public class LayoutContainer extends Entity {
-
-   protected int left;
-   protected int top;
-   protected int width;
-   protected int height;
+public interface Absolute {
+   public Label getLabel();
    
-   public int getLeft() {
-      return left;
-   }
-
-   public int getTop() {
-      return top;
-   }
-
-   public int getWidth() {
-      return width;
-   }
-
-   public int getHeight() {
-      return height;
-   }
-
-   /**
-    * Gets the polling components ids in the container.
-    * 
-    * @return the polling components ids
-    */
-   public HashSet<Integer> getPollingComponentsIds() {
-      return null;
-   }
+   public int getWidth();
+   
+   public int getHeight();
+   
+   public int getLeft();
+   
+   public int getTop();
+   
+   public void setLabel(Label label);
+   
+   public void setWidth(int width);
+   
+   public void setHeight(int height);
+   
+   public void setLeft(int left);
+   
+   public void setTop(int top);
 }

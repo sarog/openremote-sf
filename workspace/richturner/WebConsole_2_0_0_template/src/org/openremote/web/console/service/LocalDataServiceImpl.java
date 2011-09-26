@@ -28,14 +28,15 @@ public class LocalDataServiceImpl implements LocalDataService {
 			panelString = Cookies.getCookie("LocalDataService.LastPanelCredentials");
 		}
 		if (panelString != null && !panelString.equals("null")) {
-			panelCredentials = PanelCredentialsImpl.fromJson(panelString);
+			//String panelJson = AutoBeanService.getInstance().toJsonString(panelCred);
+			panelCredentials = AutoBeanService.getInstance().fromJsonString(PanelCredentials.class, panelString);
 		}
 		return panelCredentials;
 	}
 
 	@Override
 	public void setLastPanelCredentials(PanelCredentials panelCredentials) {
-		String data = PanelCredentialsImpl.toJson(panelCredentials);
+		String data = AutoBeanService.getInstance().toJsonString(PanelCredentials.class, panelCredentials);
 		if (dataStore != null) {
 			dataStore.setItem("LocalDataService.LastPanelCredentials", data);
 		} else {

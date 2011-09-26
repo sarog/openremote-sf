@@ -17,37 +17,38 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
+package org.openremote.web.console.panel.entity;
 
-import org.openremote.web.console.entity.component.Image;
+import org.openremote.web.console.panel.entity.component.Component;
 
 /**
- * This class is responsible for storing data about tabBarItem.
+ * The grid cell include a component, have position and span in grid.
  */
 @SuppressWarnings("serial")
-public class TabBarItem extends Entity {
+public class GridCell extends Entity {
 
-   /** The tabBar item display text. */
-   private String name;
+   private int x;
+   private int y;
+   private int rowspan = 1;
+   private int colspan = 1;
+   private Component component;
    
-   /** Navigate to. */
-   private Navigate navigate;
+   public GridCell() {
+   }
    
-   /** The image display on the item. */
-   private Image image;
-   
-   public TabBarItem() {
+   public int getX() {
+      return x;
    }
-
-   public String getName() {
-      return name;
+   public int getY() {
+      return y;
    }
-
-   public Navigate getNavigate() {
-      return navigate;
+   public int getRowspan() {
+      return rowspan;
    }
-
-   public Image getImage() {
-      return image;
+   public int getColspan() {
+      return colspan;
    }
+   public Component getComponent() {
+      return component;
+   }   
 }

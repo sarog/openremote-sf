@@ -17,53 +17,31 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity.component;
+package org.openremote.web.console.panel.entity;
 
-import org.openremote.web.console.entity.Link;
 
 /**
  * The label can set font size and color, change text by polling status.
  */
-@SuppressWarnings("serial")
-public class Label extends Component {
+public interface Label {
 
-   private int fontSize;
-   private String color;
-   private String text;
-   private Link link;
-   
-   public Label() {
-   }
-   
-   public int getFontSize() {
-      return fontSize;
-   }
-   
-   public void setLink(int fontSize) {
-   	this.fontSize = fontSize;
-   }
-   
-   public String getColor() {
-      return color;
-   }
-   
-   public void setColour(String color) {
-   	this.color = color;
-   }
-   
-   public String getText() {
-      return text;
-   }
+   public void setFontSize(int fontSize);
 
-   public void setText(String text) {
-   	this.text = text;
-   }
+	public void setColor(String color);
+
+   public int getFontSize();
    
-   public Link getLink() {
-   	return link;
-   }
+   public void setLink(int fontSize);
    
-   public void setLink(Link link) {
-   	this.link = link;
-   }
+   public String getColor();
+   
+   public void setColour(String color);
+   
+   public String getText();
+
+   public void setText(String text);
+   
+   public Link getLink();
+   
+   public void setLink(Link link);
 }

@@ -17,21 +17,17 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
-
-import java.util.ArrayList;
+package org.openremote.web.console.panel.entity;
 
 /**
- * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
+ * The label can set font size and color, change text by polling status.
  */
-public interface Screen {
-   public int getScreenId();
+public interface Link {
+   public String getType();
+   
+   public String getRef();
+   
+   public void setType(String type);
 
-   public String getName();
-
-   public ArrayList<LayoutContainer> getLayouts();
-
-   public Background getBackground();
-
-   public ArrayList<Gesture> getGestures();
+   public void setRef(String ref);
 }

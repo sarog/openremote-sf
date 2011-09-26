@@ -11,6 +11,8 @@ public class HTMLComponent extends PassiveConsoleComponent {
 		super(new HTML());
 		container = (HTML)this.getWidget();
 		container.setStylePrimaryName(CLASS_NAME);
+		this.setWidth("100%");
+		this.setHeight("100%");
 	}
 
 	@Override

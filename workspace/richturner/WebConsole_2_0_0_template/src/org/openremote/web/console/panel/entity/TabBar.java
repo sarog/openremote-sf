@@ -17,38 +17,14 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity;
+package org.openremote.web.console.panel.entity;
 
-import org.openremote.web.console.entity.component.Component;
+import java.util.ArrayList;
 
 /**
- * The grid cell include a component, have position and span in grid.
+ * The tabBar contains tabBarItems, which displayed as toolbars.
  */
-@SuppressWarnings("serial")
-public class GridCell extends Entity {
-
-   private int x;
-   private int y;
-   private int rowspan = 1;
-   private int colspan = 1;
-   private Component component;
-   
-   public GridCell() {
-   }
-   
-   public int getX() {
-      return x;
-   }
-   public int getY() {
-      return y;
-   }
-   public int getRowspan() {
-      return rowspan;
-   }
-   public int getColspan() {
-      return colspan;
-   }
-   public Component getComponent() {
-      return component;
-   }   
+public interface TabBar {   
+   public ArrayList<TabBarItem> getTabBarItems();
+   public void setTabBarItems(ArrayList<TabBarItem> tabBarItems);
 }

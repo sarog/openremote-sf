@@ -52,7 +52,6 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 			hasOverflow = true;
 		}
 		this.setWidth(displayWidth+"px");
-		display.setConsoleWidgetPosition(this, 0, displayHeight-TABBAR_HEIGHT);
 	}
 	
 	public void addItem(TabBarItemComponent tabItem) {

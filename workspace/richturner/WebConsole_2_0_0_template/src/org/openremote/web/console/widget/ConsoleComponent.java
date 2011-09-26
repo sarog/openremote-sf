@@ -4,6 +4,9 @@ public interface ConsoleComponent {
 	// Called when widget added to console display
 	public void onAdd();
 	
+	// Called when widget removed from console display
+	public void onRemove();
+	
 	// Configures the widget based on the values supplied
 	public void onRender();
 	

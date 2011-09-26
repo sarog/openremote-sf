@@ -17,46 +17,29 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity.component;
+package org.openremote.web.console.panel.entity.component;
+
+import org.openremote.web.console.panel.entity.Label;
 
 /**
  * The image component can has sensor and can change status.
  * It can also has a linked label to display as a label. 
  */
-@SuppressWarnings("serial")
-public class Image extends Component {
+public interface Image {
 
-   private String src;				/** The image source */
-   private String style; 			/** The image's style, but now is unUsed. */
-   private Label label; 			/** The linked label. */
-   private int labelRefId = 0;	/** The linked label id. */
-   
-   public Image() {
-   }
-   
-   public Image(String src) {
-      this.src = src;
-   }
-   public String getSrc() {
-      return src;
-   }
-   public String getStyle() {
-      return style;
-   }
-   
-   public Label getLabel() {
-      return label;
-   }
+   public void setSrc(String src);
 
-   public void setLabel(Label label) {
-      this.label = label;
-   }
+	public void setStyle(String style);
    
-   public void setLabelRefId(int labelRefId) {
-   	this.labelRefId = labelRefId;
-   }
+   public String getSrc();
    
-   public int getLabelRefId() {
-      return labelRefId;
-   }
+   public String getStyle();
+   
+   public Label getLabel();
+
+   public void setLabel(Label label);
+   
+   public void setLabelRefId(int labelRefId);
+   
+   public int getLabelRefId();
 }
