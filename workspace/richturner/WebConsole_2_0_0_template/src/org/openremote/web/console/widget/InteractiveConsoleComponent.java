@@ -1,5 +1,8 @@
 package org.openremote.web.console.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressEndEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
@@ -9,9 +12,11 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive {
+	private List<HandlerRegistration> handlerRegistrations = new ArrayList<HandlerRegistration>();
 	protected boolean handlersRegistered = false;
 	PressStartEvent startEvent = null;
 	protected PressMoveEvent lastMoveEvent = null;
@@ -69,12 +74,18 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	public void registerMouseAndTouchHandlers(Widget component) {
 		if(BrowserUtils.isMobile()) {
-			component.addDomHandler(this, TouchStartEvent.getType());
-			component.addDomHandler(this, TouchEndEvent.getType());
+			handlerRegistrations.add(component.addDomHandler(this, TouchStartEvent.getType()));
+			handlerRegistrations.add(component.addDomHandler(this, TouchEndEvent.getType()));
 		} else {
-			component.addDomHandler(this, MouseDownEvent.getType());
-			component.addDomHandler(this, MouseUpEvent.getType());
+			handlerRegistrations.add(component.addDomHandler(this, MouseDownEvent.getType()));
+			handlerRegistrations.add(component.addDomHandler(this, MouseUpEvent.getType()));
 		}
 		handlersRegistered = true;
+	}
+	
+	public void unRegisterMouseAndTouchHandlers() {
+		for (HandlerRegistration handler : handlerRegistrations) {
+			handler.removeHandler();
+		}
 	}
 }

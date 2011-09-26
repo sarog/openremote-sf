@@ -16,6 +16,7 @@ import org.openremote.web.console.event.value.UiValueChangeHandler;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.service.AsyncControllerCallback;
+import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.ControllerService;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -220,8 +221,10 @@ public class JSONPControllerService extends ControllerService {
 					break;
 				case GET_PANEL_LAYOUT:
 					AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callbackMap.getCallback();
-					PanelJso jsoPanel = getPanel(jsObj);
-					panelLayoutCallback.onSuccess((Panel)jsoPanel);
+					String json = jsObj.toString();
+					Panel panel = null; //AutoBeanService.getInstance().fromJsonString(Panel.class, json);
+					//PanelJso jsoPanel = getPanel(jsObj);
+					panelLayoutCallback.onSuccess(panel);
 					break;
 				case IS_ALIVE:
 					AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callbackMap.getCallback();
@@ -241,7 +244,7 @@ public class JSONPControllerService extends ControllerService {
 			return jsObj.panel;
 		}-*/;
 		
-		private native final PanelJso getPanel(JavaScriptObject jsObj) /*-{
-			return jsObj;
-		}-*/;
+//		private native final PanelJso getPanel(JavaScriptObject jsObj) /*-{
+//			return jsObj;
+//		}-*/;
 }

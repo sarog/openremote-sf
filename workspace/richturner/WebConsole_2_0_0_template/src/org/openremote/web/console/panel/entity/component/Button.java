@@ -17,10 +17,10 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity.component;
+package org.openremote.web.console.panel.entity.component;
 
-import org.openremote.web.console.entity.Link;
-import org.openremote.web.console.entity.Navigate;
+import org.openremote.web.console.panel.entity.Link;
+import org.openremote.web.console.panel.entity.Navigate;
 
 /**
  * The button can send command to controller and navigate to, has default image and pressed image.

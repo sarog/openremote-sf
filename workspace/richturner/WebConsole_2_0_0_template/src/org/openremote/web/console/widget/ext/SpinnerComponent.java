@@ -5,7 +5,7 @@ import org.openremote.web.console.widget.HTMLComponent;
 import com.google.gwt.user.client.DOM;
 
 public class SpinnerComponent extends HTMLComponent {
-	private static final String STATIC_STYLE = "position: relative; display: inline-block;";
+	private int size = 70;
 	private static final String SPINNER_HTML_CODE = 
 			"<div class=\"spinner\">" +
 			"<div class=\"bar1\"></div>" +
@@ -32,9 +32,13 @@ public class SpinnerComponent extends HTMLComponent {
 	@Override
 	public void setHTML(String html) {}
 	
-	public void setSize(String size) {
-		this.setWidth(size);
-		this.setHeight(size);
-		this.getElement().getFirstChildElement().setAttribute("style", STATIC_STYLE + "width: " + size + "; height: " + size + ";");
+	@Override
+	public void onRender() {
+		this.getElement().getFirstChildElement().setAttribute("style", "position: absolute; top: 50%; left: 50%; margin-top: -" + size/2 + "px; margin-left: -" + size/2 + "px; width: " + size + "px; height: " + size + "px;");
+		super.onRender();
+	}
+	
+	public void setSize(int size) {
+		this.size = size;
 	}
 }

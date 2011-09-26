@@ -47,15 +47,4 @@ public class PanelCredentialsImpl implements PanelCredentials {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	public static String toJson(PanelCredentials panelCredentials) {
-	    AutoBean<PanelCredentials> bean = AutoBeanUtils.getAutoBean(panelCredentials);
-	    return AutoBeanCodex.encode(bean).getPayload();
-	}
-
-	public static PanelCredentials fromJson(String json) {
-		PanelCredentialsFactory panelCredentialsFactory = GWT.create(PanelCredentialsFactory.class);
-	   AutoBean<PanelCredentials> bean = AutoBeanCodex.decode(panelCredentialsFactory, PanelCredentials.class, json);     
-	   return bean.as();   
-	}
 }

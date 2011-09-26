@@ -1,7 +1,5 @@
 package org.openremote.web.console.unit;
 
-import java.util.List;
-
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.HoldEvent;
@@ -16,10 +14,8 @@ import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelCredentials;
-import org.openremote.web.console.panel.PanelCredentials;
 import org.openremote.web.console.panel.PanelCredentialsImpl;
 import org.openremote.web.console.panel.PanelIdentity;
-import org.openremote.web.console.panel.PanelImpl;
 import org.openremote.web.console.rpc.json.JSONPControllerService;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.ControllerService;
@@ -27,12 +23,9 @@ import org.openremote.web.console.service.LocalDataService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.service.PanelService;
 import org.openremote.web.console.service.PanelServiceImpl;
-import org.openremote.web.console.view.LoadingScreenView;
+import org.openremote.web.console.service.ScreenViewService;
 import org.openremote.web.console.view.ScreenView;
-import org.openremote.web.console.view.ScreenViewImpl;
-import org.openremote.web.console.view.TestScreenView;
-import org.openremote.web.console.widget.ConsoleComponent;
-
+import org.openremote.web.console.widget.TabBarComponent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -49,12 +42,13 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	protected ConsoleDisplay consoleDisplay;
 	protected int width;
 	protected int height;
-	private ScreenView currentScreenView;
-	private ScreenView loadingScreenView;
 	private String orientation = "portrait";
 	private ControllerService controllerService = new JSONPControllerService();
-	private PanelService panelService = new PanelServiceImpl();	
+	private PanelService panelService = new PanelServiceImpl();
 	private LocalDataService dataService = new LocalDataServiceImpl();
+	private ScreenViewService screenViewService = new ScreenViewService();
+	private PanelCredentials currentPanelCredentials;
+	private PanelIdentity currentPanelIdentity;
 	
 	public ConsoleUnit() {
 		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
@@ -62,7 +56,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	public ConsoleUnit(int width, int height) {
 		// Create console container to store display and possibly logo for resizable units
-		//hide();
 		componentContainer = new VerticalPanel();
 		componentContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		super.add(componentContainer);
@@ -175,23 +168,27 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	public void initialise() {
+		// Create and load loading screen
+		ScreenView loadingScreen = screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
+		setScreenView(loadingScreen);
+		
 		// Check for Last Panel in Cache
+		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://192.168.1.68:8080/controller", 28, "Mobile");
+		dataService.setLastPanelCredentials(panelCred);
 		PanelCredentials lastPanelCredentials = dataService.getLastPanelCredentials();
+		
 		
 		// If Panel Credentials found look for Controller and Panel if found then load that panel
 		// Otherwise go to the settings screen view
 		if (lastPanelCredentials != null) {
+			currentPanelCredentials = lastPanelCredentials;
+			
 			// Get Panel list and look for last panel name in list
-//			Controller controller = new Controller();
-//			controller.setName("TEST");
-//			controller.setUrl("http://192.168.1.68:8080/controller");
-//			controllerService.setController(controller);
-//			getPanelIdentities();
+			Controller controller = new Controller();
+			controller.setUrl("http://192.168.1.68:8080/controller");
+			controllerService.setController(controller);
+			getPanelIdentities();
 		}
-		
-		// Create and load loading screen
-		loadingScreenView = new LoadingScreenView();
-		loadScreenView(loadingScreenView);
 	}
 	
 	public void registerHandlers() {
@@ -208,7 +205,17 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 
 			@Override
 			public void onSuccess(PanelIdentity[] result) {
-				setCurrentPanel(result[0].getName());
+				boolean panelFound = false;
+				for (PanelIdentity identity : result) {
+					if (currentPanelCredentials.getName().equalsIgnoreCase(identity.getName())) {
+						getPanel(identity);
+						panelFound = true;
+						break;
+					}
+				}
+				if (!panelFound) {
+					loadSettings();
+				}
 			}
 			
 		});
@@ -229,24 +236,35 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		});
 	}
 	
-	public void setCurrentPanel(String panelName) {
-		controllerService.getPanel(panelName, new AsyncControllerCallback<Panel>() {
+	public void getPanel(PanelIdentity panelIdentity) {
+		controllerService.getPanel(panelIdentity.getName(), new AsyncControllerCallback<Panel>() {
 
 			@Override
 			public void onSuccess(Panel result) {
 				panelService.setCurrentPanel(result);
-				Window.alert(result.getGroups()[0].getName());
+				loadPanel(result);
 			}
 			
 		});
 	}
 	
-	public void loadScreenView(ScreenView screen) {
-		List<ConsoleComponent> widgets = screen.getConsoleWidgets();
-		int top = 0;
-		for (ConsoleComponent widget : widgets) {
-			consoleDisplay.addConsoleWidget(widget, 50, top);
-			top += 100;
-		}
+	public void loadPanel(Panel panel) {
+		ScreenView defaultScreenView = screenViewService.getScreenView(panelService.getDefaultScreen());
+		
+		//Window.alert(panel.getGroups()[0].getName());
+		// Create Tab Bar
+		setTabBar(new TabBarComponent());
+	}
+	
+	public void loadSettings() {
+		// TODO Load the settings screen
+	}
+	
+	public void setScreenView(ScreenView screen) {
+		consoleDisplay.setScreenView(screen);
+	}
+	
+	public void setTabBar(TabBarComponent tabBar) {
+		consoleDisplay.setTabBar(tabBar);
 	}
 }

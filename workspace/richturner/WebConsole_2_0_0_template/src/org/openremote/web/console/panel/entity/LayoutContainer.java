@@ -17,24 +17,44 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.entity.component;
+package org.openremote.web.console.panel.entity;
 
-import org.openremote.web.console.entity.Entity;
+import java.util.HashSet;
 
 /**
- * The super class of component, which include label, image and control component.
- * It contains component id and size.
- * 
+ * The super class of AbsoluteLayoutContainer and GridLayoutContainer.
+ * It contains the absolute position and size information.
  */
 @SuppressWarnings("serial")
-public class Component extends Entity {
+public class LayoutContainer extends Entity {
 
-   private int id;
-  
-   public int getId() {
-      return id;
+   protected int left;
+   protected int top;
+   protected int width;
+   protected int height;
+   
+   public int getLeft() {
+      return left;
    }
-   public void setId(int id) {
-      this.id = id;
+
+   public int getTop() {
+      return top;
+   }
+
+   public int getWidth() {
+      return width;
+   }
+
+   public int getHeight() {
+      return height;
+   }
+
+   /**
+    * Gets the polling components ids in the container.
+    * 
+    * @return the polling components ids
+    */
+   public HashSet<Integer> getPollingComponentsIds() {
+      return null;
    }
 }

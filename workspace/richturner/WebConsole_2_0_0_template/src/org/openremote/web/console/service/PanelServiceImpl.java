@@ -1,8 +1,9 @@
 package org.openremote.web.console.service;
 
-import org.openremote.web.console.entity.Group;
-import org.openremote.web.console.entity.Screen;
 import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.entity.Group;
+import org.openremote.web.console.panel.entity.Screen;
+import org.openremote.web.console.view.ScreenView;
 
 public class PanelServiceImpl implements PanelService {
 	Panel currentPanel;
@@ -20,9 +21,13 @@ public class PanelServiceImpl implements PanelService {
 	}
 
 	@Override
-	public Group getDefaultGroup() {
+	public Screen getDefaultScreen() {
 		// TODO Auto-generated method stub
-		return null;
+		Screen screen = null;
+		if (currentPanel != null) {
+			//screen = currentPanel.getGroups()[0].getScreens()[0];
+		}
+		return screen;
 	}
 
 	@Override

@@ -19,43 +19,49 @@
 */
 package org.openremote.web.console.panel;
 
-import org.openremote.web.console.entity.Group;
-import org.openremote.web.console.entity.Screen;
-import org.openremote.web.console.entity.TabBar;
+import org.openremote.web.console.panel.entity.Group;
+import org.openremote.web.console.panel.entity.Screen;
+import org.openremote.web.console.panel.entity.TabBar;
 
 /**
  * Implementation of Panel
  */
-public class PanelImpl implements Panel {
-   private Group[] groups;
-   private Screen[] screens;
-   
-   public PanelImpl(Group[] groups, Screen[] screens) {
-      this.groups = groups;
-      this.screens = screens;
-   }
-
-   @Override
-	public Group[] getGroups() {
-		return groups;
-	}
-
-	public void setGroups(Group[] groups) {
-		this.groups = groups;
-	}
-
-	@Override
-	public Screen[] getScreens() {
-		return screens;
-	}
-
-	public void setScreens(Screen[] screens) {
-		this.screens = screens;
-	}
-	
-	@Override
-	public TabBar getTabBar() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-}
+//public class PanelImpl {
+//   private Group[] groups;
+//   private Screen[] screens;
+//   
+//   public PanelImpl(Group[] groups, Screen[] screens) {
+//      this.groups = groups;
+//      this.screens = screens;
+//   }
+//
+//   @Override
+//	public Group[] getGroups() {
+//		return groups;
+//	}
+//
+//	public void setGroups(Group[] groups) {
+//		this.groups = groups;
+//	}
+//
+//	@Override
+//	public Screen[] getScreens() {
+//		return screens;
+//	}
+//
+//	public void setScreens(Screen[] screens) {
+//		this.screens = screens;
+//	}
+//	
+//	@Override
+//	public TabBar getTabBar() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public void getTabBar(TabBar tabBar) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//}
