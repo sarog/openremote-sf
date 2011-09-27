@@ -26,15 +26,11 @@ import org.openremote.web.console.panel.entity.component.Image;
  */
 public interface TabBarItem {
 
-   public void setName(String name);
-
-	public void setNavigate(Navigate navigate);
-
-	public void setImage(Image image);
-
-   public String getName();
-
-   public Navigate getNavigate() ;
-
-   public Image getImage();
+   String getName();
+   Navigate getNavigate() ;
+   Image getImage();
+   
+   void setName(String name);
+	void setNavigate(Navigate navigate);
+	void setImage(Image image);
 }

@@ -5,7 +5,7 @@ package org.openremote.web.console.panel.entity;
  * Includes to group, to screen, to previous screen , to next screen, back, login, logout and setting.
  */
 public interface Navigate {
-   public void setTo(String to);
+   String getTo();
    
-   public String getTo();
+   void setTo(String to);
 }

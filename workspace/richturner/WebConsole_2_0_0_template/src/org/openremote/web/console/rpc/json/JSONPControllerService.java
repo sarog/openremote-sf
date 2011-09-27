@@ -1,6 +1,7 @@
 package org.openremote.web.console.rpc.json;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openremote.web.console.controller.Controller;
@@ -14,6 +15,7 @@ import org.openremote.web.console.event.controller.ControllerMessageEvent;
 import org.openremote.web.console.event.value.UiValueChangeEvent;
 import org.openremote.web.console.event.value.UiValueChangeHandler;
 import org.openremote.web.console.panel.Panel;
+import org.openremote.web.console.panel.PanelIdentities;
 import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.AutoBeanService;
@@ -87,7 +89,7 @@ public class JSONPControllerService extends ControllerService {
 	// ------------------------   Interface Overrides	-------------------------------------------
 	
 	@Override
-	public void getPanelIdentities(String controllerUrl, AsyncControllerCallback<PanelIdentity[]> callback) {
+	public void getPanelIdentities(String controllerUrl, AsyncControllerCallback<List<PanelIdentity>> callback) {
 		EnumControllerCommand command = EnumControllerCommand.GET_PANEL_LIST;
 		sendCommand(requestId++, buildCompleteJsonUrl(controllerUrl, command), command, callback);
 	}
@@ -198,6 +200,7 @@ public class JSONPControllerService extends ControllerService {
 			
 			// Check for JSONP Error Response and if set throw appropriate exception
 			JSONObject jsonObj = new JSONObject(jsObj);
+
 			boolean isSecure = false;
 			if (jsonObj.containsKey("error")) {
 				int errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
@@ -211,18 +214,21 @@ public class JSONPControllerService extends ControllerService {
 			// If we've got this far then we assume JSON response is correctly formatted so we build the response object
 			switch(command) {
 				case GET_PANEL_LIST:
-					AsyncControllerCallback<PanelIdentity[]> panelListCallback = (AsyncControllerCallback<PanelIdentity[]>)callbackMap.getCallback();
-					JsArray<PanelIdentityJso> jsoPanels = getPanelIdentities(jsObj);
-					PanelIdentity[] panels = new PanelIdentity[jsoPanels.length()];
-					for (int i=0; i<jsoPanels.length(); i++) {
-						panels[i] = (PanelIdentity)jsoPanels.get(i);
-					}
-					panelListCallback.onSuccess(panels);
+					AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callbackMap.getCallback();
+					String json = jsonObj.toString();
+					PanelIdentities panels = AutoBeanService.getInstance().fromJsonString(PanelIdentities.class, json);
+					List<PanelIdentity> temp = panels.getPanel();
+					//JsArray<PanelIdentityJso> jsoPanels = getPanelIdentities(jsObj);
+//					PanelIdentity[] panels = new PanelIdentity[jsoPanels.length()];
+//					for (int i=0; i<jsoPanels.length(); i++) {
+//						panels[i] = (PanelIdentity)jsoPanels.get(i);
+//					}
+					panelListCallback.onSuccess(temp);
 					break;
 				case GET_PANEL_LAYOUT:
 					AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callbackMap.getCallback();
-					String json = jsObj.toString();
-					Panel panel = null; //AutoBeanService.getInstance().fromJsonString(Panel.class, json);
+					String json2 = jsonObj.toString();
+					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, json2);
 					//PanelJso jsoPanel = getPanel(jsObj);
 					panelLayoutCallback.onSuccess(panel);
 					break;
@@ -240,9 +246,9 @@ public class JSONPControllerService extends ControllerService {
 		
 		// --------------------- 	JSON Overlays below here ----------------------------------
 		
-		private native final JsArray<PanelIdentityJso> getPanelIdentities(JavaScriptObject jsObj) /*-{
-			return jsObj.panel;
-		}-*/;
+//		private native final JsArray<PanelIdentityJso> getPanelIdentities(JavaScriptObject jsObj) /*-{
+//			return jsObj.panel;
+//		}-*/;
 		
 //		private native final PanelJso getPanel(JavaScriptObject jsObj) /*-{
 //			return jsObj;

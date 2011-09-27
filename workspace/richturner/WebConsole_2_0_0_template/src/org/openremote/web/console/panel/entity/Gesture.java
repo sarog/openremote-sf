@@ -25,20 +25,13 @@ package org.openremote.web.console.panel.entity;
  */
 
 public interface Gesture {
+	int getId();
+	String getType();
+   Navigate getNavigate();
+   boolean getHasControlCommand();
    
-   public int getId();
-   
-   public void setId(int id);
-   
-   public String getSwipeType();
-
-   public void setSwipeType(String swipeType);
-   
-   public Navigate getNavigate();
-   
-   public void setNavigate(Navigate navigate);
-   
-   public String getHasControlCommand();
-   
-   public void setHasControlCommand(String hasControlCommand);
+   void setId(int id); 
+   void setType(String type);
+   void setNavigate(Navigate navigate);
+   void setHasControlCommand(boolean hasControlCommand);
 }

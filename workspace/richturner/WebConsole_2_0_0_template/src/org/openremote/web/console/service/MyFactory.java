@@ -2,6 +2,7 @@ package org.openremote.web.console.service;
 
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelCredentials;
+import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.panel.entity.Absolute;
 import org.openremote.web.console.panel.entity.Background;
 import org.openremote.web.console.panel.entity.Gesture;
@@ -22,14 +23,14 @@ import com.google.web.bindery.autobean.shared.AutoBeanFactory;
 interface MyFactory extends AutoBeanFactory {
 	AutoBean<PanelCredentials> panelCredentials();
 	AutoBean<PanelCredentials> panelCredentials(PanelCredentials toWrap);
-	
+	AutoBean<PanelIdentity> panelIdentity();
 	AutoBean<Panel> panel();
 	AutoBean<Groups> groups();
-	AutoBean<Group> group();
-	AutoBean<Screens> screens();	
-	AutoBean<Screen> screen();
+	AutoBean<Screens> screens();
 	AutoBean<TabBar> tabBar();
 	AutoBean<TabBarItem> tabBarItem();
+	AutoBean<Group> group();
+	AutoBean<Screen> screen();
 	AutoBean<Navigate> navigate();
 	AutoBean<Link> link();
 	AutoBean<Label> label();
