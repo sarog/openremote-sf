@@ -3,6 +3,7 @@ package org.openremote.web.console.service;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.entity.Group;
 import org.openremote.web.console.panel.entity.Screen;
+import org.openremote.web.console.panel.entity.Screens;
 import org.openremote.web.console.view.ScreenView;
 
 public class PanelServiceImpl implements PanelService {
@@ -25,7 +26,9 @@ public class PanelServiceImpl implements PanelService {
 		// TODO Auto-generated method stub
 		Screen screen = null;
 		if (currentPanel != null) {
-			//screen = currentPanel.getGroups()[0].getScreens()[0];
+			Screen[] screens = currentPanel.getScreens().getScreen();
+			int count = screens.length;
+			//screen = currentPanel.getScreens().getScreen()[0];
 		}
 		return screen;
 	}

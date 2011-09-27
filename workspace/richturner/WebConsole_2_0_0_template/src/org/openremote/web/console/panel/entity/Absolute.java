@@ -26,23 +26,15 @@ package org.openremote.web.console.panel.entity;
  * 
  */
 public interface Absolute {
-   public Label getLabel();
+   int getHeight();
+   int getWidth();
+   int getLeft();
+   int getTop();
+   Label getLabel();
    
-   public int getWidth();
-   
-   public int getHeight();
-   
-   public int getLeft();
-   
-   public int getTop();
-   
-   public void setLabel(Label label);
-   
-   public void setWidth(int width);
-   
-   public void setHeight(int height);
-   
-   public void setLeft(int left);
-   
-   public void setTop(int top);
+   void setHeight(int height);
+   void setWidth(int width);
+   void setLeft(int left);
+   void setTop(int top);
+   void setLabel(Label label);
 }

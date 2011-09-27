@@ -23,11 +23,9 @@ package org.openremote.web.console.panel.entity;
  * The label can set font size and color, change text by polling status.
  */
 public interface Link {
-   public String getType();
+   String getType();
+   int getRef();
    
-   public String getRef();
-   
-   public void setType(String type);
-
-   public void setRef(String ref);
+   void setType(String type);
+   void setRef(int ref);
 }

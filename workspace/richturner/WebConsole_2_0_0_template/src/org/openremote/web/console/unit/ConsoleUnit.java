@@ -1,5 +1,7 @@
 package org.openremote.web.console.unit;
 
+import java.util.List;
+
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.HoldEvent;
@@ -201,10 +203,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	}
 	
 	public void getPanelIdentities() {
-		controllerService.getPanelIdentities(new AsyncControllerCallback<PanelIdentity[]>() {
+		controllerService.getPanelIdentities(new AsyncControllerCallback<List<PanelIdentity>>() {
 
 			@Override
-			public void onSuccess(PanelIdentity[] result) {
+			public void onSuccess(List<PanelIdentity> result) {
 				boolean panelFound = false;
 				for (PanelIdentity identity : result) {
 					if (currentPanelCredentials.getName().equalsIgnoreCase(identity.getName())) {
