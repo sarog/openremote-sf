@@ -19,22 +19,36 @@
 */
 package org.openremote.web.console.panel.entity;
 
+import org.openremote.web.console.panel.entity.component.ButtonComponent;
+import org.openremote.web.console.panel.entity.component.ImageComponent;
+import org.openremote.web.console.panel.entity.component.LabelComponent;
+import org.openremote.web.console.panel.entity.component.SliderComponent;
+import org.openremote.web.console.panel.entity.component.SwitchComponent;
+
 
 /**
  * The subclass of LayoutContainer which includes a component.
  * It parse the absolute node, contains size and position info.
  * 
  */
-public interface Absolute {
+public interface AbsoluteLayout {
    int getHeight();
    int getWidth();
    int getLeft();
    int getTop();
-   Label getLabel();
-   
+	ButtonComponent getButton();
+	LabelComponent getLabel();
+	SliderComponent getSlider();
+	ImageComponent getImage();
+	SwitchComponent getSwitch();
+	
    void setHeight(int height);
    void setWidth(int width);
    void setLeft(int left);
    void setTop(int top);
-   void setLabel(Label label);
+	void setButton(ButtonComponent component);
+	void setLabel(LabelComponent component);
+	void setSlider(SliderComponent component);
+	void setImage(ImageComponent component);
+	void setSwitch(SwitchComponent component);
 }

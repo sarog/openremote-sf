@@ -17,44 +17,24 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package org.openremote.web.console.panel.entity;
+package org.openremote.web.console.panel.entity.component;
 
-import java.util.HashSet;
+import org.openremote.web.console.panel.entity.Link;
+
 
 /**
- * The super class of AbsoluteLayoutContainer and GridLayoutContainer.
- * It contains the absolute position and size information.
+ * The label can set font size and color, change text by polling status.
  */
-@SuppressWarnings("serial")
-public class LayoutContainer extends Entity {
-
-   protected int left;
-   protected int top;
-   protected int width;
-   protected int height;
-   
-   public int getLeft() {
-      return left;
-   }
-
-   public int getTop() {
-      return top;
-   }
-
-   public int getWidth() {
-      return width;
-   }
-
-   public int getHeight() {
-      return height;
-   }
-
-   /**
-    * Gets the polling components ids in the container.
-    * 
-    * @return the polling components ids
-    */
-   public HashSet<Integer> getPollingComponentsIds() {
-      return null;
-   }
+public interface LabelComponent {
+	int getId();
+	String getText();
+	String getColor();
+	int getFontSize();
+	Link getLink();
+	
+	void setId(int id);
+   void setText(String text);
+	void setColor(String color);
+   void setFontSize(int fontSize);
+   void setLink(Link link);
 }

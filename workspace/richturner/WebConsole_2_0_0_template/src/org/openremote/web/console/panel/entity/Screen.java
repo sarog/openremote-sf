@@ -19,19 +19,21 @@
 */
 package org.openremote.web.console.panel.entity;
 
+import java.util.List;
+
 /**
  * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
  */
 public interface Screen {
    int getId();
    String getName();
-   Absolute[] getAbsolute();
+   List<AbsoluteLayout> getAbsolute();
+   List<Gesture> getGesture();
    Background getBackground();
-   Gesture[] getGesture();
    
    void setId(int id);
    void setName(String name);
-   void setAbsolute(Absolute[] layouts);
+   void setAbsolute(List<AbsoluteLayout> layouts);
+   void setGesture(List<Gesture> gestures);
    void setBackground(Background background);
-   void setGesture(Gesture[] gestures);
 }

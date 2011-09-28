@@ -19,27 +19,25 @@
 */
 package org.openremote.web.console.panel.entity.component;
 
-import org.openremote.web.console.panel.entity.Label;
+import org.openremote.web.console.panel.entity.Include;
+import org.openremote.web.console.panel.entity.Link;
+
 
 /**
  * The image component can has sensor and can change status.
  * It can also has a linked label to display as a label. 
  */
-public interface Image {
-
-   public void setSrc(String src);
-
-	public void setStyle(String style);
+public interface ImageComponent {
    
-   public String getSrc();
+	int getId();
+	String getSrc();
+   String getStyle();
+   Link getLink();
+   Include getInclude();
    
-   public String getStyle();
-   
-   public Label getLabel();
-
-   public void setLabel(Label label);
-   
-   public void setLabelRefId(int labelRefId);
-   
-   public int getLabelRefId();
+   void setId(int id);
+   void setSrc(String src);
+	void setStyle(String style);
+	void setLink(Link link);
+	void setInclude(Include include);
 }
