@@ -186,8 +186,8 @@
 					<min value="${sensor.getMin()}"/>
 					<max value="${sensor.getMax()}"/>
 				#elseif(${sensor.getType().toString().equals("switch")})
-					<state name="on"/>
-					<state name="off"/>
+					<state name="on" value="on"/>
+					<state name="off" value="off"/>
 				#elseif(${sensor.getType().toString().equals("custom")})
 					#foreach($state in $sensor.getStates())
 						<state name="${stringUtils.escapeXml($state.getName())}" 
