@@ -1,9 +1,11 @@
 package org.openremote.web.console.service;
 
+import java.util.List;
+
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.entity.Group;
 import org.openremote.web.console.panel.entity.Screen;
-import org.openremote.web.console.panel.entity.Screens;
+import org.openremote.web.console.panel.entity.ScreenList;
 import org.openremote.web.console.view.ScreenView;
 
 public class PanelServiceImpl implements PanelService {
@@ -26,9 +28,10 @@ public class PanelServiceImpl implements PanelService {
 		// TODO Auto-generated method stub
 		Screen screen = null;
 		if (currentPanel != null) {
-			Screen[] screens = currentPanel.getScreens().getScreen();
-			int count = screens.length;
-			//screen = currentPanel.getScreens().getScreen()[0];
+			List<Screen> screens = currentPanel.getScreens().getScreen();
+			if (screens.size() > 0) {
+				screen = screens.get(0);
+			}
 		}
 		return screen;
 	}

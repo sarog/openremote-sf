@@ -19,18 +19,20 @@
 */
 package org.openremote.web.console.panel.entity;
 
+import java.util.List;
+
 /**
  * Group is parsed by group node, which contains id, name, screens and tabBar.
  */
 public interface Group {
-   public int getGroupId();
-   public void setGroupId(int groupId);
+   public int getId();
+   public void setId(int groupId);
    
    public String getName();
    public void setName(String name);
    
-   public Screen[] getScreens();
-   public void setScreens(Screen[] screens);
+   public List<ScreenRef> getInclude();
+   public void setInclude(List<ScreenRef> screenRefs);
    
    public TabBar getTabBar();
    public void setTabBar(TabBar tabBar);

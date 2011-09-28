@@ -3,26 +3,16 @@ package org.openremote.web.console.rpc.json;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.openremote.web.console.controller.Controller;
-import org.openremote.web.console.controller.ControllerCallBackHandler;
 import org.openremote.web.console.controller.EnumControllerCommand;
 import org.openremote.web.console.controller.EnumControllerResponseCode;
-import org.openremote.web.console.controller.message.ControllerRequestMessage;
-import org.openremote.web.console.controller.message.ControllerResponseMessage;
-import org.openremote.web.console.event.ConsoleUnitEventManager;
-import org.openremote.web.console.event.controller.ControllerMessageEvent;
-import org.openremote.web.console.event.value.UiValueChangeEvent;
-import org.openremote.web.console.event.value.UiValueChangeHandler;
 import org.openremote.web.console.panel.Panel;
-import org.openremote.web.console.panel.PanelIdentities;
 import org.openremote.web.console.panel.PanelIdentity;
+import org.openremote.web.console.panel.PanelIdentityList;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.service.ControllerService;
-
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
 
@@ -215,21 +205,12 @@ public class JSONPControllerService extends ControllerService {
 			switch(command) {
 				case GET_PANEL_LIST:
 					AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callbackMap.getCallback();
-					String json = jsonObj.toString();
-					PanelIdentities panels = AutoBeanService.getInstance().fromJsonString(PanelIdentities.class, json);
-					List<PanelIdentity> temp = panels.getPanel();
-					//JsArray<PanelIdentityJso> jsoPanels = getPanelIdentities(jsObj);
-//					PanelIdentity[] panels = new PanelIdentity[jsoPanels.length()];
-//					for (int i=0; i<jsoPanels.length(); i++) {
-//						panels[i] = (PanelIdentity)jsoPanels.get(i);
-//					}
-					panelListCallback.onSuccess(temp);
+					PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString());
+					panelListCallback.onSuccess(panels.getPanel());
 					break;
 				case GET_PANEL_LAYOUT:
 					AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callbackMap.getCallback();
-					String json2 = jsonObj.toString();
-					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, json2);
-					//PanelJso jsoPanel = getPanel(jsObj);
+					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, jsonObj.toString());
 					panelLayoutCallback.onSuccess(panel);
 					break;
 				case IS_ALIVE:

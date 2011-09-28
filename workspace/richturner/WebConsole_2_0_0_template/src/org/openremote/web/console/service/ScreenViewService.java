@@ -28,7 +28,7 @@ public class ScreenViewService {
 	public ScreenView getScreenView(Screen screen) {
 		ScreenView screenView = null;
 		if (screen != null) {
-			int screenId = 1;// = screen.getScreenId();
+			int screenId = screen.getId();
 			screenView = screenViewMap.get(screenId);
 			if (screenView == null) {
 				buildScreenView(screen);
