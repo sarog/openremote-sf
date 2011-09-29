@@ -3,17 +3,20 @@ package org.openremote.web.console.service;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.entity.Group;
 import org.openremote.web.console.panel.entity.Screen;
+import org.openremote.web.console.panel.entity.TabBar;
 
 public interface PanelService {
-	Screen getScreenById(int screenId);
+	Integer getDefaultGroupId();
 	
-	Screen getScreenByName(String name);
-	
-	Screen getDefaultScreen();
-	
-	Group getGroupById();
+	Screen getDefaultScreen(int groupId);
 	
 	Panel getCurrentPanel();
 	
 	void setCurrentPanel(Panel currentPanel);
+	
+	Screen getScreenById(int screenId);
+	
+	Screen getScreenByName(String name);
+	
+	TabBar getTabBar(int groupId);
 }
