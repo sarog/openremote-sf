@@ -18,6 +18,7 @@ import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelCredentials;
 import org.openremote.web.console.panel.PanelCredentialsImpl;
 import org.openremote.web.console.panel.PanelIdentity;
+import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.rpc.json.JSONPControllerService;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.ControllerService;
@@ -51,6 +52,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private ScreenViewService screenViewService = new ScreenViewService();
 	private PanelCredentials currentPanelCredentials;
 	private PanelIdentity currentPanelIdentity;
+	private Integer currentGroupId;
 	
 	public ConsoleUnit() {
 		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
@@ -243,23 +245,35 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 
 			@Override
 			public void onSuccess(Panel result) {
-				panelService.setCurrentPanel(result);
 				loadPanel(result);
-			}
-			
+			}			
 		});
 	}
 	
 	public void loadPanel(Panel panel) {
-		ScreenView defaultScreenView = screenViewService.getScreenView(panelService.getDefaultScreen());
+		panelService.setCurrentPanel(panel);
 		
-		//Window.alert(panel.getGroups()[0].getName());
-		// Create Tab Bar
-		setTabBar(new TabBarComponent());
+		// Get default group ID
+		currentGroupId = panelService.getDefaultGroupId();
+		
+		if (currentGroupId == null) {
+			loadSettings();
+		}
+		
+		ScreenView defaultScreenView = screenViewService.getScreenView(panelService.getDefaultScreen(currentGroupId));
+		if (defaultScreenView != null) {
+			// Get Tab Bar for this group
+			TabBarComponent tabBar = new TabBarComponent(panelService.getTabBar(currentGroupId));
+			setScreenView(defaultScreenView);
+			setTabBar(tabBar);
+		} else {
+			loadSettings();
+		}
 	}
 	
 	public void loadSettings() {
 		// TODO Load the settings screen
+		Window.alert("LOAD SETTINGS");
 	}
 	
 	public void setScreenView(ScreenView screen) {

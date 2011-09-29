@@ -6,6 +6,8 @@ import java.util.List;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.panel.entity.TabBar;
+import org.openremote.web.console.panel.entity.TabBarItem;
 import org.openremote.web.console.unit.ConsoleDisplay;
 
 import com.google.gwt.user.client.Window;
@@ -23,6 +25,10 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	public class TabBarItemComponent extends VerticalPanel implements TapHandler {
 		private static final int TAB_ITEM_MIN_WIDTH = 65;
 		
+		public TabBarItemComponent(TabBarItem item) {
+			// TODO Auto-generated constructor stub
+		}
+
 		@Override
 		public void onTap(TapEvent event) {
 			// TODO Auto-generated method stub
@@ -30,11 +36,17 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		}
 	}
 	
-	public TabBarComponent() {
+	public TabBarComponent(TabBar tabBar) {
 		super(new HorizontalPanel());
 		container = (HorizontalPanel)this.getWidget();
 		container.setStylePrimaryName(CLASS_NAME);
 		container.setHeight(TABBAR_HEIGHT + "px");
+		
+		// Add Elements from tab bar entity
+		for (TabBarItem item : tabBar.getItem()) {
+			TabBarItemComponent tabBarItem = new TabBarItemComponent(item);
+			this.addItem(tabBarItem);
+		}
 	}
 	
 	@Override
