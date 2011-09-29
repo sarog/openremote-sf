@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+        <protocol displayName="Daylight Calculator" tagName="daylightCalculator">
+                <attr name="latitude" label="latitude">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                        </validations>
+                </attr>
+
+                <attr name="longitude" label="longitude">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                        </validations>
+                </attr>
+
+                <attr name="timezone" label="timezone">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                        </validations>
+                </attr>
+        </protocol>
+</openremote>
