@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.openremote.org protocol.xsd">
+        <protocol displayName="Exchange Meeting Editor" tagName="exchangeMeetingEditor">
+                <attr name="webserviceURL" label="webserviceURL">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                        </validations>
+                </attr>
+
+                <attr name="username" label="username">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                        </validations>
+                </attr>
+
+                <attr name="password" label="password">
+                        <validations>
+                                <allowBlank>false</allowBlank>
+                        </validations>
+                </attr>
+
+                <attr name="command" label="command">
+                        <validations/>
+                </attr>
+        </protocol>
+</openremote>
