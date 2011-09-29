@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.entity.Group;
+import org.openremote.web.console.panel.entity.GroupList;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.ScreenList;
 import org.openremote.web.console.panel.entity.ScreenRef;
@@ -101,17 +102,23 @@ public class PanelServiceImpl implements PanelService {
 			currentScreenMap = new LinkedHashMap<Integer, Screen>();
 			currentPanelTabBar = currentPanel.getTabbar();
 			
-			List<Group> groups = currentPanel.getGroups().getGroup();
+			GroupList groups = currentPanel.getGroups();
 			if (groups != null) {
-				for (Group groupElem : groups) {
-					currentGroupMap.put(groupElem.getId(), groupElem);
+				List<Group> groupElems = currentPanel.getGroups().getGroup();
+				if (groups != null) {
+					for (Group groupElem : groupElems) {
+						currentGroupMap.put(groupElem.getId(), groupElem);
+					}
 				}
 			}
 
-			List<Screen> screens = currentPanel.getScreens().getScreen();
+			ScreenList screens = currentPanel.getScreens();
 			if (screens != null) {
-				for (Screen screenElem : screens) {
-					currentScreenMap.put(screenElem.getId(), screenElem);
+				List<Screen> screenElems = currentPanel.getScreens().getScreen();
+				if (screens != null) {
+					for (Screen screenElem : screenElems) {
+						currentScreenMap.put(screenElem.getId(), screenElem);
+					}
 				}
 			}
 			

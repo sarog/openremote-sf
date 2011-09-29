@@ -177,7 +177,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		setScreenView(loadingScreen);
 		
 		// Check for Last Panel in Cache
-		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://192.168.1.68:8080/controller", 28, "Mobile");
+		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://192.168.1.68:8080/controller", 48, "DHD");
 		dataService.setLastPanelCredentials(panelCred);
 		PanelCredentials lastPanelCredentials = dataService.getLastPanelCredentials();
 		
