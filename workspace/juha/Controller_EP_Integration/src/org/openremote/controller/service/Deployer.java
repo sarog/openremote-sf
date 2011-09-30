@@ -21,8 +21,19 @@
 package org.openremote.controller.service;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URL;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.ProtocolException;
+import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
@@ -31,6 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipEntry;
 
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -44,12 +57,17 @@ import org.openremote.controller.OpenRemoteRuntime;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.exception.XMLParsingException;
+import org.openremote.controller.exception.ConfigurationException;
+import org.openremote.controller.exception.ConnectionException;
 import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.xml.ObjectBuilder;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.utils.PathUtil;
+import org.springframework.security.providers.encoding.Md5PasswordEncoder;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Deployer service centralizes access to the controller's runtime state information. It maintains
@@ -82,8 +100,25 @@ public class Deployer
    *  IMPLEMENTATION NOTES:
    *
    *   Relevant tasks todo:
+   * 
    *     -  ORCJAVA-123 (http://jira.openremote.org/browse/ORCJAVA-123) : introduce an immutable
    *        sensor interface for plugins to use.
+   *     -  ORCJAVA-173 (http://jira.openremote.org/browse/ORCJAVA-123) : expose some of the admin
+   *        related functions through a secured REST interface -- deployFromZip, deployFromOnline,
+   *        softRestart
+   *     -  ORCJAVA-174 (http://jira.openremote.org/browse/ORCJAVA-174) : start sensors
+   *        asynchronously
+   *     -  ORCJAVA-179 (http://jira.openremote.org/browse/ORCJAVA-179) : guard against multiple
+   *        invocations of startController()
+   *     -  ORCJAVA-180 (http://jira.openremote.org/browse/ORCJAVA-180) : add shutdown hook
+   *     -  ORCJAVA-181 (http://jira.openremote.org/browse/ORCJAVA-181) : remove queryElementByName
+   *        from public API
+   *     -  ORCJAVA-182 (http://jira.openremote.org/browse/ORCJAVA-182) : make ModelBuilder a 
+   *        top-level interface
+   *     -  ORCJAVA-185 (http://jira.openremote.org/browse/ORCJAVA-185) : refactor
+   *        registerObjectBuilder into ModelBuilder API hierarchy.
+   *     -  ORCJAVA-188 (http://jira.openremote.org/browse/ORCJAVA-188) : introduce lifecycle
+   *        interface
    *
    */
 
@@ -112,7 +147,12 @@ public class Deployer
 
 
   /**
-   * TODO
+   * TODO :
+   *
+   *     This is a temporary construct -- with introduction of top-level ModelBuilder (as aggregate
+   *     of associated object builders) this should move to appropriate model builder implementation
+   *     (see ORCJAVA-182, ORCJAVA-185)
+   *
    *
    * Indicates XML segments in the controller schema which the XML mapping implementations
    * can register with.
@@ -197,7 +237,7 @@ public class Deployer
    */
   private static Element queryElementFromXML(Document doc, String xPath) throws XMLParsingException
   {
-    // TODO : this method should probably be under the ModelBuilder hierarchy
+    // TODO : this method should be under the ModelBuilder hierarchy, see ORCJAVA-182, ORCJAVA-186
 
     if (doc == null)
     {
@@ -400,6 +440,8 @@ public class Deployer
    */
   public void startController()
   {
+    // TODO : ORCJAVA-179 -- make sure this can only be called once, see related ORCJAVA-180
+
     try
     {
       startup();
@@ -431,7 +473,7 @@ public class Deployer
 
     controllerDefinitionWatch.start();
 
-    // TODO : register shutdown hook
+    // TODO : ORCJAVA-180, register shutdown hook
   }
 
 
@@ -445,13 +487,26 @@ public class Deployer
    */
   public boolean isPaused()
   {
+    // TODO :
+    //   the use of this method is restricted to REST API implementation and the original use looks
+    //   dubious -- once those parts of REST API have been reworked, this method may be candidate
+    //   for removal.
+
     return isPaused;
   }
 
 
   /**
+   * TODO :
+   *    This is subject to further refactoring -- the aggregating object should be the model
+   *    builder, object builder should register directly with it. Model builder can delegate
+   *    to deployer if necessary. Both object builders and model builders should be configurable
+   *    via DI framework. See ORCJAVA-182, ORCJAVA-185
+   *
+   * 
    * Allows object builders to be registered with this deployer. Object builders can be
-   * registered for multiple different XML schema versions.  <p>
+   * registered for multiple different XML schema versions and are used by model builders
+   * to construct an object model. <p>
    *
    * A deployer is associated with one active model builder at a time (per controller model
    * deployment). Model builders may delegate their tasks to registered object builders as
@@ -536,18 +591,20 @@ public class Deployer
   /**
    * Initiate a shutdown/startup sequence.  <p>
    *
-   * Shutdown phase will undeploy the current runtime object model. Resources will be stopped and
-   * freed. This however only impacts the runtime object model of the controller. The controller
-   * itself stays at an init level where a new object model can be loaded into the system. The JVM
-   * process will not exit. <p>
+   * Shutdown phase will undeploy the current runtime object model and manage service lifecycles
+   * that are dependent on the object model. Resources will be stopped and freed. <p>
    *
-   * Startup phase loads back a runtime object model into the controller. The loading is done
-   * from the controller definition file, path of which is indicated by the
-   * {@link org.openremote.controller.ControllerConfiguration#getResourcePath()} method. <p>
+   * The soft restart only impacts the runtime object model and associated component lifecycles
+   * in the controller. The controller itself stays at an init level where a new object model can
+   * be loaded into the system. The JVM process will not exit. <p>
+   *
+   * Startup phase loads back a runtime object model and start dependent services of the controller.
+   * The object model is loaded from the controller definition file, path of which is indicated by
+   * the {@link org.openremote.controller.ControllerConfiguration#getResourcePath()} method. <p>
    *
    * After the startup phase is done, a complete functional controller definition has been
-   * loaded into the controller (unless fatal errors occured), has been initialized and
-   * started and is ready to handle incoming requests. <p>
+   * loaded into the controller (unless fatal errors occured), it has been initialized and
+   * started and it is ready to handle incoming requests. <p>
    *
    * <b>NOTE : </b> This method call should only be used after {@link #startController()}
    * has been invoked once. The <tt>startController</tt> method will initialize this deployer
@@ -570,6 +627,8 @@ public class Deployer
    */
   public void softRestart() throws ControllerDefinitionNotFoundException
   {
+    // TODO : ORCJAVA-184 -- queue concurrent calls
+    
     try
     {
       pause();
@@ -581,15 +640,144 @@ public class Deployer
 
     finally
     {
-
       resume();
     }
   }
 
 
+  /**
+   * Deploys a controller configuration from a given ZIP archive. This can be used when the
+   * controller configuration is already present on the local system. <p>
+   *
+   * The contents of the ZIP archive will be extracted on the file system location pointed
+   * by the 'resource.path' property. <p>
+   *
+   * If the {@link ControllerConfiguration#RESOURCE_UPLOAD_ALLOWED} has been configured to
+   * 'false', this method will throw an exception.
+   *
+   * @see org.openremote.controller.ControllerConfiguration#getResourcePath()
+   * @see org.openremote.controller.ControllerConfiguration#isResourceUploadAllowed()
+   *
+   * @see #deployFromOnline(String, String)
+   *
+   * @param inputStream     Input stream to the zip file to deploy. Note that this method will
+   *                        attempt to close the input stream on exit.
+   *
+   * @throws ConfigurationException   If new deployments through admin interface have been disabled,
+   *                                  or if the target path to extract the new deployment archive
+   *                                  cannot be resolved, or if the target path does not exist
+   *
+   * @throws IOException              If there was an unrecovable I/O error when extracting the
+   *                                  deployment archive. Note that errors in extracting individual
+   *                                  files from within the deployment archive may be logged as
+   *                                  errors or warnings instead of raising an exception.
+   */
+  public void deployFromZip(InputStream inputStream) throws ConfigurationException, IOException
+  {
+    // TODO:
+    //   May need a proper permissions object -- this would allow specific
+    //   username/credentials to upload only. Maybe there would be some benefit
+    //   in having this master all on/off check also implemented as a permission
+    //   rather than configuration option. Dunno.
+    //                                                    [JPL]
+
+    if (!controllerConfig.isResourceUploadAllowed())
+    {
+      throw new ConfigurationException(
+          "Updating controller through web interface has been disabled. " +
+          "You must update controller files manually instead."
+      );
+    }
+
+    String resourcePath = controllerConfig.getResourcePath();
+
+    if (resourcePath == null || resourcePath.equals(""))
+    {
+      throw new ConfigurationException(
+          "Configuration option 'resource.path' was not found or contains empty value."
+      );
+    }
+
+    URI resourceDirURI = new File(controllerConfig.getResourcePath()).toURI();
+
+    unzip(inputStream, resourceDirURI);
+
+    copyLircdConf(resourceDirURI, controllerConfig);
+  }
+
 
   /**
-   * TODO : temporarly here, may be moved later, see above
+   * Deploys a controller configuration directly from user's account stored on the backend.
+   * A HTTP connection is created to Beehive server and account information is downloaded to
+   * this controller using the given user name and credentials.
+   *
+   * @see #deployFromZip(java.io.InputStream)
+   *
+   * @param username        user name to download account configuration through Beehive's REST
+   *                        interface
+   *
+   * @param credentials     credentials to authenticate to use Beehive's REST interface
+   *
+   * @throws ConfigurationException   If the connection to backend cannot be created due to
+   *                                  configuration errors, or deploying new configuration has
+   *                                  been disabled, or there were other configuration errors
+   *                                  which prevented the deployment archive from being extracted.
+   *
+   * @throws ConnectionException      If connection creation failed, or reading from the connection
+   *                                  failed for any reason
+   */
+  public void deployFromOnline(String username, String credentials) throws ConfigurationException,
+                                                                           ConnectionException
+  {
+    BeehiveConnection connection = new BeehiveConnection(this);
+
+    InputStream stream = connection.downloadZip(username, credentials);
+
+    try
+    {
+      deployFromZip(stream);
+    }
+
+    catch (IOException e)
+    {
+      throw new ConnectionException(
+          "Extracting controller configuration from Beehive account failed : {0}",
+          e, e.getMessage()
+      );
+    }
+
+    finally
+    {
+      if (stream != null)
+      {
+        try
+        {
+          stream.close();
+        }
+
+        catch (IOException e)
+        {
+          log.warn(
+              "Could not close I/O stream to downloaded user configuration : {0}",
+              e, e.getMessage()
+          );
+        }
+      }
+    }
+  }
+
+
+  /**
+   * TODO :
+   *
+   *   This is temporarily here, part of the refactoring of deprecating ComponentBuilder and
+   *   migrating to a proper ObjectBuilder implementation. The existing component builders
+   *   externalize their XML parsing which is currently serviced here. Over the long term,
+   *   the object builders should be dependents of model builder which provides XML parsing
+   *   services like this method.
+   *
+   *   See ORCJAVA-143, ORCJAVA-144, ORCJAVA-151, ORCJAVA-152, ORCJAVA-153, ORCJAVA-155,
+   *       ORCJAVA-158, ORCJAVA-182, ORCJAVA-186, ORCJAVA-190
    *
    * @param id
    * @return
@@ -597,6 +785,12 @@ public class Deployer
    */
   public Element queryElementById(int id) throws InitializationException
   {
+
+    // TODO :
+    //   This method is a potential performance bottleneck. The performance issue can be
+    //   resolved by completing the reactoring tasks above. However, for a quick temporary
+    //   fix it is possible to implement the solution described in ORCJAVA-190
+
     if (modelBuilder == null)
     {
       throw new IllegalStateException("Runtime object model has not been initialized.");
@@ -615,7 +809,16 @@ public class Deployer
   }
 
   /**
-   * TODO : temporarly here, may be moved later, see above
+   * TODO :
+   *
+   *   This is temporarily here, part of refactoring to internalize Java-to-XML mapping to their
+   *   corresponding services. This is only used by configuration API at the moment. Configuration
+   *   is part of the deployment lifecycle, so configuration should be made a depedendant of
+   *   Deployer service and in the process make the requirement of having this low level XML
+   *   parsing API internalized.
+   *
+   *   See ORCJAVA-181, ORCJVA-182, ORCJAVA-183, ORCJAVA-186
+   *
    *
    * @param xmls
    * @return
@@ -642,7 +845,14 @@ public class Deployer
 
   
   /**
-   * TODO : Temporary -- Builds a sensor from XML element, see above
+   * TODO
+   *
+   *   This is temporarily here, part of refactoring to internalize Java-to-XML mapping to their
+   *   corresponding services. This is used by deprecated ComponentBuilder implementations
+   *   (see ORCJAVA-143) which rely on sensors for state input.
+   *
+   *   See ORCJAVA-143, ORCJAVA-144, ORCJAVA-147, ORCJAVA-151, ORCJVA-152, ORCJAVA-153
+   *
    *
    * @param componentIncludeElement   JDOM element for sensor
    *
@@ -721,12 +931,11 @@ public class Deployer
     );
 
 
+    // TODO : ORCJAVA-188, introduce lifecycle management for event processors
+    // TODO : ORCJAVA-188, introduce lifecycle management for connection managers
+    // TODO : ORCJAVA-188, introduce and use generic LifeCycle interface for state cache
+
     deviceStateCache.shutdown();
-
-
-    // TODO : event processor shutdowns
-    // TODO : connection manager shutdowns
-
 
     modelBuilder = null;                // null here indicates to other services that this deployer
                                         // installer currently has no object model deployed
@@ -773,9 +982,6 @@ public class Deployer
 
       case VERSION_2_0:
 
-        // NOTE: the schema 2.0 builder auto-starts all the sensors it locates in the
-        //       controller.xml definition
-
         modelBuilder = new Version20ModelBuilder(this);
         break;
 
@@ -784,6 +990,14 @@ public class Deployer
         throw new Error("Unrecognized schema version " + version);
     }
 
+    // NOTE:  the schema 2.0 builder auto-starts all the sensors it locates in the
+    //        controller.xml definition
+    //
+    // TODO: ORCJAVA-188
+    //        generalizing the sensor start mechanism through a lifecycle interface --
+    //        the builder should register the sensors and leave the lifecycle management
+    //        to the managing framework
+
     modelBuilder.buildModel();
 
     log.info("Startup complete.");
@@ -791,14 +1005,15 @@ public class Deployer
 
 
   /**
-   * Sets this deployer in 'paused' state. Method implementations can use this to determine
-   * whether to reject or block incoming requests for deployer services.
+   * Sets this deployer in 'paused' state.
    *
    * @see #resume
    */
   private void pause()
   {
     isPaused = true;
+
+    // TODO : ORCJAVA-188 -- pause() candidate for more generic lifecycle interface
 
     controllerDefinitionWatch.pause();
   }
@@ -813,6 +1028,8 @@ public class Deployer
   {
     try
     {
+      // TODO : ORCJAVA-188 -- resume() candidate for more generic lifecycle interface
+
       controllerDefinitionWatch.resume();
     }
 
@@ -826,7 +1043,7 @@ public class Deployer
    * A simplistic attempt at detecting which schema version we should use to build
    * the object model.
    *
-   * TODO -- the document instances we use need to start declaring version information
+   * TODO -- MODELER-256, ORCJAVA-189 : xml schema should include explicit version info
    *
    * @return  the detected schema version
    *
@@ -836,7 +1053,7 @@ public class Deployer
   private ControllerSchemaVersion detectVersion() throws ControllerDefinitionNotFoundException
   {
 
-    // Check if 3.0 schema instance is in place (this doesn't actually exist yet...)
+    // Check if 3.0 schema instance is in place (TODO : this doesn't actually exist yet...)
 
     if (Version30ModelBuilder.checkControllerDefinitionExists(controllerConfig))
     {
@@ -856,6 +1073,205 @@ public class Deployer
         "Could not find a controller definition to load at path ''{0}'' (for version 2.0)",
         Version20ModelBuilder.getControllerDefinitionFile(controllerConfig)
     );
+  }
+
+
+  /**
+   * Extracts an OpenRemote deployment archive into a given target file directory.
+   *
+   * @param inputStream     Input stream for reading the ZIP archive. Note that this method will
+   *                        attempt to close the stream on exiting.
+   *
+   * @param targetDir       URI that points to the root directory where the extracted files should
+   *                        be placed. Note that the URI must be an absolute file URI.
+   *
+   * @throws ConfigurationException   If target file URI cannot be resolved, or if the target
+   *                                  file path does not exist
+   *
+   * @throws IOException              If there was an unrecovable I/O error reading or extracting
+   *                                  the ZIP archive. Note that errors on individual files within
+   *                                  the archive may not generate exceptions but be logged as
+   *                                  errors or warnings instead.
+   */
+  private void unzip(InputStream inputStream, URI targetDir) throws ConfigurationException,
+                                                                    IOException
+  {
+    if (targetDir == null || targetDir.getPath().equals("") || !targetDir.isAbsolute())
+    {
+      throw new ConfigurationException(
+          "Target dir must be absolute file: protocol URI, got '" + targetDir + +'.'
+      );
+    }
+
+    File checkedTargetDir = new File(targetDir);
+
+    if (!checkedTargetDir.exists())
+    {
+      throw new ConfigurationException("The path ''{0}'' doesn't exist.", targetDir);
+    }
+
+    ZipInputStream zipInputStream = new ZipInputStream(new BufferedInputStream(inputStream));
+    ZipEntry zipEntry = null;
+
+    BufferedOutputStream fileOutputStream = null;
+
+    try
+    {
+      while ((zipEntry = zipInputStream.getNextEntry()) != null)
+      {
+        if (zipEntry.isDirectory())
+        {
+          continue;
+        }
+
+        try
+        {
+          URI extractFileURI = targetDir.resolve(new URI(null, null, zipEntry.getName(), null));
+
+          log.debug("Resolved URI to ''{0}''", extractFileURI);
+
+          File zippedFile = new File(extractFileURI);
+
+          log.debug("Attempting to extract ''{0}'' to ''{1}''.", zipEntry, zippedFile);
+
+          try
+          {
+            fileOutputStream = new BufferedOutputStream(new FileOutputStream(zippedFile));
+
+            int b;
+
+            while ((b = zipInputStream.read()) != -1)
+            {
+              fileOutputStream.write(b);
+            }
+          }
+
+          catch (FileNotFoundException e)
+          {
+            log.error(
+                "Could not extract ''{0}'' -- file ''{1}'' could not be created : {2}",
+                e, zipEntry.getName(), zippedFile, e.getMessage()
+            );
+          }
+
+          catch (IOException e)
+          {
+            log.warn(
+                "Zip extraction of ''{0}'' to ''{1}'' failed : {2}",
+                e, zipEntry, zippedFile, e.getMessage()
+            );
+          }
+
+          finally
+          {
+            if (fileOutputStream != null)
+            {
+              try
+              {
+                fileOutputStream.close();
+
+                log.debug("Extraction of ''{0}'' to ''{1}'' completed.", zipEntry, zippedFile);
+              }
+
+              catch (Throwable t)
+              {
+                log.warn(
+                    "Failed to close file ''{0}'' : {1}",
+                    t, zippedFile, t.getMessage()
+                );
+              }
+            }
+
+            if (zipInputStream != null)
+            {
+              if (zipEntry != null)
+              {
+                try
+                {
+                  zipInputStream.closeEntry();
+                }
+
+                catch (IOException e)
+                {
+                  log.warn(
+                      "Failed to close ZIP file entry ''{0}'' : {1}",
+                      e, zipEntry, e.getMessage()
+                  );
+                }
+              }
+            }
+          }
+        }
+
+        catch (URISyntaxException e)
+        {
+          log.warn("Cannot extract {0} from zip : {1}", e, zipEntry, e.getMessage());
+        }
+      }
+    }
+
+    finally
+    {
+      try
+      {
+        if (zipInputStream != null)
+        {
+          zipInputStream.close();
+        }
+      }
+
+      catch (IOException e)
+      {
+        log.warn(
+            "Failed to close zip file : {0}", e, e.getMessage()
+        );
+      }
+
+      if (fileOutputStream != null)
+      {
+        try
+        {
+          fileOutputStream.close();
+        }
+
+        catch (IOException e)
+        {
+          log.warn("Failed to close file : {0}", e, e.getMessage());
+        }
+      }
+    }
+  }
+
+
+  /**
+   * TODO
+   *
+   * @param resourcePath
+   * @param config
+   */
+  private void copyLircdConf(URI resourcePath, ControllerConfiguration config)
+  {
+    File lircdConfFile = new File(resourcePath.resolve(Constants.LIRCD_CONF).getPath());
+    File lircdconfDir = new File(config.getLircdconfPath().replaceAll(Constants.LIRCD_CONF, ""));
+
+    try
+    {
+      if (lircdconfDir.exists() && lircdConfFile.exists())
+      {
+         // this needs root user to put lircd.conf into /etc.
+         // because it's readonly, or it won't be modified.
+         if (config.isCopyLircdconf())
+         {
+            FileUtils.copyFileToDirectory(lircdConfFile, lircdconfDir);
+            log.info("copy lircd.conf to" + config.getLircdconfPath());
+         }
+      }
+    }
+
+    catch (IOException e)
+    {
+      log.error("Can't copy lircd.conf to " + config.getLircdconfPath(), e);
+    }
   }
 
 
@@ -881,6 +1297,9 @@ public class Deployer
   private static class ControllerDefinitionWatch implements Runnable
   {
 
+    // TODO : ORCJAVA-188 -- should implement lifecycle interface
+
+
     // Instance Fields ----------------------------------------------------------------------------
 
     /**
@@ -894,7 +1313,7 @@ public class Deployer
     private volatile boolean running = true;
 
     /**
-     * Indicates the wather thread should temporarily pause and not trigger any actions
+     * Indicates the watcher thread should temporarily pause and not trigger any actions
      * on the deployer.
      */
     private volatile boolean paused = false;
@@ -1199,6 +1618,10 @@ public class Deployer
      *   to expose the XML document instance to outside services beyond what is provided by the
      *   Deployer API.
      *
+     *   See related issue references in Deployer.queryElementByName() and in
+     *   Deployer.queryElementByID() methods.
+     * 
+     *
      * @return a built document for controller.xml.
      */
     @Override public Document getControllerDocument() throws InitializationException
@@ -1324,7 +1747,9 @@ public class Deployer
 
       Set<Sensor> sensors = buildSensorObjectModelFromXML();
 
-      // Register and start...
+      // TODO :
+      //   Should register as lifecycle component and let deployer manage the lifecycle method
+      //   calls, see ORCJAVA-188 
 
       for (Sensor sensor : sensors)
       {
@@ -1346,6 +1771,11 @@ public class Deployer
      * identifier. The schema version part of the key in {@link Deployer#objectBuilders} is
      * determined by subclassing and overriding this implementations {@link #version} field.
      *
+     * TODO :
+     *   See ORCJAVA-182 and the impact this might have by removal of XMLSegment and having
+     *   dependant object builders register with model builder directly.
+     *
+     * 
      * @see org.openremote.controller.model.xml.ObjectBuilder
      * @see #version
      * @see Deployer#registerObjectBuilder
@@ -1496,6 +1926,23 @@ public class Deployer
    */
   private static interface ModelBuilder
   {
+    /*
+     * IMPLEMENTATION NOTES:
+     *
+     *  Tasks TODO:
+     *
+     *    ORCJAVA-182 (http://jira.openremote.org/browse/ORCJAVA-182) : Refactor as top-level
+     *    public interface
+     *    ORCJAVA-183 (http://jira.openremote.org/browse/ORCJAVA-183) : Refactor configuration
+     *    service as part of the model
+     *    ORCJAVA-185 (http://jira.openremote.org/browse/ORCJAVA-185) : Refactor object builders
+     *    as dependants of ModelBuilder
+     *    ORCJAVA-186 (http://jira.openremote.org/browse/ORCJAVA-186) : Introduce common superclass
+     *
+     *
+     */
+
+
     /**
      * Responsible for constructing the controller's object model. Implementation details
      * vary depending on the schema and source of defining artifacts.
@@ -1516,7 +1963,10 @@ public class Deployer
 
 
     /**
-     * TODO : temporary
+     * TODO :
+     *
+     *   This signature is temporary and will go away, see comments in Version20ModelBuilder,
+     *   Deployer.queryElementByID() and Deployer.queryElementByName() methods.
      *
      * @return
      *
@@ -1606,9 +2056,191 @@ public class Deployer
 
 
   /**
+   * Abstracts the connectivity from controller to back-end in this nested class. <p>
+   *
+   * Currently only the deployer is making connections to backend. This will be later
+   * expanded with local device discovery data import, log analytics, data collection
+   * history, remote access and other operations. At that point this class visibility may
+   * be expanded and made more generic.
+   */
+  private static class BeehiveConnection
+  {
+
+    /**
+     * Part of the Beehive URL to retrieve user's controller configuration from their
+     * account. <p>
+     *
+     * The complete URL should be :
+     * [Beehive REST Base URL]/BEEHIVE_REST_USER_DIR/[username]/BEEHIVE_REST_OPENREMOTE_ZIP
+     */
+    private final static String BEEHIVE_REST_USER_DIR = "user";
+
+    /**
+     * Part of the Beehive URL to retrieve user's controller configuration from their
+     * account. <p>
+     *
+     * The complete URL should be :
+     * [Beehive REST Base URL]/BEEHIVE_REST_USER_DIR/[username]/BEEHIVE_REST_OPENREMOTE_ZIP
+     */
+    private final static String BEEHIVE_REST_OPENREMOTE_ZIP = "openremote.zip";
+
+    /**
+     * Reference to the deployer that uses this connection.
+     */
+    private Deployer deployer;
+
+
+    // Constructors -------------------------------------------------------------------------------
+
+    /**
+     * Constructs a new connection object for a given deployer.
+     *
+     * @param deployer    reference to the deployer instance that owns this connection
+     */
+    private BeehiveConnection(Deployer deployer)
+    {
+      this.deployer = deployer;
+    }
+
+
+    // Instance Methods ---------------------------------------------------------------------------
+
+
+    /**
+     * Downloads user's configuration from Beehive using the user's account name and credentials.
+     *
+     * @param username      user's account name -- part of the HTTP GET URL used to retrieve the
+     *                      account configuration
+     * @param credentials   user's credentials to access their account
+     *
+     * @return  I/O stream to read the incoming ZIP file from user's account. Note that it is up
+     *          to the caller to close the stream when appropriate. The incoming stream has basic
+     *          buffering for read operations enabled.
+     *
+     * @throws ConfigurationException   if the connection to backend cannot be created due to
+     *                                  configuration errors in the controller
+     *
+     * @throws ConnectionException      if the connection creation fails for any reason
+     */
+    private InputStream downloadZip(String username, String credentials)
+        throws ConfigurationException, ConnectionException
+    {
+      // TODO :
+      //   Could eventually return a list of URLs if multiple backend targets are enabled which
+      //   can be used for transparent failover. See ORCJAVA-191.
+      
+      String beehiveBase = deployer.controllerConfig.getBeehiveRESTRootUrl();
+      String httpURI = BEEHIVE_REST_USER_DIR + "/" + username +"/" + BEEHIVE_REST_OPENREMOTE_ZIP;
+
+      try
+      {
+        URL beehiveBaseURL = new URL(beehiveBase);
+        URI beehiveUserURI = beehiveBaseURL.toURI().resolve(httpURI);
+
+        // TODO : Should force to go over HTTPS always. See ORCJAVA-192.
+
+        URLConnection connection = beehiveUserURI.toURL().openConnection();
+
+        if (!(connection instanceof HttpURLConnection))
+        {
+          throw new ConfigurationException(
+              "The ''{0}'' property ''{1}'' must be a URL with http:// schema.",
+              ControllerConfiguration.BEEHIVE_REST_ROOT_URL, beehiveBase
+          );
+        }
+
+        HttpURLConnection http = (HttpURLConnection)connection;
+
+        http.setDoInput(true);
+        http.setRequestMethod("GET");
+
+        http.addRequestProperty(Constants.HTTP_AUTHORIZATION_HEADER,
+                                Constants.HTTP_BASIC_AUTHORIZATION + encode(username, credentials));
+
+        http.connect();
+
+        int response = http.getResponseCode();
+
+        switch (response)
+        {
+          case HttpURLConnection.HTTP_OK:
+
+            return new BufferedInputStream(http.getInputStream());
+
+          case HttpURLConnection.HTTP_UNAUTHORIZED:
+          case HttpURLConnection.HTTP_NOT_FOUND:
+
+            throw new ConnectionException(
+                "Authentication failed, please check your username and password."
+            );
+
+          default:
+
+            throw new ConnectionException(
+                "Connection to ''{0}'' failed, HTTP error code {1} - {2}",
+                beehiveUserURI, response, http.getResponseMessage()
+            );
+        }
+      }
+
+      catch (MalformedURLException e)
+      {
+        throw new ConfigurationException(
+            "Configuration property ''{0}'' with value ''{1}'' is not a valid URL : {2}",
+            e, ControllerConfiguration.BEEHIVE_REST_ROOT_URL, beehiveBase, e.getMessage()
+        );
+      }
+
+      catch (URISyntaxException e)
+      {
+        throw new ConfigurationException(
+            "Invalid URI : {0}", e, e.getMessage()
+        );
+      }
+
+      catch (ProtocolException e)
+      {
+        throw new ConnectionException(
+            "Failed to create HTTP request : {0}", e, e.getMessage()
+        );
+      }
+
+      catch (IOException e)
+      {
+        throw new ConnectionException(
+            "Downloading account configuration failed : {0}", e, e.getMessage()
+        );
+      }
+    }
+
+
+    // TODO
+    //
+    //
+    private String encode(String username, String password)
+    {
+      Md5PasswordEncoder encoder = new Md5PasswordEncoder();
+
+      String encodedPwd = encoder.encodePassword(new String(password), username);
+
+      if (username == null || encodedPwd == null)
+      {
+        return null;
+      }
+
+      return new String(Base64.encodeBase64((username + ":" + encodedPwd).getBytes()));
+    }
+  }
+
+
+
+  /**
    * Key implementation for object builders. Constructs a key based on the controller schema
    * version and xml segment identifier provided by a concrete object builder implementation.
    *
+   *
+   * TODO: this will be re-defined for ORCJAVA-182 and ORCJAVA-185
+   * 
    * @see org.openremote.controller.model.xml.ObjectBuilder#getSchemaVersion()
    * @see org.openremote.controller.model.xml.ObjectBuilder#getRootSegment()
    */
