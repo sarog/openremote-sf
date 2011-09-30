@@ -23,120 +23,49 @@
 #import "PaginationController.h"
 #import "Screen.h"
 #import "ScreenViewController.h"
+#import "UIDevice+ORAdditions.h"
 
-
-@interface GroupController (Private)
+@interface GroupController ()
 
 - (NSArray *)viewControllersForScreens:(NSArray *)screens;
 - (void)showErrorView;
-- (void)detectDeviceOrientation;
-- (void)printOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
+
+@property (assign) PaginationController *currentPaginationController;
 
 @end
 
-
-
 @implementation GroupController
 
-@synthesize group;
-
-- (id)initWithGroup:(Group *)newGroup {
+- (id)initWithGroup:(Group *)newGroup
+{
     self = [super init];
 	if (self) {
-		if (newGroup) {
-			group = [newGroup retain];// must retain newGroup here!!!
-		}
-		[self detectDeviceOrientation];
+		self.group = newGroup;
 	}
 	return self;
 }
 
-- (id)initWithGroup:(Group *)newGroup orientation:(UIInterfaceOrientation)thatOrientation {
-    self = [super init];
-	if (self) {
-		if (newGroup) {
-			group = [newGroup retain];// must retain newGroup here!!!
-		}
-		currentOrientation = thatOrientation;
-	}
-	return self;
-}
-
-- (BOOL)isOrientationLandscapeWithScreenId:(int)screenId {
-	for (int i = 0; i< group.screens.count; i++) {
-		Screen *s = (Screen *)[group.screens objectAtIndex:i];
-		if (s.screenId == screenId) {
-			return s.landscape;
-		}
-	}
-	return NO;
-}
-
-// Detect the current orientation of handset.
-- (void)detectDeviceOrientation {
-
-	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-	currentOrientation = [[UIDevice currentDevice] orientation];
-    
-    NSLog(@"GroupController.detectDeviceOrientation, detected %d", currentOrientation);
-    [self printOrientation:currentOrientation];
-    
-    
-    // EBR calling seld.interfaceOrientation at this stage is incorrect, because this method is called from init, before view loading / creation finished
-//	NSLog(@"VC.interfaceOrientation %d", self.interfaceOrientation);
-    
-    
-    
-//    [self printOrientation:self.interfaceOrientation];
-	if (currentOrientation == UIDeviceOrientationUnknown) {
-		currentOrientation = UIInterfaceOrientationPortrait;
-		NSLog(@"it's using simulator, set portrait by default");
-	}
+- (void)dealloc
+{
+	[landscapePaginationController release];
+	[portraitPaginationController release];
+	[errorViewController release];
+    self.group = nil;
 	
-	if (currentOrientation == UIDeviceOrientationFaceUp || 
-			currentOrientation == UIDeviceOrientationFaceDown) {
-		currentOrientation = UIInterfaceOrientationPortrait;
-		NSLog(@"it's facing up/down, set portrait by default");
-	}
-
-    // TODO EBR : recheck all this orientation thing but asking the VC is the way to go
-    // when using following line and lauching in landscape -> black screen, check why
-//    currentOrientation = self.interfaceOrientation;
-}
-
-- (UIInterfaceOrientation)getCurrentOrientation {
-	return currentOrientation;
-}
-
-- (void)setNewOrientation:(UIInterfaceOrientation)newOrientation {
-	[self willRotateToInterfaceOrientation:newOrientation duration:0];
-}
-
-// Check if current orientation is landscape.
-- (BOOL)isOrientationLandscape {
-	return UIInterfaceOrientationIsLandscape(currentOrientation);
+	[super dealloc];
 }
 
 - (CGRect)getFullFrame {
 	CGRect frame = self.view.frame;
 	CGSize size = [UIScreen mainScreen].bounds.size;
-	BOOL isLandscape = [self isOrientationLandscape];
+	BOOL isLandscape = [UIDevice or_isDeviceOrientationLandscape];
 	frame.size.height = isLandscape ? size.width : size.height;
 	frame.size.width = isLandscape ? size.height : size.width;
 	return frame;
 }
 
-- (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape {
-	if (isLandscape) {
-		return [group getLandscapeScreens].count == 0;
-	} else {
-		return [group getPortraitScreens].count == 0;
-	}
-	return NO;
-}
-
 - (int)groupId {
-	return group.groupId;
+	return self.group.groupId;
 }
 
 // Returns an array of ScreenViewControllers for the given Screen objects
@@ -153,15 +82,10 @@
 	return [NSArray arrayWithArray:viewControllers];
 }
 
-// Get the paginationController of groupController.
-- (PaginationController *)currentPaginationController {	
-	return [self isOrientationLandscape] ? landscapePaginationController : portraitPaginationController;
-}
-
 // Show the view of specified orientation depending on the parameter isLandScape specified.
 - (void)showLandscapeOrientation:(BOOL)isLandscape {
 	
-	NSArray *screens = isLandscape ? [group getLandscapeScreens] : [group getPortraitScreens];
+	NSArray *screens = isLandscape ? [self.group getLandscapeScreens] : [self.group getPortraitScreens];
 	if (screens.count == 0) {
 		[self showErrorView];
 		return;
@@ -172,6 +96,7 @@
 			landscapePaginationController = [[PaginationController alloc] init];
 			[landscapePaginationController setViewControllers:[self viewControllersForScreens:screens] isLandscape:isLandscape];
 		}
+        self.currentPaginationController = landscapePaginationController;
 		[self setView:landscapePaginationController.view];
 		[[portraitPaginationController currentScreenViewController] stopPolling];
 		[[landscapePaginationController currentScreenViewController] startPolling];
@@ -180,6 +105,7 @@
 			portraitPaginationController = [[PaginationController alloc] init];
 			[portraitPaginationController setViewControllers:[self viewControllersForScreens:screens] isLandscape:isLandscape];
 		}
+        self.currentPaginationController = portraitPaginationController;
 		[self setView:portraitPaginationController.view];
 		[[landscapePaginationController currentScreenViewController] stopPolling];
 		[[portraitPaginationController currentScreenViewController] startPolling];
@@ -198,17 +124,84 @@
 	[self showLandscapeOrientation:YES];
 }
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
 	[super viewDidLoad];
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	[self.navigationController setNavigationBarHidden:YES];
-	if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
-		NSLog(@"view did load show portrait");
-		[self showPortrait];
-	} else if (UIInterfaceOrientationIsLandscape(currentOrientation)) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)
+                                                 name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];        
+
+    
+    if ([UIDevice or_isDeviceOrientationLandscape]) {
 		NSLog(@"view did load show landscape");
 		[self showLandscape];
-	} 
+    } else {
+		NSLog(@"view did load show portrait");
+		[self showPortrait];
+	}
+}
+
+- (void)viewDidUnload
+{
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+    [super viewDidUnload];
+}
+
+- (void)setupRotation:(UIDeviceOrientation)orientation
+{
+    CGAffineTransform myTransform = CGAffineTransformIdentity;
+    switch (orientation) {
+        case UIDeviceOrientationPortraitUpsideDown:
+            myTransform = CGAffineTransformMakeRotation(M_PI);
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            myTransform = CGAffineTransformMakeRotation(M_PI / 2);
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            myTransform = CGAffineTransformMakeRotation(-M_PI /2);
+            break;
+        default:
+            break;
+    }
+    
+    self.view.transform = myTransform;
+    self.view.bounds = [self getFullFrame];
+}
+
+- (void)orientationChanged:(NSNotification *)notification
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    
+    NSLog(@"Going to device orientation %d", deviceOrientation);
+    
+    
+    if ([UIDevice or_isDeviceOrientationLandscape:deviceOrientation]) {
+        if ([self currentScreen].landscape) {
+            // Orientation matches, can set the transform
+            [self setupRotation:deviceOrientation];
+        } else {
+            int inverseScreenId = [self currentScreen].inverseScreenId;
+            if (inverseScreenId != 0) {
+                [self showLandscape];
+                [self setupRotation:deviceOrientation];
+                [[self currentPaginationController] switchToScreen:inverseScreenId];
+            }
+        }        
+    } else {
+        if (![self currentScreen].landscape) {
+            // Orientation matches, can set the transform
+            [self setupRotation:deviceOrientation];
+        } else {
+            int inverseScreenId = [self currentScreen].inverseScreenId;
+            if (inverseScreenId != 0) {
+                [self showPortrait];
+                [self setupRotation:deviceOrientation];
+                [[self currentPaginationController] switchToScreen:inverseScreenId];
+            }
+        }
+    }
 }
 
 // Show error view if some error occured.
@@ -261,101 +254,18 @@
 	return [[self currentScreenViewController] performGesture:gesture];
 }
 
-//only if the following conditions happen, should we rotate.
-// 1) error view
-// 2) device consistent orientation changes between up/down or left/right
-// 3) current group has two-orientation (portrait/landscape) views 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	if (errorViewController.view == self.view) {
 		return YES;
 	}
-	if (UIInterfaceOrientationIsPortrait(currentOrientation) == UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-		NSLog(@"group consistent orientation ");
-		return YES;
-	}
-	if ([self currentScreenId] > 0) {
-		NSLog(@"group opposite orientation ");
-		return [[self currentScreen] inverseScreenId] > 0;
-	} else {
-		NSLog(@"group single orientation ");
-		return ![self hasNoViewInThatOrientation:UIInterfaceOrientationIsLandscape(interfaceOrientation)];
-	}
-	
-	return NO;
+    return interfaceOrientation == UIInterfaceOrientationPortrait;
 }
 
-
-- (void)printOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-	switch (toInterfaceOrientation) {
-		case UIInterfaceOrientationPortrait:
-			NSLog(@"is portrait");
-			break;
-		case UIInterfaceOrientationLandscapeLeft:
-			NSLog(@"is landscape left");
-			break;
-		case UIInterfaceOrientationLandscapeRight:
-			NSLog(@"is landscape right");
-			break;
-		case UIInterfaceOrientationPortraitUpsideDown:
-			NSLog(@"is portrait upsidedown");
-			break;
-		default:
-			NSLog(@"is unknown orientation, it's using simulator");
-			break;
-	}
-}
-
-- (void)transformToOrientation:(UIInterfaceOrientation)thatOrientation {
-	currentOrientation = thatOrientation;
-	if (UIInterfaceOrientationIsPortrait(thatOrientation)) {
-		[self showPortrait];
-	} else {
-		[self showLandscape];
-	}
-}
-
-// Override this method for enable view rotating.
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[self printOrientation:currentOrientation];
-	[self printOrientation:toInterfaceOrientation];
-	if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation) == UIInterfaceOrientationIsPortrait(currentOrientation)) {
-		NSLog(@"same orientation");
-		return;
-	} else {
-		NSLog(@"diff orientation");
-		
-		int inverseScreenId = -1;
-		if ([self currentScreenId] > 0) {
-			inverseScreenId = [self currentScreen].inverseScreenId;
-		}
-		NSLog(@"inverseScreenId=%d", inverseScreenId);
-		if (inverseScreenId == 0) {
-			return;
-		}
-		currentOrientation = toInterfaceOrientation;
-		
-		if (UIInterfaceOrientationIsPortrait(currentOrientation)) {
-			[self showPortrait];
-		} else {
-			[self showLandscape];
-		}
-		
-		if (inverseScreenId > 0) {
-			NSLog(@"switch screen from %d - > %d", [self currentScreenId], inverseScreenId);
-			[self switchToScreen:inverseScreenId];
-		} 
-
-	}
 	[errorViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
-- (void)dealloc {
-	[landscapePaginationController release];
-	[portraitPaginationController release];
-	[errorViewController release];
-	
-	[super dealloc];
-}
-
+@synthesize group;
+@synthesize currentPaginationController;
 
 @end

@@ -53,7 +53,7 @@
 	CGSize size = [UIScreen mainScreen].bounds.size;
 	frameWidth = isLandscape ? size.height : size.width;
 	frameHeight = isLandscape ? size.width : size.height;
-	
+
 	for (UIView *view in [scrollView subviews]) {
 		[view removeFromSuperview];
 	}
@@ -69,8 +69,9 @@
 	if (lastScreenId > 0) {
 		for (int i = 0; i < [viewControllers count]; i++) {
 			if (lastScreenId == [(Screen *)[[viewControllers objectAtIndex:i] screen] screenId]) {
-				UIViewController *vc = [viewControllers objectAtIndex:i];
-				vc.view.bounds = scrollView.bounds;
+//				UIViewController *vc = [viewControllers objectAtIndex:i];
+                // TODO: ebr : check why this is ???
+//				vc.view.bounds = scrollView.bounds;
 				selectedIndex = i;
 				break;
 			}

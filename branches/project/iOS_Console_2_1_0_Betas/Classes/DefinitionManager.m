@@ -176,6 +176,7 @@
 
 - (void)downloadImages {
 	@try {
+        // TODO: why that check at this stage
 		[CheckNetwork checkWhetherNetworkAvailable];
 		
 		for (NSString *imageName in [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition.imageNames) {

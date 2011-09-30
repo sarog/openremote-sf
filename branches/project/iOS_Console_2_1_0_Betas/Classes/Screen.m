@@ -59,7 +59,7 @@
 	return ids;
 }
 
-- (int)screenIdForOrientation:(UIInterfaceOrientation)orientation {
+- (int)screenIdForOrientation:(UIDeviceOrientation)orientation {
     if (self.inverseScreenId == 0) {
         return self.screenId;
     }
