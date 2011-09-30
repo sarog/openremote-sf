@@ -181,11 +181,14 @@
 
 - (void)done:(id)sender
 {
-    self.doneAction = YES;
-
     [self.urlField resignFirstResponder];
     [self.usernameField resignFirstResponder];
     [self.passwordField resignFirstResponder];
+    if (!self.controller || !self.controller.primaryURL) {
+        [self.delegate didFailToAddController];
+        return;
+    }
+    self.doneAction = YES;
     if (self.creating) {
         [self.delegate didAddController:self.controller];      
     } else {
@@ -199,14 +202,13 @@
 {
     NSString *url;
     if (textField == self.urlField) {
-        if ([textField.text hasPrefix:@"http://"] || [textField.text hasPrefix:@"https://"]) {
-            url = textField.text;
-        } else {
-            url = [NSString stringWithFormat:@"http://%@", textField.text];
+        url = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (![url hasPrefix:@"http://"] && ![url hasPrefix:@"https://"]) {
+            url = [NSString stringWithFormat:@"http://%@", url];
         }
         
         // TODO: have better validation and non intrusive error messages
-        // following test will never fail as we set the scheme above
+        // Following test does fail if what follows :// is totally wrong
         
         NSURL *nsUrl = [NSURL URLWithString:url];
         if ([nsUrl scheme] == nil) {

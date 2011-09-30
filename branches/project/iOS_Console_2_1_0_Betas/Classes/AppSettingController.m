@@ -517,6 +517,11 @@
     [controller fetchGroupMembers];
 }
 
+- (void)didFailToAddController
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark ChoosePanelViewControllerDelegate implementation
 
 - (void)didSelectPanelIdentity:(NSString *)identity
