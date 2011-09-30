@@ -163,34 +163,5 @@ public class Main extends GenericActivity {
         finish();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Main.populateMenu(menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        handleMenu(item);
-        return true;
-    }
-
-    public void handleMenu(MenuItem item) {
-        switch (item.getItemId()) {
-        case Constants.MENU_ITEM_SETTING:
-            doSettings();
-            break;
-        case Constants.MENU_ITEM_QUIT:
-            System.exit(0);
-            break;
-        }
-    }
-
-    public static void populateMenu(Menu menu) {
-        menu.setQwertyMode(true);
-        MenuItem configItem = menu.add(0, Constants.MENU_ITEM_SETTING, 0,
-                R.string.configure);
-        configItem.setIcon(R.drawable.ic_menu_manage);
-        MenuItem quit = menu.add(0, Constants.MENU_ITEM_QUIT, 0, R.string.quit);
-        quit.setIcon(R.drawable.ic_menu_close_clear_cancel);
-    }
-   
+  
 }
