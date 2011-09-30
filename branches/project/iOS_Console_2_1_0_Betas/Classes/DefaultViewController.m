@@ -85,12 +85,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(populateLoginView:) name:NotificationPopulateCredentialView object:nil];
+    
+    // EBR: is this required, already set in Info.plist
+    [self.navigationController setNavigationBarHidden:YES];
 }
 
 - (void)viewDidUnload
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NotificationPopulateCredentialView object:nil];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [super viewDidUnload];
 }
 
@@ -194,39 +199,10 @@
 		} else {
 			[self.view addSubview:currentGroupController.view];
 		}
-		
-		//if last screen orientation is not current device orientation, transform to that orientation.
-		NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-		if ([userDefaults objectForKey:@"lastScreenId"]) {
-			int lastScreenId = [[userDefaults objectForKey:@"lastScreenId"] intValue];
-			Screen *screen = [currentGroupController.group findScreenByScreenId:lastScreenId];
-			if (screen == nil) {
-				[self shouldRotateToOppositeOrientation];
-			} else if ([currentGroupController isOrientationLandscape] != screen.landscape) {
-				[self transformToOppositeOrientation];
-				[self rerenderTabbarWithNewOrientation];
-				[currentGroupController switchToScreen:screen.screenId];
-			}
-		} else {			
-			[self shouldRotateToOppositeOrientation];
-		}
-		
+
 		[self saveLastGroupIdAndScreenId];
 	} else {		
 		[self.view addSubview:errorViewController.view];		
-	}
-}
-
-- (void)shouldRotateToOppositeOrientation {
-	if ([currentGroupController currentScreenId] == 0 && [[currentGroupController.group screens] count] > 0) {
-		NSLog(@"last screen id not exist,and the current orientation has no screen.");
-		Screen *screen = [[currentGroupController.group screens] objectAtIndex:0];
-		if ([currentGroupController isOrientationLandscape] != screen.landscape) {
-			[self transformToOppositeOrientation];
-			[self rerenderTabbarWithNewOrientation];
-			[currentGroupController switchToScreen:screen.screenId];
-		}
-        // EBR : if the orientation is matching, correct screen is already displayed, no need to navigate
 	}
 }
 
@@ -307,51 +283,8 @@
 	return NO;
 }
 
-//if the group view is not cached, tabbar can't show group view when rotation happens.
-//rerendering the tabbar will show group view.
-- (void)rerenderTabbarWithNewOrientation {
-	if (currentGroupController.group.tabBar) {
-		[localTabBarController updateTabItems];
-	} else if ([[[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition tabBar]) {
-		[globalTabBarController updateTabItems];
-	}
-}
-
-//transform view +/- 90 degrees
-- (void)transformToOppositeOrientation
-{
-	[UIView beginAnimations:@"View transform" context:nil];
-	[UIView setAnimationDuration:0.5f];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-	self.view.transform = CGAffineTransformIdentity;
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	CGFloat w = [currentGroupController isOrientationLandscape] ? size.height : size.width;
-	CGFloat h = [currentGroupController isOrientationLandscape] ? size.width : size.height;
-	
-	if (h > w) {
-		NSLog(@"view did transform to landscape");
-		[currentGroupController transformToOrientation:UIInterfaceOrientationLandscapeRight];
-		
-		//move transform centre, make portrait view and landscape view have the same centre.
-		//by default portrait view and landscape view have the same origin.
-		self.view.frame = CGRectMake((w-h)/2.0, (h-w)/2.0, h, w);
-		
-		self.view.transform = CGAffineTransformMakeRotation(degreesToRadian(([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeLeft)?-90:90));
-	} else {
-		NSLog(@"view did transform to portrait");
-		[currentGroupController transformToOrientation:UIInterfaceOrientationPortrait];
-		//by default it's portart, needn't to specify -90 degrees.
-		self.view.frame = CGRectMake(0, 0, h, w);
-	}
-	[UIView commitAnimations];	
-}
-
 - (void)updateGlobalOrLocalTabbarViewToGroupController:(GroupController *)targetGroupController withGroupId:(int)groupId
 {	
-	if ([targetGroupController getCurrentOrientation] != [currentGroupController getCurrentOrientation]) {
-		[targetGroupController setNewOrientation:[currentGroupController getCurrentOrientation]];
-	}
-
     [self.view.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 	
 	UIView *v = targetGroupController.view;
@@ -399,7 +332,6 @@
 	GroupController *targetGroupController = nil;
 	
 	BOOL isAnotherGroup = groupId != [currentGroupController groupId];
-	BOOL isLastOrientationLandscape = [currentGroupController isOrientationLandscape];
 	
     
     Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
@@ -409,7 +341,7 @@
 		if (targetGroupController == nil) {
 			Group *group = [definition findGroupById:groupId];
 			if (group) {
-				targetGroupController = [[[GroupController alloc] initWithGroup:group orientation:[currentGroupController getCurrentOrientation]] autorelease];
+				targetGroupController = [[[GroupController alloc] initWithGroup:group] autorelease];
 			} else {
 				return NO;
 			}
@@ -419,39 +351,19 @@
 		[self updateGlobalOrLocalTabbarViewToGroupController:targetGroupController withGroupId:groupId];
 	}
 	
-	//if screenId is specified, jump to that screen
+    Screen *screen = nil;
 	if (screenId > 0) {
-        
-        // First check if we have a screen more appropriate for the current device orientation orientation
-        Screen *screen = [currentGroupController.group findScreenByScreenId:screenId];
-        if (screen) {
-            screenId = [screen screenIdForOrientation:[[UIDevice currentDevice] orientation]];
-        }
-        
-		//if navigate to opposite orientation, need to transform view +/- 90 degrees.
-		if (isLastOrientationLandscape != [currentGroupController isOrientationLandscapeWithScreenId:screenId]) {
-			[self transformToOppositeOrientation];
-			[self rerenderTabbarWithNewOrientation];
-		}
-		return [currentGroupController switchToScreen:screenId];
-	}
-	//If only group is specified, then by definition we show the first screen of that group.
-	else if (screenId == 0) {
-		Screen *screen = [currentGroupController.group.screens objectAtIndex:0];
-        // First check if we have a screen more appropriate for the current device orientation orientation
-        if (screen) {
-            screenId = [screen screenIdForOrientation:[[UIDevice currentDevice] orientation]];
-        }
-
-        //if navigate to opposite orientation, need to transform view +/- 90 degrees.
-		if (screen && (isLastOrientationLandscape != screen.landscape)) {
-			[self transformToOppositeOrientation];
-			[self rerenderTabbarWithNewOrientation];
-		}
-		return [currentGroupController switchToScreen:screen.screenId];
-	}
-		
-	return YES;
+        // If screenId is specified, jump to that screen
+         screen = [currentGroupController.group findScreenByScreenId:screenId];
+    } else {
+        //If only group is specified, then by definition we show the first screen of that group.
+        screen = [currentGroupController.group.screens objectAtIndex:0];
+    }
+    // First check if we have a screen more appropriate for the current device orientation orientation
+    if (screen) {
+        screenId = [screen screenIdForOrientation:[[UIDevice currentDevice] orientation]];
+    }
+	return [currentGroupController switchToScreen:screenId];
 }
 
 //logout only when password is saved.
@@ -551,6 +463,13 @@
 	[currentGroupController performGesture:gesture];
 }
 
+
+
+
+
+
+// EBR : because this VC is installed at root, it needs to forward those messages to the VC it contains
+// When this class is not a VC anymore, this will be cleaner as the "real" VC will receive the appropriate messages
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	if ([self isLoadingViewGone]) {
 		if (currentGroupController.group.screens.count == 0) {
@@ -569,6 +488,11 @@
 		[initViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	}
 }
+
+
+
+
+
 
 #pragma mark Detect the shake motion.
 

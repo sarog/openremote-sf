@@ -303,6 +303,8 @@
 		60C9D981136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */; };
 		60C9D983136ADD31009EECA3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D982136ADD31009EECA3 /* CoreData.framework */; };
 		60C9D985136ADD38009EECA3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D984136ADD37009EECA3 /* CoreData.framework */; };
+		60DC5CF01436029D004CD42A /* UIDevice+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DC5CEF1436029D004CD42A /* UIDevice+ORAdditions.m */; };
+		60DC5CF11436029D004CD42A /* UIDevice+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DC5CEF1436029D004CD42A /* UIDevice+ORAdditions.m */; };
 		60DEC3C2140FA6FE000FF863 /* GridLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C1140FA6FD000FF863 /* GridLayoutContainerSubController.m */; };
 		60DEC3C3140FA6FE000FF863 /* GridLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C1140FA6FD000FF863 /* GridLayoutContainerSubController.m */; };
 		60DEC3C6140FB62F000FF863 /* ORImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C5140FB62F000FF863 /* ORImageView.m */; };
@@ -952,6 +954,8 @@
 		60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettings.m; sourceTree = "<group>"; };
 		60C9D982136ADD31009EECA3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		60C9D984136ADD37009EECA3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		60DC5CEE1436029D004CD42A /* UIDevice+ORAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+ORAdditions.h"; sourceTree = "<group>"; };
+		60DC5CEF1436029D004CD42A /* UIDevice+ORAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+ORAdditions.m"; sourceTree = "<group>"; };
 		60DEC3C0140FA6FD000FF863 /* GridLayoutContainerSubController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridLayoutContainerSubController.h; sourceTree = "<group>"; };
 		60DEC3C1140FA6FD000FF863 /* GridLayoutContainerSubController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridLayoutContainerSubController.m; sourceTree = "<group>"; };
 		60DEC3C4140FB62F000FF863 /* ORImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORImageView.h; sourceTree = "<group>"; };
@@ -1900,6 +1904,8 @@
 				6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */,
 				6055688013CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.h */,
 				6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */,
+				60DC5CEE1436029D004CD42A /* UIDevice+ORAdditions.h */,
+				60DC5CEF1436029D004CD42A /* UIDevice+ORAdditions.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -2521,6 +2527,7 @@
 				60DEC3CE140FC884000FF863 /* SwitchSubController.m in Sources */,
 				60EC86311410C23E003F5432 /* ColorPickerSubController.m in Sources */,
 				60EC86361410C68A003F5432 /* SliderSubController.m in Sources */,
+				60DC5CF01436029D004CD42A /* UIDevice+ORAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2671,6 +2678,7 @@
 				60DEC3CF140FC884000FF863 /* SwitchSubController.m in Sources */,
 				60EC86321410C23E003F5432 /* ColorPickerSubController.m in Sources */,
 				60EC86371410C68A003F5432 /* SliderSubController.m in Sources */,
+				60DC5CF11436029D004CD42A /* UIDevice+ORAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2802,7 +2810,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					NO_API_v2_1,
+					API_v2_1,
 					INCLUDE_SIP_SUPPORT,
 				);
 				HEADER_SEARCH_PATHS = "include/**";
@@ -2827,8 +2835,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2850,8 +2858,6 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "OpenRemote copy";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2863,8 +2869,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2883,8 +2889,6 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2896,8 +2900,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2916,8 +2920,6 @@
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
-				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2993,14 +2995,12 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = NO;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
@@ -3025,7 +3025,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					NO_API_v2_1,
+					API_v2_1,
 					INCLUDE_SIP_SUPPORT,
 				);
 				INFOPLIST_FILE = Info.plist;
@@ -3047,14 +3047,12 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = NO;
-				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
@@ -3079,7 +3077,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					NO_API_v2_1,
+					API_v2_1,
 					INCLUDE_SIP_SUPPORT,
 				);
 				INFOPLIST_FILE = Info.plist;
@@ -3132,15 +3130,14 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Eric Bariaux (LYAM92JN75)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
-				PROVISIONING_PROFILE = "8B433AC5-524A-43B2-8904-07CC38B6FAE6";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8B433AC5-524A-43B2-8904-07CC38B6FAE6";
+				PROVISIONING_PROFILE = "87869338-F96E-420E-976C-67BA1A65380E";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 2;
 			};

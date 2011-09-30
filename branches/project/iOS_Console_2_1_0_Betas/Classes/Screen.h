@@ -45,7 +45,7 @@
  *
  * @return int id of the screen to use for the provided orientation.
  */
-- (int)screenIdForOrientation:(UIInterfaceOrientation)orientation;
+- (int)screenIdForOrientation:(UIDeviceOrientation)orientation;
 
 @property (nonatomic, readonly) int screenId;
 @property (nonatomic, retain, readonly) NSString *name;

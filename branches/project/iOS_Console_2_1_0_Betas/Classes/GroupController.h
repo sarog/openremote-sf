@@ -28,8 +28,6 @@
  * Control presentation of group view with group model data.
  */
 @interface GroupController : UIViewController {
-
-	Group *group;
 	PaginationController *portraitPaginationController;
 	PaginationController *landscapePaginationController;
 	ErrorViewController *errorViewController;
@@ -40,11 +38,6 @@
  * Construct group controller with group model data.
  */
 - (id)initWithGroup:(Group *)newGroup;
-
-/**
- * Construct group controller with group model data and orientation the group view will be.
- */
-- (id)initWithGroup:(Group *)newGroup orientation:(UIInterfaceOrientation)thatOrientation;
 
 /**
  * Start polling of groupController's rendering screenView.
@@ -93,42 +86,11 @@
 - (void)performGesture:(Gesture *)gesture;
 
 /**
- * Get the orientation of handset. 
- */
-- (UIInterfaceOrientation)getCurrentOrientation;
-
-/**
- * Set the orientation of handset manually. 
- */
-- (void)setNewOrientation:(UIInterfaceOrientation)newOrientation;
-
-/**
- * Check if current orientation of handset is landscape. 
- * Reture true, if it is, otherwise, return false.
- */
-- (BOOL)isOrientationLandscape;
-
-/**
  * Get the frame of handset's screen and is depending on the current orientation.
  * If current orientation is landscape, the width of returned frame is height of portrait screen 
  * and the height of returned frame is width of portrait screen.
  */
 - (CGRect)getFullFrame;
-
-/**
- * Check if there is no view existed in the specified orientation.
- */
-- (BOOL)hasNoViewInThatOrientation:(BOOL)isLandscape;
-
-/**
- * Switch to the specified orientation screen view.
- */
-- (void)transformToOrientation:(UIInterfaceOrientation)thatOrientation;
-
-/**
- * Check if the screen parameter specified is landscape orientation.
- */
-- (BOOL)isOrientationLandscapeWithScreenId:(int)screenId;
 
 @property (nonatomic, retain) Group *group;
 
