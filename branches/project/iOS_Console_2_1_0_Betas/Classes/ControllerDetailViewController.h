@@ -28,6 +28,7 @@
 
 - (void)didAddController:(ORController *)controller;
 - (void)didEditController:(ORController *)controller;
+- (void)didFailToAddController;
 
 @end
 
