@@ -48,6 +48,7 @@
 @property (nonatomic, retain) NSUndoManager *previousUndoManager;
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
+- (void)refreshGroupMemberTableViewSection;
 
 @end
 
@@ -371,6 +372,11 @@
     [aView release];    
 }
 
+- (void)refreshGroupMemberTableViewSection
+{
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+}
+
 @synthesize delegate;
 @synthesize managedObjectContext;
 @synthesize controller;
@@ -387,7 +393,8 @@
     if (groupMembers != theGroupMembers) {
         [groupMembers release];
         groupMembers = [theGroupMembers retain];
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+        // This must be performed after the setter finishes, otherwise the data source code using the getter does not see the new value
+        [self performSelector:@selector(refreshGroupMemberTableViewSection) withObject:nil afterDelay:0.0];
     }
 }
 
