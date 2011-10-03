@@ -29,6 +29,7 @@
 
 - (NSArray *)viewControllersForScreens:(NSArray *)screens;
 - (void)showErrorView;
+- (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
 
 @property (assign) PaginationController *currentPaginationController;
 
@@ -55,13 +56,19 @@
 	[super dealloc];
 }
 
-- (CGRect)getFullFrame {
+- (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
+{
 	CGRect frame = self.view.frame;
 	CGSize size = [UIScreen mainScreen].bounds.size;
-	BOOL isLandscape = [UIDevice or_isDeviceOrientationLandscape];
+	BOOL isLandscape = [UIDevice or_isDeviceOrientationLandscape:deviceOrientation];
 	frame.size.height = isLandscape ? size.width : size.height;
 	frame.size.width = isLandscape ? size.height : size.width;
-	return frame;
+	return frame;    
+}
+
+- (CGRect)getFullFrame
+{
+    return [self fullFrameForDeviceOrientation:[UIDevice currentDevice].orientation];
 }
 
 - (int)groupId {
@@ -98,6 +105,10 @@
 		}
         self.currentPaginationController = landscapePaginationController;
 		[self setView:landscapePaginationController.view];
+
+        // By setting view above, on 1st time, view bounds got reset to "portrait". Force it back to "landscape"
+        self.view.bounds = [self fullFrameForDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+        
 		[[portraitPaginationController currentScreenViewController] stopPolling];
 		[[landscapePaginationController currentScreenViewController] startPolling];
 	} else {
@@ -258,7 +269,8 @@
 	if (errorViewController.view == self.view) {
 		return YES;
 	}
-    return interfaceOrientation == UIInterfaceOrientationPortrait;
+    return NO;
+//    return interfaceOrientation == UIInterfaceOrientationPortrait;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
