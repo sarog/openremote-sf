@@ -41,6 +41,9 @@
 // Indicates if a login window must be presented to user for entering credentials when a controller says authentication is required
 @property (nonatomic, assign) BOOL askUserForCredentials;
 
+// TODO: might go when re-doing how selection is handled, re-check
+@property (nonatomic, retain) NSIndexPath *currentSelectedServerIndex;
+
 - (void)autoDiscoverChanged:(id)sender;
 - (void)saveSettings;
 - (void)updatePanelIdentityView;
@@ -94,7 +97,7 @@
 	[done release];
 	[cancel release];
     self.panelsFetcher = nil;
-	
+	self.currentSelectedServerIndex = nil;
 	[super dealloc];
 }
 
@@ -379,7 +382,7 @@
             serverCell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 
 			if (controller == settingsManager.consoleSettings.selectedController) {
-				currentSelectedServerIndex = indexPath;
+				self.currentSelectedServerIndex = indexPath;
                 serverCell.entrySelected = YES;
 			} else {
                 serverCell.entrySelected = NO;
@@ -466,8 +469,8 @@
 	
 	
 	if (indexPath.section == CONTROLLER_URLS_SECTION) {        
-		if (currentSelectedServerIndex) {
-			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:currentSelectedServerIndex];
+		if (self.currentSelectedServerIndex) {
+			UITableViewCell *oldCell = [tableView cellForRowAtIndexPath:self.currentSelectedServerIndex];
             ((TableViewCellWithSelectionAndIndicator *)oldCell).entrySelected = NO;
  		}
         ((TableViewCellWithSelectionAndIndicator *)cell).entrySelected = YES;
@@ -479,11 +482,11 @@
         // TODO: might not be required if update of panel identities trigger this
         [settingsManager.consoleSettings.selectedController fetchGroupMembers];
         
-		if (currentSelectedServerIndex && currentSelectedServerIndex.row != indexPath.row) {            
+		if (self.currentSelectedServerIndex && self.currentSelectedServerIndex.row != indexPath.row) {            
             // TODO: review how this gets updated
 			[self updatePanelIdentityView];
 		}
-		currentSelectedServerIndex = indexPath;
+		self.currentSelectedServerIndex = indexPath;
 	}
 	
 }
@@ -597,6 +600,7 @@
 
 @synthesize panelsFetcher;
 @synthesize askUserForCredentials;
+@synthesize currentSelectedServerIndex;
 
 - (void)setPanelsFetcher:(ORControllerPanelsFetcher *)aPanelsFetcher
 {

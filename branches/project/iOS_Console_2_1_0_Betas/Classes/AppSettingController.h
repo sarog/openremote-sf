@@ -35,9 +35,7 @@
 @interface AppSettingController : UITableViewController <UITextFieldDelegate, ORControllerPanelsFetcherDelegate, ServerAutoDiscoveryControllerDelagate, ControllerDetailViewControllerDelegate, ChoosePanelViewControllerDelegate, UpdateControllerDelegate, LoginViewControllerDelegate> {
     
     ORConsoleSettingsManager *settingsManager;
-    
-	NSIndexPath *currentSelectedServerIndex;
-    
+
 	ServerAutoDiscoveryController *autoDiscoverController;
 	UIBarButtonItem *done;
 	UIBarButtonItem *cancel;
