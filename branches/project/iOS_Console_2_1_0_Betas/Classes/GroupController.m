@@ -119,9 +119,16 @@
 - (void)showLandscapeOrientation:(BOOL)isLandscape {
 	
 	NSArray *screens = isLandscape ? [self.group getLandscapeScreens] : [self.group getPortraitScreens];
+
 	if (screens.count == 0) {
-		[self showErrorView];
-		return;
+        // Check if other orientation has screens
+        isLandscape = !isLandscape;
+        screens = isLandscape ? [self.group getLandscapeScreens] : [self.group getPortraitScreens];
+        if ([screens count] == 0) {
+            // Still no luck, error
+            [self showErrorView];
+            return;
+        }
 	}
 	
 	if (isLandscape) {
