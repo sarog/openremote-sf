@@ -346,7 +346,7 @@
 	UITableViewCell *buttonCell = [tableView dequeueReusableCellWithIdentifier:buttonCellIdentifier];
 	
 	if (switchCell == nil) {
-		switchCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:switchCellIdentifier] autorelease];
+		switchCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:switchCellIdentifier] autorelease];
 		switchCell.selectionStyle = UITableViewCellSelectionStyleNone;
 		UISwitch *switchView = [[UISwitch alloc]init];
 		switchCell.accessoryView = switchView;
@@ -356,10 +356,10 @@
 		serverCell = [[[TableViewCellWithSelectionAndIndicator alloc] initWithReuseIdentifier:serverCellIdentifier] autorelease];
 	}
 	if (panelCell == nil) {
-		panelCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:panelCellIdentifier] autorelease];
+		panelCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:panelCellIdentifier] autorelease];
 	}
 	if (buttonCell == nil) {
-		buttonCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:buttonCellIdentifier] autorelease];
+		buttonCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:buttonCellIdentifier] autorelease];
 	}
 	
 	if ([self isAutoDiscoverySection:indexPath]) {

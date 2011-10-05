@@ -128,13 +128,13 @@
 	UITableViewCell *loginCell = [tableView dequeueReusableCellWithIdentifier:loginCellIdentifier];
 
 	if (loginCell == nil) {
-		loginCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:loginCellIdentifier] autorelease];
+		loginCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:loginCellIdentifier] autorelease];
 		loginCell.selectionStyle = UITableViewCellSelectionStyleNone;
 	}
 
 	if (indexPath.section == 0) {
 		UITextField *textField = [[UITextField alloc] initWithFrame:CGRectZero];
-		textField.contentVerticalAlignment = UIControlContentHorizontalAlignmentCenter;
+		textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 		textField.font = [UIFont systemFontOfSize:22];
 		textField.keyboardType = UIKeyboardTypeURL;
 		textField.adjustsFontSizeToFitWidth = YES;

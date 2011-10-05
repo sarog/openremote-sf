@@ -33,7 +33,7 @@
 #import "ORConsoleSettings.h"
 #import "ORController.h"
 
-#define TIMEOUT_INTERVAL 30
+#define TIMEOUT_INTERVAL 120
 
 @implementation CheckNetwork
 

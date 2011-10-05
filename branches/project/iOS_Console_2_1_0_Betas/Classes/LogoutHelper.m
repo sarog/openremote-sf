@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "LogoutHelper.h"
-#import "URLConnectionHelper.h"
 #import "ServerDefinition.h"
 #import "ViewHelper.h"
 #import "ViewHelper.h"
@@ -29,8 +28,6 @@
 #import "ORController.h"
 
 @interface LogoutHelper (Private)
-
-
 
 @end
 

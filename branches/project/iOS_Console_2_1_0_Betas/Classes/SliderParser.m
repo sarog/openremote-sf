@@ -47,7 +47,7 @@
 
 - (void)dealloc
 {
-    self.slider;
+    self.slider = nil;
     [super dealloc];
 }
 
