@@ -30,8 +30,7 @@ import org.openremote.controller.service.ServiceContext;
 
 /**
  * TODO:
- *   See relevant tasks:
- *     - ORCJAVA-169 (http://jira.openremote.org/browse/ORCJAVA-169)
+ *     - ORCJAVA-183 (http://jira.openremote.org/browse/ORCJAVA-183)
  *     - ORCJAVA-170 (http://jira.openremote.org/browse/ORCJAVA-170)
  *
  *
@@ -57,10 +56,24 @@ public class ControllerConfiguration extends Configuration
   public final static String LINE_SEPARATOR = getLineSeparator();
 
 
-  /* the following constants are the keys from config.properties */
+  /**
+   * Configuration property name which indicates whether uploading a new controller
+   * definition from a controller local admin interface is allowed.
+   */
+  public static final String RESOURCE_UPLOAD_ALLOWED = "resource.upload.allowed";
 
-  public static final String RESOURCE_UPLOAD_ENABLE = "resource.upload.enable";
+  /**
+   * Configuration property name which is used to locate controller's artifact location.
+   */
   public static final String RESOURCE_PATH = "resource.path";
+
+  /**
+   * Configuration property name used for locating controller backend services.
+   *
+   * TODO : See ORCJAVA-191 (http://jira.openremote.org/browse/ORCJAVA-191)
+   */
+  public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
+
   public static final String IRSEND_PATH = "irsend.path";
   public static final String MULTICAST_PORT = "multicast.port";
   public static final String MULTICAST_ADDRESS = "multicast.address";
@@ -68,11 +81,13 @@ public class ControllerConfiguration extends Configuration
   public static final String COPY_LIRCD_CONF_ON = "copy.lircd.conf.on";
   public static final String LIRCD_CONF_PATH = "lircd.conf.path";
   public static final String WEBAPP_IP = "webapp.ip";
-  public static final String BEEHIVE_REST_ROOT_URL = "beehive.REST.Root.Url";
+
+
   public static final String CONTROLLER_APPLICATIONNAME = "controller.applicationname";
 
-  // Class Methods --------------------------------------------------------------------------------
 
+
+  // Class Members --------------------------------------------------------------------------------
 
 
   private static String getLineSeparator()
@@ -127,7 +142,7 @@ public class ControllerConfiguration extends Configuration
   private boolean copyLircdconf;
 
   /** The resource upload switch. */
-  private boolean resourceUpload;
+  private boolean allowResourceUpload;
 
   /**
    * The COM (Serial) port the ORC should use (for example, to send X10 events)
@@ -317,6 +332,9 @@ public class ControllerConfiguration extends Configuration
    */
   public String getResourcePath() {
 //      return preferAttrCustomValue(RESOURCE_PATH, resourcePath);
+
+    // TODO : convert to absolute path or URI
+
      return resourcePath;
   }
 
@@ -342,21 +360,21 @@ public class ControllerConfiguration extends Configuration
   }
 
   /**
-   * Indicates if controller mapping configuration deployment has been
-   * enabled on the web user interface.
+   * Indicates if controller allows new deployments through the web admin interface.
    *
-   * @see #setResourceUpload(boolean)
+   * @see #setResourceUploadAllowed
    *
    * @return true if controller configuration can be uploaded through
    *         web interface; false otherwise
    */
-  public boolean isResourceUpload() {
-    return preferAttrCustomValue(RESOURCE_UPLOAD_ENABLE, resourceUpload);
+  public boolean isResourceUploadAllowed()
+  {
+    return preferAttrCustomValue(RESOURCE_UPLOAD_ALLOWED, allowResourceUpload);
   }
 
   /**
-   * Enables the ability to upload controller event and command mappings
-   * directly from the web user interface.  <p>
+   * Enables the ability to upload new controller definitions
+   * directly from the web admin interface.  <p>
    *
    * This is a convenience feature for home users for easy deployment of
    * the controller configuration in cases where all users of the network
@@ -370,14 +388,15 @@ public class ControllerConfiguration extends Configuration
    * {@link #setResourcePath} property. Access to this directory in the
    * filesystem should be properly secured with access restrictions. <p>
    *
-   * @param resourceUpload  true to enable controller mapping uploads via
+   * @param resourceUpload  true to enable controller configuration upload via
    *                        web interface; false otherwise
    *
    * @see #setResourcePath
-   * @see #isResourceUpload
+   * @see #isResourceUploadAllowed
    */
-  public void setResourceUpload(boolean resourceUpload) {
-    this.resourceUpload = resourceUpload;
+  public void setResourceUploadAllowed(boolean resourceUpload)
+  {
+    this.allowResourceUpload = resourceUpload;
   }
 
 
@@ -447,6 +466,8 @@ public class ControllerConfiguration extends Configuration
    }
 
    public String getBeehiveRESTRootUrl() {
+
+     // TODO : see ORCJAVA-191 (http://jira.openremote.org/browse/ORCJAVA-191)
       return preferAttrCustomValue(BEEHIVE_REST_ROOT_URL, beehiveRESTRootUrl);
    }
 
@@ -461,7 +482,6 @@ public class ControllerConfiguration extends Configuration
    public void setWebappName(String webappName) {
       this.webappName = webappName;
    }
-
 
 
 }
