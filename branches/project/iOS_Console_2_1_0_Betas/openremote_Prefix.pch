@@ -37,3 +37,7 @@
 #define log4Warn(message, ...) NSLog(message, ##__VA_ARGS__)
 #define log4Error(message, ...) NSLog(message, ##__VA_ARGS__)
 #define log4Fatal(message, ...) NSLog(message, ##__VA_ARGS__)
+
+#define OR_LogAffineTransform(message, t) NSLog(@"%@\n[%f %f 0]\n[%f %f 0]\n[%f %f 1]", message, t.a, t.b, t.c, t.d, t.tx, t.ty);
+#define OR_LogRect(message, r) NSLog(@"%@ (%f,%f)-(%f,%f)", message, r.origin.x, r.origin.y, r.size.width, r.size.height);
+#define OR_LogPoint(message, p) NSLog(@"%@ (%f,%f)", message, p.x, p.y);

@@ -29,9 +29,12 @@
 
 - (NSArray *)viewControllersForScreens:(NSArray *)screens;
 - (void)showErrorView;
+- (CGRect)fullFrameForOrientationLandscape:(BOOL)isLandscape;
 - (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
 
 @property (assign) PaginationController *currentPaginationController;
+
+@property (assign) UIInterfaceOrientation targetOrientation;
 
 @end
 
@@ -56,14 +59,37 @@
 	[super dealloc];
 }
 
+
+
+- (void)debugLogGeometry
+{
+    NSLog(@"========================================");
+    NSLog(@"view hierarchy %@ %@ %@ %@", self.view, self.view.superview, self.view.superview.superview, self.view.superview.superview);
+    OR_LogAffineTransform(@"View transform", self.view.transform);
+    OR_LogPoint(@"View center", self.view.center);
+    OR_LogRect(@"View bounds", self.view.bounds);
+    OR_LogRect(@"View frame", self.view.frame);
+    OR_LogAffineTransform(@"Superview transform", self.view.superview.transform);
+    OR_LogPoint(@"Superview center", self.view.superview.center);
+    OR_LogRect(@"Superview bounds", self.view.superview.bounds);
+    OR_LogRect(@"Superview frame", self.view.superview.frame);
+    OR_LogAffineTransform(@"Window transform", self.view.window.transform);
+    OR_LogPoint(@"Window center", self.view.window.center);
+    OR_LogRect(@"Window bounds", self.view.window.bounds);
+    OR_LogRect(@"Window frame", self.view.window.frame);
+    NSLog(@"========================================");
+}
+
+
+- (CGRect)fullFrameForOrientationLandscape:(BOOL)isLandscape
+{
+	CGSize size = [UIScreen mainScreen].bounds.size;
+	return CGRectMake(0.0, 0.0, (isLandscape ? size.height : size.width), (isLandscape ? size.width : size.height));    
+}
+
 - (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
 {
-	CGRect frame = self.view.frame;
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	BOOL isLandscape = [UIDevice or_isDeviceOrientationLandscape:deviceOrientation];
-	frame.size.height = isLandscape ? size.width : size.height;
-	frame.size.width = isLandscape ? size.height : size.width;
-	return frame;    
+    return [self fullFrameForOrientationLandscape:[UIDevice or_isDeviceOrientationLandscape:deviceOrientation]];
 }
 
 - (CGRect)getFullFrame
@@ -139,10 +165,10 @@
 	[super viewDidLoad];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	[self.navigationController setNavigationBarHidden:YES];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(orientationChanged:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];        
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(orientationChanged:)
+//                                                 name:UIDeviceOrientationDidChangeNotification
+//                                               object:nil];        
 
     
     if ([UIDevice or_isDeviceOrientationLandscape]) {
@@ -270,14 +296,80 @@
 		return YES;
 	}
     return NO;
-//    return interfaceOrientation == UIInterfaceOrientationPortrait;
+}
+
+- (void)cancelRotation:(UIInterfaceOrientation)interfaceOrientation
+{
+    CGAffineTransform myTransform = CGAffineTransformIdentity;
+    switch (interfaceOrientation) {
+        case UIInterfaceOrientationPortrait:
+            if ([self currentScreen].landscape) myTransform = CGAffineTransformMakeRotation(-M_PI_2);
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            if ([self currentScreen].landscape) myTransform = CGAffineTransformMakeRotation(M_PI_2);
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            if (![self currentScreen].landscape) myTransform = CGAffineTransformMakeRotation(M_PI_2);
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            if (![self currentScreen].landscape) myTransform = CGAffineTransformMakeRotation(-M_PI_2);
+            break;
+        default:
+            break;
+    }
+    
+    NSLog(@">>cancelRotation");
+//    [self debugLogGeometry];
+    OR_LogAffineTransform(@"Using correction matrix", myTransform);
+//    NSLog(@"Correcting");
+    self.view.transform = myTransform;
+    self.view.bounds = ([self currentScreen].landscape)?CGRectMake(0.0, 0.0, 1024.0, 768.0):CGRectMake(0.0, 0.0, 768.0, 1024.0);
+    
+    [self debugLogGeometry];
+    NSLog(@"<<cancelRotation");
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[errorViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    self.targetOrientation = toInterfaceOrientation;
+//    [self setupRotation:toInterfaceOrientation];
+//    [self cancelRotation:toInterfaceOrientation];
+//	[errorViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    NSLog(@"didRotate, interface orientation is now %d", self.targetOrientation);    
+
+    if (UIInterfaceOrientationIsLandscape(self.targetOrientation)) {
+        if (![self currentScreen].landscape) {
+            // Going to a landscape version and not currently showing a landscape screen
+            int inverseScreenId = [self currentScreen].inverseScreenId;
+            // If there is a landscape version of the screen, install that one
+            if (inverseScreenId != 0) {
+                [self showLandscape];
+                [[self currentPaginationController] switchToScreen:inverseScreenId];
+            }
+        }        
+    } else {
+        if ([self currentScreen].landscape) {
+            // Going to portrait and not currently showing a portrait screen
+            int inverseScreenId = [self currentScreen].inverseScreenId;
+            if (inverseScreenId != 0) {
+                // If there is a portrait version of the screen, install that one
+                [self showPortrait];
+                [[self currentPaginationController] switchToScreen:inverseScreenId];
+            }
+        }
+    }
+
+    [self cancelRotation:self.targetOrientation];
+
+//    [self debugLogGeometry];
 }
 
 @synthesize group;
 @synthesize currentPaginationController;
+
+@synthesize targetOrientation;
 
 @end
