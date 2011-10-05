@@ -32,13 +32,13 @@ import org.openremote.controller.statuscache.StatusCache;
  */
 @Deprecated public class StatusCacheServiceImpl implements StatusCacheService {
    
-   private StatusCache cache;
-   
-   @Override
-   public String getStatusBySensorId(Integer sensorId) {
-      return cache.queryStatusBySensorlId(sensorId);
-   }
-
+//   private StatusCache cache;
+//
+//   @Override
+//   public String getStatusBySensorId(Integer sensorId) {
+//      return cache.queryStatusBySensorlId(sensorId);
+//   }
+//
 //   @Override
 //   public Map<Integer, String> queryStatuses(Set<Integer> sensorIds) {
 //      return cache.queryStatuses(sensorIds);
@@ -53,9 +53,9 @@ import org.openremote.controller.statuscache.StatusCache;
 //   public void clearAllStatusCache() {
 //      cache.clear();
 //   }
-
-   public void setCache(StatusCache cache) {
-      this.cache = cache;
-   }
+//
+//   public void setCache(StatusCache cache) {
+//      this.cache = cache;
+//   }
    
 }
