@@ -42,7 +42,6 @@
 - (void)saveLastGroupIdAndScreenId;
 - (void)rerenderTabbarWithNewOrientation;
 - (void)transformToOppositeOrientation;
-- (void)shouldRotateToOppositeOrientation;
 
 @end
 
@@ -471,14 +470,15 @@
 // EBR : because this VC is installed at root, it needs to forward those messages to the VC it contains
 // When this class is not a VC anymore, this will be cleaner as the "real" VC will receive the appropriate messages
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	if ([self isLoadingViewGone]) {
-		if (currentGroupController.group.screens.count == 0) {
-			return YES;
-		} 
-		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-	} else {
-		return YES;
-	}
+    return YES;
+//	if ([self isLoadingViewGone]) {
+//		if (currentGroupController.group.screens.count == 0) {
+//			return YES;
+//		} 
+//		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+//	} else {
+//		return YES;
+//	}
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -489,7 +489,13 @@
 	}
 }
 
-
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    NSLog(@"DefaultViewController, reported orientation is %d", self.interfaceOrientation);
+    if ([self isLoadingViewGone]) {
+		[currentGroupController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    }
+}
 
 
 
