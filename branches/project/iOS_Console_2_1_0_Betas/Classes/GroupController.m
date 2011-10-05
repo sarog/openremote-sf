@@ -31,6 +31,7 @@
 - (void)showErrorView;
 - (CGRect)fullFrameForOrientationLandscape:(BOOL)isLandscape;
 - (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
+- (void)fixGeometryForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @property (assign) PaginationController *currentPaginationController;
 
@@ -58,8 +59,6 @@
 	
 	[super dealloc];
 }
-
-
 
 - (void)debugLogGeometry
 {
@@ -172,11 +171,6 @@
 	[super viewDidLoad];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	[self.navigationController setNavigationBarHidden:YES];
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(orientationChanged:)
-//                                                 name:UIDeviceOrientationDidChangeNotification
-//                                               object:nil];        
-
     
     if ([UIDevice or_isDeviceOrientationLandscape]) {
 		NSLog(@"view did load show landscape");
@@ -191,61 +185,6 @@
 {
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
     [super viewDidUnload];
-}
-
-- (void)setupRotation:(UIDeviceOrientation)orientation
-{
-    CGAffineTransform myTransform = CGAffineTransformIdentity;
-    switch (orientation) {
-        case UIDeviceOrientationPortraitUpsideDown:
-            myTransform = CGAffineTransformMakeRotation(M_PI);
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-            myTransform = CGAffineTransformMakeRotation(M_PI / 2);
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            myTransform = CGAffineTransformMakeRotation(-M_PI /2);
-            break;
-        default:
-            break;
-    }
-    
-    self.view.transform = myTransform;
-    self.view.bounds = [self getFullFrame];
-}
-
-- (void)orientationChanged:(NSNotification *)notification
-{
-    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    
-    NSLog(@"Going to device orientation %d", deviceOrientation);
-    
-    
-    if ([UIDevice or_isDeviceOrientationLandscape:deviceOrientation]) {
-        if ([self currentScreen].landscape) {
-            // Orientation matches, can set the transform
-            [self setupRotation:deviceOrientation];
-        } else {
-            int inverseScreenId = [self currentScreen].inverseScreenId;
-            if (inverseScreenId != 0) {
-                [self showLandscape];
-                [self setupRotation:deviceOrientation];
-                [[self currentPaginationController] switchToScreen:inverseScreenId];
-            }
-        }        
-    } else {
-        if (![self currentScreen].landscape) {
-            // Orientation matches, can set the transform
-            [self setupRotation:deviceOrientation];
-        } else {
-            int inverseScreenId = [self currentScreen].inverseScreenId;
-            if (inverseScreenId != 0) {
-                [self showPortrait];
-                [self setupRotation:deviceOrientation];
-                [[self currentPaginationController] switchToScreen:inverseScreenId];
-            }
-        }
-    }
 }
 
 // Show error view if some error occured.
@@ -305,7 +244,7 @@
     return NO;
 }
 
-- (void)cancelRotation:(UIInterfaceOrientation)interfaceOrientation
+- (void)fixGeometryForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     CGAffineTransform myTransform = CGAffineTransformIdentity;
     switch (interfaceOrientation) {
@@ -325,24 +264,18 @@
             break;
     }
     
-    NSLog(@">>cancelRotation");
-//    [self debugLogGeometry];
-    OR_LogAffineTransform(@"Using correction matrix", myTransform);
-//    NSLog(@"Correcting");
     self.view.transform = myTransform;
-    self.view.bounds = ([self currentScreen].landscape)?CGRectMake(0.0, 0.0, 1024.0, 768.0):CGRectMake(0.0, 0.0, 768.0, 1024.0);
     
-    [self debugLogGeometry];
-    NSLog(@"<<cancelRotation");
+    // TODO: this should call some version of fullFrame... and not hardcode
+    self.view.bounds = ([self currentScreen].landscape)?CGRectMake(0.0, 0.0, 1024.0, 768.0):CGRectMake(0.0, 0.0, 768.0, 1024.0);
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     self.targetOrientation = toInterfaceOrientation;
-//    [self setupRotation:toInterfaceOrientation];
-//    [self cancelRotation:toInterfaceOrientation];
-//	[errorViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
+
+// TODO: should change this method to a specific one and not the UIViewController version -> have the DefaultViewController pass us the current orientation
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     NSLog(@"didRotate, interface orientation is now %d", self.targetOrientation);    
@@ -369,9 +302,7 @@
         }
     }
 
-    [self cancelRotation:self.targetOrientation];
-
-//    [self debugLogGeometry];
+    [self fixGeometryForInterfaceOrientation:self.targetOrientation];
 }
 
 @synthesize group;
