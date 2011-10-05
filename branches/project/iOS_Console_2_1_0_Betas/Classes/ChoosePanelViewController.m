@@ -107,7 +107,7 @@
 	UITableViewCell *panelCell = [tableView dequeueReusableCellWithIdentifier:panelCellIdentifier];
 	
 	if (panelCell == nil) {
-		panelCell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:panelCellIdentifier] autorelease];
+		panelCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:panelCellIdentifier] autorelease];
 	}
 	
 	panelCell.textLabel.text = [self.panels objectAtIndex:indexPath.row];

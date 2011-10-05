@@ -96,9 +96,9 @@ extern void libmsamr_init();
 -(void) onCall:(LinphoneCall *)currentCall stateChanged:(LinphoneCallState)new_state withMessage:(const char *)message
 {
 	const char* lUserNameChars=linphone_address_get_username(linphone_call_get_remote_address(currentCall));
-	NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithCString:lUserNameChars] autorelease]:@"Unknown";
+	NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithCString:lUserNameChars encoding:NSASCIIStringEncoding] autorelease]:@"Unknown";
 	const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(currentCall));
-	NSString* lDisplayName = lDisplayNameChars?[[[NSString alloc] initWithCString:lDisplayNameChars] autorelease]:@"";
+	NSString* lDisplayName = lDisplayNameChars?[[[NSString alloc] initWithCString:lDisplayNameChars encoding:NSASCIIStringEncoding] autorelease]:@"";
 	
 	switch (new_state) {
 			

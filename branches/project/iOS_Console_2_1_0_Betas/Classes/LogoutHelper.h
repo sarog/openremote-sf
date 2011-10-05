@@ -19,11 +19,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
+#import "URLConnectionHelper.h"
 
 /**
  * Helper for logout.
  */
-@interface LogoutHelper : NSObject {
+@interface LogoutHelper : NSObject <URLConnectionHelperDelegate> {
 
 }
 
