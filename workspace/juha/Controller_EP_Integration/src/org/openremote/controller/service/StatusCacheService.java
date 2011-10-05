@@ -34,7 +34,7 @@ import java.util.Set;
    
    //void saveOrUpdateStatus(Integer sensorId,String newStatus);
    
-   String getStatusBySensorId(Integer sensorId);
+   //String getStatusBySensorId(Integer sensorId);
    
    //Map<Integer,String> queryStatuses(Set<Integer> sensorIds);
    
