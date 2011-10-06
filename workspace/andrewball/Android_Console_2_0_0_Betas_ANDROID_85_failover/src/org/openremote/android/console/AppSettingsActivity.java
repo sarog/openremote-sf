@@ -160,31 +160,18 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
    
-    /*
-     * @yusha
-     * This is the layout that loads on this activity create
-     * Change xml screen based on device size
-     */
-    
-  /*  if(Screen.SCREEN_WIDTH < 100){
-    	setContentView(R.layout.app_settings);
-    	addOnclickListenerSecurityButton();
-   
-    Toast toast = Toast.makeText(getApplicationContext(), "Screen.SCREEN_WIDTH"+Screen.SCREEN_WIDTH, 1);
-        toast.show();      
-       }
-    
-    else{   
-    	fullOptions=true;
-        setContentView(R.layout.all_options_app_settings);
-         	
-    }*/
-    
+/*
+if(Screen.SCREEN_WIDTH>5000)    {
     fullOptions=true;
     setContentView(R.layout.all_options_app_settings);
-   // autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
-    serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
+}
+else{
+*/
+	 setContentView(R.layout.app_settings);
+//}
     
+    
+   
     loadingPanelProgress = new ProgressDialog(this);
     
   // ScrollView scrollView = (ScrollView) findViewById(R.id.serversScrollView);
@@ -213,9 +200,11 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     /*
      * @yusha
      */
-   createClearImageCacheButton();
+  
    if(fullOptions){
+	   //moved SSL, cache to a background screen instead
    initSSLState(); 
+   createClearImageCacheButton();
    }
   
     addOnclickListenerOnDoneButton();
@@ -369,6 +358,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         Intent intent = new Intent();
         intent.setClass(AppSettingsActivity.this, Main.class);
         startActivity(intent);
+        //here closing ASA and switching to Main activity
         finish();
       }
     });
@@ -383,6 +373,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       public void onClick(View v) {
     	  
     	  dh.closeConnection();
+    	  //finish the ASA screen, goes back to GroupActivity
         finish();
       }
     });
@@ -828,4 +819,5 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
       panelSelectSpinnerView.setOnlyPanel(PanelSelectSpinnerView.CHOOSE_PANEL);
     }
   }
+  
 }
