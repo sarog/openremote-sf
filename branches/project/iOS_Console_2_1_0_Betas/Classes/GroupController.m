@@ -23,8 +23,8 @@
 #import "PaginationController.h"
 #import "Screen.h"
 #import "ScreenViewController.h"
-#import "UIScreen+UIScreen_ORAdditions.h"
-#import "UIImage+UIImage_ORAdditions.h"
+#import "UIScreen+ORAdditions.h"
+#import "UIImage+ORAdditions.h"
 
 @interface GroupController ()
 
@@ -269,7 +269,7 @@
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    UIImageView *tmpView = [[UIImageView alloc] initWithImage:[UIImage screenshotForWindow:self.view.window]];
+    UIImageView *tmpView = [[UIImageView alloc] initWithImage:[UIImage or_screenshotForWindow:self.view.window]];
     self.maskView = tmpView;
     [tmpView release];
     [self.view.window addSubview:self.maskView];
