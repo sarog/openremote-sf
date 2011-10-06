@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -82,6 +84,7 @@ import com.extjs.gxt.ui.client.widget.toolbar.ToolBar;
 import com.extjs.gxt.ui.client.widget.treepanel.TreePanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -102,6 +105,8 @@ public class DevicePanel extends ContentPanel {
    
    private Map<BeanModel, ChangeListener> changeListenerMap = new HashMap<BeanModel,ChangeListener>();
 
+   
+   
    /**
     * Instantiates a new device panel.
     */
@@ -273,6 +278,7 @@ public class DevicePanel extends ContentPanel {
       final MenuItem newSwitchMenuItem = createNewSwitchMenu();
       final MenuItem importKnxCommandMemuItem = createImportKnxMenuItem();
       final MenuItem newLutronImportMenuItem = createNewLutronImportMenu();
+      final MenuItem importIRCommandFileMenuItem = createimportIRCommandFileImportMenu();
       
       newMenu.add(newCommandMemuItem);
       newMenu.add(importCommandMemuItem);
@@ -281,6 +287,7 @@ public class DevicePanel extends ContentPanel {
       newMenu.add(newSwitchMenuItem);
       newMenu.add(importKnxCommandMemuItem);
       newMenu.add(newLutronImportMenuItem);
+      newMenu.add(importIRCommandFileMenuItem);
       
       // enable or disable sub menus by the selected tree model.
       newMenu.addListener(Events.BeforeShow, new Listener<MenuEvent>() {
@@ -298,6 +305,7 @@ public class DevicePanel extends ContentPanel {
             newSwitchMenuItem.setEnabled(enabled);
             importKnxCommandMemuItem.setEnabled(enabled);
             newLutronImportMenuItem.setEnabled(enabled);
+            importIRCommandFileMenuItem.setEnabled(enabled);
          }
          
       });
@@ -320,7 +328,9 @@ public class DevicePanel extends ContentPanel {
       setTopComponent(toolBar);
    }
 
-   /**
+
+
+/**
     * Creates the new device menu.
     * 
     * @return the menu item
@@ -767,6 +777,40 @@ public class DevicePanel extends ContentPanel {
       return importCommandItem;
    }
 
+   /**
+    * Creates the import IR File menu item.
+    * 
+    * @return the menu item
+    */
+   private MenuItem createimportIRCommandFileImportMenu() {
+		MenuItem importIRCommandFileItem = new MenuItem("import IR command file");
+		importIRCommandFileItem.setIcon(icon.importFromDB());
+		importIRCommandFileItem.addSelectionListener(new SelectionListener<MenuEvent>() {
+
+			@Override
+			public void componentSelected(MenuEvent ce) {
+				importIRCommandFile();
+				
+			}
+		});
+		return importIRCommandFileItem;
+	}
+   
+   private void importIRCommandFile() {
+		 final BeanModel deviceModel = getDeviceModel();
+		 if (deviceModel != null && deviceModel.getBean() instanceof Device) {
+			 final IRFileImportWindow selectIRWindow = new IRFileImportWindow(deviceModel);
+			 selectIRWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+				
+				@Override
+				public void afterSubmit(SubmitEvent be) {
+
+					
+				}
+			});
+			 
+		 }
+	  }
    /**
     * Import ir command.
     */
