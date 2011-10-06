@@ -153,8 +153,6 @@ public class FileUploadController extends MultiActionController {
 				// serialize the objects
 				try {
 					xcfParser.parseFile(zip);
-					List<Brand> brands = xcfParser.getBrands();
-					List<Device> devices = xcfParser.getDevices();
 
 
 					JSONSerializer serializer = new JSONSerializer();
@@ -162,30 +160,21 @@ public class FileUploadController extends MultiActionController {
 					response.setCharacterEncoding("UTF-8");
 
 					responseContent = serializer.exclude("*.class")
-							.deepSerialize(xcfParser);
+							.include("brands").serialize(xcfParser);
 
-					/*
-					 * for (Device device : devices) {
-					 * 
-					 * responseContent +=
-					 * serializer.deepSerialize(xcfParser.getCodeSets(device));
-					 * LOGGER.info
-					 * ("response : "+serializer.deepSerialize(xcfParser
-					 * .getCodeSets (device))); }
-					 */
 				} catch (Exception e) {
 					responseContent = "Couldn't parse file : " + e.getCause();
-					response.sendError(400,responseContent);
+					response.sendError(400, responseContent);
 				}
 			} catch (Exception e) {
 				responseContent = "Couldn't open temporary file on server :"
 						+ e.getCause();
-				response.sendError(400,responseContent);
+				response.sendError(400, responseContent);
 			}
 		} catch (Exception e) {
 
 			responseContent = "Couldn't upload file to server :" + e.getCause();
-			response.sendError(400,responseContent);
+			response.sendError(400, responseContent);
 		}
 		response.getWriter().println(responseContent);
 	}

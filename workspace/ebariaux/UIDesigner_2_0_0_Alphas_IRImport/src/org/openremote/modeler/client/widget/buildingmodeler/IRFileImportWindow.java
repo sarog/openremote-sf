@@ -40,7 +40,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
- * The window allows user to import Infrared Command.
+ * The window allows user to import Infrared Command file.
  * 
  * @author Dan 2009-8-21
  */
@@ -64,7 +64,6 @@ public class IRFileImportWindow extends FormWindow {
     deviceChooser.add(importForm);
     deviceChooser.setLayoutData(new FillLayout());
     add(deviceChooser);	
-
     importForm.disable();
     show();	
 }
