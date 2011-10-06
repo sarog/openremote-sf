@@ -23,15 +23,13 @@
 #import "PaginationController.h"
 #import "Screen.h"
 #import "ScreenViewController.h"
-#import "UIDevice+ORAdditions.h"
+#import "UIScreen+UIScreen_ORAdditions.h"
 #import "UIImage+UIImage_ORAdditions.h"
 
 @interface GroupController ()
 
 - (NSArray *)viewControllersForScreens:(NSArray *)screens;
 - (void)showErrorView;
-- (CGRect)fullFrameForOrientationLandscape:(BOOL)isLandscape;
-- (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
 - (void)fixGeometryForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @property (assign) PaginationController *currentPaginationController;
@@ -84,20 +82,9 @@
 }
 
 
-- (CGRect)fullFrameForOrientationLandscape:(BOOL)isLandscape
-{
-	CGSize size = [UIScreen mainScreen].bounds.size;
-	return CGRectMake(0.0, 0.0, (isLandscape ? size.height : size.width), (isLandscape ? size.width : size.height));    
-}
-
-- (CGRect)fullFrameForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
-{
-    return [self fullFrameForOrientationLandscape:[UIDevice or_isDeviceOrientationLandscape:deviceOrientation]];
-}
-
 - (CGRect)getFullFrame
 {
-    return [self fullFrameForDeviceOrientation:[UIDevice currentDevice].orientation];
+    return [UIScreen or_fullFrameForInterfaceOrientation:self.parentViewController.interfaceOrientation];
 }
 
 - (int)groupId {
@@ -143,7 +130,7 @@
 		[self setView:landscapePaginationController.view];
 
         // By setting view above, on 1st time, view bounds got reset to "portrait". Force it back to "landscape"
-        self.view.bounds = [self fullFrameForDeviceOrientation:UIDeviceOrientationLandscapeLeft];
+        self.view.bounds = [UIScreen or_fullFrameForInterfaceOrientation:UIInterfaceOrientationLandscapeLeft];
         
 		[[portraitPaginationController currentScreenViewController] stopPolling];
 		[[landscapePaginationController currentScreenViewController] startPolling];
@@ -288,7 +275,6 @@
     [self.view.window addSubview:self.maskView];
 }
 
-// TODO: should change this method to a specific one and not the UIViewController version -> have the DefaultViewController pass us the current orientation
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     if (UIInterfaceOrientationIsLandscape(self.parentViewController.interfaceOrientation)) {
@@ -319,7 +305,6 @@
 @synthesize group;
 @synthesize currentPaginationController;
 @synthesize parentViewController;
-
 @synthesize maskView;
 
 @end
