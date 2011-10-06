@@ -18,14 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import "UIImage+UIImage_ORAdditions.h"
+#import "UIImage+ORAdditions.h"
 #import <QuartzCore/QuartzCore.h>
 
 @implementation UIImage (UIImage_ORAdditions)
 
 // Sample code adapted from Apple documentation
 // http://developer.apple.com/library/ios/#qa/qa1703/_index.html#//apple_ref/doc/uid/DTS40010193
-+ (UIImage*)screenshotForWindow:(UIWindow *)window
++ (UIImage*)or_screenshotForWindow:(UIWindow *)window
 {
     // Create a graphics context with the target size
     // On iOS 4 and later, use UIGraphicsBeginImageContextWithOptions to take the scale into consideration

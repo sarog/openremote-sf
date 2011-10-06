@@ -18,10 +18,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <UIKit/UIKit.h>
+#import "UIScreen+ORAdditions.h"
 
-@interface UIImage (UIImage_ORAdditions)
+@implementation UIScreen (UIScreen_ORAdditions)
 
-+ (UIImage*)screenshotForWindow:(UIWindow *)window;
++ (CGRect)or_fullFrameForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
+    CGSize size = [UIScreen mainScreen].bounds.size;
+	return CGRectMake(0.0, 0.0, (isLandscape ? size.height : size.width), (isLandscape ? size.width : size.height));    
+}
 
 @end
