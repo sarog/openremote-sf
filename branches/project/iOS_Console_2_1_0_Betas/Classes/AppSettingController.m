@@ -41,7 +41,6 @@
 // Indicates if a login window must be presented to user for entering credentials when a controller says authentication is required
 @property (nonatomic, assign) BOOL askUserForCredentials;
 
-// TODO: might go when re-doing how selection is handled, re-check
 @property (nonatomic, retain) NSIndexPath *currentSelectedServerIndex;
 
 - (void)autoDiscoverChanged:(id)sender;
