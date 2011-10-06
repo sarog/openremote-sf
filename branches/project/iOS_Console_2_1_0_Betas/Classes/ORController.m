@@ -71,6 +71,9 @@
     // TODO: do that in seperate MOC, save to DB and refresh in main MOC
     self.activeGroupMember = nil;
     self.groupMembers = [NSSet set];
+    
+    // Add the main url as a group member
+    [self addGroupMemberForURL:self.primaryURL];
 
     NSLog(@"RoundRobin group members are:");
     for (NSString *url in theMembers) {
@@ -127,6 +130,11 @@
 
 - (void)addGroupMemberForURL:(NSString *)url
 {
+    for (ORGroupMember *member in self.groupMembers) {
+        if ([url isEqualToString:member.url]) {
+            return;
+        }
+    }
     ORGroupMember *groupMember = [NSEntityDescription insertNewObjectForEntityForName:@"ORGroupMember" inManagedObjectContext:self.managedObjectContext];
     groupMember.url = url;
     [self addGroupMembersObject:groupMember];
