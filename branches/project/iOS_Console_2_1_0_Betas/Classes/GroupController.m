@@ -34,18 +34,18 @@
 - (void)fixGeometryForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @property (assign) PaginationController *currentPaginationController;
-
-@property (assign) UIInterfaceOrientation targetOrientation;
+@property (assign) UIViewController *parentViewController;
 
 @end
 
 @implementation GroupController
 
-- (id)initWithGroup:(Group *)newGroup
+- (id)initWithGroup:(Group *)newGroup parentViewController:(UIViewController *)aVC
 {
     self = [super init];
 	if (self) {
 		self.group = newGroup;
+        self.parentViewController = aVC;
 	}
 	return self;
 }
@@ -56,6 +56,7 @@
 	[portraitPaginationController release];
 	[errorViewController release];
     self.group = nil;
+    self.parentViewController = nil;
 	
 	[super dealloc];
 }
@@ -171,14 +172,20 @@
 	[super viewDidLoad];
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 	[self.navigationController setNavigationBarHidden:YES];
-    
-    if ([UIDevice or_isDeviceOrientationLandscape]) {
+
+    if (UIInterfaceOrientationIsLandscape(self.parentViewController.interfaceOrientation)) {
 		NSLog(@"view did load show landscape");
 		[self showLandscape];
     } else {
 		NSLog(@"view did load show portrait");
 		[self showPortrait];
 	}
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self fixGeometryForInterfaceOrientation:self.parentViewController.interfaceOrientation];
 }
 
 - (void)viewDidUnload
@@ -270,17 +277,10 @@
     self.view.bounds = ([self currentScreen].landscape)?CGRectMake(0.0, 0.0, 1024.0, 768.0):CGRectMake(0.0, 0.0, 768.0, 1024.0);
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    self.targetOrientation = toInterfaceOrientation;
-}
-
-
 // TODO: should change this method to a specific one and not the UIViewController version -> have the DefaultViewController pass us the current orientation
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    NSLog(@"didRotate, interface orientation is now %d", self.targetOrientation);    
-
-    if (UIInterfaceOrientationIsLandscape(self.targetOrientation)) {
+    if (UIInterfaceOrientationIsLandscape(self.parentViewController.interfaceOrientation)) {
         if (![self currentScreen].landscape) {
             // Going to a landscape version and not currently showing a landscape screen
             int inverseScreenId = [self currentScreen].inverseScreenId;
@@ -301,13 +301,11 @@
             }
         }
     }
-
-    [self fixGeometryForInterfaceOrientation:self.targetOrientation];
+    [self fixGeometryForInterfaceOrientation:self.parentViewController.interfaceOrientation];
 }
 
 @synthesize group;
 @synthesize currentPaginationController;
-
-@synthesize targetOrientation;
+@synthesize parentViewController;
 
 @end
