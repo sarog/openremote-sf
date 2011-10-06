@@ -47,6 +47,9 @@
 	<classpathentry kind="lib" path="lib/core/flexjson/flexjson.jar"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/httpclient-4.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/httpcore-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/ircodeslib-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/tinsysfwk-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/core/irfileslib/irfileslib-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="lib/core/httpclient/httpmime-4.0.1.jar"/>
