@@ -160,12 +160,12 @@
 			}
 		}
 		if (lastGroup) {
-			gc = [[GroupController alloc] initWithGroup:lastGroup];
+			gc = [[GroupController alloc] initWithGroup:lastGroup parentViewController:self];
 		} else {
-			gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+			gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0]) parentViewController:self];
 		}
 	} else {
-		gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0])];
+		gc = [[GroupController alloc] initWithGroup:((Group *)[groups objectAtIndex:0]) parentViewController:self];
 	}
 	return [gc autorelease];
 }
@@ -340,7 +340,7 @@
 		if (targetGroupController == nil) {
 			Group *group = [definition findGroupById:groupId];
 			if (group) {
-				targetGroupController = [[[GroupController alloc] initWithGroup:group] autorelease];
+				targetGroupController = [[[GroupController alloc] initWithGroup:group parentViewController:self] autorelease];
 			} else {
 				return NO;
 			}
@@ -508,6 +508,10 @@
 
 -(void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+    if ([self isLoadingViewGone]) {
+		[currentGroupController viewDidAppear:animated];
+    }
+    
 	[self becomeFirstResponder];
 }
 
