@@ -24,6 +24,7 @@
 #import "Screen.h"
 #import "ScreenViewController.h"
 #import "UIDevice+ORAdditions.h"
+#import "UIImage+UIImage_ORAdditions.h"
 
 @interface GroupController ()
 
@@ -35,6 +36,8 @@
 
 @property (assign) PaginationController *currentPaginationController;
 @property (assign) UIViewController *parentViewController;
+
+@property (retain) UIView *maskView;
 
 @end
 
@@ -57,7 +60,7 @@
 	[errorViewController release];
     self.group = nil;
     self.parentViewController = nil;
-	
+	self.maskView = nil;
 	[super dealloc];
 }
 
@@ -277,6 +280,14 @@
     self.view.bounds = ([self currentScreen].landscape)?CGRectMake(0.0, 0.0, 1024.0, 768.0):CGRectMake(0.0, 0.0, 768.0, 1024.0);
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    UIImageView *tmpView = [[UIImageView alloc] initWithImage:[UIImage screenshotForWindow:self.view.window]];
+    self.maskView = tmpView;
+    [tmpView release];
+    [self.view.window addSubview:self.maskView];
+}
+
 // TODO: should change this method to a specific one and not the UIViewController version -> have the DefaultViewController pass us the current orientation
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -302,10 +313,13 @@
         }
     }
     [self fixGeometryForInterfaceOrientation:self.parentViewController.interfaceOrientation];
+    [self.maskView removeFromSuperview];
 }
 
 @synthesize group;
 @synthesize currentPaginationController;
 @synthesize parentViewController;
+
+@synthesize maskView;
 
 @end
