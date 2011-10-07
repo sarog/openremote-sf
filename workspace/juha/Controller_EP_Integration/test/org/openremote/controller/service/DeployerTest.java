@@ -31,6 +31,7 @@ import org.junit.Assert;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.ChangedStatusRecord;
+import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.exception.ControllerDefinitionNotFoundException;
 import org.openremote.controller.exception.InitializationException;
@@ -142,10 +143,10 @@ public class DeployerTest
   {
     StatusCache sc = new StatusCache();
 
-    Sensor s1 = new SwitchSensor("Sensor 1", 1, new TestEventListener());
-    Sensor s2 = new RangeSensor("Sensor 2", 2, new TestEventListener(), 0, 10);
-    Sensor s3 = new LevelSensor("Sensor 3", 3, new TestEventListener());
-    Sensor s4 = new StateSensor("Sensor 4", 4, new TestEventListener(),
+    Sensor s1 = new SwitchSensor("Sensor 1", 1, sc, new TestEventListener());
+    Sensor s2 = new RangeSensor("Sensor 2", 2, sc, new TestEventListener(), 0, 10);
+    Sensor s3 = new LevelSensor("Sensor 3", 3, sc, new TestEventListener());
+    Sensor s4 = new StateSensor("Sensor 4", 4, sc, new TestEventListener(),
                                 new StateSensor.DistinctStates());
 
     sc.registerSensor(s1);
@@ -231,7 +232,9 @@ public class DeployerTest
     cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    StatusCache sc = new StatusCache(cst, echain);
 
     Deployer d = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
@@ -241,7 +244,7 @@ public class DeployerTest
 
     cf.setCommandBuilders(p);
 
-    SensorBuilder sb = new SensorBuilder(d);
+    SensorBuilder sb = new SensorBuilder(d, sc);
     sb.setCommandFactory(cf);
     
     d.softRestart();
@@ -308,7 +311,9 @@ public class DeployerTest
     cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    StatusCache sc = new StatusCache(cst, echain);
 
     Deployer d = new Deployer("Deployer2 for " + deploymentURI, sc, cc);
 
@@ -318,7 +323,7 @@ public class DeployerTest
 
     cf.setCommandBuilders(p);
 
-    SensorBuilder sb = new SensorBuilder(d);
+    SensorBuilder sb = new SensorBuilder(d, sc);
     sb.setCommandFactory(cf);
 
     d.softRestart();
@@ -502,7 +507,9 @@ public class DeployerTest
     cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    StatusCache sc = new StatusCache(cst, echain);
 
     Deployer d = new Deployer("Deployer3 for " + deploymentURI, sc, cc);
 
@@ -512,7 +519,7 @@ public class DeployerTest
 
     cf.setCommandBuilders(p);
 
-    SensorBuilder sb = new SensorBuilder(d);
+    SensorBuilder sb = new SensorBuilder(d, sc);
     sb.setCommandFactory(cf);
 
     d.softRestart();
@@ -636,7 +643,9 @@ public class DeployerTest
 
     
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    StatusCache sc = new StatusCache(cst, echain);
     
     Deployer d = new Deployer("Deployer4 for " + deploymentURI, sc, cc);
 
