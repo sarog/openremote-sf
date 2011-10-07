@@ -23,9 +23,13 @@ package org.openremote.controller.model.sensor;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Before;
 import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.statuscache.StatusCache;
 
 /**
  * Base tests for {@link org.openremote.controller.model.sensor.SwitchSensor}.
@@ -35,12 +39,25 @@ import org.openremote.controller.component.EnumSensorType;
 public class SwitchSensorTest
 {
 
+  /* share the same cache across all sensor tests */
+  private StatusCache cache = null;
+
+
+  @Before public void setup()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain echain = new EventProcessorChain();
+
+    cache = new StatusCache(cst, echain);
+  }
+
+
   /**
    * Test 'on' state.
    */
   @Test public void testSwitchOnState()
   {
-    SwitchSensor s1 = new SwitchSensor("switch on", 1, new SwitchReadCommand("switch on", 1, "on"));
+    SwitchSensor s1 = new SwitchSensor("switch on", 1, cache, new SwitchReadCommand("switch on", 1, "on"));
 
     Assert.assertTrue(s1.read().equals("on"));
     Assert.assertTrue(s1.getSensorID() == 1);
@@ -55,7 +72,7 @@ public class SwitchSensorTest
    */
   @Test public void testSwitchOffState()
   {
-    SwitchSensor s1 = new SwitchSensor("switch off", 2, new SwitchReadCommand("switch off", 2, "off"));
+    SwitchSensor s1 = new SwitchSensor("switch off", 2, cache, new SwitchReadCommand("switch off", 2, "off"));
 
     Assert.assertTrue(s1.read().equals("off"));
     Assert.assertTrue(s1.getSensorID() == 2);
@@ -71,7 +88,7 @@ public class SwitchSensorTest
    */
   @Test public void testSwitchUnknownState()
   {
-    SwitchSensor s1 = new SwitchSensor("unknown", 3, new SwitchReadCommand("unknown", 3, "foo"));
+    SwitchSensor s1 = new SwitchSensor("unknown", 3, cache, new SwitchReadCommand("unknown", 3, "foo"));
 
     Assert.assertTrue(s1.read().equals(StatusCommand.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 3);
@@ -92,7 +109,7 @@ public class SwitchSensorTest
     mapping.addStateMapping("on", "open");
 
     
-    SwitchSensor s1 = new SwitchSensor("door sensor", 4, new SwitchReadCommand("door sensor", 4, "on"), mapping);
+    SwitchSensor s1 = new SwitchSensor("door sensor", 4, cache, new SwitchReadCommand("door sensor", 4, "on"), mapping);
 
     Assert.assertTrue(s1.read().equals("open"));
     Assert.assertTrue(s1.getSensorID() == 4);
@@ -103,7 +120,7 @@ public class SwitchSensorTest
 
 
 
-    SwitchSensor s2 = new SwitchSensor("door", 5, new SwitchReadCommand("door", 5, "off"), mapping);
+    SwitchSensor s2 = new SwitchSensor("door", 5, cache, new SwitchReadCommand("door", 5, "off"), mapping);
 
     Assert.assertTrue(s2.read().equals("close"));
     Assert.assertTrue(s2.getSensorID() == 5);
@@ -114,7 +131,7 @@ public class SwitchSensorTest
 
 
 
-    SwitchSensor s3 = new SwitchSensor("unknown", 6, new SwitchReadCommand("unknown", 6, "bar"), mapping);
+    SwitchSensor s3 = new SwitchSensor("unknown", 6, cache, new SwitchReadCommand("unknown", 6, "bar"), mapping);
 
     Assert.assertTrue(s3.read().equals(StatusCommand.UNKNOWN_STATUS));
     Assert.assertTrue(s3.getSensorID() == 6);
@@ -131,7 +148,7 @@ public class SwitchSensorTest
    */
   @Test public void testBrokenCommand()
   {
-    SwitchSensor s1 = new SwitchSensor("broken", 7, new BrokenCommand());
+    SwitchSensor s1 = new SwitchSensor("broken", 7, cache, new BrokenCommand());
 
     Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 7);
