@@ -29,15 +29,19 @@ import org.openremote.controller.exception.CommandBuildException;
 import org.openremote.controller.exception.NoSuchCommandBuilderException;
 import org.openremote.controller.exception.ConfigurationException;
 import org.openremote.controller.service.ServiceContext;
-import org.springframework.context.support.ApplicationObjectSupport;
 
 
 /**
- * TODO : A factory for creating Command objects.
+ * TODO :
+ *
+ *   ORCJAVA-194 (http://jira.openremote.org/browse/ORCJAVA-194) : protocol implementations
+ *   should be injected (using bean reference) by DI framework, instead of using the currently
+ *   deprecated lookup from service context.
+ *
  * 
  * @author Handy.Wang 2009-10-13
  */
-public class CommandFactory //extends ApplicationObjectSupport
+public class CommandFactory
 {
    
    private Properties commandBuilders;
@@ -68,8 +72,8 @@ public class CommandFactory //extends ApplicationObjectSupport
          throw new NoSuchCommandBuilderException("Cannot find '" + protocolType + "Builder' by '" + protocolType + "' protocol.");
       }
 
-      CommandBuilder commandBuilder = //(CommandBuilder) getApplicationContext().getBean(builder);
-        ServiceContext.getProtocol(protocolType);
+      // TODO : see ORCJAVA-194
+      CommandBuilder commandBuilder = ServiceContext.getProtocol(protocolType);
 
       return commandBuilder.build(element);
    }
