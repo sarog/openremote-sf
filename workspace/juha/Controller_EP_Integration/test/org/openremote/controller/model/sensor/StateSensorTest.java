@@ -25,8 +25,12 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Before;
 import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.EventProcessorChain;
 
 /**
  * Base tests for {@link org.openremote.controller.model.sensor.StateSensor} class.
@@ -35,6 +39,21 @@ import org.openremote.controller.component.EnumSensorType;
  */
 public class StateSensorTest
 {
+
+  /* share the same cache across all sensor tests */
+  private StatusCache cache = null;
+
+
+  @Before
+  public void setup()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain echain = new EventProcessorChain();
+
+    cache = new StatusCache(cst, echain);
+  }
+
+
   /**
    * Simple test case of a one-state sensor.
    */
@@ -43,7 +62,7 @@ public class StateSensorTest
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("foo");
 
-    StateSensor s1 = new StateSensor("single", 1, new StateReadCommand("foo"), states);
+    StateSensor s1 = new StateSensor("single", 1, cache, new StateReadCommand("foo"), states);
 
     Assert.assertTrue(s1.read().equals("foo"));
     Assert.assertTrue(s1.getSensorID() == 1);
@@ -64,7 +83,7 @@ public class StateSensorTest
     states.addState("foo");
     states.addState("bar");
 
-    StateSensor s1 = new StateSensor("twostate", 2, new StateReadCommand("foo", "bar"), states);
+    StateSensor s1 = new StateSensor("twostate", 2, cache, new StateReadCommand("foo", "bar"), states);
 
     Assert.assertTrue(s1.read().equals("foo"));
     Assert.assertTrue(s1.getSensorID() == 2);
@@ -93,7 +112,7 @@ public class StateSensorTest
     states.addState("bar");
     states.addState("acme");
 
-    StateSensor s1 = new StateSensor("threestate", 3, new StateReadCommand("foo", "bar", "acme"), states);
+    StateSensor s1 = new StateSensor("threestate", 3, cache, new StateReadCommand("foo", "bar", "acme"), states);
 
     Assert.assertTrue(s1.read().equals("foo"));
     Assert.assertTrue(s1.getSensorID() == 3);
@@ -132,7 +151,7 @@ public class StateSensorTest
     states.addState("ten");
 
     StateSensor s1 = new StateSensor(
-        "tenstate", 4,
+        "tenstate", 4, cache,
         new StateReadCommand("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"),
         states
     );
@@ -187,7 +206,7 @@ public class StateSensorTest
     states.addState("bar");
     states.addState("foo");
 
-    StateSensor s1 = new StateSensor("funky", 5, new StateReadCommand("acme", "foo", "bar"), states);
+    StateSensor s1 = new StateSensor("funky", 5, cache, new StateReadCommand("acme", "foo", "bar"), states);
 
     Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
     Assert.assertTrue(s1.getSensorID() == 5);
@@ -218,7 +237,7 @@ public class StateSensorTest
     states.addStateMapping("1", "Cloudy");
     states.addStateMapping("2", "Sunny");
 
-    StateSensor s1 = new StateSensor("mapped", 6, new StateReadCommand("0", "1", "2"), states);
+    StateSensor s1 = new StateSensor("mapped", 6, cache, new StateReadCommand("0", "1", "2"), states);
 
     Assert.assertTrue(s1.read().equals("Raining"));
     Assert.assertTrue(s1.getSensorID() == 6);
@@ -258,7 +277,7 @@ public class StateSensorTest
     states.addStateMapping("1", "Cloudy");
     states.addStateMapping("2", "Sunny");
 
-    StateSensor s1 = new StateSensor("broken", 7, new BrokenCommand(), states);
+    StateSensor s1 = new StateSensor("broken", 7, cache, new BrokenCommand(), states);
 
     Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
 
@@ -312,7 +331,7 @@ public class StateSensorTest
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("foo");
 
-    StateSensor s1 = new StateSensor("single", 1, new StateReadCommand("foo"), states);
+    StateSensor s1 = new StateSensor("single", 1, cache, new StateReadCommand("foo"), states);
 
     Assert.assertTrue(s1.toString().contains("single"));
     Assert.assertTrue(s1.toString().contains("foo"));
@@ -322,7 +341,7 @@ public class StateSensorTest
     states.addState("foo");
     states.addState("bar");
 
-    s1 = new StateSensor("twostate", 2, new StateReadCommand("foo", "bar"), states);
+    s1 = new StateSensor("twostate", 2, cache, new StateReadCommand("foo", "bar"), states);
 
     Assert.assertTrue(s1.toString().contains("twostate"));
     Assert.assertTrue(s1.toString().contains("foo"));
