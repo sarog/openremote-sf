@@ -35,6 +35,7 @@ import org.openremote.controller.component.control.gesture.GestureBuilder;
 import org.openremote.controller.service.Deployer;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.suite.AllTests;
 
 /**
@@ -60,7 +61,9 @@ public class GestureBuilderTest
   @Before public void setUp() throws Exception
   {
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    StatusCache sc = new StatusCache(cst, echain);
     
     ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/gesture");

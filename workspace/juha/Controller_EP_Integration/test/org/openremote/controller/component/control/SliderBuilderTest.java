@@ -69,14 +69,14 @@ public class SliderBuilderTest {
     p.put("virtual", VirtualCommandBuilder.class.getName());
     cf.setCommandBuilders(p);
 
-    StatusCache sc = new StatusCache(null);
+    StatusCache sc = new StatusCache();
 
     ControllerConfiguration cc = new ControllerConfiguration();
     cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/slider").getPath());
 
     deployer = new Deployer("Deployer for " + getClass().getSimpleName(), sc, cc);
 
-    SensorBuilder sb = new SensorBuilder(deployer);
+    SensorBuilder sb = new SensorBuilder(deployer, sc);
     sb.setCommandFactory(cf);
     
     deployer.startController();
