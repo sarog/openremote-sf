@@ -39,6 +39,7 @@ import org.openremote.controller.model.xml.SensorBuilder;
 import org.openremote.controller.service.Deployer;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.suite.AllTests;
 
 
@@ -80,12 +81,13 @@ public class ComponentBuilderTest
     cc.setResourcePath(deploymentURI.getPath());
 
     ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain echain = new EventProcessorChain();
 
-    StatusCache sc = new StatusCache(cst);
+    StatusCache sc = new StatusCache(cst, echain);
 
     deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
 
-    sensorBuilder = new SensorBuilder(deployer);
+    sensorBuilder = new SensorBuilder(deployer, sc);
     sensorBuilder.setCommandFactory(commandFactory);
 
     deployer.softRestart();
