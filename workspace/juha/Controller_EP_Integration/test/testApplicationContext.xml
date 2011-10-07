@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+ 
 <!--
  **
  * OpenRemote, the Home of the Digital Home.
@@ -36,6 +36,7 @@
        xsi:schemaLocation = "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
        default-autowire = "byName">
+
   <bean id="propertyConfigurer"
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">
@@ -63,7 +64,7 @@
     <property name = "multicastAddress" value = "${multicast.address}"/>
     <property name = "multicastPort" value = "${multicast.port}"/>
     <property name = "resourcePath" value = "${resource.path}"/>
-    <property name = "resourceUpload" value = "${resource.upload.enable}"/>
+    <property name = "resourceUploadAllowed" value = "${resource.upload.allowed}"/>
     <property name = "macroIRExecutionDelay" value = "${Macro.IR.Execution.Delay}" />
     <property name = "beehiveRESTRootUrl" value="${beehive.REST.Root.Url}" />
     <property name = "webappName" value="${controller.applicationname}" />
@@ -87,21 +88,26 @@
     <property name="address" value="${lutron_homeworks.address}" />
     <property name="port" value="${lutron_homeworks.port}" />
   </bean>
-
+  
   <bean id="lutronHomeWorksGateway" class="org.openremote.controller.protocol.lutron.LutronHomeWorksGateway"/>
 
-    <!-- service for control command from panel -->
-    <bean id="controlCommandService" class="org.openremote.controller.service.impl.ControlCommandServiceImpl" />
-
+  <!-- TODO -->
+  <bean id = "controlCommandService"
+        class = "org.openremote.controller.service.impl.ControlCommandServiceImpl">
+    <constructor-arg><ref bean = "deployer"/></constructor-arg>
+    <constructor-arg><ref bean = "componentFactory"/></constructor-arg>
+  </bean>
+    
     <!-- controller.xml parser -->
+<!--
     <bean id = "remoteActionXMLParser"
           class = "org.openremote.controller.command.RemoteActionXMLParser">
     </bean>
 
-	<!-- service for file system operation : upload, unzip etc. -->
 	<bean id = "fileService"
 	      class = "org.openremote.controller.service.impl.FileServiceImpl">
 	</bean>
+-->
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
@@ -110,33 +116,29 @@
 
     <!-- round-robin service -->
     <bean id="roundRobinService" class="org.openremote.controller.service.impl.RoundRobinServiceImpl" />
-
+    
     <bean id = "servers" class="java.util.concurrent.ConcurrentHashMap" />
 
-    <!-- polling machine service -->
-    <bean id="pollingMachinesService" class="org.openremote.controller.service.impl.PollingMachinesServiceImpl">
-      <property name="cache" ref="statusCache"></property>
+
+    <!-- TODO : service for status command from panel -->
+    <bean id = "statusCommandService"
+          class = "org.openremote.controller.service.impl.StatusCommandServiceImpl">
+
+      <constructor-arg ref="deployer"/>
+      <constructor-arg ref="statusCache"/>
     </bean>
 
-    <!-- service for status command from panel -->
-    <bean id="statusCommandService" class="org.openremote.controller.service.impl.StatusCommandServiceImpl" />
-
+  
     <!-- service for listening the status of device -->
-    <bean id="statusPollingService" class="org.openremote.controller.service.impl.StatusPollingServiceImpl" />
+    <bean id = "statusPollingService"
+          class = "org.openremote.controller.service.impl.StatusPollingServiceImpl">
 
+      <property name = "deployer" ref="deployer"/>
+      <property name = "statusCache" ref="statusCache"/>
+    </bean>
+    
     <bean id = "changedStatusTable" class="org.openremote.controller.statuscache.ChangedStatusTable" />
 
-
-
-	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache">
-    <property name = "eventProcessorChain" ref = "eventProcessorChain" />
-  </bean>
-
-
-	<!-- status cache service -->
-  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
-    <property name="cache" ref="statusCache"></property>
-  </bean>
 
 
   <!--
@@ -144,11 +146,33 @@
    |
    |
    +-->
-  <bean id = "deployer" class = "org.openremote.controller.service.Deployer">
-    <constructor-arg><ref bean = "statusCache"/></constructor-arg>
-    <constructor-arg><ref bean = "configuration"/></constructor-arg>
+	<bean id = "statusCache" class="org.openremote.controller.statuscache.StatusCache">
+
+    <constructor-arg ref = "changedStatusTable"/>
+    <constructor-arg ref = "eventProcessorChain"/>
+    
   </bean>
 
+
+	<!-- status cache service
+  <bean id="statusCacheService" class="org.openremote.controller.service.impl.StatusCacheServiceImpl" >
+    <property name="cache" ref="statusCache"></property>
+  </bean>
+  -->
+
+  <!--
+   | TODO
+   |
+   |
+   +-->
+  <bean id = "deployer" class = "org.openremote.controller.service.Deployer">
+
+    <constructor-arg value = "Default Deployer"/>
+    <constructor-arg ref = "statusCache"/>
+    <constructor-arg ref = "configuration"/>
+
+  </bean>
+  
 
   <!--
    | TODO   : XML mappers
@@ -156,12 +180,14 @@
    |
    +-->
   <bean id = "sensorBuilder" class = "org.openremote.controller.model.xml.SensorBuilder">
-    <constructor-arg><ref bean = "deployer"/></constructor-arg>
-    <property name = "commandFactory" ref = "commandFactory"/>
+    <constructor-arg ref = "deployer"/>
+    <constructor-arg ref = "statusCache"/>
+    
+    <property name = "commandFactory" ref = "commandFactory"/>  <!-- TODO -->
   </bean>
+  
 
-
-	<!-- controller.xml change service -->
+	<!-- controller.xml change service
   <bean id = "controllerXMLChangeService"
         class = "org.openremote.controller.service.impl.ControllerXMLChangeServiceImpl">
     <property name = "cache" ref = "statusCache"/>
@@ -171,7 +197,8 @@
     <property name = "changedStatusTable" ref = "changedStatusTable"/>
     <property name = "sensorBuilder" ref = "sensorBuilder"/>
   </bean>
-
+	-->
+  
 	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
@@ -200,10 +227,10 @@
 	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
 	 | extend the implementation with additional command types.
 	 +-->
-
+	
 	<!-- Infrared Command Builder -->
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
-
+	
 	<!-- KNX Command Builder -->
 	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
 		<constructor-arg index="0" value="${knx.ip.interface.hostname}" />
@@ -213,21 +240,21 @@
 	<!-- TCP Socket Command Builder for IP enabled devices -->
 	<bean id = "tcpSocketCommandBuilder" class = "org.openremote.controller.protocol.socket.TCPSocketCommandBuilder"
 	      scope = "prototype"/>
-
+	
 	<!-- X10 Command Builder -->
 	<bean id = "x10CommandBuilder" class = "org.openremote.controller.protocol.x10.X10CommandBuilder"/>
-
+	
 	<!-- Telnet Command Builder -->
 	<bean id = "telnetCommandBuilder" class = "org.openremote.controller.protocol.telnet.TelnetCommandBuilder"
 	      scope = "prototype" />
-
+	
 	<!-- HTTP GET Command Builder -->
 	<bean id = "httpGetCommandBuilder" class = "org.openremote.controller.protocol.http.HttpGetCommandBuilder"
 	      scope = "prototype" />
 
   <!-- 1-wire protocol Command Builder -->
   <bean id = "oneWireCommandBuilder" class = "org.openremote.controller.protocol.onewire.OneWireCommandBuilder"/>
-
+  
   <!-- OpenRemote Virtual Command Builder -->
   <bean id = "virtualCommandBuilder" class = "org.openremote.controller.protocol.virtual.VirtualCommandBuilder"/>
 
@@ -245,18 +272,19 @@
 		<property name="gateway" ref="lutronHomeWorksGateway"></property>
 	</bean>
 
+
+  <!-- TODO -->
 	<bean id = "componentFactory" class = "org.openremote.controller.component.ComponentFactory">
-		<property name = "componentBuilders">
-		    <props>
-		        <prop key = "button">buttonBuilder</prop>
-		        <prop key = "toggle">toggleBuilder</prop>
-		        <prop key = "switch">switchBuilder</prop>
-		        <prop key = "label">labelBuilder</prop>
-		        <prop key = "slider">sliderBuilder</prop>
-		        <prop key = "gesture">gestureBuilder</prop>
-		        <prop key = "image">imageBuilder</prop>
-		    </props>
-		</property>
+    <property name = "componentBuilders">
+      <map>
+        <entry key = "button" value-ref = "buttonBuilder"/>
+        <entry key = "switch" value-ref = "switchBuilder"/>
+        <entry key = "label"  value-ref = "labelBuilder"/>
+        <entry key = "slider" value-ref = "sliderBuilder"/>
+        <entry key = "gesture" value-ref = "gestureBuilder"/>
+        <entry key = "image"  value-ref = "imageBuilder"/>
+      </map>
+    </property>
 	</bean>
 
 
@@ -280,29 +308,51 @@
 	 | See the org.openremote.controller.component.ComponentBuilder interface for details if you seek to
 	 | extend the implementation with additional UI component types.
 	 +-->
-
+	 
+  <!-- TODO -->
 	<bean id = "buttonBuilder" class = "org.openremote.controller.component.control.button.ButtonBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
-  </bean>
 
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-155) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+	
+
+  <!-- TODO -->
 	<bean id = "switchBuilder" class = "org.openremote.controller.component.control.switchtoggle.SwitchBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-147) -->
+    <property name = "deployer" ref = "deployer"/>
   </bean>
 
-	<bean id = "labelBuilder" class="org.openremote.controller.component.onlysensory.LabelBuilder" />
 
+  <!-- TODO -->
+	<bean id = "labelBuilder" class = "org.openremote.controller.component.onlysensory.LabelBuilder">
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-152) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+
+
+  <!-- TODO -->
+  <bean id = "imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder">
+
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-153) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+
+
+  <!-- TODO -->
 	<bean id = "sliderBuilder" class="org.openremote.controller.component.control.slider.SliderBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
-  </bean>
 
+    <!--  TODO : this explicit dependency will go away once migrated to ObjectBuilder (see ORCJAVA-151) -->
+    <property name = "deployer" ref = "deployer"/>
+  </bean>
+	
 	<bean id = "gestureBuilder" class="org.openremote.controller.component.control.gesture.GestureBuilder">
     <property name = "commandFactory" ref = "commandFactory"/>
-    <property name = "remoteActionXMLParser" ref = "remoteActionXMLParser"/>
 	</bean>
-
-	<bean id = "imageBuilder" class="org.openremote.controller.component.onlysensory.ImageBuilder" />
 
 </beans>
