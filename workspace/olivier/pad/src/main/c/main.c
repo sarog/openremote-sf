@@ -12,6 +12,6 @@ void main(int argc, const char *argv[]) {
   apr_status_t st = apr_initialize();
   printf("apr_initialize result : %d\n", st);
 
-  runServer(readRequest, writeResponse);
+  runServer();
   apr_terminate();
 }
