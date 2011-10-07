@@ -47,9 +47,9 @@ import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.service.impl.ControlCommandServiceImpl;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.CommandFactory;
-import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 
@@ -66,6 +66,7 @@ public class SensorBuilderTest
   private Deployer deployer;
   private SensorBuilder sensorBuilder;
   private ControlCommandService commandService;
+  private StatusCache cache;
 
 
   // Test Lifecycle -------------------------------------------------------------------------------
@@ -79,21 +80,22 @@ public class SensorBuilderTest
   @Before public void setUp() throws Exception
   {
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache();
-    sc.setChangedStatusTable(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    cache = new StatusCache(cst, echain);
 
     ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/sensor");
     cc.setResourcePath(deploymentURI.getPath());
 
-    deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
+    deployer = new Deployer("Deployer for " + deploymentURI, cache, cc);
 
     CommandFactory cf = new CommandFactory();
     Properties p = new Properties();
     p.put("virtual", VirtualCommandBuilder.class.getName());
     cf.setCommandBuilders(p);
 
-    sensorBuilder = new SensorBuilder(deployer);
+    sensorBuilder = new SensorBuilder(deployer, cache);
     sensorBuilder.setCommandFactory(cf);
 
     ButtonBuilder bb = new ButtonBuilder();
@@ -332,7 +334,12 @@ public class SensorBuilderTest
 
     // should get either one depending what the state of the listener is
 
-    Assert.assertTrue(s.read().equals("off") || s.read().equals("on"));
+    String val = s.read();
+    
+    Assert.assertTrue(
+        "Expected either 'on' or 'off', got " + val,
+        val.equals("off") || val.equals("on")
+    );
     
 
     Assert.assertTrue(s instanceof SwitchSensor);
@@ -345,7 +352,7 @@ public class SensorBuilderTest
     Assert.assertTrue(state.processEvent("off").equals("off"));
     Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
 
-    String status = ServiceContext.getDeviceStateCache().queryStatus(727);
+    String status = cache.queryStatusBySensorId(727);
 
     // should have something since its a listener...
 
@@ -356,10 +363,12 @@ public class SensorBuilderTest
   }
 
 
+  // TODO : See ORCJAVA-196
   // TODO : test sensor 1099 use case
   // TODO : test Sensor.update
   // TODO : test Sensor.start
   // TODO : test Sensor.isRunning()
+  // TODO : test SensorBuilder subclassing with new sensor types
   
   
 
