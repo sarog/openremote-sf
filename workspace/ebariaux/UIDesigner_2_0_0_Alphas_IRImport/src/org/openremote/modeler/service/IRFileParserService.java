@@ -10,4 +10,5 @@ public interface IRFileParserService {
 
 	List<Device> getDevices(Brand brand);
 	List<CodeSet> getCodeSets(Device device);
+	List<Brand> getBrands();
 }

@@ -77,7 +77,7 @@ private void initial(String heading) {
 	
 	createFileUploadField();
 	createLoadResetButton();
-	createResultGrid();
+//	createResultGrid();
 	createWindowButtons();
 	form.setWidth(800);
 	form.add(fileUploadPanel);
@@ -91,9 +91,9 @@ private void initial(String heading) {
 private void addListenersToForm() {
 	form.addListener(Events.Submit, new Listener<FormEvent>() {
         public void handleEvent(FormEvent be) {
-        	// TODO add data to device picker.
-        	Window.alert(be.getResultHtml());
+
         	importForm.enable();
+        	importForm.showDevices();
 
         }
     });
