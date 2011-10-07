@@ -44,8 +44,10 @@ import org.openremote.controller.service.Deployer;
  * value methods of this superclass.
  *
  * TODO:
- *  - this implementation still needs further re-structuring,
- *    see ORCJAVA-169 (http://jira.openremote.org/browse/ORCJAVA-169)
+ *  - this implementation still needs further re-structuring, see
+ *    ORCJAVA-183 (http://jira.openremote.org/browse/ORCJAVA-183)
+ *    ORCJAVA-193 (http://jira.openremote.org/browse/ORCJAVA-193)
+ *
  *
  * @author <a href="mailto:juha@openremote.org>Juha Lindfors</a>
  *
@@ -64,6 +66,8 @@ public abstract class Configuration
 
     try
     {
+      // TODO : remove dependency to deprecated API, see ORCJAVA-193
+
       element = ServiceContext.getDeployer().queryElementByName(Deployer.XMLSegment.CONFIG);
     }
 
