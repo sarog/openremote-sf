@@ -31,14 +31,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.utils.Logger;
 import org.openremote.controller.exception.ControlCommandException;
 import org.openremote.controller.exception.ControllerException;
 import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.rest.support.json.JSONTranslator;
-import org.openremote.controller.service.StatusCacheService;
 import org.openremote.controller.service.StatusPollingService;
+import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.spring.SpringContext;
 
 /**
@@ -47,45 +48,47 @@ import org.openremote.controller.spring.SpringContext;
  * 
  * @author Handy.Wang 2009-10-19
  */
-@SuppressWarnings("serial")
 public class StatusPollingRESTServlet extends HttpServlet {
 
+  // TODO : add appropriate subcategory to logging
+  private final static Logger logger = Logger.getLogger(Constants.HTTP_REST_LOG_CATEGORY);
+
+
+  private StatusCache deviceStateCache = ServiceContext.getDeviceStateCache();
+
    /** This service is responsible for observe statuses change and return the changed statuses(xml-formatted). */
-   private StatusPollingService statusPollingService = 
+   private StatusPollingService statusPollingService =
       (StatusPollingService) SpringContext.getInstance().getBean("statusPollingService");
    
-   /** This service is check whether the component is exist. */
-   private StatusCacheService statusCacheService = (StatusCacheService)SpringContext.getInstance().getBean("statusCacheService");
-   
-   private Logger logger = Logger.getLogger(this.getClass().getName());
-   
-   /**
-    * The Constructor.
-    */
-   public StatusPollingRESTServlet() {
-      super();
-   }
+
+
+
 
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       doPost(request, response);
    }
 
-   /**
-    * It's responsible for polling the <b>changed statuses</b> or <b>TIME_OUT</b> if time out.
-    */
-   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  /**
+   * It's responsible for polling the <b>changed statuses</b> or <b>TIME_OUT</b> if time out.
+   */
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws
+     ServletException, IOException
+  {
+
+      // TODO : creating a formatter on every request is a bad idea...
+
       logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
       // Set response MIME type and character encoding...
 
       response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
       response.setContentType(Constants.MIME_APPLICATION_XML);
-      
 
-     // Get the 'accept' header from client -- this will indicate whether we will send
-     // application/xml or application/json response...
 
-     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
+      // Get the 'accept' header from client -- this will indicate whether we will send
+      // application/xml or application/json response...
+
+      String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
 
 
       String url = request.getRequestURL().toString();
@@ -123,24 +126,36 @@ public class StatusPollingRESTServlet extends HttpServlet {
       printWriter.flush();
    }
    
-   /**
-    * check whether the sensor id is valid.
-    * @param unParsedSensorIDs
-    */
-   private void checkSensorId(String unParsedSensorIDs){
-      String[] sensorIDs = (unParsedSensorIDs == null || "".equals(unParsedSensorIDs)) ? new String[] {}
-            : unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
-      if (sensorIDs.length == 0) {
-         throw new NullPointerException("Polling ids were null.");
+  /**
+   * check whether the sensor id is valid.
+   *
+   * @param unParsedSensorIDs
+   */
+  private void checkSensorId(String unParsedSensorIDs)
+  {
+    String[] sensorIDs = (unParsedSensorIDs == null || "".equals(unParsedSensorIDs)) ? new String[] {}
+          : unParsedSensorIDs.split(Constants.STATUS_POLLING_SENSOR_IDS_SEPARATOR);
+
+    if (sensorIDs.length == 0)
+    {
+      throw new NullPointerException("Polling ids were null.");
+    }
+
+    String tmpStr = null;
+
+    try
+    {
+      for (int i = 0; i < sensorIDs.length; i++)
+      {
+        tmpStr = sensorIDs[i];
+        deviceStateCache.queryStatusBySensorId(Integer.parseInt(tmpStr));
       }
-      String tmpStr = null;
-      try {
-         for (int i = 0; i < sensorIDs.length; i++) {
-            tmpStr = sensorIDs[i];
-            statusCacheService.getStatusBySensorId(Integer.parseInt(tmpStr));
-         }
-      } catch (NumberFormatException e) {
-         throw new NoSuchComponentException("Wrong sensor id :'"+tmpStr+"' The sensor id can only be digit");
-      }
-   }
+    }
+
+    catch (NumberFormatException e)
+    {
+       throw new NoSuchComponentException("Wrong sensor id :'"+tmpStr+"' The sensor id can only be digit");
+    }
+  }
+
 }
