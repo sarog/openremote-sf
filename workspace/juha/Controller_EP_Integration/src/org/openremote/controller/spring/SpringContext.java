@@ -27,11 +27,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 import org.openremote.controller.service.ServiceContext;
+import org.openremote.controller.service.Deployer;
 import org.openremote.controller.command.CommandFactory;
 
 /**
- * TODO : ApplicationContext for Spring container
+ * TODO :
+ *
+ *   ORCJAVA-195 : remove direct API references to this subclass of service context
+ *   ORCJAVA-194 : remove deprecated used of getProtocol() and param handling in getService()
  * 
+ * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Dan 2009-2-16
  */
 public class SpringContext extends ServiceContext
@@ -44,13 +49,11 @@ public class SpringContext extends ServiceContext
 
 
   /**
-   * Gets a instance of <code>SpringContext</code>
-   *
-   * @return the instance of <code>SpringContext</code>
+   * TODO : should be removed, see ORCJAVA-195
    */
-  public synchronized static SpringContext getInstance()
+  @Deprecated public synchronized static SpringContext getInstance()
   {
-    return (SpringContext)ServiceContext.getInstance(); // TODO : should remove this method altogether
+    return (SpringContext)ServiceContext.getInstance();
   }
 
 
@@ -67,7 +70,7 @@ public class SpringContext extends ServiceContext
     this(contextFiles);
   }
 
-  public SpringContext(String[] setting) throws InstantiationException
+  private SpringContext(String[] setting) throws InstantiationException
   {
     ctx = new ClassPathXmlApplicationContext(setting);
 
@@ -75,35 +78,6 @@ public class SpringContext extends ServiceContext
   }
 
 
-  @Override public Object getService(ServiceName name, Object... params)
-  {
-    if (name == ServiceName.PROTOCOL && params != null)
-    {
-      CommandFactory cf = (CommandFactory)getBean(name.getSpringBeanName());
-      Map<String, String> protocols = cf.getProtocols();
-
-      String paramValue = (String)params[0];
-      String protocolImplName = protocols.get(paramValue);
-
-      return getBean(protocolImplName);
-    }
-
-    else if (name == ServiceName.XML_BINDING)
-    {
-      if (params == null || params[0] == null)
-        throw new IllegalArgumentException("XML Binding service requires a component name parameter");
-
-      String suffix = (String)params[0];
-
-      return getBean(suffix + name.getSpringBeanName());
-    }
-    else
-    {
-      return getBean(name.getSpringBeanName());
-    }
-  }
-
-  
   /**
    * Gets a bean instance with the given bean identifier
    *
@@ -123,5 +97,48 @@ public class SpringContext extends ServiceContext
 
     return o;
   }
+
+
+  // Implements ServiceContext --------------------------------------------------------------------
+
+
+  /**
+   * TODO
+   */
+  @Override protected void initializeController()
+  {
+    getDeployer().startController();
+  }
+
+  /**
+   * Implements service lookup using Spring API.
+   *
+   * @param   name    service name
+   *
+   * @return  bean reference
+   */
+  @Override protected Object getService(ServiceName name, Object... params)
+  {
+    if (name == ServiceName.PROTOCOL && params != null)
+    {
+      // TODO : This should go away with completion of ORCJAVA-194
+
+      CommandFactory cf = (CommandFactory)getBean(name.getSpringBeanName());
+      Map<String, String> protocols = cf.getProtocols();
+
+      String paramValue = (String)params[0];
+      String protocolImplName = protocols.get(paramValue);
+
+      return getBean(protocolImplName);
+    }
+
+    else
+    {
+      return getBean(name.getSpringBeanName());
+    }
+  }
+
+
+
 
 }
