@@ -38,6 +38,7 @@ import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 import org.openremote.controller.service.Deployer;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.suite.AllTests;
 
 /**
@@ -69,7 +70,9 @@ public class SwitchBuilderTest
   {
 
     ChangedStatusTable cst = new ChangedStatusTable();
-    StatusCache sc = new StatusCache(cst);
+    EventProcessorChain echain = new EventProcessorChain();
+
+    StatusCache sc = new StatusCache(cst, echain);
 
     ControllerConfiguration cc = new ControllerConfiguration();
 
@@ -83,7 +86,7 @@ public class SwitchBuilderTest
     p.put("virtual", VirtualCommandBuilder.class.getName());
     cf.setCommandBuilders(p);
 
-    SensorBuilder sensorBuilder = new SensorBuilder(deployer);
+    SensorBuilder sensorBuilder = new SensorBuilder(deployer, sc);
     sensorBuilder.setCommandFactory(cf);
 
     builder = new SwitchBuilder();
