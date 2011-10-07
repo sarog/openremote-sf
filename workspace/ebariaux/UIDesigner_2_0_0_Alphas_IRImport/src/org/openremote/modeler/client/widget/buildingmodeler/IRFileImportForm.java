@@ -19,8 +19,15 @@
 */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.List;
+
+import org.openremote.modeler.client.BrandInfo;
+import org.openremote.modeler.client.proxy.IrFileParserProxy;
+import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.rpc.ConfigurationRPCService;
 import org.openremote.modeler.client.rpc.ConfigurationRPCServiceAsync;
+import org.openremote.modeler.client.rpc.IRFileParserRPCService;
+import org.openremote.modeler.client.rpc.IRFileParserRPCServiceAsync;
 import org.openremote.modeler.client.widget.CommonForm;
 import org.openremote.modeler.domain.Device;
 
@@ -38,6 +45,7 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 /**
  * IR File Command Import Form.
@@ -49,8 +57,8 @@ public class IRFileImportForm extends CommonForm {
 
    
    /** The configuration service. */
-   private ConfigurationRPCServiceAsync configurationService = (ConfigurationRPCServiceAsync) GWT
-         .create(ConfigurationRPCService.class);
+   private IRFileParserRPCServiceAsync iRFileParserService = (IRFileParserRPCServiceAsync) GWT
+         .create(IRFileParserRPCService.class);
    
    /** The device. */
    protected Device device = null;
@@ -114,6 +122,26 @@ public class IRFileImportForm extends CommonForm {
    }
 
 
+
+public void showDevices() {
+	IrFileParserProxy.loadBrands(new AsyncSuccessCallback<List<BrandInfo>>(){
+
+		@Override
+		public void onSuccess(List<BrandInfo> brands) {
+			//TODO now that we can retrieve brands from server, 
+			//add them into a drop-down list, where a selection will trigger the next one
+			// with the devices where a selection in it will trigger display of a last drop-down list 
+			// or display a list of available codes.
+			String test = "";
+			for (BrandInfo brandInfo : brands) {
+				test += brandInfo.getBrandName()+"\n\r";
+			}
+			Window.alert(test);
+			
+		}
+		
+	});
+}
 
  
  

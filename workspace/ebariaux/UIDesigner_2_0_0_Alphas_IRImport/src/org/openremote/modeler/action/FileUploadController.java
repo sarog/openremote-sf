@@ -42,10 +42,13 @@ import org.openremote.modeler.domain.KnxGroupAddress;
 import org.openremote.modeler.exception.FileOperationException;
 import org.openremote.modeler.lutron.ImportException;
 import org.openremote.modeler.lutron.LutronHomeworksImporter;
+import org.openremote.modeler.server.IRFileParserController;
 import org.openremote.modeler.service.ResourceService;
 import org.openremote.modeler.utils.ImageRotateUtil;
 import org.openremote.modeler.utils.KnxImporter;
 import org.openremote.modeler.utils.MultipartFileUtil;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -68,14 +71,23 @@ import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
  * 
  * @author handy.wang
  */
-public class FileUploadController extends MultiActionController {
+public class FileUploadController extends MultiActionController implements BeanFactoryAware {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(FileUploadController.class);
 
 	/** The resource service. */
 	private ResourceService resourceService;
-
+	private BeanFactory beanFactory;
+	
+	
+	public void setBeanFactory(BeanFactory beanFactory){
+		this.beanFactory = beanFactory;
+		
+	}
+	
+	
+	
 	/**
 	 * Import openremote.zip into application, but now is not use.
 	 * 
@@ -128,6 +140,7 @@ public class FileUploadController extends MultiActionController {
 				+ File.separator
 				+ multipartFile.getOriginalFilename());
 		ZipFile zip;
+		XCFFileParser xcfParser = new XCFFileParser();
 		String responseContent;
 
 		try {
@@ -148,7 +161,7 @@ public class FileUploadController extends MultiActionController {
 				new NecIRCodeRepresentationHandler()
 						.registerWithFactory(factory);
 
-				XCFFileParser xcfParser = new XCFFileParser();
+				
 				xcfParser.setFactory(factory);
 				// serialize the objects
 				try {
@@ -176,7 +189,10 @@ public class FileUploadController extends MultiActionController {
 			responseContent = "Couldn't upload file to server :" + e.getCause();
 			response.sendError(400, responseContent);
 		}
+		IRFileParserController iRFileParserController = (IRFileParserController)beanFactory.getBean("irFileParserController");
+		iRFileParserController.setXcfFileParser(xcfParser);
 		response.getWriter().println(responseContent);
+		
 	}
 
 	public void importLutron(HttpServletRequest request,
