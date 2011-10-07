@@ -23,8 +23,13 @@ package org.openremote.controller.service;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.RoundRobinConfiguration;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.OpenRemoteRuntime;
+import org.openremote.controller.Constants;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.net.RoundRobinTCPServer;
+import org.openremote.controller.net.RoundRobinUDPServer;
+import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.command.RemoteActionXMLParser;
 import org.openremote.controller.command.CommandBuilder;
 
 /**
@@ -44,9 +49,17 @@ public abstract class ServiceContext
 {
 
 
-  // TODO :
+  // Tasks TODO :
+  //
   //        the various configuration related services (e.g. lutron) need a better API (higher
-  //        degree of de-typing)
+  //        degree of de-typing) -- these should be part of the configuration refactoring as
+  //        described in ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+  //
+  //        Reduce dependencies to deprecated getDeployer() API -- ORCJAVA-193, ORCJAVA-173
+  //
+  //        Remove dependecy to deprecated getProtocol() API -- ORCJAVA-194
+  //
+  //        Remove direct use of subclass SpringContext API -- ORCJAVA-195
 
 
 
@@ -60,30 +73,29 @@ public abstract class ServiceContext
 
   // Enums ----------------------------------------------------------------------------------------
 
-  final static boolean IS_SUFFIX = true;
 
+  /**
+   * TODO : This is a temporary refactoring construct.
+   *
+   *        This enum encapsulates the spring configuration specific bean names and replaces
+   *        them with typed enum identifiers to reduce sprinkling bean names all over the codebase.
+   *
+   *        These names are used where a direct lookup to spring context has been made. Most of
+   *        them should be ultimately unnecessary and to be replaced with injecting dependent
+   *        references instead (see various to-dos and JIRA references below). Some others may
+   *        still need to be (temporarily) added to reduce direct API calls to SpringContext
+   *        (see ORCJAVA-195)
+   */
   public static enum ServiceName
   {
 
-    CONTROLLER_XML_PARSER("remoteActionXMLParser"),
+    DEPLOYER("deployer"),                                     // TODO : Deprecated, see ORCJAVA-173 ORCJACA-193
+    CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
+    ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
+    LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
+    DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated
+    PROTOCOL("commandFactory");                               // TODO : Deprecated, see ORCJAVA-194
 
-    CONTROLLER_CONFIGURATION("configuration"),
-
-    ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),
-
-    LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),
-
-    DEVICE_POLLING("pollingMachinesService"),
-
-    DEVICE_STATE_CACHE("statusCache"),
-
-    FILE_RESOURCE_SERVICE("fileService"),
-
-    DEPLOYMENT_SERVICE("controllerXMLChangeService"),
-
-    PROTOCOL("commandFactory"),
-
-    XML_BINDING("Builder");
 
     private String springBeanName;
 
@@ -103,12 +115,21 @@ public abstract class ServiceContext
   // Class Members --------------------------------------------------------------------------------
 
   /**
+   * Direct logging to INIT log category.
+   */
+  private final static Logger log = Logger.getLogger(Constants.INIT_LOG_CATEGORY);
+
+  /**
    * Service context singleton instance.
    */
   private static ServiceContext singletonInstance;
 
 
-
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
   public static ControllerConfiguration getControllerConfiguration()
   {
     try
@@ -124,6 +145,11 @@ public abstract class ServiceContext
     }
   }
 
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
   public static RoundRobinConfiguration getRoundRobinConfiguration()
   {
     try
@@ -139,6 +165,11 @@ public abstract class ServiceContext
     }
   }
 
+  /**
+   * TODO :
+   *   This is temporary and should go away with configuration refactoring as part of the
+   *   deployment unit, see ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
+   */
   public static LutronHomeWorksConfig getLutronHomeWorksConfiguration()
   {
     try
@@ -154,11 +185,21 @@ public abstract class ServiceContext
     }
   }
 
-  public static RemoteActionXMLParser getControllerXMLParser()
+  /**
+   * TODO :
+   *   See ORCJAVA-193 (http://jira.openremote.org/browse/ORCJAVA-193)
+   *   See ORCJAVA-173 (http://jira.openremote.org/browse/ORCJAVA-173)
+   *
+   *
+   * @deprecated  This is deprecated and should go away with refactoring of the configuration
+   *              to become part of deployment unit (see ORCJAVA-183) and creating a REST admin
+   *              interface for the controller (see ORCJAVA-173).
+   */
+  @Deprecated public static Deployer getDeployer()
   {
     try
     {
-      return (RemoteActionXMLParser)getInstance().getService(ServiceName.CONTROLLER_XML_PARSER);
+      return (Deployer)getInstance().getService(ServiceName.DEPLOYER);
     }
 
     catch (ClassCastException e)
@@ -170,22 +211,10 @@ public abstract class ServiceContext
   }
 
 
-  public static PollingMachinesService getDevicePollingService()
-  {
-    try
-    {
-      return (PollingMachinesService)getInstance().getService(ServiceName.DEVICE_POLLING);
-    }
-
-    catch (ClassCastException e)
-    {
-      throw new Error(
-          "Device polling service implementation has had an incompatible change.", e
-      );
-    }
-  }
-
-  public static StatusCache getDeviceStateCache()
+  /**
+   * TODO
+   */
+  @Deprecated public static StatusCache getDeviceStateCache()
   {
     try
     {
@@ -201,37 +230,12 @@ public abstract class ServiceContext
   }
 
 
-  public static FileService getFileResourceService()
-  {
-    try
-    {
-      return (FileService)getInstance().getService(ServiceName.FILE_RESOURCE_SERVICE);
-    }
-
-    catch (ClassCastException e)
-    {
-      throw new Error(
-          "File resource service implementation has had an incompatible change.", e
-      );
-    }
-  }
-
-  public static ControllerXMLChangeService getDeployer()
-  {
-    try
-    {
-      return (ControllerXMLChangeService)getInstance().getService(ServiceName.DEPLOYMENT_SERVICE);
-    }
-
-    catch (ClassCastException e)
-    {
-      throw new Error(
-          "Deployment service implementation has had an incompatible change.", e
-      );
-    }
-  }
-
-  public static CommandBuilder getProtocol(String name)
+  /**
+   * TODO : see ORCJAVA-194 (http://jira.openremote.org/browse/ORCJAVA-194)
+   *
+   * @deprecated  This method is temporary, and should be removed with completion of ORCJAVA-194
+   */
+  @Deprecated public static CommandBuilder getProtocol(String name)
   {
     Object service = getInstance().getService(ServiceName.PROTOCOL, name);
 
@@ -250,16 +254,10 @@ public abstract class ServiceContext
   }
 
 
-
-  public static Object getXMLBinding(String namePrefix)
-  {
-    return getInstance().getService(ServiceName.XML_BINDING, namePrefix);
-
-    // TODO : returning object since SensorBuilder does not adhere to any common type
-  }
-
-
-  public static ServiceContext getInstance()    // TODO : go to private once spring context getinstance has been removed
+  /**
+   * TODO
+   */
+  protected static ServiceContext getInstance()   
   {
     synchronized (SINGLETON_MUTEX)
     {
@@ -278,6 +276,9 @@ public abstract class ServiceContext
   }
 
 
+  /**
+   * TODO
+   */
   protected static void registerServiceContext(ServiceContext ctx) throws InstantiationException
   {
     synchronized (SINGLETON_MUTEX)
@@ -300,7 +301,60 @@ public abstract class ServiceContext
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * TODO
+   */
   protected ServiceContext() { }
+
+
+
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+
+  public void init()
+  {
+    // TODO : this could be called from the constructor, rather than requiring explicit init() API call
+
+    try
+    {
+      Thread t = OpenRemoteRuntime.createThread("Controller Auto-Discovery", new IPAutoDiscoveryServer());
+      t.start();
+
+      Thread.sleep(10);   // TODO : makes no sense
+    }
+
+    catch (InterruptedException e)
+    {
+      log.error("Autodiscovery server failed to start : {0}", e.getMessage());
+    }
+
+    try
+    {
+      Thread udp = OpenRemoteRuntime.createThread("Cluster UDP", new RoundRobinUDPServer());
+      udp.start();
+
+      Thread.sleep(10);   // TODO : makes no sense
+
+      Thread tcp = OpenRemoteRuntime.createThread("Cluster TCP", new RoundRobinTCPServer());
+      tcp.start();
+
+      Thread.sleep(10);   // TODO : makes no sense
+    }
+
+    catch (InterruptedException e)
+    {
+      log.error("Cluster failed to start : {0}", e.getMessage());
+    }
+
+    // allow for service container specific initialization...
+    
+    initializeController();
+  }
+
+
+
+  // Abstract Methods -----------------------------------------------------------------------------
 
 
   /**
@@ -311,10 +365,19 @@ public abstract class ServiceContext
    * return the requested service implementations.
    *
    * @param   name    service name
-   * @param   params  TODO
    * @return  service implementation
    */
-  public abstract Object getService(ServiceName name, Object... params);
+  protected abstract Object getService(ServiceName name, Object... params);
 
 
+  /**
+   * An explicit call made by the service context to the concrete implementations allowing
+   * them to implement DI framework specific initialization, if necessary.  <p>
+   *
+   * This in general is application (JVM) wide initialization, and is therefore called once
+   * per controller's lifecycle -- should not be confused with the deployment lifecycle which
+   * may occur multiple times within controller process lifetime.
+   */
+  protected abstract void initializeController();
+  
 }
