@@ -22,6 +22,8 @@ package org.openremote.controller.model.sensor;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.protocol.ReadCommand;
@@ -31,6 +33,8 @@ import org.openremote.controller.protocol.Event;
 import org.openremote.controller.service.ServiceContext;
 import org.openremote.controller.utils.Logger;
 import org.openremote.controller.Constants;
+import org.openremote.controller.OpenRemoteRuntime;
+import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.model.event.Switch;
 import org.openremote.controller.model.event.Range;
 import org.openremote.controller.model.event.CustomState;
@@ -50,16 +54,23 @@ import org.openremote.controller.component.EnumSensorType;
  * read commands and event listeners. These properties may be used by protocol implementers to
  * direct their event producer output values to suit the sensor's configuration. <p>
  *
- * A sensor class is designed as immutable. This immutability should be maintained by the sensor's
- * subclasses in order to make it safe to pass the sensor instances to protocol handlers and
- * possibly to other plugins and/or components.  TODO -- no longer strictly immutable, see ORCJAVA-123
+ * Sensors are registered with
+ * {@link org.openremote.controller.statuscache.StatusCache device state cache}. Sensors create
+ * {@link org.openremote.controller.protocol.Event events} which represent the data from event
+ * producers and are passed by cache to
+ * {@link org.openremote.controller.statuscache.EventProcessor event processors}. <p>
  *
+ * Therefore the object hierarchy for sensors is as follows: <p>
  *
- * TODO : per sensor polling frequency
+ * <pre>{@code Cache (one) <--> (many) Sensor (one) <--> (one) Event Producer}</pre>
  *
- * TODO : cache polling reads
+ * Event producers are created by third party integrators where as cache and sensors are part of
+ * the controller framework. <p>
  *
- * TODO : keep track of event producer ID  associated with this sensor
+ * @see org.openremote.controller.statuscache.StatusCache
+ * @see org.openremote.controller.statuscache.EventProcessor
+ * @see org.openremote.controller.protocol.EventListener
+ * @see org.openremote.controller.protocol.Event
  *
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
@@ -67,24 +78,59 @@ import org.openremote.controller.component.EnumSensorType;
 public abstract class Sensor
 {
 
+  /*
+   * Tasks TODO :
+   *
+   *   - to maintain immutability to extensions, this implementation should be based on a
+   *     sensor interface where the methods included in this implementation that no longer
+   *     fulfill the immutability requirement are not included.
+   *
+   *     getName, getSensorID, getProperties, update are relevant to extensions and should
+   *     be in the Sensor interface, other methods should be considered internal
+   *
+   *     See ORCJAVA-123 - http://jira.openremote.org/browse/ORCJAVA-123
+   *
+   *   - Minor improvement: event producers should expose some type of ID for the sensors.
+   *     This is mostly useful for reporting (the sensor is associated with which event producer)
+   *
+   */
+
+
   // Constants ------------------------------------------------------------------------------------
 
+  /**
+   * TODO:
+   *
+   *  Represents an uninitialized or unknown sensor status value.
+   *
+   *   -- the type String should go away once events are completely defined as type-safe
+   */
   public final static String UNKNOWN_STATUS = StatusCommand.UNKNOWN_STATUS;
 
-  // TODO :
-  //   both constants below are a result of a rather poorly designed API -- they may well be
-  //   candidates for removal later.
-  //                                                                                  [JPL]
 
   /**
-   * key name used in state map to store range min state.
+   * Key name used in sensor properties to store range minimum value.
+   *
+   * @deprecated This is provided for backwards compatibility to a deprecated
+   *             {@link org.openremote.controller.command.StatusCommand} interface.
+   *             New implementations should use
+   *             {@link org.openremote.controller.protocol.EventListener} interface instead and
+   *             query the minimum and maximum values through the interface defined by
+   *             {@link org.openremote.controller.component.RangeSensor}.
    */
-  public final static String RANGE_MIN_STATE = "_range_min_state_";
+  @Deprecated public final static String RANGE_MIN_STATE = "_range_min_state_";
 
   /**
-   * key name used in state map to store range max state.
+   * Key name used in sensor properties to store range maximum value.
+   *
+   * @deprecated This is provided for backwards compatibility to a deprecated
+   *             {@link org.openremote.controller.command.StatusCommand} interface.
+   *             New implementations should use
+   *             {@link org.openremote.controller.protocol.EventListener} interface instead and
+   *             query the minimum and maximum values through the interface defined by
+   *             {@link org.openremote.controller.component.RangeSensor}.
    */
-  public final static String RANGE_MAX_STATE = "_range_max_state_";
+  @Deprecated public final static String RANGE_MAX_STATE = "_range_max_state_";
 
 
 
@@ -101,21 +147,23 @@ public abstract class Sensor
   // Instance Fields ------------------------------------------------------------------------------
 
 
+  /**
+   * Human readable sensor name. Used with event processors, logging, etc.
+   */
   private String sensorName;
 
 
   /**
-   * Sensors unique ID. Must be unique per controller deployment (unique within controller.xml file)
+   * Sensor's unique ID. Must be unique per controller deployment.
    */
   private int sensorID;
 
+
   /**
-   * The datatype of sensor. The sensor should return values on its {@link #read} operation
-   * only according to its datatype.
-   *
-   * NOTE: this is going away with the legacy StatusCommand interface
+   * Reference to the state cache that receives and processes the events generated from this sensor.
    */
-  private EnumSensorType sensorType;
+  private StatusCache deviceStateCache;
+
 
   /**
    * An event producer is a protocol handler that can be customized to return values to a sensor.
@@ -124,33 +172,69 @@ public abstract class Sensor
    *
    * Two sub-categories of event producers exist today: read commands (a.k.a status command) and
    * event listeners. These are dealt differently in that read commands are actively polled by
-   * the controller (through Sensor's API ) while event listeners produce events to the
-   * controller at their own schedule.
+   * the sensor while event listeners produce events to the controller at their own schedule.
    */
   private EventProducer eventProducer;
 
+
+  /**
+   * This is a polling thread implementation for sensors that use
+   * {@link org.openremote.controller.protocol.ReadCommand} instead of
+   * {@link org.openremote.controller.protocol.EventListener}.
+   */
+  private DeviceReader deviceReader;
+
+  
   /**
    * Sensor properties. These properties can be used by the protocol implementors to direct
    * their implementation on read commands and event listeners according to sensor configuration.
+   *
+   * TODO : add sensor <property> elements to XML schema
    */
   private Map<String, String> sensorProperties;
+
+  /**
+   * The datatype of sensor. The sensor should return values on its {@link #read} operation
+   * only according to its datatype.
+   *
+   * @deprecated This enum is only provided for backwards compatibility with the already
+   *             deprecated {@link org.openremote.controller.command.StatusCommand} interface.
+   *             New code should not make use of this type.
+   */
+  @Deprecated private EnumSensorType sensorType;
 
 
 
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * Constructs a new sensor with a given ID, sensor datatype, an event producing protocol handler,
-   * and a set of sensor properties
+   * Constructs a new sensor with a given name, ID, sensor datatype (deprecated legacy),
+   * an event producing protocol handler, reference to the managing device state cache,
+   * and a set of sensor properties.
    *
-   * @param name              human-readable name of the sensor
-   * @param sensorID          an unique sensor ID
-   * @param sensorType        datatype for this sensor
-   * @param eventProducer     event producing protocol handler implementation
-   * @param sensorProperties  additional sensor properties
+   * @param name
+   *          Human readable name of the sensor. Used with event processors, logging, etc.
+   *
+   * @param sensorID
+   *          A unique sensor ID. Must be unique per controller deployment.
+   *
+   * @param cache
+   *          reference to a device state cache this sensor registers itself with and pushes
+   *          value updates to
+   *
+   * @param eventProducer
+   *          protocol handler implementation
+   *
+   * @param sensorProperties
+   *          Additional sensor properties. These properties can be used by the protocol
+   *          implementors to direct their implementation according to sensor configuration.
+   *
+   * @param sensorType
+   *          datatype for this sensor
+   *
    */
-  protected Sensor(String name, int sensorID, EnumSensorType sensorType, EventProducer eventProducer,
-               Map<String, String> sensorProperties)
+  protected Sensor(String name, int sensorID, StatusCache cache, EventProducer eventProducer,
+                   Map<String, String> sensorProperties, EnumSensorType sensorType)
   {
     if (sensorType == null || eventProducer == null)
     {
@@ -167,9 +251,10 @@ public abstract class Sensor
 
     this.sensorName = name;
     this.sensorID = sensorID;
-    this.sensorType = sensorType;
+    this.deviceStateCache = cache;
     this.eventProducer = eventProducer;
     this.sensorProperties = sensorProperties;
+    this.sensorType = sensorType;
   }
 
 
@@ -179,7 +264,7 @@ public abstract class Sensor
   /**
    * Returns the human readable name of this sensor.
    *
-   * @return  sensor's name as defined in tooling and in controller.xml file
+   * @return  sensor's name as defined in tooling and controller's XML definition
    */
   public String getName()
   {
@@ -187,7 +272,7 @@ public abstract class Sensor
   }
 
   /**
-   * Returns this sensors ID. The sensor ID is unique in a controller deployment.
+   * Returns this sensor's ID. The sensor ID is unique within a controller deployment.
    *
    * @return  sensor ID
    */
@@ -202,15 +287,16 @@ public abstract class Sensor
    *
    * @deprecated  Sensor types are available via proper object model where each sensor is a
    *              subclass of this abstract sensor class -- therefore normal type checks
-   *              using 'instanceof' apply. The EnumSensorType however is exposed via a public
-   *              API used by protocol implementers and therefore must still remain -- use of
-   *              it (and use of this method by extension) is heavily discouraged though.
+   *              using 'instanceof' apply. The EnumSensorType however is exposed as part of
+   *              the now deprecated {@link org.openremote.controller.command.StatusCommand}
+   *              interface and therefore this method still remains to maintain that backwards
+   *              compatibility. <b>New code should not make use of this method.</b>
    *
    * @return  this sensor's data type
    */
   @Deprecated public EnumSensorType getSensorType()
   {
-    return sensorType;
+    return sensorType;  // TODO : should be able to remove now
   }
 
 
@@ -235,7 +321,7 @@ public abstract class Sensor
    * Returns the current state of this sensor.  <p>
    *
    * If the sensor is bound to a read command implementation, the read command is invoked --
-   * this may yield an active state request on the connecting transport unless the read
+   * this may yield an active request using the connecting transport to device unless the read
    * command implementation caches certain values and returns them from memory. <p>
    *
    * In case of an event listener, this method does not invoke anything on the listener itself
@@ -259,9 +345,9 @@ public abstract class Sensor
    * @see org.openremote.controller.protocol.ReadCommand
    *
    * @return sensor's value, according to its datatype and provided by protocol handlers (read
-   *         command or event listener)
+   *         command or event listener) or {@link #UNKNOWN_STATUS} if value cannot be found.
    */
-  public String read()
+  public String read() // TODO : no longer needs to be public
   {
     // If this sensor abstracts an event listener, the read() will not invoke the protocol
     // handler associated with this sensor directly -- instead we try to fetch the latest
@@ -269,9 +355,7 @@ public abstract class Sensor
 
     if (isEventListener())
     {
-      String status = ServiceContext.getDeviceStateCache().queryStatus(sensorID);
-
-      return (status == null) ? UNKNOWN_STATUS : status;
+      return deviceStateCache.queryStatusBySensorId(sensorID);
     }
 
     // If we are dealing with regular read commands, execute it to explicitly fetch the
@@ -283,27 +367,28 @@ public abstract class Sensor
       {
         // Support legacy API...
 
+        String returnValue;
+
         if (eventProducer instanceof StatusCommand)
         {
           StatusCommand statusCommand = (StatusCommand)eventProducer;
 
-          String returnValue = statusCommand.read(sensorType, sensorProperties);
-
-          return processEvent(returnValue);
+          returnValue = statusCommand.read(sensorType, sensorProperties);
         }
 
         else
         {
           ReadCommand command = (ReadCommand)eventProducer;
 
-          String returnValue = command.read(this);
-
-          return processEvent(returnValue);
+          returnValue = command.read(this);
         }
+
+        return processEvent(returnValue);
       }
+
       catch (Throwable t)
       {
-        log.error("Implementation error in protocol handler " + eventProducer);
+        log.error("Implementation error in protocol handler " + eventProducer);  // TODO : event producers should provide toString() impl.
 
         return Sensor.UNKNOWN_STATUS;
       }
@@ -386,7 +471,7 @@ public abstract class Sensor
 
       Event evt = new Switch(getSensorID(), getName(), switchState);
 
-      ServiceContext.getDeviceStateCache().update(evt);
+      deviceStateCache.update(evt);
     }
 
     else if (getSensorType() == EnumSensorType.RANGE)
@@ -395,7 +480,7 @@ public abstract class Sensor
       {
         Event evt = new Range(getSensorID(), getName(), Integer.parseInt(value));
 
-        ServiceContext.getDeviceStateCache().update(evt);
+        deviceStateCache.update(evt);
       }
 
       catch (NumberFormatException exception)
@@ -411,7 +496,7 @@ public abstract class Sensor
     {
       Event evt = new CustomState(getSensorID(), getName(), value);
 
-      ServiceContext.getDeviceStateCache().update(evt);
+      deviceStateCache.update(evt);
     }
 
     else if (getSensorType() == EnumSensorType.LEVEL)
@@ -420,7 +505,7 @@ public abstract class Sensor
       {
         Event evt = new Level(getSensorID(), getName(), Integer.parseInt(value));
 
-        ServiceContext.getDeviceStateCache().update(evt);
+        deviceStateCache.update(evt);
       }
 
       catch (NumberFormatException exception)
@@ -475,35 +560,104 @@ public abstract class Sensor
 
 
   /**
-   * TODO :
-   *
-   *   - Starts the sensor. This currently only applies to event listeners (which are initialized
-   *     with a reference to this sensor). It should also apply to polling sensors by creating
-   *     the polling thread (which ought to be managed by the sensor implementation itself).
-   *     Further, the sensor should register itself with the deployer once it starts.
-   *
-   *     This all needs to wait until the thread polling thread mess is sorted out and a proper
-   *     deployer is created.
-   *                                                                                    [JPL]
+   * TODO 
    */
   public void start()
   {
-    // TODO :
-    //    register the sensor with state cache -- the cache should control the
-    //    sensor start/stop lifecycle.
-    //
-    //    (ORCJAVA-101 - http://jira.openremote.org/browse/ORCJAVA-101)
 
     if (isEventListener())
     {
       EventListener listener = (EventListener)eventProducer;
 
-      listener.setSensor(this);
+      try
+      {
+        listener.setSensor(this);
+      }
+
+      catch (Throwable t)
+      {
+        log.error(
+            "There was an implementation error in the event listener associated with " +
+            " sensor ''{0}''. The listener implementation may not have started correctly : {1}",
+            t, getName(), t.getMessage()
+        );
+      }
+    }
+
+    else
+    {
+//      Runnable r = new Runnable()
+//      {
+//        @Override public void run()
+//        {
+//          log.info("Started sensor (ID = {0}, type = {1}).", getSensorID(), getSensorType());
+//
+//          while (pollingThreadRunning)
+//          {
+//            update(read());
+//
+//            try
+//            {
+//              Thread.sleep(POLLING_INTERVAL);
+//            }
+//            catch (InterruptedException e)
+//            {
+//              pollingThreadRunning = false;
+//
+//              log.info("Shutting down sensor (ID = {0}, type = {1}).", getSensorID(), getSensorType());
+//
+//              // Allow the container to handle thread cleanup if it wants to...
+//
+//              Thread.currentThread().interrupt();
+//            }
+//          }
+//        }
+//      };
+
+      deviceReader = new DeviceReader();
+      deviceReader.start();
+    }
+  }
+
+  //private Thread pollingThread;
+
+  public void stop()
+  {
+    if (isEventListener())
+    {
+      EventListener listener = (EventListener)eventProducer;
+
+      try
+      {
+        listener.stop(this);
+      }
+
+      catch (Throwable t)
+      {
+        log.error(
+            "There was an implementation error in the event listener associated with " +
+            "sensor ''{0}''. The event listener may not have stopped properly : {1}",
+            t, getName(), t.getMessage()
+        );
+      }
+    }
+
+    else
+    {
+      deviceReader.stop();
     }
   }
 
 
-  
+  public boolean isRunning() // TODO : remove
+  {
+    if (deviceReader == null)
+      return false;
+    else
+      return deviceReader.pollingThreadRunning;
+  }
+
+
 
   // Object Overrides -----------------------------------------------------------------------------
 
@@ -551,4 +705,86 @@ public abstract class Sensor
     return sensor.getSensorID() == this.getSensorID();
   }
 
+
+
+  // Inner Classes -------------------------------------------------------------------------------
+
+
+  /**
+   * TODO
+   */
+  private class DeviceReader implements Runnable
+  {
+
+    private final static int POLLING_INTERVAL = 500;
+    private volatile boolean pollingThreadRunning = true;
+    private Thread pollingThread;
+
+    public void start()
+    {
+      pollingThreadRunning = true;
+      
+      pollingThread = OpenRemoteRuntime.createThread(
+          "Polling Sensor Thread ID = " + getSensorID() + ", Name ='" + getName() + "'", this
+      );
+
+      pollingThread.start();
+    }
+
+    public void stop()
+    {
+      pollingThreadRunning = false;
+
+      try
+      {
+        // ----- BEGIN PRIVILEGED CODE BLOCK ------------------------------------------------------
+
+        AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Void>()
+        {
+          @Override public Void run()
+          {
+            pollingThread.interrupt();
+
+            return null;
+          }
+        });
+
+        // ----- END PRIVILEGED CODE BLOCK ------------------------------------------------------
+      }
+
+      catch (SecurityException e)
+      {
+        log.warn(
+            "Could not interrupt device polling thread ''{0}'' due to security constraints: {1}\n" +
+            "the thread will exit in {2} milliseconds...",
+            pollingThread.getName(), e.getMessage(), POLLING_INTERVAL
+        );
+      }
+    }
+
+
+    @Override public void run()
+    {
+      log.info("Started sensor (ID = {0}, type = {1}).", getSensorID(), getSensorType());
+
+      while (pollingThreadRunning)
+      {
+        Sensor.this.update(read());
+
+        try
+        {
+          Thread.sleep(POLLING_INTERVAL);
+        }
+        catch (InterruptedException e)
+        {
+          pollingThreadRunning = false;
+
+          log.info("Shutting down sensor (ID = {0}, type = {1}).", getSensorID(), getSensorType());
+
+          Thread.currentThread().interrupt();
+        }
+      }
+    }
+
+  }
 }
