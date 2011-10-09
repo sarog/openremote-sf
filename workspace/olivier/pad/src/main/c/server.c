@@ -1,5 +1,5 @@
 /**
- * TODO handle external socket closes
+ *
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -31,13 +31,12 @@
 #define DEF_POLL_TIMEOUT	(APR_USEC_PER_SEC * 30)
 
 /* default buffer size */
-//#define BUFSIZE			4096
 typedef struct _serviceContext_t serviceContext_t;
 
 /**
  * network event callback function type
  */
-typedef int (*socket_callback_t)(serviceContext_t *serviceContext, apr_pollset_t *pollset, apr_socket_t *sock);
+typedef int (*socket_callback_t)(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 
 typedef int (*readCallback_t)(apr_socket_t *sock, message_t **message, apr_pool_t *socketPool);
 typedef int (*writeCallback_t)(apr_socket_t *sock, message_t *message);
@@ -63,29 +62,30 @@ struct _serviceContext_t {
 static apr_socket_t* createListenSocket(apr_pool_t *mp);
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool, readCallback_t readCb, writeCallback_t writeCb);
 
-static int receiveRequestCallback(serviceContext_t *serviceContext, apr_pollset_t *pollset, apr_socket_t *sock);
-static int sendResponseCallback(serviceContext_t *serviceContext, apr_pollset_t *pollset, apr_socket_t *sock);
+static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 
 /**
  *
  */
 int runServer() {
 	apr_status_t rv;
-	apr_pool_t *pool;
+	apr_pool_t *listenPool, *socketPool;
 	apr_socket_t *lsock;/* listening socket */
 	apr_pollset_t *pollset;
 	apr_int32_t num;
 	const apr_pollfd_t *descriptors;
 
-	apr_pool_create(&pool, NULL);
+	apr_pool_create(&listenPool, NULL);
+	apr_pool_create(&socketPool, NULL);
 
-	lsock = createListenSocket(pool);
+	lsock = createListenSocket(listenPool);
 	assert(lsock);
 
-	apr_pollset_create(&pollset, DEF_POLLSET_NUM, pool, 0);
+	apr_pollset_create(&pollset, DEF_POLLSET_NUM, listenPool, 0);
 	{
 		// Monitor with pollset the listen socket can read without blocking
-		apr_pollfd_t pfd = { pool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, NULL };
+		apr_pollfd_t pfd = { listenPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, NULL };
 		pfd.desc.s = lsock;
 		apr_pollset_add(pollset, &pfd);
 	}
@@ -99,11 +99,11 @@ int runServer() {
 			for (i = 0; i < num; i++) {
 				if (descriptors[i].desc.s == lsock) {
 					/* the listen socket is readable. that indicates we accepted a new connection */
-					doAccept(pollset, lsock, pool, readRequest, writeResponse);
+					doAccept(pollset, lsock, socketPool, readRequest, writeResponse);
 				} else {
-					serviceContext_t *serviceContext = descriptors[i].client_data;
-					socket_callback_t cbFunc = serviceContext->cbFunc;
-					cbFunc(serviceContext, pollset, descriptors[i].desc.s);
+					serviceContext_t *context = descriptors[i].client_data;
+					socket_callback_t cbFunc = context->cbFunc;
+					cbFunc(context, pollset, descriptors[i].desc.s);
 				}
 			}
 		}
@@ -152,16 +152,16 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *poo
 
 	rv = apr_socket_accept(&ns, lsock, pool);
 	if (rv == APR_SUCCESS) {
-		serviceContext_t *serviceContext = apr_palloc(pool, sizeof(serviceContext_t));
-		apr_pollfd_t descriptor = { pool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, serviceContext };
+		// Create service context
+		serviceContext_t *context = apr_palloc(pool, sizeof(serviceContext_t));
+		apr_pollfd_t descriptor = { pool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
 		descriptor.desc.s = ns;
-		/* at first, we expect requests, so we poll APR_POLLIN event */
-		serviceContext->status = SERV_RECV_REQUEST;
-		serviceContext->cbFunc = receiveRequestCallback;
-		serviceContext->socketPool = pool;
-		serviceContext->readCb = readCb;
-		serviceContext->writeCb = writeCb;
-		apr_pool_create(&serviceContext->transactionPool, NULL);
+		context->status = SERV_RECV_REQUEST;
+		context->cbFunc = receiveRequestCallback;
+		context->socketPool = pool;
+		context->readCb = readCb;
+		context->writeCb = writeCb;
+		apr_pool_create(&context->transactionPool, NULL);
 
 		/* non-blocking socket. We can't expect that @ns inherits non-blocking mode from @lsock */
 		apr_socket_opt_set(ns, APR_SO_NONBLOCK, 1);
@@ -169,46 +169,57 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *poo
 
 		/* monitor accepted socket */
 		apr_pollset_add(pollset, &descriptor);
+		printf("socket accepted\n");
 	}
 	return TRUE;
 }
 
-static int receiveRequestCallback(serviceContext_t *serviceContext, apr_pollset_t *pollset, apr_socket_t *sock) {
-	int r = serviceContext->readCb(sock, &serviceContext->request, serviceContext->transactionPool);
+void clearTransaction(serviceContext_t *context) {
+	apr_pool_clear(context->transactionPool);
+	printf("transactionPool cleared\n");
+}
+
+void clearSocket(serviceContext_t *context) {
+	apr_pool_clear(context->socketPool);
+	printf("socketPool cleared\n");
+}
+
+static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
+	int r = context->readCb(sock, &context->request, context->transactionPool);
 	if (r != R_SUCCESS) {
-		apr_pool_clear(serviceContext->transactionPool);
-		printf("transactionPool cleared\n");
+		apr_socket_close(sock);
+		clearTransaction(context);
+		clearSocket(context);
 		return r;
 	}
 
 	// Change context status from write to read
-	apr_pollfd_t pfd = { serviceContext->socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, serviceContext };
-	pfd.desc.s = sock;
-	apr_pollset_remove(pollset, &pfd);
-	pfd.reqevents = APR_POLLOUT;
-	apr_pollset_add(pollset, &pfd);
-	serviceContext->status = SERV_SEND_RESPONSE;
-	serviceContext->cbFunc = sendResponseCallback;
+	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
+	descriptor.desc.s = sock;
+	apr_pollset_remove(pollset, &descriptor);
+	descriptor.reqevents = APR_POLLOUT;
+	apr_pollset_add(pollset, &descriptor);
+	context->status = SERV_SEND_RESPONSE;
+	context->cbFunc = sendResponseCallback;
 	return R_SUCCESS;
 }
 
 /**
  * Send a response to the client.
  */
-static int sendResponseCallback(serviceContext_t *serviceContext, apr_pollset_t *pollset, apr_socket_t *sock) {
-	serviceContext->writeCb(sock, serviceContext->response);
+static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
+	context->writeCb(sock, context->response);
 
 	// Clear all memory related to request and response
-	apr_pool_clear(serviceContext->transactionPool);
-	printf("transactionPool cleared\n");
+	clearTransaction(context);
 
 	// Change context status from write to read
-	apr_pollfd_t pfd = { serviceContext->socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, serviceContext };
-	pfd.desc.s = sock;
-	apr_pollset_remove(pollset, &pfd);
-	pfd.reqevents = APR_POLLIN;
-	apr_pollset_add(pollset, &pfd);
-	serviceContext->status = SERV_RECV_REQUEST;
-	serviceContext->cbFunc = receiveRequestCallback;
+	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
+	descriptor.desc.s = sock;
+	apr_pollset_remove(pollset, &descriptor);
+	descriptor.reqevents = APR_POLLIN;
+	apr_pollset_add(pollset, &descriptor);
+	context->status = SERV_RECV_REQUEST;
+	context->cbFunc = receiveRequestCallback;
 	return R_SUCCESS;
 }
