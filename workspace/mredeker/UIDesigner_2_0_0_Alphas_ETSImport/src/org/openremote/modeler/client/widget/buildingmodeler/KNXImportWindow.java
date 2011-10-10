@@ -113,7 +113,7 @@ public class KNXImportWindow extends FormWindow {
         super();
         importWindow = this;
         setSize(800, 600);
-        initial("Import ETS4 project");
+        initial("Import ETS4 project or ETS3 group export CSV file");
         this.ensureDebugId(DebugId.IMPORT_WINDOW);
         this.device = (Device) deviceBeanModel.getBean();
         show();
