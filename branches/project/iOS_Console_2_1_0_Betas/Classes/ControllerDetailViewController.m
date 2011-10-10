@@ -47,6 +47,10 @@
 @property (nonatomic, assign) BOOL creating;
 @property (nonatomic, retain) NSUndoManager *previousUndoManager;
 
+@property (nonatomic, retain) UILabel *controllerURLErrorLabel;
+
+@property (nonatomic, retain) UIColor *originalTextColor;
+
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
 - (void)refreshGroupMemberTableViewSection;
 
@@ -80,6 +84,8 @@
     self.usernameField = nil;
     self.passwordField = nil;
     self.previousUndoManager = nil;
+    self.controllerURLErrorLabel = nil;
+    self.originalTextColor = nil;
     [super dealloc];
 }
 
@@ -197,10 +203,33 @@
     }
 }
 
+
+
+
+
+- (void)displayURLErrorMessage
+{
+    self.controllerURLErrorLabel.text = @"Invalid URL";
+    [self.controllerURLErrorLabel setNeedsDisplay];
+//    [self.tableView reloadData];
+//    [self.urlField becomeFirstResponder];
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    self.controllerURLErrorLabel.text = textField.text;
+    return YES;
+}
+                                                                                                                
+
+
+
 #pragma mark - UITextField delegate
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
+    
+    NSLog(@"textFieldShouldEndEditing");
     NSString *url;
     if (textField == self.urlField) {
         url = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -213,9 +242,15 @@
         
         NSURL *nsUrl = [NSURL URLWithString:url];
         if ([nsUrl scheme] == nil) {
-    //		[ViewHelper showAlertViewWithTitle:@"" Message:@"URL is invalid."];
+            self.urlField.textColor = [UIColor redColor];
+//            self.controllerURLErrorLabel.text = @"Invalid URL";
+            
+//            [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.0];
+//            [self performSelector:@selector(displayURLErrorMessage) withObject:nil afterDelay:0.0];
             return NO;
         }
+//        self.controllerURLErrorLabel.text = @"";
+        self.urlField.textColor = self.originalTextColor;
         self.urlField.text = url;
         self.controller.primaryURL = url;
     } else if (textField == self.usernameField) {
@@ -267,6 +302,7 @@
                 cell = [[[TextFieldCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kControllerUrlCellIdentifier] autorelease];
                 self.urlField = ((TextFieldCell *)cell).textField;
                 self.urlField.delegate = self;
+                self.originalTextColor = self.urlField.textColor;
             }
             self.urlField.text = self.controller.primaryURL;
             break;
@@ -312,11 +348,6 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)aTableView heightForHeaderInSection:(NSInteger)section
-{
-	return 40.0;
-}
-
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
 {
 	return (section == 0)?@"Sample:192.168.1.2:8080/controller":@"";
@@ -324,9 +355,11 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
+    NSLog(@"titleForHeaderInSection %d", section);
     switch (section) {
         case 0:
-            return @"Controller URL:";
+            // Handled by custom view so error message can be displayed
+            return nil;
         case 1:
             return @"Roundrobin group members:";
         case 2:
@@ -341,6 +374,40 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+- (CGFloat)tableView:(UITableView *)aTableView heightForHeaderInSection:(NSInteger)section
+{
+	return 40.0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    NSLog(@"viewForHeaderInSection %d", section);
+    if (section == 0) {
+        UIView *v = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, tableView.frame.size.width)] autorelease];
+        UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 11.0, 330.0, 21.0)]; // TODO: compute width
+        l.text = @"Controller URL:";
+        l.font = [UIFont boldSystemFontOfSize:17];
+        l.textColor = [UIColor colorWithRed:0.298039 green:0.337255 blue:0.423529 alpha:1.0];
+        l.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        [v addSubview:l];
+        [l release];
+        if (!self.controllerURLErrorLabel) {
+            // TODO : compute width and x
+            l = [[UILabel alloc] initWithFrame:CGRectMake(384.0, 11.0, 330.0, 21.0)];
+            l.text = @"TEST";
+            l.font = [UIFont boldSystemFontOfSize:17];
+            l.textColor = [UIColor redColor];
+            l.textAlignment = UITextAlignmentRight;
+            l.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            self.controllerURLErrorLabel = l;
+            [l release];
+        }
+        [v addSubview:self.controllerURLErrorLabel];
+        return v;
+    }
+    return nil;
 }
 
 #pragma mark - KVO
@@ -387,6 +454,8 @@
 @synthesize doneAction;
 @synthesize creating;
 @synthesize previousUndoManager;
+@synthesize controllerURLErrorLabel;
+@synthesize originalTextColor;
 
 - (void)setGroupMembers:(NSArray *)theGroupMembers
 {
