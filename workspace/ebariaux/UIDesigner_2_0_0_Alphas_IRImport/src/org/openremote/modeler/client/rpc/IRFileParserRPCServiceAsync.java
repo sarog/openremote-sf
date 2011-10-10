@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.client.BrandInfo;
+import org.openremote.modeler.client.DeviceInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -32,6 +33,7 @@ public interface IRFileParserRPCServiceAsync {
 //	void getCodeSets(Device device, AsyncCallback<List<CodeSet>> callback);
 
 	void getBrands(AsyncCallback<List<BrandInfo>> callback);
+	void getDevices(BrandInfo brand, AsyncCallback<List<DeviceInfo>> callback);
 
 
 

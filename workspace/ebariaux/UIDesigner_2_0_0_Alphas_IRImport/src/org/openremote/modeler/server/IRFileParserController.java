@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.BrandInfo;
+import org.openremote.modeler.client.DeviceInfo;
 import org.openremote.modeler.client.rpc.IRFileParserRPCService;
 
 import com.tinsys.ir.database.Brand;
@@ -41,5 +42,16 @@ public class IRFileParserController extends BaseGWTSpringController implements I
 		return brandInfo;} else{
 			return null;
 		}
+	}
+	
+	public List<DeviceInfo> getDevices(BrandInfo bi) {
+		List<DeviceInfo> deviceInfo = new ArrayList<DeviceInfo>();
+		Brand b = new Brand(bi.getBrandName());
+		
+		List<Device> devices = xcfFileParser.getDevices(b);
+		for (Device device : devices) {
+			deviceInfo.add(new DeviceInfo(new BrandInfo(device.getBrand().getBrandName()), device.getModelName()));
+		}
+		return deviceInfo;
 	}
 }
