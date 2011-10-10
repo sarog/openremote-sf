@@ -28,7 +28,6 @@
 
 @interface DefaultViewController (Private)
 
-
 - (void)navigateFromNotification:(NSNotification *)notification;
 - (void)refreshView:(id)sender;
 - (BOOL)navigateToGroup:(int)groupId toScreen:(int)screenId;
@@ -44,7 +43,6 @@
 - (void)transformToOppositeOrientation;
 
 @end
-
 
 @implementation DefaultViewController
 
@@ -98,27 +96,22 @@
     [super viewDidUnload];
 }
 
-- (void)loadView {
-	// Create a default view that won't be overlapped by status bar.
-	// status bar is 20px high and on the top of window.
-	// all the visible view contents will be shown inside this container.
+- (void)loadView
+{
 	[super loadView];
 	[self.view setBackgroundColor:[UIColor blackColor]];
-	
 
-	//Must add xib file view into window to detect current device orientation.
-	
 	//Init the error view with xib
 	errorViewController = [[ErrorViewController alloc] initWithErrorTitle:@"No Group Found" message:@"Please check your setting or define a group with screens first."];
 	[self.view addSubview:errorViewController.view];
-
 	
 	//Init the loading view with xib
 	initViewController = [[InitViewController alloc] init];
 	[self.view addSubview:initViewController.view];
 }
 
-- (void)refreshPolling {
+- (void)refreshPolling
+{
 	[currentGroupController startPolling];
 }
 
@@ -462,26 +455,16 @@
 	[currentGroupController performGesture:gesture];
 }
 
+#pragma mark Rotation handling
 
-
-
-
-
-// EBR : because this VC is installed at root, it needs to forward those messages to the VC it contains
-// When this class is not a VC anymore, this will be cleaner as the "real" VC will receive the appropriate messages
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
     return YES;
-//	if ([self isLoadingViewGone]) {
-//		if (currentGroupController.group.screens.count == 0) {
-//			return YES;
-//		} 
-//		return [currentGroupController shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-//	} else {
-//		return YES;
-//	}
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+// Because this VC is installed at root, it needs to forward those messages to the VC it contains
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
 	if ([self isLoadingViewGone]) {
 		[currentGroupController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	} else {
@@ -491,14 +474,12 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    NSLog(@"DefaultViewController, reported orientation is %d", self.interfaceOrientation);
     if ([self isLoadingViewGone]) {
 		[currentGroupController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    } else {
+        [initViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
     }
 }
-
-
-
 
 #pragma mark Detect the shake motion.
 
