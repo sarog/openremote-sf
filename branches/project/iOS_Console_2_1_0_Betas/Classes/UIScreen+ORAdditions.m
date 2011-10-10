@@ -22,11 +22,15 @@
 
 @implementation UIScreen (UIScreen_ORAdditions)
 
++ (CGRect)or_fullFrameForLandscapeOrientation:(BOOL)isLandscape
+{
+    CGSize size = [UIScreen mainScreen].bounds.size;
+	return CGRectMake(0.0, 0.0, (isLandscape ? size.height : size.width), (isLandscape ? size.width : size.height));        
+}
+
 + (CGRect)or_fullFrameForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    BOOL isLandscape = UIInterfaceOrientationIsLandscape(interfaceOrientation);
-    CGSize size = [UIScreen mainScreen].bounds.size;
-	return CGRectMake(0.0, 0.0, (isLandscape ? size.height : size.width), (isLandscape ? size.width : size.height));    
+    return [self or_fullFrameForLandscapeOrientation:UIInterfaceOrientationIsLandscape(interfaceOrientation)];
 }
 
 @end

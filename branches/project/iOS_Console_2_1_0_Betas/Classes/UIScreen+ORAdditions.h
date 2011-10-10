@@ -22,6 +22,7 @@
 
 @interface UIScreen (UIScreen_ORAdditions)
 
++ (CGRect)or_fullFrameForLandscapeOrientation:(BOOL)isLandscape;
 + (CGRect)or_fullFrameForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @end
