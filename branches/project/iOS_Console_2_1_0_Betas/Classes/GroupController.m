@@ -262,10 +262,7 @@
     }
     
     self.view.transform = myTransform;
-    
-    // TODO: this should call some version of fullFrame... and not hardcode
-    self.view.bounds = ([self currentScreen].landscape)?CGRectMake(0.0, 0.0, 1024.0, 768.0):CGRectMake(0.0, 0.0, 768.0, 1024.0);
-    
+    self.view.bounds = [UIScreen or_fullFrameForLandscapeOrientation:[self currentScreen].landscape];
     self.view.center = UIInterfaceOrientationIsPortrait(interfaceOrientation)?self.view.superview.center:CGPointMake(self.view.superview.center.y, self.view.superview.center.x);    
 }
 
