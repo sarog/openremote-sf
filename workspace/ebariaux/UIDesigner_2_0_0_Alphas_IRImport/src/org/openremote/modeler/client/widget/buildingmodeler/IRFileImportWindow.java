@@ -93,7 +93,7 @@ private void addListenersToForm() {
         public void handleEvent(FormEvent be) {
 
         	importForm.enable();
-        	importForm.showDevices();
+        	importForm.showBrands();
 
         }
     });

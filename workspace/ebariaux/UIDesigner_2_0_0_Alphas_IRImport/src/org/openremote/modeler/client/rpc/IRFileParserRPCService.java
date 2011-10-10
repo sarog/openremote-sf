@@ -22,6 +22,7 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.client.BrandInfo;
+import org.openremote.modeler.client.DeviceInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -35,5 +36,5 @@ public interface IRFileParserRPCService extends RemoteService {
 //	List<Device> getDevices(Brand brand);
 //	List<CodeSet> getCodeSets(Device device);
 	List<BrandInfo> getBrands(); 
-
+	List<DeviceInfo> getDevices(BrandInfo brand);
 }
