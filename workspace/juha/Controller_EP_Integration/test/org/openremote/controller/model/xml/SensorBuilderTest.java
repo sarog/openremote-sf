@@ -52,6 +52,7 @@ import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
+import org.openremote.controller.protocol.ReadCommand;
 
 /**
  * Unit tests for {@link org.openremote.controller.model.xml.SensorBuilder} class.
@@ -277,7 +278,7 @@ public class SensorBuilderTest
 
     commandService.trigger("666", "click");
 
-    String offValue = s.read();
+    String offValue = getSensorValueFromCache(717);
 
     Assert.assertTrue(
         "Expected 'off', got '" + offValue + "'",
@@ -286,7 +287,8 @@ public class SensorBuilderTest
 
     commandService.trigger("555", "click");
 
-    String onValue = s.read();
+
+    String onValue = getSensorValueFromCache(717);
 
     Assert.assertTrue(
         "Expected 'on', got '" + onValue + "'",
@@ -334,7 +336,7 @@ public class SensorBuilderTest
 
     // should get either one depending what the state of the listener is
 
-    String val = s.read();
+    String val = cache.queryStatusBySensorId(727);
     
     Assert.assertTrue(
         "Expected either 'on' or 'off', got " + val,
@@ -373,6 +375,15 @@ public class SensorBuilderTest
   
 
   // Helpers --------------------------------------------------------------------------------------
+
+  private String getSensorValueFromCache(int sensorID) throws Exception
+  {
+    // sleep here to give the polling mechanism enough time to push the event value to cache...
+    
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
+    
+    return cache.queryStatusBySensorId(sensorID);
+  }
 
   private Sensor buildSensor(SensorType type) throws Exception
   {
