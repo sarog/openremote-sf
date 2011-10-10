@@ -46,9 +46,6 @@
 @property (nonatomic, assign) BOOL doneAction;
 @property (nonatomic, assign) BOOL creating;
 @property (nonatomic, retain) NSUndoManager *previousUndoManager;
-
-@property (nonatomic, retain) UILabel *controllerURLErrorLabel;
-
 @property (nonatomic, retain) UIColor *originalTextColor;
 
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
@@ -84,7 +81,6 @@
     self.usernameField = nil;
     self.passwordField = nil;
     self.previousUndoManager = nil;
-    self.controllerURLErrorLabel = nil;
     self.originalTextColor = nil;
     [super dealloc];
 }
@@ -203,33 +199,11 @@
     }
 }
 
-
-
-
-
-- (void)displayURLErrorMessage
-{
-    self.controllerURLErrorLabel.text = @"Invalid URL";
-    [self.controllerURLErrorLabel setNeedsDisplay];
-//    [self.tableView reloadData];
-//    [self.urlField becomeFirstResponder];
-}
-
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    self.controllerURLErrorLabel.text = textField.text;
-    return YES;
-}
-                                                                                                                
-
-
-
 #pragma mark - UITextField delegate
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
     
-    NSLog(@"textFieldShouldEndEditing");
     NSString *url;
     if (textField == self.urlField) {
         url = [textField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -243,13 +217,8 @@
         NSURL *nsUrl = [NSURL URLWithString:url];
         if ([nsUrl scheme] == nil) {
             self.urlField.textColor = [UIColor redColor];
-//            self.controllerURLErrorLabel.text = @"Invalid URL";
-            
-//            [self.tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.0];
-//            [self performSelector:@selector(displayURLErrorMessage) withObject:nil afterDelay:0.0];
             return NO;
         }
-//        self.controllerURLErrorLabel.text = @"";
         self.urlField.textColor = self.originalTextColor;
         self.urlField.text = url;
         self.controller.primaryURL = url;
@@ -355,7 +324,6 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSLog(@"titleForHeaderInSection %d", section);
     switch (section) {
         case 0:
             // Handled by custom view so error message can be displayed
@@ -383,8 +351,10 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    NSLog(@"viewForHeaderInSection %d", section);
     if (section == 0) {
+        // Note: all this can be accomplish with just the tableView:titleForHeaderInSection: method
+        // This has been added to add display of error message in section title.
+        // See IPHONE-123 for more information
         UIView *v = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, tableView.frame.size.width)] autorelease];
         UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 11.0, 330.0, 21.0)]; // TODO: compute width
         l.text = @"Controller URL:";
@@ -393,18 +363,6 @@
         l.backgroundColor = [UIColor groupTableViewBackgroundColor];
         [v addSubview:l];
         [l release];
-        if (!self.controllerURLErrorLabel) {
-            // TODO : compute width and x
-            l = [[UILabel alloc] initWithFrame:CGRectMake(384.0, 11.0, 330.0, 21.0)];
-            l.text = @"TEST";
-            l.font = [UIFont boldSystemFontOfSize:17];
-            l.textColor = [UIColor redColor];
-            l.textAlignment = UITextAlignmentRight;
-            l.backgroundColor = [UIColor groupTableViewBackgroundColor];
-            self.controllerURLErrorLabel = l;
-            [l release];
-        }
-        [v addSubview:self.controllerURLErrorLabel];
         return v;
     }
     return nil;
@@ -454,7 +412,6 @@
 @synthesize doneAction;
 @synthesize creating;
 @synthesize previousUndoManager;
-@synthesize controllerURLErrorLabel;
 @synthesize originalTextColor;
 
 - (void)setGroupMembers:(NSArray *)theGroupMembers
