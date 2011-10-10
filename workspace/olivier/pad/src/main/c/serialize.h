@@ -13,7 +13,10 @@ typedef struct _field_t {
 		HEX = 'H'
 	} encoding;
 	int length;
-	char *data;
+	union {
+		apr_int32_t int32Val;
+		char *stringVal;
+	};
 } field_t;
 
 typedef enum _code_t {
