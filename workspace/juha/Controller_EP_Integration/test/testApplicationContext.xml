@@ -94,8 +94,8 @@
   <!-- TODO -->
   <bean id = "controlCommandService"
         class = "org.openremote.controller.service.impl.ControlCommandServiceImpl">
-    <constructor-arg><ref bean = "deployer"/></constructor-arg>
-    <constructor-arg><ref bean = "componentFactory"/></constructor-arg>
+    <constructor-arg ref = "deployer"/>
+    <constructor-arg ref = "componentFactory"/>
   </bean>
     
     <!-- controller.xml parser -->
@@ -111,7 +111,7 @@
 
 	<!-- profile service -->
     <bean id="profileService" class="org.openremote.controller.service.impl.ProfileServiceImpl" >
-    	<property name="configuration" ref="configuration"></property>
+    	<property name="configuration" ref="configuration"/>
     </bean>
 
     <!-- round-robin service -->
@@ -198,9 +198,12 @@
     <property name = "sensorBuilder" ref = "sensorBuilder"/>
   </bean>
 	-->
-  
-	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
 
+  <!--
+	<bean id = "controllerXMLListenSharingData" class="org.openremote.controller.config.ControllerXMLListenSharingData" />
+   -->
+
+  
     <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
 		<property name = "commandBuilders">
 		    <props>
@@ -269,7 +272,7 @@
 
 
 	<bean id="lutronHomeWorksCommandBuilder" class = "org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder">
-		<property name="gateway" ref="lutronHomeWorksGateway"></property>
+		<property name="gateway" ref="lutronHomeWorksGateway"/>
 	</bean>
 
 
