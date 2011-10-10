@@ -194,7 +194,7 @@ public class ComponentBuilderTest
     // Test...
 
     Sensor s = sensorBuilder.build(sensor1001);
-
+    s.start();
 
     Assert.assertTrue(s.getSensorID() == 1001);
     Assert.assertTrue(s.getSensorType() == EnumSensorType.SWITCH);
