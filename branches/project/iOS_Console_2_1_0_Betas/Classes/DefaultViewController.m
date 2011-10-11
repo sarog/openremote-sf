@@ -51,8 +51,6 @@
     self = [super init];
     if (self) {	
 			theDelegate = delegate;
-			tabBarControllers = [[NSMutableArray alloc] init];
-			tabBarControllerViewMap = [[NSMutableDictionary alloc] init];
 			navigationHistory = [[NSMutableArray alloc] init];
 			
 			//register notifications
@@ -65,15 +63,12 @@
 }
 
 - (void)dealloc {
-	[tabBarControllers release];
-    [tabBarControllerViewMap release];
 	[navigationHistory release];
     
     // TODO: recheck release of those, what about on view unload in case of low memory condition
     [currentGroupController release];
     
 	[errorViewController release];
-	[globalTabBarController release];
 	[updateController release];
 	
 	[super dealloc];
@@ -174,24 +169,7 @@
 	if (groups.count > 0) {
 		GroupController *gc = [self recoverLastOrCreateGroup];
 		currentGroupController = [gc retain];
-		
-		TabBar *localTabBar = currentGroupController.group.tabBar;
-		// local tabBar
-		if (localTabBar) {
-			localTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:localTabBar];
-			[self.view addSubview:localTabBarController.view];
-			
-			[tabBarControllers addObject:localTabBarController];
-			[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", gc.group.groupId]];
-		}		
-		// global tabBar
-		else if ([definition tabBar]) {
-			globalTabBarController = [[TabBarController alloc] initWithGroupController:currentGroupController tabBar:[definition tabBar]];
-			[self.view addSubview:globalTabBarController.view];
-		} else {
-			[self.view addSubview:currentGroupController.view];
-		}
-
+		[self.view addSubview:currentGroupController.view];
 		[self saveLastGroupIdAndScreenId];
 	} else {		
 		[self.view addSubview:errorViewController.view];		
@@ -280,37 +258,6 @@
     [self.view.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 	
 	UIView *v = targetGroupController.view;
-
-    Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
-    
-	//if local tabbar exists
-	if (targetGroupController.group.tabBar) {
-		BOOL findCachedLocalTabBarController = NO;
-		for (TabBarController *lTabBarController in tabBarControllers) {
-			if (lTabBarController.groupController.group.groupId == groupId) {
-				localTabBarController = lTabBarController;
-				findCachedLocalTabBarController = YES;
-				break;
-			}
-		}
-		if (!findCachedLocalTabBarController) {
-			localTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:targetGroupController.group.tabBar];
-			[tabBarControllers addObject:localTabBarController];
-			[tabBarControllerViewMap setObject:localTabBarController.view forKey:[NSString stringWithFormat:@"%d", groupId]];
-		} else {
-			[localTabBarController updateGroupController:targetGroupController];
-		}
-		v = [tabBarControllerViewMap objectForKey:[NSString stringWithFormat:@"%d", groupId]];
-	}
-	//if global tabbar exists
-	else if ([definition tabBar]) {
-		if (globalTabBarController) {
-			[globalTabBarController updateGroupController:targetGroupController];
-		} else {
-			globalTabBarController = [[TabBarController alloc] initWithGroupController:targetGroupController tabBar:[definition tabBar]];
-		}
-		v = globalTabBarController.view;
-	}
 
 	[self.view addSubview:v];
 
@@ -413,10 +360,6 @@
 	for (UIView *view in self.view.subviews) {
 		[view removeFromSuperview];
 	}
-	[tabBarControllers removeAllObjects];
-	[tabBarControllerViewMap removeAllObjects];
-	globalTabBarController = nil;
-	localTabBarController = nil;
 	
 	if (currentGroupController) {
 		[currentGroupController stopPolling];

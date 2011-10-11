@@ -28,7 +28,6 @@
 #import "LogoutHelper.h"
 #import "Gesture.h"
 #import "TabBarItem.h"
-#import "TabBarController.h"
 #import "Definition.h"
 #import "UpdateController.h"
 #import "InitViewController.h"
@@ -44,18 +43,11 @@
 	GroupController *currentGroupController;
 	NSMutableArray *navigationHistory;
 	ErrorViewController* errorViewController;
-	TabBarController *globalTabBarController;
-	TabBarController *localTabBarController;
-	NSMutableArray *tabBarControllers;
-	NSMutableDictionary *tabBarControllerViewMap;
 	UpdateController *updateController;
 }
 
 - (id)initWithDelegate:(id)delegate;
 
-/**
- * Initialize all groupControllers, localTabBarControllers and globalTabBarController with group, localTabBar and globalTabBar model data.
- */
 - (void)initGroups;
 
 /**

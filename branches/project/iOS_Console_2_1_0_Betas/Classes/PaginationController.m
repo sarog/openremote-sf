@@ -20,9 +20,21 @@
  */
 #import "PaginationController.h"
 #import "ScreenViewController.h"
+#import "GroupController.h"
 #import "Group.h"
+#import "TabBar.h"
+#import "TabBarItem.h"
+#import "Image.h"
+#import "Definition.h"
+#import "Navigate.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
+#import "DirectoryDefinition.h"
+#import "NotificationConstant.h"
 
 #define PAGE_CONTROL_HEIGHT 20
+#define kTabBarHeight 49.0
 
 @interface PaginationController ()
 
@@ -35,18 +47,29 @@
 - (void)pageControlValueDidChange:(id)sender;
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
 - (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation;
+- (void)updateTabBarItemSelection;
 
-@property (nonatomic, retain) Group *group;
+@property (nonatomic, assign) GroupController *groupController;
+@property (nonatomic, retain) TabBar *tabBar;
+@property (nonatomic, assign) UITabBar *uiTabBar;
 
 @end
 
 @implementation PaginationController
 
-- (id)initWithGroup:(Group *)aGroup
+- (id)initWithGroupController:(GroupController *)aGroupController
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.group = aGroup;
+        self.groupController = aGroupController;
+        if (self.groupController.group.tabBar) {
+            self.tabBar = self.groupController.group.tabBar;
+        } else {
+            Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
+            if ([definition tabBar]) {
+                self.tabBar = [definition tabBar];
+            }
+        }
     }
     return self;
 }
@@ -54,8 +77,9 @@
 - (void)dealloc
 {
 	[viewControllers release];
-    self.group = nil;
-	
+    self.groupController = nil;
+	self.tabBar = nil;
+    self.uiTabBar = nil;
 	[super dealloc];
 }
 
@@ -182,6 +206,7 @@
 - (void)updateViewForCurrentPage {
 	[self initViewForPage:selectedIndex];
 	[pageControl setCurrentPage:selectedIndex];
+    [self updateTabBarItemSelection];
 }
 
 // Refresh the current screenView, previous screenView and next screenView.
@@ -189,7 +214,8 @@
 	[self updateViewForPage:selectedIndex - 1];
 	[self updateViewForPage:selectedIndex];
 	[self updateViewForPage:selectedIndex + 1];
-	
+    [self updateTabBarItemSelection];
+
 	[pageControl setCurrentPage:selectedIndex];
 	[self saveLastScreen];
 }
@@ -262,6 +288,24 @@
 - (void)loadView {
 	[super loadView];
 	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+    
+    if (self.tabBar) {
+        UITabBar *tmpBar = [[UITabBar alloc] initWithFrame:CGRectMake(0.0, frameHeight - kTabBarHeight, frameWidth, kTabBarHeight)];
+        self.uiTabBar = tmpBar;
+        [self.view addSubview:self.uiTabBar];
+        NSMutableArray *tmpItems = [NSMutableArray arrayWithCapacity:[self.tabBar.tabBarItems count]];
+        // Not using fast iteration but standard for loop to have access to object index
+        for (int i = 0; i < [self.tabBar.tabBarItems count]; i++) {
+            TabBarItem *item = [self.tabBar.tabBarItems objectAtIndex:i];
+            UIImage *image = [[UIImage alloc] initWithContentsOfFile:[[DirectoryDefinition imageCacheFolder] stringByAppendingPathComponent:item.tabBarItemImage.src]];
+            UITabBarItem *uiItem = [[UITabBarItem alloc] initWithTitle:item.tabBarItemName image:image tag:i];
+            [tmpItems addObject:uiItem];
+        }
+        self.uiTabBar.items = tmpItems;
+        self.uiTabBar.delegate = self;
+        [tmpBar release];
+    }
+    
 	scrollView = [[UIScrollView alloc] init];
 	[scrollView setDelegate:self];
 	[scrollView setPagingEnabled:YES];
@@ -270,14 +314,14 @@
 	[scrollView setScrollsToTop:NO];
 	[scrollView setOpaque:YES];
 	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-	[scrollView setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	[scrollView setFrame:CGRectMake(0, 0, frameWidth, frameHeight - (self.uiTabBar?kTabBarHeight:0.0))];
 	[scrollView setBackgroundColor:[UIColor blackColor]];
 	[self.view addSubview:scrollView];
 	[scrollView release];
 	pageControl = [[UIPageControl alloc] init];
 	if (viewControllers.count > 1) {
 		[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-		[pageControl setFrame:CGRectMake(0, frameHeight - PAGE_CONTROL_HEIGHT, frameWidth, PAGE_CONTROL_HEIGHT)];
+		[pageControl setFrame:CGRectMake(0, frameHeight - PAGE_CONTROL_HEIGHT - (self.uiTabBar?kTabBarHeight:0.0), frameWidth, PAGE_CONTROL_HEIGHT)];
 		[pageControl setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5f]];
 		[pageControl setOpaque:YES];
 		[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
@@ -336,8 +380,40 @@
 	[self initView];
 }
 
+/**
+ * Verify that the screen that is current displayed is the target of the navigation of an item in the tab bar.
+ * If it is, select that item. Items are search in order and the first one matching is selected.
+ * If no matching item is found, selection is cleared.
+ */
+- (void)updateTabBarItemSelection
+{
+    NSUInteger selected = NSNotFound;
+    
+    for (TabBarItem *tabBarItem in self.tabBar.tabBarItems) {
+		if (tabBarItem.navigate && self.groupController.groupId == tabBarItem.navigate.toGroup) {
+			if (tabBarItem.navigate.toScreen == [self.groupController currentScreenId]) {
+				selected = [self.tabBar.tabBarItems indexOfObject:tabBarItem];
+                break;
+			}	
+		}
+    }
+    self.uiTabBar.selectedItem = [self.uiTabBar.items objectAtIndex:selected];
+}
 
-@synthesize group;
+#pragma mark UITabBar delegate
+
+- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item
+{
+    TabBarItem *tabBarItem = [self.tabBar.tabBarItems objectAtIndex:item.tag];
+	if (tabBarItem && tabBarItem.navigate) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
+	}
+    [self updateTabBarItemSelection];
+}
+
+@synthesize groupController;
+@synthesize tabBar;
+@synthesize uiTabBar;
 @synthesize viewControllers, selectedIndex;
 
 @end

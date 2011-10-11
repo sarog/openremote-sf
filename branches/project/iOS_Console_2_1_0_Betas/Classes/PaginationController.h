@@ -21,12 +21,12 @@
 #import <UIKit/UIKit.h>
 #import "ScreenViewController.h"
 
-@class Group;
+@class GroupController;
 
 /**
  * This class is mainly responsible for switching screenView in groupController's screenViews.
  */
-@interface PaginationController : UIViewController <UIScrollViewDelegate> {
+@interface PaginationController : UIViewController <UIScrollViewDelegate, UITabBarDelegate> {
 	NSArray *viewControllers;
 	NSUInteger selectedIndex;
 	
@@ -45,7 +45,7 @@
 @property(nonatomic,copy) NSArray *viewControllers;
 @property(nonatomic,readonly) NSUInteger selectedIndex;
 
-- (id)initWithGroup:(Group *)aGroup;
+- (id)initWithGroupController:(GroupController *)aGroupController;
 
 /**
  * Switch to the specified screen with screen id.
