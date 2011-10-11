@@ -23,7 +23,7 @@
 
 #define PAGE_CONTROL_HEIGHT 20
 
-@interface PaginationController (Private)
+@interface PaginationController ()
 
 - (void)initView;
 - (void)updateView;
@@ -39,7 +39,8 @@
 
 @implementation PaginationController
 
-- (void)dealloc {
+- (void)dealloc
+{
 	[viewControllers release];
 	
 	[super dealloc];
@@ -154,7 +155,7 @@
 
 // Save last screen's id while switching screen view for recovery of lastScreenView in RootViewController.
 - (void)saveLastScreen {
-	if (selectedIndex < viewControllers.count && selectedIndex >= 0) {
+	if (selectedIndex < viewControllers.count) {
 		int lastScreenId = ((ScreenViewController *)[viewControllers objectAtIndex:selectedIndex]).screen.screenId;
 		if (lastScreenId == 0) {
 			return;
@@ -182,7 +183,6 @@
 
 // Init current screen view of paginationController with specified page index.
 - (void)initViewForPage:(NSUInteger)page {
-	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
 	UIViewController *controller = [viewControllers objectAtIndex:page];
 	
@@ -204,7 +204,6 @@
 
 // Refresh the screenView page index specified.
 - (void)updateViewForPage:(NSUInteger)page {
-	if (page < 0) return;
 	if (page >= [viewControllers count]) return;
 	UIViewController *controller = [viewControllers objectAtIndex:page];
 	CGRect frame = scrollView.bounds;
