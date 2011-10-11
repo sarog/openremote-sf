@@ -49,7 +49,7 @@
 - (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation;
 - (void)updateTabBarItemSelection;
 
-@property (nonatomic, assign) GroupController *groupController;
+@property (nonatomic, retain) Group *group;
 @property (nonatomic, retain) TabBar *tabBar;
 @property (nonatomic, assign) UITabBar *uiTabBar;
 
@@ -57,13 +57,13 @@
 
 @implementation PaginationController
 
-- (id)initWithGroupController:(GroupController *)aGroupController
+- (id)initWithGroup:(Group *)aGroup
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.groupController = aGroupController;
-        if (self.groupController.group.tabBar) {
-            self.tabBar = self.groupController.group.tabBar;
+        self.group = aGroup;
+        if (self.group.tabBar) {
+            self.tabBar = self.group.tabBar;
         } else {
             Definition *definition = [[ORConsoleSettingsManager sharedORConsoleSettingsManager] consoleSettings].selectedController.definition;
             if ([definition tabBar]) {
@@ -77,7 +77,7 @@
 - (void)dealloc
 {
 	[viewControllers release];
-    self.groupController = nil;
+    self.group = nil;
 	self.tabBar = nil;
     self.uiTabBar = nil;
 	[super dealloc];
@@ -390,8 +390,8 @@
     NSUInteger selected = NSNotFound;
     
     for (TabBarItem *tabBarItem in self.tabBar.tabBarItems) {
-		if (tabBarItem.navigate && self.groupController.groupId == tabBarItem.navigate.toGroup) {
-			if (tabBarItem.navigate.toScreen == [self.groupController currentScreenId]) {
+		if (tabBarItem.navigate && self.group.groupId == tabBarItem.navigate.toGroup) {
+			if (tabBarItem.navigate.toScreen == [self currentScreenViewController].screen.screenId) {
 				selected = [self.tabBar.tabBarItems indexOfObject:tabBarItem];
                 break;
 			}	
@@ -411,7 +411,7 @@
     [self updateTabBarItemSelection];
 }
 
-@synthesize groupController;
+@synthesize group;
 @synthesize tabBar;
 @synthesize uiTabBar;
 @synthesize viewControllers, selectedIndex;
