@@ -24,8 +24,8 @@ public class DeviceInfo extends BaseModel implements IsSerializable {
 		setModelName(modelName);
 	}
 
-	public String getBrandInfo() {
-		return get("brandName");
+	public BrandInfo getBrandInfo() {
+		return get("brandInfo");
 	}
 
 	public void setBrandInfo(BrandInfo brandInfo) {
