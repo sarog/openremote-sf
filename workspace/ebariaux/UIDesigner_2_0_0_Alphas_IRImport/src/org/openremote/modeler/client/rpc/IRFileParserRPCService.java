@@ -22,10 +22,14 @@ package org.openremote.modeler.client.rpc;
 import java.util.List;
 
 import org.openremote.modeler.client.BrandInfo;
+import org.openremote.modeler.client.CodeSetInfo;
 import org.openremote.modeler.client.DeviceInfo;
+import org.openremote.modeler.client.IRCommandInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.tinsys.ir.database.CodeSet;
+import com.tinsys.ir.database.IRCommand;
 
 /**
  * The Interface is for managing slider entity.
@@ -33,8 +37,9 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("irfile.smvc")
 public interface IRFileParserRPCService extends RemoteService {
    
-//	List<Device> getDevices(Brand brand);
-//	List<CodeSet> getCodeSets(Device device);
+
+	List<CodeSetInfo> getCodeSets(DeviceInfo device);
 	List<BrandInfo> getBrands(); 
 	List<DeviceInfo> getDevices(BrandInfo brand);
+	List<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
 }

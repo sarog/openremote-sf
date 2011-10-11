@@ -19,10 +19,13 @@
  */
 package org.openremote.modeler.client.widget.buildingmodeler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openremote.modeler.client.BrandInfo;
+import org.openremote.modeler.client.CodeSetInfo;
 import org.openremote.modeler.client.DeviceInfo;
+import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.proxy.DeviceBeanModelProxy;
 import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
@@ -56,7 +59,11 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
+import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
+import com.extjs.gxt.ui.client.widget.grid.GridView;
+import com.extjs.gxt.ui.client.widget.grid.GridViewConfig;
 import com.extjs.gxt.ui.client.widget.layout.CenterLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
@@ -90,14 +97,26 @@ public class IRFileImportForm extends CommonForm {
 	protected Button importButton;
 
 	/** The code grid. */
-	protected Grid<ModelData> codeGrid = null;
+	protected Grid<IRCommandInfo> codeGrid = null;
 
-	ListStore<BrandInfo> brandInfos = null;
-	ComboBox<BrandInfo> brandInfoList = null;
-	ListStore<DeviceInfo> deviceInfos = null;
-	ComboBox<DeviceInfo> deviceInfoList = null;
-
+	private ColumnModel cm = null;
+	
+	protected ListStore<BrandInfo> brandInfos = null;
+	protected ComboBox<BrandInfo> brandInfoList = null;
+	
+	protected ListStore<DeviceInfo> deviceInfos = null;
+	protected ComboBox<DeviceInfo> deviceInfoList = null;
+	
+	protected ListStore<CodeSetInfo> codeSetInfos = null;
+	protected ComboBox<CodeSetInfo> codeSetInfoList = null;
+	
+	ListStore<IRCommandInfo> listStore;
+	
 	protected Component wrapper;
+
+	private ModelType codeType;
+
+
 
 	/**
 	 * Instantiates a new iR command import form.
@@ -123,9 +142,9 @@ public class IRFileImportForm extends CommonForm {
 		commandContainer.setLayout(new CenterLayout());
 		commandContainer.setLayoutOnChange(true);
 		add(commandContainer, new RowData(1, 1));
-
+		onSubmit(wrapper);
 	}
-
+	
 	/**
 	 * On submit.
 	 * 
@@ -226,9 +245,12 @@ public class IRFileImportForm extends CommonForm {
 									});
 
 						} else {
+							codeSetInfos.removeAll();
+							codeSetInfoList.clearSelections();
+							codeSetInfoList.getStore().removeAll();
 							deviceInfos.removeAll();
-							deviceInfoList.removeFromParent();
-							deviceInfoList = null;
+							deviceInfoList.clearSelections();
+							deviceInfoList.getStore().removeAll();
 							brandInfoList.clearSelections();
 							brandInfos.removeAll();
 							brandInfos.add(brands);
@@ -245,7 +267,6 @@ public class IRFileImportForm extends CommonForm {
 
 					@Override
 					public void onSuccess(List<DeviceInfo> devices) {
-			//			Window.alert(String.valueOf(devices.size())+devices.get(0).getModelName());
 						if (deviceInfos == null) {
 							deviceInfos = new ListStore<DeviceInfo>();
 
@@ -266,20 +287,122 @@ public class IRFileImportForm extends CommonForm {
 										@Override
 										public void selectionChanged(
 												SelectionChangedEvent<DeviceInfo> se) {
-											Window.alert(se.getSelectedItem()
-													.getModelName());
-											// showDevices(se.getSelectedItem());
+											showCodeSets(se.getSelectedItem());
 
 										}
 
+										
+
 									});
 						} else {
+							codeSetInfos.removeAll();
+							codeSetInfoList.clearSelections();
+							codeSetInfoList.getStore().removeAll();
 							deviceInfos.removeAll();
+							deviceInfoList.clearSelections();
+							deviceInfoList.getStore().removeAll();
 							deviceInfos.add(devices);
+							
+							
 						}
 
 					}
 				});
 
+	}
+	
+	private void showCodeSets(
+			DeviceInfo device) {
+		IrFileParserProxy.loadCodeSets(device, new AsyncSuccessCallback<List<CodeSetInfo>>() {
+
+			@Override
+			public void onSuccess(List<CodeSetInfo> codeSets) {
+				if (codeSetInfos==null){
+					codeSetInfos = new ListStore<CodeSetInfo>();
+					codeSetInfoList = new ComboBox<CodeSetInfo>();
+					
+					deviceInfoList
+					.setEmptyText("Please select CodeSet...");
+//					Window.alert(String.valueOf(codeSets.size()));
+					codeSetInfoList.setDisplayField("category");
+					codeSetInfoList.setWidth(150);
+					codeSetInfoList.setStore(codeSetInfos);
+					codeSetInfoList.setTriggerAction(TriggerAction.ALL);
+					codeSetInfoList.setEditable(false);
+			selectContainer.add(codeSetInfoList);
+			codeSetInfos.add(codeSets);
+
+			codeSetInfoList.addSelectionChangedListener(new SelectionChangedListener<CodeSetInfo>() {
+
+						@Override
+						public void selectionChanged(
+								SelectionChangedEvent<CodeSetInfo> se) {
+							//Window.alert(se.getSelectedItem().getCategory()+" "+se.getSelectedItem().getDescription()+" "+se.getSelectedItem().getCategory().toString());
+							showGrid(se.getSelectedItem());
+						}
+
+						
+					});
+					
+				}else{
+					codeSetInfos.removeAll();
+					codeSetInfoList.clearSelections();
+					codeSetInfoList.getStore().removeAll();
+					codeSetInfos.add(codeSets);
+				}
+				
+			}
+		});
+		
+	}
+	private void showGrid(CodeSetInfo selectedItem) {
+		
+		IrFileParserProxy.loadIRCommands(selectedItem, new AsyncSuccessCallback<List<IRCommandInfo>>() {
+
+			@Override
+			public void onSuccess(List<IRCommandInfo> iRCommands) {
+				if (importButton != null) {
+			         importButton.setEnabled(true);
+			      }
+				if (listStore==null){
+				 listStore = new ListStore<IRCommandInfo>();}else{
+					 listStore.removeAll();
+				 }
+				for (IRCommandInfo irCommandInfo : iRCommands) {
+					listStore.add(irCommandInfo);
+				}
+			      if (cm == null) {
+			          List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
+			          codeGridColumns.add(new ColumnConfig("name", "Name", 120));
+			          codeGridColumns.add(new ColumnConfig("code", "Code", 250));
+			          codeGridColumns.add(new ColumnConfig("originalCode", "Original Code", 250));
+			          codeGridColumns.add(new ColumnConfig("comment", "Comment", 250));
+			          cm = new ColumnModel(codeGridColumns);
+			       }
+			      if (codeGrid==null){
+			      codeGrid = new Grid<IRCommandInfo>(listStore, cm);}
+			      GridView gv = new GridView();
+			      codeGrid.setView(gv);
+			      gv.setViewConfig(new GridViewConfig(){
+			    	 @Override
+			    	public String getRowStyle(ModelData model, int rowIndex,
+			    			ListStore<ModelData> ds) {
+			    		 	if (model!=null){
+			    		if (model.get("code")==null){
+			    			return "background-color:red;";
+			    		}else{
+			    			return "";
+			    		}}else{
+			    			return "";
+			    		}
+			    	} 
+			      });
+			      codeGrid.setLoadMask(true);
+			      codeGrid.setHeight(400);
+			      commandContainer.add(codeGrid);
+			}
+		});
+		
+		
 	}
 }

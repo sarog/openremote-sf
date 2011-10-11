@@ -7,6 +7,7 @@ import org.openremote.modeler.service.IRFileParserService;
 import com.tinsys.ir.database.Brand;
 import com.tinsys.ir.database.CodeSet;
 import com.tinsys.ir.database.Device;
+import com.tinsys.ir.database.IRCommand;
 import com.tinsys.pronto.irfiles.XCFFileParser;
 
 public class IRFileParserServiceImpl implements IRFileParserService {
@@ -34,6 +35,10 @@ public class IRFileParserServiceImpl implements IRFileParserService {
 	}
 
 
-
+	@Override
+	public List<IRCommand> getIRCommands(CodeSet codeset) {
+		
+		return codeset.getIRCommands();
+	}
 
 }
