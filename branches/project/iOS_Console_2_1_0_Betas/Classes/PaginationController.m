@@ -397,7 +397,7 @@
 			}	
 		}
     }
-    self.uiTabBar.selectedItem = [self.uiTabBar.items objectAtIndex:selected];
+    self.uiTabBar.selectedItem = (selected != NSNotFound)?[self.uiTabBar.items objectAtIndex:selected]:nil;
 }
 
 #pragma mark UITabBar delegate
