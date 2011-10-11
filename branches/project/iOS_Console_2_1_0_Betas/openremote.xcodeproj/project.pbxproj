@@ -15,7 +15,6 @@
 		33267ED410E4895E00E3AE42 /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
 		338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
-		33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		6001B9A3140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
 		6001B9A4140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
 		6001B9A8140B6F7A00B18E84 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
@@ -371,7 +370,6 @@
 		60EB56E6135C4E4100B29CED /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
 		60EB56E7135C4E4100B29CED /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
 		60EB56E9135C4E4100B29CED /* GestureWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */; };
-		60EB56EC135C4E4100B29CED /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33DF56CD10CCF6B50005446D /* TabBarController.m */; };
 		60EB56ED135C4E4100B29CED /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		60EB56EE135C4E4100B29CED /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		60EB56EF135C4E4100B29CED /* DefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC1E07D10DB491400155CC0 /* DefaultViewController.m */; };
@@ -564,8 +562,6 @@
 		338D306A10D8DD000043BFE9 /* UIViewUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewUtil.h; sourceTree = "<group>"; };
 		338D306B10D8DD000043BFE9 /* UIViewUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewUtil.m; sourceTree = "<group>"; };
 		33981B3410B119BC0076DB59 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
-		33DF56CC10CCF6B50005446D /* TabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabBarController.h; sourceTree = "<group>"; };
-		33DF56CD10CCF6B50005446D /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		6001B9A1140B6A3400B18E84 /* ButtonParserAPI_v2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParserAPI_v2.h; sourceTree = "<group>"; };
 		6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonParserAPI_v2.m; sourceTree = "<group>"; };
 		6001B9A6140B6F7900B18E84 /* ButtonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonParser.h; sourceTree = "<group>"; };
@@ -2122,8 +2118,6 @@
 				8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */,
 				8CF539A910B9359F00C52FB0 /* ErrorViewController.h */,
 				8CF539AA10B9359F00C52FB0 /* ErrorViewController.m */,
-				33DF56CC10CCF6B50005446D /* TabBarController.h */,
-				33DF56CD10CCF6B50005446D /* TabBarController.m */,
 				8CC1E07C10DB491400155CC0 /* DefaultViewController.h */,
 				8CC1E07D10DB491400155CC0 /* DefaultViewController.m */,
 				60950E1413CB3A6100B983E7 /* ControllerDetailViewController.h */,
@@ -2422,7 +2416,6 @@
 				8CC636D010BD4DCC009C25C9 /* NSStringAdditions.m in Sources */,
 				8CE7EBE510BE773600E15487 /* ControllerException.m in Sources */,
 				8CDE3FF910C39D1F0096CAC9 /* GestureWindow.m in Sources */,
-				33DF56CF10CCF6B50005446D /* TabBarController.m in Sources */,
 				338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */,
 				338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */,
 				8CC1E07F10DB491400155CC0 /* DefaultViewController.m in Sources */,
@@ -2575,7 +2568,6 @@
 				60EB56E6135C4E4100B29CED /* NSStringAdditions.m in Sources */,
 				60EB56E7135C4E4100B29CED /* ControllerException.m in Sources */,
 				60EB56E9135C4E4100B29CED /* GestureWindow.m in Sources */,
-				60EB56EC135C4E4100B29CED /* TabBarController.m in Sources */,
 				60EB56ED135C4E4100B29CED /* ClippedUIImage.m in Sources */,
 				60EB56EE135C4E4100B29CED /* UIViewUtil.m in Sources */,
 				60EB56EF135C4E4100B29CED /* DefaultViewController.m in Sources */,
