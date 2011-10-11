@@ -20,6 +20,7 @@
  */
 #import "PaginationController.h"
 #import "ScreenViewController.h"
+#import "Group.h"
 
 #define PAGE_CONTROL_HEIGHT 20
 
@@ -35,13 +36,25 @@
 - (void)scrollToSelectedViewWithAnimation:(BOOL)withAnimation;
 - (BOOL)switchToScreen:(int)screenId withAnimation:(BOOL) withAnimation;
 
+@property (nonatomic, retain) Group *group;
+
 @end
 
 @implementation PaginationController
 
+- (id)initWithGroup:(Group *)aGroup
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        self.group = aGroup;
+    }
+    return self;
+}
+
 - (void)dealloc
 {
 	[viewControllers release];
+    self.group = nil;
 	
 	[super dealloc];
 }
@@ -323,6 +336,8 @@
 	[self initView];
 }
 
+
+@synthesize group;
 @synthesize viewControllers, selectedIndex;
 
 @end
