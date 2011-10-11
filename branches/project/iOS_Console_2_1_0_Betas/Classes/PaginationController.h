@@ -21,7 +21,7 @@
 #import <UIKit/UIKit.h>
 #import "ScreenViewController.h"
 
-@class GroupController;
+@class Group;
 
 /**
  * This class is mainly responsible for switching screenView in groupController's screenViews.
@@ -45,7 +45,7 @@
 @property(nonatomic,copy) NSArray *viewControllers;
 @property(nonatomic,readonly) NSUInteger selectedIndex;
 
-- (id)initWithGroupController:(GroupController *)aGroupController;
+- (id)initWithGroup:(Group *)aGroup;
 
 /**
  * Switch to the specified screen with screen id.

@@ -123,7 +123,7 @@
 	
 	if (isLandscape) {
 		if (landscapePaginationController == nil) {
-			landscapePaginationController = [[PaginationController alloc] initWithGroupController:self];
+			landscapePaginationController = [[PaginationController alloc] initWithGroup:self.group];
 			[landscapePaginationController setViewControllers:[self viewControllersForScreens:screens] isLandscape:isLandscape];
 		}
         self.currentPaginationController = landscapePaginationController;
@@ -136,7 +136,7 @@
 		[[landscapePaginationController currentScreenViewController] startPolling];
 	} else {
 		if (portraitPaginationController == nil) {
-			portraitPaginationController = [[PaginationController alloc] initWithGroupController:self];
+			portraitPaginationController = [[PaginationController alloc] initWithGroup:self.group];
 			[portraitPaginationController setViewControllers:[self viewControllersForScreens:screens] isLandscape:isLandscape];
 		}
         self.currentPaginationController = portraitPaginationController;
