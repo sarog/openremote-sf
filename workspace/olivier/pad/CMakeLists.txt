@@ -9,3 +9,4 @@ set (pad_VERSION_MAJOR 1)
 set (pad_VERSION_MINOR 0)
   
 add_subdirectory (src/main/c)
+add_subdirectory (src/test/c)
