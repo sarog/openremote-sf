@@ -44,10 +44,7 @@
         <allowBlank>false</allowBlank>
         <maxLength>1000</maxLength>
 
-        <regex
-            message = "URL should start with http:// just like 'http://www.google.com'">
-          (http|https|ftp)\://[a-zA-Z0-9\-\.]+(\.[a-zA-Z]{2,3})?(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*
-        </regex>
+        <regex message = "Enter valid HTTP URL">.*</regex>
       </validations>
     </attr>
     
