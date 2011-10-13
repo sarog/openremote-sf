@@ -204,8 +204,8 @@
         }
         case UNAUTHORIZED:
         {
-            if ([delegate respondsToSelector:@selector(controllerRequestRequiresAuthentication)]) {
-                [delegate controllerRequestRequiresAuthentication];
+            if ([delegate respondsToSelector:@selector(controllerRequestRequiresAuthentication:)]) {
+                [delegate controllerRequestRequiresAuthentication:self];
             } else {
                 // No specific handling by the delegate, post a notification so "anyone" can handle
 //                [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil; // TODO: move to specific cases, don't always get rid of password
