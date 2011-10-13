@@ -47,7 +47,6 @@
     NSString *requestPath;
     NSString *method;
 	NSURLConnection *connection;
-    NSError* lastError;
 
     ORGroupMember *usedGroupMember;
     NSMutableSet *potentialGroupMembers;
