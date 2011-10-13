@@ -14,6 +14,8 @@ void testBuf2Int32() {
   ASSERT(v, -1);
   r = buf2Int32("GFFFFFFF", &v);
   ASSERT(r, R_INVALID_MESSAGE);
+  r = buf2Int32("FFFFFFF", &v);
+  ASSERT(r, R_INVALID_MESSAGE);
 }
 
 void main(int argc, const char *argv[]) {
