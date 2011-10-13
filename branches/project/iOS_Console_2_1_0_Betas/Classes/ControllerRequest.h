@@ -20,6 +20,7 @@
  */
 #import <Foundation/Foundation.h>
 #import "DataCapturingNSURLConnectionDelegate.h"
+#import "UpdateController.h"
 
 @class ORGroupMember;
 @class ORController;
@@ -41,7 +42,7 @@
  * It is retained and released when the connection is finished (after NSURLConnection sent
  * connectionDidFinishLoading: or connection:didFailWithError:
  */
-@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate> {
+@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate, UpdateControllerDelegate> {
 
     NSString *requestPath;
     NSString *method;
