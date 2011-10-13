@@ -96,6 +96,13 @@
 	} 
 }
 
+- (void)controllerRequestRequiresAuthentication
+{
+    if ([delegate respondsToSelector:@selector(fetchPanelsRequiresAuthentication)]) {
+        [delegate fetchPanelsRequiresAuthentication];
+    }
+}
+
 @synthesize controller;
 @synthesize delegate;
 

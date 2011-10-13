@@ -174,6 +174,11 @@
     [self updateTableView];
 }
 
+- (void)fetchPanelsRequiresAuthentication
+{
+    [self populateLoginView:self];
+}
+
 - (void)fetchPanelsDidFailWithError:(NSError *)error
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];

@@ -548,6 +548,11 @@
 	}
 }
 
+- (void)fetchPanelsRequiresAuthentication
+{
+    [self populateLoginView:self];
+}
+
 #pragma mark LoginViewControllerDelegate implementation
 
 // When cancelled on credentials panel
@@ -561,6 +566,10 @@
 {
     
     // TODO: double check fetchGroupMember is the only source that can trigger this
+    // No, it is not the only source:
+    // - fetchPanels will trigger this
+    // - UpdateController can trigger it
+    
     
     // TODO: the controller should be passed back in the message
     [settingsManager.consoleSettings.selectedController fetchGroupMembers];
