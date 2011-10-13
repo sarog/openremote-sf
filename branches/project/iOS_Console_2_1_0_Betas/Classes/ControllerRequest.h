@@ -63,5 +63,6 @@
 - (void)postRequestWithPath:(NSString *)path;
 - (void)getRequestWithPath:(NSString *)path;
 - (void)cancel;
+- (void)retry;
 
 @end
