@@ -23,6 +23,9 @@
 #import "NSURLRequest+ORAdditions.h"
 #import "ORController.h"
 #import "ORGroupMember.h"
+#import "NotificationConstant.h"
+#import "ControllerException.h"
+#import "ViewHelper.h"
 
 @interface ControllerRequest ()
 
@@ -166,6 +169,7 @@
     // Connection error, check if failover URLs available
     lastError = error;
     
+    // TODO: there are certain errors for which we should not switch to a different server
     if ([self selectNextGroupMemberToTry]) {
         [self send];
     } else {
@@ -186,9 +190,25 @@
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-	if ([delegate respondsToSelector:@selector(controllerRequestDidReceiveResponse:)]) {
-		[delegate controllerRequestDidReceiveResponse:response];
-	}
+    
+    // TODO: shouldn't this also trigger the switch to another controller ?
+    
+    NSHTTPURLResponse *httpResp = (NSHTTPURLResponse *)response;
+    switch ([httpResp statusCode]) {
+        case CONTROLLER_CONFIG_CHANGED: //controller config changed
+        {
+            UpdateController *updateController = [[UpdateController alloc] initWithDelegate:self];
+            [updateController checkConfigAndUpdate];
+            [updateController release];
+            break;
+        }
+        default:
+        {
+            if ([delegate respondsToSelector:@selector(controllerRequestDidReceiveResponse:)]) {
+                [delegate controllerRequestDidReceiveResponse:response];
+            }
+        }
+    }
 }
 
 // HTTPS self-certificate
@@ -202,6 +222,33 @@
 	NSLog(@"[async] use HTTPS self-certificate");
 	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+	}
+}
+
+// TODO EBR : this should be moved to another class
+
+#pragma mark Delegate method of UpdateController
+
+- (void)didUpdate
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+}
+
+- (void)didUseLocalCache:(NSString *)errorMessage
+{
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
+	}
+}
+
+- (void)didUpdateFail:(NSString *)errorMessage
+{
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
 	}
 }
 

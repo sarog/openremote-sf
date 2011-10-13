@@ -20,12 +20,10 @@
  */
 #import "ORControllerPollingSender.h"
 #import "Definition.h"
-#import "ViewHelper.h"
-#import "ControllerException.h"
-#import "NotificationConstant.h"
 #import "ServerDefinition.h"
 #import "PollingStatusParserDelegate.h"
 #import "ORController.h"
+#import "ControllerException.h"
 
 @interface ORControllerPollingSender ()
 
@@ -83,13 +81,6 @@
 {
 	if (statusCode != 200) {
 		switch (statusCode) {
-			case CONTROLLER_CONFIG_CHANGED: //controller config changed
-            {
-				UpdateController *updateController = [[UpdateController alloc] initWithDelegate:self];
-				[updateController checkConfigAndUpdate];
-                [updateController release];
-				return;
-            }
 			case POLLING_TIMEOUT:
             {
                 if ([delegate respondsToSelector:@selector(pollingDidTimeout)]) {
@@ -101,7 +92,10 @@
         if ([delegate respondsToSelector:@selector(pollingDidReceiveErrorResponse)]) {
             [delegate pollingDidReceiveErrorResponse];
         }
-		[ViewHelper showAlertViewWithTitle:@"Polling Failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
+        // [ViewHelper showAlertViewWithTitle:@"Polling Failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
+        // Don't bother user with this, for now simply log
+        NSLog(@"Polling failed %@", [ControllerException exceptionMessageOfCode:statusCode]);
+        // TODO: user should be notified in an unobstrusive way that the polling did stop and there should be a way to restart it
 	} else {
         if ([delegate respondsToSelector:@selector(pollingDidSucceed)]) {
             [delegate pollingDidSucceed];
@@ -138,33 +132,6 @@
 	if ([delegate respondsToSelector:@selector(pollingDidFailWithError:)]) {
         [delegate pollingDidFailWithError:error];
     }
-}
-
-// TODO EBR : this should be moved to another class
-
-#pragma mark Delegate method of UpdateController
-
-- (void)didUpdate
-{
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
-}
-
-- (void)didUseLocalCache:(NSString *)errorMessage
-{
-	if ([errorMessage isEqualToString:@"401"]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-	} else {
-		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
-	}
-}
-
-- (void)didUpdateFail:(NSString *)errorMessage
-{
-	if ([errorMessage isEqualToString:@"401"]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-	} else {
-		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
-	}
 }
 
 @synthesize controller;
