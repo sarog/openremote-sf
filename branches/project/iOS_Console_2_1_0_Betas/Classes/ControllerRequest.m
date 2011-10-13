@@ -26,6 +26,9 @@
 #import "NotificationConstant.h"
 #import "ControllerException.h"
 #import "ViewHelper.h"
+#import "ORConsoleSettingsManager.h"
+#import "ORConsoleSettings.h"
+#import "ORController.h"
 
 @interface ControllerRequest ()
 
@@ -197,6 +200,12 @@
             UpdateController *updateController = [[UpdateController alloc] initWithDelegate:self];
             [updateController checkConfigAndUpdate];
             [updateController release];
+            break;
+        }
+        case UNAUTHORIZED:
+        {
+            [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
+            [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
             break;
         }
         default:
