@@ -97,7 +97,7 @@ public class IRFileImportForm extends CommonForm {
 
 	protected Component wrapper;
 
-	protected IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(device);
+	protected IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper,device);
 
 	/**
 	 * Instantiates a new iR command import form.
@@ -150,7 +150,7 @@ public class IRFileImportForm extends CommonForm {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-
+				protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
 				protocolChooserForm.show();
 			}
 		});
@@ -283,7 +283,7 @@ public class IRFileImportForm extends CommonForm {
 	}
 
 	private void showGrid(CodeSetInfo selectedItem) {
-
+		wrapper.mask("Please Wait...");
 		IrFileParserProxy.loadIRCommands(selectedItem,
 				new AsyncSuccessCallback<List<IRCommandInfo>>() {
 
@@ -359,6 +359,7 @@ public class IRFileImportForm extends CommonForm {
 											}
 										});
 						commandContainer.add(codeGrid);
+						wrapper.unmask();
 					}
 				});
 
