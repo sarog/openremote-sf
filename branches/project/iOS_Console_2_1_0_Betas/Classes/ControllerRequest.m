@@ -172,11 +172,9 @@
     if ([self selectNextGroupMemberToTry]) {
         [self send];
     } else {
+        NSLog(@"Connection did fail with error %@", error);
         if ([delegate respondsToSelector:@selector(controllerRequestDidFailWithError:)]) {
-            NSLog(@">>>>>>>>>>connection:didFailWithError:");
-            
-            [delegate controllerRequestDidFailWithError:error];
-            
+            [delegate controllerRequestDidFailWithError:error];            
         } else {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occured" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alert show];
