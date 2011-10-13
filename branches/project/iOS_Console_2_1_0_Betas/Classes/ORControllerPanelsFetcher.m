@@ -96,10 +96,10 @@
 	} 
 }
 
-- (void)controllerRequestRequiresAuthentication:(ControllerRequest *)controllerRequest
+- (void)controllerRequestRequiresAuthentication:(ControllerRequest *)request
 {
-    if ([delegate respondsToSelector:@selector(fetchPanelsRequiresAuthentication)]) {
-        [delegate fetchPanelsRequiresAuthentication];
+    if ([delegate respondsToSelector:@selector(fetchPanelsRequiresAuthenticationForControllerRequest:)]) {
+        [delegate fetchPanelsRequiresAuthenticationForControllerRequest:request];
     }
 }
 
