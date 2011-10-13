@@ -3,11 +3,14 @@ package org.openremote.modeler.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.openremote.modeler.client.BrandInfo;
 import org.openremote.modeler.client.CodeSetInfo;
 import org.openremote.modeler.client.DeviceInfo;
 import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.rpc.IRFileParserRPCService;
+import org.openremote.modeler.service.IRFileParserService;
+import org.openremote.modeler.service.impl.IRFileParserServiceImpl;
 
 import com.tinsys.ir.database.Brand;
 import com.tinsys.ir.database.CodeSet;
@@ -15,15 +18,21 @@ import com.tinsys.ir.database.Device;
 import com.tinsys.ir.database.IRCommand;
 import com.tinsys.pronto.irfiles.XCFFileParser;
 
-public class IRFileParserController extends BaseGWTSpringController implements
+public class IRFileParserController extends BaseGWTSpringControllerWithHibernateSupport implements
 		IRFileParserRPCService {
 
 	private XCFFileParser xcfFileParser;
+	private IRFileParserService iRFileParserService;
+	
+
+	private static Logger log = Logger.getLogger(IRFileParserController.class); 
 
 	public void setXcfFileParser(XCFFileParser xcfFileParser) {
 		this.xcfFileParser = xcfFileParser;
 	}
-
+	public void setiRFileParserService(IRFileParserService iRFileParserService) {
+		this.iRFileParserService = iRFileParserService;
+	}
 	public List<Device> getDevices(Brand brand) {
 
 		return xcfFileParser.getDevices(brand);
@@ -92,5 +101,13 @@ public class IRFileParserController extends BaseGWTSpringController implements
 			iRCommandInfo.add(iRCI);
 		}
 		return iRCommandInfo;
+	}
+	
+	public void saveCommands(org.openremote.modeler.domain.Device device,
+	List<IRCommandInfo> selectedFunctions){
+		log.info("saving "+selectedFunctions.size()+" commands for device ");
+		System.out.println("saving "+selectedFunctions.size()+" commands for device ");
+	iRFileParserService.saveCommands(device, selectedFunctions);
+
 	}
 }

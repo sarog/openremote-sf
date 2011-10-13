@@ -25,6 +25,7 @@ import org.openremote.modeler.client.BrandInfo;
 import org.openremote.modeler.client.CodeSetInfo;
 import org.openremote.modeler.client.DeviceInfo;
 import org.openremote.modeler.client.IRCommandInfo;
+import org.openremote.modeler.domain.Device;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -39,6 +40,9 @@ public interface IRFileParserRPCServiceAsync {
 			AsyncCallback<List<CodeSetInfo>> callback);
 	void getIRCommands(CodeSetInfo codeset,
 			AsyncCallback<List<IRCommandInfo>> callback);
+	void saveCommands(Device device, List<IRCommandInfo> selectedFunctions,
+			AsyncCallback<Void> callback);
+	
 
 
 

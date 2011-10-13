@@ -8,9 +8,14 @@ import org.openremote.modeler.client.DeviceInfo;
 import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
+import org.openremote.modeler.domain.Device;
+
+import com.extjs.gxt.ui.client.data.BeanModel;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class IrFileParserProxy {
+
 
 	private IrFileParserProxy() {
 	}
@@ -62,4 +67,22 @@ public class IrFileParserProxy {
 			}
 		});
 	}
+
+	public static void saveCommands(
+			Device device, final List<IRCommandInfo> selectedFunctions,
+			final AsyncSuccessCallback<List<BeanModel>> callback) {
+		AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,selectedFunctions, new AsyncSuccessCallback<Void>() {
+
+			@Override
+			public void onSuccess(Void result) {
+				Window.alert("saving "+selectedFunctions.size()+" commands for device ");
+				callback.onSuccess(null);
+				
+			}
+		});
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }
