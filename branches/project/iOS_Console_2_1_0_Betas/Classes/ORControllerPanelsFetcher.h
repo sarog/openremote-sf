@@ -29,6 +29,7 @@
 
 @optional
 - (void)fetchPanelsDidFailWithError:(NSError *)error;
+- (void)fetchPanelsRequiresAuthentication;
 
 @end
 
