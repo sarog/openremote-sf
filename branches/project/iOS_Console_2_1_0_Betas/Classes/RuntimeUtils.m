@@ -18,37 +18,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
-#import "DataCapturingNSURLConnectionDelegate.h"
+#import "RuntimeUtils.h"
+#import <objc/runtime.h>
 
-@class ORController;
+@implementation RuntimeUtils
 
-@protocol ORControllerGroupMembersFetcherDelegate
++ (NSArray *)selectorsFromProtocol:(Protocol *)aProtocol
+{
+    NSMutableArray *tmp = [NSMutableArray array];
+    unsigned int numMethods;
+    struct objc_method_description *methods = protocol_copyMethodDescriptionList(aProtocol, NO, YES, &numMethods);
+    if (methods) {
+        for (int i = 0; i < numMethods; i++) {
+            [tmp addObject:[NSValue valueWithPointer:methods[i].name]];
+        }
+        free(methods);
+    }
+    methods = protocol_copyMethodDescriptionList(aProtocol, YES, YES, &numMethods);
+    if (methods) {
+        for (int i = 0; i < numMethods; i++) {
+            [tmp addObject:[NSValue valueWithPointer:methods[i].name]];
+        }
+        free(methods);
+    }
 
-/**
- */
-- (void)controller:(ORController *)aController fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers;
-
-@optional
-
-/**
- */
-- (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error;
-
-/**
- */
-- (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController;
-
-@end
-
-@interface ORControllerGroupMembersFetcher : NSObject <NSXMLParserDelegate, DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate> {
-    NSMutableArray *members;
+    return [NSArray arrayWithArray:tmp];
 }
-
-@property (nonatomic, assign) NSObject <ORControllerGroupMembersFetcherDelegate> *delegate;
-
-- (id)initWithController:(ORController *)aController;
-- (void)fetch;
-- (void)cancelFetch;
+                            
 
 @end

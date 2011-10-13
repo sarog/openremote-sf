@@ -31,10 +31,10 @@
  * As data is received, it is captured and handled back in one go once connection is completed.
  * All other delegate methods are forwarded to encapsulated object.
  */
-@interface DataCapturingNSURLConnectionDelegate : NSObject {
+@interface DataCapturingNSURLConnectionDelegate : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate, NSURLConnectionDownloadDelegate> {
     
 }
 
-- (id)initWithNSURLConnectionDelegate:(NSObject <DataCapturingNSURLConnectionDelegateDelegate> *)aDelegate;
+- (id)initWithNSURLConnectionDelegate:(id <DataCapturingNSURLConnectionDelegateDelegate>)aDelegate;
 
 @end

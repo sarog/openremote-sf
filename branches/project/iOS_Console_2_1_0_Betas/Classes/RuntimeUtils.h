@@ -19,36 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import <Foundation/Foundation.h>
-#import "DataCapturingNSURLConnectionDelegate.h"
 
-@class ORController;
+@interface RuntimeUtils : NSObject
 
-@protocol ORControllerGroupMembersFetcherDelegate
-
-/**
- */
-- (void)controller:(ORController *)aController fetchGroupMembersDidSucceedWithMembers:(NSArray *)theMembers;
-
-@optional
-
-/**
- */
-- (void)controller:(ORController *)aController fetchGroupMembersDidFailWithError:(NSError *)error;
-
-/**
- */
-- (void)fetchGroupMembersRequiresAuthenticationForController:(ORController *)aController;
-
-@end
-
-@interface ORControllerGroupMembersFetcher : NSObject <NSXMLParserDelegate, DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate> {
-    NSMutableArray *members;
-}
-
-@property (nonatomic, assign) NSObject <ORControllerGroupMembersFetcherDelegate> *delegate;
-
-- (id)initWithController:(ORController *)aController;
-- (void)fetch;
-- (void)cancelFetch;
++ (NSArray *)selectorsFromProtocol:(Protocol *)aProtocol;
 
 @end

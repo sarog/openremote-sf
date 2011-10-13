@@ -159,7 +159,7 @@
     delegate = nil;
 }
 
-#pragma mark NSURLConnection delegate implementation
+#pragma mark NSURLConnectionDelegate implementation
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {

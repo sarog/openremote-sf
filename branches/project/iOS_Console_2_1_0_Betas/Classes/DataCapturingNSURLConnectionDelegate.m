@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "DataCapturingNSURLConnectionDelegate.h"
+#import "RuntimeUtils.h"
 
 #define NUM_DELEGATE_METHODS 10
 
@@ -31,23 +32,24 @@
 
 @implementation DataCapturingNSURLConnectionDelegate
 
-static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
+static NSArray* connectionDelegateSelectors;
 
 + (void)initialize
 {
-    connectionDelegateSelectors[0] = @selector(connection:willSendRequest:redirectResponse:);
-    connectionDelegateSelectors[1] = @selector(connection:needNewBodyStream:);
-    connectionDelegateSelectors[2] = @selector(connection:canAuthenticateAgainstProtectionSpace:);
-    connectionDelegateSelectors[3] = @selector(connection:didReceiveAuthenticationChallenge:);
-    connectionDelegateSelectors[4] = @selector(connection:didCancelAuthenticationChallenge:);
-    connectionDelegateSelectors[5] = @selector(connectionShouldUseCredentialStorage:);
-    connectionDelegateSelectors[6] = @selector(connection:didReceiveResponse:);
-    connectionDelegateSelectors[7] = @selector(connection:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:);
-    connectionDelegateSelectors[8] = @selector(connection:didFailWithError:);
-    connectionDelegateSelectors[9] = @selector(connection:willCacheResponse:);
+    NSMutableArray *tmp = [NSMutableArray array];
+    // Doing a dynamic lookup of methods in the NSURLConnectionDelegate protocol did not work, adding them manually
+    [tmp addObject:[NSValue valueWithPointer:@selector(connection:didFailWithError:)]];
+    [tmp addObject:[NSValue valueWithPointer:@selector(connectionShouldUseCredentialStorage:)]];
+    [tmp addObject:[NSValue valueWithPointer:@selector(connection:willSendRequestForAuthenticationChallenge:)]];
+    [tmp addObject:[NSValue valueWithPointer:@selector(connection:canAuthenticateAgainstProtectionSpace:)]];
+    [tmp addObject:[NSValue valueWithPointer:@selector(connection:didReceiveAuthenticationChallenge:)]];
+    [tmp addObject:[NSValue valueWithPointer:@selector(connection:didCancelAuthenticationChallenge:)]];
+    [tmp addObjectsFromArray:[RuntimeUtils selectorsFromProtocol:@protocol(NSURLConnectionDataDelegate)]];
+    [tmp addObjectsFromArray:[RuntimeUtils selectorsFromProtocol:@protocol(NSURLConnectionDownloadDelegate)]];
+    connectionDelegateSelectors = [[NSArray arrayWithArray:tmp] retain];
 }
 
-- (id)initWithNSURLConnectionDelegate:(NSObject <DataCapturingNSURLConnectionDelegateDelegate> *)aDelegate
+- (id)initWithNSURLConnectionDelegate:(id <DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate, NSURLConnectionDataDelegate, NSURLConnectionDownloadDelegate>)aDelegate;
 {
     self = [super init];
     if (self) {
@@ -68,12 +70,7 @@ static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
 
 - (BOOL)isDelegateSelector:(SEL)selector
 {
-    for (int i = 0; i < NUM_DELEGATE_METHODS; i++) {
-        if (connectionDelegateSelectors[i] == selector) {
-            return YES;
-        }
-    }
-    return NO;
+    return [connectionDelegateSelectors containsObject:[NSValue valueWithPointer:selector]];
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector
@@ -94,56 +91,113 @@ static SEL connectionDelegateSelectors[NUM_DELEGATE_METHODS];
     [self.delegate connectionDidFinishLoading:connection receivedData:self.receiveData];
 }
 
-#pragma mark - Forwarded delegate methods
+#pragma mark - Forwarded NSURLConnectionDelegate methods
 
-- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    return [self.delegate connection:connection willSendRequest:request redirectResponse:response];
-}
-
-- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request
-{
-    return [self.delegate connection:connection needNewBodyStream:request];
-}
-
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
-{
-    return [self.delegate connection:connection canAuthenticateAgainstProtectionSpace:protectionSpace];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-    [self.delegate connection:connection didReceiveAuthenticationChallenge:challenge];
-}
-
-- (void)connection:(NSURLConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-    [self.delegate connection:connection didCancelAuthenticationChallenge:challenge];
+    if ([self.delegate respondsToSelector:@selector(connection:didFailWithError:)]) {
+        [(id <NSURLConnectionDelegate>)self.delegate connection:connection didFailWithError:error];
+    }
 }
 
 - (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection
 {
-    return [self.delegate connectionShouldUseCredentialStorage:connection];
+    if ([self.delegate respondsToSelector:@selector(connectionShouldUseCredentialStorage:)]) {
+        return [(id <NSURLConnectionDelegate>)self.delegate connectionShouldUseCredentialStorage:connection];
+    }
+    return NO;
+}
+
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    if ([self.delegate respondsToSelector:@selector(connection:willSendRequestForAuthenticationChallenge:)]) {
+        [(id <NSURLConnectionDelegate>)self.delegate connection:connection willSendRequestForAuthenticationChallenge:challenge];
+    }
+}
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
+{
+    if ([self.delegate respondsToSelector:@selector(connection:canAuthenticateAgainstProtectionSpace:)]) {
+        return [(id <NSURLConnectionDelegate>)self.delegate connection:connection canAuthenticateAgainstProtectionSpace:protectionSpace];
+    }
+    return NO;
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    if ([self.delegate respondsToSelector:@selector(connection:didReceiveAuthenticationChallenge:)]) {
+        [(id <NSURLConnectionDelegate>)self.delegate connection:connection didReceiveAuthenticationChallenge:challenge];
+    }
+}
+
+- (void)connection:(NSURLConnection *)connection didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    if ([self.delegate respondsToSelector:@selector(connection:didCancelAuthenticationChallenge:)]) {
+        [(id <NSURLConnectionDelegate>)self.delegate connection:connection didCancelAuthenticationChallenge:challenge];
+    }
+}
+
+#pragma mark - Forwarded NSURLConnectionDataDelegate methods
+
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
+{
+    if ([self.delegate respondsToSelector:@selector(connection:willSendRequest:redirectResponse:)]) {
+        return [(id <NSURLConnectionDataDelegate>)self.delegate connection:connection willSendRequest:request redirectResponse:response];
+    }
+    return request;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    return [self.delegate connection:connection didReceiveResponse:response];
+    if ([self.delegate respondsToSelector:@selector(connection:didReceiveResponse:)]) {
+        [(id <NSURLConnectionDataDelegate>)self.delegate connection:connection didReceiveResponse:response];
+    }
+}
+
+- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request
+{
+    if ([self.delegate respondsToSelector:@selector(connection:needNewBodyStream:)]) {
+        return [(id <NSURLConnectionDataDelegate>)self.delegate connection:connection needNewBodyStream:request];
+    }
+    return nil;
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
-    [self.delegate connection:connection didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    [self.delegate connection:connection didFailWithError:error];
+    if ([self.delegate respondsToSelector:@selector(connection:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
+        [(id <NSURLConnectionDataDelegate>)self.delegate connection:connection didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
+    }
 }
 
 - (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse *)cachedResponse
 {
-    return [self.delegate connection:connection willCacheResponse:cachedResponse];
+    if ([self.delegate respondsToSelector:@selector(connection:willCacheResponse:)]) {
+        return [(id <NSURLConnectionDataDelegate>)self.delegate connection:connection willCacheResponse:cachedResponse];
+    }
+    return cachedResponse;
+}
+
+#pragma mark - Forwarded NSURLConnectionDownloadDelegate methods
+
+- (void)connection:(NSURLConnection *)connection didWriteData:(long long)bytesWritten totalBytesWritten:(long long)totalBytesWritten expectedTotalBytes:(long long)expectedTotalBytes
+{
+    if ([self.delegate respondsToSelector:@selector(connection:didWriteData:totalBytesWritten:expectedTotalBytes:)]) {
+        [(id <NSURLConnectionDownloadDelegate>)self.delegate connection:connection didWriteData:bytesWritten totalBytesWritten:totalBytesWritten expectedTotalBytes:expectedTotalBytes];
+    }
+}
+
+- (void)connectionDidResumeDownloading:(NSURLConnection *)connection totalBytesWritten:(long long)totalBytesWritten expectedTotalBytes:(long long)expectedTotalBytes
+{
+    if ([self.delegate respondsToSelector:@selector(connectionDidResumeDownloading:totalBytesWritten:expectedTotalBytes:)]) {
+        [(id <NSURLConnectionDownloadDelegate>)self.delegate connectionDidResumeDownloading:connection totalBytesWritten:totalBytesWritten expectedTotalBytes:expectedTotalBytes];
+    }
+}
+
+- (void)connectionDidFinishDownloading:(NSURLConnection *)connection destinationURL:(NSURL *)destinationURL
+{
+    if ([self.delegate respondsToSelector:@selector(connectionDidFinishDownloading:destinationURL:)]) {
+        [(id <NSURLConnectionDownloadDelegate>)self.delegate connectionDidFinishDownloading:connection destinationURL:destinationURL];
+    }
 }
 
 @synthesize delegate;
