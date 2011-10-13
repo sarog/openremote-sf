@@ -50,6 +50,8 @@
 		6055689313CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689013CF188F0035CC1A /* ControllerRequiresAuthentication.png */; };
 		6055689413CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689113CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png */; };
 		6055689513CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689113CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png */; };
+		606281121446F5F6001123BD /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
+		606281131446F5F6001123BD /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
 		6068DE6B13744BC8007746F1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6A13744BC8007746F1 /* QuartzCore.framework */; };
 		6068DE6D13744BF5007746F1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6C13744BF5007746F1 /* CoreGraphics.framework */; };
 		6068DE6E13744C11007746F1 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
@@ -588,6 +590,8 @@
 		6055688713CF184E0035CC1A /* ControllerNOK@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ControllerNOK@2x.png"; sourceTree = "<group>"; };
 		6055689013CF188F0035CC1A /* ControllerRequiresAuthentication.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ControllerRequiresAuthentication.png; sourceTree = "<group>"; };
 		6055689113CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ControllerRequiresAuthentication@2x.png"; sourceTree = "<group>"; };
+		606281101446F5F6001123BD /* RuntimeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuntimeUtils.h; sourceTree = "<group>"; };
+		606281111446F5F6001123BD /* RuntimeUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RuntimeUtils.m; sourceTree = "<group>"; };
 		6068DE6A13744BC8007746F1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		6068DE6C13744BF5007746F1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6068DE9713744E36007746F1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1908,6 +1912,8 @@
 				60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */,
 				60F8A9D0143DCEBA00176004 /* UIScreen+ORAdditions.h */,
 				60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */,
+				606281101446F5F6001123BD /* RuntimeUtils.h */,
+				606281111446F5F6001123BD /* RuntimeUtils.m */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -2528,6 +2534,7 @@
 				60EC86361410C68A003F5432 /* SliderSubController.m in Sources */,
 				60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */,
 				60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */,
+				606281121446F5F6001123BD /* RuntimeUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2679,6 +2686,7 @@
 				60EC86371410C68A003F5432 /* SliderSubController.m in Sources */,
 				60F8A9D3143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */,
 				60F8A9D5143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */,
+				606281131446F5F6001123BD /* RuntimeUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
