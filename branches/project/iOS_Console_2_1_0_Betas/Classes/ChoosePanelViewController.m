@@ -174,7 +174,7 @@
     [self updateTableView];
 }
 
-- (void)fetchPanelsRequiresAuthentication
+- (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
 {
     [self populateLoginView:self];
 }
