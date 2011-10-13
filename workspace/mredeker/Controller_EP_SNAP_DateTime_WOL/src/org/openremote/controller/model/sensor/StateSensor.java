@@ -177,7 +177,7 @@ public class StateSensor extends Sensor
           super.getSensorID(), value
       );
 
-      return Sensor.UNKNOWN_STATUS;
+      return value;
     }
 
     if (!states.hasMapping(value))
