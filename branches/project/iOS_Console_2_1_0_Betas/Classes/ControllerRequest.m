@@ -167,8 +167,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     // Connection error, check if failover URLs available
-    lastError = error;
-    
+
     // TODO: there are certain errors for which we should not switch to a different server
     if ([self selectNextGroupMemberToTry]) {
         [self send];
