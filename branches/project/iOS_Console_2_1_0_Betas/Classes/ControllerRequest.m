@@ -137,6 +137,11 @@
     [self send];    
 }
 
+- (void)retry
+{
+    [self send];
+}
+
 - (void)postRequestWithPath:(NSString *)path
 {
     method = @"POST";
