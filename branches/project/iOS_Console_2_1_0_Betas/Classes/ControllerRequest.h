@@ -24,6 +24,7 @@
 
 @class ORGroupMember;
 @class ORController;
+@class ControllerRequest;
 
 @protocol ControllerRequestDelegate <NSObject>
 
@@ -32,7 +33,7 @@
 @optional
 - (void)controllerRequestDidFailWithError:(NSError *)error;
 - (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response;
-- (void)controllerRequestRequiresAuthentication;
+- (void)controllerRequestRequiresAuthentication:(ControllerRequest *)request;
 
 // TODO EBR : do we really want to pass URL classes back to our delegate ? this should be hidden
 

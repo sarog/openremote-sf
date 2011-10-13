@@ -96,7 +96,7 @@
 	} 
 }
 
-- (void)controllerRequestRequiresAuthentication
+- (void)controllerRequestRequiresAuthentication:(ControllerRequest *)controllerRequest
 {
     if ([delegate respondsToSelector:@selector(fetchPanelsRequiresAuthentication)]) {
         [delegate fetchPanelsRequiresAuthentication];
