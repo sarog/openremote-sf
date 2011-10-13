@@ -25,9 +25,6 @@
 #import "ControllerException.h"
 #import "NotificationConstant.h"
 #import "ServerDefinition.h"
-#import "ORConsoleSettingsManager.h"
-#import "ORConsoleSettings.h"
-#import "ORController.h"
 
 @interface ORControllerCommandSender ()
 
@@ -73,13 +70,8 @@
 
 - (void)handleServerResponseWithStatusCode:(int) statusCode {
 	if (statusCode != 200) {
-		if (statusCode == UNAUTHORIZED) {
-            [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil;
-			[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-		} else {
-			[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
-		}
-        
+		[ViewHelper showAlertViewWithTitle:@"Command failed" Message:[ControllerException exceptionMessageOfCode:statusCode]];
+
         // TODO EBR we should sure pass some params e.g. for handling multiple command send ...
         if ([delegate respondsToSelector:@selector(commandSendFailed)]) {
             [delegate commandSendFailed];
