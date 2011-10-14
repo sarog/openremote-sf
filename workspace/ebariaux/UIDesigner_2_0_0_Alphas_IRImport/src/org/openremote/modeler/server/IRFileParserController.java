@@ -9,6 +9,8 @@ import org.openremote.modeler.client.CodeSetInfo;
 import org.openremote.modeler.client.DeviceInfo;
 import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.rpc.IRFileParserRPCService;
+import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.modeler.irfileparser.IRTrans;
 import org.openremote.modeler.service.IRFileParserService;
 import org.openremote.modeler.service.impl.IRFileParserServiceImpl;
 
@@ -94,20 +96,22 @@ public class IRFileParserController extends BaseGWTSpringControllerWithHibernate
 			IRCommandInfo iRCI;
 			if (irCommand.getCode() != null) {
 				iRCI = new IRCommandInfo(irCommand.getName(), irCommand
-						.getCode().toString(), irCommand.getOriginalCodeString(),irCommand.getComment());
+						.getCode().toString(), irCommand.getOriginalCodeString(),irCommand.getComment(),csi);
 			} else {
-				iRCI = new IRCommandInfo(irCommand.getName(), null,irCommand.getOriginalCodeString(),irCommand.getComment());
+				iRCI = new IRCommandInfo(irCommand.getName(), null,irCommand.getOriginalCodeString(),irCommand.getComment(),csi);
 			}
 			iRCommandInfo.add(iRCI);
 		}
 		return iRCommandInfo;
 	}
 	
-	public void saveCommands(org.openremote.modeler.domain.Device device,
+	public void saveCommands(org.openremote.modeler.domain.Device device, GlobalCache globalCache,IRTrans irTrans,
 	List<IRCommandInfo> selectedFunctions){
 		log.info("saving "+selectedFunctions.size()+" commands for device ");
 		System.out.println("saving "+selectedFunctions.size()+" commands for device ");
-	iRFileParserService.saveCommands(device, selectedFunctions);
+		//TODO implement 
+		
+	iRFileParserService.saveCommands(device,globalCache,irTrans, selectedFunctions);
 
 	}
 }

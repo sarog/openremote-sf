@@ -26,6 +26,8 @@ import org.openremote.modeler.client.CodeSetInfo;
 import org.openremote.modeler.client.DeviceInfo;
 import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.modeler.irfileparser.IRTrans;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -42,5 +44,6 @@ public interface IRFileParserRPCService extends RemoteService {
 	List<DeviceInfo> getDevices(BrandInfo brand);
 	List<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
 	
-	void saveCommands(Device device,List<IRCommandInfo> selectedFunctions);
+	void saveCommands(Device device, GlobalCache globalCache, IRTrans irTrans,
+			List<IRCommandInfo> selectedFunctions);
 }

@@ -9,6 +9,8 @@ import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.modeler.irfileparser.IRTrans;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.Window;
@@ -70,12 +72,12 @@ public class IrFileParserProxy {
 
 	public static void saveCommands(
 			Device device, final List<IRCommandInfo> selectedFunctions,
-			final AsyncSuccessCallback<List<BeanModel>> callback) {
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,selectedFunctions, new AsyncSuccessCallback<Void>() {
+			GlobalCache globalCache, IRTrans irTrans, final AsyncSuccessCallback<List<BeanModel>> callback) {
+		AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,globalCache,irTrans,selectedFunctions, new AsyncSuccessCallback<Void>() {
 
 			@Override
 			public void onSuccess(Void result) {
-				Window.alert("saving "+selectedFunctions.size()+" commands for device ");
+
 				callback.onSuccess(null);
 				
 			}
