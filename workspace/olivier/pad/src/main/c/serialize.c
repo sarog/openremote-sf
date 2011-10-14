@@ -50,7 +50,7 @@ int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
 	if (rv == APR_EOF || l != len - 1) {
 		return R_INVALID_MESSAGE;
 	}
-	buf[len] = 0; // Make sure buf can be treated as a string
+	buf[l] = 0; // Make sure buf can be treated as a string
 	return R_SUCCESS;
 }
 
