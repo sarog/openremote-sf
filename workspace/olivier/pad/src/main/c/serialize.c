@@ -80,7 +80,7 @@ int readString(apr_pool_t *pool, apr_socket_t *sock, field_t *field) {
 }
 
 int setCode(message_t *message, char code) {
-	if (strchr("PSGAN", code) == NULL)
+	if (strchr("PSANCLUO", code) == NULL)
 		return R_INVALID_CODE;
 	message->code = (code_t) code;
 	return R_SUCCESS;
@@ -100,6 +100,8 @@ int readRequest(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
 	int r; // Return value
 	char car;
 	int len = 1;
+	field_t f1, f2;
+	int i;
 
 	// Allocate message
 	*message = apr_palloc(pool, sizeof(message_t));
@@ -120,20 +122,37 @@ int readRequest(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
 
 	// Read message fields
 	switch (car) {
+	case PING:
+	case SHUTDOWN:
+		// Nothing more expected
+		break;
 	case ACK:
 		createMessageFields(pool, *message, 1);
 		RETURN_IF(readInt32(sock, &(*message)->fields[0]), r)
 		break;
 	case NOTIFY:
+	case LOCK:
+	case UNLOCK:
+	case CREATE_PORT:
 		createMessageFields(pool, *message, 2);
 		RETURN_IF(readString(pool, sock, &(*message)->fields[0]), r)
 		RETURN_IF(readString(pool, sock, &(*message)->fields[1]), r)
 		break;
-	case PING:
-	case SHUTTING_DOWN:
-	case SHUTDOWN:
-		// Nothing more expected
+	case CONFIGURE:
+		RETURN_IF(readString(pool, sock, &f1), r)
+		RETURN_IF(readString(pool, sock, &f2), r)
+		createMessageFields(pool, *message, f2.int32Val + 2);
+		(*message)->fields[0].length = f1.length;
+		(*message)->fields[0].stringVal = f1.stringVal;
+		(*message)->fields[1].length = f2.length;
+		(*message)->fields[1].int32Val = f2.int32Val;
+		for (i = 0; i < f2.int32Val - 2; ++i) {
+			RETURN_IF(readString(pool, sock, &(*message)->fields[2 + (i * 2)]), r)RETURN_IF(
+					readString(pool, sock, &(*message)->fields[3 + (i * 2)]), r)
+		}
 		break;
+	default:
+		return R_INVALID_MESSAGE;
 	}
 
 	printMessage(*message);
