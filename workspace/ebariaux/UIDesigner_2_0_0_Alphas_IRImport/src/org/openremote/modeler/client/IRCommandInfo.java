@@ -16,11 +16,21 @@ public class IRCommandInfo extends BaseModel implements IsSerializable {
 	public IRCommandInfo() {
 	}
 
-	public IRCommandInfo(String name, String code, String originalCode, String comment) {
+	public IRCommandInfo(String name, String code, String originalCode, String comment, CodeSetInfo codeSet) {
 		setName(name);
 		setCode(code);
 		setOriginalCodeString(originalCode);
 		setComment(comment);
+		setCodeSet(codeSet);
+	}
+
+	public CodeSetInfo getCodeSet(){
+		return get("codeSet");
+	}
+	
+	public void setCodeSet(CodeSetInfo codeSet) {
+		set("codeSet",codeSet);
+		
 	}
 
 	public String getOriginalCodeString(){

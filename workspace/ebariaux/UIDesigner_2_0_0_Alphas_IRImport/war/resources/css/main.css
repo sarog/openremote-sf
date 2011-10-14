@@ -334,3 +334,9 @@ table.screen-btn-cont td.br-c{
 	width: 100%;
 	margin-bottom: 10px;
 }
+
+.row-invalid_file_imported_code .x-grid3-cell-inner  {
+ color:red;
+}
+
+
