@@ -20,7 +20,17 @@ typedef struct _field_t {
 } field_t;
 
 typedef enum _code_t {
-	PING = 'P', SHUTDOWN = 'S', SHUTTING_DOWN = 'G', ACK = 'A', NOTIFY = 'N'
+	PING = 'P',
+	SHUTDOWN = 'S',
+	SHUTTING_DOWN = 'G',
+	ACK = 'A',
+	NOTIFY = 'N',
+	CONFIGURE = 'C',
+	LOCK = 'L',
+	UNLOCK = 'U',
+	PORT_CREATED = 'D',
+	PORT_REMOVED = 'V',
+	CREATE_PORT = 'O'
 } code_t;
 
 typedef struct _message_t {
