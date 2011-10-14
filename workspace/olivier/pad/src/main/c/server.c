@@ -53,14 +53,12 @@ struct _serviceContext_t {
 	apr_pool_t *socketPool;
 	apr_pool_t *transactionPool;
 
-	readCallback_t readCb;
 	message_t *request;
-	writeCallback_t writeCb;
 	message_t *response;
 };
 
 static apr_socket_t* createListenSocket(apr_pool_t *mp);
-static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool, readCallback_t readCb, writeCallback_t writeCb);
+static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool);
 
 static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
@@ -99,7 +97,7 @@ int runServer() {
 			for (i = 0; i < num; i++) {
 				if (descriptors[i].desc.s == lsock) {
 					/* the listen socket is readable. that indicates we accepted a new connection */
-					doAccept(pollset, lsock, socketPool, readRequest, writeResponse);
+					doAccept(pollset, lsock, socketPool);
 				} else {
 					serviceContext_t *context = descriptors[i].client_data;
 					socket_callback_t cbFunc = context->cbFunc;
@@ -146,7 +144,7 @@ static apr_socket_t* createListenSocket(apr_pool_t *mp) {
 	error: return NULL;
 }
 
-static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool, readCallback_t readCb, writeCallback_t writeCb) {
+static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool) {
 	apr_socket_t *ns;/* accepted socket */
 	apr_status_t rv;
 
@@ -159,8 +157,6 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *poo
 		context->status = SERV_RECV_REQUEST;
 		context->cbFunc = receiveRequestCallback;
 		context->socketPool = pool;
-		context->readCb = readCb;
-		context->writeCb = writeCb;
 		apr_pool_create(&context->transactionPool, NULL);
 
 		/* non-blocking socket. We can't expect that @ns inherits non-blocking mode from @lsock */
@@ -169,23 +165,20 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *poo
 
 		/* monitor accepted socket */
 		apr_pollset_add(pollset, &descriptor);
-		printf("socket accepted\n");
 	}
 	return TRUE;
 }
 
 void clearTransaction(serviceContext_t *context) {
 	apr_pool_clear(context->transactionPool);
-	printf("transactionPool cleared\n");
 }
 
 void clearSocket(serviceContext_t *context) {
 	apr_pool_clear(context->socketPool);
-	printf("socketPool cleared\n");
 }
 
 static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-	int r = context->readCb(sock, &context->request, context->transactionPool);
+	int r = readRequest(sock, &context->request, context->transactionPool);
 	if (r != R_SUCCESS) {
 		apr_socket_close(sock);
 		clearTransaction(context);
@@ -208,7 +201,7 @@ static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *poll
  * Send a response to the client.
  */
 static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-	context->writeCb(sock, context->response);
+	writeResponse(sock, context->response);
 
 	// Clear all memory related to request and response
 	clearTransaction(context);
