@@ -1,22 +1,43 @@
 #include <stdio.h>
 
 #include "apr_pools.h"
+
+#include "codes.h"
 #include "serialize.h"
 
-#define RETURN_IF(call, r)              r = call; if(r != R_SUCCESS) return r;
-#define APR_RETURN_IF(call, rv, ret)    rv = call; if(rv != APR_SUCCESS) return ret;
-
 void printMessage(message_t *message) {
+	int i;
 	printf("message code %c", message->code);
 	switch (message->code) {
+	case PING:
+		printf(" (PING)");
+		break;
+	case SHUTDOWN:
+		printf(" (SHUTDOWN)");
+		break;
 	case ACK:
 		printf(" (ACK), code=0x%X", message->fields[0].int32Val);
 		break;
 	case NOTIFY:
 		printf(" (NOTIFY), portId='%s', content='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
 		break;
+	case LOCK:
+		printf(" (LOCK), portId='%s', sourceId='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		break;
+	case UNLOCK:
+		printf(" (UNLOCK), portId='%s', sourceId='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		break;
+	case CREATE_PORT:
+		printf(" (CREATE_PORT), portId='%s', portType='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		break;
+	case CONFIGURE:
+		printf(" (CONFIGURE), portId='%s'", message->fields[0].stringVal);
+		for (i = 0; i < message->fields[1].int32Val; ++i) {
+			printf("\n\t%s=%s", message->fields[2 + i * 2].stringVal, message->fields[3 + i * 2].stringVal);
+		}
+		break;
 	default:
-		printf("TODO");
+		printf(" unknown");
 		break;
 	}
 	printf("\n");
@@ -96,7 +117,7 @@ void createMessageFields(apr_pool_t *pool, message_t *message, int nbFields) {
 	}
 }
 
-int readRequest(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
+int readMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
 	int r; // Return value
 	char car;
 	int len = 1;
@@ -146,7 +167,7 @@ int readRequest(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
 		(*message)->fields[0].stringVal = f1.stringVal;
 		(*message)->fields[1].length = f2.length;
 		(*message)->fields[1].int32Val = f2.int32Val;
-		for (i = 0; i < f2.int32Val - 2; ++i) {
+		for (i = 0; i < f2.int32Val; ++i) {
 			RETURN_IF(readString(pool, sock, &(*message)->fields[2 + (i * 2)]), r)RETURN_IF(
 					readString(pool, sock, &(*message)->fields[3 + (i * 2)]), r)
 		}
