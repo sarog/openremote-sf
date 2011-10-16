@@ -8,16 +8,14 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <sys/socket.h>
-
 #include "apr_general.h"
 #include "apr_file_io.h"
 #include "apr_strings.h"
 #include "apr_network_io.h"
 #include "apr_poll.h"
 
-#include "server.h"
-#include "serialize.h"
+#include "codes.h"
+#include "dispatch.h"
 
 /* default listen port number */
 #define DEF_LISTEN_PORT		7876
@@ -37,9 +35,6 @@ typedef struct _serviceContext_t serviceContext_t;
  * network event callback function type
  */
 typedef int (*socket_callback_t)(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
-
-typedef int (*readCallback_t)(apr_socket_t *sock, message_t **message, apr_pool_t *socketPool);
-typedef int (*writeCallback_t)(apr_socket_t *sock, message_t *message);
 
 /**
  * network server context 
@@ -178,7 +173,7 @@ void clearSocket(serviceContext_t *context) {
 }
 
 static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-	int r = readRequest(sock, &context->request, context->transactionPool);
+	int r = dispatchInputMessage(sock, &context->request, context->transactionPool);
 	if (r != R_SUCCESS) {
 		apr_socket_close(sock);
 		clearTransaction(context);
