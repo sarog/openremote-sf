@@ -21,10 +21,13 @@
 package org.openremote.controller.rest.support.json;
 
 import java.net.HttpURLConnection;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.XML;
 import org.openremote.controller.Constants;
 
@@ -33,15 +36,16 @@ import org.openremote.controller.Constants;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author handy 2010-06-28
+ * @author <a href="mailto:richard@openremote.org">Richard Turner 2011-10-12</a>
  */
 public class JSONTranslator
 {
 
   private static final Logger logger = Logger.getLogger(Constants.XML_PARSER_LOG_CATEGORY);
   
-  public static String translateXMLToJSONP(HttpServletResponse response, String xml)
+  public static String translateXMLToJSONP(HttpServletRequest request, HttpServletResponse response, String xml)
   {
-     return translateXMLToJSON(Constants.MIME_TEXT_JAVASCRIPT, response, xml);
+     return translateXMLToJSON(Constants.MIME_TEXT_JAVASCRIPT, response, xml, request);
   }
   
   public static String translateXMLToJSON(HttpServletResponse response, String xml)
@@ -51,13 +55,17 @@ public class JSONTranslator
 
   public static String translateXMLToJSON(String acceptHeader, HttpServletResponse response, String xml)
   {
+     return translateXMLToJSON(acceptHeader, response, xml, null);
+  }
+  
+  public static String translateXMLToJSON(String acceptHeader, HttpServletResponse response, String xml, HttpServletRequest request)
+  {
     if (Constants.MIME_APPLICATION_JSON.equalsIgnoreCase(acceptHeader))
     {
       if (response != null) {
          response.setContentType(Constants.MIME_APPLICATION_JSON);
       }
-
-      return translate(response, xml);
+      return translate(request, response, xml);
     }
     
     else if (Constants.MIME_TEXT_JAVASCRIPT.equalsIgnoreCase(acceptHeader))
@@ -66,7 +74,7 @@ public class JSONTranslator
          response.setContentType(Constants.MIME_TEXT_JAVASCRIPT);
       }
 
-      return translate(response, xml);
+      return translate(request, response, xml);
     }
 
     else
@@ -87,7 +95,7 @@ public class JSONTranslator
          response.setContentType(Constants.MIME_APPLICATION_JSON);
       }
       
-      return translate(response, xml);
+      return translate(null, response, xml);
     }
 
     else
@@ -102,15 +110,18 @@ public class JSONTranslator
   }
 
 
-  private static String translate(HttpServletResponse response, String xml)
+  private static String translate(HttpServletRequest request, HttpServletResponse response, String xml)
   {
      if (response != null) {
         response.setStatus(HttpURLConnection.HTTP_OK);
      }
      xml = xml.replaceAll("<openremote.*>", "").replace("</openremote>", "");
-     String json = "";
+     String json = "";     
      try {
-        json = XML.toJSONObject(xml).toString();
+        JSONObject jsonObj = XML.toJSONObject(xml);
+        // Format this JSON Object
+        jsonObj = JSONFormatter.format(request, jsonObj);
+        json = jsonObj.toString();
      } catch (JSONException e) {
         logger.error("Can't convert XML to json.", e);
      }
