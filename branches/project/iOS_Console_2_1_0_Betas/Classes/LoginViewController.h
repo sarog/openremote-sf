@@ -20,24 +20,22 @@
  */
 #import <UIKit/UIKit.h>
 
+@class LoginViewController;
+
 @protocol LoginViewControllerDelegate <NSObject>
 
-- (void)onSignin;
-- (void)onBackFromLogin;
+- (void)loginViewControllerDidCancelLogin:(LoginViewController *)controller;
+- (void)loginViewController:(LoginViewController *)controller didProvideUserName:(NSString *)username password:(NSString *)password;
 
 @end
 
 /**
  * It's responsible for rendering login view and function of login to remote controller server.
  */
-@interface LoginViewController : UITableViewController <UITextFieldDelegate> {
-	
-	UITextField *usernameField;
-	UITextField *passwordField;
-    
-	NSObject <LoginViewControllerDelegate> *theDelegate;
-}
+@interface LoginViewController : UITableViewController <UITextFieldDelegate>
 
-- (id)initWithDelegate:(NSObject <LoginViewControllerDelegate> *)delegate;
+- (id)initWithDelegate:(NSObject <LoginViewControllerDelegate> *)aDelegate context:(id)aContext;
+
+@property (nonatomic, retain, readonly) id context;
 
 @end

@@ -30,25 +30,32 @@
 
 - (void)goBack:(id)sender;
 
+@property (nonatomic, retain) UITextField *usernameField;
+@property (nonatomic, retain) UITextField *passwordField;
+@property (nonatomic, assign) NSObject <LoginViewControllerDelegate> *delegate;
+@property (nonatomic, retain, readwrite) id context;
+ 
 @end
 
 @implementation LoginViewController
 
-- (id)initWithDelegate:(NSObject <LoginViewControllerDelegate> *)delegate 
+- (id)initWithDelegate:(NSObject <LoginViewControllerDelegate> *)aDelegate context:(id)aContext
 {
     self = [super initWithStyle:UITableViewStyleGrouped];
 	if (self) {
 		[self setTitle:@"Sign in"];
-		theDelegate = delegate;
+        self.delegate = aDelegate;
+        self.context = aContext;
 	}
 	return self;
 }
 
 - (void)dealloc
 {
-	[usernameField release];
-	[passwordField release];
-	
+    self.delegate = nil;
+    self.context = nil;
+    self.usernameField = nil;
+    self.passwordField = nil;	
 	[super dealloc];
 }
 
@@ -68,21 +75,29 @@
 // Back to the view where loginView was triggered from.
 - (void)goBack:(id)sender
 {
+    [self.delegate loginViewControllerDidCancelLogin:self];
+    /*
+     OLD CODE
 	[self dismissModalViewControllerAnimated:YES];
 	if ([theDelegate respondsToSelector:@selector(onBackFromLogin)]) {
 		[theDelegate performSelector:@selector(onBackFromLogin)];
 	}
+     */
 }
 
 // Send sign in request to remote controller server by loginViewController's delegate.
 - (void)signin:(id)sender
 {
-	if (usernameField.text == nil || passwordField.text == nil ||
-			[@"" isEqualToString:usernameField.text] || [@"" isEqualToString:passwordField.text]) {
+	if (self.usernameField.text == nil || self.passwordField.text == nil ||
+			[@"" isEqualToString:self.usernameField.text] || [@"" isEqualToString:self.passwordField.text]) {
 		[ViewHelper showAlertViewWithTitle:@"" Message:@"No username or password entered."];
 		return;
 	}
+    
+    [self.delegate loginViewController:self didProvideUserName:self.usernameField.text password:self.passwordField.text];
 
+    /*
+     OLD CODE
     // Why was it here ?
 	// [[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
     
@@ -100,6 +115,7 @@
 	if ([theDelegate respondsToSelector:@selector(onSignin)]) {
 		[theDelegate performSelector:@selector(onSignin)];
 	}
+     */
 }
 
 #pragma mark Table view methods
@@ -149,15 +165,16 @@
 		if (indexPath.row == 0) {
 			loginCell.textLabel.text = @"Username";
 			[textField becomeFirstResponder];
-			usernameField = textField;
+			self.usernameField = textField;
             
             ORController *activeController = [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController;
-			usernameField.text = activeController.userName; 
+			self.usernameField.text = activeController.userName; 
 		} else if (indexPath.row == 1) {
 			loginCell.textLabel.text = @"Password";
 			[textField setSecureTextEntry:YES];
-			passwordField = textField;
+			self.passwordField = textField;
 		}
+        [textField release];
 	} else if (indexPath.section == 1) {
 		UIButton *signinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		
@@ -181,18 +198,18 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {	
-	if ([@"" isEqualToString:usernameField.text]) {
-		[usernameField becomeFirstResponder];
+	if ([@"" isEqualToString:self.usernameField.text]) {
+		[self.usernameField becomeFirstResponder];
 		return YES;
 	} else {
-		[passwordField becomeFirstResponder];		
+		[self.passwordField becomeFirstResponder];		
 	}
 	
-	if ([@"" isEqualToString:passwordField.text]) {
-		[passwordField becomeFirstResponder];
+	if ([@"" isEqualToString:self.passwordField.text]) {
+		[self.passwordField becomeFirstResponder];
 		return YES;
 	} else {
-		[usernameField becomeFirstResponder];		
+		[self.usernameField becomeFirstResponder];
 	}
 	
 	[self signin:nil];
@@ -220,5 +237,10 @@
 {
 	return YES;
 }
+
+@synthesize usernameField;
+@synthesize passwordField;
+@synthesize delegate;
+@synthesize context;
 
 @end

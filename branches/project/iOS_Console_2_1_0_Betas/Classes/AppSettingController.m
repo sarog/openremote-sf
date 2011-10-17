@@ -56,6 +56,8 @@
 - (void)fetchGroupMembersForAllControllers;
 - (void)cancelFetchGroupMembers;
 
+- (void)presentLoginRequestForControllerRequest:(ControllerRequest *)controllerRequest;
+
 @end
 
 // The section of table cell where autoDiscoverySwitch is in.
@@ -120,9 +122,14 @@
 	}
 }
 
-//prompts the user to enter a valid user name and password
-- (void)populateLoginView:(id)sender {
-	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
+- (void)populateLoginView:(NSNotification *)notification
+{
+    [self presentLoginRequestForControllerRequest:[notification.userInfo objectForKey:kAuthenticationRequiredControllerRequest]];
+}
+
+- (void)presentLoginRequestForControllerRequest:(ControllerRequest *)controllerRequest
+{
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self context:controllerRequest];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
 	[self presentModalViewController:loginNavController animated:NO];
 	[loginController release];
@@ -294,7 +301,7 @@
 {
     [self orControllerGroupMembersFetchStatusChanged:notification];
     if (self.askUserForCredentials) {
-        [self populateLoginView:self];
+        [self populateLoginView:nil];
     }
     self.askUserForCredentials = NO;
 }
@@ -548,31 +555,52 @@
 	}
 }
 
+- (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
+{
+    [self presentLoginRequestForControllerRequest:controllerRequest];
+}
+
 - (void)fetchPanelsRequiresAuthentication
 {
-    [self populateLoginView:self];
+    [self populateLoginView:nil];
 }
 
 #pragma mark LoginViewControllerDelegate implementation
 
-// When cancelled on credentials panel
-- (void)onBackFromLogin
+- (void)loginViewControllerDidCancelLogin:(LoginViewController *)controller
 {
+    // TODO: Is this still required ?
     [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+
+    [self dismissModalViewControllerAnimated:YES];
 }
 
-// When crendentials entered
-- (void)onSignin
+- (void)loginViewController:(LoginViewController *)controller didProvideUserName:(NSString *)username password:(NSString *)password
 {
+    ORController *orController = ((ControllerRequest *)controller.context).controller;
+    orController.userName = username;
+	orController.password = password;
     
-    // TODO: double check fetchGroupMember is the only source that can trigger this
-    // No, it is not the only source:
-    // - fetchPanels will trigger this
-    // - UpdateController can trigger it
+    // TODO: we might not want to save here, maybe have a method to set this and save in dedicated MOC
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
     
+	[self dismissModalViewControllerAnimated:YES];
     
-    // TODO: the controller should be passed back in the message
-    [settingsManager.consoleSettings.selectedController fetchGroupMembers];
+    if (controller.context) {
+        [(ControllerRequest *)controller.context retry];
+    } else {
+        // By default if we don't know where we're coming from, trigger a fetch group members
+
+        // TODO: double check fetchGroupMember is the only source that can trigger this
+        // No, it is not the only source:
+        // - fetchPanels will trigger this
+        // - UpdateController can trigger it
+        
+        // TODO: put appropriate info in context so that correct call can be performed
+        
+        // TODO: the controller should be passed back in the message
+        [settingsManager.consoleSettings.selectedController fetchGroupMembers];
+    }
 }
 
 #pragma mark -

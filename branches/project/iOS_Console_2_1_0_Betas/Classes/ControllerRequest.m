@@ -33,7 +33,7 @@
 @interface ControllerRequest ()
 
 @property (nonatomic, retain) ORGroupMember *usedGroupMember;
-@property (nonatomic, assign) ORController *controller;
+@property (nonatomic, assign, readwrite) ORController *controller;
 
 @end
 
@@ -214,7 +214,9 @@
             } else {
                 // No specific handling by the delegate, post a notification so "anyone" can handle
 //                [ORConsoleSettingsManager sharedORConsoleSettingsManager].consoleSettings.selectedController.password = nil; // TODO: move to specific cases, don't always get rid of password
-                [[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+                
+                [[NSNotificationCenter defaultCenter] postNotification:
+                 [NSNotification notificationWithName:NotificationPopulateCredentialView object:nil userInfo:[NSDictionary dictionaryWithObject:self forKey:kAuthenticationRequiredControllerRequest]]];
             }
             break;
         }

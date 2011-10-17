@@ -336,10 +336,9 @@
 	return [currentGroupController nextScreen];
 }
 
-
 //prompts the user to enter a valid user name and password
-- (void)populateLoginView:(id)sender {
-	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
+- (void)populateLoginView:(NSNotification *)notification {
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self context:[notification.userInfo objectForKey:kAuthenticationRequiredControllerRequest]];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
 	[self presentModalViewController:loginNavController animated:NO];
 	[loginController release];
@@ -381,15 +380,29 @@
 
 #pragma mark delegate method of LoginViewController
 
-- (void)onSignin {
+
+- (void)loginViewControllerDidCancelLogin:(LoginViewController *)controller
+{
+    [self dismissModalViewControllerAnimated:YES];
+
+	[theDelegate performSelector:@selector(updateDidFinished)];
+}
+
+- (void)loginViewController:(LoginViewController *)controller didProvideUserName:(NSString *)username password:(NSString *)password
+{
+    ORController *orController = ((ControllerRequest *)controller.context).controller;
+    orController.userName = username;
+	orController.password = password;
+    
+    // TODO: we might not want to save here, maybe have a method to set this and save in dedicated MOC
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
+    
+	[self dismissModalViewControllerAnimated:YES];
+    
 	[currentGroupController stopPolling];
 	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationShowLoading object:nil];
 	[theDelegate performSelector:@selector(checkConfigAndUpdate)];
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
-}
-
-- (void)onBackFromLogin {
-	[theDelegate performSelector:@selector(updateDidFinished)];
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];    
 }
 
 #pragma mark delegate method of GestureWindow
