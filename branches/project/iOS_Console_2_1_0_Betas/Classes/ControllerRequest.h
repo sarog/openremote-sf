@@ -58,6 +58,8 @@
 
 @property (nonatomic, retain) NSObject <ControllerRequestDelegate> *delegate;
 
+@property (nonatomic, assign, readonly) ORController *controller;
+
 - (id)initWithController:(ORController *)aController;
 
 - (void)postRequestWithPath:(NSString *)path;

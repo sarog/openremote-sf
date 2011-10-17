@@ -32,6 +32,8 @@
 //If you are in development mode, comment this empty NSLog to show log.
 //#define NSLog(...) {}
 
+#define kAuthenticationRequiredControllerRequest @"kAuthenticationRequiredControllerRequest"
+
 #define log4Debug(message, ...) NSLog(message, ##__VA_ARGS__)
 #define log4Info(message, ...) NSLog(message, ##__VA_ARGS__)
 #define log4Warn(message, ...) NSLog(message, ##__VA_ARGS__)

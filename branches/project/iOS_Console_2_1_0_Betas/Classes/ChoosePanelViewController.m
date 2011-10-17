@@ -123,25 +123,32 @@
 	[self.delegate didSelectPanelIdentity:[tableView cellForRowAtIndexPath:indexPath].textLabel.text];
 }
 
-//prompts the user to enter a valid user name and password
-- (void)populateLoginView:(id)sender {
-	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self];
+- (void)presentLoginRequestForControllerRequest:(ControllerRequest *)controllerRequest
+{
+	LoginViewController *loginController = [[LoginViewController alloc] initWithDelegate:self context:controllerRequest];
 	UINavigationController *loginNavController = [[UINavigationController alloc] initWithRootViewController:loginController];
-	[self presentModalViewController:loginNavController animated:NO];
+	[self presentModalViewController:loginNavController animated:YES];
 	[loginController release];
 	[loginNavController release];
 }
 
-// When cancelled on credentials panel
-- (void)onBackFromLogin
+- (void)loginViewControllerDidCancelLogin:(LoginViewController *)controller
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:NotificationHideLoading object:nil];
+    [self dismissModalViewControllerAnimated:YES];
 }
 
-// When crendentials entered
-- (void)onSignin
+- (void)loginViewController:(LoginViewController *)controller didProvideUserName:(NSString *)username password:(NSString *)password
 {
-    [self requestPanelList];
+    ORController *orController = ((ControllerRequest *)controller.context).controller;
+    orController.userName = username;
+	orController.password = password;
+    
+    // TODO: we might not want to save here, maybe have a method to set this and save in dedicated MOC
+    [[ORConsoleSettingsManager sharedORConsoleSettingsManager] saveConsoleSettings];
+    
+	[self dismissModalViewControllerAnimated:YES];
+    
+    [(ControllerRequest *)controller.context retry];
 }
 
 - (void)updateTableView {
@@ -176,7 +183,7 @@
 
 - (void)fetchPanelsRequiresAuthenticationForControllerRequest:(ControllerRequest *)controllerRequest
 {
-    [self populateLoginView:self];
+    [self presentLoginRequestForControllerRequest:controllerRequest];
 }
 
 - (void)fetchPanelsDidFailWithError:(NSError *)error

@@ -58,7 +58,7 @@
 /**
  * Prompts the user to enter a valid user name and password
  */
-- (void)populateLoginView:(id)sender;
+- (void)populateLoginView:(NSNotification *)notification;
 
 /**
  * Prompts the user to setting.
