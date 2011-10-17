@@ -64,12 +64,12 @@ public class IRFileParserServiceImpl extends
 	public void saveCommands(org.openremote.modeler.domain.Device device,
 			GlobalCache globalCache, IRTrans irTrans,
 			List<IRCommandInfo> selectedFunctions) {
-		/*CodeSetInfo csi = selectedFunctions.get(0).getCodeSet();
+		CodeSetInfo csi = selectedFunctions.get(0).getCodeSet();
 		System.out.println("csi : "+csi.getDeviceInfo().getModelName());
 		CodeSet cs= new CodeSet(csi.getDeviceInfo().getBrandInfo().getBrandName(), csi.getDeviceInfo().getModelName());
 		System.out.println(cs+"  "+cs.getDevice()+" ");
 		currentCodeSet = getIRCommands(cs);
-		System.out.println("saving device euh");
+		System.out.println("xcfFileParser device "+ xcfFileParser.getDevices().get(0));
 
 		System.out.println("current cs"+currentCodeSet);
 		System.out.println("current cs"+currentCodeSet.size());
@@ -156,7 +156,7 @@ public class IRFileParserServiceImpl extends
 				System.out.println("Saving command : " + command);
 		        
 		         genericDAO.save(command);
-			}*/
+			}
 		}
 
 		// TODO create a DeviceCommand based on
