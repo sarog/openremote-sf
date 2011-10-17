@@ -5,10 +5,10 @@ typedef struct _port_t {
 	char *portId;
 	char *portType;
 	void *configuration;
-	int lockStatus;
+	char *lockSource;
 } port_t;
 
-int lock(port_t *port);
-int unlock(port_t *port);
+int lock(port_t *port, char *source);
+int unlock(port_t *port, char *source);
 
 #endif

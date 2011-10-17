@@ -5,7 +5,7 @@
 static apr_pool_t *portPool;
 static apr_hash_t *ports;
 
-int init() {
+int initPortManager() {
 	apr_pool_create(&portPool, NULL);
 	ports = apr_hash_make(portPool);
 	return R_SUCCESS;
@@ -13,14 +13,22 @@ int init() {
 
 int createPort(char *portId, char *portType) {
 	port_t *p;
-	port_t port;
+
+	// Check if port already exists
 	p = apr_hash_get(ports, portId, strlen(portId));
 	if (p != NULL)
 		return R_PORT_EXISTS;
-	// TODO portId should be copied?
-	port.portId = portId;
-	port.portType = portType;
-	apr_hash_set(ports, portId, strlen(portId), &port);
+
+	// Otherwise create it
+	p = apr_palloc(portPool, sizeof(port_t));
+	p->portId = apr_palloc(portPool, strlen(portId) + 1);
+	strcpy(p->portId, portId);
+	p->portType = apr_palloc(portPool, strlen(portType) + 1);
+	strcpy(p->portType, portType);
+	p->lockSource = NULL;
+	p->configuration = NULL;
+	apr_hash_set(ports, portId, strlen(portId), p);
+	printf("port '%s' created\n", portId);
 	return R_SUCCESS;
 }
 

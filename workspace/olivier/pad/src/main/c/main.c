@@ -4,14 +4,16 @@
 
 #include "padConfig.h"
 #include "server.h"
-#include "serialize.h"
+#include "portManager.h"
 
 void main(int argc, const char *argv[]) {
   printf("%s version %d.%d\n", argv[0], pad_VERSION_MAJOR, pad_VERSION_MINOR);
 
   apr_status_t st = apr_initialize();
-  printf("apr_initialize result : %d\n", st);
+
+  initPortManager();
 
   runServer();
+
   apr_terminate();
 }
