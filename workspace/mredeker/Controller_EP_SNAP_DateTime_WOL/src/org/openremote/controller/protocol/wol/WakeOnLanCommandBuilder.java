@@ -3,34 +3,63 @@ package org.openremote.controller.protocol.wol;
 import java.util.List;
 
 import org.jdom.Element;
+import org.openremote.controller.Constants;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.command.CommandBuilder;
-import org.openremote.controller.utils.CommandUtil;
+import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.utils.Logger;
 
 /**
+ * Builds a WakeOnLandCommand which can be used to send WOL magic packets onto the LAN to wakeup a pc.
  * 
  * @author Marcus Redeker
  */
 public class WakeOnLanCommandBuilder implements CommandBuilder {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
+   // Constants ------------------------------------------------------------------------------------
+
+   public final static String WOL_PROTOCOL_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "WOL";
+
+   private final static String STR_ATTRIBUTE_NAME_MAC_ADDRESS = "macAddress";
+   private final static String STR_ATTRIBUTE_NAME_BROADCAST_IP = "broadcastIp";
+
+   // Class Members --------------------------------------------------------------------------------
+
+   private final static Logger logger = Logger.getLogger(WOL_PROTOCOL_LOG_CATEGORY);
+
+   /**
+    * {@inheritDoc}
+    */
+   @SuppressWarnings("unchecked")
    public Command build(Element element) {
+      logger.debug("Building WOL command");
+      List<Element> propertyEles = element.getChildren("property", element.getNamespace());
 
-		WakeOnLanCommand cmd = new WakeOnLanCommand();
+      String macAddress = null;
+      String broadcastIp = null;
 
-		List<Element> propertyElements = element.getChildren(CommandBuilder.XML_ELEMENT_PROPERTY, element.getNamespace());
-		for (Element el : propertyElements) {
-			if ("macAddress".equals(el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME))) {
-				cmd.setMacAddress(CommandUtil.parseStringWithParam(element, el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE)));
-			}
-         if ("broadcastIp".equals(el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME))) {
-            cmd.setBroadcastIp(CommandUtil.parseStringWithParam(element, el.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE)));
+      // read values from config xml
+
+      for (Element ele : propertyEles) {
+         String elementName = ele.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_NAME);
+         String elementValue = ele.getAttributeValue(CommandBuilder.XML_ATTRIBUTENAME_VALUE);
+
+         if (STR_ATTRIBUTE_NAME_MAC_ADDRESS.equals(elementName)) {
+            macAddress = elementValue;
+            logger.debug("WOL Command: macAddress = " + macAddress);
+         } else if (STR_ATTRIBUTE_NAME_BROADCAST_IP.equals(elementName)) {
+            broadcastIp = elementValue;
+            logger.debug("WOL Command: broadcastIp = " + broadcastIp);
          }
-		}
-		return cmd;
-	}
+      }
+
+      if (null == macAddress || null == broadcastIp || macAddress.trim().length() == 0 || broadcastIp.trim().length() == 0) {
+         throw new NoSuchCommandException("WOL command must have a both properties 'macAddress' and 'broadcastIp'.");
+      }
+
+      logger.debug("WOL Command created successfully");
+
+      return new WakeOnLanCommand(macAddress, broadcastIp);
+   }
 
 }

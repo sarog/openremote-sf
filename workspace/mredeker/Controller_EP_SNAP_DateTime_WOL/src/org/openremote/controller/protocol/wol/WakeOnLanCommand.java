@@ -26,7 +26,7 @@ import org.openremote.controller.command.ExecutableCommand;
 public class WakeOnLanCommand implements ExecutableCommand {
 
    /** The logger. */
-   private static Logger logger = Logger.getLogger(WakeOnLanCommand.class.getName());
+   private static Logger logger = Logger.getLogger(WakeOnLanCommandBuilder.WOL_PROTOCOL_LOG_CATEGORY);
 
    /** The MAC-Address to which the WOL package is sent */
    private String macAddress;
@@ -36,6 +36,16 @@ public class WakeOnLanCommand implements ExecutableCommand {
 
    public static final int PORT = 9;
 
+   /**
+    * WakeOnLanCommand is a protocol to wakeup PC's via a magic packet from the network.
+    * @param macAddress
+    * @param broadcastIp
+    */
+   public WakeOnLanCommand(String macAddress, String broadcastIp) {
+      this.broadcastIp = broadcastIp;
+      this.macAddress = macAddress;
+   }
+   
    /**
     * {@inheritDoc}
     */
@@ -84,16 +94,8 @@ public class WakeOnLanCommand implements ExecutableCommand {
       return macAddress;
    }
 
-   public void setMacAddress(String macAddress) {
-      this.macAddress = macAddress;
-   }
-
    public String getBroadcastIp() {
       return broadcastIp;
-   }
-
-   public void setBroadcastIp(String broadcastIp) {
-      this.broadcastIp = broadcastIp;
    }
 
 }
