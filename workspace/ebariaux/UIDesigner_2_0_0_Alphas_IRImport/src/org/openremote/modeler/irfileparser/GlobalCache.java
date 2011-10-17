@@ -4,33 +4,44 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class GlobalCache implements IsSerializable{
 	
-	private String ipAddress;
+	private String IpAddress;
 	private String tcpPort;
 	private String connector;
-	public GlobalCache() {
-	}
-	
+
 	public GlobalCache(String ipAddress, String tcpPort, String connector) {
-		this.ipAddress = ipAddress;
+		super();
+		IpAddress = ipAddress;
 		this.tcpPort = tcpPort;
 		this.connector = connector;
 	}
 
+
+
+	public GlobalCache() {
+	}
+
+
+
 	public String getIpAddress() {
-		return ipAddress;
+		return this.IpAddress;
 	}
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
+
 	public String getTcpPort() {
-		return tcpPort;
+		return this.tcpPort;
 	}
+
+	public String getConnector() {
+		return this.connector;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		IpAddress = ipAddress;
+	}
+
 	public void setTcpPort(String tcpPort) {
 		this.tcpPort = tcpPort;
 	}
-	public String getConnector() {
-		return connector;
-	}
+
 	public void setConnector(String connector) {
 		this.connector = connector;
 	}
