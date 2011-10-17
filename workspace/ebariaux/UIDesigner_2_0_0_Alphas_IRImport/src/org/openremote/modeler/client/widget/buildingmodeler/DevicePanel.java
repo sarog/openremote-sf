@@ -783,14 +783,12 @@ public class DevicePanel extends ContentPanel {
     * @return the menu item
     */
    private MenuItem createimportIRCommandFileImportMenu() {
-		MenuItem importIRCommandFileItem = new MenuItem("import IR command file");
+		MenuItem importIRCommandFileItem = new MenuItem("import IR Commands from file");
 		importIRCommandFileItem.setIcon(icon.importFromDB());
 		importIRCommandFileItem.addSelectionListener(new SelectionListener<MenuEvent>() {
-
 			@Override
 			public void componentSelected(MenuEvent ce) {
 				importIRCommandFile();
-				
 			}
 		});
 		return importIRCommandFileItem;
@@ -799,12 +797,17 @@ public class DevicePanel extends ContentPanel {
    private void importIRCommandFile() {
 		 final BeanModel deviceModel = getDeviceModel();
 		 if (deviceModel != null && deviceModel.getBean() instanceof Device) {
-			 final IRFileImportWindow selectIRWindow = new IRFileImportWindow(deviceModel);
-			 selectIRWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
+			 final IRFileImportWindow selectIRFileWindow = new IRFileImportWindow(deviceModel);
+			 selectIRFileWindow.addListener(SubmitEvent.SUBMIT, new SubmitListener() {
 				
 				@Override
 				public void afterSubmit(SubmitEvent be) {
-
+					List<BeanModel> deviceCommandModels = be.getData();
+		               for (BeanModel deviceCommandModel : deviceCommandModels) {
+		                  tree.getStore().add(deviceModel, deviceCommandModel, false);
+		               }
+		               tree.setExpanded(deviceModel, true);
+		               selectIRFileWindow.hide();
 					
 				}
 			});

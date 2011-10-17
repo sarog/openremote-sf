@@ -2,14 +2,15 @@ package org.openremote.modeler.client.proxy;
 
 import java.util.List;
 
-import org.openremote.modeler.client.BrandInfo;
-import org.openremote.modeler.client.CodeSetInfo;
-import org.openremote.modeler.client.DeviceInfo;
-import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.rpc.AsyncServiceFactory;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.irfileparser.BrandInfo;
+import org.openremote.modeler.irfileparser.CodeSetInfo;
+import org.openremote.modeler.irfileparser.DeviceInfo;
 import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRTrans;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -73,16 +74,15 @@ public class IrFileParserProxy {
 	public static void saveCommands(
 			Device device, final List<IRCommandInfo> selectedFunctions,
 			GlobalCache globalCache, IRTrans irTrans, final AsyncSuccessCallback<List<BeanModel>> callback) {
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,globalCache,irTrans,selectedFunctions, new AsyncSuccessCallback<Void>() {
+		AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,globalCache,irTrans,selectedFunctions, new AsyncSuccessCallback<List<DeviceCommand>>() {
 
 			@Override
-			public void onSuccess(Void result) {
-
-				callback.onSuccess(null);
-				
+			public void onSuccess(List<DeviceCommand> deviceCommands) {
+	            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
+	            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
+	            callback.onSuccess(deviceCommandModels);
 			}
 		});
-		// TODO Auto-generated method stub
 		
 	}
 	

@@ -21,14 +21,16 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 
 import java.util.List;
 
-import org.openremote.modeler.client.IRCommandInfo;
+import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.listener.FormResetListener;
 import org.openremote.modeler.client.listener.FormSubmitListener;
 import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRLed;
 import org.openremote.modeler.irfileparser.IRTrans;
 
@@ -51,12 +53,12 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The window creates or updates a deviceCommand into server.
  */
 public class IRFileImportToProtocolForm extends FormWindow {
-
 
 	/** The device. */
 	private Device device = null;
@@ -79,6 +81,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
 
 	private List<IRCommandInfo> selectedFunctions;
 	private ComboBox<IRLed> IRLed;
+	private Component wrapper;
 	protected static final String INFO_FIELD = "infoField";
 
 	/**
@@ -92,6 +95,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
 	public IRFileImportToProtocolForm(Component wrapper, Device device) {
 		super();
 		this.device = device;
+		this.wrapper = wrapper;
 		setHeading("New command");
 		initial();
 		show();
@@ -120,25 +124,27 @@ public class IRFileImportToProtocolForm extends FormWindow {
 
 			@Override
 			public void handleEvent(FormEvent be) {
-				// TODO add the globalCaché/IRTrans data in a convenient way
-				Window.alert(String.valueOf(selectedFunctions.size()));
-				
+				form.mask("Please Wait...");
 				GlobalCache globalCache = new GlobalCache();
 				IRTrans irTrans = new IRTrans();
 
-				if (gCPanel.isEnabled()){
-					globalCache = new GlobalCache(gCip.getValue(), tcpPort.getValue(), connector.getValue());
-				}else{
-					Window.alert(iRLed.getSelection().get(0).getCode());
-					irTrans = new IRTrans(iRTransIp.getValue(), udpPort.getValue(), iRLed.getSelection().get(0).getCode());
-					
+				if (gCPanel.isEnabled()) {
+					globalCache = new GlobalCache(gCip.getValue(), tcpPort
+							.getValue(), connector.getValue());
+				} else {
+					irTrans = new IRTrans(iRTransIp.getValue(), udpPort
+							.getValue(), iRLed.getSelection().get(0).getCode());
 				}
-				IrFileParserProxy.saveCommands(device, selectedFunctions,globalCache,irTrans,
+				IrFileParserProxy.saveCommands(device, selectedFunctions,
+						globalCache, irTrans,
 						new AsyncSuccessCallback<List<BeanModel>>() {
 							@Override
 							public void onSuccess(
 									List<BeanModel> deviceCommandModels) {
-								Window.alert("should be saved");
+								IRFileImportToProtocolForm.this.hide();
+								wrapper.fireEvent(SubmitEvent.SUBMIT,
+										new SubmitEvent(deviceCommandModels));
+
 							}
 						});
 			}
@@ -247,8 +253,6 @@ public class IRFileImportToProtocolForm extends FormWindow {
 		});
 		form.layout();
 	}
-
-
 
 	public void setSelectedFunctions(List<IRCommandInfo> selectedItems) {
 		this.selectedFunctions = selectedItems;
