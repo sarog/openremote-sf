@@ -20,8 +20,6 @@ public class IRFileParserServiceImpl extends
 
 	private XCFFileParser xcfFileParser;
 
-	private static Logger log = Logger.getLogger(IRFileParserServiceImpl.class);
-
 	public void setXcfFileParser(XCFFileParser xcfFileParser) {
 		this.xcfFileParser = xcfFileParser;
 	}
@@ -52,8 +50,6 @@ public class IRFileParserServiceImpl extends
 	@Transactional
 	public void saveCommands(List<DeviceCommand> deviceCommands) {
 		for (DeviceCommand command : deviceCommands){
-			System.out.println("Saving command : " + command);
-	        
 	         genericDAO.save(command);
 		}
 	}

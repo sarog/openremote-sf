@@ -21,14 +21,16 @@ package org.openremote.modeler.client.rpc;
 
 import java.util.List;
 
-import org.openremote.modeler.client.BrandInfo;
-import org.openremote.modeler.client.CodeSetInfo;
-import org.openremote.modeler.client.DeviceInfo;
-import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
+import org.openremote.modeler.irfileparser.BrandInfo;
+import org.openremote.modeler.irfileparser.CodeSetInfo;
+import org.openremote.modeler.irfileparser.DeviceInfo;
 import org.openremote.modeler.irfileparser.GlobalCache;
+import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRTrans;
 
+import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -44,6 +46,6 @@ public interface IRFileParserRPCService extends RemoteService {
 	List<DeviceInfo> getDevices(BrandInfo brand);
 	List<IRCommandInfo> getIRCommands(CodeSetInfo codeset);
 	
-	void saveCommands(Device device, GlobalCache globalCache, IRTrans irTrans,
+	List<DeviceCommand> saveCommands(Device device, GlobalCache globalCache, IRTrans irTrans,
 			List<IRCommandInfo> selectedFunctions);
 }

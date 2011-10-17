@@ -1,4 +1,4 @@
-package org.openremote.modeler.client;
+package org.openremote.modeler.irfileparser;
 
 
 import java.util.List;

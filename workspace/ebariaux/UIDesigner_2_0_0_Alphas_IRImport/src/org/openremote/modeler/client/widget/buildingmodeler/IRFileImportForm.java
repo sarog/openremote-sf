@@ -22,14 +22,15 @@ package org.openremote.modeler.client.widget.buildingmodeler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openremote.modeler.client.BrandInfo;
-import org.openremote.modeler.client.CodeSetInfo;
-import org.openremote.modeler.client.DeviceInfo;
-import org.openremote.modeler.client.IRCommandInfo;
 import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
+import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.irfileparser.BrandInfo;
+import org.openremote.modeler.irfileparser.CodeSetInfo;
+import org.openremote.modeler.irfileparser.DeviceInfo;
+import org.openremote.modeler.irfileparser.IRCommandInfo;
 
 import com.extjs.gxt.ui.client.Style.Orientation;
 import com.extjs.gxt.ui.client.data.BeanModel;
@@ -97,10 +98,10 @@ public class IRFileImportForm extends CommonForm {
 
 	protected Component wrapper;
 
-	protected IRFileImportToProtocolForm protocolChooserForm = new IRFileImportToProtocolForm(wrapper,device);
+	protected IRFileImportToProtocolForm protocolChooserForm;
 
 	/**
-	 * Instantiates a new iR command import form.
+	 * Instantiates a new iR command file import form.
 	 * 
 	 * @param wrapper
 	 *            the wrapper
@@ -108,14 +109,17 @@ public class IRFileImportForm extends CommonForm {
 	 *            the device bean model
 	 */
 	public IRFileImportForm(final Component wrapper, BeanModel deviceBeanModel) {
+
 		super();
+
 		setHeight(500);
 		this.wrapper = wrapper;
 		setLayout(new RowLayout(Orientation.VERTICAL));
 		HBoxLayout selectContainerLayout = new HBoxLayout();
 		selectContainerLayout.setPadding(new Padding(5));
 		selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
-
+		device = (Device) deviceBeanModel.getBean();
+		protocolChooserForm = new IRFileImportToProtocolForm(wrapper,device);
 		selectContainer.setLayout(selectContainerLayout);
 		selectContainer.setLayoutOnChange(true);
 		add(selectContainer, new RowData(1, 35));
@@ -124,6 +128,10 @@ public class IRFileImportForm extends CommonForm {
 		commandContainer.setLayoutOnChange(true);
 		add(commandContainer, new RowData(1, 1));
 		protocolChooserForm.setVisible(false);
+		cleanBrandComboBox();
+		cleanCodeGrid();
+		cleanCodeSetComboBox();
+		cleanDeviceComboBox();
 		add(protocolChooserForm);
 		onSubmit(wrapper);
 	}
@@ -137,7 +145,7 @@ public class IRFileImportForm extends CommonForm {
 	protected void onSubmit(final Component wrapper) {
 		addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
 			public void handleEvent(FormEvent be) {
-				protocolChooserForm.show();
+
 			}
 		});
 	}
@@ -152,6 +160,7 @@ public class IRFileImportForm extends CommonForm {
 			public void componentSelected(ButtonEvent ce) {
 				protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
 				protocolChooserForm.show();
+
 			}
 		});
 		addButton(nextButton);

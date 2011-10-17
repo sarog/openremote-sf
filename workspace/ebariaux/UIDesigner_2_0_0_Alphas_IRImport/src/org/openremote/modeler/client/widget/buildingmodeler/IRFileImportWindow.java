@@ -45,8 +45,8 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class IRFileImportWindow extends FormWindow {
 
-    private Device device;
-    private Button importBtn;
+    @SuppressWarnings("unused")
+	private Device device;
     private final IRFileImportWindow importWindow;
 	private FileUploadField fileUploadField;
 	private IRFileImportForm importForm; 
@@ -76,21 +76,18 @@ private void initial(String heading) {
 	
 	createFileUploadField();
 	createLoadResetButton();
-//	createResultGrid();
-	createWindowButtons();
 	form.setWidth(800);
 	form.add(fileUploadPanel);
 	
 	deviceChooser.add(form);
 	addListenersToForm();
-//	deviceChooser.
 }
 
 
 private void addListenersToForm() {
 	form.addListener(Events.Submit, new Listener<FormEvent>() {
         public void handleEvent(FormEvent be) {
-
+        	importWindow.unmask();
         	importForm.enable();
         	importForm.showBrands();
 
@@ -99,16 +96,6 @@ private void addListenersToForm() {
 }
 
 
-private void createWindowButtons() {
-	// TODO Auto-generated method stub
-	
-}
-
-
-private void createResultGrid() {
-	// TODO Auto-generated method stub
-	
-}
 
 
 private void createLoadResetButton() {
@@ -119,6 +106,7 @@ private void createLoadResetButton() {
 		@Override
 		public void componentSelected(ButtonEvent ce) {
 			if (form.isValid()){
+				importWindow.mask("Please wait while file is loaded and processed");
 				form.submit();
 			}
 			

@@ -1,4 +1,4 @@
-package org.openremote.modeler.client;
+package org.openremote.modeler.irfileparser;
 
 import com.extjs.gxt.ui.client.data.BaseModel;
 import com.google.gwt.user.client.rpc.IsSerializable;
