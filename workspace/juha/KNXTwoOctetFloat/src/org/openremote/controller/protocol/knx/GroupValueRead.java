@@ -252,15 +252,15 @@ class GroupValueRead extends KNXCommand implements StatusCommand
     else if (sensorType == EnumSensorType.CUSTOM)
     {
 
-      if (dpt == DataPointType.Float2ByteValue.VALUE_TEMP)
-      {
-        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+//      if (dpt == DataPointType.Float2ByteValue.VALUE_TEMP)
+//      {
+//        Float2Byte valueDPT = (Float2Byte)responseAPDU.getDataType();
+//
+//        float resolution = valueDPT.resolve();
+//        return Float.toString(resolution);
+//      }
 
-        float resolution = valueDPT.resolve();
-        return Float.toString(resolution);
-      }
-
-      else if (dpt instanceof DataPointType.TwoOctetFloat)
+      if (dpt instanceof DataPointType.TwoOctetFloat)
       {
         TwoOctetFloat valueDPT = (TwoOctetFloat)responseAPDU.getDataType();
 
