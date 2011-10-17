@@ -18,10 +18,12 @@ import org.openremote.modeler.server.BaseGWTSpringControllerWithHibernateSupport
 import org.openremote.modeler.service.IRFileParserService;
 
 import com.tinsys.ir.codes.IRCode;
+import com.tinsys.ir.codes.InvalidIRCodeException;
 import com.tinsys.ir.database.Brand;
 import com.tinsys.ir.database.CodeSet;
 import com.tinsys.ir.database.Device;
 import com.tinsys.ir.database.IRCommand;
+import com.tinsys.ir.representations.IRCodeRepresentation;
 import com.tinsys.ir.representations.gc.GCIRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.ProntoIRCodeRepresentationHandler;
@@ -202,10 +204,14 @@ public class IRFileParserController extends
 				currentCodeSet.remove(currentCom);
 				if (currentCom.requiresToggle()) {
 					boolean toggle = true;
-/*					codeString = new RawIRCodeRepresentationHandler()
+					try {
+					  IRCodeRepresentation representation = new RawIRCodeRepresentationHandler()
 							.getRepresentationFromCode(
-									currentCom.getRawCode(toggle))
-							.getStringRepresentation();*/
+									currentCom.getRawCode(toggle));
+				        codeString = representation.getStringRepresentation();
+					} catch (InvalidIRCodeException e) {
+					  e.printStackTrace();
+					}
 					commandAttr.setValue("sndccf " + codeString + ",l"
 							+ irTrans.getIrLed());
 					commandAttr.setProtocol(protocol);
