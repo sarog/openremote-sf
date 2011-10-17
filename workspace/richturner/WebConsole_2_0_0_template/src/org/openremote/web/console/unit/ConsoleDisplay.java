@@ -32,8 +32,8 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class ConsoleDisplay extends InteractiveConsoleComponent implements TouchMoveHandler, MouseMoveHandler, MouseOutHandler {
-	public static final int DEFAULT_DISPLAY_WIDTH = 480;
-	public static final int DEFAULT_DISPLAY_HEIGHT = 800;
+	public static final int DEFAULT_DISPLAY_WIDTH = 320;
+	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
 	private AbsolutePanel display;
 	private int width;
@@ -138,7 +138,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 	
 	protected void setTabBar(TabBarComponent tabBar) {
-		display.add(tabBar, 0, height- TabBarComponent.TABBAR_HEIGHT);
+		display.add(tabBar, 0, height- tabBar.getHeight());
 		tabBar.onAdd();
 	}
 	

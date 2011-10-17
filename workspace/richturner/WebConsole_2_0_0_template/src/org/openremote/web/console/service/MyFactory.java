@@ -22,7 +22,7 @@ import org.openremote.web.console.panel.entity.component.LabelComponent;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
 
-interface MyFactory extends AutoBeanFactory {
+public interface MyFactory extends AutoBeanFactory {
 	AutoBean<PanelCredentials> panelCredentials();
 	AutoBean<PanelCredentials> panelCredentials(PanelCredentials toWrap);
 	AutoBean<PanelIdentityList> panelIdentityList();

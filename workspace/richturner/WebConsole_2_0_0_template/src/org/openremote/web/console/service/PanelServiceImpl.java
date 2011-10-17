@@ -1,19 +1,14 @@
 package org.openremote.web.console.service;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.entity.Group;
-import org.openremote.web.console.panel.entity.GroupList;
 import org.openremote.web.console.panel.entity.Screen;
-import org.openremote.web.console.panel.entity.ScreenList;
 import org.openremote.web.console.panel.entity.ScreenRef;
 import org.openremote.web.console.panel.entity.TabBar;
-import org.openremote.web.console.view.ScreenView;
 
 public class PanelServiceImpl implements PanelService {
 	Panel currentPanel;
@@ -102,23 +97,17 @@ public class PanelServiceImpl implements PanelService {
 			currentScreenMap = new LinkedHashMap<Integer, Screen>();
 			currentPanelTabBar = currentPanel.getTabbar();
 			
-			GroupList groups = currentPanel.getGroups();
+			List<Group> groups = currentPanel.getGroups().getGroup();
 			if (groups != null) {
-				List<Group> groupElems = currentPanel.getGroups().getGroup();
-				if (groups != null) {
-					for (Group groupElem : groupElems) {
-						currentGroupMap.put(groupElem.getId(), groupElem);
-					}
+				for (Group groupElem : groups) {
+					currentGroupMap.put(groupElem.getId(), groupElem);
 				}
 			}
 
-			ScreenList screens = currentPanel.getScreens();
+			List<Screen> screens = currentPanel.getScreens().getScreen();
 			if (screens != null) {
-				List<Screen> screenElems = currentPanel.getScreens().getScreen();
-				if (screens != null) {
-					for (Screen screenElem : screenElems) {
-						currentScreenMap.put(screenElem.getId(), screenElem);
-					}
+				for (Screen screenElem : screens) {
+					currentScreenMap.put(screenElem.getId(), screenElem);
 				}
 			}
 			
@@ -133,7 +122,7 @@ public class PanelServiceImpl implements PanelService {
 		if (currentGroupMap != null) {
 			Group group = getGroupById(groupId);
 			if (group != null) {
-				tabBar = group.getTabBar();
+				tabBar = group.getTabbar();
 			}
 		}
 		

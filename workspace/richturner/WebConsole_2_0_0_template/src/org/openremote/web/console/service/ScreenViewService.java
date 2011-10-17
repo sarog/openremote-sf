@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
-import org.openremote.web.console.panel.entity.Image;
+import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
 import org.openremote.web.console.panel.entity.component.ImageComponent;
