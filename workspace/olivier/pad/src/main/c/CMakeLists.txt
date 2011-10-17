@@ -18,7 +18,7 @@ set_property(TARGET apr-1 PROPERTY IMPORTED_LOCATION ${APR_PATH}/.libs/libapr-1.
 #add_library(pthread MODULE IMPORTED)
 
 # add the executable
-add_library(pa server.c serialize.c)
+add_library(pa server.c serialize.c portManager.c)
 add_executable(pad main.c server.c dispatch.c serialize.c portManager.c port.c)
 target_link_libraries(pad apr-1)
 target_link_libraries(pad pthread)

@@ -21,11 +21,11 @@ int dispatchInputMessage(apr_socket_t *sock, message_t **message, apr_pool_t *po
 		break;
 	case LOCK:
 		RETURN_IF(getPort((*message)->fields[0].stringVal, &port), r)
-		return lock(port);
+		return lock(port, (*message)->fields[1].stringVal);
 		break;
 	case UNLOCK:
 		RETURN_IF(getPort((*message)->fields[0].stringVal, &port), r)
-		return unlock(port);
+		return unlock(port, (*message)->fields[1].stringVal);
 		break;
 	case CREATE_PORT:
 		return createPort((*message)->fields[0].stringVal, (*message)->fields[1].stringVal);
