@@ -9,6 +9,7 @@ import org.openremote.web.console.event.hold.HoldHandler;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.rotate.RotationHandler;
 import org.openremote.web.console.event.swipe.SwipeEvent;
+import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.swipe.SwipeHandler;
 import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
@@ -18,6 +19,8 @@ import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelCredentials;
 import org.openremote.web.console.panel.PanelCredentialsImpl;
 import org.openremote.web.console.panel.PanelIdentity;
+import org.openremote.web.console.panel.entity.Gesture;
+import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.rpc.json.JSONPControllerService;
 import org.openremote.web.console.service.AsyncControllerCallback;
@@ -93,12 +96,22 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	@Override
 	public void onHold(HoldEvent event) {
-		//TODO Handle Hold Event	
+		loadSettings();
 	}
 
 	@Override
 	public void onSwipe(SwipeEvent event) {
-		//TODO Handle swipe Event
+		switch (event.getDirection()) {
+			case LEFT:
+				
+				break;
+			case RIGHT:
+				break;
+			case DOWN:
+				break;
+			case UP:
+				break;
+		}
 	}
 
 	@Override
@@ -177,7 +190,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		setScreenView(loadingScreen);
 		
 		// Check for Last Panel in Cache
-		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://192.168.1.68:8080/controller", 48, "DHD");
+		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://192.168.1.71:8080/controller", 30, "Mobile");
 		dataService.setLastPanelCredentials(panelCred);
 		PanelCredentials lastPanelCredentials = dataService.getLastPanelCredentials();
 		
@@ -189,7 +202,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			
 			// Get Panel list and look for last panel name in list
 			Controller controller = new Controller();
-			controller.setUrl("http://192.168.1.68:8080/controller");
+			controller.setUrl(lastPanelCredentials.getControllerUrl());
 			controllerService.setController(controller);
 			getPanelIdentities();
 		}
@@ -245,29 +258,55 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 
 			@Override
 			public void onSuccess(Panel result) {
+				panelService.setCurrentPanel(result);
 				loadPanel(result);
 			}			
 		});
 	}
 	
 	public void loadPanel(Panel panel) {
-		panelService.setCurrentPanel(panel);
-		
 		// Get default group ID
 		currentGroupId = panelService.getDefaultGroupId();
 		
 		if (currentGroupId == null) {
 			loadSettings();
+			return;
 		}
 		
-		ScreenView defaultScreenView = screenViewService.getScreenView(panelService.getDefaultScreen(currentGroupId));
-		if (defaultScreenView != null) {
+		// Load default Screen for default group
+		loadScreen(panelService.getDefaultScreen(currentGroupId));
+	}
+	
+	public void loadScreen(Screen screen) {
+		ScreenView screenView = screenViewService.getScreenView(screen);
+		if (screenView != null) {
+			setScreenView(screenView);
+			
 			// Get Tab Bar for this group
-			TabBarComponent tabBar = new TabBarComponent(panelService.getTabBar(currentGroupId));
-			setScreenView(defaultScreenView);
-			setTabBar(tabBar);
+			TabBar tabBar = panelService.getTabBar(currentGroupId);
+			if (tabBar != null) {
+				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
+				setTabBar(tabBarComponent);
+			}
+			
+			// Get gestures for this screen
+			if (screen.getGesture() != null) {
+				for (Gesture gesture : screen.getGesture()) {
+					String direction = gesture.getType();
+					if (direction.equalsIgnoreCase("swipe-bottom-to-top")) {
+						
+					} else if (direction.equalsIgnoreCase("swipe-top-to-bottom")) {
+						
+					} else if (direction.equalsIgnoreCase("swipe-left-to-right")) {
+						
+					} else if (direction.equalsIgnoreCase("swipe-right-to-left")) {
+						
+					}
+				}
+			}
 		} else {
 			loadSettings();
+			return;
 		}
 	}
 	
@@ -282,5 +321,9 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	public void setTabBar(TabBarComponent tabBar) {
 		consoleDisplay.setTabBar(tabBar);
+	}
+	
+	public ControllerService getControllerService() {
+		return this.controllerService;
 	}
 }

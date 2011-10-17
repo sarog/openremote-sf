@@ -19,7 +19,7 @@
 */
 package org.openremote.web.console.panel.entity;
 
-import org.openremote.web.console.panel.entity.Image;
+import org.openremote.web.console.panel.entity.TabImage;
 
 /**
  * The background of screen, which contains background position in screen.
@@ -30,7 +30,7 @@ public interface Background {
 
    public void setFillScreen(String fillScreen);
 
-	public void setImage(Image backgroundImage);
+	public void setImage(TabImage backgroundImage);
 	
 	public void setRelative(String relative);
 
@@ -38,5 +38,5 @@ public interface Background {
    
    public String getRelative();
    
-   public Image getImage();
+   public TabImage getImage();
 }

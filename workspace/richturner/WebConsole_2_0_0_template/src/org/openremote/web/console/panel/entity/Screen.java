@@ -28,12 +28,14 @@ public interface Screen {
    int getId();
    String getName();
    List<AbsoluteLayout> getAbsolute();
+   List<GridLayout> getGrid();
    List<Gesture> getGesture();
    Background getBackground();
    
    void setId(int id);
    void setName(String name);
    void setAbsolute(List<AbsoluteLayout> layouts);
+   void setGrid(List<GridLayout> layouts);
    void setGesture(List<Gesture> gestures);
    void setBackground(Background background);
 }

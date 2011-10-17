@@ -34,6 +34,6 @@ public interface Group {
    public List<ScreenRef> getInclude();
    public void setInclude(List<ScreenRef> screenRefs);
    
-   public TabBar getTabBar();
-   public void setTabBar(TabBar tabBar);
+   public TabBar getTabbar();
+   public void setTabbar(TabBar tabBar);
 }

@@ -35,5 +35,7 @@ public class AutoBeanService {
 	   return bean.as();
 	}
 	
-	
+	public MyFactory getFactory() {
+		return this.factory;
+	}
 }

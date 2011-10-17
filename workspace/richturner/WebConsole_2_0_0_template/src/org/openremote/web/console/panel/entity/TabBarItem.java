@@ -28,9 +28,9 @@ public interface TabBarItem {
 
    String getName();
    Navigate getNavigate() ;
-   Image getImage();
+   TabImage getImage();
    
    void setName(String name);
 	void setNavigate(Navigate navigate);
-	void setImage(Image image);
+	void setImage(TabImage image);
 }
