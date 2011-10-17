@@ -1,36 +1,38 @@
 package org.openremote.modeler.irfileparser;
 
-import com.extjs.gxt.ui.client.data.BaseModelData;
+import com.extjs.gxt.ui.client.data.BaseModel;
 
-public class IRLed extends BaseModelData {
+public class IRLed extends BaseModel {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private String code;
+	private String value;
 
 	public IRLed() {
-
 	}
 
-	public IRLed(String value, String code) {
-		setValue(value);
-		setCode(code);
-	}
-
-	public String getCode() {
-		return get("code");
+	public IRLed(String code, String value) {
+		this.code = code;
+		this.value = value;
 	}
 
 	public void setCode(String code) {
-		set("code", code);
-
+		this.code = code;
 	}
 
-	protected String getValue() {
-		return get("value");
+	public String getCode() {
+		return code;
 	}
 
-	protected void setValue(String value) {
-		set("value", value);
+	public void setValue(String value) {
+		this.value = value;
 	}
+
+	public String getValue() {
+		return value;
+	}
+
 }
