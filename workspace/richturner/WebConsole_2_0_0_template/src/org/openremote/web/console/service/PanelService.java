@@ -8,7 +8,7 @@ import org.openremote.web.console.panel.entity.TabBar;
 public interface PanelService {
 	Integer getDefaultGroupId();
 	
-	Screen getDefaultScreen(int groupId);
+	Screen getDefaultScreen(Integer groupId);
 	
 	Panel getCurrentPanel();
 	
