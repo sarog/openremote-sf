@@ -345,7 +345,6 @@
 	[loginNavController release];
 }
 
-
 - (void)populateSettingsView:(id)sender {
 	AppSettingController *settingController = [[AppSettingController alloc] init];
 	UINavigationController *settingNavController = [[UINavigationController alloc] initWithRootViewController:settingController];
@@ -380,7 +379,6 @@
 
 #pragma mark delegate method of LoginViewController
 
-
 - (void)loginViewControllerDidCancelLogin:(LoginViewController *)controller
 {
     [self dismissModalViewControllerAnimated:YES];
@@ -406,6 +404,7 @@
 }
 
 #pragma mark delegate method of GestureWindow
+
 - (void)performGesture:(Gesture *)gesture {
 	NSLog(@"detected gesture : %@", [gesture toString]);
 	[currentGroupController performGesture:gesture];
