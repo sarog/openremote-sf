@@ -21,38 +21,35 @@
 package org.openremote.controller.model.xml;
 
 
-import java.util.Properties;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URI;
+import java.util.Properties;
 
 import junit.framework.Assert;
-
-
 import org.jdom.Element;
-import org.junit.Test;
 import org.junit.Before;
-import org.openremote.controller.component.RangeSensor;
-import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.model.sensor.StateSensor;
-import org.openremote.controller.component.LevelSensor;
-import org.openremote.controller.component.ComponentFactory;
-import org.openremote.controller.component.ComponentBuilder;
-import org.openremote.controller.component.control.button.ButtonBuilder;
-import org.openremote.controller.service.ServiceContext;
-import org.openremote.controller.service.Deployer;
-import org.openremote.controller.service.ControlCommandService;
-import org.openremote.controller.service.impl.ControlCommandServiceImpl;
-import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.command.CommandFactory;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.statuscache.EventProcessorChain;
+import org.junit.Test;
 import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
+import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.component.ComponentBuilder;
+import org.openremote.controller.component.ComponentFactory;
+import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.component.control.button.ButtonBuilder;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.ReadCommand;
+import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
+import org.openremote.controller.service.ControlCommandService;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.service.impl.ControlCommandServiceImpl;
+import org.openremote.controller.statuscache.ChangedStatusTable;
+import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.suite.AllTests;
 
 /**
  * Unit tests for {@link org.openremote.controller.model.xml.SensorBuilder} class.
@@ -131,7 +128,7 @@ public class SensorBuilderTest
    *
    * @throws Exception if the test fails
    */
-  @Test public void testCreateRangeSensor() throws Exception
+  @Test public void testRangeSensorBuild() throws Exception
   {
     RangeSensor s = (RangeSensor)buildSensor(SensorType.RANGE);
     Assert.assertEquals(EnumSensorType.RANGE, s.getSensorType());
@@ -139,6 +136,15 @@ public class SensorBuilderTest
     Assert.assertEquals(-20, s.getMinValue());
     Assert.assertTrue(s.getName().equals("range sensor"));
     Assert.assertTrue(s.getProperties().size() == 2);
+    Assert.assertTrue(s.getSensorID() == 1008);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertTrue(s.equals(buildSensor(SensorType.RANGE)));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
   }
 
 
@@ -156,12 +162,55 @@ public class SensorBuilderTest
    *
    * @throws Exception if test fails
    */
-  @Test public void testCreateSwitchSensor() throws Exception
+  @Test public void testSwitchSensorBuild() throws Exception
   {
     Sensor s = buildSensor(SensorType.SWITCH);
     Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
     Assert.assertTrue(s.getName().equals("lampA power sensor"));
     Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1001);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertTrue(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.RANGE)));
+  }
+
+  /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
+   * <pre>{@code
+   * <sensor id="1011" name="s1011" type="switch">
+   *   <include type="command" ref="962" />
+   *   <state name="on" value="on" />
+   *   <state name="off" value="off" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testSwitchSensorBuildWithListener() throws Exception
+  {
+    Sensor s = buildSensor(1011);
+    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s.getName().equals("s1011"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1011);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertFalse(s.isPolling());
+    Assert.assertTrue(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.RANGE)));
+    Assert.assertTrue(s.equals(buildSensor(1011)));
   }
 
 
@@ -169,25 +218,215 @@ public class SensorBuilderTest
    * Parse the following sensor when deployed through a complete controller.xml document.
    *
    * <pre>{@code
-   * <sensor id="1010" name="range sensor" type="level">
-   *   <include type="command" ref="96" />
-   *   <min value="0" />
-   *   <max value="100" />
+   * <sensor id="1012" name="s1012" type="switch">
+   *   <include type="command" ref="98" />
    * </sensor>
    *
    * }</pre>
    *
    * @throws Exception if test fails
    */
-  @Test public void testCreateLevelSensor() throws Exception
+  @Test public void testBasicSwitchSensorBuild() throws Exception
+  {
+    Sensor s = buildSensor(1012);
+    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s.getName().equals("s1012"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1012);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.RANGE)));
+    Assert.assertTrue(s.equals(buildSensor(1012)));
+  }
+
+
+
+  /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
+   * <pre>{@code
+   * <sensor id="1013" name="s1013" type="switch">
+   *   <include type="command" ref="962" />
+   *   <state name="on" value="open" />
+   *   <state name="off" value="close" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testMappedSwitchSensorBuildWithListener() throws Exception
+  {
+    Sensor s = buildSensor(1013);
+    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s.getName().equals("s1013"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1013);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertFalse(s.isPolling());
+    Assert.assertTrue(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.RANGE)));
+  }
+
+
+
+
+  /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   *
+   * <pre>{@code
+   * <sensor id="1010" name="level sensor" type="level">
+   *   <include type="command" ref="96" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testLevelSensorBuild() throws Exception
   {
     LevelSensor s = (LevelSensor)buildSensor(SensorType.LEVEL);
     Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
-    Assert.assertTrue(s.getName().equals("range sensor"));
+    Assert.assertTrue(s.getName().equals("level sensor"));
     Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1010);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertTrue(s.equals(buildSensor(SensorType.LEVEL)));
   }
+
+
+
+  /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   * The command implementation is an event listener.
+   *
+   * <pre>{@code
+   * <sensor id="1040" name="ls1040" type="level">
+   *   <include type="command" ref="963" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testLevelSensorBuildWithListener() throws Exception
+  {
+    LevelSensor s = (LevelSensor)buildSensor(1040);
+    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
+    Assert.assertEquals(100, s.getMaxValue());
+    Assert.assertEquals(0, s.getMinValue());
+    Assert.assertTrue(s.getName().equals("ls1040"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1040);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertFalse(s.isPolling());
+    Assert.assertTrue(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertTrue(s.equals(buildSensor(1040)));
+  }
+
+
+
+  /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   * This one includes incorrect min/max value elements. They should be ignored (or schema
+   * validation should flag the document instance incorrect).
+   *
+   * <pre>{@code
+   * <sensor id="1020" name="ls1020" type="level">
+   *   <include type="command" ref="96" />
+   *
+   *   <min value = "0" />
+   *   <max value = "100" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testLevelSensorBuildIncorrectSchema() throws Exception
+  {
+    LevelSensor s = (LevelSensor)buildSensor(1020);
+    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
+    Assert.assertEquals(100, s.getMaxValue());
+    Assert.assertEquals(0, s.getMinValue());
+    Assert.assertTrue(s.getName().equals("ls1020"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1020);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertTrue(s.equals(buildSensor(1020)));
+  }
+
+  /**
+   * Parse the following sensor when deployed through a complete controller.xml document.
+   * This one includes incorrect min/max value elements. They should be ignored (or schema
+   * validation should flag the document instance incorrect).
+   *
+   * <pre>{@code
+   * <sensor id="1030" name="ls1030" type="level">
+   *   <include type="command" ref="96" />
+   *
+   *   <min value = "20" />
+   *   <max value = "40" />
+   * </sensor>
+   *
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testLevelSensorBuildIncorrectSchema2() throws Exception
+  {
+    LevelSensor s = (LevelSensor)buildSensor(1030);
+    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
+    Assert.assertEquals(100, s.getMaxValue());
+    Assert.assertEquals(0, s.getMinValue());
+    Assert.assertTrue(s.getName().equals("ls1030"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s.getSensorID() == 1030);
+    Assert.assertFalse(s.isRunning());
+    Assert.assertTrue(s.isPolling());
+    Assert.assertFalse(s.isEventListener());
+
+    Assert.assertFalse(s.equals(null));
+    Assert.assertTrue(s.equals(s));
+    Assert.assertFalse(s.equals(buildSensor(SensorType.SWITCH)));
+    Assert.assertTrue(s.equals(buildSensor(1030)));
+  }
+
+
+
 
 
   /**
@@ -209,7 +448,7 @@ public class SensorBuilderTest
    *
    * @throws Exception if test fails
    */
-  @Test public void testCreateCustomSensor() throws Exception
+  @Test public void testCustomSensorBuild() throws Exception
   {
     Sensor s = buildSensor(SensorType.CUSTOM);
     Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
@@ -227,8 +466,88 @@ public class SensorBuilderTest
     Assert.assertTrue(state.processEvent("on").getValue().equals("open"));
     Assert.assertTrue(state.processEvent("off").getValue().equals("close"));
 
-    Assert.assertTrue(state.processEvent("foo").getValue().equals(Sensor.UNKNOWN_STATUS));
+    Assert.assertTrue(state.processEvent("foo").getValue().equals("foo"));
   }
+
+
+  /**
+   * Parse the following sensor configuration:
+   *
+   * <pre>{@code
+   *
+   *  Four-state CUSTOM sensor configuration. Mixed mappings.
+   *
+   *  Read command return value '1' is mapped to 'one'
+   *  Read command return value '2' is not mapped.
+   *  Read command return value '3' is mapped to 'three'
+   *  Read command return value '4' is not mapped.
+   *
+   * <sensor id = "1099" name = "Numbers" type = "custom">
+   *   <include type = "command" ref = "98" />
+   *
+   *   <state name = "one" value = "1" />
+   *   <state name = "three" value = "3" />
+   * </sensor>
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testPartiallyMappedCustomSensorBuild() throws Exception
+  {
+    Sensor s = buildSensor(1099);
+    Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
+    Assert.assertTrue(s.getName().equals("Numbers"));
+    Assert.assertTrue(s.getProperties().size() == 2);
+    Assert.assertTrue(s.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s.getProperties().values().contains("1"));
+    Assert.assertTrue(s.getProperties().values().contains("3"));
+
+    Assert.assertTrue(s instanceof StateSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    Assert.assertTrue(state.processEvent("1").getValue().equals("one"));
+    Assert.assertTrue(state.processEvent("2").getValue().equals("2"));
+    Assert.assertTrue(state.processEvent("3").getValue().equals("three"));
+    Assert.assertTrue(state.processEvent("4").getValue().equals("4"));
+
+    Assert.assertTrue(state.processEvent("foo").getValue().equals("foo"));
+  }
+
+
+  /**
+   * Parse the following sensor configuration:
+   *
+   * <pre>{@code
+   *
+   * <sensor id = "1098" name = "s1098" type = "custom">
+   *   <include type = "command" ref = "98" />
+   * </sensor>
+   * }</pre>
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testArbitraryCustomSensorBuild() throws Exception
+  {
+    Sensor s = buildSensor(1098);
+    Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
+    Assert.assertTrue(s.getName().equals("s1098"));
+    Assert.assertTrue(s.getProperties().size() == 0);
+
+    Assert.assertTrue(s instanceof StateSensor);
+
+    StateSensor state = (StateSensor)s;
+
+    Assert.assertTrue(state.processEvent("1").getValue().equals("1"));
+    Assert.assertTrue(state.processEvent("2").getValue().equals("2"));
+    Assert.assertTrue(state.processEvent("3").getValue().equals("3"));
+    Assert.assertTrue(state.processEvent("4").getValue().equals("4"));
+    Assert.assertTrue(state.processEvent("foo").getValue().equals("foo"));
+  }
+
+  
+
 
 
   @Test public void testInvalidConfigs()
@@ -365,13 +684,7 @@ public class SensorBuilderTest
     Assert.assertFalse(s.isPolling());
   }
 
-  // TODO : add tests for level, range and custom sensors similar to SwitchStateMappingTests
 
-  // TODO : See ORCJAVA-196
-  // TODO : test sensor 1099 use case
-  // TODO : test Sensor.update
-  // TODO : test Sensor.start
-  // TODO : test Sensor.isRunning()
   // TODO : test SensorBuilder subclassing with new sensor types
   
   
@@ -415,6 +728,11 @@ public class SensorBuilderTest
     }
     
     return sensorBuilder.build(ele);
+  }
+
+  private Sensor buildSensor(int id) throws Exception
+  {
+    return sensorBuilder.build(deployer.queryElementById(id));
   }
 
 
