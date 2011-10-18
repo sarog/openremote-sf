@@ -16,42 +16,234 @@
 		338D2ED610D8AADB0043BFE9 /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
 		338D306C10D8DD000043BFE9 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
 		6001B9A3140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
-		6001B9A4140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
 		6001B9A8140B6F7A00B18E84 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
-		6001B9A9140B6F7A00B18E84 /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
 		6010DE3A13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
-		6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
 		6010DE7A13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
-		6010DE7B13FEB389001E6AA9 /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
 		6010DE8E13FEB8D3001E6AA9 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
-		6010DE8F13FEB8D3001E6AA9 /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
 		6026CD8D138BE4E60062477F /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		6026CD8E138BE4E60062477F /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
 		6026CD8F138BE4F90062477F /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
+		60366B6B144DCB9C004FED3B /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
+		60366B6C144DCB9C004FED3B /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
+		60366B6D144DCB9C004FED3B /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
+		60366B6E144DCB9C004FED3B /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 8CECF3E010E9DD1400C0E1BB /* database.db */; };
+		60366B6F144DCB9C004FED3B /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
+		60366B70144DCB9C004FED3B /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
+		60366B71144DCB9C004FED3B /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3021163492C00DD4EE7 /* Default.png */; };
+		60366B72144DCB9C004FED3B /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3031163492C00DD4EE7 /* global.logo.png */; };
+		60366B73144DCB9C004FED3B /* iPhoneAppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3041163492C00DD4EE7 /* iPhoneAppIcon.png */; };
+		60366B74144DCB9C004FED3B /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3051163492C00DD4EE7 /* loading.png */; };
+		60366B75144DCB9C004FED3B /* repair.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3061163492C00DD4EE7 /* repair.png */; };
+		60366B76144DCB9C004FED3B /* slider_tip.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3071163492C00DD4EE7 /* slider_tip.png */; };
+		60366B77144DCB9C004FED3B /* Default-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89706711B056D900655CA5 /* Default-Portrait.png */; };
+		60366B78144DCB9C004FED3B /* loading~iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89707311B05BD200655CA5 /* loading~iPad.png */; };
+		60366B79144DCB9C004FED3B /* global.logo~iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89707511B05C8A00655CA5 /* global.logo~iPad.png */; };
+		60366B7A144DCB9C004FED3B /* iPadAppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89708211B0600700655CA5 /* iPadAppIcon.png */; };
+		60366B7B144DCB9C004FED3B /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89709111B062D300655CA5 /* Icon-Small-50.png */; };
+		60366B7C144DCB9C004FED3B /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89712C11B1365F00655CA5 /* Default-Landscape.png */; };
+		60366B7D144DCB9C004FED3B /* InitViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C49724011B20D660039A293 /* InitViewController~iPhone.xib */; };
+		60366B7E144DCB9C004FED3B /* InitViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C49725211B20E080039A293 /* InitViewController~iPad.xib */; };
+		60366B7F144DCB9C004FED3B /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C49736D11B2288D0039A293 /* Icon.png */; };
+		60366B80144DCB9C004FED3B /* ErrorViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C49746711B242290039A293 /* ErrorViewController~iPad.xib */; };
+		60366B81144DCB9C004FED3B /* ErrorViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C4974C111B24B020039A293 /* ErrorViewController~iPhone.xib */; };
+		60366B82144DCB9C004FED3B /* oldphone-mono.wav in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A821355FC8100A7C87E /* oldphone-mono.wav */; };
+		60366B83144DCB9C004FED3B /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A831355FC8100A7C87E /* ringback.wav */; };
+		60366B84144DCB9C004FED3B /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A861355FD1E00A7C87E /* linphonerc */; };
+		60366B85144DCB9C004FED3B /* CheckMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9613CB115400B983E7 /* CheckMark.png */; };
+		60366B86144DCB9C004FED3B /* CheckMark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9713CB115400B983E7 /* CheckMark@2x.png */; };
+		60366B87144DCB9C004FED3B /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
+		60366B88144DCB9C004FED3B /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
+		60366B89144DCB9C004FED3B /* ControllerOK.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688413CF184E0035CC1A /* ControllerOK.png */; };
+		60366B8A144DCB9C004FED3B /* ControllerOK@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688513CF184E0035CC1A /* ControllerOK@2x.png */; };
+		60366B8B144DCB9C004FED3B /* ControllerNOK.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688613CF184E0035CC1A /* ControllerNOK.png */; };
+		60366B8C144DCB9C004FED3B /* ControllerNOK@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688713CF184E0035CC1A /* ControllerNOK@2x.png */; };
+		60366B8D144DCB9C004FED3B /* ControllerRequiresAuthentication.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689013CF188F0035CC1A /* ControllerRequiresAuthentication.png */; };
+		60366B8E144DCB9C004FED3B /* ControllerRequiresAuthentication@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689113CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png */; };
+		60366B90144DCB9C004FED3B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		60366B91144DCB9C004FED3B /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
+		60366B92144DCB9C004FED3B /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
+		60366B93144DCB9C004FED3B /* StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C72E7150F541FAB006CC0DF /* StringUtils.m */; };
+		60366B94144DCB9C004FED3B /* ViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */; };
+		60366B95144DCB9C004FED3B /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
+		60366B96144DCB9C004FED3B /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
+		60366B97144DCB9C004FED3B /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
+		60366B98144DCB9C004FED3B /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
+		60366B99144DCB9C004FED3B /* AppSettingsDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E721095555500C7A686 /* AppSettingsDefinition.m */; };
+		60366B9A144DCB9C004FED3B /* DirectoryDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E741095555500C7A686 /* DirectoryDefinition.m */; };
+		60366B9B144DCB9C004FED3B /* ServerDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E761095555500C7A686 /* ServerDefinition.m */; };
+		60366B9C144DCB9C004FED3B /* AppSettingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F011095628C00C7A686 /* AppSettingController.m */; };
+		60366B9D144DCB9C004FED3B /* GroupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F031095628C00C7A686 /* GroupController.m */; };
+		60366B9E144DCB9C004FED3B /* InitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F051095628C00C7A686 /* InitViewController.m */; };
+		60366B9F144DCB9C004FED3B /* PaginationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F091095628C00C7A686 /* PaginationController.m */; };
+		60366BA0144DCB9C004FED3B /* ScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F0B1095628C00C7A686 /* ScreenViewController.m */; };
+		60366BA1144DCB9C004FED3B /* ServerAutoDiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F0D1095628C00C7A686 /* ServerAutoDiscoveryController.m */; };
+		60366BA2144DCB9C004FED3B /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F0F1095628C00C7A686 /* TextFieldCell.m */; };
+		60366BA3144DCB9C004FED3B /* UpdateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F111095628C00C7A686 /* UpdateController.m */; };
+		60366BA4144DCB9C004FED3B /* CheckNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F2B109562D200C7A686 /* CheckNetwork.m */; };
+		60366BA5144DCB9C004FED3B /* NotificationConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F3F109563E100C7A686 /* NotificationConstant.m */; };
+		60366BA6144DCB9C004FED3B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F5B109564D000C7A686 /* AppDelegate.m */; };
+		60366BA7144DCB9C004FED3B /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
+		60366BA8144DCB9C004FED3B /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
+		60366BA9144DCB9C004FED3B /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
+		60366BAA144DCB9C004FED3B /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
+		60366BAB144DCB9C004FED3B /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
+		60366BAC144DCB9C004FED3B /* ErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF539AA10B9359F00C52FB0 /* ErrorViewController.m */; };
+		60366BAD144DCB9C004FED3B /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
+		60366BAE144DCB9C004FED3B /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
+		60366BAF144DCB9C004FED3B /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
+		60366BB0144DCB9C004FED3B /* GestureWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */; };
+		60366BB1144DCB9C004FED3B /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
+		60366BB2144DCB9C004FED3B /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
+		60366BB3144DCB9C004FED3B /* DefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC1E07D10DB491400155CC0 /* DefaultViewController.m */; };
+		60366BB4144DCB9C004FED3B /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
+		60366BB5144DCB9C004FED3B /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
+		60366BB6144DCB9C004FED3B /* AbsoluteLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */; };
+		60366BB7144DCB9C004FED3B /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85310EB6E3200C0E1BB /* Background.m */; };
+		60366BB8144DCB9C004FED3B /* Button.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85510EB6E3200C0E1BB /* Button.m */; };
+		60366BB9144DCB9C004FED3B /* Component.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85710EB6E3200C0E1BB /* Component.m */; };
+		60366BBA144DCB9C004FED3B /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85910EB6E3200C0E1BB /* Control.m */; };
+		60366BBB144DCB9C004FED3B /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85B10EB6E3300C0E1BB /* Definition.m */; };
+		60366BBC144DCB9C004FED3B /* Gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85D10EB6E3300C0E1BB /* Gesture.m */; };
+		60366BBD144DCB9C004FED3B /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
+		60366BBE144DCB9C004FED3B /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
+		60366BBF144DCB9C004FED3B /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
+		60366BC0144DCB9C004FED3B /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
+		60366BC1144DCB9C004FED3B /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
+		60366BC2144DCB9C004FED3B /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
+		60366BC3144DCB9C004FED3B /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87110EB6E3300C0E1BB /* Navigate.m */; };
+		60366BC4144DCB9C004FED3B /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87310EB6E3300C0E1BB /* Screen.m */; };
+		60366BC5144DCB9C004FED3B /* Sensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87510EB6E3300C0E1BB /* Sensor.m */; };
+		60366BC6144DCB9C004FED3B /* SensorComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87710EB6E3300C0E1BB /* SensorComponent.m */; };
+		60366BC7144DCB9C004FED3B /* SensorState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87910EB6E3300C0E1BB /* SensorState.m */; };
+		60366BC8144DCB9C004FED3B /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87B10EB6E3300C0E1BB /* Slider.m */; };
+		60366BC9144DCB9C004FED3B /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87D10EB6E3300C0E1BB /* Switch.m */; };
+		60366BCA144DCB9C004FED3B /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
+		60366BCB144DCB9C004FED3B /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
+		60366BCC144DCB9C004FED3B /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
+		60366BCD144DCB9C004FED3B /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */; };
+		60366BCE144DCB9C004FED3B /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
+		60366BCF144DCB9C004FED3B /* SipController.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBB76131FF90500C9089F /* SipController.m */; };
+		60366BD0144DCB9C004FED3B /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
+		60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
+		60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
+		60366BD3144DCB9C004FED3B /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
+		60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
+		60366BD5144DCB9C004FED3B /* TimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A61A801355F85600A7C87E /* TimeManager.m */; };
+		60366BD6144DCB9C004FED3B /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
+		60366BD7144DCB9C004FED3B /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
+		60366BD8144DCB9C004FED3B /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
+		60366BD9144DCB9C004FED3B /* ORController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D977136ADB31009EECA3 /* ORController.m */; };
+		60366BDA144DCB9C004FED3B /* ORGroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */; };
+		60366BDB144DCB9C004FED3B /* ORConsoleSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */; };
+		60366BDC144DCB9C004FED3B /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
+		60366BDD144DCB9C004FED3B /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
+		60366BDE144DCB9C004FED3B /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
+		60366BDF144DCB9C004FED3B /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
+		60366BE0144DCB9C004FED3B /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
+		60366BE1144DCB9C004FED3B /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
+		60366BE2144DCB9C004FED3B /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
+		60366BE3144DCB9C004FED3B /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
+		60366BE4144DCB9C004FED3B /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
+		60366BE5144DCB9C004FED3B /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
+		60366BE6144DCB9C004FED3B /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
+		60366BE7144DCB9C004FED3B /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
+		60366BE8144DCB9C004FED3B /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
+		60366BE9144DCB9C004FED3B /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
+		60366BEA144DCB9C004FED3B /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
+		60366BEB144DCB9C004FED3B /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
+		60366BEC144DCB9C004FED3B /* StyleValue1TextEntryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE3913FE7B47001E6AA9 /* StyleValue1TextEntryCell.m */; };
+		60366BED144DCB9C004FED3B /* DefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE7913FEB389001E6AA9 /* DefinitionParser.m */; };
+		60366BEE144DCB9C004FED3B /* ScreenParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */; };
+		60366BEF144DCB9C004FED3B /* DefinitionElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4813FF071E00967DEA /* DefinitionElementParser.m */; };
+		60366BF0144DCB9C004FED3B /* DefinitionElementParserRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */; };
+		60366BF1144DCB9C004FED3B /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
+		60366BF2144DCB9C004FED3B /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
+		60366BF3144DCB9C004FED3B /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
+		60366BF4144DCB9C004FED3B /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
+		60366BF5144DCB9C004FED3B /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
+		60366BF6144DCB9C004FED3B /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
+		60366BF7144DCB9C004FED3B /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
+		60366BF8144DCB9C004FED3B /* BackgroundParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6C13FF8E2200967DEA /* BackgroundParser.m */; };
+		60366BF9144DCB9C004FED3B /* LayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E70140157A300967DEA /* LayoutContainerParser.m */; };
+		60366BFA144DCB9C004FED3B /* GridCellParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E751401796D00967DEA /* GridCellParser.m */; };
+		60366BFB144DCB9C004FED3B /* LabelParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7914017B3A00967DEA /* LabelParser.m */; };
+		60366BFC144DCB9C004FED3B /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
+		60366BFD144DCB9C004FED3B /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
+		60366BFE144DCB9C004FED3B /* ButtonParserAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */; };
+		60366BFF144DCB9C004FED3B /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
+		60366C00144DCB9C004FED3B /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
+		60366C01144DCB9C004FED3B /* ColorPickerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9114017BF100967DEA /* ColorPickerParser.m */; };
+		60366C02144DCB9C004FED3B /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
+		60366C03144DCB9C004FED3B /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
+		60366C04144DCB9C004FED3B /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
+		60366C05144DCB9C004FED3B /* LabelDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelDeferredBinding.m */; };
+		60366C06144DCB9C004FED3B /* ScreenDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */; };
+		60366C07144DCB9C004FED3B /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
+		60366C08144DCB9C004FED3B /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
+		60366C09144DCB9C004FED3B /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
+		60366C0A144DCB9C004FED3B /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
+		60366C0B144DCB9C004FED3B /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
+		60366C0C144DCB9C004FED3B /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
+		60366C0D144DCB9C004FED3B /* ButtonParserAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A2140B6A3400B18E84 /* ButtonParserAPI_v2.m */; };
+		60366C0E144DCB9C004FED3B /* ButtonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 6001B9A7140B6F7900B18E84 /* ButtonParser.m */; };
+		60366C0F144DCB9C004FED3B /* ScreenSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EB140E79320001B78F /* ScreenSubController.m */; };
+		60366C10144DCB9C004FED3B /* SubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EF140E79400001B78F /* SubController.m */; };
+		60366C11144DCB9C004FED3B /* LayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7F3140E7E620001B78F /* LayoutContainerSubController.m */; };
+		60366C12144DCB9C004FED3B /* AbsoluteLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7F7140E80C50001B78F /* AbsoluteLayoutContainerSubController.m */; };
+		60366C13144DCB9C004FED3B /* LabelSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7FB140E8EA30001B78F /* LabelSubController.m */; };
+		60366C14144DCB9C004FED3B /* ComponentSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7FF140E912F0001B78F /* ComponentSubController.m */; };
+		60366C15144DCB9C004FED3B /* SensorySubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC803140EA29E0001B78F /* SensorySubController.m */; };
+		60366C16144DCB9C004FED3B /* ImageSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC807140EA7510001B78F /* ImageSubController.m */; };
+		60366C17144DCB9C004FED3B /* ControlSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC82E140EC3770001B78F /* ControlSubController.m */; };
+		60366C18144DCB9C004FED3B /* ButtonSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC832140EC38C0001B78F /* ButtonSubController.m */; };
+		60366C19144DCB9C004FED3B /* GridLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C1140FA6FD000FF863 /* GridLayoutContainerSubController.m */; };
+		60366C1A144DCB9C004FED3B /* ORImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C5140FB62F000FF863 /* ORImageView.m */; };
+		60366C1B144DCB9C004FED3B /* WebSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C9140FC080000FF863 /* WebSubController.m */; };
+		60366C1C144DCB9C004FED3B /* SwitchSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3CD140FC883000FF863 /* SwitchSubController.m */; };
+		60366C1D144DCB9C004FED3B /* ColorPickerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86301410C23E003F5432 /* ColorPickerSubController.m */; };
+		60366C1E144DCB9C004FED3B /* SliderSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86351410C68A003F5432 /* SliderSubController.m */; };
+		60366C1F144DCB9C004FED3B /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
+		60366C20144DCB9C004FED3B /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
+		60366C21144DCB9C004FED3B /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
+		60366C23144DCB9C004FED3B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D982136ADD31009EECA3 /* CoreData.framework */; };
+		60366C24144DCB9C004FED3B /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7D1355F15000A7C87E /* libresolv.dylib */; };
+		60366C25144DCB9C004FED3B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7B1355F12400A7C87E /* AVFoundation.framework */; };
+		60366C26144DCB9C004FED3B /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A791355F07E00A7C87E /* CoreAudio.framework */; };
+		60366C27144DCB9C004FED3B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
+		60366C28144DCB9C004FED3B /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */; };
+		60366C29144DCB9C004FED3B /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */; };
+		60366C2A144DCB9C004FED3B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
+		60366C2B144DCB9C004FED3B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		60366C2C144DCB9C004FED3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		60366C2D144DCB9C004FED3B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
+		60366C2E144DCB9C004FED3B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6197F1355ED9900A7C87E /* libcrypto.a */; };
+		60366C2F144DCB9C004FED3B /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619801355ED9900A7C87E /* libeXosip2.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		60366C30144DCB9C004FED3B /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619811355ED9900A7C87E /* libgsm.a */; };
+		60366C31144DCB9C004FED3B /* libilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619821355ED9900A7C87E /* libilbc.a */; };
+		60366C32144DCB9C004FED3B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619831355ED9900A7C87E /* liblinphone.a */; };
+		60366C33144DCB9C004FED3B /* libmediastreamer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619841355ED9900A7C87E /* libmediastreamer.a */; };
+		60366C34144DCB9C004FED3B /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619851355ED9900A7C87E /* libopencore-amrnb.a */; };
+		60366C35144DCB9C004FED3B /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619861355ED9900A7C87E /* libopencore-amrwb.a */; };
+		60366C36144DCB9C004FED3B /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619871355ED9900A7C87E /* libortp.a */; };
+		60366C37144DCB9C004FED3B /* libosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619881355ED9900A7C87E /* libosip2.a */; };
+		60366C38144DCB9C004FED3B /* libosipparser2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619891355ED9900A7C87E /* libosipparser2.a */; };
+		60366C39144DCB9C004FED3B /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6198A1355ED9900A7C87E /* libspeex.a */; };
+		60366C3A144DCB9C004FED3B /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6198B1355ED9900A7C87E /* libspeexdsp.a */; };
+		60366C3B144DCB9C004FED3B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6198C1355ED9900A7C87E /* libssl.a */; };
+		60366C3C144DCB9C004FED3B /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A731355EFB000A7C87E /* libmsamr.a */; };
+		60366C3D144DCB9C004FED3B /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A741355EFB000A7C87E /* libmsilbc.a */; };
 		6044316E136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
-		6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */; };
 		605393F81383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
-		605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 605393F71383FF0A00F3F5FC /* EnvironmentManager.m */; };
 		6055687913CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
-		6055687A13CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
 		6055687E13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
-		6055687F13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687D13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m */; };
 		6055688213CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
-		6055688313CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
 		6055688813CF184E0035CC1A /* ControllerOK.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688413CF184E0035CC1A /* ControllerOK.png */; };
-		6055688913CF184E0035CC1A /* ControllerOK.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688413CF184E0035CC1A /* ControllerOK.png */; };
 		6055688A13CF184E0035CC1A /* ControllerOK@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688513CF184E0035CC1A /* ControllerOK@2x.png */; };
-		6055688B13CF184E0035CC1A /* ControllerOK@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688513CF184E0035CC1A /* ControllerOK@2x.png */; };
 		6055688C13CF184E0035CC1A /* ControllerNOK.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688613CF184E0035CC1A /* ControllerNOK.png */; };
-		6055688D13CF184E0035CC1A /* ControllerNOK.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688613CF184E0035CC1A /* ControllerNOK.png */; };
 		6055688E13CF184E0035CC1A /* ControllerNOK@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688713CF184E0035CC1A /* ControllerNOK@2x.png */; };
-		6055688F13CF184E0035CC1A /* ControllerNOK@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055688713CF184E0035CC1A /* ControllerNOK@2x.png */; };
 		6055689213CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689013CF188F0035CC1A /* ControllerRequiresAuthentication.png */; };
-		6055689313CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689013CF188F0035CC1A /* ControllerRequiresAuthentication.png */; };
 		6055689413CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689113CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png */; };
-		6055689513CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6055689113CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png */; };
 		606281121446F5F6001123BD /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
-		606281131446F5F6001123BD /* RuntimeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 606281111446F5F6001123BD /* RuntimeUtils.m */; };
 		6068DE6B13744BC8007746F1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6A13744BC8007746F1 /* QuartzCore.framework */; };
 		6068DE6D13744BF5007746F1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DE6C13744BF5007746F1 /* CoreGraphics.framework */; };
 		6068DE6E13744C11007746F1 /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
@@ -108,7 +300,6 @@
 		6068DEA313744EC7007746F1 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
 		6068DEA513744ED0007746F1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6068DEA413744ED0007746F1 /* SystemConfiguration.framework */; };
 		6079C2B913CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
-		6079C2BA13CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6079C2B813CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m */; };
 		6082FEAA139643C4005A75C2 /* ButtonTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6082FEA9139643C4005A75C2 /* ButtonTest.m */; };
 		608D985B1419091E001A7534 /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
 		608D985C1419091E001A7534 /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
@@ -151,75 +342,40 @@
 		608FBDD8132120D700C9089F /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
 		608FBDDB132120DD00C9089F /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
 		60950D9813CB115400B983E7 /* CheckMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9613CB115400B983E7 /* CheckMark.png */; };
-		60950D9913CB115400B983E7 /* CheckMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9613CB115400B983E7 /* CheckMark.png */; };
 		60950D9A13CB115400B983E7 /* CheckMark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9713CB115400B983E7 /* CheckMark@2x.png */; };
-		60950D9B13CB115400B983E7 /* CheckMark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9713CB115400B983E7 /* CheckMark@2x.png */; };
 		60950D9E13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
-		60950D9F13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9C13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png */; };
 		60950DA013CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
-		60950DA113CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 60950D9D13CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png */; };
 		60950DA413CB153500B983E7 /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
-		60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950DA313CB153500B983E7 /* UIColor+ORAdditions.m */; };
 		60950E1613CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
-		60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60950E1513CB3A6200B983E7 /* ControllerDetailViewController.m */; };
 		6097DAF01378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
-		6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6097DAEF1378099D00E22AA8 /* ORControllerPollingSender.m */; };
 		60987E4913FF071E00967DEA /* DefinitionElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4813FF071E00967DEA /* DefinitionElementParser.m */; };
-		60987E4A13FF071E00967DEA /* DefinitionElementParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4813FF071E00967DEA /* DefinitionElementParser.m */; };
 		60987E4D13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */; };
-		60987E4E13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E4C13FF0D7300967DEA /* DefinitionElementParserRegister.m */; };
 		60987E5113FF0DA000967DEA /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
-		60987E5213FF0DA000967DEA /* PanelDefinitionParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5013FF0DA000967DEA /* PanelDefinitionParser.m */; };
 		60987E5513FF8DA400967DEA /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
-		60987E5613FF8DA400967DEA /* GroupParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5413FF8DA300967DEA /* GroupParser.m */; };
 		60987E5913FF8DBD00967DEA /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
-		60987E5A13FF8DBD00967DEA /* TabBarParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5813FF8DBC00967DEA /* TabBarParser.m */; };
 		60987E5D13FF8DD100967DEA /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
-		60987E5E13FF8DD100967DEA /* LocalLogicParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E5C13FF8DD100967DEA /* LocalLogicParser.m */; };
 		60987E6113FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
-		60987E6213FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6013FF8DE600967DEA /* AbsoluteLayoutContainerParser.m */; };
 		60987E6513FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
-		60987E6613FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6413FF8E0400967DEA /* GridLayoutContainerParser.m */; };
 		60987E6913FF8E1300967DEA /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
-		60987E6A13FF8E1300967DEA /* GestureParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6813FF8E1300967DEA /* GestureParser.m */; };
 		60987E6D13FF8E2700967DEA /* BackgroundParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6C13FF8E2200967DEA /* BackgroundParser.m */; };
-		60987E6E13FF8E2700967DEA /* BackgroundParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E6C13FF8E2200967DEA /* BackgroundParser.m */; };
 		60987E71140157A500967DEA /* LayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E70140157A300967DEA /* LayoutContainerParser.m */; };
-		60987E72140157A500967DEA /* LayoutContainerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E70140157A300967DEA /* LayoutContainerParser.m */; };
 		60987E761401796F00967DEA /* GridCellParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E751401796D00967DEA /* GridCellParser.m */; };
-		60987E771401796F00967DEA /* GridCellParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E751401796D00967DEA /* GridCellParser.m */; };
 		60987E7A14017B4D00967DEA /* LabelParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7914017B3A00967DEA /* LabelParser.m */; };
-		60987E7B14017B4D00967DEA /* LabelParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7914017B3A00967DEA /* LabelParser.m */; };
 		60987E7E14017B6E00967DEA /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
-		60987E7F14017B6E00967DEA /* ImageParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E7D14017B6C00967DEA /* ImageParser.m */; };
 		60987E8214017B7B00967DEA /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
-		60987E8314017B7B00967DEA /* WebParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8114017B7900967DEA /* WebParser.m */; };
 		60987E8614017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */; };
-		60987E8714017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8514017BBE00967DEA /* ButtonParserAPI_v2_1.m */; };
 		60987E8A14017BD400967DEA /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
-		60987E8B14017BD400967DEA /* SwitchParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8914017BCF00967DEA /* SwitchParser.m */; };
 		60987E8E14017BE500967DEA /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
-		60987E8F14017BE500967DEA /* SliderParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E8D14017BE100967DEA /* SliderParser.m */; };
 		60987E9214017BF400967DEA /* ColorPickerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9114017BF100967DEA /* ColorPickerParser.m */; };
-		60987E9314017BF400967DEA /* ColorPickerParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9114017BF100967DEA /* ColorPickerParser.m */; };
 		60987E961402538E00967DEA /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
-		60987E971402538E00967DEA /* NavigateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E951402538800967DEA /* NavigateParser.m */; };
 		60987E9A14025B8400967DEA /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
-		60987E9B14025B8400967DEA /* SensorLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9914025B7E00967DEA /* SensorLinkParser.m */; };
 		60987E9E14025DC000967DEA /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
-		60987E9F14025DC000967DEA /* SensorStateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987E9D14025DB800967DEA /* SensorStateParser.m */; };
 		60987EA31402667600967DEA /* LabelDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelDeferredBinding.m */; };
-		60987EA41402667600967DEA /* LabelDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EA21402667600967DEA /* LabelDeferredBinding.m */; };
 		60987EB41402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */; };
-		60987EB51402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB31402AA0E00967DEA /* ScreenDeferredBinding.m */; };
 		60987EB81402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
-		60987EB91402AD0E00967DEA /* TabBarItemParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EB71402AD0600967DEA /* TabBarItemParser.m */; };
 		60987EBC1402B0C000967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
-		60987EBD1402B0C100967DEA /* SensorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBB1402B09500967DEA /* SensorParser.m */; };
 		60987EC01402B11F00967DEA /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
-		60987EC11402B12000967DEA /* CommandParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EBF1402B10600967DEA /* CommandParser.m */; };
 		60987EC41402B15800967DEA /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
-		60987EC51402B15800967DEA /* TaskParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 60987EC31402B14C00967DEA /* TaskParser.m */; };
 		609C57DB137430F60093C03A /* NSString+ORAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A619611354A92600A7C87E /* NSString+ORAdditionsTest.m */; };
 		609C57DC137430F60093C03A /* StringUtilsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDAF611BF446B00CEDC24 /* StringUtilsTest.m */; };
 		609C57DD137430F60093C03A /* ClippedUIImageViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5796CE116B9D7200ED63EA /* ClippedUIImageViewTest.m */; };
@@ -231,9 +387,7 @@
 		60A2D2251403A90E00A529ED /* DataCapturingNSURLConnectionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055688113CDCA280035CC1A /* DataCapturingNSURLConnectionDelegate.m */; };
 		60A2D2271403A92100A529ED /* ORControllerGroupMembersFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 6055687813CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m */; };
 		60A2D264140662C600A529ED /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
-		60A2D265140662C600A529ED /* DefinitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D263140662BA00A529ED /* DefinitionManager.m */; };
 		60A2D2681407BE4F00A529ED /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
-		60A2D2691407BE4F00A529ED /* DeferredBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A2D2671407BE4D00A529ED /* DeferredBinding.m */; };
 		60A6195B1354A24C00A7C87E /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
 		60A6198D1355ED9900A7C87E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A6197F1355ED9900A7C87E /* libcrypto.a */; };
 		60A6198E1355ED9900A7C87E /* libeXosip2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A619801355ED9900A7C87E /* libeXosip2.a */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -260,172 +414,38 @@
 		60A61A871355FD1E00A7C87E /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 60A61A861355FD1E00A7C87E /* linphonerc */; };
 		60A85C85131F965500C7918A /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
 		60AA14B813E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
-		60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14B713E9653E008ACE4A /* ControllerButtonAPI_v2.m */; };
 		60AA14BC13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
-		60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14BB13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m */; };
 		60AA14C413E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
-		60AA14C513E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AA14C313E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m */; };
 		60AFC7EC140E79320001B78F /* ScreenSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EB140E79320001B78F /* ScreenSubController.m */; };
-		60AFC7ED140E79320001B78F /* ScreenSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EB140E79320001B78F /* ScreenSubController.m */; };
 		60AFC7F0140E79400001B78F /* SubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EF140E79400001B78F /* SubController.m */; };
-		60AFC7F1140E79400001B78F /* SubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7EF140E79400001B78F /* SubController.m */; };
 		60AFC7F4140E7E620001B78F /* LayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7F3140E7E620001B78F /* LayoutContainerSubController.m */; };
-		60AFC7F5140E7E620001B78F /* LayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7F3140E7E620001B78F /* LayoutContainerSubController.m */; };
 		60AFC7F8140E80C50001B78F /* AbsoluteLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7F7140E80C50001B78F /* AbsoluteLayoutContainerSubController.m */; };
-		60AFC7F9140E80C50001B78F /* AbsoluteLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7F7140E80C50001B78F /* AbsoluteLayoutContainerSubController.m */; };
 		60AFC7FC140E8EA40001B78F /* LabelSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7FB140E8EA30001B78F /* LabelSubController.m */; };
-		60AFC7FD140E8EA40001B78F /* LabelSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7FB140E8EA30001B78F /* LabelSubController.m */; };
 		60AFC800140E912F0001B78F /* ComponentSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7FF140E912F0001B78F /* ComponentSubController.m */; };
-		60AFC801140E912F0001B78F /* ComponentSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC7FF140E912F0001B78F /* ComponentSubController.m */; };
 		60AFC804140EA29F0001B78F /* SensorySubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC803140EA29E0001B78F /* SensorySubController.m */; };
-		60AFC805140EA29F0001B78F /* SensorySubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC803140EA29E0001B78F /* SensorySubController.m */; };
 		60AFC808140EA7520001B78F /* ImageSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC807140EA7510001B78F /* ImageSubController.m */; };
-		60AFC809140EA7520001B78F /* ImageSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC807140EA7510001B78F /* ImageSubController.m */; };
 		60AFC82F140EC3780001B78F /* ControlSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC82E140EC3770001B78F /* ControlSubController.m */; };
-		60AFC830140EC3780001B78F /* ControlSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC82E140EC3770001B78F /* ControlSubController.m */; };
 		60AFC833140EC38D0001B78F /* ButtonSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC832140EC38C0001B78F /* ButtonSubController.m */; };
-		60AFC834140EC38D0001B78F /* ButtonSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFC832140EC38C0001B78F /* ButtonSubController.m */; };
 		60AFCED01371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
-		60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCECF1371787300A811D4 /* ORControllerProxy.m */; };
 		60AFCED5137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
-		60AFCED6137180E400A811D4 /* ORControllerCommandSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCED4137180E400A811D4 /* ORControllerCommandSender.m */; };
 		60AFCEE913729AA500A811D4 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
-		60AFCEEA13729AA500A811D4 /* ControllerRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 60AFCEE813729AA400A811D4 /* ControllerRequest.m */; };
 		60C2F95B135F39E7000824A5 /* panel_screenIdForOrientation.xml in Resources */ = {isa = PBXBuildFile; fileRef = 60C2F959135F37FE000824A5 /* panel_screenIdForOrientation.xml */; };
 		60C81D9D137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
-		60C81D9E137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C81D9C137BD55300B2A12A /* ORControllerPanelsFetcher.m */; };
 		60C9D974136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
-		60C9D975136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D972136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld */; };
 		60C9D978136ADB31009EECA3 /* ORController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D977136ADB31009EECA3 /* ORController.m */; };
-		60C9D979136ADB31009EECA3 /* ORController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D977136ADB31009EECA3 /* ORController.m */; };
 		60C9D97C136ADB8A009EECA3 /* ORGroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */; };
-		60C9D97D136ADB8A009EECA3 /* ORGroupMember.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97B136ADB8A009EECA3 /* ORGroupMember.m */; };
 		60C9D980136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */; };
-		60C9D981136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 60C9D97F136ADB8B009EECA3 /* ORConsoleSettings.m */; };
 		60C9D983136ADD31009EECA3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D982136ADD31009EECA3 /* CoreData.framework */; };
-		60C9D985136ADD38009EECA3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60C9D984136ADD37009EECA3 /* CoreData.framework */; };
 		60DEC3C2140FA6FE000FF863 /* GridLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C1140FA6FD000FF863 /* GridLayoutContainerSubController.m */; };
-		60DEC3C3140FA6FE000FF863 /* GridLayoutContainerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C1140FA6FD000FF863 /* GridLayoutContainerSubController.m */; };
 		60DEC3C6140FB62F000FF863 /* ORImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C5140FB62F000FF863 /* ORImageView.m */; };
-		60DEC3C7140FB62F000FF863 /* ORImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C5140FB62F000FF863 /* ORImageView.m */; };
 		60DEC3CA140FC081000FF863 /* WebSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C9140FC080000FF863 /* WebSubController.m */; };
-		60DEC3CB140FC081000FF863 /* WebSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3C9140FC080000FF863 /* WebSubController.m */; };
 		60DEC3CE140FC884000FF863 /* SwitchSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3CD140FC883000FF863 /* SwitchSubController.m */; };
-		60DEC3CF140FC884000FF863 /* SwitchSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60DEC3CD140FC883000FF863 /* SwitchSubController.m */; };
 		60E7A8E913696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
-		60E7A8EA13696C8B00EA107A /* ColorPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E413696C8B00EA107A /* ColorPicker.m */; };
 		60E7A8EB13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
-		60E7A8EC13696C8B00EA107A /* ColorPickerImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */; };
-		60EB56A2135C4E4100B29CED /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
-		60EB56A3135C4E4100B29CED /* appSettings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CFDB2760FBBBF4500D204CB /* appSettings.plist */; };
-		60EB56A4135C4E4100B29CED /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = 97B0011F106127AF00C31E4A /* iTunesArtwork */; };
-		60EB56A6135C4E4100B29CED /* database.db in Resources */ = {isa = PBXBuildFile; fileRef = 8CECF3E010E9DD1400C0E1BB /* database.db */; };
-		60EB56A7135C4E4100B29CED /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
-		60EB56A8135C4E4100B29CED /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3011163492C00DD4EE7 /* button.png */; };
-		60EB56A9135C4E4100B29CED /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3021163492C00DD4EE7 /* Default.png */; };
-		60EB56AA135C4E4100B29CED /* global.logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3031163492C00DD4EE7 /* global.logo.png */; };
-		60EB56AB135C4E4100B29CED /* iPhoneAppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3041163492C00DD4EE7 /* iPhoneAppIcon.png */; };
-		60EB56AC135C4E4100B29CED /* loading.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3051163492C00DD4EE7 /* loading.png */; };
-		60EB56AD135C4E4100B29CED /* repair.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3061163492C00DD4EE7 /* repair.png */; };
-		60EB56AE135C4E4100B29CED /* slider_tip.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3071163492C00DD4EE7 /* slider_tip.png */; };
-		60EB56AF135C4E4100B29CED /* Default-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89706711B056D900655CA5 /* Default-Portrait.png */; };
-		60EB56B0135C4E4100B29CED /* loading~iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89707311B05BD200655CA5 /* loading~iPad.png */; };
-		60EB56B1135C4E4100B29CED /* global.logo~iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89707511B05C8A00655CA5 /* global.logo~iPad.png */; };
-		60EB56B2135C4E4100B29CED /* iPadAppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89708211B0600700655CA5 /* iPadAppIcon.png */; };
-		60EB56B3135C4E4100B29CED /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89709111B062D300655CA5 /* Icon-Small-50.png */; };
-		60EB56B4135C4E4100B29CED /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C89712C11B1365F00655CA5 /* Default-Landscape.png */; };
-		60EB56B5135C4E4100B29CED /* InitViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C49724011B20D660039A293 /* InitViewController~iPhone.xib */; };
-		60EB56B6135C4E4100B29CED /* InitViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C49725211B20E080039A293 /* InitViewController~iPad.xib */; };
-		60EB56B7135C4E4100B29CED /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C49736D11B2288D0039A293 /* Icon.png */; };
-		60EB56B8135C4E4100B29CED /* ErrorViewController~iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C49746711B242290039A293 /* ErrorViewController~iPad.xib */; };
-		60EB56B9135C4E4100B29CED /* ErrorViewController~iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C4974C111B24B020039A293 /* ErrorViewController~iPhone.xib */; };
-		60EB56BE135C4E4100B29CED /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
-		60EB56BF135C4E4100B29CED /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
-		60EB56C0135C4E4100B29CED /* FileUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6682480F53FFF5007C45D4 /* FileUtils.m */; };
-		60EB56C1135C4E4100B29CED /* StringUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C72E7150F541FAB006CC0DF /* StringUtils.m */; };
-		60EB56C2135C4E4100B29CED /* ViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE4220FA0395F00F18AA1 /* ViewHelper.m */; };
-		60EB56C3135C4E4100B29CED /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C7BE48A0FA0431700F18AA1 /* Reachability.m */; };
-		60EB56C4135C4E4100B29CED /* AsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27D0FBD3782006ED733 /* AsyncSocket.m */; };
-		60EB56C5135C4E4100B29CED /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF6A27F0FBD3782006ED733 /* AsyncUdpSocket.m */; };
-		60EB56C6135C4E4100B29CED /* CheckNetworkException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E6E109554D600C7A686 /* CheckNetworkException.m */; };
-		60EB56C7135C4E4100B29CED /* AppSettingsDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E721095555500C7A686 /* AppSettingsDefinition.m */; };
-		60EB56C8135C4E4100B29CED /* DirectoryDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E741095555500C7A686 /* DirectoryDefinition.m */; };
-		60EB56C9135C4E4100B29CED /* ServerDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460E761095555500C7A686 /* ServerDefinition.m */; };
-		60EB56D2135C4E4100B29CED /* AppSettingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F011095628C00C7A686 /* AppSettingController.m */; };
-		60EB56D3135C4E4100B29CED /* GroupController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F031095628C00C7A686 /* GroupController.m */; };
-		60EB56D4135C4E4100B29CED /* InitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F051095628C00C7A686 /* InitViewController.m */; };
-		60EB56D5135C4E4100B29CED /* PaginationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F091095628C00C7A686 /* PaginationController.m */; };
-		60EB56D6135C4E4100B29CED /* ScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F0B1095628C00C7A686 /* ScreenViewController.m */; };
-		60EB56D7135C4E4100B29CED /* ServerAutoDiscoveryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F0D1095628C00C7A686 /* ServerAutoDiscoveryController.m */; };
-		60EB56D8135C4E4100B29CED /* TextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F0F1095628C00C7A686 /* TextFieldCell.m */; };
-		60EB56D9135C4E4100B29CED /* UpdateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F111095628C00C7A686 /* UpdateController.m */; };
-		60EB56DA135C4E4100B29CED /* CheckNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F2B109562D200C7A686 /* CheckNetwork.m */; };
-		60EB56DB135C4E4100B29CED /* NotificationConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F3F109563E100C7A686 /* NotificationConstant.m */; };
-		60EB56DC135C4E4100B29CED /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C460F5B109564D000C7A686 /* AppDelegate.m */; };
-		60EB56DD135C4E4100B29CED /* PollingStatusParserDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C65FDF41096F33C006FC19F /* PollingStatusParserDelegate.m */; };
-		60EB56DE135C4E4100B29CED /* PollingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C6502E1109809EC006FC19F /* PollingHelper.m */; };
-		60EB56E0135C4E4100B29CED /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CAEB81A10A6B25B0051C827 /* LoginViewController.m */; };
-		60EB56E2135C4E4100B29CED /* LogoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEB4E7E10B2827200A67721 /* LogoutHelper.m */; };
-		60EB56E3135C4E4100B29CED /* ChoosePanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5341E10B64C1900C52FB0 /* ChoosePanelViewController.m */; };
-		60EB56E4135C4E4100B29CED /* ErrorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CF539AA10B9359F00C52FB0 /* ErrorViewController.m */; };
-		60EB56E5135C4E4100B29CED /* CredentialUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC6364D10BD37D8009C25C9 /* CredentialUtil.m */; };
-		60EB56E6135C4E4100B29CED /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC636CF10BD4DCC009C25C9 /* NSStringAdditions.m */; };
-		60EB56E7135C4E4100B29CED /* ControllerException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CE7EBE310BE773600E15487 /* ControllerException.m */; };
-		60EB56E9135C4E4100B29CED /* GestureWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDE3FF710C39D1F0096CAC9 /* GestureWindow.m */; };
-		60EB56ED135C4E4100B29CED /* ClippedUIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D2ED510D8AADB0043BFE9 /* ClippedUIImage.m */; };
-		60EB56EE135C4E4100B29CED /* UIViewUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 338D306B10D8DD000043BFE9 /* UIViewUtil.m */; };
-		60EB56EF135C4E4100B29CED /* DefaultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CC1E07D10DB491400155CC0 /* DefaultViewController.m */; };
-		60EB56F0135C4E4100B29CED /* NSDateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267E7010E47C5B00E3AE42 /* NSDateHelper.m */; };
-		60EB56F1135C4E4100B29CED /* RoundRobinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 33267ED310E4895E00E3AE42 /* RoundRobinException.m */; };
-		60EB56F3135C4E4100B29CED /* AbsoluteLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85110EB6E3200C0E1BB /* AbsoluteLayoutContainer.m */; };
-		60EB56F4135C4E4100B29CED /* Background.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85310EB6E3200C0E1BB /* Background.m */; };
-		60EB56F5135C4E4100B29CED /* Button.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85510EB6E3200C0E1BB /* Button.m */; };
-		60EB56F6135C4E4100B29CED /* Component.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85710EB6E3200C0E1BB /* Component.m */; };
-		60EB56F7135C4E4100B29CED /* Control.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85910EB6E3200C0E1BB /* Control.m */; };
-		60EB56F8135C4E4100B29CED /* Definition.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85B10EB6E3300C0E1BB /* Definition.m */; };
-		60EB56F9135C4E4100B29CED /* Gesture.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85D10EB6E3300C0E1BB /* Gesture.m */; };
-		60EB56FA135C4E4100B29CED /* GridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF85F10EB6E3300C0E1BB /* GridCell.m */; };
-		60EB56FB135C4E4100B29CED /* GridLayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86110EB6E3300C0E1BB /* GridLayoutContainer.m */; };
-		60EB56FC135C4E4100B29CED /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86310EB6E3300C0E1BB /* Group.m */; };
-		60EB56FE135C4E4100B29CED /* Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86710EB6E3300C0E1BB /* Image.m */; };
-		60EB56FF135C4E4100B29CED /* Label.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86910EB6E3300C0E1BB /* Label.m */; };
-		60EB5700135C4E4100B29CED /* LayoutContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF86B10EB6E3300C0E1BB /* LayoutContainer.m */; };
-		60EB5701135C4E4100B29CED /* Navigate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87110EB6E3300C0E1BB /* Navigate.m */; };
-		60EB5702135C4E4100B29CED /* Screen.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87310EB6E3300C0E1BB /* Screen.m */; };
-		60EB5703135C4E4100B29CED /* Sensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87510EB6E3300C0E1BB /* Sensor.m */; };
-		60EB5704135C4E4100B29CED /* SensorComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87710EB6E3300C0E1BB /* SensorComponent.m */; };
-		60EB5705135C4E4100B29CED /* SensorState.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87910EB6E3300C0E1BB /* SensorState.m */; };
-		60EB5706135C4E4100B29CED /* Slider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87B10EB6E3300C0E1BB /* Slider.m */; };
-		60EB5707135C4E4100B29CED /* Switch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87D10EB6E3300C0E1BB /* Switch.m */; };
-		60EB5708135C4E4100B29CED /* TabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF87F10EB6E3300C0E1BB /* TabBar.m */; };
-		60EB5709135C4E4100B29CED /* TabBarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88110EB6E3300C0E1BB /* TabBarItem.m */; };
-		60EB570B135C4E4100B29CED /* XMLEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CECF88910EB6E3300C0E1BB /* XMLEntity.m */; };
-		60EB570F135C4E4100B29CED /* LoadingHUDView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CEFDA8B11BF35EE00CEDC24 /* LoadingHUDView.m */; };
-		60EB5711135C4E4100B29CED /* Web.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A85C84131F965500C7918A /* Web.m */; };
-		60EB5714135C4E4100B29CED /* LocalLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD013211DED00C9089F /* LocalLogic.m */; };
-		60EB5715135C4E4100B29CED /* LocalSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD4132120D200C9089F /* LocalSensor.m */; };
-		60EB5716135C4E4100B29CED /* LocalCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDD7132120D700C9089F /* LocalCommand.m */; };
-		60EB5717135C4E4100B29CED /* LocalTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 608FBDDA132120DD00C9089F /* LocalTask.m */; };
-		60EB5718135C4E4100B29CED /* NSString+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A6195A1354A24A00A7C87E /* NSString+ORAdditions.m */; };
-		60EB5719135C4E4100B29CED /* TimeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 60A61A801355F85600A7C87E /* TimeManager.m */; };
-		60EB571B135C4E4100B29CED /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7D1355F15000A7C87E /* libresolv.dylib */; };
-		60EB571C135C4E4100B29CED /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A7B1355F12400A7C87E /* AVFoundation.framework */; };
-		60EB571D135C4E4100B29CED /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A61A791355F07E00A7C87E /* CoreAudio.framework */; };
-		60EB571E135C4E4100B29CED /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CB33E4D0FCA4AE400B010DF /* CoreGraphics.framework */; };
-		60EB571F135C4E4100B29CED /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA75EC40F579B4C00ADF0C0 /* QuartzCore.framework */; };
-		60EB5720135C4E4100B29CED /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C7BE4F50FA0471F00F18AA1 /* SystemConfiguration.framework */; };
-		60EB5721135C4E4100B29CED /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CF6A2B00FBD784C006ED733 /* CFNetwork.framework */; };
-		60EB5722135C4E4100B29CED /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		60EB5723135C4E4100B29CED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		60EB5725135C4E4100B29CED /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 608FBB9D131FF9C300C9089F /* AudioToolbox.framework */; };
 		60EC86311410C23E003F5432 /* ColorPickerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86301410C23E003F5432 /* ColorPickerSubController.m */; };
-		60EC86321410C23E003F5432 /* ColorPickerSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86301410C23E003F5432 /* ColorPickerSubController.m */; };
 		60EC86361410C68A003F5432 /* SliderSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86351410C68A003F5432 /* SliderSubController.m */; };
-		60EC86371410C68A003F5432 /* SliderSubController.m in Sources */ = {isa = PBXBuildFile; fileRef = 60EC86351410C68A003F5432 /* SliderSubController.m */; };
 		60F8A9D2143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
-		60F8A9D3143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9CF143DCEBA00176004 /* UIImage+ORAdditions.m */; };
 		60F8A9D4143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
-		60F8A9D5143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 60F8A9D1143DCEBA00176004 /* UIScreen+ORAdditions.m */; };
 		799CC3CE0F4D4EEA006195BD /* URLConnectionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 799CC3CD0F4D4EEA006195BD /* URLConnectionHelper.m */; };
 		8C3B6D3D0FA006D00004A7E8 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8C3B6D3C0FA006D00004A7E8 /* Entitlements.plist */; };
 		8C3DE3081163492C00DD4EE7 /* btn_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C3DE3001163492C00DD4EE7 /* btn_green.png */; };
@@ -574,6 +594,8 @@
 		6010DE7913FEB389001E6AA9 /* DefinitionParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefinitionParser.m; sourceTree = "<group>"; };
 		6010DE8C13FEB8D3001E6AA9 /* ScreenParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenParser.h; sourceTree = "<group>"; };
 		6010DE8D13FEB8D3001E6AA9 /* ScreenParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenParser.m; sourceTree = "<group>"; };
+		60366C42144DCB9C004FED3B /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "OpenRemote copy-Info.plist"; path = "/Users/ebr/Development/OpenRemote/iOS_Console_2_1_0_Betas/OpenRemote copy-Info.plist"; sourceTree = "<absolute>"; };
 		6044316C136EE69200BABA2D /* ORConsoleSettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORConsoleSettingsManager.h; sourceTree = "<group>"; };
 		6044316D136EE69200BABA2D /* ORConsoleSettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORConsoleSettingsManager.m; sourceTree = "<group>"; };
 		605393F61383FF0A00F3F5FC /* EnvironmentManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnvironmentManager.h; sourceTree = "<group>"; };
@@ -968,7 +990,6 @@
 		60E7A8E413696C8B00EA107A /* ColorPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPicker.m; sourceTree = "<group>"; };
 		60E7A8E513696C8B00EA107A /* ColorPickerImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerImageView.h; sourceTree = "<group>"; };
 		60E7A8E613696C8B00EA107A /* ColorPickerImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPickerImageView.m; sourceTree = "<group>"; };
-		60EB573A135C4E4100B29CED /* OpenRemote copy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "OpenRemote copy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60EC862F1410C23E003F5432 /* ColorPickerSubController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorPickerSubController.h; sourceTree = "<group>"; };
 		60EC86301410C23E003F5432 /* ColorPickerSubController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorPickerSubController.m; sourceTree = "<group>"; };
 		60EC86341410C68A003F5432 /* SliderSubController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderSubController.h; sourceTree = "<group>"; };
@@ -1189,21 +1210,37 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		60EB571A135C4E4100B29CED /* Frameworks */ = {
+		60366C22144DCB9C004FED3B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60C9D985136ADD38009EECA3 /* CoreData.framework in Frameworks */,
-				60EB571B135C4E4100B29CED /* libresolv.dylib in Frameworks */,
-				60EB571C135C4E4100B29CED /* AVFoundation.framework in Frameworks */,
-				60EB571D135C4E4100B29CED /* CoreAudio.framework in Frameworks */,
-				60EB571E135C4E4100B29CED /* CoreGraphics.framework in Frameworks */,
-				60EB571F135C4E4100B29CED /* QuartzCore.framework in Frameworks */,
-				60EB5720135C4E4100B29CED /* SystemConfiguration.framework in Frameworks */,
-				60EB5721135C4E4100B29CED /* CFNetwork.framework in Frameworks */,
-				60EB5722135C4E4100B29CED /* UIKit.framework in Frameworks */,
-				60EB5723135C4E4100B29CED /* Foundation.framework in Frameworks */,
-				60EB5725135C4E4100B29CED /* AudioToolbox.framework in Frameworks */,
+				60366C23144DCB9C004FED3B /* CoreData.framework in Frameworks */,
+				60366C24144DCB9C004FED3B /* libresolv.dylib in Frameworks */,
+				60366C25144DCB9C004FED3B /* AVFoundation.framework in Frameworks */,
+				60366C26144DCB9C004FED3B /* CoreAudio.framework in Frameworks */,
+				60366C27144DCB9C004FED3B /* CoreGraphics.framework in Frameworks */,
+				60366C28144DCB9C004FED3B /* QuartzCore.framework in Frameworks */,
+				60366C29144DCB9C004FED3B /* SystemConfiguration.framework in Frameworks */,
+				60366C2A144DCB9C004FED3B /* CFNetwork.framework in Frameworks */,
+				60366C2B144DCB9C004FED3B /* UIKit.framework in Frameworks */,
+				60366C2C144DCB9C004FED3B /* Foundation.framework in Frameworks */,
+				60366C2D144DCB9C004FED3B /* AudioToolbox.framework in Frameworks */,
+				60366C2E144DCB9C004FED3B /* libcrypto.a in Frameworks */,
+				60366C2F144DCB9C004FED3B /* libeXosip2.a in Frameworks */,
+				60366C30144DCB9C004FED3B /* libgsm.a in Frameworks */,
+				60366C31144DCB9C004FED3B /* libilbc.a in Frameworks */,
+				60366C32144DCB9C004FED3B /* liblinphone.a in Frameworks */,
+				60366C33144DCB9C004FED3B /* libmediastreamer.a in Frameworks */,
+				60366C34144DCB9C004FED3B /* libopencore-amrnb.a in Frameworks */,
+				60366C35144DCB9C004FED3B /* libopencore-amrwb.a in Frameworks */,
+				60366C36144DCB9C004FED3B /* libortp.a in Frameworks */,
+				60366C37144DCB9C004FED3B /* libosip2.a in Frameworks */,
+				60366C38144DCB9C004FED3B /* libosipparser2.a in Frameworks */,
+				60366C39144DCB9C004FED3B /* libspeex.a in Frameworks */,
+				60366C3A144DCB9C004FED3B /* libspeexdsp.a in Frameworks */,
+				60366C3B144DCB9C004FED3B /* libssl.a in Frameworks */,
+				60366C3C144DCB9C004FED3B /* libmsamr.a in Frameworks */,
+				60366C3D144DCB9C004FED3B /* libmsilbc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1254,7 +1291,7 @@
 			children = (
 				1D6058910D05DD3D006BFB54 /* OpenRemote.app */,
 				8C4DFC66115414B300C2C7EE /* UnitTest.octest */,
-				60EB573A135C4E4100B29CED /* OpenRemote copy.app */,
+				60366C42144DCB9C004FED3B /* OpenRemote copy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1282,6 +1319,7 @@
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				974DAC871063ADEF00B1B04B /* Entitlements.plist */,
 				8C460E4B109552C800C7A686 /* UnitTest-Info.plist */,
+				60366C45144DCB9D004FED3B /* OpenRemote copy-Info.plist */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2175,13 +2213,13 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* OpenRemote.app */;
 			productType = "com.apple.product-type.application";
 		};
-		60EB56A0135C4E4100B29CED /* OpenRemote No SIP */ = {
+		60366B69144DCB9C004FED3B /* OpenRemote No SIP */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 60EB5736135C4E4100B29CED /* Build configuration list for PBXNativeTarget "OpenRemote No SIP" */;
+			buildConfigurationList = 60366C3E144DCB9C004FED3B /* Build configuration list for PBXNativeTarget "OpenRemote No SIP" */;
 			buildPhases = (
-				60EB56A1135C4E4100B29CED /* Resources */,
-				60EB56BD135C4E4100B29CED /* Sources */,
-				60EB571A135C4E4100B29CED /* Frameworks */,
+				60366B6A144DCB9C004FED3B /* Resources */,
+				60366B8F144DCB9C004FED3B /* Sources */,
+				60366C22144DCB9C004FED3B /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2189,7 +2227,7 @@
 			);
 			name = "OpenRemote No SIP";
 			productName = openremote;
-			productReference = 60EB573A135C4E4100B29CED /* OpenRemote copy.app */;
+			productReference = 60366C42144DCB9C004FED3B /* OpenRemote copy.app */;
 			productType = "com.apple.product-type.application";
 		};
 		8C460E49109552C800C7A686 /* UnitTest */ = {
@@ -2235,7 +2273,7 @@
 			targets = (
 				1D6058900D05DD3D006BFB54 /* OpenRemote */,
 				8C460E49109552C800C7A686 /* UnitTest */,
-				60EB56A0135C4E4100B29CED /* OpenRemote No SIP */,
+				60366B69144DCB9C004FED3B /* OpenRemote No SIP */,
 			);
 		};
 /* End PBXProject section */
@@ -2284,43 +2322,46 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		60EB56A1135C4E4100B29CED /* Resources */ = {
+		60366B6A144DCB9C004FED3B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60EB56A2135C4E4100B29CED /* Entitlements.plist in Resources */,
-				60EB56A3135C4E4100B29CED /* appSettings.plist in Resources */,
-				60EB56A4135C4E4100B29CED /* iTunesArtwork in Resources */,
-				60EB56A6135C4E4100B29CED /* database.db in Resources */,
-				60EB56A7135C4E4100B29CED /* btn_green.png in Resources */,
-				60EB56A8135C4E4100B29CED /* button.png in Resources */,
-				60EB56A9135C4E4100B29CED /* Default.png in Resources */,
-				60EB56AA135C4E4100B29CED /* global.logo.png in Resources */,
-				60EB56AB135C4E4100B29CED /* iPhoneAppIcon.png in Resources */,
-				60EB56AC135C4E4100B29CED /* loading.png in Resources */,
-				60EB56AD135C4E4100B29CED /* repair.png in Resources */,
-				60EB56AE135C4E4100B29CED /* slider_tip.png in Resources */,
-				60EB56AF135C4E4100B29CED /* Default-Portrait.png in Resources */,
-				60EB56B0135C4E4100B29CED /* loading~iPad.png in Resources */,
-				60EB56B1135C4E4100B29CED /* global.logo~iPad.png in Resources */,
-				60EB56B2135C4E4100B29CED /* iPadAppIcon.png in Resources */,
-				60EB56B3135C4E4100B29CED /* Icon-Small-50.png in Resources */,
-				60EB56B4135C4E4100B29CED /* Default-Landscape.png in Resources */,
-				60EB56B5135C4E4100B29CED /* InitViewController~iPhone.xib in Resources */,
-				60EB56B6135C4E4100B29CED /* InitViewController~iPad.xib in Resources */,
-				60EB56B7135C4E4100B29CED /* Icon.png in Resources */,
-				60EB56B8135C4E4100B29CED /* ErrorViewController~iPad.xib in Resources */,
-				60EB56B9135C4E4100B29CED /* ErrorViewController~iPhone.xib in Resources */,
-				60950D9913CB115400B983E7 /* CheckMark.png in Resources */,
-				60950D9B13CB115400B983E7 /* CheckMark@2x.png in Resources */,
-				60950D9F13CB127100B983E7 /* CheckMarkBlankPlaceHolder.png in Resources */,
-				60950DA113CB127100B983E7 /* CheckMarkBlankPlaceHolder@2x.png in Resources */,
-				6055688913CF184E0035CC1A /* ControllerOK.png in Resources */,
-				6055688B13CF184E0035CC1A /* ControllerOK@2x.png in Resources */,
-				6055688D13CF184E0035CC1A /* ControllerNOK.png in Resources */,
-				6055688F13CF184E0035CC1A /* ControllerNOK@2x.png in Resources */,
-				6055689313CF188F0035CC1A /* ControllerRequiresAuthentication.png in Resources */,
-				6055689513CF188F0035CC1A /* ControllerRequiresAuthentication@2x.png in Resources */,
+				60366B6B144DCB9C004FED3B /* Entitlements.plist in Resources */,
+				60366B6C144DCB9C004FED3B /* appSettings.plist in Resources */,
+				60366B6D144DCB9C004FED3B /* iTunesArtwork in Resources */,
+				60366B6E144DCB9C004FED3B /* database.db in Resources */,
+				60366B6F144DCB9C004FED3B /* btn_green.png in Resources */,
+				60366B70144DCB9C004FED3B /* button.png in Resources */,
+				60366B71144DCB9C004FED3B /* Default.png in Resources */,
+				60366B72144DCB9C004FED3B /* global.logo.png in Resources */,
+				60366B73144DCB9C004FED3B /* iPhoneAppIcon.png in Resources */,
+				60366B74144DCB9C004FED3B /* loading.png in Resources */,
+				60366B75144DCB9C004FED3B /* repair.png in Resources */,
+				60366B76144DCB9C004FED3B /* slider_tip.png in Resources */,
+				60366B77144DCB9C004FED3B /* Default-Portrait.png in Resources */,
+				60366B78144DCB9C004FED3B /* loading~iPad.png in Resources */,
+				60366B79144DCB9C004FED3B /* global.logo~iPad.png in Resources */,
+				60366B7A144DCB9C004FED3B /* iPadAppIcon.png in Resources */,
+				60366B7B144DCB9C004FED3B /* Icon-Small-50.png in Resources */,
+				60366B7C144DCB9C004FED3B /* Default-Landscape.png in Resources */,
+				60366B7D144DCB9C004FED3B /* InitViewController~iPhone.xib in Resources */,
+				60366B7E144DCB9C004FED3B /* InitViewController~iPad.xib in Resources */,
+				60366B7F144DCB9C004FED3B /* Icon.png in Resources */,
+				60366B80144DCB9C004FED3B /* ErrorViewController~iPad.xib in Resources */,
+				60366B81144DCB9C004FED3B /* ErrorViewController~iPhone.xib in Resources */,
+				60366B82144DCB9C004FED3B /* oldphone-mono.wav in Resources */,
+				60366B83144DCB9C004FED3B /* ringback.wav in Resources */,
+				60366B84144DCB9C004FED3B /* linphonerc in Resources */,
+				60366B85144DCB9C004FED3B /* CheckMark.png in Resources */,
+				60366B86144DCB9C004FED3B /* CheckMark@2x.png in Resources */,
+				60366B87144DCB9C004FED3B /* CheckMarkBlankPlaceHolder.png in Resources */,
+				60366B88144DCB9C004FED3B /* CheckMarkBlankPlaceHolder@2x.png in Resources */,
+				60366B89144DCB9C004FED3B /* ControllerOK.png in Resources */,
+				60366B8A144DCB9C004FED3B /* ControllerOK@2x.png in Resources */,
+				60366B8B144DCB9C004FED3B /* ControllerNOK.png in Resources */,
+				60366B8C144DCB9C004FED3B /* ControllerNOK@2x.png in Resources */,
+				60366B8D144DCB9C004FED3B /* ControllerRequiresAuthentication.png in Resources */,
+				60366B8E144DCB9C004FED3B /* ControllerRequiresAuthentication@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2538,155 +2579,156 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		60EB56BD135C4E4100B29CED /* Sources */ = {
+		60366B8F144DCB9C004FED3B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60EB56BE135C4E4100B29CED /* main.m in Sources */,
-				60EB56BF135C4E4100B29CED /* URLConnectionHelper.m in Sources */,
-				60EB56C0135C4E4100B29CED /* FileUtils.m in Sources */,
-				60EB56C1135C4E4100B29CED /* StringUtils.m in Sources */,
-				60EB56C2135C4E4100B29CED /* ViewHelper.m in Sources */,
-				60EB56C3135C4E4100B29CED /* Reachability.m in Sources */,
-				60EB56C4135C4E4100B29CED /* AsyncSocket.m in Sources */,
-				60EB56C5135C4E4100B29CED /* AsyncUdpSocket.m in Sources */,
-				60EB56C6135C4E4100B29CED /* CheckNetworkException.m in Sources */,
-				60EB56C7135C4E4100B29CED /* AppSettingsDefinition.m in Sources */,
-				60EB56C8135C4E4100B29CED /* DirectoryDefinition.m in Sources */,
-				60EB56C9135C4E4100B29CED /* ServerDefinition.m in Sources */,
-				60EB56D2135C4E4100B29CED /* AppSettingController.m in Sources */,
-				60EB56D3135C4E4100B29CED /* GroupController.m in Sources */,
-				60EB56D4135C4E4100B29CED /* InitViewController.m in Sources */,
-				60EB56D5135C4E4100B29CED /* PaginationController.m in Sources */,
-				60EB56D6135C4E4100B29CED /* ScreenViewController.m in Sources */,
-				60EB56D7135C4E4100B29CED /* ServerAutoDiscoveryController.m in Sources */,
-				60EB56D8135C4E4100B29CED /* TextFieldCell.m in Sources */,
-				60EB56D9135C4E4100B29CED /* UpdateController.m in Sources */,
-				60EB56DA135C4E4100B29CED /* CheckNetwork.m in Sources */,
-				60EB56DB135C4E4100B29CED /* NotificationConstant.m in Sources */,
-				60EB56DC135C4E4100B29CED /* AppDelegate.m in Sources */,
-				60EB56DD135C4E4100B29CED /* PollingStatusParserDelegate.m in Sources */,
-				60EB56DE135C4E4100B29CED /* PollingHelper.m in Sources */,
-				60EB56E0135C4E4100B29CED /* LoginViewController.m in Sources */,
-				60EB56E2135C4E4100B29CED /* LogoutHelper.m in Sources */,
-				60EB56E3135C4E4100B29CED /* ChoosePanelViewController.m in Sources */,
-				60EB56E4135C4E4100B29CED /* ErrorViewController.m in Sources */,
-				60EB56E5135C4E4100B29CED /* CredentialUtil.m in Sources */,
-				60EB56E6135C4E4100B29CED /* NSStringAdditions.m in Sources */,
-				60EB56E7135C4E4100B29CED /* ControllerException.m in Sources */,
-				60EB56E9135C4E4100B29CED /* GestureWindow.m in Sources */,
-				60EB56ED135C4E4100B29CED /* ClippedUIImage.m in Sources */,
-				60EB56EE135C4E4100B29CED /* UIViewUtil.m in Sources */,
-				60EB56EF135C4E4100B29CED /* DefaultViewController.m in Sources */,
-				60EB56F0135C4E4100B29CED /* NSDateHelper.m in Sources */,
-				60EB56F1135C4E4100B29CED /* RoundRobinException.m in Sources */,
-				60EB56F3135C4E4100B29CED /* AbsoluteLayoutContainer.m in Sources */,
-				60EB56F4135C4E4100B29CED /* Background.m in Sources */,
-				60EB56F5135C4E4100B29CED /* Button.m in Sources */,
-				60EB56F6135C4E4100B29CED /* Component.m in Sources */,
-				60EB56F7135C4E4100B29CED /* Control.m in Sources */,
-				60EB56F8135C4E4100B29CED /* Definition.m in Sources */,
-				60EB56F9135C4E4100B29CED /* Gesture.m in Sources */,
-				60EB56FA135C4E4100B29CED /* GridCell.m in Sources */,
-				60EB56FB135C4E4100B29CED /* GridLayoutContainer.m in Sources */,
-				60EB56FC135C4E4100B29CED /* Group.m in Sources */,
-				60EB56FE135C4E4100B29CED /* Image.m in Sources */,
-				60EB56FF135C4E4100B29CED /* Label.m in Sources */,
-				60EB5700135C4E4100B29CED /* LayoutContainer.m in Sources */,
-				60EB5701135C4E4100B29CED /* Navigate.m in Sources */,
-				60EB5702135C4E4100B29CED /* Screen.m in Sources */,
-				60EB5703135C4E4100B29CED /* Sensor.m in Sources */,
-				60EB5704135C4E4100B29CED /* SensorComponent.m in Sources */,
-				60EB5705135C4E4100B29CED /* SensorState.m in Sources */,
-				60EB5706135C4E4100B29CED /* Slider.m in Sources */,
-				60EB5707135C4E4100B29CED /* Switch.m in Sources */,
-				60EB5708135C4E4100B29CED /* TabBar.m in Sources */,
-				60EB5709135C4E4100B29CED /* TabBarItem.m in Sources */,
-				60EB570B135C4E4100B29CED /* XMLEntity.m in Sources */,
-				60EB570F135C4E4100B29CED /* LoadingHUDView.m in Sources */,
-				60EB5711135C4E4100B29CED /* Web.m in Sources */,
-				60EB5714135C4E4100B29CED /* LocalLogic.m in Sources */,
-				60EB5715135C4E4100B29CED /* LocalSensor.m in Sources */,
-				60EB5716135C4E4100B29CED /* LocalCommand.m in Sources */,
-				60EB5717135C4E4100B29CED /* LocalTask.m in Sources */,
-				60EB5718135C4E4100B29CED /* NSString+ORAdditions.m in Sources */,
-				60EB5719135C4E4100B29CED /* TimeManager.m in Sources */,
-				60E7A8EA13696C8B00EA107A /* ColorPicker.m in Sources */,
-				60E7A8EC13696C8B00EA107A /* ColorPickerImageView.m in Sources */,
-				60C9D975136AD43E009EECA3 /* ORConsoleSettings.xcdatamodeld in Sources */,
-				60C9D979136ADB31009EECA3 /* ORController.m in Sources */,
-				60C9D97D136ADB8A009EECA3 /* ORGroupMember.m in Sources */,
-				60C9D981136ADB8B009EECA3 /* ORConsoleSettings.m in Sources */,
-				6044316F136EE69200BABA2D /* ORConsoleSettingsManager.m in Sources */,
-				60AFCED11371787400A811D4 /* ORControllerProxy.m in Sources */,
-				60AFCED6137180E400A811D4 /* ORControllerCommandSender.m in Sources */,
-				60AFCEEA13729AA500A811D4 /* ControllerRequest.m in Sources */,
-				6097DAF11378099E00E22AA8 /* ORControllerPollingSender.m in Sources */,
-				60C81D9E137BD55400B2A12A /* ORControllerPanelsFetcher.m in Sources */,
-				605393F91383FF0A00F3F5FC /* EnvironmentManager.m in Sources */,
-				60950DA513CB153500B983E7 /* UIColor+ORAdditions.m in Sources */,
-				60950E1713CB3A6200B983E7 /* ControllerDetailViewController.m in Sources */,
-				6079C2BA13CB4E0A00E6F326 /* TableViewCellWithSelectionAndIndicator.m in Sources */,
-				6055687A13CDBD9B0035CC1A /* ORControllerGroupMembersFetcher.m in Sources */,
-				6055687F13CDC4A20035CC1A /* NSURLRequest+ORAdditions.m in Sources */,
-				6055688313CDCA290035CC1A /* DataCapturingNSURLConnectionDelegate.m in Sources */,
-				60AA14B913E9653E008ACE4A /* ControllerButtonAPI_v2.m in Sources */,
-				60AA14BD13E9673F008ACE4A /* ControllerButtonAPI_v2_1.m in Sources */,
-				60AA14C513E98ED2008ACE4A /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
-				6010DE3B13FE7B47001E6AA9 /* StyleValue1TextEntryCell.m in Sources */,
-				6010DE7B13FEB389001E6AA9 /* DefinitionParser.m in Sources */,
-				6010DE8F13FEB8D3001E6AA9 /* ScreenParser.m in Sources */,
-				60987E4A13FF071E00967DEA /* DefinitionElementParser.m in Sources */,
-				60987E4E13FF0D7300967DEA /* DefinitionElementParserRegister.m in Sources */,
-				60987E5213FF0DA000967DEA /* PanelDefinitionParser.m in Sources */,
-				60987E5613FF8DA400967DEA /* GroupParser.m in Sources */,
-				60987E5A13FF8DBD00967DEA /* TabBarParser.m in Sources */,
-				60987E5E13FF8DD100967DEA /* LocalLogicParser.m in Sources */,
-				60987E6213FF8DE700967DEA /* AbsoluteLayoutContainerParser.m in Sources */,
-				60987E6613FF8E0400967DEA /* GridLayoutContainerParser.m in Sources */,
-				60987E6A13FF8E1300967DEA /* GestureParser.m in Sources */,
-				60987E6E13FF8E2700967DEA /* BackgroundParser.m in Sources */,
-				60987E72140157A500967DEA /* LayoutContainerParser.m in Sources */,
-				60987E771401796F00967DEA /* GridCellParser.m in Sources */,
-				60987E7B14017B4D00967DEA /* LabelParser.m in Sources */,
-				60987E7F14017B6E00967DEA /* ImageParser.m in Sources */,
-				60987E8314017B7B00967DEA /* WebParser.m in Sources */,
-				60987E8714017BC000967DEA /* ButtonParserAPI_v2_1.m in Sources */,
-				60987E8B14017BD400967DEA /* SwitchParser.m in Sources */,
-				60987E8F14017BE500967DEA /* SliderParser.m in Sources */,
-				60987E9314017BF400967DEA /* ColorPickerParser.m in Sources */,
-				60987E971402538E00967DEA /* NavigateParser.m in Sources */,
-				60987E9B14025B8400967DEA /* SensorLinkParser.m in Sources */,
-				60987E9F14025DC000967DEA /* SensorStateParser.m in Sources */,
-				60987EA41402667600967DEA /* LabelDeferredBinding.m in Sources */,
-				60987EB51402AA0E00967DEA /* ScreenDeferredBinding.m in Sources */,
-				60987EB91402AD0E00967DEA /* TabBarItemParser.m in Sources */,
-				60987EBD1402B0C100967DEA /* SensorParser.m in Sources */,
-				60987EC11402B12000967DEA /* CommandParser.m in Sources */,
-				60987EC51402B15800967DEA /* TaskParser.m in Sources */,
-				60A2D265140662C600A529ED /* DefinitionManager.m in Sources */,
-				60A2D2691407BE4F00A529ED /* DeferredBinding.m in Sources */,
-				6001B9A4140B6A3400B18E84 /* ButtonParserAPI_v2.m in Sources */,
-				6001B9A9140B6F7A00B18E84 /* ButtonParser.m in Sources */,
-				60AFC7ED140E79320001B78F /* ScreenSubController.m in Sources */,
-				60AFC7F1140E79400001B78F /* SubController.m in Sources */,
-				60AFC7F5140E7E620001B78F /* LayoutContainerSubController.m in Sources */,
-				60AFC7F9140E80C50001B78F /* AbsoluteLayoutContainerSubController.m in Sources */,
-				60AFC7FD140E8EA40001B78F /* LabelSubController.m in Sources */,
-				60AFC801140E912F0001B78F /* ComponentSubController.m in Sources */,
-				60AFC805140EA29F0001B78F /* SensorySubController.m in Sources */,
-				60AFC809140EA7520001B78F /* ImageSubController.m in Sources */,
-				60AFC830140EC3780001B78F /* ControlSubController.m in Sources */,
-				60AFC834140EC38D0001B78F /* ButtonSubController.m in Sources */,
-				60DEC3C3140FA6FE000FF863 /* GridLayoutContainerSubController.m in Sources */,
-				60DEC3C7140FB62F000FF863 /* ORImageView.m in Sources */,
-				60DEC3CB140FC081000FF863 /* WebSubController.m in Sources */,
-				60DEC3CF140FC884000FF863 /* SwitchSubController.m in Sources */,
-				60EC86321410C23E003F5432 /* ColorPickerSubController.m in Sources */,
-				60EC86371410C68A003F5432 /* SliderSubController.m in Sources */,
-				60F8A9D3143DCEBA00176004 /* UIImage+ORAdditions.m in Sources */,
-				60F8A9D5143DCEBA00176004 /* UIScreen+ORAdditions.m in Sources */,
-				606281131446F5F6001123BD /* RuntimeUtils.m in Sources */,
+				60366B90144DCB9C004FED3B /* main.m in Sources */,
+				60366B91144DCB9C004FED3B /* URLConnectionHelper.m in Sources */,
+				60366B92144DCB9C004FED3B /* FileUtils.m in Sources */,
+				60366B93144DCB9C004FED3B /* StringUtils.m in Sources */,
+				60366B94144DCB9C004FED3B /* ViewHelper.m in Sources */,
+				60366B95144DCB9C004FED3B /* Reachability.m in Sources */,
+				60366B96144DCB9C004FED3B /* AsyncSocket.m in Sources */,
+				60366B97144DCB9C004FED3B /* AsyncUdpSocket.m in Sources */,
+				60366B98144DCB9C004FED3B /* CheckNetworkException.m in Sources */,
+				60366B99144DCB9C004FED3B /* AppSettingsDefinition.m in Sources */,
+				60366B9A144DCB9C004FED3B /* DirectoryDefinition.m in Sources */,
+				60366B9B144DCB9C004FED3B /* ServerDefinition.m in Sources */,
+				60366B9C144DCB9C004FED3B /* AppSettingController.m in Sources */,
+				60366B9D144DCB9C004FED3B /* GroupController.m in Sources */,
+				60366B9E144DCB9C004FED3B /* InitViewController.m in Sources */,
+				60366B9F144DCB9C004FED3B /* PaginationController.m in Sources */,
+				60366BA0144DCB9C004FED3B /* ScreenViewController.m in Sources */,
+				60366BA1144DCB9C004FED3B /* ServerAutoDiscoveryController.m in Sources */,
+				60366BA2144DCB9C004FED3B /* TextFieldCell.m in Sources */,
+				60366BA3144DCB9C004FED3B /* UpdateController.m in Sources */,
+				60366BA4144DCB9C004FED3B /* CheckNetwork.m in Sources */,
+				60366BA5144DCB9C004FED3B /* NotificationConstant.m in Sources */,
+				60366BA6144DCB9C004FED3B /* AppDelegate.m in Sources */,
+				60366BA7144DCB9C004FED3B /* PollingStatusParserDelegate.m in Sources */,
+				60366BA8144DCB9C004FED3B /* PollingHelper.m in Sources */,
+				60366BA9144DCB9C004FED3B /* LoginViewController.m in Sources */,
+				60366BAA144DCB9C004FED3B /* LogoutHelper.m in Sources */,
+				60366BAB144DCB9C004FED3B /* ChoosePanelViewController.m in Sources */,
+				60366BAC144DCB9C004FED3B /* ErrorViewController.m in Sources */,
+				60366BAD144DCB9C004FED3B /* CredentialUtil.m in Sources */,
+				60366BAE144DCB9C004FED3B /* NSStringAdditions.m in Sources */,
+				60366BAF144DCB9C004FED3B /* ControllerException.m in Sources */,
+				60366BB0144DCB9C004FED3B /* GestureWindow.m in Sources */,
+				60366BB1144DCB9C004FED3B /* ClippedUIImage.m in Sources */,
+				60366BB2144DCB9C004FED3B /* UIViewUtil.m in Sources */,
+				60366BB3144DCB9C004FED3B /* DefaultViewController.m in Sources */,
+				60366BB4144DCB9C004FED3B /* NSDateHelper.m in Sources */,
+				60366BB5144DCB9C004FED3B /* RoundRobinException.m in Sources */,
+				60366BB6144DCB9C004FED3B /* AbsoluteLayoutContainer.m in Sources */,
+				60366BB7144DCB9C004FED3B /* Background.m in Sources */,
+				60366BB8144DCB9C004FED3B /* Button.m in Sources */,
+				60366BB9144DCB9C004FED3B /* Component.m in Sources */,
+				60366BBA144DCB9C004FED3B /* Control.m in Sources */,
+				60366BBB144DCB9C004FED3B /* Definition.m in Sources */,
+				60366BBC144DCB9C004FED3B /* Gesture.m in Sources */,
+				60366BBD144DCB9C004FED3B /* GridCell.m in Sources */,
+				60366BBE144DCB9C004FED3B /* GridLayoutContainer.m in Sources */,
+				60366BBF144DCB9C004FED3B /* Group.m in Sources */,
+				60366BC0144DCB9C004FED3B /* Image.m in Sources */,
+				60366BC1144DCB9C004FED3B /* Label.m in Sources */,
+				60366BC2144DCB9C004FED3B /* LayoutContainer.m in Sources */,
+				60366BC3144DCB9C004FED3B /* Navigate.m in Sources */,
+				60366BC4144DCB9C004FED3B /* Screen.m in Sources */,
+				60366BC5144DCB9C004FED3B /* Sensor.m in Sources */,
+				60366BC6144DCB9C004FED3B /* SensorComponent.m in Sources */,
+				60366BC7144DCB9C004FED3B /* SensorState.m in Sources */,
+				60366BC8144DCB9C004FED3B /* Slider.m in Sources */,
+				60366BC9144DCB9C004FED3B /* Switch.m in Sources */,
+				60366BCA144DCB9C004FED3B /* TabBar.m in Sources */,
+				60366BCB144DCB9C004FED3B /* TabBarItem.m in Sources */,
+				60366BCC144DCB9C004FED3B /* XMLEntity.m in Sources */,
+				60366BCD144DCB9C004FED3B /* LoadingHUDView.m in Sources */,
+				60366BCE144DCB9C004FED3B /* Web.m in Sources */,
+				60366BCF144DCB9C004FED3B /* SipController.m in Sources */,
+				60366BD0144DCB9C004FED3B /* LocalLogic.m in Sources */,
+				60366BD1144DCB9C004FED3B /* LocalSensor.m in Sources */,
+				60366BD2144DCB9C004FED3B /* LocalCommand.m in Sources */,
+				60366BD3144DCB9C004FED3B /* LocalTask.m in Sources */,
+				60366BD4144DCB9C004FED3B /* NSString+ORAdditions.m in Sources */,
+				60366BD5144DCB9C004FED3B /* TimeManager.m in Sources */,
+				60366BD6144DCB9C004FED3B /* ColorPicker.m in Sources */,
+				60366BD7144DCB9C004FED3B /* ColorPickerImageView.m in Sources */,
+				60366BD8144DCB9C004FED3B /* ORConsoleSettings.xcdatamodeld in Sources */,
+				60366BD9144DCB9C004FED3B /* ORController.m in Sources */,
+				60366BDA144DCB9C004FED3B /* ORGroupMember.m in Sources */,
+				60366BDB144DCB9C004FED3B /* ORConsoleSettings.m in Sources */,
+				60366BDC144DCB9C004FED3B /* ORConsoleSettingsManager.m in Sources */,
+				60366BDD144DCB9C004FED3B /* ORControllerProxy.m in Sources */,
+				60366BDE144DCB9C004FED3B /* ORControllerCommandSender.m in Sources */,
+				60366BDF144DCB9C004FED3B /* ControllerRequest.m in Sources */,
+				60366BE0144DCB9C004FED3B /* ORControllerPollingSender.m in Sources */,
+				60366BE1144DCB9C004FED3B /* ORControllerPanelsFetcher.m in Sources */,
+				60366BE2144DCB9C004FED3B /* EnvironmentManager.m in Sources */,
+				60366BE3144DCB9C004FED3B /* UIColor+ORAdditions.m in Sources */,
+				60366BE4144DCB9C004FED3B /* ControllerDetailViewController.m in Sources */,
+				60366BE5144DCB9C004FED3B /* TableViewCellWithSelectionAndIndicator.m in Sources */,
+				60366BE6144DCB9C004FED3B /* ORControllerGroupMembersFetcher.m in Sources */,
+				60366BE7144DCB9C004FED3B /* NSURLRequest+ORAdditions.m in Sources */,
+				60366BE8144DCB9C004FED3B /* DataCapturingNSURLConnectionDelegate.m in Sources */,
+				60366BE9144DCB9C004FED3B /* ControllerButtonAPI_v2.m in Sources */,
+				60366BEA144DCB9C004FED3B /* ControllerButtonAPI_v2_1.m in Sources */,
+				60366BEB144DCB9C004FED3B /* ORControllerGroupMembersFetchStatusIconProvider.m in Sources */,
+				60366BEC144DCB9C004FED3B /* StyleValue1TextEntryCell.m in Sources */,
+				60366BED144DCB9C004FED3B /* DefinitionParser.m in Sources */,
+				60366BEE144DCB9C004FED3B /* ScreenParser.m in Sources */,
+				60366BEF144DCB9C004FED3B /* DefinitionElementParser.m in Sources */,
+				60366BF0144DCB9C004FED3B /* DefinitionElementParserRegister.m in Sources */,
+				60366BF1144DCB9C004FED3B /* PanelDefinitionParser.m in Sources */,
+				60366BF2144DCB9C004FED3B /* GroupParser.m in Sources */,
+				60366BF3144DCB9C004FED3B /* TabBarParser.m in Sources */,
+				60366BF4144DCB9C004FED3B /* LocalLogicParser.m in Sources */,
+				60366BF5144DCB9C004FED3B /* AbsoluteLayoutContainerParser.m in Sources */,
+				60366BF6144DCB9C004FED3B /* GridLayoutContainerParser.m in Sources */,
+				60366BF7144DCB9C004FED3B /* GestureParser.m in Sources */,
+				60366BF8144DCB9C004FED3B /* BackgroundParser.m in Sources */,
+				60366BF9144DCB9C004FED3B /* LayoutContainerParser.m in Sources */,
+				60366BFA144DCB9C004FED3B /* GridCellParser.m in Sources */,
+				60366BFB144DCB9C004FED3B /* LabelParser.m in Sources */,
+				60366BFC144DCB9C004FED3B /* ImageParser.m in Sources */,
+				60366BFD144DCB9C004FED3B /* WebParser.m in Sources */,
+				60366BFE144DCB9C004FED3B /* ButtonParserAPI_v2_1.m in Sources */,
+				60366BFF144DCB9C004FED3B /* SwitchParser.m in Sources */,
+				60366C00144DCB9C004FED3B /* SliderParser.m in Sources */,
+				60366C01144DCB9C004FED3B /* ColorPickerParser.m in Sources */,
+				60366C02144DCB9C004FED3B /* NavigateParser.m in Sources */,
+				60366C03144DCB9C004FED3B /* SensorLinkParser.m in Sources */,
+				60366C04144DCB9C004FED3B /* SensorStateParser.m in Sources */,
+				60366C05144DCB9C004FED3B /* LabelDeferredBinding.m in Sources */,
+				60366C06144DCB9C004FED3B /* ScreenDeferredBinding.m in Sources */,
+				60366C07144DCB9C004FED3B /* TabBarItemParser.m in Sources */,
+				60366C08144DCB9C004FED3B /* SensorParser.m in Sources */,
+				60366C09144DCB9C004FED3B /* CommandParser.m in Sources */,
+				60366C0A144DCB9C004FED3B /* TaskParser.m in Sources */,
+				60366C0B144DCB9C004FED3B /* DefinitionManager.m in Sources */,
+				60366C0C144DCB9C004FED3B /* DeferredBinding.m in Sources */,
+				60366C0D144DCB9C004FED3B /* ButtonParserAPI_v2.m in Sources */,
+				60366C0E144DCB9C004FED3B /* ButtonParser.m in Sources */,
+				60366C0F144DCB9C004FED3B /* ScreenSubController.m in Sources */,
+				60366C10144DCB9C004FED3B /* SubController.m in Sources */,
+				60366C11144DCB9C004FED3B /* LayoutContainerSubController.m in Sources */,
+				60366C12144DCB9C004FED3B /* AbsoluteLayoutContainerSubController.m in Sources */,
+				60366C13144DCB9C004FED3B /* LabelSubController.m in Sources */,
+				60366C14144DCB9C004FED3B /* ComponentSubController.m in Sources */,
+				60366C15144DCB9C004FED3B /* SensorySubController.m in Sources */,
+				60366C16144DCB9C004FED3B /* ImageSubController.m in Sources */,
+				60366C17144DCB9C004FED3B /* ControlSubController.m in Sources */,
+				60366C18144DCB9C004FED3B /* ButtonSubController.m in Sources */,
+				60366C19144DCB9C004FED3B /* GridLayoutContainerSubController.m in Sources */,
+				60366C1A144DCB9C004FED3B /* ORImageView.m in Sources */,
+				60366C1B144DCB9C004FED3B /* WebSubController.m in Sources */,
+				60366C1C144DCB9C004FED3B /* SwitchSubController.m in Sources */,
+				60366C1D144DCB9C004FED3B /* ColorPickerSubController.m in Sources */,
+				60366C1E144DCB9C004FED3B /* SliderSubController.m in Sources */,
+				60366C1F144DCB9C004FED3B /* UIImage+ORAdditions.m in Sources */,
+				60366C20144DCB9C004FED3B /* UIScreen+ORAdditions.m in Sources */,
+				60366C21144DCB9C004FED3B /* RuntimeUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2817,10 +2859,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					API_v2_1,
-					INCLUDE_SIP_SUPPORT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = INCLUDE_SIP_SUPPORT;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "include/**";
 				INFOPLIST_FILE = Info.plist;
@@ -2838,14 +2877,14 @@
 			};
 			name = "Simulator 3.2";
 		};
-		60EB5737135C4E4100B29CED /* Simulator 3.2 */ = {
+		60366C3F144DCB9C004FED3B /* Simulator 3.2 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2857,10 +2896,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = Info.plist;
+				HEADER_SEARCH_PATHS = "include/**";
+				INFOPLIST_FILE = "OpenRemote copy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2868,19 +2907,21 @@
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "OpenRemote copy";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Simulator 3.2";
 		};
-		60EB5738135C4E4100B29CED /* Ad-Hoc Distribution */ = {
+		60366C40144DCB9C004FED3B /* Ad-Hoc Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: TInSys";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2891,28 +2932,30 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = "OpenRemote copy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
+				PROVISIONING_PROFILE = "0F12AC7C-0831-4708-AD8D-5CBE097712CB";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "0F12AC7C-0831-4708-AD8D-5CBE097712CB";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Ad-Hoc Distribution";
 		};
-		60EB5739135C4E4100B29CED /* App Store Release */ = {
+		60366C41144DCB9C004FED3B /* App Store Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: OpenRemote Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: OpenRemote Inc.";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2923,15 +2966,17 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = "OpenRemote copy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "OpenRemote copy";
+				PROVISIONING_PROFILE = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "58F6E502-ED73-4980-88AA-6BE34FBA4C27";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3009,13 +3054,15 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: TInSys";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TInSys";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
+				PROVISIONING_PROFILE = "C33FF211-9C83-4827-81E7-413B89F5ECB9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C33FF211-9C83-4827-81E7-413B89F5ECB9";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3039,10 +3086,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					API_v2_1,
-					INCLUDE_SIP_SUPPORT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = INCLUDE_SIP_SUPPORT;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
@@ -3093,10 +3137,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					API_v2_1,
-					INCLUDE_SIP_SUPPORT,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = INCLUDE_SIP_SUPPORT;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2.2;
@@ -3125,7 +3166,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = openremote_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = API_v2_1;
+				GCC_PREPROCESSOR_DEFINITIONS = NOTAPI_v2_1;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "UnitTest-Info.plist";
 				OTHER_LDFLAGS = (
@@ -3175,12 +3216,12 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator 3.2";
 		};
-		60EB5736135C4E4100B29CED /* Build configuration list for PBXNativeTarget "OpenRemote No SIP" */ = {
+		60366C3E144DCB9C004FED3B /* Build configuration list for PBXNativeTarget "OpenRemote No SIP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				60EB5737135C4E4100B29CED /* Simulator 3.2 */,
-				60EB5738135C4E4100B29CED /* Ad-Hoc Distribution */,
-				60EB5739135C4E4100B29CED /* App Store Release */,
+				60366C3F144DCB9C004FED3B /* Simulator 3.2 */,
+				60366C40144DCB9C004FED3B /* Ad-Hoc Distribution */,
+				60366C41144DCB9C004FED3B /* App Store Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Simulator 3.2";
