@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/controller.xsd">
+  <components>
+    <button id="1">
+      <include type="command" ref="2" />
+    </button>
+    <label id="45">
+      <include type="sensor" ref="46" />
+    </label>
+    <label id="144">
+      <include type="sensor" ref="146" />
+    </label>
+    <label id="145">
+      <include type="sensor" ref="147" />
+    </label>
+    <label id="210">
+      <include type="sensor" ref="202" />
+    </label>
+    <label id="251">
+      <include type="sensor" ref="252" />
+    </label>
+    <label id="261">
+      <include type="sensor" ref="262" />
+    </label>
+    <label id="271">
+      <include type="sensor" ref="272" />
+    </label>
+  </components>
+  <sensors>
+    <sensor id="46" name="test_sensor1" type="custom">
+      <include type="command" ref="54" />
+    </sensor>
+    <sensor id="146" name="test_sensor2" type="custom">
+      <include type="command" ref="154" />
+    </sensor>
+    <sensor id="147" name="test_sensor3" type="custom">
+      <include type="command" ref="155" />
+    </sensor>
+    <sensor id="202" name="test_sensor4" type="custom">
+      <include type="command" ref="203" />
+    </sensor>
+    <sensor id="252" name="test_sensor5" type="custom">
+      <include type="command" ref="253" />
+    </sensor>
+    <sensor id="262" name="test_sensor6" type="custom">
+      <include type="command" ref="263" />
+    </sensor>
+    <sensor id="272" name="test_sensor7" type="custom">
+      <include type="command" ref="273" />
+    </sensor>
+  </sensors>
+  <commands>
+    <command id="2" protocol="wol">
+      <property name="broadcastIp" value="192.168.100.255" />
+      <property name="macAddress" value="20:cf:30:2e:15:95" />
+    </command>
+    <command id="54" protocol="datetime">
+      <property name="command" value="date" />
+      <property name="format" value="dd.MM.yyyy HH:mm:ss" />
+    </command>
+    <command id="154" protocol="datetime">
+      <property name="command" value="sunrise" />
+      <property name="longitude" value="8.5352" />
+      <property name="latitude" value="52.0213" />
+      <property name="timezone" value="Europe/Berlin" />
+      <property name="format" value="dd.MM.yyyy HH:mm:ss" />
+    </command>
+    <command id="155" protocol="datetime">
+      <property name="command" value="sunset" />
+      <property name="longitude" value="8.5352" />
+      <property name="latitude" value="52.0213" />
+      <property name="timezone" value="Europe/Berlin" />
+      <property name="format" value="dd.MM.yyyy HH:mm:ss" />
+    </command>
+    <command id="203" protocol="datetime">
+      <property name="command" value="minutesUntilSunrise" />
+      <property name="longitude" value="8.5352" />
+      <property name="latitude" value="52.0213" />
+      <property name="timezone" value="Europe/Berlin" />
+    </command>
+    <command id="253" protocol="datetime">
+      <property name="command" value="minutesUntilSunset" />
+      <property name="longitude" value="8.5352" />
+      <property name="latitude" value="52.0213" />
+      <property name="timezone" value="Europe/Berlin" />
+    </command>
+    <command id="263" protocol="datetime">
+      <property name="command" value="isDay" />
+      <property name="longitude" value="8.5352" />
+      <property name="latitude" value="52.0213" />
+      <property name="timezone" value="Europe/Berlin" />
+    </command>
+    <command id="273" protocol="datetime">
+      <property name="command" value="isNight" />
+      <property name="longitude" value="8.5352" />
+      <property name="latitude" value="52.0213" />
+      <property name="timezone" value="Europe/Berlin" />
+    </command>
+  </commands>
+  <config>
+    <property name="controller.roundrobin.tcpserver.port" value="20000" />
+    <property name="multicast.address" value="224.0.1.100" />
+    <property name="controller.roundrobin.multicast.port" value="10000" />
+    <property name="multicast.port" value="3333" />
+    <property name="controller.groupname" value="floor20" />
+    <property name="Macro.IR.Execution.Delay" value="500" />
+    <property name="controller.roundrobin.multicast.address" value="224.0.1.200" />
+    <property name="lircd.conf.path" value="/etc/lircd.conf" />
+    <property name="controller.groupmember.autodetect.on" value="true" />
+    <property name="webapp.port" value="8080" />
+    <property name="copy.lircd.conf.on" value="true" />
+    <property name="irsend.path" value="/usr/local/bin/irsend" />
+    <property name="resource.upload.enable" value="true" />
+    <property name="controller.applicationname" value="controller" />
+    <property name="lutron_homeworks.port" value="23" />
+    <property name="lutron_homeworks.address" value="192.168.1.1" />
+    <property name="lutron_homeworks.username" value="openremote" />
+    <property name="lutron_homeworks.password" value="openremote" />
+  </config>
+</openremote>
+

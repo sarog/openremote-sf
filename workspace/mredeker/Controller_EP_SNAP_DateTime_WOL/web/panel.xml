@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/panel.xsd">
+  <panels>
+    <panel id="23" name="panel2">
+      <include type="group" ref="24" />
+    </panel>
+  </panels>
+  <screens>
+    <screen id="25" name="Starting Screen">
+      <absolute left="20" top="36" width="100" height="50">
+        <label id="45" fontSize="14" color="#FFFFFF" text="Current time:" />
+      </absolute>
+      <absolute left="120" top="36" width="150" height="50">
+        <label id="45" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="46" />
+        </label>
+      </absolute>
+
+      <absolute left="20" top="90" width="100" height="50">
+        <label id="45" fontSize="14" color="#FFFFFF" text="Sunrise:" />
+      </absolute>
+      <absolute left="120" top="90" width="150" height="50">
+        <label id="144" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="146" />
+        </label>
+      </absolute>
+
+      <absolute left="20" top="150" width="100" height="50">
+        <label id="45" fontSize="14" color="#FFFFFF" text="Sunset:" />
+      </absolute>
+      <absolute left="120" top="150" width="150" height="50">
+        <label id="145" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="147" />
+        </label>
+      </absolute>
+      
+      <absolute left="20" top="210" width="100" height="50">
+        <label id="200" fontSize="14" color="#FFFFFF" text="Minutes until sunrise:" />
+      </absolute>
+      <absolute left="120" top="210" width="150" height="50">
+        <label id="201" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="202" />
+        </label>
+      </absolute>
+      
+      <absolute left="20" top="270" width="100" height="50">
+        <label id="250" fontSize="14" color="#FFFFFF" text="Minutes until sunset:" />
+      </absolute>
+      <absolute left="120" top="270" width="150" height="50">
+        <label id="251" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="252" />
+        </label>
+      </absolute>
+      
+      <absolute left="20" top="330" width="100" height="50">
+        <label id="260" fontSize="14" color="#FFFFFF" text="isDay:" />
+      </absolute>
+      <absolute left="120" top="330" width="150" height="50">
+        <label id="261" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="262" />
+        </label>
+      </absolute>
+      
+      <absolute left="20" top="390" width="100" height="50">
+        <label id="270" fontSize="14" color="#FFFFFF" text="isNight:" />
+      </absolute>
+      <absolute left="120" top="390" width="150" height="50">
+        <label id="271" fontSize="14" color="#FFFFFF" text="">
+          <link type="sensor" ref="272" />
+        </label>
+      </absolute>
+      
+      <absolute left="113" top="440" width="50" height="50">
+        <button id="1" name="WOL" hasControlCommand="true"  />
+      </absolute>
+    </screen>
+  </screens>
+  <groups>
+    <group id="24" name="Default Group">
+      <include type="screen" ref="25" />
+    </group>
+  </groups>
+</openremote>
+
