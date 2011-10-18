@@ -20,7 +20,7 @@
  */
 #import <Foundation/Foundation.h>
 
-@protocol DataCapturingNSURLConnectionDelegateDelegate <NSObject>
+@protocol DataCapturingNSURLConnectionDelegateDelegate <NSURLConnectionDataDelegate>
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection receivedData:(NSData *)receiveData;
 
@@ -31,7 +31,7 @@
  * As data is received, it is captured and handled back in one go once connection is completed.
  * All other delegate methods are forwarded to encapsulated object.
  */
-@interface DataCapturingNSURLConnectionDelegate : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate, NSURLConnectionDownloadDelegate> {
+@interface DataCapturingNSURLConnectionDelegate : NSObject <NSURLConnectionDataDelegate> {
     
 }
 
