@@ -224,9 +224,10 @@ public class SensorBuilderTest
 
     StateSensor state = (StateSensor)s;
 
-    Assert.assertTrue(state.processEvent("on").equals("open"));
-    Assert.assertTrue(state.processEvent("off").equals("close"));
-    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+    Assert.assertTrue(state.processEvent("on").getValue().equals("open"));
+    Assert.assertTrue(state.processEvent("off").getValue().equals("close"));
+
+    Assert.assertTrue(state.processEvent("foo").getValue().equals(Sensor.UNKNOWN_STATUS));
   }
 
 
@@ -301,9 +302,9 @@ public class SensorBuilderTest
 
     // check that states are in place despite funky XML model...
 
-    Assert.assertTrue(state.processEvent("on").equals("on"));
-    Assert.assertTrue(state.processEvent("off").equals("off"));
-    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+    Assert.assertTrue(state.processEvent("on").getValue().equals("on"));
+    Assert.assertTrue(state.processEvent("off").getValue().equals("off"));
+    Assert.assertTrue(state.processEvent("foo").getValue().equals(Sensor.UNKNOWN_STATUS));
 
 
     Assert.assertTrue(s.isPolling());
@@ -350,9 +351,9 @@ public class SensorBuilderTest
 
     // check that states are in place despite funky XML model...
 
-    Assert.assertTrue(state.processEvent("on").equals("on"));
-    Assert.assertTrue(state.processEvent("off").equals("off"));
-    Assert.assertTrue(state.processEvent("foo").equals(Sensor.UNKNOWN_STATUS));
+    Assert.assertTrue(state.processEvent("on").getValue().equals("on"));
+    Assert.assertTrue(state.processEvent("off").getValue().equals("off"));
+    Assert.assertTrue(state.processEvent("foo").getValue().equals(Sensor.UNKNOWN_STATUS));
 
     String status = cache.queryStatusBySensorId(727);
 
@@ -364,6 +365,7 @@ public class SensorBuilderTest
     Assert.assertFalse(s.isPolling());
   }
 
+  // TODO : add tests for level, range and custom sensors similar to SwitchStateMappingTests
 
   // TODO : See ORCJAVA-196
   // TODO : test sensor 1099 use case
