@@ -44,7 +44,7 @@
  * It is retained and released when the connection is finished (after NSURLConnection sent
  * connectionDidFinishLoading: or connection:didFailWithError:
  */
-@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate, UpdateControllerDelegate> {
+@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate, UpdateControllerDelegate> {
 
     NSString *requestPath;
     NSString *method;

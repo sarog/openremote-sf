@@ -41,7 +41,7 @@
 
 @end
 
-@interface ORControllerGroupMembersFetcher : NSObject <NSXMLParserDelegate, DataCapturingNSURLConnectionDelegateDelegate, NSURLConnectionDelegate> {
+@interface ORControllerGroupMembersFetcher : NSObject <NSXMLParserDelegate, DataCapturingNSURLConnectionDelegateDelegate> {
     NSMutableArray *members;
 }
 
