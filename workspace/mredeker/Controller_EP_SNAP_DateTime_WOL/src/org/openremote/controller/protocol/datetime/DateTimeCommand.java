@@ -150,6 +150,7 @@ public class DateTimeCommand implements EventListener, Runnable {
       logger.debug("*** setSensor called as part of EventListener init *** sensor is: " + sensor);
       this.sensor = sensor;
       pollingThread = new Thread(this);
+      pollingThread.setName("Polling thread for sensor: " + sensor.getName());
       pollingThread.start();
    }
 
@@ -171,6 +172,14 @@ public class DateTimeCommand implements EventListener, Runnable {
       }
       logger.debug("*** Out of run method: " + sensor);
 
+   }
+
+   public TimeZone getTimezone() {
+      return timezone;
+   }
+
+   public String getCommand() {
+      return command;
    }
 
 }
