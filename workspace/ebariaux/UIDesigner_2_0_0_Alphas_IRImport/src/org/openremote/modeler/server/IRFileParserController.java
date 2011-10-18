@@ -14,9 +14,9 @@ import org.openremote.modeler.irfileparser.DeviceInfo;
 import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRTrans;
-import org.openremote.modeler.server.BaseGWTSpringControllerWithHibernateSupport;
 import org.openremote.modeler.service.IRFileParserService;
 
+import com.google.gwt.core.client.GWT;
 import com.tinsys.ir.codes.IRCode;
 import com.tinsys.ir.codes.InvalidIRCodeException;
 import com.tinsys.ir.database.Brand;
@@ -26,7 +26,6 @@ import com.tinsys.ir.database.IRCommand;
 import com.tinsys.ir.representations.IRCodeRepresentation;
 import com.tinsys.ir.representations.gc.GCIRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
-import com.tinsys.ir.representations.pronto.ProntoIRCodeRepresentationHandler;
 import com.tinsys.pronto.irfiles.XCFFileParser;
 
 public class IRFileParserController extends
@@ -36,8 +35,7 @@ public class IRFileParserController extends
 	private XCFFileParser xcfFileParser;
 	private IRFileParserService iRFileParserService;
 	private List<IRCommand> currentCodeSet;
-
-	private static Logger log = Logger.getLogger(IRFileParserController.class);
+	private IRCodeRepresentation representation;
 
 	public void setXcfFileParser(XCFFileParser xcfFileParser) {
 		this.xcfFileParser = xcfFileParser;
@@ -104,6 +102,7 @@ public class IRFileParserController extends
 				.getBrandName(), csi.getDeviceInfo().getModelName());
 		List<IRCommand> iRcommands = xcfFileParser.getCodeSets(d)
 				.get(xcfFileParser.getCodeSets(d).indexOf(cs)).getIRCommands();
+
 		for (IRCommand irCommand : iRcommands) {
 			IRCommandInfo iRCI;
 			if (irCommand.getCode() != null) {
@@ -149,17 +148,16 @@ public class IRFileParserController extends
 				ProtocolAttr commandAttr = new ProtocolAttr();
 				commandAttr.setName("command");
 				IRCode currentCom = null;
-				String codeString="";
+				String codeString = "";
 				for (IRCommand commands : currentCodeSet) {
 					if (commands.getName().equals(irCommandInfo.getName())
 							&& commands.getOriginalCodeString().equals(
 									irCommandInfo.getOriginalCodeString())) {
 						currentCom = commands.getCode();
 						break;
-
 					}
 				}
-
+				currentCodeSet.remove(currentCom);
 				codeString = new GCIRCodeRepresentationHandler()
 						.getRepresentationFromCode(currentCom)
 						.getStringRepresentation();
@@ -177,22 +175,25 @@ public class IRFileParserController extends
 				device.getDeviceCommands().add(deviceCommand);
 				deviceCommands.add(deviceCommand);
 
-			} else {
+			} else if (irTrans != null) {
 				protocol.setType("UDP");
+				GWT.log("test GWT LOG");
 				ProtocolAttr ipAttr = new ProtocolAttr();
 				ipAttr.setName("ipAddress");
 				ipAttr.setValue(irTrans.getIpAdress());
 				ipAttr.setProtocol(protocol);
 				protocol.getAttributes().add(ipAttr);
 				ProtocolAttr portAttr = new ProtocolAttr();
+
 				portAttr.setName("port");
 				portAttr.setValue(irTrans.getUdpPort());
 				portAttr.setProtocol(protocol);
 				protocol.getAttributes().add(portAttr);
+
 				ProtocolAttr commandAttr = new ProtocolAttr();
 				commandAttr.setName("command");
 				IRCode currentCom = null;
-				String codeString=" ";
+				String codeString = "";
 				for (IRCommand commands : currentCodeSet) {
 					if (commands.getName().equals(irCommandInfo.getName())
 							&& commands.getOriginalCodeString().equals(
@@ -202,75 +203,87 @@ public class IRFileParserController extends
 					}
 				}
 				currentCodeSet.remove(currentCom);
-				if (currentCom.requiresToggle()) {
-					boolean toggle = true;
-					try {
-					  IRCodeRepresentation representation = new RawIRCodeRepresentationHandler()
-							.getRepresentationFromCode(
-									currentCom.getRawCode(toggle));
-				        codeString = representation.getStringRepresentation();
-					} catch (InvalidIRCodeException e) {
-					  e.printStackTrace();
+				if (currentCom != null) {
+					if (currentCom.requiresToggle()) {
+						boolean toggle = true;
+						try {
+							codeString = new RawIRCodeRepresentationHandler()
+									.getRepresentationFromCode(currentCom
+											.getRawCode(toggle)).getStringRepresentation();
+
+						} catch (InvalidIRCodeException e) {
+							e.printStackTrace();
+						}
+						commandAttr.setValue("sndccf " + codeString + ",l"
+								+ irTrans.getIrLed());
+						System.out.println("   " + codeString + " "
+								+ irTrans.getIrLed());
+						commandAttr.setProtocol(protocol);
+						protocol.getAttributes().add(commandAttr);
+
+						DeviceCommand deviceCommand = new DeviceCommand();
+						deviceCommand.setDevice(device);
+						deviceCommand.setProtocol(protocol);
+						deviceCommand.setName(irCommandInfo.getName()
+								+ "_ToggleOn");
+
+						protocol.setDeviceCommand(deviceCommand);
+						device.getDeviceCommands().add(deviceCommand);
+						deviceCommands.add(deviceCommand);
+						toggle = false;
+						try {
+							codeString = new RawIRCodeRepresentationHandler()
+									.getRepresentationFromCode(currentCom
+											.getRawCode(toggle)).getStringRepresentation();
+						} catch (InvalidIRCodeException e) {
+							e.printStackTrace();
+						}
+						commandAttr.setValue("sndccf " + codeString + ",l"
+								+ irTrans.getIrLed());
+
+						commandAttr.setProtocol(protocol);
+						protocol.getAttributes().add(commandAttr);
+
+						deviceCommand = new DeviceCommand();
+						deviceCommand.setDevice(device);
+						deviceCommand.setProtocol(protocol);
+						deviceCommand.setName(irCommandInfo.getName()
+								+ "_ToggleOff");
+
+						protocol.setDeviceCommand(deviceCommand);
+						device.getDeviceCommands().add(deviceCommand);
+						deviceCommands.add(deviceCommand);
+					} else {
+						boolean toggle = true;
+						try {
+							codeString = new RawIRCodeRepresentationHandler()
+									.getRepresentationFromCode(currentCom
+											.getRawCode(toggle)).getStringRepresentation();
+						} catch (InvalidIRCodeException e) {
+
+							e.printStackTrace();
+						}
+						commandAttr.setValue("sndccf " + codeString + ",l"
+								+ irTrans.getIrLed());
+						commandAttr.setProtocol(protocol);
+						protocol.getAttributes().add(commandAttr);
+
+						DeviceCommand deviceCommand = new DeviceCommand();
+						deviceCommand.setDevice(device);
+						deviceCommand.setProtocol(protocol);
+						deviceCommand.setName(irCommandInfo.getName());
+
+						protocol.setDeviceCommand(deviceCommand);
+						device.getDeviceCommands().add(deviceCommand);
+						deviceCommands.add(deviceCommand);
 					}
-					commandAttr.setValue("sndccf " + codeString + ",l"
-							+ irTrans.getIrLed());
-					commandAttr.setProtocol(protocol);
-					protocol.getAttributes().add(commandAttr);
-
-					DeviceCommand deviceCommand = new DeviceCommand();
-					deviceCommand.setDevice(device);
-					deviceCommand.setProtocol(protocol);
-					deviceCommand
-							.setName(irCommandInfo.getName() + "_ToggleOn");
-
-					protocol.setDeviceCommand(deviceCommand);
-					device.getDeviceCommands().add(deviceCommand);
-					deviceCommands.add(deviceCommand);
-					toggle = false;
-/*					codeString = new RawIRCodeRepresentationHandler()
-							.getRepresentationFromCode(
-									currentCom.getRawCode(toggle))
-							.getStringRepresentation();*/
-					commandAttr.setValue("sndccf " + codeString + ",l"
-							+ irTrans.getIrLed());
-
-					commandAttr.setProtocol(protocol);
-					protocol.getAttributes().add(commandAttr);
-
-					deviceCommand = new DeviceCommand();
-					deviceCommand.setDevice(device);
-					deviceCommand.setProtocol(protocol);
-					deviceCommand.setName(irCommandInfo.getName()
-							+ "_ToggleOff");
-
-					protocol.setDeviceCommand(deviceCommand);
-					device.getDeviceCommands().add(deviceCommand);
-					deviceCommands.add(deviceCommand);
-				} else {
-					boolean toggle = true;
-/*					codeString = new RawIRCodeRepresentationHandler()
-							.getRepresentationFromCode(
-									currentCom.getRawCode(toggle))
-							.getStringRepresentation();*/
-					commandAttr.setValue("sndccf " + codeString + ",l"
-							+ irTrans.getIrLed());
-					commandAttr.setProtocol(protocol);
-					protocol.getAttributes().add(commandAttr);
-
-					DeviceCommand deviceCommand = new DeviceCommand();
-					deviceCommand.setDevice(device);
-					deviceCommand.setProtocol(protocol);
-					deviceCommand.setName(irCommandInfo.getName());
-
-					protocol.setDeviceCommand(deviceCommand);
-					device.getDeviceCommands().add(deviceCommand);
-					deviceCommands.add(deviceCommand);
 				}
 			}
-
-			iRFileParserService.saveCommands(deviceCommands);
-
 		}
+		if (deviceCommands.size() > 0) {
+			iRFileParserService.saveCommands(deviceCommands);
+		}
+
 		return deviceCommands;
 	}
 

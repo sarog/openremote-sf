@@ -125,8 +125,8 @@ public class IRFileImportToProtocolForm extends FormWindow {
 			@Override
 			public void handleEvent(FormEvent be) {
 				form.mask("Please Wait...");
-				GlobalCache globalCache = new GlobalCache();
-				IRTrans irTrans = new IRTrans();
+				GlobalCache globalCache=null;
+				IRTrans irTrans=null ;
 
 				if (gCPanel.isEnabled()) {
 					globalCache = new GlobalCache(gCip.getValue(), tcpPort
@@ -146,6 +146,10 @@ public class IRFileImportToProtocolForm extends FormWindow {
 										new SubmitEvent(deviceCommandModels));
 
 							}
+						/*	@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Failure when saving Commands "+caught.getMessage());
+							}*/
 						});
 			}
 		});

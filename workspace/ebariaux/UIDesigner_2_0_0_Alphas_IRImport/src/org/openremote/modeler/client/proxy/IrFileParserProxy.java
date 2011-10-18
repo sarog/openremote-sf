@@ -14,7 +14,6 @@ import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRTrans;
 
 import com.extjs.gxt.ui.client.data.BeanModel;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class IrFileParserProxy {
@@ -62,7 +61,11 @@ public class IrFileParserProxy {
 	}
 	
 	public static void loadIRCommands(CodeSetInfo codeSet, final AsyncCallback<List<IRCommandInfo>> callback){
+		
 		AsyncServiceFactory.getiRFileParserRPCServiceAsync().getIRCommands(codeSet, new AsyncSuccessCallback<List<IRCommandInfo>>() {
+			
+			
+			
 
 			@Override
 			public void onSuccess(List<IRCommandInfo> result) {
@@ -82,6 +85,13 @@ public class IrFileParserProxy {
 	            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
 	            callback.onSuccess(deviceCommandModels);
 			}
+			/*@Override
+			public void onFailure(Throwable caught) {
+				
+				super.onFailure(caught);
+				Window.alert("erreur..."+caught.getMessage()+caught.getCause());
+				System.out.println("erreur..."+caught.getMessage()+caught.getCause());
+			}*/
 		});
 		
 	}
