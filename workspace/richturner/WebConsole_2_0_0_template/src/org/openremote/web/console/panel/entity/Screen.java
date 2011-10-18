@@ -25,17 +25,19 @@ import java.util.List;
  * Screen contains id, name, layouts, background, gestures and pollingComponentsIds.
  */
 public interface Screen {
-   int getId();
+   Integer getId();
    String getName();
    List<AbsoluteLayout> getAbsolute();
    List<GridLayout> getGrid();
    List<Gesture> getGesture();
    Background getBackground();
+   Integer getInverseScreenId();
    
-   void setId(int id);
+   void setId(Integer id);
    void setName(String name);
    void setAbsolute(List<AbsoluteLayout> layouts);
    void setGrid(List<GridLayout> layouts);
    void setGesture(List<Gesture> gestures);
    void setBackground(Background background);
+   void setInverseScreenId(Integer id);
 }

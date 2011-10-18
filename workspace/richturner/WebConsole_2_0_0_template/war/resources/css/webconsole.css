@@ -196,7 +196,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	);
 }
 
-.tabBarComponentSelected {
+.tabBarItemSelected {
 	background-image: linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);

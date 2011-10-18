@@ -54,10 +54,10 @@ public class PanelServiceImpl implements PanelService {
 	}
 
 	@Override
-	public Screen getDefaultScreen(int groupId) {
+	public Screen getDefaultScreen(Integer groupId) {
 		Screen screen = null;
 		
-		if (currentGroupMap != null && currentScreenMap != null) {
+		if (groupId != null && currentGroupMap != null && currentScreenMap != null) {
 			Group group = getGroupById(groupId);
 			if (group != null) {
 				List<ScreenRef> screenRefs = group.getInclude();

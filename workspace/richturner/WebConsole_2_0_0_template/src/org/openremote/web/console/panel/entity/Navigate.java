@@ -6,10 +6,10 @@ package org.openremote.web.console.panel.entity;
  */
 public interface Navigate {
    String getTo();
-   String getToGroup();
-   String getToScreen();
+   Integer getToGroup();
+   Integer getToScreen();
 
    void setTo(String to);
-   void setToGroup(String toGroup);
-   void setToScreen(String toScreen);
+   void setToGroup(Integer toGroup);
+   void setToScreen(Integer toScreen);
 }

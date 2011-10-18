@@ -20,6 +20,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -41,6 +42,8 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	private String colour;
 	private AbsolutePanel container;
 	public boolean isVertical = true;
+	private Widget currentTabBar;
+	private Widget currentScreen;
 	
 	public ConsoleDisplay(int width, int height) {
 		super(new AbsolutePanel());
@@ -123,11 +126,17 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 	
 	protected void setScreenView(ScreenView screenView) {
-		if (screenView != null) {
-			clearDisplay();
-			display.add((Widget)screenView, 0, 0);
-			screenView.onAdd();
+		if (screenView == null) {
+			return;
 		}
+		
+		if (currentScreen != null && screenView != currentScreen) {
+			display.remove(currentScreen);
+		}
+		
+		display.add((Widget)screenView, 0, 0);
+		currentScreen = (Widget)screenView;
+		screenView.onAdd();
 	}
 	
 	/**
@@ -138,7 +147,16 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 	
 	protected void setTabBar(TabBarComponent tabBar) {
+		if (tabBar == null) {
+			return;
+		}
+		
+		if (currentTabBar != null && tabBar != currentTabBar) {
+			display.remove(currentTabBar);
+		}
 		display.add(tabBar, 0, height- tabBar.getHeight());
+		DOM.setIntStyleAttribute( tabBar.getElement(), "zIndex", 30000 );
+		currentTabBar = tabBar;
 		tabBar.onAdd();
 	}
 	
