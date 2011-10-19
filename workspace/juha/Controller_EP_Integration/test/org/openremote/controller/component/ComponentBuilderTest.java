@@ -140,7 +140,6 @@ public class ComponentBuilderTest
 
 
     Assert.assertTrue(sensor.getSensorID() == 1001);
-    Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(sensor instanceof SwitchSensor);
     Assert.assertTrue(sensor.isRunning());
   }
@@ -164,7 +163,6 @@ public class ComponentBuilderTest
 
 
     Assert.assertTrue(sensor.getSensorID() == 1001);
-    Assert.assertTrue(sensor.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(sensor instanceof SwitchSensor);
     Assert.assertTrue(sensor.isRunning());
   }
@@ -197,7 +195,6 @@ public class ComponentBuilderTest
     s.start();
 
     Assert.assertTrue(s.getSensorID() == 1001);
-    Assert.assertTrue(s.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s instanceof SwitchSensor);
     Assert.assertTrue(s.isRunning());
 
@@ -251,7 +248,6 @@ public class ComponentBuilderTest
 
     Assert.assertTrue(sensor.getSensorID() == 1008);
 
-    Assert.assertTrue(sensor.getSensorType() == EnumSensorType.RANGE);
     Assert.assertTrue(sensor instanceof RangeSensor);
     Assert.assertTrue(sensor.isRunning());
 
@@ -326,7 +322,6 @@ public class ComponentBuilderTest
 
 
     Assert.assertTrue(s.getSensorID() == 1008);
-    Assert.assertTrue(s.getSensorType() == EnumSensorType.RANGE);
     Assert.assertTrue(s.getMaxValue() == 100);
     Assert.assertTrue(s.getMinValue() == -20);
     Assert.assertNotNull(s.getProperties());
