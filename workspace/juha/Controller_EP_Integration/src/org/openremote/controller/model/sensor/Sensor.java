@@ -104,13 +104,13 @@ public abstract class Sensor
   // Constants ------------------------------------------------------------------------------------
 
   /**
-   * TODO:
-   *
-   *  Represents an uninitialized or unknown sensor status value.
-   *
-   *   -- the type String should go away once events are completely defined as type-safe
+   * TODO
+   * 
+   * @deprecated This is deprecated in favour of
+   * {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent}. Also see ORCJAVA-199 --
+   * http://jira.openremote.org/browse/ORCJAVA-199
    */
-  public final static String UNKNOWN_STATUS = StatusCommand.UNKNOWN_STATUS;
+  @Deprecated public final static String UNKNOWN_STATUS = StatusCommand.UNKNOWN_STATUS;
 
 
   /**
@@ -193,8 +193,6 @@ public abstract class Sensor
   /**
    * Sensor properties. These properties can be used by the protocol implementors to direct
    * their implementation on read commands and event listeners according to sensor configuration.
-   *
-   * TODO : add sensor <property> elements to XML schema
    */
   private Map<String, String> sensorProperties;
 
@@ -283,24 +281,6 @@ public abstract class Sensor
   public int getSensorID()
   {
     return sensorID;
-  }
-
-  /**
-   * Returns this sensor's datatype. Datatype dictates the types of values a sensor may
-   * return.
-   *
-   * @deprecated  Sensor types are available via proper object model where each sensor is a
-   *              subclass of this abstract sensor class -- therefore normal type checks
-   *              using 'instanceof' apply. The EnumSensorType however is exposed as part of
-   *              the now deprecated {@link org.openremote.controller.command.StatusCommand}
-   *              interface and therefore this method still remains to maintain that backwards
-   *              compatibility. <b>New code should not make use of this method.</b>
-   *
-   * @return  this sensor's data type
-   */
-  @Deprecated public EnumSensorType getSensorType()
-  {
-    return sensorType;  // TODO : should be able to remove now
   }
 
 
@@ -643,7 +623,7 @@ public abstract class Sensor
      */
     @Override public void run()
     {
-      log.info("Started sensor (ID = {0}, type = {1}).", getSensorID(), getSensorType());
+      log.info("Started sensor (ID = {0}, type = {1}).", getSensorID(), sensorType);
 
       while (pollingThreadRunning)
       {
@@ -657,7 +637,7 @@ public abstract class Sensor
         {
           pollingThreadRunning = false;
 
-          log.info("Shutting down sensor (ID = {0}, type = {1}).", getSensorID(), getSensorType());
+          log.info("Shutting down sensor (ID = {0}, type = {1}).", getSensorID(), sensorType);
 
           Thread.currentThread().interrupt();
         }
