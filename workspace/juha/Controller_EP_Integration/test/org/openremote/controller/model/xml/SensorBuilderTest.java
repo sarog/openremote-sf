@@ -34,7 +34,6 @@ import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.ComponentFactory;
-import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.component.LevelSensor;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.control.button.ButtonBuilder;
@@ -131,7 +130,6 @@ public class SensorBuilderTest
   @Test public void testRangeSensorBuild() throws Exception
   {
     RangeSensor s = (RangeSensor)buildSensor(SensorType.RANGE);
-    Assert.assertEquals(EnumSensorType.RANGE, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(-20, s.getMinValue());
     Assert.assertTrue(s.getName().equals("range sensor"));
@@ -165,7 +163,7 @@ public class SensorBuilderTest
   @Test public void testSwitchSensorBuild() throws Exception
   {
     Sensor s = buildSensor(SensorType.SWITCH);
-    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s instanceof SwitchSensor);
     Assert.assertTrue(s.getName().equals("lampA power sensor"));
     Assert.assertTrue(s.getProperties().size() == 0);
 
@@ -197,7 +195,7 @@ public class SensorBuilderTest
   @Test public void testSwitchSensorBuildWithListener() throws Exception
   {
     Sensor s = buildSensor(1011);
-    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s instanceof SwitchSensor);
     Assert.assertTrue(s.getName().equals("s1011"));
     Assert.assertTrue(s.getProperties().size() == 0);
 
@@ -229,7 +227,7 @@ public class SensorBuilderTest
   @Test public void testBasicSwitchSensorBuild() throws Exception
   {
     Sensor s = buildSensor(1012);
-    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s instanceof SwitchSensor);
     Assert.assertTrue(s.getName().equals("s1012"));
     Assert.assertTrue(s.getProperties().size() == 0);
 
@@ -264,7 +262,7 @@ public class SensorBuilderTest
   @Test public void testMappedSwitchSensorBuildWithListener() throws Exception
   {
     Sensor s = buildSensor(1013);
-    Assert.assertEquals(EnumSensorType.SWITCH, s.getSensorType());
+    Assert.assertTrue(s instanceof SwitchSensor);
     Assert.assertTrue(s.getName().equals("s1013"));
     Assert.assertTrue(s.getProperties().size() == 0);
 
@@ -297,7 +295,6 @@ public class SensorBuilderTest
   @Test public void testLevelSensorBuild() throws Exception
   {
     LevelSensor s = (LevelSensor)buildSensor(SensorType.LEVEL);
-    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
     Assert.assertTrue(s.getName().equals("level sensor"));
@@ -332,7 +329,6 @@ public class SensorBuilderTest
   @Test public void testLevelSensorBuildWithListener() throws Exception
   {
     LevelSensor s = (LevelSensor)buildSensor(1040);
-    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
     Assert.assertTrue(s.getName().equals("ls1040"));
@@ -371,7 +367,6 @@ public class SensorBuilderTest
   @Test public void testLevelSensorBuildIncorrectSchema() throws Exception
   {
     LevelSensor s = (LevelSensor)buildSensor(1020);
-    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
     Assert.assertTrue(s.getName().equals("ls1020"));
@@ -408,7 +403,6 @@ public class SensorBuilderTest
   @Test public void testLevelSensorBuildIncorrectSchema2() throws Exception
   {
     LevelSensor s = (LevelSensor)buildSensor(1030);
-    Assert.assertEquals(EnumSensorType.LEVEL, s.getSensorType());
     Assert.assertEquals(100, s.getMaxValue());
     Assert.assertEquals(0, s.getMinValue());
     Assert.assertTrue(s.getName().equals("ls1030"));
@@ -451,7 +445,6 @@ public class SensorBuilderTest
   @Test public void testCustomSensorBuild() throws Exception
   {
     Sensor s = buildSensor(SensorType.CUSTOM);
-    Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
     Assert.assertTrue(s.getName().equals("Door power sensor"));
     Assert.assertTrue(s.getProperties().size() == 2);
     Assert.assertTrue(s.getProperties().keySet().contains("state-1"));
@@ -495,7 +488,6 @@ public class SensorBuilderTest
   @Test public void testPartiallyMappedCustomSensorBuild() throws Exception
   {
     Sensor s = buildSensor(1099);
-    Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
     Assert.assertTrue(s.getName().equals("Numbers"));
     Assert.assertTrue(s.getProperties().size() == 2);
     Assert.assertTrue(s.getProperties().keySet().contains("state-1"));
@@ -531,7 +523,6 @@ public class SensorBuilderTest
   @Test public void testArbitraryCustomSensorBuild() throws Exception
   {
     Sensor s = buildSensor(1098);
-    Assert.assertEquals(EnumSensorType.CUSTOM, s.getSensorType());
     Assert.assertTrue(s.getName().equals("s1098"));
     Assert.assertTrue(s.getProperties().size() == 0);
 
@@ -588,7 +579,6 @@ public class SensorBuilderTest
   {
     Sensor s = buildSensorWithID(717);
 
-    Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
     Assert.assertTrue(s.getName().equals("se"));
     Assert.assertTrue(s.getSensorID() == 717);
 
@@ -645,7 +635,6 @@ public class SensorBuilderTest
 
     s.start();
     
-    Assert.assertEquals(EnumSensorType.SWITCH,  s.getSensorType());
     Assert.assertTrue(s.getName().equals("se2"));
     Assert.assertTrue(s.getSensorID() == 727);
 
