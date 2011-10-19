@@ -57,7 +57,7 @@ import com.tinsys.ir.database.Brand;
 import com.tinsys.ir.database.CodeProvider;
 import com.tinsys.ir.database.CodeSet;
 import com.tinsys.ir.database.Device;
-
+import org.openremote.modeler.client.Constants;
 import flexjson.JSONSerializer;
 
 import com.tinsys.ir.representations.IRCodeRepresentationFactory;
@@ -71,7 +71,8 @@ import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
  * 
  * @author handy.wang
  */
-public class FileUploadController extends MultiActionController implements BeanFactoryAware {
+public class FileUploadController extends MultiActionController implements
+		BeanFactoryAware {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(FileUploadController.class);
@@ -79,15 +80,12 @@ public class FileUploadController extends MultiActionController implements BeanF
 	/** The resource service. */
 	private ResourceService resourceService;
 	private BeanFactory beanFactory;
-	
-	
-	public void setBeanFactory(BeanFactory beanFactory){
+
+	public void setBeanFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		
+
 	}
-	
-	
-	
+
 	/**
 	 * Import openremote.zip into application, but now is not use.
 	 * 
@@ -161,12 +159,10 @@ public class FileUploadController extends MultiActionController implements BeanF
 				new NecIRCodeRepresentationHandler()
 						.registerWithFactory(factory);
 
-				
 				xcfParser.setFactory(factory);
 				// serialize the objects
 				try {
 					xcfParser.parseFile(zip);
-
 
 					JSONSerializer serializer = new JSONSerializer();
 
@@ -176,23 +172,23 @@ public class FileUploadController extends MultiActionController implements BeanF
 							.include("brands").serialize(xcfParser);
 
 				} catch (Exception e) {
-					responseContent = "Couldn't parse file : " + e.getCause();
-					response.sendError(400, responseContent);
+					responseContent = Constants.IRFILE_UPLOAD_ERROR
+							+ "Couldn't parse file : " + e.getMessage();
 				}
 			} catch (Exception e) {
-				responseContent = "Couldn't open temporary file on server :"
-						+ e.getCause();
-				response.sendError(400, responseContent);
+				responseContent = Constants.IRFILE_UPLOAD_ERROR
+						+ "Couldn't open temporary file on server :"
+						+ e.getMessage();
 			}
 		} catch (Exception e) {
-
-			responseContent = "Couldn't upload file to server :" + e.getCause();
-			response.sendError(400, responseContent);
+			responseContent = Constants.IRFILE_UPLOAD_ERROR
+					+ "Couldn't upload file to server :" + e.getMessage();
 		}
-		IRFileParserController iRFileParserController = (IRFileParserController)beanFactory.getBean("irFileParserController");
+		IRFileParserController iRFileParserController = (IRFileParserController) beanFactory
+				.getBean("irFileParserController");
 		iRFileParserController.setXcfFileParser(xcfParser);
 		response.getWriter().println(responseContent);
-		
+
 	}
 
 	public void importLutron(HttpServletRequest request,

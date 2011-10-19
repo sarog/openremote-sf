@@ -20,12 +20,22 @@ public class CodeSetInfo extends BaseModel implements IsSerializable {
 	public CodeSetInfo() {
 	}
 	
-	public CodeSetInfo(DeviceInfo device, String description, String category) {
+	public CodeSetInfo(DeviceInfo device, String description, String category,int index) {
 		setDeviceInfo(device);
 		setDescription(description);
 		setCategory(category);
+		setIndex(index);
 	}
 
+	public void setIndex(Integer index) {
+		set("index",index);
+		
+	}
+
+	public Integer getIndex(){
+		return get("index");
+	}
+	
 	public void setCategory(String category) {
 		set("category",category);
 		

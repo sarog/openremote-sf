@@ -28,7 +28,6 @@ import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
-import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRLed;
@@ -51,9 +50,7 @@ import com.extjs.gxt.ui.client.widget.layout.FlowLayout;
 import com.extjs.gxt.ui.client.widget.layout.FormLayout;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * The window creates or updates a deviceCommand into server.
@@ -82,6 +79,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
 	private List<IRCommandInfo> selectedFunctions;
 	private ComboBox<IRLed> IRLed;
 	private Component wrapper;
+	private Button submitBtn;
 	protected static final String INFO_FIELD = "infoField";
 
 	/**
@@ -111,7 +109,8 @@ public class IRFileImportToProtocolForm extends FormWindow {
 
 		form.setWidth(370);
 
-		Button submitBtn = new Button("Submit");
+		submitBtn = new Button("Submit");
+		submitBtn.setEnabled(false);
 		form.addButton(submitBtn);
 
 		submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
@@ -165,7 +164,7 @@ public class IRFileImportToProtocolForm extends FormWindow {
 	 */
 	private void createFields() {
 		final ListBox product = new ListBox();
-		product.addItem("Please choose a product"); // addItem("Please choose a product");
+		product.addItem("Please choose a product"); 
 		product.addItem("GlobalCaché	");
 		product.addItem("IRTrans");
 		form.add(product);
@@ -181,13 +180,22 @@ public class IRFileImportToProtocolForm extends FormWindow {
 
 		gCip = new TextField<String>();
 		gCip.setFieldLabel("IP address / HostName");
+		gCip.setAllowBlank(false);
 		gCFieldSet.add(gCip);
 		tcpPort = new TextField<String>();
 		tcpPort.setValue("4998");
+		tcpPort.setAllowBlank(false);
+		tcpPort.setMaxLength(5);
+	
+		tcpPort.setRegex("\\d+");
+		tcpPort.getMessages().setRegexText("Port must be an integer number");
+
 		tcpPort.setFieldLabel("TCP Port");
 		gCFieldSet.add(tcpPort);
 		connector = new TextField<String>();
 		connector.setValue("4:1");
+		tcpPort.setRegex("[1-7]:[1-3]");
+      tcpPort.getMessages().setRegexText("format must be digit (1-> 7):digit (1-> 3)");
 		connector.setFieldLabel("Connector");
 		gCFieldSet.add(connector);
 
@@ -205,9 +213,14 @@ public class IRFileImportToProtocolForm extends FormWindow {
 		iRTransFieldSet.setLayout(iRTransLayout);
 		iRTransIp = new TextField<String>();
 		iRTransIp.setFieldLabel(new String("Ip address Host name"));
+		iRTransIp.setAllowBlank(false);
 		iRTransFieldSet.add(iRTransIp);
 		udpPort = new TextField<String>();
 		udpPort.setValue("21000");
+		udpPort.setAllowBlank(false);
+		udpPort.setMaxLength(5);
+		udpPort.setRegex("\\d+");
+		udpPort.getMessages().setRegexText("Port must be an integer number");
 		udpPort.setFieldLabel(new String("UDP Port"));
 		iRTransFieldSet.add(udpPort);
 		iRLed = new ComboBox<IRLed>();
@@ -239,18 +252,21 @@ public class IRFileImportToProtocolForm extends FormWindow {
 					gCPanel.setVisible(true);
 					iRTransPanel.setEnabled(false);
 					iRTransPanel.setVisible(false);
+					submitBtn.setEnabled(true);
 					break;
 				case 2:
 					gCPanel.setEnabled(false);
 					gCPanel.setVisible(false);
 					iRTransPanel.setEnabled(true);
 					iRTransPanel.setVisible(true);
+					submitBtn.setEnabled(true);
 					break;
 				default:
 					gCPanel.setEnabled(false);
 					gCPanel.setVisible(false);
 					iRTransPanel.setVisible(false);
 					iRTransPanel.setVisible(false);
+					submitBtn.setEnabled(false);
 					break;
 				}
 			}

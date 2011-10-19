@@ -49,6 +49,7 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
+import com.extjs.gxt.ui.client.widget.form.ListModelPropertyEditor;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
@@ -66,7 +67,6 @@ import com.google.gwt.user.client.Window;
  * 
  */
 public class IRFileImportForm extends CommonForm {
-
 
 	/** The device. */
 	protected Device device = null;
@@ -119,7 +119,7 @@ public class IRFileImportForm extends CommonForm {
 		selectContainerLayout.setPadding(new Padding(5));
 		selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
 		device = (Device) deviceBeanModel.getBean();
-		protocolChooserForm = new IRFileImportToProtocolForm(wrapper,device);
+		protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
 		selectContainer.setLayout(selectContainerLayout);
 		selectContainer.setLayoutOnChange(true);
 		add(selectContainer, new RowData(1, 35));
@@ -158,7 +158,8 @@ public class IRFileImportForm extends CommonForm {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				protocolChooserForm.setSelectedFunctions(codeGrid.getSelectionModel().getSelectedItems());
+				protocolChooserForm.setSelectedFunctions(codeGrid
+						.getSelectionModel().getSelectedItems());
 				protocolChooserForm.show();
 
 			}
@@ -196,11 +197,13 @@ public class IRFileImportForm extends CommonForm {
 									});
 
 						} else {
+							brandInfoList.setVisible(true);
 							cleanCodeGrid();
 							cleanDeviceComboBox();
 							cleanCodeSetComboBox();
 							cleanBrandComboBox();
 							brandInfos.add(brands);
+							brandInfoList.setVisible(true);
 						}
 
 					}
@@ -243,6 +246,7 @@ public class IRFileImportForm extends CommonForm {
 							cleanCodeSetComboBox();
 							cleanDeviceComboBox();
 							deviceInfos.add(devices);
+							deviceInfoList.setVisible(true);
 						}
 
 					}
@@ -256,17 +260,34 @@ public class IRFileImportForm extends CommonForm {
 				new AsyncSuccessCallback<List<CodeSetInfo>>() {
 
 					@Override
-					public void onSuccess(List<CodeSetInfo> codeSets) {
+					public void onSuccess(final List<CodeSetInfo> codeSets) {
 						if (codeSetInfos == null) {
+
 							codeSetInfos = new ListStore<CodeSetInfo>();
 							codeSetInfoList = new ComboBox<CodeSetInfo>();
 							codeSetInfoList
 									.setEmptyText("Please select CodeSet...");
-							codeSetInfoList.setDisplayField("category");
+							codeSetInfoList.setDisplayField("index");
+							codeSetInfoList.setSimpleTemplate("{category}");
+                     
 							codeSetInfoList.setWidth(150);
 							codeSetInfoList.setStore(codeSetInfos);
+/*							codeSetInfoList.setPropertyEditor(new ListModelPropertyEditor<CodeSetInfo>() {
+							   public String getStringValue(CodeSetInfo value) {
+							      return  "("+value.getIndex()+") "+value.getCategory();
+							    }
+							   
+                        public CodeSetInfo convertStringValue(String value) {
+
+                           return codeSets.get(Integer.parseInt(value.substring(value.indexOf('(')+1, value.indexOf(')'))));
+                        }
+							   
+							   
+							   
+							  });*/
 							codeSetInfoList.setTriggerAction(TriggerAction.ALL);
 							codeSetInfoList.setEditable(false);
+					
 							selectContainer.add(codeSetInfoList);
 							codeSetInfos.add(codeSets);
 
@@ -284,6 +305,7 @@ public class IRFileImportForm extends CommonForm {
 							cleanCodeGrid();
 							cleanCodeSetComboBox();
 							codeSetInfos.add(codeSets);
+							codeSetInfoList.setVisible(true);
 						}
 
 					}
@@ -292,23 +314,24 @@ public class IRFileImportForm extends CommonForm {
 	}
 
 	private void showGrid(CodeSetInfo selectedItem) {
-		wrapper.mask("Please Wait...");
+//		wrapper.mask("Please Wait...");
 		IrFileParserProxy.loadIRCommands(selectedItem,
 				new AsyncSuccessCallback<List<IRCommandInfo>>() {
 
 					@Override
 					public void onSuccess(List<IRCommandInfo> iRCommands) {
-						if (nextButton != null) {
-							nextButton.setEnabled(true);
-						}
+						
+
+
+
 						if (listStore == null) {
 							listStore = new ListStore<IRCommandInfo>();
 						} else {
 							listStore.removeAll();
 						}
-						for (IRCommandInfo irCommandInfo : iRCommands) {
-							listStore.add(irCommandInfo);
-						}
+						listStore.add(iRCommands);
+
+
 						if (cm == null) {
 							List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
 							codeGridColumns.add(new ColumnConfig("name",
@@ -319,9 +342,11 @@ public class IRFileImportForm extends CommonForm {
 									"Comment", 250));
 							cm = new ColumnModel(codeGridColumns);
 						}
+
 						if (codeGrid == null) {
 							codeGrid = new Grid<IRCommandInfo>(listStore, cm);
-						}
+						
+	
 						GridView gv = new GridView();
 						codeGrid.setView(gv);
 						// invalid code lines are rendered in red
@@ -341,12 +366,14 @@ public class IRFileImportForm extends CommonForm {
 							}
 
 						});
+
 						codeGrid.setLoadMask(true);
 						codeGrid.setHeight(400);
 						codeGrid.getSelectionModel()
 								.addSelectionChangedListener(
 										new SelectionChangedListener<IRCommandInfo>() {
-											// if trying to select invalid line, remove it from selection
+											// if trying to select invalid line,
+											// remove it from selection
 											@Override
 											public void selectionChanged(
 													SelectionChangedEvent<IRCommandInfo> se) {
@@ -359,25 +386,50 @@ public class IRFileImportForm extends CommonForm {
 																		irCommandInfo);
 													}
 												}
-												if (codeGrid.getSelectionModel().getSelectedItems().size()>0){
+												if (codeGrid
+														.getSelectionModel()
+														.getSelectedItems()
+														.size() > 0) {
 													nextButton.setEnabled(true);
-												}else{
-													nextButton.setEnabled(false);
+												} else {
+													nextButton
+															.setEnabled(false);
 												}
 
 											}
 										});
+
 						commandContainer.add(codeGrid);
+						}else{
+							codeGrid.getStore().removeAll();
+							codeGrid.getStore().add(iRCommands);
+						}
 						wrapper.unmask();
 					}
 				});
 
 	}
 
+	public void hideComboBoxes() {
+		if (brandInfoList != null) {
+			brandInfoList.setVisible(false);
+		}
+		if (deviceInfoList != null) {
+
+			deviceInfoList.setVisible(false);
+		}
+		if (codeSetInfoList != null) {
+
+			codeSetInfoList.setVisible(false);
+		}
+		cleanCodeGrid();
+	}
+
 	private void cleanCodeGrid() {
 		if (codeGrid != null) {
 			codeGrid.removeFromParent();
 			codeGrid.removeAllListeners();
+			nextButton.setEnabled(false);
 			codeGrid = null;
 		}
 
