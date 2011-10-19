@@ -54,12 +54,71 @@
   -->
   <sensors>
 
+    <!--
+
+       Mapped SWITCH sensor configuration.
+
+       Both 'on' and 'off' states are mapped to 'on' and 'off' strings (unnecessarily).
+       Protocol implementation is POLLED.
+
+    -->
     <sensor id = "1001" name = "lampA power sensor" type = "switch">
       <include type = "command" ref = "98" />
       <state name = "on" value = "on" />
       <state name = "off" value = "off" />
     </sensor>
 
+
+
+    <!--
+
+       Mapped SWITCH sensor configuration.
+
+       Both 'on' and 'off' states are mapped to 'on' and 'off' strings (unnecessarily).
+       Protocol implementation is a LISTENER.
+
+    -->
+    <sensor id = "1011" name = "s1011" type = "switch">
+      <include type = "command" ref = "962" />
+      <state name = "on" value = "on" />
+      <state name = "off" value = "off" />
+    </sensor>
+
+
+
+    <!--
+
+       Simple SWITCH sensor configuration.
+
+       Protocol implementation is a POLLED.
+
+    -->
+    <sensor id = "1012" name = "s1012" type = "switch">
+      <include type = "command" ref = "98" />
+    </sensor>
+
+
+    <!--
+
+       Mapped SWITCH sensor configuration.
+
+       The 'on' and 'off' states are mapped to 'open' and 'close'.
+       Protocol implementation is a LISTENER.
+
+    -->
+    <sensor id = "1013" name = "s1013" type = "switch">
+      <include type = "command" ref = "962" />
+      <state name = "open" value = "on" />
+      <state name = "close" value = "off" />
+    </sensor>
+    
+
+
+    <!--
+
+      Typical RANGE sensor [-20..100], protocol implementation is POLLED.
+
+    -->
     <sensor id = "1008" name = "range sensor" type = "range">
       <include type = "command" ref = "96" />
       <min value = "-20" />
@@ -100,12 +159,65 @@
     </sensor>
 
 
-    <sensor id = "1010" name = "range sensor" type = "level">
+    <!--
+
+      Arbitrary-state CUSTOM sensor configuration.
+
+      All values from underlying protocol implementation should be passed through.
+
+    -->
+    <sensor id = "1098" name = "s1098" type = "custom">
+      <include type = "command" ref = "98" />
+    </sensor>
+
+    
+
+
+    <!--
+
+      Typica LEVEL sensor, protocol implementation is POLLED.
+
+    -->
+    <sensor id = "1010" name = "level sensor" type = "level">
+      <include type = "command" ref = "96" />
+    </sensor>
+
+
+    <!--
+
+      Typica LEVEL sensor, protocol implementation is EVENT LISTENER.
+
+    -->
+    <sensor id = "1040" name = "ls1040" type = "level">
+      <include type = "command" ref = "963" />
+    </sensor>
+
+
+    <!--
+
+      *INCORRECT* LEVEL sensor definition, min/max are not allowed.
+
+    -->
+    <sensor id = "1020" name = "ls1020" type = "level">
       <include type = "command" ref = "96" />
 
       <min value = "0" />
       <max value = "100" />
     </sensor>
+
+
+    <!--
+
+      *INCORRECT* LEVEL sensor definition, min/max are not allowed.
+
+    -->
+    <sensor id = "1030" name = "ls1030" type = "level">
+      <include type = "command" ref = "96" />
+
+      <min value = "20" />
+      <max value = "40" />
+    </sensor>
+
 
 
     <!--
@@ -201,6 +313,18 @@
     <command id = "962" protocol = "virtual">
       <property name = "command" value = "BlinkLight" />
       <property name = "address" value = "cmd5" />
+    </command>
+
+
+    <!--
+    
+       Event Listener which produces values in range -50..50,
+       incrementing or decreasing once every 5 seconds.
+
+    -->
+    <command id = "963" protocol = "virtual">
+      <property name = "command" value = "TemperatureSensor" />
+      <property name = "address" value = "a3" />
     </command>
 
   </commands>
