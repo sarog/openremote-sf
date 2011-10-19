@@ -21,20 +21,17 @@
 package org.openremote.controller.model.sensor;
 
 
-import java.util.Map;
-
-import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
-import org.openremote.controller.protocol.EventProducer;
-import org.openremote.controller.protocol.EventListener;
-import org.openremote.controller.protocol.ReadCommand;
-import org.openremote.controller.component.RangeSensor;
+import org.junit.Test;
 import org.openremote.controller.component.LevelSensor;
-import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.protocol.EventListener;
+import org.openremote.controller.protocol.EventProducer;
+import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.statuscache.StatusCache;
 
 /**
  * Basic tests on the {@link Sensor} superclass. Specific sensor implementations have their
@@ -149,7 +146,6 @@ public class SensorTest
     Sensor s1 = new SwitchSensor("switch", 9, cache, new EventProducer() {});
 
     Assert.assertTrue(s1.getSensorID() == 9);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
     Assert.assertTrue(s1.getName().equals("switch"));
     Assert.assertTrue(s1.getProperties().size() == 0);
 
@@ -159,7 +155,6 @@ public class SensorTest
     Assert.assertTrue(s2.getSensorID() == 99);
     Assert.assertTrue(s2.getMaxValue() == 0);
     Assert.assertTrue(s2.getMinValue() == 0);
-    Assert.assertTrue(s2.getSensorType() == EnumSensorType.RANGE);
     Assert.assertTrue(s2.getName().equals("range"));
     Assert.assertTrue(s2.getProperties().size() == 2);
 
@@ -171,7 +166,6 @@ public class SensorTest
     Sensor s3 = new StateSensor("state", 444, cache, new EventProducer() {}, states);
 
     Assert.assertTrue(s3.getSensorID() == 444);
-    Assert.assertTrue(s3.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s3.getName().equals("state"));
     Assert.assertTrue(s3.getProperties().size() == 2);
     Assert.assertTrue(s3.getProperties().keySet().contains("state-1"));
@@ -183,7 +177,6 @@ public class SensorTest
     LevelSensor s4 = new LevelSensor("level", 993, cache, new EventProducer() {});
 
     Assert.assertTrue(s4.getSensorID() == 993);
-    Assert.assertTrue(s4.getSensorType() == EnumSensorType.LEVEL);
     Assert.assertTrue(s4.getName().equals("level"));
     Assert.assertTrue(s4.getProperties().size() == 0);
     Assert.assertTrue(s4.getMaxValue() == 100);
@@ -193,12 +186,17 @@ public class SensorTest
 
   /**
    * Test that the binding of event producer to sensor works correctly.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSensorRead()
+  @Test public void testSensorRead() throws Exception
   {
     Sensor s1 = new SwitchSensor("switch", 84, cache, new SwitchRead("switch", 84));
 
-    String returnValue = s1.read();
+    cache.registerSensor(s1);
+    s1.start();
+
+    String returnValue = getSensorValueFromCache(84);
 
     Assert.assertTrue(returnValue.equals("on"));
 
@@ -206,7 +204,10 @@ public class SensorTest
 
     Sensor s2 = new RangeSensor("range", 33, cache, new RangeRead("range", 33, 0, 1), 0, 1);
 
-    returnValue = s2.read();
+    cache.registerSensor(s2);
+    s2.start();
+
+    returnValue = getSensorValueFromCache(33);
 
     Assert.assertTrue(returnValue.equals("0"));
   }
@@ -235,6 +236,18 @@ public class SensorTest
   // TODO : test contract on modifying sensor properties -- getProperties() method
 
 
+
+  // Helpers --------------------------------------------------------------------------------------
+
+
+  private String getSensorValueFromCache(int sensorID) throws Exception
+  {
+    // sleep here to give the polling mechanism enough time to push the event value to cache...
+
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
+
+    return cache.queryStatusBySensorId(sensorID);
+  }
 
   
   // Nested Classes -------------------------------------------------------------------------------
