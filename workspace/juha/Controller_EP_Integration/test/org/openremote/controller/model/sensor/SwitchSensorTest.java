@@ -21,12 +21,11 @@
 package org.openremote.controller.model.sensor;
 
 
-import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
-import org.openremote.controller.protocol.ReadCommand;
+import org.junit.Test;
 import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.statuscache.StatusCache;
@@ -54,30 +53,45 @@ public class SwitchSensorTest
 
   /**
    * Test 'on' state.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSwitchOnState()
+  @Test public void testSwitchOnState() throws Exception
   {
-    SwitchSensor s1 = new SwitchSensor("switch on", 1, cache, new SwitchReadCommand("switch on", 1, "on"));
+    final int SENSOR_ID = 1;
 
-    Assert.assertTrue(s1.read().equals("on"));
-    Assert.assertTrue(s1.getSensorID() == 1);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
+    SwitchSensor s1 = new SwitchSensor("switch on", SENSOR_ID, cache, new SwitchReadCommand("switch on", SENSOR_ID, "on"));
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("on"));
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("switch on"));
     Assert.assertTrue(s1.getProperties().size() == 0);
   }
 
   /**
    * Test 'off' state.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSwitchOffState()
+  @Test public void testSwitchOffState() throws Exception
   {
-    SwitchSensor s1 = new SwitchSensor("switch off", 2, cache, new SwitchReadCommand("switch off", 2, "off"));
+    final int SENSOR_ID = 2;
 
-    Assert.assertTrue(s1.read().equals("off"));
-    Assert.assertTrue(s1.getSensorID() == 2);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
+    SwitchSensor s1 = new SwitchSensor("switch off", SENSOR_ID, cache, new SwitchReadCommand("switch off", SENSOR_ID, "off"));
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("off"));
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("switch off"));
     Assert.assertTrue(s1.getProperties().size() == 0);
   }
@@ -85,15 +99,27 @@ public class SwitchSensorTest
 
   /**
    * Test switch when event producer gives a non-compliant value.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSwitchUnknownState()
+  @Test public void testSwitchUnknownState() throws Exception
   {
-    SwitchSensor s1 = new SwitchSensor("unknown", 3, cache, new SwitchReadCommand("unknown", 3, "foo"));
+    final int SENSOR_ID = 3;
 
-    Assert.assertTrue(s1.read().equals(StatusCommand.UNKNOWN_STATUS));
-    Assert.assertTrue(s1.getSensorID() == 3);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
+    SwitchSensor s1 = new SwitchSensor("unknown", SENSOR_ID, cache, new SwitchReadCommand("unknown", SENSOR_ID, "foo"));
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected '" + Sensor.UNKNOWN_STATUS + "', got " + getSensorValueFromCache(SENSOR_ID),
+        getSensorValueFromCache(SENSOR_ID).equals(Sensor.UNKNOWN_STATUS)
+    );
+
+    
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("unknown"));
     Assert.assertTrue(s1.getProperties().size() == 0);
   }
@@ -101,62 +127,88 @@ public class SwitchSensorTest
 
   /**
    * Test translations of switch states.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSwitchStateMapping()
+  @Test public void testSwitchStateMapping() throws Exception
   {
     SwitchSensor.DistinctStates mapping = new SwitchSensor.DistinctStates();
     mapping.addStateMapping("off", "close");
     mapping.addStateMapping("on", "open");
 
-    
-    SwitchSensor s1 = new SwitchSensor("door sensor", 4, cache, new SwitchReadCommand("door sensor", 4, "on"), mapping);
+    final int SENSOR_ID = 4;
 
-    Assert.assertTrue(s1.read().equals("open"));
-    Assert.assertTrue(s1.getSensorID() == 4);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
+    SwitchSensor s1 = new SwitchSensor("door sensor", SENSOR_ID, cache, new SwitchReadCommand("door sensor", SENSOR_ID, "on"), mapping);
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected 'open', got " + getSensorValueFromCache(SENSOR_ID),
+        getSensorValueFromCache(SENSOR_ID).equals("open")
+    );
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("door sensor"));
     Assert.assertTrue(s1.getProperties().size() == 0);
 
 
+    final int SENSOR_ID2 = 5;
 
-    SwitchSensor s2 = new SwitchSensor("door", 5, cache, new SwitchReadCommand("door", 5, "off"), mapping);
+    SwitchSensor s2 = new SwitchSensor("door", SENSOR_ID2, cache, new SwitchReadCommand("door", SENSOR_ID2, "off"), mapping);
 
-    Assert.assertTrue(s2.read().equals("close"));
-    Assert.assertTrue(s2.getSensorID() == 5);
-    Assert.assertTrue(s2.getSensorType() == EnumSensorType.SWITCH);
+    cache.registerSensor(s2);
+    s2.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID2).equals("close"));
+
+    Assert.assertTrue(s2.getSensorID() == SENSOR_ID2);
+    Assert.assertFalse(s2.isEventListener());
     Assert.assertTrue(s2.isPolling());
     Assert.assertTrue(s2.getName().equals("door"));
     Assert.assertTrue(s2.getProperties().size() == 0);
 
 
 
-    SwitchSensor s3 = new SwitchSensor("unknown", 6, cache, new SwitchReadCommand("unknown", 6, "bar"), mapping);
+    final int SENSOR_ID3 = 6;
 
-    Assert.assertTrue(s3.read().equals(StatusCommand.UNKNOWN_STATUS));
-    Assert.assertTrue(s3.getSensorID() == 6);
-    Assert.assertTrue(s3.getSensorType() == EnumSensorType.SWITCH);
+    SwitchSensor s3 = new SwitchSensor("unknown", SENSOR_ID3, cache, new SwitchReadCommand("unknown", SENSOR_ID3, "bar"), mapping);
+
+    cache.registerSensor(s3);
+    s3.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID3).equals(StatusCommand.UNKNOWN_STATUS));
+
+    Assert.assertTrue(s3.getSensorID() == SENSOR_ID3);
     Assert.assertTrue(s3.isPolling());
+    Assert.assertFalse(s3.isEventListener());
     Assert.assertTrue(s3.getName().equals("unknown"));
     Assert.assertTrue(s3.getProperties().size() == 0);
-
   }
 
 
   /**
    * Test switch behavior against a broken event producer.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testBrokenCommand()
+  @Test public void testBrokenCommand() throws Exception
   {
-    SwitchSensor s1 = new SwitchSensor("broken", 7, cache, new BrokenCommand());
+    final int SENSOR_ID = 7;
 
-    Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
-    Assert.assertTrue(s1.getSensorID() == 7);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.SWITCH);
+    SwitchSensor s1 = new SwitchSensor("broken", SENSOR_ID, cache, new BrokenCommand());
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals(Sensor.UNKNOWN_STATUS));
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("broken"));
     Assert.assertTrue(s1.getProperties().size() == 0);
-
   }
 
 
@@ -178,6 +230,16 @@ public class SwitchSensorTest
   }
 
 
+  // Helpers --------------------------------------------------------------------------------------
+
+  private String getSensorValueFromCache(int sensorID) throws Exception
+  {
+    // sleep here to give the polling mechanism enough time to push the event value to cache...
+
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
+
+    return cache.queryStatusBySensorId(sensorID);
+  }
 
 
   // Nested Classes -------------------------------------------------------------------------------
