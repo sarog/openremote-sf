@@ -449,7 +449,7 @@ public abstract class Sensor
    */
   @Override public String toString()
   {
-    return sensorType + " Sensor (ID = " + sensorID + ") bound to event producer " + eventProducer;
+    return "Sensor (ID = " + sensorID + ") bound to event producer " + eventProducer;
   }
 
   /**
@@ -623,7 +623,7 @@ public abstract class Sensor
      */
     @Override public void run()
     {
-      log.info("Started sensor (ID = {0}, type = {1}).", getSensorID(), sensorType);
+      log.info("Started polling thread for sensor (ID = {0}, name = {1}).", getSensorID(), getName());
 
       while (pollingThreadRunning)
       {
@@ -637,7 +637,7 @@ public abstract class Sensor
         {
           pollingThreadRunning = false;
 
-          log.info("Shutting down sensor (ID = {0}, type = {1}).", getSensorID(), sensorType);
+          log.info("Shutting down polling thread of sensor (ID = {0}, name = {1}).", getSensorID(), getName());
 
           Thread.currentThread().interrupt();
         }
