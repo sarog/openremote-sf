@@ -23,14 +23,13 @@ package org.openremote.controller.model.sensor;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 import org.openremote.controller.protocol.ReadCommand;
-import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.statuscache.ChangedStatusTable;
 import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.statuscache.StatusCache;
 
 /**
  * Base tests for {@link org.openremote.controller.model.sensor.StateSensor} class.
@@ -56,18 +55,24 @@ public class StateSensorTest
 
   /**
    * Simple test case of a one-state sensor.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testSingleState()
+  @Test public void testSingleState() throws Exception
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("foo");
 
     StateSensor s1 = new StateSensor("single", 1, cache, new StateReadCommand("foo"), states);
 
-    Assert.assertTrue(s1.read().equals("foo"));
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(1).equals("foo"));
+
     Assert.assertTrue(s1.getSensorID() == 1);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("single"));
     Assert.assertTrue(s1.getProperties().size() == 1);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
@@ -76,50 +81,68 @@ public class StateSensorTest
 
   /**
    * A test case of a two-state sensor (similar to switch).
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testTwoState()
+  @Test public void testTwoState() throws Exception
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("foo");
     states.addState("bar");
 
-    StateSensor s1 = new StateSensor("twostate", 2, cache, new StateReadCommand("foo", "bar"), states);
+    final int SENSOR_ID = 2;
+    StateReadCommand readCommand = new StateReadCommand("foo", "bar");
 
-    Assert.assertTrue(s1.read().equals("foo"));
-    Assert.assertTrue(s1.getSensorID() == 2);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
+    StateSensor s1 = new StateSensor("twostate", SENSOR_ID, cache, readCommand, states);
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("foo"));
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.isPolling());
     Assert.assertTrue(s1.getName().equals("twostate"));
-    Assert.assertTrue(s1.getProperties().size() == 2);
+    Assert.assertTrue(s1.getProperties().size() == SENSOR_ID);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
     Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
     Assert.assertTrue(s1.getProperties().values().contains("foo"));
     Assert.assertTrue(s1.getProperties().values().contains("bar"));
 
+    readCommand.nextValue();
 
-    Assert.assertTrue(s1.read().equals("bar"));
-
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("bar"));
   }
 
 
   /**
    * Test case of a three-state sensor
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testThreeState()
+  @Test public void testThreeState() throws Exception
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("foo");
     states.addState("bar");
     states.addState("acme");
 
-    StateSensor s1 = new StateSensor("threestate", 3, cache, new StateReadCommand("foo", "bar", "acme"), states);
+    final int SENSOR_ID = 3;
+    StateReadCommand readCommand = new StateReadCommand("foo", "bar", "acme");
 
-    Assert.assertTrue(s1.read().equals("foo"));
-    Assert.assertTrue(s1.getSensorID() == 3);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
+    StateSensor s1 = new StateSensor("threestate", SENSOR_ID, cache, readCommand, states);
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("foo"));
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("threestate"));
-    Assert.assertTrue(s1.getProperties().size() == 3);
+    Assert.assertTrue(s1.getProperties().size() == SENSOR_ID);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
     Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
     Assert.assertTrue(s1.getProperties().keySet().contains("state-3"));
@@ -128,15 +151,22 @@ public class StateSensorTest
     Assert.assertTrue(s1.getProperties().values().contains("acme"));
 
 
-    Assert.assertTrue(s1.read().equals("bar"));
-    Assert.assertTrue(s1.read().equals("acme"));
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("bar"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("acme"));
   }
 
 
   /**
    * Test case of a sensor with ten distinct states.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testTenState()
+  @Test public void testTenState() throws Exception
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("one");
@@ -150,16 +180,21 @@ public class StateSensorTest
     states.addState("nine");
     states.addState("ten");
 
-    StateSensor s1 = new StateSensor(
-        "tenstate", 4, cache,
-        new StateReadCommand("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"),
-        states
+    final int SENSOR_ID = 4;
+    StateReadCommand readCommand = new StateReadCommand(
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"
     );
 
-    Assert.assertTrue(s1.read().equals("one"));
+    StateSensor s1 = new StateSensor("tenstate", 4, cache, readCommand, states);
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("one"));
+
     Assert.assertTrue(s1.getSensorID() == 4);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("tenstate"));
     Assert.assertTrue(s1.getProperties().size() == 10);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
@@ -184,34 +219,68 @@ public class StateSensorTest
     Assert.assertTrue(s1.getProperties().values().contains("nine"));
     Assert.assertTrue(s1.getProperties().values().contains("ten"));
 
-    Assert.assertTrue(s1.read().equals("two"));
-    Assert.assertTrue(s1.read().equals("three"));
-    Assert.assertTrue(s1.read().equals("four"));
-    Assert.assertTrue(s1.read().equals("five"));
-    Assert.assertTrue(s1.read().equals("six"));
-    Assert.assertTrue(s1.read().equals("seven"));
-    Assert.assertTrue(s1.read().equals("eight"));
-    Assert.assertTrue(s1.read().equals("nine"));
-    Assert.assertTrue(s1.read().equals("ten"));
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("two"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("three"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("four"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("five"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("six"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("seven"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("eight"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("nine"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("ten"));
   }
 
 
   /**
    * Test sensor behavior when event producer returns a value that has not been added to this
    * state sensor's configuration.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testFalseReturn()
+  @Test public void testFalseReturn() throws Exception
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addState("bar");
     states.addState("foo");
 
-    StateSensor s1 = new StateSensor("funky", 5, cache, new StateReadCommand("acme", "foo", "bar"), states);
+    final int SENSOR_ID = 5;
+    StateReadCommand readCommand = new MixedStateReadCommand("acme", "foo", "bar");
+    StateSensor s1 = new StateSensor("funky", SENSOR_ID, cache, readCommand, states);
 
-    Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
-    Assert.assertTrue(s1.getSensorID() == 5);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals(Sensor.UNKNOWN_STATUS));
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("funky"));
     Assert.assertTrue(s1.getProperties().size() == 2);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
@@ -220,29 +289,46 @@ public class StateSensorTest
     Assert.assertTrue(s1.getProperties().values().contains("bar"));
 
 
-    String readVal = s1.read();
-    Assert.assertTrue("Expected 'foo', got : " + readVal, readVal.equals("foo"));
-    Assert.assertTrue(s1.read().equals("bar"));
+    readCommand.nextValue();
 
+    String readVal = getSensorValueFromCache(SENSOR_ID);
+
+    Assert.assertTrue("Expected 'foo', got : " + readVal, readVal.equals("foo"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("bar"));
   }
 
 
   /**
    * Test mapping of state string from event producers to translated forms.
+   *
+   * @throws Exception if test fails
    */
-  @Test public void testStateMapping()
+  @Test public void testStateMapping() throws Exception
   {
     StateSensor.DistinctStates states = new StateSensor.DistinctStates();
     states.addStateMapping("0", "Raining");
     states.addStateMapping("1", "Cloudy");
     states.addStateMapping("2", "Sunny");
 
-    StateSensor s1 = new StateSensor("mapped", 6, cache, new StateReadCommand("0", "1", "2"), states);
+    final int SENSOR_ID = 6;
+    StateReadCommand readCommand = new StateReadCommand("0", "1", "2");
 
-    Assert.assertTrue(s1.read().equals("Raining"));
-    Assert.assertTrue(s1.getSensorID() == 6);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
+    StateSensor s1 = new StateSensor("mapped", SENSOR_ID, cache, readCommand, states);
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected 'Raining', got " + getSensorValueFromCache(SENSOR_ID),
+        getSensorValueFromCache(SENSOR_ID).equals("Raining")
+    );
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("mapped"));
     Assert.assertTrue(s1.getProperties().size() == 3);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
@@ -253,8 +339,13 @@ public class StateSensorTest
     Assert.assertTrue(s1.getProperties().values().contains("2"));
 
 
-    Assert.assertTrue(s1.read().equals("Cloudy"));
-    Assert.assertTrue(s1.read().equals("Sunny"));
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("Cloudy"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("Sunny"));
   }
 
 
@@ -279,11 +370,14 @@ public class StateSensorTest
 
     StateSensor s1 = new StateSensor("broken", 7, cache, new BrokenCommand(), states);
 
-    Assert.assertTrue(s1.read().equals(Sensor.UNKNOWN_STATUS));
+    cache.registerSensor(s1);
+    s1.start();
 
+    Assert.assertTrue(cache.queryStatusBySensorId(7).equals(Sensor.UNKNOWN_STATUS));
+    
     Assert.assertTrue(s1.getSensorID() == 7);
-    Assert.assertTrue(s1.getSensorType() == EnumSensorType.CUSTOM);
     Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
     Assert.assertTrue(s1.getName().equals("broken"));
     Assert.assertTrue(s1.getProperties().size() == 3);
     Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
@@ -322,7 +416,7 @@ public class StateSensorTest
     //     output to restrict this usage and allow arbitrary strings to pass through if no state
     //     mappings are defined.
 
-    Assert.fail("Not Yet Implemented. See ORCJAVA-109 -- http://jira.openremote.org/browse/ORCJAVA-109");
+    Assert.fail("Not Yet Implemented. See ORCJAVA-90 -- http://jira.openremote.org/browse/ORCJAVA-90");
   }
 
 
@@ -353,15 +447,27 @@ public class StateSensorTest
 
 
 
+  // Helpers --------------------------------------------------------------------------------------
+
+  private String getSensorValueFromCache(int sensorID) throws Exception
+  {
+    // sleep here to give the polling mechanism enough time to push the event value to cache...
+
+    Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
+
+    return cache.queryStatusBySensorId(sensorID);
+  }
+
+
   // Nested Classes -------------------------------------------------------------------------------
 
   private static class StateReadCommand extends ReadCommand
   {
 
-    private String[] returnValue;
-    private int index = 0;
+    protected String[] returnValue;
+    protected int index = 0;
 
-    StateReadCommand(String... returnValue)
+    protected StateReadCommand(String... returnValue)
     {
       this.returnValue = returnValue;
     }
@@ -379,14 +485,39 @@ public class StateSensorTest
       {
         Assert.assertTrue(s.getProperties().keySet().contains("state-" + i));
 
-        String state = s.getProperties().get("state-" + 1);
+        String state = s.getProperties().get("state-" + i);
 
         Assert.assertTrue(vals.contains(state));
       }
 
-      return returnValue[index++];
+      return returnValue[index];
+    }
+
+    public void nextValue()
+    {
+      index++;
     }
   }
+
+  private static class MixedStateReadCommand extends StateReadCommand
+  {
+    MixedStateReadCommand(String... values)
+    {
+      super(values);
+    }
+
+    @Override public String read(Sensor s)
+    {
+      if (index >= returnValue.length )
+        index = 0;
+
+      Assert.assertTrue(s instanceof StateSensor);
+
+      return returnValue[index];
+    }
+  }
+
+
 
   private static class BrokenCommand extends ReadCommand
   {
