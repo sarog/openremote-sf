@@ -25,7 +25,7 @@ import java.util.List;
 import org.openremote.modeler.client.proxy.IrFileParserProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.CommonForm;
-import org.openremote.modeler.client.widget.FormWindow;
+import org.openremote.modeler.client.widget.RemoteJsonComboBox;
 import org.openremote.modeler.domain.Device;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.CodeSetInfo;
@@ -49,7 +49,6 @@ import com.extjs.gxt.ui.client.widget.LayoutContainer;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.ComboBox;
 import com.extjs.gxt.ui.client.widget.form.ComboBox.TriggerAction;
-import com.extjs.gxt.ui.client.widget.form.ListModelPropertyEditor;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
 import com.extjs.gxt.ui.client.widget.grid.ColumnModel;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
@@ -60,7 +59,6 @@ import com.extjs.gxt.ui.client.widget.layout.HBoxLayout;
 import com.extjs.gxt.ui.client.widget.layout.HBoxLayout.HBoxLayoutAlign;
 import com.extjs.gxt.ui.client.widget.layout.RowData;
 import com.extjs.gxt.ui.client.widget.layout.RowLayout;
-import com.google.gwt.user.client.Window;
 
 /**
  * IR File Command Import Form.
@@ -68,394 +66,419 @@ import com.google.gwt.user.client.Window;
  */
 public class IRFileImportForm extends CommonForm {
 
-	/** The device. */
-	protected Device device = null;
+   /** The device. */
+   protected Device device = null;
 
-	/** The select container. */
-	private LayoutContainer selectContainer = new LayoutContainer();
+   /** The select container. */
+   private LayoutContainer selectContainer = new LayoutContainer();
 
-	/** The command container. */
-	private LayoutContainer commandContainer = new LayoutContainer();
+   /** The command container. */
+   private LayoutContainer commandContainer = new LayoutContainer();
 
-	/** The next button. */
-	protected Button nextButton;
+   /** The next button. */
+   protected Button nextButton;
 
-	/** The code grid. */
-	protected Grid<IRCommandInfo> codeGrid = null;
+   /** The code grid. */
+   protected Grid<IRCommandInfo> codeGrid = null;
 
-	private ColumnModel cm = null;
+   private ColumnModel cm = null;
 
-	protected ListStore<BrandInfo> brandInfos = null;
-	protected ComboBox<BrandInfo> brandInfoList = null;
+   protected ListStore<BrandInfo> brandInfos = null;
+   protected ComboBox<BrandInfo> brandInfoList = null;
 
-	protected ListStore<DeviceInfo> deviceInfos = null;
-	protected ComboBox<DeviceInfo> deviceInfoList = null;
+   protected ListStore<DeviceInfo> deviceInfos = null;
+   protected ComboBox<DeviceInfo> deviceInfoList = null;
 
-	protected ListStore<CodeSetInfo> codeSetInfos = null;
-	protected ComboBox<CodeSetInfo> codeSetInfoList = null;
+   protected ListStore<CodeSetInfo> codeSetInfos = null;
+   protected ComboBox<CodeSetInfo> codeSetInfoList = null;
 
-	ListStore<IRCommandInfo> listStore;
+   ListStore<IRCommandInfo> listStore;
 
-	protected Component wrapper;
+   protected Component wrapper;
 
-	protected IRFileImportToProtocolForm protocolChooserForm;
+   protected IRFileImportToProtocolForm protocolChooserForm;
 
-	/**
-	 * Instantiates a new iR command file import form.
-	 * 
-	 * @param wrapper
-	 *            the wrapper
-	 * @param deviceBeanModel
-	 *            the device bean model
-	 */
-	public IRFileImportForm(final Component wrapper, BeanModel deviceBeanModel) {
+   /**
+    * Instantiates a new iR command file import form.
+    * 
+    * @param wrapper
+    *           the wrapper
+    * @param deviceBeanModel
+    *           the device bean model
+    */
+   public IRFileImportForm(final Component wrapper, BeanModel deviceBeanModel) {
 
-		super();
+      super();
 
-		setHeight(500);
-		this.wrapper = wrapper;
-		setLayout(new RowLayout(Orientation.VERTICAL));
-		HBoxLayout selectContainerLayout = new HBoxLayout();
-		selectContainerLayout.setPadding(new Padding(5));
-		selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
-		device = (Device) deviceBeanModel.getBean();
-		protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
-		selectContainer.setLayout(selectContainerLayout);
-		selectContainer.setLayoutOnChange(true);
-		add(selectContainer, new RowData(1, 35));
+      setHeight(500);
+      this.wrapper = wrapper;
+      setLayout(new RowLayout(Orientation.VERTICAL));
+      
+      HBoxLayout selectContainerLayout = new HBoxLayout();
+      selectContainerLayout.setPadding(new Padding(5));
 
-		commandContainer.setLayout(new CenterLayout());
-		commandContainer.setLayoutOnChange(true);
-		add(commandContainer, new RowData(1, 1));
-		protocolChooserForm.setVisible(false);
-		cleanBrandComboBox();
-		cleanCodeGrid();
-		cleanCodeSetComboBox();
-		cleanDeviceComboBox();
-		add(protocolChooserForm);
-		onSubmit(wrapper);
-	}
+      selectContainerLayout.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
 
-	/**
-	 * On submit.
-	 * 
-	 * @param wrapper
-	 *            the wrapper
-	 */
-	protected void onSubmit(final Component wrapper) {
-		addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
-			public void handleEvent(FormEvent be) {
+      selectContainer.setLayout(selectContainerLayout);
+      selectContainer.setLayoutOnChange(true);
+      add(selectContainer, new RowData(1, 35));
 
-			}
-		});
-	}
+      commandContainer.setLayout(new CenterLayout());
+      commandContainer.setLayoutOnChange(true);
+      add(commandContainer, new RowData(1, 1));
+      
+      device = (Device) deviceBeanModel.getBean();
+      protocolChooserForm = new IRFileImportToProtocolForm(wrapper, device);
+      protocolChooserForm.setVisible(false);
+      add(protocolChooserForm);
+      
+      cleanBrandComboBox();
+      cleanCodeGrid();
+      cleanCodeSetComboBox();
+      cleanDeviceComboBox();
+      onSubmit(wrapper);
+   }
 
-	@Override
-	protected void addButtons() {
-		nextButton = new Button("Next");
-		nextButton.setEnabled(false);
-		nextButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
+   /**
+    * On submit.
+    * 
+    * @param wrapper
+    *           the wrapper
+    */
+   protected void onSubmit(final Component wrapper) {
+      addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+         public void handleEvent(FormEvent be) {
 
-			@Override
-			public void componentSelected(ButtonEvent ce) {
-				protocolChooserForm.setSelectedFunctions(codeGrid
-						.getSelectionModel().getSelectedItems());
-				protocolChooserForm.show();
+         }
+      });
+   }
 
-			}
-		});
-		addButton(nextButton);
-	}
+   @Override
+   protected void addButtons() {
+      nextButton = new Button("Next");
+      nextButton.setEnabled(false);
+      nextButton.addSelectionListener(new SelectionListener<ButtonEvent>() {
 
-	public void showBrands() {
-		IrFileParserProxy
-				.loadBrands(new AsyncSuccessCallback<List<BrandInfo>>() {
+         @Override
+         public void componentSelected(ButtonEvent ce) {
+            protocolChooserForm.setSelectedFunctions(codeGrid
+                  .getSelectionModel().getSelectedItems());
+            protocolChooserForm.show();
+         }
+      });
+      addButton(nextButton);
+   }
 
-					@Override
-					public void onSuccess(final List<BrandInfo> brands) {
+   /**
+    * populates and shows the brand combo box
+    */
+   public void showBrands() {
+      IrFileParserProxy.loadBrands(new AsyncSuccessCallback<List<BrandInfo>>() {
 
-						if (brandInfos == null) {
-							brandInfos = new ListStore<BrandInfo>();
-							brandInfoList = new ComboBox<BrandInfo>();
-							brandInfoList
-									.setEmptyText("Please select Brand...");
-							brandInfoList.setDisplayField("brandName");
-							brandInfoList.setWidth(150);
-							brandInfoList.setStore(brandInfos);
-							brandInfoList.setTriggerAction(TriggerAction.ALL);
-							brandInfoList.setEditable(false);
-							selectContainer.add(brandInfoList);
-							brandInfos.add(brands);
+         @Override
+         public void onSuccess(final List<BrandInfo> brands) {
 
-							brandInfoList
-									.addSelectionChangedListener(new SelectionChangedListener<BrandInfo>() {
-										@Override
-										public void selectionChanged(
-												SelectionChangedEvent<BrandInfo> se) {
-											showDevices(se.getSelectedItem());
-										}
-									});
-
-						} else {
-							brandInfoList.setVisible(true);
-							cleanCodeGrid();
-							cleanDeviceComboBox();
-							cleanCodeSetComboBox();
-							cleanBrandComboBox();
-							brandInfos.add(brands);
-							brandInfoList.setVisible(true);
-						}
-
-					}
-
-				});
-	}
-
-	private void showDevices(BrandInfo brandInfo) {
-		IrFileParserProxy.loadModels(brandInfo,
-				new AsyncSuccessCallback<List<DeviceInfo>>() {
-
-					@Override
-					public void onSuccess(List<DeviceInfo> devices) {
-						if (deviceInfos == null) {
-							deviceInfos = new ListStore<DeviceInfo>();
-							deviceInfoList = new ComboBox<DeviceInfo>();
-							deviceInfoList
-									.setEmptyText("Please select Device...");
-							deviceInfoList.setDisplayField("modelName");
-							deviceInfoList.setWidth(150);
-							deviceInfoList.setStore(deviceInfos);
-							deviceInfoList.setTriggerAction(TriggerAction.ALL);
-							deviceInfoList.setEditable(false);
-							selectContainer.add(deviceInfoList);
-							deviceInfos.add(devices);
-
-							deviceInfoList
-									.addSelectionChangedListener(new SelectionChangedListener<DeviceInfo>() {
-
-										@Override
-										public void selectionChanged(
-												SelectionChangedEvent<DeviceInfo> se) {
-											showCodeSets(se.getSelectedItem());
-
-										}
-
-									});
-						} else {
-							cleanCodeGrid();
-							cleanCodeSetComboBox();
-							cleanDeviceComboBox();
-							deviceInfos.add(devices);
-							deviceInfoList.setVisible(true);
-						}
-
-					}
-
-				});
-
-	}
-
-	private void showCodeSets(DeviceInfo device) {
-		IrFileParserProxy.loadCodeSets(device,
-				new AsyncSuccessCallback<List<CodeSetInfo>>() {
-
-					@Override
-					public void onSuccess(final List<CodeSetInfo> codeSets) {
-						if (codeSetInfos == null) {
-
-							codeSetInfos = new ListStore<CodeSetInfo>();
-							codeSetInfoList = new ComboBox<CodeSetInfo>();
-							codeSetInfoList
-									.setEmptyText("Please select CodeSet...");
-							codeSetInfoList.setDisplayField("index");
-							codeSetInfoList.setSimpleTemplate("{category}");
-                     
-							codeSetInfoList.setWidth(150);
-							codeSetInfoList.setStore(codeSetInfos);
-/*							codeSetInfoList.setPropertyEditor(new ListModelPropertyEditor<CodeSetInfo>() {
-							   public String getStringValue(CodeSetInfo value) {
-							      return  "("+value.getIndex()+") "+value.getCategory();
-							    }
-							   
-                        public CodeSetInfo convertStringValue(String value) {
-
-                           return codeSets.get(Integer.parseInt(value.substring(value.indexOf('(')+1, value.indexOf(')'))));
+            if (brandInfos == null) {
+               brandInfos = new ListStore<BrandInfo>();
+               brandInfoList = new ComboBox<BrandInfo>();
+               brandInfoList.setEmptyText("Please select Brand...");
+               brandInfoList.setDisplayField("brandName");
+               brandInfoList.setWidth(150);
+               brandInfoList.setStore(brandInfos);
+               brandInfoList.setTriggerAction(TriggerAction.ALL);
+               brandInfoList.setEditable(false);
+               selectContainer.add(brandInfoList);
+               brandInfos.add(brands);
+               setStyleOfComboBox(brandInfoList);
+               brandInfoList
+                     .addSelectionChangedListener(new SelectionChangedListener<BrandInfo>() {
+                        @Override
+                        public void selectionChanged(
+                              SelectionChangedEvent<BrandInfo> se) {
+                           showDevices(se.getSelectedItem());
                         }
-							   
-							   
-							   
-							  });*/
-							codeSetInfoList.setTriggerAction(TriggerAction.ALL);
-							codeSetInfoList.setEditable(false);
-					
-							selectContainer.add(codeSetInfoList);
-							codeSetInfos.add(codeSets);
+                     });
 
-							codeSetInfoList
-									.addSelectionChangedListener(new SelectionChangedListener<CodeSetInfo>() {
+            } else {
+               brandInfoList.setVisible(true);
+               cleanCodeGrid();
+               cleanDeviceComboBox();
+               cleanCodeSetComboBox();
+               cleanBrandComboBox();
+               brandInfos.add(brands);
+               brandInfoList.setVisible(true);
+            }
 
-										@Override
-										public void selectionChanged(
-												SelectionChangedEvent<CodeSetInfo> se) {
-											showGrid(se.getSelectedItem());
-										}
-									});
+         }
 
-						} else {
-							cleanCodeGrid();
-							cleanCodeSetComboBox();
-							codeSetInfos.add(codeSets);
-							codeSetInfoList.setVisible(true);
-						}
+      });
+   }
 
-					}
-				});
+   /**
+    * populates and shows the devices combobox for the currently selected brand
+    * 
+    * @param brandInfo
+    */
+   private void showDevices(BrandInfo brandInfo) {
+      IrFileParserProxy.loadModels(brandInfo,
+            new AsyncSuccessCallback<List<DeviceInfo>>() {
 
-	}
+               @Override
+               public void onSuccess(List<DeviceInfo> devices) {
+                  if (deviceInfos == null) {
+                     deviceInfos = new ListStore<DeviceInfo>();
+                     deviceInfoList = new ComboBox<DeviceInfo>();
+                     deviceInfoList.setEmptyText("Please select Device...");
+                     deviceInfoList.setDisplayField("modelName");
+                     deviceInfoList.setWidth(150);
+                     deviceInfoList.setStore(deviceInfos);
+                     deviceInfoList.setTriggerAction(TriggerAction.ALL);
+                     deviceInfoList.setEditable(false);
+                     selectContainer.add(deviceInfoList);
+                     deviceInfos.add(devices);
+                     setStyleOfComboBox(deviceInfoList);
+                     deviceInfoList
+                           .addSelectionChangedListener(new SelectionChangedListener<DeviceInfo>() {
 
-	private void showGrid(CodeSetInfo selectedItem) {
-//		wrapper.mask("Please Wait...");
-		IrFileParserProxy.loadIRCommands(selectedItem,
-				new AsyncSuccessCallback<List<IRCommandInfo>>() {
+                              @Override
+                              public void selectionChanged(
+                                    SelectionChangedEvent<DeviceInfo> se) {
+                                 showCodeSets(se.getSelectedItem());
 
-					@Override
-					public void onSuccess(List<IRCommandInfo> iRCommands) {
-						
+                              }
 
+                           });
+                  } else {
+                     cleanCodeGrid();
+                     cleanCodeSetComboBox();
+                     cleanDeviceComboBox();
+                     deviceInfos.add(devices);
+                     deviceInfoList.setVisible(true);
+                  }
 
+               }
 
-						if (listStore == null) {
-							listStore = new ListStore<IRCommandInfo>();
-						} else {
-							listStore.removeAll();
-						}
-						listStore.add(iRCommands);
+            });
 
+   }
 
-						if (cm == null) {
-							List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
-							codeGridColumns.add(new ColumnConfig("name",
-									"Name", 120));
-							codeGridColumns.add(new ColumnConfig(
-									"originalCode", "Original Code", 250));
-							codeGridColumns.add(new ColumnConfig("comment",
-									"Comment", 250));
-							cm = new ColumnModel(codeGridColumns);
-						}
+   /**
+    * populates and shows the code set combo box for the currently selected
+    * device
+    * 
+    * @param device
+    */
+   private void showCodeSets(DeviceInfo device) {
+      IrFileParserProxy.loadCodeSets(device,
+            new AsyncSuccessCallback<List<CodeSetInfo>>() {
 
-						if (codeGrid == null) {
-							codeGrid = new Grid<IRCommandInfo>(listStore, cm);
-						
-	
-						GridView gv = new GridView();
-						codeGrid.setView(gv);
-						// invalid code lines are rendered in red
-						gv.setViewConfig(new GridViewConfig() {
-							@Override
-							public String getRowStyle(ModelData model,
-									int rowIndex, ListStore<ModelData> ds) {
-								if (model != null) {
-									if (model.get("code") == null) {
-										return "row-invalid_file_imported_code";
-									} else {
-										return "";
-									}
-								} else {
-									return "";
-								}
-							}
+               @Override
+               public void onSuccess(final List<CodeSetInfo> codeSets) {
+                  if (codeSetInfos == null) {
 
-						});
+                     codeSetInfos = new ListStore<CodeSetInfo>();
+                     codeSetInfoList = new ComboBox<CodeSetInfo>();
+                     codeSetInfoList.setEmptyText("Please select CodeSet...");
+                     codeSetInfoList.setDisplayField("index");
+                     codeSetInfoList.setSimpleTemplate("{category}");
 
-						codeGrid.setLoadMask(true);
-						codeGrid.setHeight(400);
-						codeGrid.getSelectionModel()
-								.addSelectionChangedListener(
-										new SelectionChangedListener<IRCommandInfo>() {
-											// if trying to select invalid line,
-											// remove it from selection
-											@Override
-											public void selectionChanged(
-													SelectionChangedEvent<IRCommandInfo> se) {
-												List<IRCommandInfo> selectedItems = se
-														.getSelection();
-												for (IRCommandInfo irCommandInfo : selectedItems) {
-													if (irCommandInfo.getCode() == null) {
-														codeGrid.getSelectionModel()
-																.deselect(
-																		irCommandInfo);
-													}
-												}
-												if (codeGrid
-														.getSelectionModel()
-														.getSelectedItems()
-														.size() > 0) {
-													nextButton.setEnabled(true);
-												} else {
-													nextButton
-															.setEnabled(false);
-												}
+                     codeSetInfoList.setWidth(150);
+                     codeSetInfoList.setStore(codeSetInfos);
+                     codeSetInfoList.setTriggerAction(TriggerAction.ALL);
+                     codeSetInfoList.setEditable(false);
 
-											}
-										});
+                     selectContainer.add(codeSetInfoList);
+                     codeSetInfos.add(codeSets);
+                     setStyleOfComboBox(codeSetInfoList);
+                     codeSetInfoList
+                           .addSelectionChangedListener(new SelectionChangedListener<CodeSetInfo>() {
 
-						commandContainer.add(codeGrid);
-						}else{
-							codeGrid.getStore().removeAll();
-							codeGrid.getStore().add(iRCommands);
-						}
-						wrapper.unmask();
-					}
-				});
+                              @Override
+                              public void selectionChanged(
+                                    SelectionChangedEvent<CodeSetInfo> se) {
+                                 showGrid(se.getSelectedItem());
+                                 codeSetInfoList.setRawValue(se
+                                       .getSelectedItem().getCategory());
+                              }
 
-	}
+                           });
 
-	public void hideComboBoxes() {
-		if (brandInfoList != null) {
-			brandInfoList.setVisible(false);
-		}
-		if (deviceInfoList != null) {
+                  } else {
+                     cleanCodeGrid();
+                     cleanCodeSetComboBox();
+                     codeSetInfos.add(codeSets);
+                     codeSetInfoList.setVisible(true);
+                  }
 
-			deviceInfoList.setVisible(false);
-		}
-		if (codeSetInfoList != null) {
+               }
+            });
 
-			codeSetInfoList.setVisible(false);
-		}
-		cleanCodeGrid();
-	}
+   }
 
-	private void cleanCodeGrid() {
-		if (codeGrid != null) {
-			codeGrid.removeFromParent();
-			codeGrid.removeAllListeners();
-			nextButton.setEnabled(false);
-			codeGrid = null;
-		}
+   /**
+    * show the Ir commands from the currently selected code set
+    * 
+    * @param selectedItem
+    */
+   private void showGrid(CodeSetInfo selectedItem) {
+      // wrapper.mask("Please Wait...");
+      IrFileParserProxy.loadIRCommands(selectedItem,
+            new AsyncSuccessCallback<List<IRCommandInfo>>() {
 
-	}
+               @Override
+               public void onSuccess(List<IRCommandInfo> iRCommands) {
 
-	private void cleanDeviceComboBox() {
-		if (deviceInfos != null) {
-			deviceInfos.removeAll();
-			deviceInfoList.clearSelections();
-			deviceInfoList.getStore().removeAll();
-		}
+                  if (listStore == null) {
+                     listStore = new ListStore<IRCommandInfo>();
+                  } else {
+                     listStore.removeAll();
+                  }
+                  listStore.add(iRCommands);
 
-	}
+                  if (cm == null) {
+                     List<ColumnConfig> codeGridColumns = new ArrayList<ColumnConfig>();
+                     codeGridColumns.add(new ColumnConfig("name", "Name", 120));
+                     codeGridColumns.add(new ColumnConfig("originalCode",
+                           "Original Code", 250));
+                     codeGridColumns.add(new ColumnConfig("comment", "Comment",
+                           250));
+                     cm = new ColumnModel(codeGridColumns);
+                  }
 
-	private void cleanCodeSetComboBox() {
-		if (codeSetInfos != null) {
-			codeSetInfos.removeAll();
-			codeSetInfoList.clearSelections();
-			codeSetInfoList.getStore().removeAll();
-		}
-	}
+                  if (codeGrid == null) {
+                     codeGrid = new Grid<IRCommandInfo>(listStore, cm);
 
-	private void cleanBrandComboBox() {
-		if (brandInfos != null) {
-			brandInfoList.clearSelections();
-			brandInfos.removeAll();
-		}
-	}
+                     GridView gv = new GridView();
+                     codeGrid.setView(gv);
+                     // invalid code lines are rendered in red
+                     gv.setViewConfig(new GridViewConfig() {
+                        @Override
+                        public String getRowStyle(ModelData model,
+                              int rowIndex, ListStore<ModelData> ds) {
+                           if (model != null) {
+                              if (model.get("code") == null) {
+                                 return "row-invalid_file_imported_code";
+                              } else {
+                                 return "";
+                              }
+                           } else {
+                              return "";
+                           }
+                        }
+
+                     });
+
+                     codeGrid.setLoadMask(true);
+                     codeGrid.setHeight(400);
+                     codeGrid.getSelectionModel().addSelectionChangedListener(
+                           new SelectionChangedListener<IRCommandInfo>() {
+                              // if trying to select invalid line,
+                              // remove it from selection
+                              @Override
+                              public void selectionChanged(
+                                    SelectionChangedEvent<IRCommandInfo> se) {
+                                 List<IRCommandInfo> selectedItems = se
+                                       .getSelection();
+                                 for (IRCommandInfo irCommandInfo : selectedItems) {
+                                    if (irCommandInfo.getCode() == null) {
+                                       codeGrid.getSelectionModel().deselect(
+                                             irCommandInfo);
+                                    }
+                                 }
+                                 if (codeGrid.getSelectionModel()
+                                       .getSelectedItems().size() > 0) {
+                                    nextButton.setEnabled(true);
+                                 } else {
+                                    nextButton.setEnabled(false);
+                                 }
+
+                              }
+                           });
+
+                     commandContainer.add(codeGrid);
+                  } else {
+                     codeGrid.getStore().removeAll();
+                     codeGrid.getStore().add(iRCommands);
+                  }
+                  wrapper.unmask();
+               }
+            });
+
+   }
+
+   /**
+    * Hides the combobox and clean the grid
+    */
+   public void hideComboBoxes() {
+      if (brandInfoList != null) {
+         brandInfoList.setVisible(false);
+      }
+      if (deviceInfoList != null) {
+
+         deviceInfoList.setVisible(false);
+      }
+      if (codeSetInfoList != null) {
+
+         codeSetInfoList.setVisible(false);
+      }
+      cleanCodeGrid();
+   }
+
+   /**
+    * cleans the grid
+    */
+   private void cleanCodeGrid() {
+      if (codeGrid != null) {
+         codeGrid.removeFromParent();
+         codeGrid.removeAllListeners();
+         nextButton.setEnabled(false);
+         codeGrid = null;
+      }
+
+   }
+
+   /**
+    * cleans the device combobox
+    */
+   private void cleanDeviceComboBox() {
+      if (deviceInfos != null) {
+         deviceInfos.removeAll();
+         deviceInfoList.clearSelections();
+         deviceInfoList.getStore().removeAll();
+      }
+
+   }
+
+   /**
+    * cleans the code set combo box
+    */
+   private void cleanCodeSetComboBox() {
+      if (codeSetInfos != null) {
+         codeSetInfos.removeAll();
+         codeSetInfoList.clearSelections();
+         codeSetInfoList.getStore().removeAll();
+      }
+   }
+
+   /**
+    * cleans the brand combo box
+    */
+   private void cleanBrandComboBox() {
+      if (brandInfos != null) {
+         brandInfoList.clearSelections();
+         brandInfos.removeAll();
+      }
+   }
+
+   /**
+    * Sets the style of combo box.
+    * 
+    * @param box
+    *           the new style of combo box
+    */
+   private void setStyleOfComboBox(ComboBox<?> box) {
+      box.setWidth(170);
+      box.setMaxHeight(250);
+
+   }
 }

@@ -53,229 +53,241 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
- * The window creates or updates a deviceCommand into server.
+ * The window creates a deviceCommand into server.
  */
 public class IRFileImportToProtocolForm extends FormWindow {
 
-	/** The device. */
-	private Device device = null;
-	private VerticalPanel gCPanel;
-	private TextField<String> gCip;
-	private TextField<String> tcpPort;
-	protected boolean hideWindow = true;
 
-	protected LabelField info;
+   private Device device = null;
+   private VerticalPanel gCPanel;
+   private TextField<String> gCip;
+   private TextField<String> tcpPort;
+   protected boolean hideWindow = true;
 
-	private TextField<String> connector;
+   protected LabelField info;
 
-	private VerticalPanel iRTransPanel;
+   private TextField<String> connector;
 
-	private TextField<String> udpPort;
+   private VerticalPanel iRTransPanel;
 
-	private ComboBox<IRLed> iRLed;
+   private TextField<String> udpPort;
 
-	private TextField<String> iRTransIp;
+   private ComboBox<IRLed> iRLed;
 
-	private List<IRCommandInfo> selectedFunctions;
-	private ComboBox<IRLed> IRLed;
-	private Component wrapper;
-	private Button submitBtn;
-	protected static final String INFO_FIELD = "infoField";
+   private TextField<String> iRTransIp;
 
-	/**
-	 * Instantiates a new device command window.
-	 * 
-	 * @param wrapper
-	 * 
-	 * @param device
-	 *            the device
-	 */
-	public IRFileImportToProtocolForm(Component wrapper, Device device) {
-		super();
-		this.device = device;
-		this.wrapper = wrapper;
-		setHeading("New command");
-		initial();
-		show();
-	}
+   private List<IRCommandInfo> selectedFunctions;
+   @SuppressWarnings("unused")
+   private ComboBox<IRLed> IRLed;
+   private Component wrapper;
+   private Button submitBtn;
+   protected static final String INFO_FIELD = "infoField";
 
-	/**
-	 * Initial.
-	 */
-	private void initial() {
-		setWidth(380);
-		setAutoHeight(true);
-		setLayout(new FlowLayout());
+   /**
+    * Instantiates a new device command window.
+    * 
+    * @param wrapper
+    * 
+    * @param device
+    *           the device
+    */
+   public IRFileImportToProtocolForm(Component wrapper, Device device) {
+      super();
+      this.device = device;
+      this.wrapper = wrapper;
+      setHeading("New command");
+      initial();
+      show();
+   }
 
-		form.setWidth(370);
+   /**
+    * Initial.
+    */
+   private void initial() {
+      setWidth(380);
+      setAutoHeight(true);
+      setLayout(new FlowLayout());
+      info = new LabelField();
+      info.setStyleName("importErrorMessage");
+      form.setWidth(370);
 
-		submitBtn = new Button("Submit");
-		submitBtn.setEnabled(false);
-		form.addButton(submitBtn);
+      submitBtn = new Button("Submit");
+      submitBtn.setEnabled(false);
+      form.addButton(submitBtn);
 
-		submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
+      submitBtn.addSelectionListener(new FormSubmitListener(form, submitBtn));
 
-		Button resetButton = new Button("Reset");
-		resetButton.addSelectionListener(new FormResetListener(form));
-		form.addButton(resetButton);
+      Button resetButton = new Button("Reset");
+      resetButton.addSelectionListener(new FormResetListener(form));
+      form.addButton(resetButton);
 
-		form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
+      form.addListener(Events.BeforeSubmit, new Listener<FormEvent>() {
 
-			@Override
-			public void handleEvent(FormEvent be) {
-				form.mask("Please Wait...");
-				GlobalCache globalCache=null;
-				IRTrans irTrans=null ;
+         @Override
+         public void handleEvent(FormEvent be) {
+            info.setVisible(false);
+            form.mask("Please Wait...");
+            GlobalCache globalCache = null;
+            IRTrans irTrans = null;
 
-				if (gCPanel.isEnabled()) {
-					globalCache = new GlobalCache(gCip.getValue(), tcpPort
-							.getValue(), connector.getValue());
-				} else {
-					irTrans = new IRTrans(iRTransIp.getValue(), udpPort
-							.getValue(), iRLed.getSelection().get(0).getCode());
-				}
-				IrFileParserProxy.saveCommands(device, selectedFunctions,
-						globalCache, irTrans,
-						new AsyncSuccessCallback<List<BeanModel>>() {
-							@Override
-							public void onSuccess(
-									List<BeanModel> deviceCommandModels) {
-								IRFileImportToProtocolForm.this.hide();
-								wrapper.fireEvent(SubmitEvent.SUBMIT,
-										new SubmitEvent(deviceCommandModels));
+            if (gCPanel.isEnabled()) {
+               globalCache = new GlobalCache(gCip.getValue(), tcpPort
+                     .getValue(), connector.getValue());
+            } else {
+               irTrans = new IRTrans(iRTransIp.getValue(), udpPort.getValue(),
+                     iRLed.getSelection().get(0).getCode());
+            }
+            IrFileParserProxy.saveCommands(device, selectedFunctions,
+                  globalCache, irTrans,
+                  new AsyncSuccessCallback<List<BeanModel>>() {
+                     @Override
+                     public void onSuccess(List<BeanModel> deviceCommandModels) {
+                        IRFileImportToProtocolForm.this.hide();
+                        wrapper.fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(
+                              deviceCommandModels));
 
-							}
-						/*	@Override
-							public void onFailure(Throwable caught) {
-								Window.alert("Failure when saving Commands "+caught.getMessage());
-							}*/
-						});
-			}
-		});
-		createFields();
-		add(form);
-	}
+                     }
 
-	/**
-	 * Creates the fields.
-	 * 
-	 * @param protocols
-	 *            the protocols
-	 */
-	private void createFields() {
-		final ListBox product = new ListBox();
-		product.addItem("Please choose a product"); 
-		product.addItem("GlobalCaché	");
-		product.addItem("IRTrans");
-		form.add(product);
+                     @Override
+                     public void onFailure(Throwable caught) {
+                        form.unmask();
+                        info.setText("Error : " + caught.getMessage());
+                        info.setVisible(true);
+                        submitBtn.setEnabled(true);
 
-		// globalCaché panel
-		gCPanel = new VerticalPanel();
-		gCPanel.setSpacing(10);
+                     }
+                  });
+         }
+      });
+      createFields();
+      form.add(info);
+      info.setVisible(false);
+      add(form);
+   }
 
-		FieldSet gCFieldSet = new FieldSet();
-		FormLayout gCLayout = new FormLayout();
-		gCLayout.setLabelWidth(80);
-		gCFieldSet.setLayout(gCLayout);
 
-		gCip = new TextField<String>();
-		gCip.setFieldLabel("IP address / HostName");
-		gCip.setAllowBlank(false);
-		gCFieldSet.add(gCip);
-		tcpPort = new TextField<String>();
-		tcpPort.setValue("4998");
-		tcpPort.setAllowBlank(false);
-		tcpPort.setMaxLength(5);
-	
-		tcpPort.setRegex("\\d+");
-		tcpPort.getMessages().setRegexText("Port must be an integer number");
+   /**
+    * create the fields for globalcaché and IR Trans
+    */
+   private void createFields() {
+      final ListBox product = new ListBox();
+      product.addItem("Please choose a product");
+      product.addItem("GlobalCaché	");
+      product.addItem("IRTrans");
+      form.add(product);
 
-		tcpPort.setFieldLabel("TCP Port");
-		gCFieldSet.add(tcpPort);
-		connector = new TextField<String>();
-		connector.setValue("4:1");
-		tcpPort.setRegex("[1-7]:[1-3]");
-      tcpPort.getMessages().setRegexText("format must be digit (1-> 7):digit (1-> 3)");
-		connector.setFieldLabel("Connector");
-		gCFieldSet.add(connector);
+      // globalCaché panel
+      gCPanel = new VerticalPanel();
+      gCPanel.setSpacing(10);
 
-		gCPanel.add(gCFieldSet);
-		gCPanel.setVisible(false);
-		form.add(gCPanel);
+      FieldSet gCFieldSet = new FieldSet();
+      FormLayout gCLayout = new FormLayout();
+      gCLayout.setLabelWidth(80);
+      gCFieldSet.setLayout(gCLayout);
 
-		// IRTrans Panel
-		iRTransPanel = new VerticalPanel();
-		iRTransPanel.setSpacing(10);
+      gCip = new TextField<String>();
+      gCip.setFieldLabel("IP address / HostName");
+      gCip.setAllowBlank(false);
+      gCFieldSet.add(gCip);
+      tcpPort = new TextField<String>();
+      tcpPort.setValue("4998");
+      tcpPort.setAllowBlank(false);
+      tcpPort.setMaxLength(5);
 
-		FieldSet iRTransFieldSet = new FieldSet();
-		FormLayout iRTransLayout = new FormLayout();
-		iRTransLayout.setLabelWidth(80);
-		iRTransFieldSet.setLayout(iRTransLayout);
-		iRTransIp = new TextField<String>();
-		iRTransIp.setFieldLabel(new String("Ip address Host name"));
-		iRTransIp.setAllowBlank(false);
-		iRTransFieldSet.add(iRTransIp);
-		udpPort = new TextField<String>();
-		udpPort.setValue("21000");
-		udpPort.setAllowBlank(false);
-		udpPort.setMaxLength(5);
-		udpPort.setRegex("\\d+");
-		udpPort.getMessages().setRegexText("Port must be an integer number");
-		udpPort.setFieldLabel(new String("UDP Port"));
-		iRTransFieldSet.add(udpPort);
-		iRLed = new ComboBox<IRLed>();
-		ListStore<IRLed> irStore = new ListStore<IRLed>();
-		irStore.add(new IRLed("Internal", "i"));
-		irStore.add(new IRLed("External", "e"));
-		irStore.add(new IRLed("Both", "b"));
-		iRLed.setStore(irStore);
-		iRLed.setFieldLabel("IR Led");
-		iRLed.setAllowBlank(false);
-		iRLed.setDisplayField("value");
-		iRLed.setLazyRender(false);
-		iRLed.setValue(new IRLed("Internal", "i"));
-		iRLed.setTriggerAction(TriggerAction.ALL);
+      tcpPort.setRegex("\\d+");
+      tcpPort.getMessages().setRegexText("Port must be an integer number");
 
-		iRTransFieldSet.add(iRLed);
+      tcpPort.setFieldLabel("TCP Port");
+      gCFieldSet.add(tcpPort);
+      connector = new TextField<String>();
+      connector.setValue("4:1");
+      connector.setRegex("[1-7]:[1-3]");
+      connector.getMessages().setRegexText(
+            "format must be digit (1-> 7):digit (1-> 3)");
+      connector.setFieldLabel("Connector");
+      gCFieldSet.add(connector);
 
-		iRTransPanel.add(iRTransFieldSet);
-		iRTransPanel.setVisible(false);
-		form.add(iRTransPanel);
+      gCPanel.add(gCFieldSet);
+      gCPanel.setVisible(false);
+      form.add(gCPanel);
 
-		product.addChangeHandler(new ChangeHandler() {
+      // IRTrans Panel
+      iRTransPanel = new VerticalPanel();
+      iRTransPanel.setSpacing(10);
 
-			@Override
-			public void onChange(ChangeEvent event) {
-				switch (product.getSelectedIndex()) {
-				case 1:
-					gCPanel.setEnabled(true);
-					gCPanel.setVisible(true);
-					iRTransPanel.setEnabled(false);
-					iRTransPanel.setVisible(false);
-					submitBtn.setEnabled(true);
-					break;
-				case 2:
-					gCPanel.setEnabled(false);
-					gCPanel.setVisible(false);
-					iRTransPanel.setEnabled(true);
-					iRTransPanel.setVisible(true);
-					submitBtn.setEnabled(true);
-					break;
-				default:
-					gCPanel.setEnabled(false);
-					gCPanel.setVisible(false);
-					iRTransPanel.setVisible(false);
-					iRTransPanel.setVisible(false);
-					submitBtn.setEnabled(false);
-					break;
-				}
-			}
-		});
-		form.layout();
-	}
+      FieldSet iRTransFieldSet = new FieldSet();
+      FormLayout iRTransLayout = new FormLayout();
+      iRTransLayout.setLabelWidth(80);
+      iRTransFieldSet.setLayout(iRTransLayout);
+      iRTransIp = new TextField<String>();
+      iRTransIp.setFieldLabel(new String("Ip address Host name"));
+      iRTransIp.setAllowBlank(false);
+      iRTransFieldSet.add(iRTransIp);
+      udpPort = new TextField<String>();
+      udpPort.setValue("21000");
+      udpPort.setAllowBlank(false);
+      udpPort.setMaxLength(5);
+      udpPort.setRegex("\\d+");
+      udpPort.getMessages().setRegexText("Port must be an integer number");
+      udpPort.setFieldLabel(new String("UDP Port"));
+      iRTransFieldSet.add(udpPort);
+      iRLed = new ComboBox<IRLed>();
+      ListStore<IRLed> irStore = new ListStore<IRLed>();
+      irStore.add(new IRLed("Internal", "i"));
+      irStore.add(new IRLed("External", "e"));
+      irStore.add(new IRLed("Both", "b"));
+      iRLed.setStore(irStore);
+      iRLed.setFieldLabel("IR Led");
+      iRLed.setAllowBlank(false);
+      iRLed.setDisplayField("value");
+      iRLed.setLazyRender(false);
+      iRLed.setValue(new IRLed("Internal", "i"));
+      iRLed.setTriggerAction(TriggerAction.ALL);
 
-	public void setSelectedFunctions(List<IRCommandInfo> selectedItems) {
-		this.selectedFunctions = selectedItems;
+      iRTransFieldSet.add(iRLed);
 
-	}
+      iRTransPanel.add(iRTransFieldSet);
+      iRTransPanel.setVisible(false);
+      form.add(iRTransPanel);
+
+      product.addChangeHandler(new ChangeHandler() {
+
+         @Override
+         public void onChange(ChangeEvent event) {
+            info.setVisible(false);
+            switch (product.getSelectedIndex()) {
+            case 1:
+               gCPanel.setEnabled(true);
+               gCPanel.setVisible(true);
+               iRTransPanel.setEnabled(false);
+               iRTransPanel.setVisible(false);
+               submitBtn.setEnabled(true);
+               break;
+            case 2:
+               gCPanel.setEnabled(false);
+               gCPanel.setVisible(false);
+               iRTransPanel.setEnabled(true);
+               iRTransPanel.setVisible(true);
+               submitBtn.setEnabled(true);
+               break;
+            default:
+               gCPanel.setEnabled(false);
+               gCPanel.setVisible(false);
+               iRTransPanel.setVisible(false);
+               iRTransPanel.setVisible(false);
+               submitBtn.setEnabled(false);
+               break;
+            }
+         }
+      });
+      form.layout();
+   }
+
+   /** stores the grid selected items
+    * @param selectedItems
+    */
+   public void setSelectedFunctions(List<IRCommandInfo> selectedItems) {
+      this.selectedFunctions = selectedItems;
+
+   }
 }

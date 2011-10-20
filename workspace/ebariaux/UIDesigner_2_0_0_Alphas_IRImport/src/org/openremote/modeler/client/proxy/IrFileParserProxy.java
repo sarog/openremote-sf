@@ -16,85 +16,123 @@ import org.openremote.modeler.irfileparser.IRTrans;
 import com.extjs.gxt.ui.client.data.BeanModel;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * proxy for managing loaded file information
+ * 
+ */
 public class IrFileParserProxy {
 
+   /**
+    * not to be instantiated
+    */
+   private IrFileParserProxy() {
+   }
 
-	private IrFileParserProxy() {
-	}
+   /**
+    * load Brands into brands for use in brands combo box
+    * 
+    * @param callback
+    */
+   public static void loadBrands(final AsyncCallback<List<BrandInfo>> callback) {
 
-	public static void loadBrands(final AsyncCallback<List<BrandInfo>> callback) {
+      AsyncServiceFactory.getiRFileParserRPCServiceAsync().getBrands(
+            new AsyncSuccessCallback<List<BrandInfo>>() {
+               @Override
+               public void onSuccess(List<BrandInfo> result) {
+                  callback.onSuccess(result);
+               }
+            });
+   }
 
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().getBrands(
-				new AsyncSuccessCallback<List<BrandInfo>>() {
-					@Override
-					public void onSuccess(List<BrandInfo> result) {
-						callback.onSuccess(result);
-					}
-				});
-	}
+   /**
+    * load devices from a brand into devices for use in devices combo box
+    * 
+    * @param brand
+    * @param callback
+    */
+   public static void loadModels(BrandInfo brand,
+         final AsyncCallback<List<DeviceInfo>> callback) {
 
-	public static void loadModels(BrandInfo brand,
-			final AsyncCallback<List<DeviceInfo>> callback) {
+      AsyncServiceFactory.getiRFileParserRPCServiceAsync().getDevices(brand,
+            new AsyncSuccessCallback<List<DeviceInfo>>() {
 
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().getDevices(brand,
-				new AsyncSuccessCallback<List<DeviceInfo>>() {
+               @Override
+               public void onSuccess(List<DeviceInfo> result) {
+                  callback.onSuccess(result);
 
-					@Override
-					public void onSuccess(List<DeviceInfo> result) {
-						callback.onSuccess(result);
+               }
+            });
 
-					}
-				});
+   }
 
-	}
+   /**
+    * load codesets from a device into codesets for use in codesets combo box
+    * 
+    * @param device
+    * @param callback
+    */
+   public static void loadCodeSets(DeviceInfo device,
+         final AsyncCallback<List<CodeSetInfo>> callback) {
+      AsyncServiceFactory.getiRFileParserRPCServiceAsync().getCodeSets(device,
+            new AsyncSuccessCallback<List<CodeSetInfo>>() {
 
-	public static void loadCodeSets(DeviceInfo device,
-			final AsyncCallback<List<CodeSetInfo>> callback) {
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().getCodeSets(
-				device, new AsyncSuccessCallback<List<CodeSetInfo>>() {
+               @Override
+               public void onSuccess(List<CodeSetInfo> result) {
+                  callback.onSuccess(result);
+               }
+            });
+   }
 
-					@Override
-					public void onSuccess(List<CodeSetInfo> result) {
-						callback.onSuccess(result);
-					}
-				});
-	}
-	
-	public static void loadIRCommands(CodeSetInfo codeSet, final AsyncCallback<List<IRCommandInfo>> callback){
-		
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().getIRCommands(codeSet, new AsyncSuccessCallback<List<IRCommandInfo>>() {
-			
-			
-			
+   /**
+    * load IR commands from a codeset into IRCommands for use in the form grid.
+    * 
+    * @param codeSet
+    * @param callback
+    */
+   public static void loadIRCommands(CodeSetInfo codeSet,
+         final AsyncCallback<List<IRCommandInfo>> callback) {
 
-			@Override
-			public void onSuccess(List<IRCommandInfo> result) {
-				callback.onSuccess(result);				
-			}
-		});
-	}
+      AsyncServiceFactory.getiRFileParserRPCServiceAsync().getIRCommands(
+            codeSet, new AsyncSuccessCallback<List<IRCommandInfo>>() {
 
-	public static void saveCommands(
-			Device device, final List<IRCommandInfo> selectedFunctions,
-			GlobalCache globalCache, IRTrans irTrans, final AsyncSuccessCallback<List<BeanModel>> callback) {
-		AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,globalCache,irTrans,selectedFunctions, new AsyncSuccessCallback<List<DeviceCommand>>() {
+               @Override
+               public void onSuccess(List<IRCommandInfo> result) {
+                  callback.onSuccess(result);
+               }
+            });
+   }
 
-			@Override
-			public void onSuccess(List<DeviceCommand> deviceCommands) {
-	            List<BeanModel> deviceCommandModels = DeviceCommand.createModels(deviceCommands);
-	            BeanModelDataBase.deviceCommandTable.insertAll(deviceCommandModels);
-	            callback.onSuccess(deviceCommandModels);
-			}
-			/*@Override
-			public void onFailure(Throwable caught) {
-				
-				super.onFailure(caught);
-				Window.alert("erreur..."+caught.getMessage()+caught.getCause());
-				System.out.println("erreur..."+caught.getMessage()+caught.getCause());
-			}*/
-		});
-		
-	}
-	
-	
+   /**
+    * imports user selected Ir commands into database.
+    * 
+    * @param device
+    * @param selectedFunctions
+    * @param globalCache
+    * @param irTrans
+    * @param callback
+    */
+   public static void saveCommands(Device device,
+         final List<IRCommandInfo> selectedFunctions, GlobalCache globalCache,
+         IRTrans irTrans, final AsyncSuccessCallback<List<BeanModel>> callback) {
+      AsyncServiceFactory.getiRFileParserRPCServiceAsync().saveCommands(device,
+            globalCache, irTrans, selectedFunctions,
+            new AsyncSuccessCallback<List<DeviceCommand>>() {
+
+               @Override
+               public void onSuccess(List<DeviceCommand> deviceCommands) {
+                  List<BeanModel> deviceCommandModels = DeviceCommand
+                        .createModels(deviceCommands);
+                  BeanModelDataBase.deviceCommandTable
+                        .insertAll(deviceCommandModels);
+                  callback.onSuccess(deviceCommandModels);
+               }
+
+               @Override
+               public void onFailure(Throwable caught) {
+                  callback.onFailure(caught);
+               }
+            });
+
+   }
+
 }
