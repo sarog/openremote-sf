@@ -195,7 +195,15 @@ public class StateSensor extends Sensor
   {
     super(name, sensorID, cache, producer, statesAsProperties(includeStatesAsProperties, states), type);
 
-    this.states = states;
+    if (states == null)
+    {
+      this.states = new DistinctStates();
+    }
+    
+    else
+    {
+      this.states = states;
+    }
   }
 
 
@@ -206,7 +214,7 @@ public class StateSensor extends Sensor
    * Constructs an event from the raw protocol output string. This implementation checks the
    * incoming value for possible state mappings and returns an event containing the mapped
    * state value where necessary. Arbitrary, non-declared states are rejected unless
-   * {@link #setStrictStateMapping(boolean)} has been set to false. When set to true, an
+   * {@link #setStrictStateMapping} has been set to false. When set to true, an
    * instance of {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent} is returned
    * for any non-declared state.
    *
@@ -220,15 +228,22 @@ public class StateSensor extends Sensor
   {
     if (!states.hasState(value))
     {
-      log.debug(
-          "Event producer bound to sensor (ID = {0}) returned a value that is not " +
-          "consistent with sensor's datatype : {1}",
-          super.getSensorID(), value
-      );
+      if (isUnknownSensorValue(value))
+      {
+        return new UnknownEvent(this);
+      }
 
       if (hasStrictStateMapping)
       {
-        return new UnknownEvent();
+        Event evt = new UnknownEvent(this);
+
+        log.warn(
+            "Event producer bound to sensor (ID = {0}) returned a value that is not " +
+            "consistent with sensor''s datatype : {1}  setting sensor value to ''{2}''",
+            super.getSensorID(), value, evt.getValue()
+        );
+
+        return new UnknownEvent(this);
       }
 
       else
