@@ -25,7 +25,10 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.openremote.controller.protocol.EventProducer;
+import org.openremote.controller.protocol.Event;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.model.event.CustomState;
 
 /**
  * A state sensor operates on a finite set of explicit state values that it returns. <p>
@@ -50,6 +53,16 @@ import org.openremote.controller.component.EnumSensorType;
 public class StateSensor extends Sensor
 {
 
+
+  // Constants ------------------------------------------------------------------------------------
+
+  /**
+   * The default setting for enforcing strict state mapping rules -- only explicitly declared
+   * state values can be returned from this sensor.
+   */
+  public final static boolean DEFAULT_STRICT_STATE_MAPPING = true;
+
+  
   // Class Members --------------------------------------------------------------------------------
 
 
@@ -90,6 +103,14 @@ public class StateSensor extends Sensor
   private DistinctStates states;
 
 
+  /**
+   * Indicates whether this sensor instance should enforce strict state mapping rules -- when
+   * enabled, only state values explicitly declared for this sensor will be accepted and returned.
+   * If set to false, all values are allowed but those with value mappings will be converted.
+   */
+  private boolean hasStrictStateMapping = DEFAULT_STRICT_STATE_MAPPING;
+
+
 
   // Constructors ---------------------------------------------------------------------------------
 
@@ -109,15 +130,25 @@ public class StateSensor extends Sensor
    * @see org.openremote.controller.protocol.EventListener
    *
    *
-   * @param name        human-readable name of this sensor
-   * @param sensorID    controller unique identifier
-   * @param producer    the protocol handler that backs this sensor either with a read command
-   *                    or event listener implementation
-   * @param states      distinct state values and their mappings this sensor will return
+   * @param name
+   *          human-readable name of this sensor
+   *
+   * @param sensorID
+   *          controller unique identifier
+   *
+   * @param cache
+   *          reference to the device state cache this sensor will register with
+   *
+   * @param producer
+   *          the protocol handler that backs this sensor either with a read command
+   *          or event listener implementation
+   *
+   * @param states
+   *          distinct state values and their mappings this sensor will return
    */
-  public StateSensor(String name, int sensorID, EventProducer producer, DistinctStates states)
+  public StateSensor(String name, int sensorID, StatusCache cache, EventProducer producer, DistinctStates states)
   {
-    this(name, sensorID, EnumSensorType.CUSTOM, producer, states, true);
+    this(name, sensorID, cache, EnumSensorType.CUSTOM, producer, states, true);
   }
 
 
@@ -132,26 +163,39 @@ public class StateSensor extends Sensor
    * states explicit, it may not be necessary to pass the additional property information to
    * event producer implementers.
    *
-   * @param name        human-readable name of this sensor
-   * @param sensorID    controller unique identifier
-   * @param type        enumeration of sensor types -- this enum set is made available to
-   *                    event producer implementers to discover the sensor's datatype they
-   *                    need to adhere to. NOTE: this is legacy API and bound to evolve away
-   *                    as the immutable Sensor class can be used instead
-   * @param producer    the protocol handler that backs this sensor either with a read command
-   *                    or event listener implementation
-   * @param states      distinct state values and their mappings this sensor will return
-   * @param includeStatesAsProperties indicates whether the sensor implementation should pass the
-   *                    explicit state strings as sensor properties for event producer implementers
-   *                    to inspect
+   * @param name
+   *          human-readable name of this sensor
+   *
+   * @param sensorID
+   *          controller unique identifier
+   *
+   * @param cache
+   *          reference to the device state cache this sensor will register with
+   *
+   * @param type
+   *          enumeration of sensor types -- this enum set is made available to
+   *          event producer implementers to discover the sensor's datatype they
+   *          need to adhere to. NOTE: this is legacy API and bound to evolve away
+   *          as the immutable Sensor class can be used instead
+   *
+   * @param producer
+   *          the protocol handler that backs this sensor either with a read command
+   *          or event listener implementation
+   *
+   * @param states
+   *          distinct state values and their mappings this sensor will return
+   *
+   * @param includeStatesAsProperties
+   *          indicates whether the sensor implementation should pass the
+   *          explicit state strings as sensor properties for event producer implementers
+   *          to inspect
    */
-  protected StateSensor(String name, int sensorID, EnumSensorType type, EventProducer producer,
+  protected StateSensor(String name, int sensorID, StatusCache cache, EnumSensorType type, EventProducer producer,
                         DistinctStates states, boolean includeStatesAsProperties)
   {
-    super(name, sensorID, type, producer, statesAsProperties(includeStatesAsProperties, states));
+    super(name, sensorID, cache, producer, statesAsProperties(includeStatesAsProperties, states), type);
 
     this.states = states;
-
   }
 
 
@@ -159,15 +203,20 @@ public class StateSensor extends Sensor
 
 
   /**
-   * Enforce read values for state sensor which 1) only allow event producers to return values this
-   * sensor advertizes as producing (any other values are converted to
-   * {@link org.openremote.controller.model.sensor.Sensor#UNKNOWN_STATUS} values) and
-   * 2) map the return values from event producers to translated values if such
-   * have been configured for this sensor.
+   * Constructs an event from the raw protocol output string. This implementation checks the
+   * incoming value for possible state mappings and returns an event containing the mapped
+   * state value where necessary. Arbitrary, non-declared states are rejected unless
+   * {@link #setStrictStateMapping(boolean)} has been set to false. When set to true, an
+   * instance of {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent} is returned
+   * for any non-declared state.
    *
-   * @return  the state strings of this sensor or their translated versions
+   * @return  An event containing the state returned by the associated event producer or
+   *          a translated (mapped) version of the state string. Can return
+   *          {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent} in case where
+   *          {@link #setStrictStateMapping} is true and a state value is returned from the
+   *          event producer that has not been declared as a distinct state for this sensor.
    */
-  @Override public String processEvent(String value)
+  @Override public Event processEvent(String value)
   {
     if (!states.hasState(value))
     {
@@ -177,19 +226,39 @@ public class StateSensor extends Sensor
           super.getSensorID(), value
       );
 
-      return Sensor.UNKNOWN_STATUS;
+      if (hasStrictStateMapping)
+      {
+        return new UnknownEvent();
+      }
+
+      else
+      {
+        return createEvent(value);
+      }
     }
 
     if (!states.hasMapping(value))
     {
-      return value;
+      return createEvent(value);
     }
 
     else
     {
-      return states.getMapping(value);
+      return createEvent(states.getMapping(value), value);
     }
+  }
 
+
+  /**
+   * When set to true, this sensor can only return values that have been explicitly declared as
+   * its distinct states. When false, any arbitrary value can be returned from the sensor (those
+   * with distinct state mappings will get translated).
+   *
+   * @param strictStateMapping    true or false
+   */
+  public void setStrictStateMapping(boolean strictStateMapping)
+  {
+    this.hasStrictStateMapping = strictStateMapping;
   }
 
 
@@ -208,6 +277,43 @@ public class StateSensor extends Sensor
   }
 
 
+  // Protected Methods ----------------------------------------------------------------------------
+
+
+  /**
+   * Constructs an event for this sensor with a given state value. Subclasses can override this
+   * implementation to provide their own specific event types.
+   *
+   * @param value     event value
+   *
+   * @return    new event instance associated with this sensor
+   */
+  protected Event createEvent(String value)
+  {
+    int id = getSensorID();
+    String name = getName();
+
+    return new CustomState(id, name, value);
+  }
+
+  /**
+   * Constructs an event for this sensor with a given state value, and the originating value
+   * when state mapping (translation) was used. Subclasses can override this implementation to
+   * provide their own specific event types.
+   *
+   * @param value           the translated (mapped) event value
+   * @param originalValue   the original event value returned by the associated event producer
+   *
+   * @return    new event instance associated with this sensor
+   */
+  protected Event createEvent(String value, String originalValue)
+  {
+    int id = getSensorID();
+    String name = getName();
+
+    return new CustomState(id, name, value, originalValue);
+  }
+
 
 
   // Nested Classes -------------------------------------------------------------------------------
@@ -224,7 +330,6 @@ public class StateSensor extends Sensor
    */
   public static class DistinctStates
   {
-
 
     // Instance Fields ----------------------------------------------------------------------------
 
