@@ -408,17 +408,96 @@ public class StateSensorTest
   }
 
 
-  @Test public void testArbitraryStringPassThrough()
+  /**
+   * Test state sensor that has strict state mapping set to false (allowing arbitrary
+   * string values to pass through) with no explicit state declaration (so not showing
+   * up in sensor properties) <p>
+   *
+   * Related issue was ORCJAVA-90
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testArbitraryStringPassThrough() throws Exception
   {
-    // TODO :
-    //   - Some panel behavior depends on 'CUSTOM' type sensor passing through arbitrary strings
-    //     unfiltered. Make sure we're not too aggressive with validating custom state sensor
-    //     output to restrict this usage and allow arbitrary strings to pass through if no state
-    //     mappings are defined.
+    final int SENSOR_ID = 21;
+    MixedStateReadCommand readCommand = new MixedStateReadCommand("foo", "bar", "acme");
 
-    Assert.fail("Not Yet Implemented. See ORCJAVA-90 -- http://jira.openremote.org/browse/ORCJAVA-90");
+    StateSensor s1 = new StateSensor("arbitrary string", SENSOR_ID, cache, readCommand, null);
+    s1.setStrictStateMapping(false);
+    
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected 'foo', got " + getSensorValueFromCache(SENSOR_ID),
+        getSensorValueFromCache(SENSOR_ID).equals("foo")
+    );
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
+    Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
+    Assert.assertTrue(s1.getName().equals("arbitrary string"));
+    Assert.assertTrue(s1.getProperties().size() == 0);
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("bar"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("acme"));
   }
 
+  /**
+   * Test state sensor that has strict state mapping set to false (allowing arbitrary
+   * string values to pass through) but has *some* of the states explicitly declared
+   * (so they appear in sensor's properties which are available to protocol implementations)
+   * and *some* explicitly states declared and **mapped** to another value (so we do the
+   * conversion automatically).  <p>
+   *
+   * Related issue was ORCJAVA-90
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testArbitraryStringPassThroughWithMixedMapping() throws Exception
+  {
+    final int SENSOR_ID = 21;
+    MixedStateReadCommand readCommand = new MixedStateReadCommand("foo", "bar", "acme");
+    StateSensor.DistinctStates states = new StateSensor.DistinctStates();
+    states.addState("bar");
+    states.addStateMapping("acme", "emca");
+
+    StateSensor s1 = new StateSensor("arbitrary string", SENSOR_ID, cache, readCommand, states);
+    s1.setStrictStateMapping(false);
+
+    cache.registerSensor(s1);
+    s1.start();
+
+    Assert.assertTrue(
+        "Expected 'foo', got " + getSensorValueFromCache(SENSOR_ID),
+        getSensorValueFromCache(SENSOR_ID).equals("foo")
+    );
+
+    Assert.assertTrue(s1.getSensorID() == SENSOR_ID);
+    Assert.assertTrue(s1.isPolling());
+    Assert.assertFalse(s1.isEventListener());
+    Assert.assertTrue(s1.getName().equals("arbitrary string"));
+    Assert.assertTrue(s1.getProperties().size() == 2);
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-1"));
+    Assert.assertTrue(s1.getProperties().keySet().contains("state-2"));
+    Assert.assertTrue(s1.getProperties().values().contains("bar"));
+    Assert.assertTrue(s1.getProperties().values().contains("acme"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("bar"));
+
+    readCommand.nextValue();
+
+    Assert.assertTrue(getSensorValueFromCache(SENSOR_ID).equals("emca"));
+  }
+
+  
 
   @Test public void testToString()
   {
