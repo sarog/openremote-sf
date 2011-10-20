@@ -21,7 +21,10 @@
 package org.openremote.controller.model.sensor;
 
 import org.openremote.controller.protocol.EventProducer;
+import org.openremote.controller.protocol.Event;
 import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.model.event.Switch;
 
 
 /**
@@ -62,14 +65,22 @@ public class SwitchSensor extends StateSensor
    * Constructs a new switch sensor with given sensor ID and event producer. The sensor
    * implementation will return 'on' or 'off' string values.
    *
-   * @param name        human-readable name of this sensor
-   * @param sensorID    controller unique identifier
-   * @param producer    the protocol handler that backs this sensor either with a read command
-   *                    or event listener implementation
+   * @param name
+   *          human-readable name of this sensor
+   *
+   * @param sensorID
+   *          controller unique identifier
+   *
+   * @param cache
+   *          reference to the device state cache this sensor is associated with
+   *
+   * @param producer
+   *          the protocol handler that backs this sensor either with a read command
+   *          or event listener implementation
    */
-  public SwitchSensor(String name, int sensorID, EventProducer producer)
+  public SwitchSensor(String name, int sensorID, StatusCache cache, EventProducer producer)
   {
-    this(name, sensorID, producer, createSwitchStates());
+    this(name, sensorID, cache, producer, createSwitchStates());
   }
 
 
@@ -80,17 +91,26 @@ public class SwitchSensor extends StateSensor
    *
    * The sensor implementation will return 'on or 'off' string values.
    *
-   * @param name        human-readable name of this sensor
-   * @param sensorID    controller unique identifier
-   * @param producer    the protocol handler that backs this sensor either with a read command
-   *                    or event listener implementation
-   * @param states      state string mappings for the default 'on' and 'off' values
+   * @param name
+   *          human-readable name of this sensor
+   *
+   * @param sensorID
+   *          controller unique identifier
+   *
+   * @param cache
+   *          reference to the device state cache this sensor is associated with
+   *
+   * @param producer
+   *          the protocol handler that backs this sensor either with a read command
+   *          or event listener implementation
+   *
+   * @param states
+   *          state string mappings for the default 'on' and 'off' values
    */
-  public SwitchSensor(String name, int sensorID, EventProducer producer, DistinctStates states)
+  public SwitchSensor(String name, int sensorID, StatusCache cache, EventProducer producer, DistinctStates states)
   {
-    super(name, sensorID, EnumSensorType.SWITCH, producer, states, false);
+    super(name, sensorID, cache, EnumSensorType.SWITCH, producer, states, false);
   }
-
 
 
   // Object Overrides -----------------------------------------------------------------------------
@@ -107,5 +127,68 @@ public class SwitchSensor extends StateSensor
         "Switch Sensor (Name = '" + getName() + "', ID = '" + getSensorID() + "')";
   }
 
+
+
+  // StateSensor Overrides ------------------------------------------------------------------------
+
+  /**
+   * Constructs an event for this sensor instance with a given event value. Event value must be
+   * either 'on' or 'off' -- any other value will cause a
+   * {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent} instance to be returned
+   * instead.
+   *
+   * @param value     event value 'on' or 'off' -- case insensitive
+   *
+   * @return    a new event instance for this sensor
+   */
+  @Override protected Event createEvent(String value)
+  {
+    try
+    {
+      return new Switch(getSensorID(), getName(), value, Switch.State.valueOf(value.toUpperCase()));
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      log.warn(
+          "Switch event value must be either 'on' or 'off', got ''{0}'' in {1}",
+          value, this
+      );
+
+      return new UnknownEvent();
+    }
+  }
+
+  /**
+   * Constructs an event for this sensor instance with a given mapped (translated) event value
+   * and the original event value which was used for the translation. <p>
+   *
+   * The original value must be either 'on' or 'off' (case insensitive), otherwise a
+   * {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent} is returned instead. The
+   * translated value can be any arbitrary string value.
+   *
+   * @param value           the translated (mapped) event value
+   * @param originalValue   the original event value ('on' or 'off') returned by the associated
+   *                        event producer
+   *
+   * @return    a new event instance for this sensor
+   */
+  @Override protected Event createEvent(String value, String originalValue)
+  {
+    try
+    {
+      return new Switch(getSensorID(), getName(), value, Switch.State.valueOf(originalValue.toUpperCase()));
+    }
+
+    catch (IllegalArgumentException e)
+    {
+      log.warn(
+          "Switch event value must be either 'on' or 'off', got ''{0}'' in {1}",
+          value, this
+      );
+
+      return new UnknownEvent();
+    }
+  }
 }
 
