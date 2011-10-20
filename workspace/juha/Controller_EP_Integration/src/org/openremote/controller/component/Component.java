@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.HashMap;
 
 import org.openremote.controller.protocol.EventProducer;
+import org.openremote.controller.protocol.Event;
 import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.service.ServiceContext;
 
 /**
  * Super class of all components
@@ -88,7 +90,8 @@ public abstract class Component {
    }
 
 
-   public void setSensor(Sensor sensor) {
+   public void setSensor(Sensor sensor)
+   {
       this.sensor = sensor;
    }
 
@@ -97,12 +100,18 @@ public abstract class Component {
   {
     InitSensor()
     {
-      super("Init", Integer.MIN_VALUE, EnumSensorType.CUSTOM, new EventProducer() {}, new HashMap<String, String>(0));
+      super("Init",
+            Integer.MIN_VALUE,
+            null,
+            new EventProducer() {},
+            new HashMap<String, String>(0),
+            EnumSensorType.CUSTOM
+      );
     }
 
-    @Override public String processEvent(String value)
+    @Override public Event processEvent(String value)
     {
-      return value;
+      return new UnknownEvent(this);
     }
   }
 }
