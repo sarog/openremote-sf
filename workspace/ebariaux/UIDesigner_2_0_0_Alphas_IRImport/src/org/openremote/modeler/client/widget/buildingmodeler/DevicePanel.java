@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
 import org.openremote.modeler.client.event.DoubleClickEvent;
 import org.openremote.modeler.client.event.SubmitEvent;
 import org.openremote.modeler.client.gxtextends.SelectionServiceExt;
@@ -105,8 +103,6 @@ public class DevicePanel extends ContentPanel {
    
    private Map<BeanModel, ChangeListener> changeListenerMap = new HashMap<BeanModel,ChangeListener>();
 
-   
-   
    /**
     * Instantiates a new device panel.
     */
@@ -328,9 +324,7 @@ public class DevicePanel extends ContentPanel {
       setTopComponent(toolBar);
    }
 
-
-
-/**
+   /**
     * Creates the new device menu.
     * 
     * @return the menu item

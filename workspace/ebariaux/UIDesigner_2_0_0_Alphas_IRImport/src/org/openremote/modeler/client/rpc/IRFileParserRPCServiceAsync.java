@@ -35,10 +35,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IRFileParserRPCServiceAsync {
 
-//	void getDevices(Brand brand, AsyncCallback<List<Device>> callback);
-
-
-	void getBrands(AsyncCallback<List<BrandInfo>> callback);
+   void getBrands(AsyncCallback<List<BrandInfo>> callback);
 	void getDevices(BrandInfo brand, AsyncCallback<List<DeviceInfo>> callback);
 	void getCodeSets(DeviceInfo device,
 			AsyncCallback<List<CodeSetInfo>> callback);
@@ -46,8 +43,4 @@ public interface IRFileParserRPCServiceAsync {
 			AsyncCallback<List<IRCommandInfo>> callback);
 	void saveCommands(Device device, GlobalCache globalCache, IRTrans irTrans, List<IRCommandInfo> selectedFunctions,
 			AsyncCallback<List<DeviceCommand>> callback);
-	
-
-
-
 }
