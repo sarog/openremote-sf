@@ -150,12 +150,15 @@ public class SwitchSensor extends StateSensor
 
     catch (IllegalArgumentException e)
     {
-      log.warn(
-          "Switch event value must be either 'on' or 'off', got ''{0}'' in {1}",
-          value, this
-      );
+      if (!isUnknownSensorValue(value))
+      {
+        log.warn(
+            "Switch event value must be either 'on' or 'off', got ''{0}'' in {1}",
+            value, this
+        );
+      }
 
-      return new UnknownEvent();
+      return new UnknownEvent(this);
     }
   }
 
@@ -182,12 +185,15 @@ public class SwitchSensor extends StateSensor
 
     catch (IllegalArgumentException e)
     {
-      log.warn(
-          "Switch event value must be either 'on' or 'off', got ''{0}'' in {1}",
-          value, this
-      );
+      if (!isUnknownSensorValue(originalValue))
+      {
+        log.warn(
+            "Switch event value must be either 'on' or 'off', got ''{0}'' in {1}",
+            originalValue, this
+        );
+      }
 
-      return new UnknownEvent();
+      return new UnknownEvent(this);
     }
   }
 }
