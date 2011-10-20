@@ -503,6 +503,20 @@ public abstract class Sensor
   protected abstract Event processEvent(String value);
 
 
+  /**
+   * Helper method to allow subclasses to check if a given value matches the 'N/A' string that
+   * is used for uninitialized or error states in sensor implementations.
+   *
+   * @param value   value to compare to
+   *
+   * @return  true if value matches the string representation of
+   *          {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent}, false otherwise
+   */
+  protected boolean isUnknownSensorValue(String value)
+  {
+    return value.equals(Sensor.UNKNOWN_STATUS);
+  }
+
 
   // Inner Classes -------------------------------------------------------------------------------
 
@@ -514,15 +528,17 @@ public abstract class Sensor
    *
    * The value returned by this event is defined in {@link Sensor#UNKNOWN_STATUS}.
    */
-  public class UnknownEvent extends Event
+  protected static class UnknownEvent extends Event
   {
 
     /**
-     * Constructs a new unknown event type.
+     * Constructs a new unknown event type for a given sensor.
+     *
+     * @param sensor  the sensor reference to which this unknown event value is associated with
      */
-    public UnknownEvent()
+    public UnknownEvent(Sensor sensor)
     {
-      super(getSensorID(), getName());
+      super(sensor.getSensorID(), sensor.getName());
     }
 
     /**
