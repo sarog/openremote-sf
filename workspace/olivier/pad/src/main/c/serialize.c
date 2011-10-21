@@ -100,9 +100,13 @@ int readString(apr_pool_t *pool, apr_socket_t *sock, field_t *field) {
 	return R_SUCCESS;
 }
 
-int setCode(message_t *message, char code) {
+int checkCode(char code) {
 	if (strchr("PSANCLUO", code) == NULL)
 		return R_INVALID_CODE;
+	return R_SUCCESS;
+}
+
+int setCode(message_t *message, char code) {
 	message->code = (code_t) code;
 	return R_SUCCESS;
 }
@@ -117,15 +121,9 @@ void createMessageFields(apr_pool_t *pool, message_t *message, int nbFields) {
 	}
 }
 
-int readMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
-	int r; // Return value
+int readHeader(apr_socket_t *sock, char *code) {
 	char car;
-	int len = 1;
-	field_t f1, f2;
-	int i;
-
-	// Allocate message
-	*message = apr_palloc(pool, sizeof(message_t));
+	int len;
 
 	// Read version
 	apr_status_t rv = apr_socket_recv(sock, &car, &len);
@@ -139,10 +137,24 @@ int readMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
 	rv = apr_socket_recv(sock, &car, &len);
 	if (rv == APR_EOF || len == 0) {
 		return R_INVALID_MESSAGE;
-	}APR_RETURN_IF(setCode(*message, car), rv, rv);
+	}APR_RETURN_IF(checkCode(car), rv, rv);
+	*code = car;
+	return R_SUCCESS;
+}
+
+int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code) {
+	int r; // Return value
+	field_t f1, f2;
+	int i;
+
+	// Allocate message
+	*message = apr_palloc(pool, sizeof(message_t));
+
+	// Set code
+	(*message)->code = code;
 
 	// Read message fields
-	switch (car) {
+	switch (code) {
 	case PING:
 	case SHUTDOWN:
 		// Nothing more expected
@@ -181,7 +193,7 @@ int readMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
 	return R_SUCCESS;
 }
 
-int writeResponse(apr_socket_t *sock, message_t *message) {
+int writeMessage(apr_socket_t *sock, message_t *message) {
 	const char *buf = "OK";
 	printf("writing [%s]\n", buf);
 

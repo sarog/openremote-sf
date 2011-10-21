@@ -3,14 +3,24 @@
 #include "port.h"
 #include "dispatch.h"
 
-int dispatchInputMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool) {
+int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *type) {
+	int r;
+
+	RETURN_IF(readHeader(sock, code), r)
+	if (*code == ACK)
+		*type = CLIENT;
+	else
+		*type = SERVER;
+	return R_SUCCESS;
+}
+
+int dispatchInputMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code) {
 	int r;
 	port_t *port;
 
-	RETURN_IF(readMessage(sock, message, pool), r)
+	RETURN_IF(readBody(sock, message, pool, code), r)
 
 	switch ((*message)->code) {
-
 	case PING:
 		break;
 	case SHUTDOWN:
