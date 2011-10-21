@@ -31,7 +31,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 	public static final String CLASS_NAME = "tabBarComponent";
 	public static final int TABBAR_HEIGHT = 47;
 	public static final int PADDING_TOP = 3;
-	private static List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
+	private List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
 	private HorizontalPanel container;
 	private int pageCount = 0;
 	private int maxItemsPerPage = 0;
@@ -175,15 +175,32 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		loadPage(1);
 	}
 	
+	/*
+	 * When display dimensions change need to redraw the tab bar to
+	 * account for the change
+	 */
+	public void refresh() {
+		// Remove existing items
+		hideCurrentItems();
+		
+		// Remove the system tab items
+		int count = container.getWidgetCount();
+		for (TabBarItemComponent item : items) {
+			if (item.systemTabType != null) {
+				items.remove(item);
+			}
+		}
+		
+		// Recall render to do the calculations
+		onRender();
+	}
+	
 	private void loadPage(int pageNo) {
 		pageNo = pageNo > pageCount ? pageCount : pageNo;
 		currentPage = pageNo;
 		
 		// Remove existing items
-		int count = container.getWidgetCount();
-		for (int i=0; i<count; i++) {
-			container.remove(0);
-		}
+		hideCurrentItems();
 		
 		// Draw the corresponding set of items
 		int startIndex = ((pageNo-1) * maxItemsPerPage);
@@ -194,6 +211,13 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			}
 			TabBarItemComponent item = items.get(i);
 			container.add(item);
+		}
+	}
+	
+	public void hideCurrentItems() {
+		int count = container.getWidgetCount();
+		for (int i=0; i<count; i++) {
+			container.remove(0);
 		}
 	}
 	

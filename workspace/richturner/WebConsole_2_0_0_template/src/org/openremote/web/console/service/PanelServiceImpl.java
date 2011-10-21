@@ -130,5 +130,29 @@ public class PanelServiceImpl implements PanelService {
 			tabBar = currentPanelTabBar;
 		}
 		return tabBar;
+	}
+
+	@Override
+	public Screen getInverseScreen(int screenId) {
+		Screen screen = null;
+		Screen inverseScreen = null;
+		
+		if (currentScreenMap != null) {
+				screen = currentScreenMap.get(screenId);
+		}
+		
+		if (screen != null) {
+			Integer inverseId = screen.getInverseScreenId();
+			if (inverseId != null) {
+				inverseScreen = currentScreenMap.get(inverseId);
+			}
+		}
+		
+		return inverseScreen;
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return this.isInitialised;
 	}	
 }

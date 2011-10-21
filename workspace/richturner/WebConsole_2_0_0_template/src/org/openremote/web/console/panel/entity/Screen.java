@@ -32,6 +32,7 @@ public interface Screen {
    List<Gesture> getGesture();
    Background getBackground();
    Integer getInverseScreenId();
+   Boolean getLandscape();
    
    void setId(Integer id);
    void setName(String name);
@@ -40,4 +41,5 @@ public interface Screen {
    void setGesture(List<Gesture> gestures);
    void setBackground(Background background);
    void setInverseScreenId(Integer id);
+   void setLandscape(Boolean bool);
 }
