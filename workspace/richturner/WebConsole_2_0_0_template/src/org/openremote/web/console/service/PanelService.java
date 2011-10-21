@@ -19,4 +19,8 @@ public interface PanelService {
 	Screen getScreenByName(String name);
 	
 	TabBar getTabBar(int groupId);
+	
+	Screen getInverseScreen(int screenId);
+	
+	boolean isInitialized();
 }

@@ -318,7 +318,13 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		setPosition(event.getWindowWidth(), event.getWindowHeight());
 		
 		// Load in the inverse screen to what is currently loaded
-		
+		if (panelService.isInitialized()) {
+			Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
+			if (inverseScreen != null) {
+				loadScreen(currentGroupId, inverseScreen);
+				rotateDisplay = true;
+			}
+		}
 		
 		// Adjust console display
 		consoleDisplay.setOrientation(event, rotateDisplay);
@@ -363,10 +369,19 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			Integer toScreenId = navigate.getToScreen();
 			
 			if (to != null && !to.equals("")) {
+				// Force portrait display
+				consoleDisplay.setDisplayOrientation("portrait");
 				// TODO Load System Screen
 				Window.alert("Load System Screen");
 			} else if(toGroupId != null && toScreenId != null) {
-				loadScreen(toGroupId, panelService.getScreenById(toScreenId));
+				Screen screen = panelService.getScreenById(toScreenId);
+				loadScreen(toGroupId, screen);
+				Boolean isLandscape =screen.getLandscape();  
+				if (isLandscape != null && isLandscape) {
+					consoleDisplay.setDisplayOrientation("landscape");
+				} else {
+					consoleDisplay.setDisplayOrientation("portrait");
+				}
 			}
 		}
 	}

@@ -42,8 +42,10 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	private String colour;
 	private AbsolutePanel container;
 	public boolean isVertical = true;
-	private Widget currentTabBar;
+	private TabBarComponent currentTabBar;
 	private Widget currentScreen;
+	private String currentOrientation;
+	private String currentScreenOrientation = "portrait";
 	
 	public ConsoleDisplay(int width, int height) {
 		super(new AbsolutePanel());
@@ -91,6 +93,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	 */
 	public void setOrientation(RotationEvent event, boolean rotateDisplay) {
 		String orientation = event.getOrientation();
+		this.currentOrientation = orientation;
 		
 		if ("portrait".equals(orientation)) {
 			isVertical = true;
@@ -103,16 +106,36 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 			return;
 		}
 		
+		rotateScreen(orientation);
+	}
+	
+	public void setDisplayOrientation(String orientation) {
+		if (!orientation.equalsIgnoreCase(currentScreenOrientation)) {
+			rotateScreen(orientation);
+		}
+	}
+	
+	private void rotateScreen(String orientation) {
+		currentScreenOrientation = orientation;
+		int width = getWidth();
+		int height = getHeight();
+		
 		if ("portrait".equals(orientation)) {
 			container.setWidgetPosition(display,0,0);
 		   display.setStylePrimaryName("portraitDisplay");
-		   display.setWidth(width + "px");
-		   display.setHeight(height + "px");
 		} else {
-			container.setWidgetPosition(display, (width/2)-(height/2), (height/2)-(width/2));
+			//container.setWidgetPosition(display, (width/2)-(height/2), (height/2)-(width/2));
+			container.setWidgetPosition(display, (height/2)-(width/2), (width/2)-(height/2));
 			display.setStylePrimaryName("landscapeDisplay");
-		   display.setWidth(height + "px");
-		   display.setHeight(width + "px");
+		}
+		
+	   display.setWidth(width + "px");
+	   display.setHeight(height + "px");
+		
+		// Update the tab bar
+		if (currentTabBar != null) {
+			currentTabBar.refresh();
+			display.setWidgetPosition(currentTabBar,  0, getHeight() - currentTabBar.getHeight());
 		}
 	}
 	
@@ -187,10 +210,22 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	public void onRender() {}
 	
 	public int getWidth() {
-		return this.width;
+		int value = 0; 
+		if ("portrait".equals(currentOrientation)) {
+			value = this.width;
+		} else {
+			value = this.height;
+		}
+		return value;
 	}
 	
 	public int getHeight() {
-		return this.height;
+		int value = 0; 
+		if ("portrait".equals(currentOrientation)) {
+			value = this.height;
+		} else {
+			value = this.width;
+		}
+		return value;
 	}
 }
