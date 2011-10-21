@@ -22,32 +22,30 @@ package org.openremote.controller.model.xml;
 
 import java.util.List;
 
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.Attribute;
 import org.jdom.Namespace;
-import org.openremote.controller.model.XMLMapping;
-import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.Constants;
+import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.command.Command;
+import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.exception.XMLParsingException;
-import org.openremote.controller.protocol.EventProducer;
-import org.openremote.controller.command.CommandFactory;
-import org.openremote.controller.command.RemoteActionXMLParser;
-import org.openremote.controller.command.Command;
-import org.openremote.controller.Constants;
-import org.openremote.controller.utils.Logger;
+import org.openremote.controller.model.XMLMapping;
 import org.openremote.controller.model.sensor.Sensor;
-import org.openremote.controller.component.EnumSensorType;
-import org.openremote.controller.component.RangeSensor;
-import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.model.sensor.StateSensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.protocol.EventProducer;
+import org.openremote.controller.service.Deployer;
+import org.openremote.controller.utils.Logger;
 
 /**
  * XML Binding from XML document to sensor object model.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class SensorBuilder
+public class SensorBuilder extends ObjectBuilder
 {
 
   // TODO :
@@ -179,11 +177,23 @@ public class SensorBuilder
 
 
 
+  // Enums ----------------------------------------------------------------------------------------
+
+  // TODO : sensor type should be externalized to make it easier to plug in new sensor implementations
+
+  private enum SensorType
+  {
+    RANGE, LEVEL, SWITCH, CUSTOM
+  }
+
+
 
   // Class Members --------------------------------------------------------------------------------
 
+  /**
+   * TODO
+   */
   private static Namespace orNamespace = Namespace.getNamespace(Constants.OPENREMOTE_WEBSITE);
-
   
   /**
    * Common log category for all XML parsing related activities.
@@ -191,145 +201,70 @@ public class SensorBuilder
   private final static Logger log = Logger.getLogger(Constants.SENSOR_XML_PARSER_LOG_CATEGORY);
 
 
+
+
   // Private Instance Fields ----------------------------------------------------------------------
 
-  private RemoteActionXMLParser controllerXMLParser;
+
+  /**
+   * TODO : this reference should go away once ORCJAVA-201 and ORCJAVA-202 are complete
+   */
   private CommandFactory protocolHandlerFactory;
+
+  /**
+   * This is a reference to the deployer's state cache. The created sensors should register
+   * themselves with the state cache.
+   */
+  private StatusCache deviceStateCache;
+
+
+  // Constructors ---------------------------------------------------------------------------------
+
+  /**
+   * Constructs a new sensor builder and registers it with the given deployer.
+   *
+   * @param deployer
+   *          deployer instance this sensor builder will register with
+   *
+   * @param cache
+   *          deployer's associated device state cache -- the created sensors will use
+   *          this state cache to register themselves with
+   */
+  public SensorBuilder(Deployer deployer, StatusCache cache)
+  {
+    super(deployer);
+
+    this.deviceStateCache = cache;
+  }
 
 
   // Public Instance Methods ----------------------------------------------------------------------
 
 
   /**
-   * Constructs a sensor instance from controller's controller.xml document using a JDOM XML
-   * element pointing to <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt>
-   * entry. The JDOM element must belong to the controller's controller.xml document.
+   * Constructs a sensor instance from controller's definition using a JDOM XML element pointing
+   * to <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt> entry.
    *
-   * @param sensorElement     JDOM element for sensor
+   * @param sensorElement
+   *            JDOM element for sensor
    *
-   * @throws InitializationException    if the sensor model cannot be build from the given XML
-   *                                    element
+   * @throws InitializationException
+   *            if the sensor model cannot be build from the given XML element
    *
-   * @return initialized sensor instance
+   * @return initialized sensor instance -- notice that sensor must be
+   *         {@link org.openremote.controller.model.sensor.Sensor#start() started} explicitly.
    */
-  public Sensor build(Element sensorElement) throws InitializationException
-  {
-    return build(sensorElement.getDocument(), sensorElement);
-  }
-
-
-  /**
-   * TODO : Builds a sensor from XML element.
-   *
-   * @param componentIncludeElement   JDOM element for sensor
-   *
-   * @throws InitializationException    if the sensor model cannot be built from the given XML
-   *                                    element
-   *
-   * @return sensor
-   */
-  public Sensor buildFromComponentInclude(Element componentIncludeElement)
-      throws InitializationException
-  {
-
-    if (componentIncludeElement == null)
-    {
-      throw new InitializationException(
-          "Implementation error, null reference on expected " +
-          "<include type = \"sensor\" ref = \"nnn\"/> element."
-      );
-    }
-
-    Attribute includeTypeAttr =
-        componentIncludeElement.getAttribute(XMLMapping.XML_INCLUDE_ELEMENT_TYPE_ATTR);
-
-    String typeAttributeValue = includeTypeAttr.getValue();
-
-    if (!typeAttributeValue.equals(XMLMapping.XML_INCLUDE_ELEMENT_TYPE_SENSOR))
-    {
-      throw new XMLParsingException(
-          "Expected to include 'sensor' type, got {0} instead.", typeAttributeValue
-      );
-    }
-
-
-    Attribute includeRefAttr =
-        componentIncludeElement.getAttribute(XMLMapping.XML_INCLUDE_ELEMENT_REF_ATTR);
-
-    String refAttributeValue = includeRefAttr.getValue();
-
-
-    try
-    {
-      int sensorID = Integer.parseInt(refAttributeValue);
-      Document document = componentIncludeElement.getDocument();
-
-      Element sensorElement = controllerXMLParser.queryElementById(document, sensorID);
-
-      Sensor sensor = this.build(document, sensorElement);
-
-      // Pull out a specific log category just to log the creation of sensor objects
-      // in this method (happens at startup or soft restart)...
-
-      Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY)
-          .info("BUG ORCJAVA-118 -- Create sensor : {0}", sensor.toString());
-
-      return sensor;
-    }
-
-    catch (NumberFormatException e)
-    {
-        throw new InitializationException(
-            "Currently only integer values are accepted as unique sensor ids. " +
-            "Could not parse {0} to integer.", refAttributeValue
-        );
-    }
-  }
-
-
-
-  // Service Dependencies -------------------------------------------------------------------------
-
-  public void setRemoteActionXMLParser(RemoteActionXMLParser controllerXMLParser)
-  {
-     this.controllerXMLParser = controllerXMLParser;
-  }
-
-  public void setCommandFactory(CommandFactory protocolHandlerFactory)
-  {
-     this.protocolHandlerFactory = protocolHandlerFactory;
-  }
-
-
-
-  // Private Instance Methods ---------------------------------------------------------------------
-
-
-  /**
-   * Constructs a sensor instance from a given document and JDOM XML element pointing to a
-   * <tt>{@code <sensor id = "nnn" name = "sensor-name" type = "<datatype>"/>}</tt> element
-   * in the controller.xml file.
-   *
-   * @param document        TODO specified JDOM document of controller.xml, use default
-   *                        controller.xml if it's null.
-   * @param sensorElement   JDOM element for sensor
-   *
-   * @throws InitializationException    if the sensor model cannot be built from the given XML
-   *                                    element
-   *
-   * @return initialized sensor instance
-   */
-  private Sensor build(Document document, Element sensorElement) throws InitializationException
+  @Override public Sensor build(Element sensorElement) throws InitializationException
   {
     String sensorIDValue = sensorElement.getAttributeValue("id");
     String sensorName = sensorElement.getAttributeValue("name");
 
-    EnumSensorType type = parseSensorType(sensorElement);
+    SensorType type = parseSensorType(sensorElement);
 
     try
     {
       int sensorID = Integer.parseInt(sensorIDValue);
-      EventProducer ep = parseSensorEventProducer(document, sensorElement);
+      EventProducer ep = parseSensorEventProducer(sensorElement);
 
       switch (type)
       {
@@ -338,23 +273,27 @@ public class SensorBuilder
           int min = getMinProperty(sensorElement);
           int max = getMaxProperty(sensorElement);
 
-          return new RangeSensor(sensorName, sensorID, ep, min, max);
+          return new RangeSensor(sensorName, sensorID, deviceStateCache, ep, min, max);
 
         case LEVEL:
 
-          return new LevelSensor(sensorName, sensorID, ep);
+          return new LevelSensor(sensorName, sensorID, deviceStateCache, ep);
 
         case SWITCH:
 
           StateSensor.DistinctStates states = getSwitchStateMapping(sensorElement);
 
-          return new SwitchSensor(sensorName, sensorID, ep, states);
+          return new SwitchSensor(sensorName, sensorID, deviceStateCache, ep, states);
 
         case CUSTOM:
 
           StateSensor.DistinctStates stateMapping = getDistinctStateMapping(sensorElement);
 
-          return new StateSensor(sensorName, sensorID, ep, stateMapping);
+          StateSensor sensor = new StateSensor(sensorName, sensorID, deviceStateCache, ep, stateMapping);
+
+          sensor.setStrictStateMapping(false);
+
+          return sensor;
 
         default:
 
@@ -375,29 +314,78 @@ public class SensorBuilder
   }
 
 
-  private EnumSensorType parseSensorType(Element sensorElement) throws XMLParsingException
+
+  // Implements ObjectBuilder ---------------------------------------------------------------------
+
+
+  // TODO : these two are likely to get modified with ORCJAVA-185
+
+  @Override public Deployer.ControllerSchemaVersion getSchemaVersion()
+  {
+    return Deployer.ControllerSchemaVersion.VERSION_2_0;
+  }
+
+  @Override public Deployer.XMLSegment getRootSegment()
+  {
+    return Deployer.XMLSegment.SENSORS;
+  }
+
+
+
+  // Service Dependencies -------------------------------------------------------------------------
+
+  public void setCommandFactory(CommandFactory protocolHandlerFactory)
+  {
+     this.protocolHandlerFactory = protocolHandlerFactory;
+  }
+
+
+  // Private Instance Methods ---------------------------------------------------------------------
+
+
+  /**
+   * Determines the type of sensor from the type attribute in
+   * <tt>{@code <sensor name = "..." type = "XXX"/>}</tt> <p>
+   *
+   * Currently valid values are defined in
+   * {@link org.openremote.controller.model.xml.SensorBuilder.SensorType}.
+   *
+   * @param   sensorElement  JDOM element pointing to the sensor structure
+   *
+   * @return sensor's type
+   *
+   * @throws XMLParsingException if the type attribute value cannot be recognized
+   */
+  private SensorType parseSensorType(Element sensorElement) throws XMLParsingException
   {
     String typeValue = sensorElement.getAttributeValue(XML_SENSOR_ELEMENT_TYPE_ATTR);
 
-    return parseSensorType(typeValue);
-  }
-
-  private EnumSensorType parseSensorType(String value) throws XMLParsingException
-  {
     try
     {
-      return EnumSensorType.valueOf(value.toUpperCase());
+      return SensorType.valueOf(typeValue.toUpperCase());
     }
     catch (IllegalArgumentException e)
     {
       throw new XMLParsingException(
-          "Sensor type {0} is not a valid sensor datatype.", value
+          "Sensor type {0} is not a valid sensor datatype.", typeValue
       );
     }
   }
 
 
-  private EventProducer parseSensorEventProducer(Document doc, Element sensorElement)
+  /**
+   * Resolves an <tt>{@code <include .../>}</tt> entry from within sensor element
+   * that references the command sensor uses to retrieve device state.
+   *
+   * @param sensorElement   JDOM element pointing to sensor structure
+   *
+   * @return  event producer instance that the sensor uses to retrieve device state
+   *
+   * @throws InitializationException
+   *            if the sensor element does not have a child include element, or if the
+   *            referenced command in include element could not be created
+   */
+  private EventProducer parseSensorEventProducer(Element sensorElement)
     throws InitializationException
   {
     List<Element> sensorPropertyElements = getChildren(sensorElement);
@@ -419,8 +407,10 @@ public class SensorBuilder
           {
             int eventProducerID = Integer.parseInt(eventProducerRefValue);
 
-            Element eventProducerElement =
-                controllerXMLParser.queryElementById(doc, eventProducerID);
+            Element eventProducerElement = getDeployer().queryElementById(eventProducerID);
+
+
+            // TODO : this should go through deployer API, see ORCJAVA-202 and ORCJAVA-201
 
             Command eventProducer = protocolHandlerFactory.getCommand(eventProducerElement);
 
