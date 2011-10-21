@@ -5,7 +5,8 @@
 
 #include "dispatch.h"
 
-int readMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool);
-int writeResponse(apr_socket_t *sock, message_t *message);
+int readHeader(apr_socket_t *sock, char *code);
+int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code);
+int writeMessage(apr_socket_t *sock, message_t *message);
 
 #endif

@@ -17,46 +17,49 @@
 #include "codes.h"
 #include "dispatch.h"
 
-/* default listen port number */
+// Default listen port number
 #define DEF_LISTEN_PORT		7876
 
-/* default socket backlog number. SOMAXCONN is a system default value */
+// Default socket backlog number. SOMAXCONN is a system default value.
 #define DEF_SOCKET_BACKLOG	SOMAXCONN
 
+//
 #define DEF_POLLSET_NUM		32
 
-/* default socket timeout */
+// Default socket timeout
 #define DEF_POLL_TIMEOUT	(APR_USEC_PER_SEC * 30)
 
-/* default buffer size */
+// Default buffer size
 typedef struct _serviceContext_t serviceContext_t;
 
-/**
- * network event callback function type
- */
+// Network event callback function type
 typedef int (*socket_callback_t)(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 
-/**
- * network server context 
- */
-struct _serviceContext_t {
+typedef struct _transaction_t {
 	enum {
-		SERV_RECV_REQUEST, SERV_SEND_RESPONSE,
+		WAITING_FOR_REQUEST, WAITING_FOR_RESPONSE
 	} status;
-
-	socket_callback_t cbFunc;
-	apr_pool_t *socketPool;
-	apr_pool_t *transactionPool;
-
 	message_t *request;
 	message_t *response;
+} transaction_t;
+
+// Service context
+struct _serviceContext_t {
+	enum {
+		RECV_MESSAGE, SEND_MESSAGE,
+	} status;
+	socket_callback_t cbFunc;
+	apr_pool_t *socketPool;
+	apr_pool_t *serverTxPool;
+	apr_pool_t *clientTxPool;
+	transaction_t *clientTx;
+	transaction_t *serverTx;
 };
 
-static apr_socket_t* createListenSocket(apr_pool_t *mp);
-static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool);
-
-static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
-static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+static apr_socket_t* createListenSocket(apr_pool_t *listenPool);
+static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool);
+int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+static int sendMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 
 /**
  *
@@ -73,7 +76,6 @@ int runServer() {
 	apr_pool_create(&socketPool, NULL);
 
 	lsock = createListenSocket(listenPool);
-	assert(lsock);
 
 	apr_pollset_create(&pollset, DEF_POLLSET_NUM, listenPool, 0);
 	{
@@ -102,20 +104,22 @@ int runServer() {
 		}
 	}
 
-	return 0;
+	apr_pool_destroy(socketPool);
+	apr_pool_destroy(listenPool);
+	return R_SUCCESS;
 }
 
-static apr_socket_t* createListenSocket(apr_pool_t *mp) {
+static apr_socket_t* createListenSocket(apr_pool_t *listenPool) {
 	apr_status_t rv;
 	apr_socket_t *s;
 	apr_sockaddr_t *sa;
 
-	rv = apr_sockaddr_info_get(&sa, NULL, APR_INET, DEF_LISTEN_PORT, 0, mp);
+	rv = apr_sockaddr_info_get(&sa, NULL, APR_INET, DEF_LISTEN_PORT, 0, listenPool);
 	if (rv != APR_SUCCESS) {
 		goto error;
 	}
 
-	rv = apr_socket_create(&s, sa->family, SOCK_STREAM, APR_PROTO_TCP, mp);
+	rv = apr_socket_create(&s, sa->family, SOCK_STREAM, APR_PROTO_TCP, listenPool);
 	if (rv != APR_SUCCESS) {
 		goto error;
 	}
@@ -139,20 +143,23 @@ static apr_socket_t* createListenSocket(apr_pool_t *mp) {
 	error: return NULL;
 }
 
-static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *pool) {
+static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool) {
 	apr_socket_t *ns;/* accepted socket */
 	apr_status_t rv;
 
-	rv = apr_socket_accept(&ns, lsock, pool);
+	rv = apr_socket_accept(&ns, lsock, socketPool);
 	if (rv == APR_SUCCESS) {
 		// Create service context
-		serviceContext_t *context = apr_palloc(pool, sizeof(serviceContext_t));
-		apr_pollfd_t descriptor = { pool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
+		serviceContext_t *context = apr_palloc(socketPool, sizeof(serviceContext_t));
+		apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
 		descriptor.desc.s = ns;
-		context->status = SERV_RECV_REQUEST;
-		context->cbFunc = receiveRequestCallback;
-		context->socketPool = pool;
-		apr_pool_create(&context->transactionPool, NULL);
+		context->status = RECV_MESSAGE;
+		context->cbFunc = receiveMessage;
+		context->socketPool = socketPool;
+
+		// Create new transaction pools
+		apr_pool_create(&context->serverTxPool, context->socketPool);
+		apr_pool_create(&context->clientTxPool, context->socketPool);
 
 		/* non-blocking socket. We can't expect that @ns inherits non-blocking mode from @lsock */
 		apr_socket_opt_set(ns, APR_SO_NONBLOCK, 1);
@@ -165,40 +172,67 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *poo
 }
 
 void clearTransaction(serviceContext_t *context) {
-	apr_pool_clear(context->transactionPool);
+	apr_pool_clear(context->serverTxPool);
 }
 
-void clearSocket(serviceContext_t *context) {
+void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
+	apr_socket_close(sock);
 	apr_pool_clear(context->socketPool);
 }
 
-static int receiveRequestCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-	int r = dispatchInputMessage(sock, &context->request, context->transactionPool);
+static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
+	// Create a new server transaction if not already existing
+	if (context->serverTx == NULL) {
+		context->serverTx = apr_palloc(context->serverTxPool, sizeof(transaction_t));
+	}
+
+	int r = dispatchInputMessage(sock, &context->serverTx->request, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
-		apr_socket_close(sock);
-		clearTransaction(context);
-		clearSocket(context);
+		closeSocket(sock, context);
 		return r;
 	}
 
-	// Change context status from write to read
+	// Change context status from receive to send
 	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
 	descriptor.desc.s = sock;
 	apr_pollset_remove(pollset, &descriptor);
 	descriptor.reqevents = APR_POLLOUT;
 	apr_pollset_add(pollset, &descriptor);
-	context->status = SERV_SEND_RESPONSE;
-	context->cbFunc = sendResponseCallback;
+	context->status = SEND_MESSAGE;
+	context->cbFunc = sendMessage;
 	return R_SUCCESS;
+}
+
+static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
+
+}
+
+int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
+	char code;
+	messageTxType_t type;
+
+	// Read message header
+	int r = checkInputMessage(sock, &code, &type);
+	if (r != R_SUCCESS) {
+		closeSocket(sock, context);
+		return r;
+	}
+
+	// Handle rest of message according to its transaction type
+	if (type == SERVER) {
+		return receiveRequest(context, pollset, sock, code);
+	} else {
+		return receiveResponse(context, pollset, sock, code);
+	}
 }
 
 /**
  * Send a response to the client.
  */
-static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-	writeResponse(sock, context->response);
+static int sendMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
+//	writeMessage(sock, context->response);
 
-	// Clear all memory related to request and response
+// Clear all memory related to request and response
 	clearTransaction(context);
 
 	// Change context status from write to read
@@ -207,7 +241,7 @@ static int sendResponseCallback(serviceContext_t *context, apr_pollset_t *pollse
 	apr_pollset_remove(pollset, &descriptor);
 	descriptor.reqevents = APR_POLLIN;
 	apr_pollset_add(pollset, &descriptor);
-	context->status = SERV_RECV_REQUEST;
-	context->cbFunc = receiveRequestCallback;
+	context->status = RECV_MESSAGE;
+	context->cbFunc = receiveMessage;
 	return R_SUCCESS;
 }
