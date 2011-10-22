@@ -79,6 +79,7 @@
 	[viewControllers release];
     self.group = nil;
 	self.tabBar = nil;
+    self.uiTabBar.delegate = nil;
     self.uiTabBar = nil;
 	[super dealloc];
 }
@@ -165,6 +166,7 @@
 		return NO;
 	}
 	
+    [self updateTabBarItemSelection];
 	return YES;
 }
 
@@ -391,7 +393,7 @@
     
     for (TabBarItem *tabBarItem in self.tabBar.tabBarItems) {
 		if (tabBarItem.navigate && self.group.groupId == tabBarItem.navigate.toGroup) {
-			if (tabBarItem.navigate.toScreen == [self currentScreenViewController].screen.screenId) {
+			if (tabBarItem.navigate.toScreen == [self currentScreenViewController].screen.screenId | tabBarItem.navigate.toScreen <= 0) {
 				selected = [self.tabBar.tabBarItems indexOfObject:tabBarItem];
                 break;
 			}	
@@ -409,8 +411,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}
     
-    // TODO: self might be released if above navigated some place else
-//    [self updateTabBarItemSelection];
+    // ! Do not do anything anymore here as after the navigation, self will be released if we moved to a different group
 }
 
 @synthesize group;
