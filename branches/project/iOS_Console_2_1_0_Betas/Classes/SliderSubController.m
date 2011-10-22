@@ -24,6 +24,7 @@
 #import "DirectoryDefinition.h"
 #import "PollingStatusParserDelegate.h"
 #import "Sensor.h"
+#import "NotificationConstant.h"
 
 #define MIN_SLIDE_VARIANT 1
 
@@ -160,6 +161,12 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
         
         self.view = uiSlider;
         [uiSlider release];
+        
+        int sensorId = ((SensorComponent *)self.component).sensorId;
+        if (sensorId > 0 ) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:nil];
+        }
     }
     
     return self;
@@ -167,6 +174,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     self.sliderTip = nil;
     [super dealloc];
 }
@@ -192,6 +200,9 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = self.slider.sensor.sensorId;
 	float newStatus = [[pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]] floatValue];
+    
+    NSLog(@"Slider - setPollingStatus %d to %f", sensorId, newStatus);
+    
 	((UISlider *)self.view).value = newStatus;
 	self.currentValue = (int)newStatus;
 }

@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #import "SensorComponent.h"
+#import "Sensor.h"
 
 @implementation SensorComponent
 
@@ -30,7 +31,7 @@
 
 - (int)sensorId
 {
-    return 0;
+    return self.sensor.sensorId;
 }
 
 @synthesize sensor;

@@ -408,7 +408,9 @@
 	if (tabBarItem && tabBarItem.navigate) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationNavigateTo object:tabBarItem.navigate];
 	}
-    [self updateTabBarItemSelection];
+    
+    // TODO: self might be released if above navigated some place else
+//    [self updateTabBarItemSelection];
 }
 
 @synthesize group;

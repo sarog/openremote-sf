@@ -42,11 +42,6 @@
 	[super dealloc];
 }
 
-- (int)sensorId
-{
-    return self.sensor.sensorId;
-}
-
 @synthesize fontSize, color, text;
 
 @end
