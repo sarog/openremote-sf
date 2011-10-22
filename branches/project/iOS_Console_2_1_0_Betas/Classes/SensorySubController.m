@@ -49,7 +49,7 @@
 - (void)addPollingNotificationObserver
 {
 	int sensorId = ((SensorComponent *)self.component).sensorId;
-    	if (sensorId > 0 ) {
+    if (sensorId > 0 ) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:nil];
 	}

@@ -24,6 +24,7 @@
 #import "DirectoryDefinition.h"
 #import "PollingStatusParserDelegate.h"
 #import "Sensor.h"
+#import "NotificationConstant.h"
 
 @interface SwitchSubController()
 
@@ -64,12 +65,19 @@
         }
         self.view = button;
         [self setOn:NO];
+        
+        int sensorId = ((SensorComponent *)self.component).sensorId;
+        if (sensorId > 0 ) {
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setPollingStatus:) name:[NSString stringWithFormat:NotificationPollingStatusIdFormat, sensorId] object:nil];
+        }
     }    
     return self;
 }
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     self.onUIImage = nil;
     self.offUIImage = nil;
     [super dealloc];
