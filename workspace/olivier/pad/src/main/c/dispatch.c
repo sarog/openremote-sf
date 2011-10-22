@@ -4,9 +4,7 @@
 #include "dispatch.h"
 
 int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *type) {
-	int r;
-
-	RETURN_IF(readHeader(sock, code), r)
+	CHECK(readHeader(sock, code))
 	if (*code == ACK)
 		*type = CLIENT;
 	else
@@ -14,35 +12,44 @@ int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *type) {
 	return R_SUCCESS;
 }
 
-int dispatchInputMessage(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code) {
-	int r;
+int operateRequest(apr_socket_t *sock, transaction_t *tx, apr_pool_t *txPool, char code) {
 	port_t *port;
 
-	RETURN_IF(readBody(sock, message, pool, code), r)
+	CHECK(readBody(sock, &tx->request, txPool, code))
 
-	switch ((*message)->code) {
+	switch (tx->request->code) {
 	case PING:
+		return createACK(txPool, &tx->response, ACK_OK);
 		break;
 	case SHUTDOWN:
-		break;
-	case ACK:
 		break;
 	case NOTIFY:
 		break;
 	case LOCK:
-		RETURN_IF(getPort((*message)->fields[0].stringVal, &port), r)
-		return lock(port, (*message)->fields[1].stringVal);
+		CHECK(getPort(tx->request->fields[0].stringVal, &port))
+		return lock(port, tx->request->fields[1].stringVal);
 		break;
 	case UNLOCK:
-		RETURN_IF(getPort((*message)->fields[0].stringVal, &port), r)
-		return unlock(port, (*message)->fields[1].stringVal);
+		CHECK(getPort(tx->request->fields[0].stringVal, &port))
+		return unlock(port, tx->request->fields[1].stringVal);
 		break;
 	case CREATE_PORT:
-		return createPort((*message)->fields[0].stringVal, (*message)->fields[1].stringVal);
+		return createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
 		break;
 	case CONFIGURE:
-		RETURN_IF(getPort((*message)->fields[0].stringVal, &port), r)
+		CHECK(getPort(tx->request->fields[0].stringVal, &port))
 		// TODO configure
+		break;
+	}
+
+	return R_SUCCESS;
+}
+
+int writeMessage(apr_socket_t *sock, message_t *message) {
+	CHECK(writeHeader(sock, message));
+	switch (message->code) {
+	case ACK:
+		CHECK(writeInt32(sock, &message->fields[0]))
 		break;
 	}
 

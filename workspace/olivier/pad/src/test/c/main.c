@@ -9,23 +9,33 @@
 void testBuf2Int32() {
 	apr_int32_t v;
 	int r = buf2Int32("00000001", &v);
-	ASSERT(r, R_SUCCESS);
-	ASSERT(v, 1);
+	ASSERT_INTS_EQUAL(r, R_SUCCESS);
+	ASSERT_INTS_EQUAL(v, 1);
 	r = buf2Int32("FFFFFFFF", &v);
-	ASSERT(r, R_SUCCESS);
-	ASSERT(v, -1);
+	ASSERT_INTS_EQUAL(r, R_SUCCESS);
+	ASSERT_INTS_EQUAL(v, -1);
 	r = buf2Int32("GFFFFFFF", &v);
-	ASSERT(r, R_INVALID_MESSAGE);
+	ASSERT_INTS_EQUAL(r, R_INVALID_MESSAGE);
 	r = buf2Int32("FFFFFFF", &v);
-	ASSERT(r, R_INVALID_MESSAGE);
+	ASSERT_INTS_EQUAL(r, R_INVALID_MESSAGE);
+}
+
+void testInt322Buf() {
+	int r;
+	char buf[9];
+	buf[8] = 0;
+	ASSERT_INTS_EQUAL(int322Buf(buf, 16), R_SUCCESS);
+	ASSERT_STRINGS_EQUAL(buf, "00000010");
+	ASSERT_INTS_EQUAL(int322Buf(buf, -1), R_SUCCESS);
+	ASSERT_STRINGS_EQUAL(buf, "FFFFFFFF");
 }
 
 void testBuf2Uint16() {
 	apr_uint16_t v;
 	int r = buf2Uint16("GFFF", &v);
-	ASSERT(r, R_INVALID_MESSAGE);
+	ASSERT_INTS_EQUAL(r, R_INVALID_MESSAGE);
 	r = buf2Uint16("FFF", &v);
-	ASSERT(r, R_INVALID_MESSAGE);
+	ASSERT_INTS_EQUAL(r, R_INVALID_MESSAGE);
 }
 
 void testCreatePort() {
@@ -33,19 +43,20 @@ void testCreatePort() {
 	port_t *port;
 	initPortManager();
 	r = createPort("foo", "bar");
-	ASSERT(r, R_SUCCESS);
+	ASSERT_INTS_EQUAL(r, R_SUCCESS);
 	r = getPort("foo", &port);
-	ASSERT(r, R_SUCCESS)
-	ASSERT(strcmp(port->portId, "foo"), 0)
-	ASSERT(strcmp(port->portType, "bar"), 0)
-	ASSERT((int)port->lockSource, 0)
-	ASSERT((int)port->configuration, 0)
+	ASSERT_INTS_EQUAL(r, R_SUCCESS);
+	ASSERT_INTS_EQUAL(strcmp(port->portId, "foo"), 0);
+	ASSERT_INTS_EQUAL(strcmp(port->portType, "bar"), 0);
+	ASSERT_INTS_EQUAL((int)port->lockSource, 0);
+	ASSERT_INTS_EQUAL((int)port->configuration, 0);
 }
 
 void main(int argc, const char *argv[]) {
 	apr_status_t st = apr_initialize();
-	ASSERT(st, APR_SUCCESS)
+	ASSERT_INTS_EQUAL(st, APR_SUCCESS);
 	testBuf2Int32();
+	testInt322Buf();
 	testBuf2Uint16();
 	testCreatePort();
 	printf("\n");

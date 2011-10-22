@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-
+#include <sys/socket.h>  // To please Eclipse
 #include "apr_general.h"
 #include "apr_file_io.h"
 #include "apr_strings.h"
@@ -23,7 +23,7 @@
 // Default socket backlog number. SOMAXCONN is a system default value.
 #define DEF_SOCKET_BACKLOG	SOMAXCONN
 
-//
+// TODO
 #define DEF_POLLSET_NUM		32
 
 // Default socket timeout
@@ -34,14 +34,6 @@ typedef struct _serviceContext_t serviceContext_t;
 
 // Network event callback function type
 typedef int (*socket_callback_t)(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
-
-typedef struct _transaction_t {
-	enum {
-		WAITING_FOR_REQUEST, WAITING_FOR_RESPONSE
-	} status;
-	message_t *request;
-	message_t *response;
-} transaction_t;
 
 // Service context
 struct _serviceContext_t {
@@ -59,7 +51,7 @@ struct _serviceContext_t {
 static apr_socket_t* createListenSocket(apr_pool_t *listenPool);
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool);
 int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
-static int sendMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 
 /**
  *
@@ -160,6 +152,8 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 		// Create new transaction pools
 		apr_pool_create(&context->serverTxPool, context->socketPool);
 		apr_pool_create(&context->clientTxPool, context->socketPool);
+		context->serverTx = NULL;
+		context->clientTx = NULL;
 
 		/* non-blocking socket. We can't expect that @ns inherits non-blocking mode from @lsock */
 		apr_socket_opt_set(ns, APR_SO_NONBLOCK, 1);
@@ -171,8 +165,18 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 	return TRUE;
 }
 
-void clearTransaction(serviceContext_t *context) {
-	apr_pool_clear(context->serverTxPool);
+void createTransaction(apr_pool_t *pool, transaction_t **transaction) {
+	if (*transaction == NULL) {
+		*transaction = apr_palloc(pool, sizeof(transaction_t));
+		(*transaction)->request = NULL;
+		(*transaction)->response = NULL;
+		(*transaction)->status = WAITING_FOR_REQUEST;
+	}
+}
+
+void clearTransaction(apr_pool_t *pool, transaction_t **transaction) {
+	apr_pool_clear(pool);
+	*transaction = NULL;
 }
 
 void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
@@ -181,12 +185,11 @@ void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
 }
 
 static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
-	// Create a new server transaction if not already existing
-	if (context->serverTx == NULL) {
-		context->serverTx = apr_palloc(context->serverTxPool, sizeof(transaction_t));
-	}
+	// Create a new server transaction
+	// TODO what happens if a transaction was already created?
+	createTransaction(context->serverTxPool, &context->serverTx);
 
-	int r = dispatchInputMessage(sock, &context->serverTx->request, context->serverTxPool, code);
+	int r = operateRequest(sock, context->serverTx, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
 		closeSocket(sock, context);
 		return r;
@@ -199,12 +202,13 @@ static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr
 	descriptor.reqevents = APR_POLLOUT;
 	apr_pollset_add(pollset, &descriptor);
 	context->status = SEND_MESSAGE;
-	context->cbFunc = sendMessage;
+	context->cbFunc = sendResponse;
 	return R_SUCCESS;
 }
 
 static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
-
+	// TODO
+	return R_SUCCESS;
 }
 
 int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
@@ -229,11 +233,11 @@ int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket
 /**
  * Send a response to the client.
  */
-static int sendMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-//	writeMessage(sock, context->response);
+static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
+	writeMessage(sock, context->serverTx->response);
 
-// Clear all memory related to request and response
-	clearTransaction(context);
+	// Clear all memory related to request and response
+	clearTransaction(context->serverTxPool, &context->serverTx);
 
 	// Change context status from write to read
 	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
