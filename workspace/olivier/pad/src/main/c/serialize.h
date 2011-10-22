@@ -7,6 +7,6 @@
 
 int readHeader(apr_socket_t *sock, char *code);
 int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code);
-int writeMessage(apr_socket_t *sock, message_t *message);
+int createACK(apr_pool_t *pool, message_t **message, apr_int32_t code);
 
 #endif

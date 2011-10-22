@@ -17,10 +17,19 @@ void printStackTrace(void) {
 	free(strings);
 }
 
-void assertEquals(char *file, int line, int testValue, int expectedValue) {
+void assertIntsEqual(char *file, int line, const int testValue, const int expectedValue) {
 	printf(".");
 	if (testValue != expectedValue) {
 		printf("\nAt %s:%d, expected %d, got %d\n", file, line, expectedValue, testValue);
+		printStackTrace();
+		exit(-1);
+	}
+}
+
+void assertStringsEqual(char *file, int line, const char *testValue, const char *expectedValue) {
+	printf(".");
+	if (strcmp(testValue, expectedValue)) {
+		printf("\nAt %s:%d, expected '%s', got '%s'\n", file, line, expectedValue, testValue);
 		printStackTrace();
 		exit(-1);
 	}
