@@ -25,14 +25,16 @@ int operateRequest(apr_socket_t *sock, transaction_t *tx, apr_pool_t *txPool, ch
 		break;
 	case NOTIFY:
 		break;
-	case LOCK:
+	case LOCK: {
 		CHECK(getPort(tx->request->fields[0].stringVal, &port))
-		return lock(port, tx->request->fields[1].stringVal);
-		break;
-	case UNLOCK:
+		int r = lock(txPool, port, tx->request->fields[1].stringVal);
+		return createACK(txPool, &tx->response, r); //TODO define a return code
+	}
+	case UNLOCK: {
 		CHECK(getPort(tx->request->fields[0].stringVal, &port))
-		return unlock(port, tx->request->fields[1].stringVal);
-		break;
+		int r = unlock(txPool, port, tx->request->fields[1].stringVal);
+		return createACK(txPool, &tx->response, r); //TODO define a return code
+	}
 	case CREATE_PORT:
 		return createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
 		break;
