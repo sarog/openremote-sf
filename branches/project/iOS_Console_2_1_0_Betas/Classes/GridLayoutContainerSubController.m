@@ -41,8 +41,8 @@
         self.view = [[[UIView alloc] initWithFrame:CGRectMake(container.left, container.top, container.width, container.height)] autorelease];
         self.view.backgroundColor = [UIColor clearColor];
         self.cells = [[[NSMutableArray alloc] initWithCapacity:[container.cells count]] autorelease];
-        int h = container.width / container.rows;				
-        int w = container.height / container.cols;
+        int h = container.height / container.rows;				
+        int w = container.width / container.cols;
         for (GridCell *cell in container.cells) {
             Component *aComponent = cell.component;
             ComponentSubController *ctrl;
