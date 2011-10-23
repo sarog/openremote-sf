@@ -68,44 +68,37 @@ public class ChangedStatusTable {
     */
    public synchronized ChangedStatusRecord query(String deviceID, List<Integer> pollingSensorIDs) {
       if (recordList.size() == 0 || pollingSensorIDs == null || pollingSensorIDs.size() == 0) {
-         return null; // TODO : why return null instead of empty list?   [JPL]
+         return null;
       }
       ChangedStatusRecord record = new ChangedStatusRecord(deviceID, pollingSensorIDs);
       
-      for (ChangedStatusRecord tempRecord : recordList) {
-         if (tempRecord.equals(record)) {
+      for (ChangedStatusRecord tempRecord : recordList)
+      {
+         if (tempRecord.equals(record))       // TODO : should probably be SET rather than LIST, and then just use contains() instead of equals loop
+         {
             return tempRecord;
          }
       }
       return null;
    }
-   
-   /**
-    * Query all changed status records whose pollingSensorID column contains statusChangedSensorID.
-    */
-   public synchronized List<ChangedStatusRecord> query(Integer statusChangedSensorID) {
-      List<ChangedStatusRecord> statusChangedRecord = new ArrayList<ChangedStatusRecord>();
-      if(recordList==null||recordList.size()==0){
-         return null; // TODO : why return null instead of empty list?  [JPL]
-      }
-      for (ChangedStatusRecord record : recordList) {
-         if (record.getPollingSensorIDs().contains(statusChangedSensorID)) {
-            statusChangedRecord.add(record);
-         }
-      }
-      return statusChangedRecord;
-   }
-   
-   /**
-    * Update status_changed_id column.
-    */
-   public void updateStatusChangedIDs(Integer statusChangedSensorID) {
-      for(ChangedStatusRecord record : recordList){
-         synchronized (record) {
-            if (record.getPollingSensorIDs() != null && record.getPollingSensorIDs().size() != 0) {
-               for (Integer tmpSensorId : record.getPollingSensorIDs()) {
-                  if (statusChangedSensorID.equals(tmpSensorId)) {
-                     record.getStatusChangedSensorIDs().add(statusChangedSensorID);
+
+
+
+   public void updateStatusChangedIDs(Integer statusChangedSensorID)
+   {
+     // TODO : this looks like an inefficient way of doing the update   [JPL]
+
+      for(ChangedStatusRecord record : recordList)
+      {
+         synchronized (record)
+         {
+            if (!record.getPollingSensorIDs().isEmpty())
+            {
+               for (Integer tmpSensorId : record.getPollingSensorIDs())
+               {
+                  if (statusChangedSensorID.equals(tmpSensorId))
+                  {
+                     record.getStatusChangedSensorIDs().add(statusChangedSensorID); // TODO : shouldn't add to collection outside the containing class -- bad form
                      record.notifyAll();
                      break;
                   }
@@ -118,7 +111,7 @@ public class ChangedStatusTable {
    /**
     * Reset changed status of panel in {@link ChangedStatusTable}. 
     */
-   public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingSensorIDs) {
+   @Deprecated public synchronized void resetChangedStatusIDs(String deviceID, List<Integer> pollingSensorIDs) {
       ChangedStatusRecord skippedStatusRecord = this.query(deviceID, pollingSensorIDs);
       skippedStatusRecord.setStatusChangedSensorIDs(new HashSet<Integer>());
    }
@@ -130,8 +123,5 @@ public class ChangedStatusTable {
       this.recordList.clear();
    }
 
-   public List<ChangedStatusRecord> getRecordList() {
-      return recordList;
-   }
    
 }
