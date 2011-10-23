@@ -57,7 +57,7 @@ public abstract class ServiceContext
   //
   //        Reduce dependencies to deprecated getDeployer() API -- ORCJAVA-193, ORCJAVA-173
   //
-  //        Remove dependecy to deprecated getProtocol() API -- ORCJAVA-194
+  //        Remove dependency to deprecated getProtocol() API -- ORCJAVA-194
   //
   //        Remove direct use of subclass SpringContext API -- ORCJAVA-195
 
@@ -93,7 +93,7 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
-    DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated
+    DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
     PROTOCOL("commandFactory");                               // TODO : Deprecated, see ORCJAVA-194
 
 
@@ -212,7 +212,9 @@ public abstract class ServiceContext
 
 
   /**
-   * TODO
+   * TODO : See ORCJAVA-197 -- http://jira.openremote.org/browse/ORCJAVA-197
+   *
+   * @deprecated See ORCJAVA-197
    */
   @Deprecated public static StatusCache getDeviceStateCache()
   {
