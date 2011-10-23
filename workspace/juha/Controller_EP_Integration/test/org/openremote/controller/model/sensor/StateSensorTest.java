@@ -391,14 +391,6 @@ public class StateSensorTest
 
 
 
-  @Test public void testMixedStateMapping()
-  {
-    // TODO : test state mappings where only some of the states are mapped to other values..
-
-
-    Assert.fail("Not Yet Implemented. See ORCJAVA-107 -- http://jira.openremote.org/browse/ORCJAVA-107");
-  }
-
   @Test public void testMappingToNull()
   {
 
