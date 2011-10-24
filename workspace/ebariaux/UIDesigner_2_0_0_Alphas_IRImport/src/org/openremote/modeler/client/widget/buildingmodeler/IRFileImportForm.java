@@ -429,6 +429,7 @@ public class IRFileImportForm extends CommonForm {
     */
    private void cleanCodeGrid() {
       if (codeGrid != null) {
+         codeGrid.getSelectionModel().deselectAll();
          codeGrid.removeFromParent();
          codeGrid.removeAllListeners();
          nextButton.setEnabled(false);

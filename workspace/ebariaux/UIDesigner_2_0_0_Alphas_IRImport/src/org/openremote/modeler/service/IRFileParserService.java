@@ -11,19 +11,15 @@ import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRTrans;
 
-import com.tinsys.ir.database.Brand;
-import com.tinsys.ir.database.CodeSet;
-import com.tinsys.ir.database.Device;
-import com.tinsys.ir.database.IRCommand;
-import com.tinsys.pronto.irfiles.XCFFileParser;
+import com.tinsys.pronto.irfiles.ProntoFileParser;
 
 public interface IRFileParserService {
 
    /** 
-    * sets the xcfFileParser
-    * @param xcfFileParser
+    * sets the prontoFileParser
+    * @param prontoFileParser
     */
-   void setXcfFileParser(XCFFileParser xcfFileParser);
+   void setProntoFileParser(ProntoFileParser prontoFileParser);
    
 	/** 
 	 * returns the device information to the client side for the given brand

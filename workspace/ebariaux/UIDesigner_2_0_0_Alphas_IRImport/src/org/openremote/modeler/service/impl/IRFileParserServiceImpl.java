@@ -25,12 +25,12 @@ import com.tinsys.ir.database.Device;
 import com.tinsys.ir.database.IRCommand;
 import com.tinsys.ir.representations.gc.GCIRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
-import com.tinsys.pronto.irfiles.XCFFileParser;
+import com.tinsys.pronto.irfiles.ProntoFileParser;
 
 public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       implements IRFileParserService {
 
-   private XCFFileParser xcfFileParser;
+   private ProntoFileParser prontoFileParser;
    private List<IRCommand> currentIRCommands;
 
    /*
@@ -40,8 +40,8 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     * org.openremote.modeler.service.IRFileParserService#setXcfFileParser(com
     * .tinsys.pronto.irfiles.XCFFileParser)
     */
-   public void setXcfFileParser(XCFFileParser xcfFileParser) {
-      this.xcfFileParser = xcfFileParser;
+   public void setProntoFileParser(ProntoFileParser prontoFileParser) {
+      this.prontoFileParser = prontoFileParser;
    }
 
    /*
@@ -57,7 +57,7 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       List<DeviceInfo> deviceInfo = new ArrayList<DeviceInfo>();
       Brand b = new Brand(brand.getBrandName());
 
-      List<Device> devices = xcfFileParser.getDevices(b);
+      List<Device> devices = prontoFileParser.getDevices(b);
       for (Device device : devices) {
          deviceInfo.add(new DeviceInfo(new BrandInfo(device.getBrand()
                .getBrandName()), device.getModelName()));
@@ -79,7 +79,7 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       Device d = new Device(new Brand(di.getBrandInfo().getBrandName()),
             di.getModelName());
 
-      List<CodeSet> codeSets = xcfFileParser.getCodeSets(d);
+      List<CodeSet> codeSets = prontoFileParser.getCodeSets(d);
       int index = 0;
       for (CodeSet codeSet : codeSets) {
          codeSetInfo.add(new CodeSetInfo(di, codeSet.getDescription(), codeSet
@@ -96,9 +96,9 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
     */
    @Override
    public List<BrandInfo> getBrands() {
-      if (xcfFileParser != null) {
+      if (prontoFileParser != null) {
          List<BrandInfo> brandInfo = new ArrayList<BrandInfo>();
-         List<Brand> brands = xcfFileParser.getBrands();
+         List<Brand> brands = prontoFileParser.getBrands();
          for (Brand brand : brands) {
             brandInfo.add(new BrandInfo(brand.getBrandName()));
          }
@@ -119,7 +119,7 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       List<IRCommandInfo> iRCommandInfo = new ArrayList<IRCommandInfo>();
       Device d = new Device(new Brand(csi.getDeviceInfo().getBrandInfo()
             .getBrandName()), csi.getDeviceInfo().getModelName());
-      List<IRCommand> iRcommands = xcfFileParser.getCodeSets(d)
+      List<IRCommand> iRcommands = prontoFileParser.getCodeSets(d)
             .get(csi.getIndex().intValue()).getIRCommands();
 
       for (IRCommand irCommand : iRcommands) {
@@ -156,7 +156,7 @@ public class IRFileParserServiceImpl extends BaseAbstractService<DeviceCommand>
       CodeSetInfo csi = selectedFunctions.get(0).getCodeSet();
       CodeSet cs = new CodeSet(csi.getDeviceInfo().getBrandInfo()
             .getBrandName(), csi.getDeviceInfo().getModelName());
-      currentIRCommands = xcfFileParser.getCodeSets(cs.getDevice())
+      currentIRCommands = prontoFileParser.getCodeSets(cs.getDevice())
             .get(csi.getIndex()).getIRCommands();
       List<DeviceCommand> deviceCommands = new ArrayList<DeviceCommand>();
       for (IRCommandInfo irCommandInfo : selectedFunctions) {
