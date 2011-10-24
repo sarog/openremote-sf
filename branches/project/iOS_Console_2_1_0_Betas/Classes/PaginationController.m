@@ -242,11 +242,11 @@
 	}
 }
 
-
 // Refresh the screenView page index specified.
 - (void)updateViewForPage:(NSUInteger)page {
 	if (page >= [viewControllers count]) return;
 	UIViewController *controller = [viewControllers objectAtIndex:page];
+    
 	CGRect frame = scrollView.bounds;
 	frame.origin.x = frameWidth * page;
 	[controller.view setFrame:frame];
@@ -258,8 +258,7 @@
 		[((ScreenViewController *)controller) startPolling];
 	} else {
 		[((ScreenViewController *)controller) stopPolling];
-	}
-	
+	}	
 }
 
 //if you have changed *selectedIndex* then calling this method will scroll to that seleted view immediately
@@ -284,7 +283,6 @@
 	frame.origin.x = frameWidth * selectedIndex;
 	frame.origin.y = 0;
 	[scrollView scrollRectToVisible:frame animated:withAnimation];
-
 }
 
 - (void)loadView {
@@ -353,7 +351,8 @@
 - (void)scrollViewWillBeginDragging:(UIScrollView *)s {
 	//HACK: correct hacked larger ContentSize back to normal.
 	//TODO: should fix this hack.
-	[scrollView setContentSize:CGSizeMake(frameWidth * pageControl.numberOfPages, frameHeight)];
+// EBR - 20111024 - Not sure if this is of any use
+//	[scrollView setContentSize:CGSizeMake(frameWidth * pageControl.numberOfPages, frameHeight)];
 }
 
 - (void)pageControlValueDidChange:(id)sender {
@@ -371,6 +370,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[self initView];
+    [super viewWillDisappear:animated];
 }
 
 /**
