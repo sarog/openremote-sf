@@ -330,7 +330,6 @@
 		[self.view addSubview:pageControl];
 		[pageControl release];
 	}
-	pageControlUsed = NO;
 	[self initView];
 }
 
@@ -345,8 +344,6 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-	if (pageControlUsed) return;
-
 	// Switch the indicator when more than 50% of the previous/next page is visible
 	selectedIndex = floor((scrollView.contentOffset.x - frameWidth / 2) / frameWidth) + 1;
 	
@@ -357,10 +354,6 @@
 	//HACK: correct hacked larger ContentSize back to normal.
 	//TODO: should fix this hack.
 	[scrollView setContentSize:CGSizeMake(frameWidth * pageControl.numberOfPages, frameHeight)];
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)s {
-	pageControlUsed = NO;
 }
 
 - (void)pageControlValueDidChange:(id)sender {
@@ -374,9 +367,7 @@
 
 	// DENNIS: Maybe you want to make sure that the user can't interact with the scroll view while it is animating.
 	//[scrollView setUserInteractionEnabled:NO];
-	pageControlUsed = NO;
 }
-
 
 - (void)viewWillAppear:(BOOL)animated {
 	[self initView];

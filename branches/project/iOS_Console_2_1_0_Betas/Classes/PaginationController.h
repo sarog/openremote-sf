@@ -35,7 +35,6 @@
 	
 	BOOL isLandscape;
 	BOOL isGrinding;
-	BOOL pageControlUsed;
 	
 	CGFloat frameWidth;
 	CGFloat frameHeight;
