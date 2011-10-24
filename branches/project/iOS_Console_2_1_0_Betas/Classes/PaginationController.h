@@ -34,11 +34,9 @@
 	UIPageControl *pageControl;
 	
 	BOOL isLandscape;
-	BOOL isGrinding;
 	
 	CGFloat frameWidth;
-	CGFloat frameHeight;
-	
+	CGFloat frameHeight;	
 }
 
 @property(nonatomic,copy) NSArray *viewControllers;
