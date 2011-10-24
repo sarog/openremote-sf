@@ -55,7 +55,7 @@ import com.tinsys.ir.representations.pronto.NecIRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.RC5IRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.RC5xIRCodeRepresentationHandler;
 import com.tinsys.ir.representations.pronto.RawIRCodeRepresentationHandler;
-import com.tinsys.pronto.irfiles.XCFFileParser;
+import com.tinsys.pronto.irfiles.ProntoFileParser;
 
 import flexjson.JSONSerializer;
 
@@ -142,7 +142,7 @@ public class FileUploadController extends MultiActionController implements BeanF
       File f = new File(resourceService.getTempDirectory(request.getSession().getId()) + File.separator
               + multipartFile.getOriginalFilename());
       ZipFile zip;
-      XCFFileParser xcfParser = new XCFFileParser();
+      ProntoFileParser prontoParser= new ProntoFileParser();
       String responseContent;
       try {
         FileOutputStream fos = new FileOutputStream(f);
@@ -156,13 +156,13 @@ public class FileUploadController extends MultiActionController implements BeanF
             new RC5xIRCodeRepresentationHandler().registerWithFactory(factory);
             new RawIRCodeRepresentationHandler().registerWithFactory(factory);
             new NecIRCodeRepresentationHandler().registerWithFactory(factory);
-            xcfParser.setFactory(factory);
+            prontoParser.setFactory(factory);
             // serialize the objects
               try {
-                xcfParser.parseFile(zip);
+                prontoParser.parseFile(zip);
                 JSONSerializer serializer = new JSONSerializer();
                 response.setCharacterEncoding("UTF-8");
-                  responseContent = serializer.exclude("*.class").include("brands").serialize(xcfParser);
+                  responseContent = serializer.exclude("*.class").include("brands").serialize(prontoParser);
                 } catch (Exception e) {
                   responseContent = Constants.IRFILE_UPLOAD_ERROR + "Couldn't parse file : " + e.getMessage();
                 }
@@ -175,7 +175,7 @@ public class FileUploadController extends MultiActionController implements BeanF
       }
       IRFileParserController iRFileParserController = (IRFileParserController) beanFactory
             .getBean("irFileParserController");
-      iRFileParserController.setXcfFileParser(xcfParser);
+      iRFileParserController.setProntoFileParser(prontoParser);
       response.getWriter().println(responseContent);
     }
     

@@ -14,7 +14,7 @@ import org.openremote.modeler.irfileparser.IRTrans;
 import org.openremote.modeler.service.IRFileParserService;
 
 import com.tinsys.ir.database.IRCommand;
-import com.tinsys.pronto.irfiles.XCFFileParser;
+import com.tinsys.pronto.irfiles.ProntoFileParser;
 
 /**
  * @author william_work
@@ -24,18 +24,18 @@ public class IRFileParserController extends
       BaseGWTSpringControllerWithHibernateSupport implements
       IRFileParserRPCService {
 
-   private XCFFileParser xcfFileParser;
+   private ProntoFileParser prontoFileParser;
    private IRFileParserService iRFileParserService;
    private List<IRCommand> currentIRCommands;
 
    /**
-    * XcfFileParser injected by fileUploadController
+    * ProntoFileParser injected by fileUploadController
     * 
-    * @param xcfFileParser
+    * @param prontoFileParser
     */
-   public void setXcfFileParser(XCFFileParser xcfFileParser) {
-      this.xcfFileParser = xcfFileParser;
-      this.iRFileParserService.setXcfFileParser(xcfFileParser);
+   public void setProntoFileParser(ProntoFileParser prontoFileParser) {
+      this.prontoFileParser = prontoFileParser;
+      this.iRFileParserService.setProntoFileParser(prontoFileParser);
    }
 
    /**
