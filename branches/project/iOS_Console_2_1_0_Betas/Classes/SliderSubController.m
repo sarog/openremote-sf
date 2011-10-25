@@ -241,18 +241,21 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
     // TODO: get rid of that and make sure label is only added and configured once
 	[self clearSliderTipSubviews:self.sliderTip];
     
+    // TODO: pre-calculate values that can be and cache them
     UISlider *uiSlider = (UISlider *)self.view;
 	CGFloat x = 0;
 	CGFloat y = 0;
 	CGFloat span = uiSlider.minimumValue - uiSlider.maximumValue;
-	
+    CGFloat thumbHeight = [uiSlider thumbImageForState:UIControlStateNormal].size.height;
+    CGFloat thumbWidth = [uiSlider thumbImageForState:UIControlStateNormal].size.width;
+    
 	if (self.slider.vertical) {
 		span = uiSlider.maximumValueImage ? span - uiSlider.maximumValueImage.size.height : span;
 		span = uiSlider.minimumValueImage ? span - uiSlider.minimumValueImage.size.height : span;
 		x = uiSlider.frame.origin.x + uiSlider.frame.size.width / 2;
-		y = ((uiSlider.value - uiSlider.maximumValue)/span) * uiSlider.frame.size.height + uiSlider.frame.origin.y;		
+		y = ((uiSlider.value - uiSlider.maximumValue)/span) * (uiSlider.frame.size.height - thumbHeight) + uiSlider.frame.origin.y;
 	} else {
-		x = ((uiSlider.minimumValue - uiSlider.value)/span) * uiSlider.frame.size.width + uiSlider.frame.origin.x;
+		x = ((uiSlider.minimumValue - uiSlider.value)/span) * (uiSlider.frame.size.width - thumbWidth) + uiSlider.frame.origin.x;
 		y = uiSlider.frame.origin.y + uiSlider.frame.size.height / 2;
 	}
 	
