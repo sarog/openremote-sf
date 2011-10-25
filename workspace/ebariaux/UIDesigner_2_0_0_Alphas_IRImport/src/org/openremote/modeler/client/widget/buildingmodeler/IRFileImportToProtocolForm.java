@@ -170,6 +170,8 @@ public class IRFileImportToProtocolForm extends FormWindow {
     * create the fields for globalcaché and IR Trans
     */
    private void createFields() {
+      String hostRegex = "(?:(?:1\\d{0,2}|[3-9]\\d?|2(?:[0-5]{1,2}|\\d)?|0)\\.){3}(?:1\\d{0,2}|[3-9]\\d?|2(?:[0-5]{1,2}|\\d)?|0)|(^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\\-]*[A-Za-z0-9])$)|(^([0-9a-f]{1,4}:){1,1}(:[0-9a-f]{1,4}){1,6}$)|(^([0-9a-f]{1,4}:){1,2}(:[0-9a-f]{1,4}){1,5}$)|(^([0-9a-f]{1,4}:){1,3}(:[0-9a-f]{1,4}){1,4}$)|(^([0-9a-f]{1,4}:){1,4}(:[0-9a-f]{1,4}){1,3}$)|(^([0-9a-f]{1,4}:){1,5}(:[0-9a-f]{1,4}){1,2}$)|(^([0-9a-f]{1,4}:){1,6}(:[0-9a-f]{1,4}){1,1}$)|(^(([0-9a-f]{1,4}:){1,7}|:):$)|(^:(:[0-9a-f]{1,4}){1,7}$)|(^((([0-9a-f]{1,4}:){6})(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3})$)|(^(([0-9a-f]{1,4}:){5}[0-9a-f]{1,4}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3})$)|(^([0-9a-f]{1,4}:){5}:[0-9a-f]{1,4}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)|(^([0-9a-f]{1,4}:){1,1}(:[0-9a-f]{1,4}){1,4}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)|(^([0-9a-f]{1,4}:){1,2}(:[0-9a-f]{1,4}){1,3}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)|(^([0-9a-f]{1,4}:){1,3}(:[0-9a-f]{1,4}){1,2}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)|(^([0-9a-f]{1,4}:){1,4}(:[0-9a-f]{1,4}){1,1}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)|(^(([0-9a-f]{1,4}:){1,5}|:):(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)|(^:(:[0-9a-f]{1,4}){1,5}:(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$)";
+      String hostRegexText = "Must be a valid IPv4 or IPv6 address or a fully qualified domain name";
       final ListBox product = new ListBox();
       product.addItem("Please choose a product");
       product.addItem("GlobalCaché	");
@@ -188,7 +190,10 @@ public class IRFileImportToProtocolForm extends FormWindow {
       gCip = new TextField<String>();
       gCip.setFieldLabel("IP address / HostName");
       gCip.setAllowBlank(false);
+      gCip.setRegex(hostRegex );
+      gCip.getMessages().setRegexText(hostRegexText);
       gCFieldSet.add(gCip);
+      
       tcpPort = new TextField<String>();
       tcpPort.setValue("4998");
       tcpPort.setAllowBlank(false);
@@ -222,6 +227,8 @@ public class IRFileImportToProtocolForm extends FormWindow {
       iRTransIp = new TextField<String>();
       iRTransIp.setFieldLabel(new String("Ip address Host name"));
       iRTransIp.setAllowBlank(false);
+      iRTransIp.setRegex(hostRegex );
+      iRTransIp.getMessages().setRegexText(hostRegexText);
       iRTransFieldSet.add(iRTransIp);
       udpPort = new TextField<String>();
       udpPort.setValue("21000");

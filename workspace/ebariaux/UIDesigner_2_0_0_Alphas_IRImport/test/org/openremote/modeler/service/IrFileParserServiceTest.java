@@ -27,19 +27,22 @@ import java.util.zip.ZipFile;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.hibernate.SessionFactory;
+import org.junit.AfterClass;
 import org.openremote.modeler.SpringTestContext;
-import org.openremote.modeler.dao.GenericDAO;
 import org.openremote.modeler.domain.Device;
+import org.openremote.modeler.domain.DeviceCommand;
 import org.openremote.modeler.exception.IrFileParserException;
 import org.openremote.modeler.irfileparser.BrandInfo;
 import org.openremote.modeler.irfileparser.GlobalCache;
 import org.openremote.modeler.irfileparser.IRCommandInfo;
 import org.openremote.modeler.irfileparser.IRTrans;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate3.SessionFactoryUtils;
+import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -61,30 +64,21 @@ public class IrFileParserServiceTest extends AbstractTransactionalJUnit4SpringCo
 
    private DeviceService deviceService =
       (DeviceService) SpringTestContext.getInstance().getBean("deviceService");
-   
    private IRFileParserService iRFileParserService =
       (IRFileParserService) SpringTestContext.getInstance().getBean("iRFileParserService");
-   
    private DeviceCommandService deviceCommandService =
       (DeviceCommandService) SpringTestContext.getInstance().getBean("deviceCommandService");
- 
-   private GenericDAO genericDAO =
-      (GenericDAO) SpringTestContext.getInstance().getBean("genericDAO");
-   
-   private UserService userService =
-      (UserService) SpringTestContext.getInstance().getBean("userService");
-   
    private ProntoFileParser prontoFileParser = new ProntoFileParser();
-   private  HibernateTemplate ht;
-   private SessionFactory sessionFactory;
+   private SessionFactory sf;
+   private org.hibernate.classic.Session s;
+   private SessionHolder holder;
    
    
    
    @BeforeClass
-
-   public void mysetUp() throws IOException, ParserConfigurationException, SAXException {
+   public void setUp() throws IOException, ParserConfigurationException, SAXException {
       ZipFile file = new ZipFile(
-            "./test/irfileparser_testdata/XCF Files/Scott Sovern-Front Room 8-TSU9400.xcf");
+            "./test/irfileparser_testdata/ProntoFiles/Scott Sovern-Front Room 8-TSU9400.xcf");
       IRCodeRepresentationFactory factory = new IRCodeRepresentationFactory();
       new RC5IRCodeRepresentationHandler().registerWithFactory(factory);
       new RC5xIRCodeRepresentationHandler().registerWithFactory(factory);
@@ -93,10 +87,9 @@ public class IrFileParserServiceTest extends AbstractTransactionalJUnit4SpringCo
       prontoFileParser.setFactory(factory);
       prontoFileParser.parseFile(file);
       iRFileParserService.setProntoFileParser(prontoFileParser);
-//      LocalSessionFactoryBean lsfb = (LocalSessionFactoryBean) SpringContext.getInstance().getBean("&sessionFactory");
-//      System.out.println("----> "+lsfb.getHibernateProperties());
-//      sessionFactory = lsfb.getConfiguration().buildSessionFactory();
-//       ht = new HibernateTemplate(sessionFactory);
+      sf = (SessionFactory) SpringTestContext.getInstance().getBean("sessionFactory");
+      s = sf.openSession();
+      TransactionSynchronizationManager.bindResource(sf, new SessionHolder(s));
    }
    
    
@@ -108,28 +101,32 @@ public class IrFileParserServiceTest extends AbstractTransactionalJUnit4SpringCo
    
    @Test(dependsOnMethods = "getBrands")
    public void saveCommand() throws IrFileParserException {
-//      Session session = SessionFactoryUtils.getSession(ht.getSessionFactory(), true);
-//      TransactionSynchronizationManager.bindResource(sessionFactory , new SessionHolder(session));
 
       Device device = new Device();
       device.setName("irFPTest");
       device.setModel("tv");
       device.setVendor("sony");
       deviceService.saveDevice(device);
-      
+
       GlobalCache globalCache = new GlobalCache("127.0.0.1", "4998"
             , "4:1");
       IRTrans irTrans = new IRTrans();
       List<IRCommandInfo> selectedFunctions = new ArrayList<IRCommandInfo>();
       IRCommandInfo irCommand = iRFileParserService.getIRCommands(iRFileParserService.getCodeSets(iRFileParserService.getDevices(iRFileParserService.getBrands().get(0)).get(0)).get(0)).get(0);
       selectedFunctions.add(irCommand);
-
       
-/*      iRFileParserService.saveCommands(device, globalCache, irTrans, selectedFunctions);
-      Assert.assertEquals(deviceCommandService.loadById(1L).getName(), irCommand.getName());*/
-      
-      
+      List<DeviceCommand> deviceCommand = iRFileParserService.saveCommands(device, globalCache, irTrans, selectedFunctions);
+      Assert.assertEquals(deviceCommandService.loadSameCommands(deviceCommand.get(0)).get(0).getName(), irCommand.getName());
    }
    
+   @AfterClass
+   protected void tearDown() throws Exception {
 
+   holder = (SessionHolder)TransactionSynchronizationManager.getResource(sf);
+   s = (org.hibernate.classic.Session) holder.getSession();
+   s.flush();
+   TransactionSynchronizationManager.unbindResource(sf);
+   SessionFactoryUtils.releaseSession(s, sf);
+
+   }
 }
