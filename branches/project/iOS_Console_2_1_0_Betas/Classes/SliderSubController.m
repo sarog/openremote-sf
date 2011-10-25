@@ -75,7 +75,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 @property (nonatomic, assign) int currentValue;
 @property (nonatomic, retain) UIImageView *sliderTip;
 
-- (void)afterSlide:(UISlider *)sender;
+- (void)sliderValueChanged:(UISlider *)sender;
 - (void)releaseSlider:(UISlider *)sender;
 - (void)touchDownSlider:(UISlider *)sender;
 - (void)clearSliderTipSubviews:(UIImageView *)sliderTipParam;
@@ -151,7 +151,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
         }
 
         if (!self.slider.passive) {
-            [uiSlider addTarget:self action:@selector(afterSlide:) forControlEvents:UIControlEventValueChanged];
+            [uiSlider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
             [uiSlider addTarget:self action:@selector(touchDownSlider:) forControlEvents:UIControlEventTouchDown];
             [uiSlider addTarget:self action:@selector(releaseSlider:) forControlEvents:UIControlEventTouchUpInside];
             [uiSlider addTarget:self action:@selector(releaseSlider:) forControlEvents:UIControlEventTouchUpOutside];
@@ -209,8 +209,8 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 #pragma mark Private methods
 
-// This method will be executed after slide action finished.
-- (void)afterSlide:(UISlider *)sender {
+- (void)sliderValueChanged:(UISlider *)sender
+{
     // During the user action, always refresh the tip display
 	[self refreshTip];
 }
