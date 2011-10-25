@@ -248,15 +248,29 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	CGFloat span = uiSlider.minimumValue - uiSlider.maximumValue;
     CGFloat thumbHeight = [uiSlider thumbImageForState:UIControlStateNormal].size.height;
     CGFloat thumbWidth = [uiSlider thumbImageForState:UIControlStateNormal].size.width;
+    CGFloat trackWidth = uiSlider.frame.size.width;
+    CGFloat trackHeight = uiSlider.frame.size.height;
+    if (uiSlider.minimumValueImage) {
+        trackWidth = trackWidth - uiSlider.minimumValueImage.size.width - 14;
+        trackHeight = trackHeight - uiSlider.minimumValueImage.size.height - 14;
+    }
+    if (uiSlider.maximumValueImage) {
+        trackWidth = trackWidth - uiSlider.maximumValueImage.size.width - 14;
+        trackHeight = trackHeight - uiSlider.maximumValueImage.size.height - 14;
+    }
     
 	if (self.slider.vertical) {
-		span = uiSlider.maximumValueImage ? span - uiSlider.maximumValueImage.size.height : span;
-		span = uiSlider.minimumValueImage ? span - uiSlider.minimumValueImage.size.height : span;
 		x = uiSlider.frame.origin.x + uiSlider.frame.size.width / 2;
-		y = ((uiSlider.value - uiSlider.maximumValue)/span) * (uiSlider.frame.size.height - thumbHeight) + uiSlider.frame.origin.y;
+		y = ((uiSlider.value - uiSlider.maximumValue)/span) * (trackHeight - thumbHeight) + uiSlider.frame.origin.y;
+        if (uiSlider.maximumValueImage) {
+            y = y + uiSlider.maximumValueImage.size.height + 14;
+        }
 	} else {
-		x = ((uiSlider.minimumValue - uiSlider.value)/span) * (uiSlider.frame.size.width - thumbWidth) + uiSlider.frame.origin.x;
+		x = ((uiSlider.minimumValue - uiSlider.value)/span) * (trackWidth - thumbWidth) + uiSlider.frame.origin.x + thumbWidth / 2;
 		y = uiSlider.frame.origin.y + uiSlider.frame.size.height / 2;
+        if (uiSlider.minimumValueImage) {
+            x = x + uiSlider.minimumValueImage.size.width + 14;
+        }
 	}
 	
 	self.sliderTip.frame = CGRectMake(x - 40, y - 100, 80, 80);
