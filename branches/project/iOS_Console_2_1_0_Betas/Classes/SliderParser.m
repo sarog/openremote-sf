@@ -60,6 +60,7 @@
                                    vertical:[@"true" isEqualToString:[[attributeDict objectForKey:VERTICAL] lowercaseString]]
                                     passive:[@"true" isEqualToString:[[attributeDict objectForKey:PASSIVE] lowercaseString]]
                               thumbImageSrc:[attributeDict objectForKey:THUMB_IMAGE]];
+        [self.depRegister.definition addImageName:[attributeDict objectForKey:THUMB_IMAGE]];
         self.slider = tmp;
         [tmp release];
     }
@@ -70,8 +71,10 @@
 {
 	Image *img = [[Image alloc] init];
 	img.src = [attributeDict objectForKey:IMAGE];
+    [self.depRegister.definition addImageName:img.src];
 	Image *trackImg = [[Image alloc] init];
 	trackImg.src = [attributeDict objectForKey:TRACK_IMAGE];
+    [self.depRegister.definition addImageName:trackImg.src];
 	
 	if ([elementName isEqualToString:MIN_VALUE]) {
 		self.slider.minValue = [[attributeDict objectForKey:VALUE] floatValue];				
