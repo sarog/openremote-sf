@@ -210,15 +210,9 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 #pragma mark Private methods
 
 // This method will be executed after slide action finished.
-- (void) afterSlide:(UISlider *)sender {
-	int afterSlideValue = (int)[sender value];
-	if (self.currentValue >= 0 && abs(self.currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
-		//NSLog(@"The value sent is : %d", afterSlideValue);
-		[self refreshTip]; // showTip:sliderTip ofSlider:uiSlider withSender:sender];
-		//[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
-	} else {
-		NSLog(@"The min slide variant value less than %d", MIN_SLIDE_VARIANT);
-	}
+- (void)afterSlide:(UISlider *)sender {
+    // During the user action, always refresh the tip display
+	[self refreshTip];
 }
 
 -(void) releaseSlider:(UISlider *)sender {
