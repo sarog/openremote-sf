@@ -20,13 +20,14 @@
  */
 #import <Foundation/Foundation.h>
 #import "ORControllerPollingSender.h"
+#import "UpdateController.h"
 
 /**
  * Setup a polling connection to detect the component status changes and 
  * notificate the new status to component on screen.
  */
 
-@interface PollingHelper : NSObject <ORControllerPollingSenderDelegate>
+@interface PollingHelper : NSObject <ORControllerPollingSenderDelegate, UpdateControllerDelegate>
 
 /**
  * Construct polling helper with sensor ids.

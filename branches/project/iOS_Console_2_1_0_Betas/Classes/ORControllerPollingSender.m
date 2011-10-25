@@ -127,11 +127,18 @@
 	[self handleServerResponseWithStatusCode:[httpResp statusCode]];
 }
 
-- (void) controllerRequestDidFailWithError:(NSError *)error
+- (void)controllerRequestDidFailWithError:(NSError *)error
 {
 	if ([delegate respondsToSelector:@selector(pollingDidFailWithError:)]) {
         [delegate pollingDidFailWithError:error];
     }
+}
+
+- (void)controllerRequestConfigurationUpdated:(ControllerRequest *)request
+{
+    if ([delegate respondsToSelector:@selector(controllerConfigurationUpdated:)]) {
+        [delegate controllerConfigurationUpdated:request.controller];
+    }    
 }
 
 @synthesize controller;
