@@ -159,6 +159,7 @@
             	<prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
             	<prop key = "wol">wolCommandBuilder</prop>
             	<prop key = "datetime">datetimeCommandBuilder</prop>
+            	<prop key = "samsungTV">samsungTVCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -185,6 +186,11 @@
 	<bean id = "knxCommandBuilder" class = "org.openremote.controller.protocol.knx.KNXCommandBuilder">
 		<constructor-arg index="0" value="${knx.ip.interface.hostname}" />
 		<constructor-arg index="1" value="${knx.ip.interface.port}" type="int" />
+	</bean>
+
+	<!-- Samsung TV Command Builder -->
+	<bean id = "samsungTVCommandBuilder" class = "org.openremote.controller.protocol.samsungtv.SamsungTVRemoteCommandBuilder">
+		<constructor-arg index="0" value="${samsungTV.interface.ip}" />
 	</bean>
 
 	<!-- TCP Socket Command Builder for IP enabled devices -->
