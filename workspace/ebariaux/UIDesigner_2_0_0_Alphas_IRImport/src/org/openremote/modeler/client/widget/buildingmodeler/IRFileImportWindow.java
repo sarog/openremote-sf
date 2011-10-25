@@ -162,7 +162,7 @@ public class IRFileImportWindow extends FormWindow {
       });
 
       resetBtn = new Button("Clear");
-      resetBtn.ensureDebugId(DebugId.KNX_IMPORT_WINDOW_CLEAR_BTN);
+      resetBtn.ensureDebugId(DebugId.IRFILE_IMPORT_WINDOW_CLEAR_BTN);
       resetBtn.addSelectionListener(new SelectionListener<ButtonEvent>() {
          @Override
          public void componentSelected(ButtonEvent ce) {

@@ -186,5 +186,7 @@ public class DebugId {
 
     public static final String KNX_IMPORT_WINDOW_CLEAR_BTN = "knxImportWindowClearBtn";
     
-    public static final String IRFILE_IMPORT_WINDOW_LOAD_BTN = "irFileImportWindowBtn";
+    public static final String IRFILE_IMPORT_WINDOW_LOAD_BTN = "irFileImportWindowOkBtn";
+
+   public static final String IRFILE_IMPORT_WINDOW_CLEAR_BTN = "irFileImportWindowClearBtn";
 }
