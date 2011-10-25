@@ -31,6 +31,8 @@
 - (void)pollingDidTimeout;
 - (void)pollingDidReceiveErrorResponse;
 
+- (void)controllerConfigurationUpdated:(ORController *)aController;
+
 @end
 
 @interface ORControllerPollingSender : NSObject <ControllerRequestDelegate> {

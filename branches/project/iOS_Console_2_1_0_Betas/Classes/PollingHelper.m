@@ -40,6 +40,8 @@
 @property (nonatomic, retain) NSArray *localSensors;
 @property (nonatomic, retain) NSMutableDictionary *localSensorTimers;
 @property (nonatomic, retain) ORControllerPollingSender *pollingSender;
+
+@property (nonatomic, retain) UpdateController *updateController;
     
 @end
     
@@ -165,6 +167,16 @@
     self.isPolling = NO;
 }
 
+- (void)controllerConfigurationUpdated:(ORController *)aController
+{
+    if (!self.updateController) {
+        UpdateController *tmpController = [[UpdateController alloc] initWithDelegate:self];
+        self.updateController = tmpController;
+        [tmpController release];
+    }
+    [self.updateController checkConfigAndUpdate];
+}
+
 - (void)dealloc
 {
 	self.pollingSender = nil;
@@ -172,10 +184,36 @@
 	[self cancelLocalSensors];
     self.localSensors = nil;
     self.localSensorTimers = nil;
+    self.updateController = nil;
 	[super dealloc];
 }
 
-@synthesize isPolling, pollingStatusIds, isError, pollingSender, localSensors, localSensorTimers;
+#pragma mark Delegate method of UpdateController
+
+- (void)didUpdate
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
+}
+
+- (void)didUseLocalCache:(NSString *)errorMessage
+{
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
+	}
+}
+
+- (void)didUpdateFail:(NSString *)errorMessage
+{
+	if ([errorMessage isEqualToString:@"401"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
+	} else {
+		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
+	}
+}
+
+@synthesize isPolling, pollingStatusIds, isError, pollingSender, localSensors, localSensorTimers, updateController;
 
 - (void)setPollingSender:(ORControllerPollingSender *)aPollingSender
 {

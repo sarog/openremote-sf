@@ -202,9 +202,9 @@
     switch ([httpResp statusCode]) {
         case CONTROLLER_CONFIG_CHANGED: //controller config changed
         {
-            UpdateController *updateController = [[UpdateController alloc] initWithDelegate:self];
-            [updateController checkConfigAndUpdate];
-            [updateController release];
+            if ([delegate respondsToSelector:@selector(controllerRequestConfigurationUpdated:)]) {
+                [delegate controllerRequestConfigurationUpdated:self];
+            }
             break;
         }
         case UNAUTHORIZED:
@@ -240,33 +240,6 @@
 	NSLog(@"[async] use HTTPS self-certificate");
 	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
-	}
-}
-
-// TODO EBR : this should be moved to another class
-
-#pragma mark Delegate method of UpdateController
-
-- (void)didUpdate
-{
-	[[NSNotificationCenter defaultCenter] postNotificationName:NotificationRefreshGroupsView object:nil];
-}
-
-- (void)didUseLocalCache:(NSString *)errorMessage
-{
-	if ([errorMessage isEqualToString:@"401"]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-	} else {
-		[ViewHelper showAlertViewWithTitle:@"Use Local Cache" Message:errorMessage];
-	}
-}
-
-- (void)didUpdateFail:(NSString *)errorMessage
-{
-	if ([errorMessage isEqualToString:@"401"]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:NotificationPopulateCredentialView object:nil];
-	} else {
-		[ViewHelper showAlertViewWithTitle:@"Update Failed" Message:errorMessage];
 	}
 }
 

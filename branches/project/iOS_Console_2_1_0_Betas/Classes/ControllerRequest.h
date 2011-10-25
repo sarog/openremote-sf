@@ -20,7 +20,6 @@
  */
 #import <Foundation/Foundation.h>
 #import "DataCapturingNSURLConnectionDelegate.h"
-#import "UpdateController.h"
 
 @class ORGroupMember;
 @class ORController;
@@ -34,6 +33,7 @@
 - (void)controllerRequestDidFailWithError:(NSError *)error;
 - (void)controllerRequestDidReceiveResponse:(NSURLResponse *)response;
 - (void)controllerRequestRequiresAuthentication:(ControllerRequest *)request;
+- (void)controllerRequestConfigurationUpdated:(ControllerRequest *)request;
 
 // TODO EBR : do we really want to pass URL classes back to our delegate ? this should be hidden
 
@@ -44,7 +44,7 @@
  * It is retained and released when the connection is finished (after NSURLConnection sent
  * connectionDidFinishLoading: or connection:didFailWithError:
  */
-@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate, UpdateControllerDelegate> {
+@interface ControllerRequest : NSObject <DataCapturingNSURLConnectionDelegateDelegate> {
 
     NSString *requestPath;
     NSString *method;

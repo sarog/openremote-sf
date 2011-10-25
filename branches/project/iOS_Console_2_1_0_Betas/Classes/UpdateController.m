@@ -210,7 +210,6 @@
 	}
 }
 
-
 #pragma mark delegate method of ServerAutoDiscoveryController
 - (void)onFindServer:(ORController *)aController {
 	NSLog(@"onFindServer %@", aController.primaryURL);
