@@ -373,7 +373,7 @@ public class StateSensorTest
     cache.registerSensor(s1);
     s1.start();
 
-    Assert.assertTrue(cache.queryStatusBySensorId(7).equals(Sensor.UNKNOWN_STATUS));
+    Assert.assertTrue(cache.queryStatus(7).equals(Sensor.UNKNOWN_STATUS));
     
     Assert.assertTrue(s1.getSensorID() == 7);
     Assert.assertTrue(s1.isPolling());
@@ -526,7 +526,7 @@ public class StateSensorTest
 
     Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
 
-    return cache.queryStatusBySensorId(sensorID);
+    return cache.queryStatus(sensorID);
   }
 
 
