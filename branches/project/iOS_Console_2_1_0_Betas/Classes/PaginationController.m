@@ -288,7 +288,32 @@
 - (void)loadView {
 	[super loadView];
 	[self.view setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
-    
+
+	scrollView = [[UIScrollView alloc] init];
+	[scrollView setDelegate:self];
+	[scrollView setPagingEnabled:YES];
+	[scrollView setShowsVerticalScrollIndicator:NO];
+	[scrollView setShowsHorizontalScrollIndicator:NO];
+	[scrollView setScrollsToTop:NO];
+	[scrollView setOpaque:YES];
+	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+    // Scroll view takes whole screen height, even if a tab bar is present
+    // This is so the rendering on iOS console is in sync with how the modeler presents it
+	[scrollView setFrame:CGRectMake(0, 0, frameWidth, frameHeight)];
+	[scrollView setBackgroundColor:[UIColor blackColor]];
+	[self.view addSubview:scrollView];
+	[scrollView release];
+	pageControl = [[UIPageControl alloc] init];
+	if (viewControllers.count > 1) {
+		[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
+		[pageControl setFrame:CGRectMake(0, frameHeight - PAGE_CONTROL_HEIGHT - (self.tabBar?kTabBarHeight:0.0), frameWidth, PAGE_CONTROL_HEIGHT)];
+		[pageControl setBackgroundColor:[UIColor clearColor]];
+		[pageControl setOpaque:NO];
+		[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
+		[self.view addSubview:pageControl];
+		[pageControl release];
+	}
+    // Tab bar added latest so it sits on top of other views
     if (self.tabBar) {
         UITabBar *tmpBar = [[UITabBar alloc] initWithFrame:CGRectMake(0.0, frameHeight - kTabBarHeight, frameWidth, kTabBarHeight)];
         self.uiTabBar = tmpBar;
@@ -305,30 +330,8 @@
         self.uiTabBar.delegate = self;
         [tmpBar release];
     }
-    
-	scrollView = [[UIScrollView alloc] init];
-	[scrollView setDelegate:self];
-	[scrollView setPagingEnabled:YES];
-	[scrollView setShowsVerticalScrollIndicator:NO];
-	[scrollView setShowsHorizontalScrollIndicator:NO];
-	[scrollView setScrollsToTop:NO];
-	[scrollView setOpaque:YES];
-	[scrollView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-	[scrollView setFrame:CGRectMake(0, 0, frameWidth, frameHeight - (self.uiTabBar?kTabBarHeight:0.0))];
-	[scrollView setBackgroundColor:[UIColor blackColor]];
-	[self.view addSubview:scrollView];
-	[scrollView release];
-	pageControl = [[UIPageControl alloc] init];
-	if (viewControllers.count > 1) {
-		[pageControl setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth];
-		[pageControl setFrame:CGRectMake(0, frameHeight - PAGE_CONTROL_HEIGHT - (self.uiTabBar?kTabBarHeight:0.0), frameWidth, PAGE_CONTROL_HEIGHT)];
-		[pageControl setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.5f]];
-		[pageControl setOpaque:YES];
-		[pageControl addTarget:self action:@selector(pageControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
-		[self.view addSubview:pageControl];
-		[pageControl release];
-	}
-	[self initView];
+
+    [self initView];
 }
 
 - (void)didReceiveMemoryWarning {
