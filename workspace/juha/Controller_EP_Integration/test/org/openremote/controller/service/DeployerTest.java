@@ -284,17 +284,6 @@ public class DeployerTest
     Assert.assertTrue(sensor4 instanceof StateSensor);
     Assert.assertTrue(sensor4.isRunning());
 
-    Iterator it = sc.listSensors();
-    int count = 0;
-
-    while(it.hasNext())
-    {
-      count++;
-      it.next();
-    }
-
-    Assert.assertTrue(count == 4);
-
   }
 
 
@@ -363,17 +352,6 @@ public class DeployerTest
     Assert.assertTrue(sensor4 instanceof StateSensor);
     Assert.assertTrue(sensor4.isRunning());
 
-    Iterator it = sc.listSensors();
-    int count = 0;
-
-    while(it.hasNext())
-    {
-      count++;
-      it.next();
-    }
-
-    Assert.assertTrue(count == 4);
-
 
     // do the change...
 
@@ -391,18 +369,6 @@ public class DeployerTest
     Assert.assertTrue(d.getSensor(2) == null);
     Assert.assertTrue(d.getSensor(3) == null);
     Assert.assertTrue(d.getSensor(4) == null);
-
-
-    it = sc.listSensors();
-    count = 0;
-
-    while(it.hasNext())
-    {
-      count++;
-      it.next();
-    }
-
-    Assert.assertTrue(count == 5);
 
 
     Sensor sensor5 = d.getSensor(5);
@@ -479,19 +445,6 @@ public class DeployerTest
     Assert.assertTrue("expected sensor 8 to be cleared", d.getSensor(8) == null);
     Assert.assertTrue("expected sensor 9 to be cleared", d.getSensor(9) == null);
 
-
-    it = sc.listSensors();
-    count = 0;
-
-    while(it.hasNext())
-    {
-      count++;
-      it.next();
-    }
-
-    Assert.assertTrue(count == 0);
-
-   // Assert.assertTrue(cst.getRecordList().isEmpty());
   }
 
 
@@ -559,17 +512,6 @@ public class DeployerTest
     Assert.assertTrue(sensor4 instanceof StateSensor);
     Assert.assertTrue(sensor4.isRunning());
 
-    Iterator it = sc.listSensors();
-    int count = 0;
-
-    while(it.hasNext())
-    {
-      count++;
-      it.next();
-    }
-
-    Assert.assertTrue(count == 4);
-
 
     // redeploy
 
@@ -580,16 +522,6 @@ public class DeployerTest
     Assert.assertFalse(sensor2.isRunning());
     Assert.assertFalse(sensor1.isRunning());
 
-    it = sc.listSensors();
-    count = 0;
-
-    while(it.hasNext())
-    {
-      count++;
-      it.next();
-    }
-
-    Assert.assertTrue(count == 4);
 
     sensor1 = d.getSensor(1);
 
