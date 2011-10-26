@@ -132,7 +132,7 @@ public class StatusPollingServiceImpl implements StatusPollingService {
    private String queryChangedStatusesFromCachedStatusTable(Set<Integer> statusChangedIDs) {
       logger.info("Querying changed data from StatusCache...");
       PollingData pollingData = new PollingData(statusChangedIDs);
-      Map<Integer, String> changedStatuses = statusCache.queryStatuses(pollingData.getSensorIDs());
+      Map<Integer, String> changedStatuses = statusCache.queryStatus(pollingData.getSensorIDs());
       pollingData.setChangedStatuses(changedStatuses);
       logger.info("Have queried changed data from StatusCache.");
       return composePollingResult(pollingData);
