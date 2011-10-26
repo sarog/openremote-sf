@@ -88,6 +88,7 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+//    NSLog(@"controller %@ - connection:didFailWithError: %@", self.controller.primaryURL, error);
     if ([self.delegate respondsToSelector:@selector(controller:fetchGroupMembersDidFailWithError:)]) {
         [self.delegate controller:self.controller fetchGroupMembersDidFailWithError:error];
     } else {
@@ -100,6 +101,7 @@
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
     int statusCode = ((NSHTTPURLResponse *)response).statusCode;
+//    NSLog(@"controller %@ - connection:didReceiveResponse: %d", self.controller.primaryURL, statusCode);
 	if (statusCode != 200) {
         if (statusCode == UNAUTHORIZED) {
             if ([self.delegate respondsToSelector:@selector(fetchGroupMembersRequiresAuthenticationForController:)]) {
@@ -108,8 +110,12 @@
         }
         self.lastRequestWasError = YES;
 
-        // TODO: call delegate with error
+        // TODO: should we have our own error domain ?
+        if ([self.delegate respondsToSelector:@selector(controller:fetchGroupMembersDidFailWithError:)]) {
+            [self.delegate controller:self.controller fetchGroupMembersDidFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:statusCode userInfo:nil]];
+        }
 
+        // TODO: log / have some notification mechanism
 //		[ViewHelper showAlertViewWithTitle:@"Panel List Error" Message:[ControllerException exceptionMessageOfCode:statusCode]];	
         
 	} 
