@@ -238,7 +238,7 @@ public class SwitchSensorTest
 
     Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
 
-    return cache.queryStatusBySensorId(sensorID);
+    return cache.queryStatus(sensorID);
   }
 
 

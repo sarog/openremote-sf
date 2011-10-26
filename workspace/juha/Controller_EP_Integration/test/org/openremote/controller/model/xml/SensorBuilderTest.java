@@ -645,7 +645,7 @@ public class SensorBuilderTest
 
     // should get either one depending what the state of the listener is
 
-    String val = cache.queryStatusBySensorId(727);
+    String val = cache.queryStatus(727);
     
     Assert.assertTrue(
         "Expected either 'on' or 'off', got " + val,
@@ -663,7 +663,7 @@ public class SensorBuilderTest
     Assert.assertTrue(state.processEvent("off").getValue().equals("off"));
     Assert.assertTrue(state.processEvent("foo").getValue().equals(Sensor.UNKNOWN_STATUS));
 
-    String status = cache.queryStatusBySensorId(727);
+    String status = cache.queryStatus(727);
 
     // should have something since its a listener...
 
@@ -686,7 +686,7 @@ public class SensorBuilderTest
     
     Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
     
-    return cache.queryStatusBySensorId(sensorID);
+    return cache.queryStatus(sensorID);
   }
 
   private Sensor buildSensor(SensorType type) throws Exception
