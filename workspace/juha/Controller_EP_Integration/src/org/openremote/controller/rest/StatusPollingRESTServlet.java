@@ -148,7 +148,7 @@ public class StatusPollingRESTServlet extends HttpServlet {
       for (int i = 0; i < sensorIDs.length; i++)
       {
         tmpStr = sensorIDs[i];
-        deviceStateCache.queryStatusBySensorId(Integer.parseInt(tmpStr));
+        deviceStateCache.queryStatus(Integer.parseInt(tmpStr));
       }
     }
 
