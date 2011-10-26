@@ -150,6 +150,16 @@ public class PanelServiceImpl implements PanelService {
 		
 		return inverseScreen;
 	}
+	
+	@Override
+	public String getScreenOrientation(int screenId) {
+		String orientation = "portrait";
+		Boolean isLandscape = getScreenById(screenId).getLandscape();
+		if (isLandscape != null && isLandscape) {
+			orientation = "landscape";
+		}
+		return orientation;
+	}
 
 	@Override
 	public boolean isInitialized() {

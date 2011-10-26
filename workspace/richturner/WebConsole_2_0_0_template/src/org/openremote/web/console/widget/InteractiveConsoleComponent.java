@@ -74,18 +74,24 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	public void registerMouseAndTouchHandlers(Widget component) {
 		if(BrowserUtils.isMobile()) {
-			handlerRegistrations.add(component.addDomHandler(this, TouchStartEvent.getType()));
-			handlerRegistrations.add(component.addDomHandler(this, TouchEndEvent.getType()));
+			storeHandler(component.addDomHandler(this, TouchStartEvent.getType()));
+			storeHandler(component.addDomHandler(this, TouchEndEvent.getType()));
 		} else {
-			handlerRegistrations.add(component.addDomHandler(this, MouseDownEvent.getType()));
-			handlerRegistrations.add(component.addDomHandler(this, MouseUpEvent.getType()));
+			storeHandler(component.addDomHandler(this, MouseDownEvent.getType()));
+			storeHandler(component.addDomHandler(this, MouseUpEvent.getType()));
 		}
-		handlersRegistered = true;
+		
 	}
 	
 	public void unRegisterMouseAndTouchHandlers() {
 		for (HandlerRegistration handler : handlerRegistrations) {
 			handler.removeHandler();
 		}
+		handlersRegistered = false;
+	}
+	
+	public void storeHandler(HandlerRegistration registration) {
+		handlerRegistrations.add(registration);
+		handlersRegistered = true;
 	}
 }

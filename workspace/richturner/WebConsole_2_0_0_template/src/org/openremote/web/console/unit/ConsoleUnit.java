@@ -35,6 +35,7 @@ import org.openremote.web.console.service.PanelService;
 import org.openremote.web.console.service.PanelServiceImpl;
 import org.openremote.web.console.service.ScreenViewService;
 import org.openremote.web.console.view.ScreenView;
+import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.TabBarComponent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.Window;
@@ -61,6 +62,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private PanelIdentity currentPanelIdentity;
 	private Integer currentGroupId;
 	private Integer currentScreenId;
+	private TabBarComponent currentTabBar;
+	private ScreenViewImpl currentScreen;
 	
 	public ConsoleUnit() {
 		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
@@ -119,9 +122,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	 * Adjusts the CSS class to either landscape or portrait
 	 * @param orientation
 	 */
-	public void setOrientation(RotationEvent event) {
-		String orientation = event.getOrientation();
-
+	public void setOrientation(String orientation) {
 		if ("portrait".equals(orientation)) {
 			getElement().removeClassName("landscapeConsole");
 			getElement().addClassName("portraitConsole");
@@ -147,7 +148,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	public void initialise() {
 		// Create and load loading screen
-		ScreenView loadingScreen = screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
+		ScreenViewImpl loadingScreen = screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
 		setScreenView(loadingScreen);
 		
 		// Check for Last Panel in Cache
@@ -232,6 +233,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	public void loadScreen(Integer groupId, Screen screen) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
+		boolean screenOrientationChanged = false;
+		boolean tabBarChanged = false;
+		
+		String orientation = "";
 		
 		if (screen == null) {
 			return;
@@ -252,7 +257,17 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		currentGroupId = groupId;
 		
 		if (screenChanged) {
-			ScreenView screenView = screenViewService.getScreenView(screen);
+			// Check if orientation has changed
+			String newScreenOrientation = panelService.getScreenOrientation(currentScreenId);
+			String currentDisplayOrientation = consoleDisplay.getOrientation();
+			if(!newScreenOrientation.equalsIgnoreCase(currentDisplayOrientation)) {
+				screenOrientationChanged = true;
+				
+				// Adjust console display to suit new screen
+				consoleDisplay.setOrientation(panelService.getScreenOrientation(currentScreenId));
+			}
+			
+			ScreenViewImpl screenView = screenViewService.getScreenView(screen);
 		
 			if (screenView != null) {
 				setScreenView(screenView);
@@ -267,14 +282,22 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			TabBar tabBar = panelService.getTabBar(currentGroupId);
 			if (tabBar != null) {
 				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
-				setTabBar(tabBarComponent);
+				tabBarChanged = setTabBar(tabBarComponent);
 			}
 		}
 		
+		// Update the tab bar only if it's not new
+		if (screenOrientationChanged && !tabBarChanged) {
+			currentTabBar.refresh();
+			consoleDisplay.setComponentPosition(currentTabBar,  0, consoleDisplay.getHeight() - currentTabBar.getHeight());
+		}
+		
 		// Fire Screen View Change event
+		// Seems that the old tabBar is handling the event but the newly
+		// created one doesn't need to look into this but temporary workaround used 
 		if (screenChanged) {
 			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-			eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));
+			eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));			
 		}
 	}
 	
@@ -283,12 +306,33 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		Window.alert("LOAD SETTINGS");
 	}
 	
-	public void setScreenView(ScreenView screen) {
-		consoleDisplay.setScreenView(screen);
+	public void setScreenView(ScreenViewImpl screenView) {
+		if (screenView == null) {
+			return;
+		}
+	
+		if (currentScreen != null && screenView != currentScreen) {
+			consoleDisplay.removeComponent(currentScreen);
+		}
+	
+		consoleDisplay.addComponent(screenView);
+		currentScreen = screenView;
 	}
 	
-	public void setTabBar(TabBarComponent tabBar) {
-		consoleDisplay.setTabBar(tabBar);
+	public boolean setTabBar(TabBarComponent tabBar) {
+		boolean changeOccurred = false;
+		if (tabBar == null) {
+			return changeOccurred;
+		}
+	
+		if (currentTabBar != null && tabBar != currentTabBar) {
+			consoleDisplay.removeComponent(currentTabBar);
+		}
+		consoleDisplay.addComponent(tabBar, 0, consoleDisplay.getHeight() - tabBar.getHeight());
+		currentTabBar = tabBar;
+		changeOccurred = true;
+		
+		return changeOccurred;
 	}
 	
 	public ControllerService getControllerService() {
@@ -312,22 +356,19 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	@Override
 	public void onRotate(RotationEvent event) {
-		boolean rotateDisplay = false;
-		
-		setOrientation(event);
+		String orientation = event.getOrientation();
+		setOrientation(orientation);
 		setPosition(event.getWindowWidth(), event.getWindowHeight());
 		
-		// Load in the inverse screen to what is currently loaded
+		// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
 		if (panelService.isInitialized()) {
-			Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
-			if (inverseScreen != null) {
-				loadScreen(currentGroupId, inverseScreen);
-				rotateDisplay = true;
+			if (!orientation.equalsIgnoreCase(panelService.getScreenOrientation(currentScreenId))) {
+				Screen inverseScreen = panelService.getInverseScreen(currentScreenId);
+				if (inverseScreen != null) {
+					loadScreen(currentGroupId, inverseScreen);
+				}
 			}
 		}
-		
-		// Adjust console display
-		consoleDisplay.setOrientation(event, rotateDisplay);
 	}
 	
 	@Override
@@ -369,19 +410,13 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			Integer toScreenId = navigate.getToScreen();
 			
 			if (to != null && !to.equals("")) {
-				// Force portrait display
-				consoleDisplay.setDisplayOrientation("portrait");
 				// TODO Load System Screen
 				Window.alert("Load System Screen");
 			} else if(toGroupId != null && toScreenId != null) {
 				Screen screen = panelService.getScreenById(toScreenId);
 				loadScreen(toGroupId, screen);
-				Boolean isLandscape =screen.getLandscape();  
-				if (isLandscape != null && isLandscape) {
-					consoleDisplay.setDisplayOrientation("landscape");
-				} else {
-					consoleDisplay.setDisplayOrientation("portrait");
-				}
+				HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+				eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));
 			}
 		}
 	}

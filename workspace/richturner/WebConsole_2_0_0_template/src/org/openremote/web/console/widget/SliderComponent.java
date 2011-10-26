@@ -68,7 +68,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
-			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().isVertical;
+			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
 			boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
 			
 			if (!sliderAppearsVertical) {
@@ -123,7 +123,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			if (!clickable) {
 				return;
 			}
-			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().isVertical;
+			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
 			boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
 			
 			if (!sliderAppearsVertical) {
@@ -229,7 +229,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	private int calculateRelativePixelValue(int absValue) {
 		int value = absValue;
 		int pixelMin = 0;
-		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().isVertical;
+		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
 		boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
 		
 		if (!sliderAppearsVertical) {		

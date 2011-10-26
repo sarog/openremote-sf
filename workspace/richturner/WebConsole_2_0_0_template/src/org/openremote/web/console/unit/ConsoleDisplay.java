@@ -10,6 +10,7 @@ import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.view.ScreenView;
 import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
 import org.openremote.web.console.widget.Positional;
 import org.openremote.web.console.widget.TabBarComponent;
@@ -41,11 +42,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	private int height;
 	private String colour;
 	private AbsolutePanel container;
-	public boolean isVertical = true;
-	private TabBarComponent currentTabBar;
-	private Widget currentScreen;
-	private String currentOrientation;
-	private String currentScreenOrientation = "portrait";
+	private String currentOrientation = "portrait";
 	
 	public ConsoleDisplay(int width, int height) {
 		super(new AbsolutePanel());
@@ -91,32 +88,13 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	 * size and position within the wrapper
 	 * @param orientation
 	 */
-	public void setOrientation(RotationEvent event, boolean rotateDisplay) {
-		String orientation = event.getOrientation();
-		this.currentOrientation = orientation;
-		
-		if ("portrait".equals(orientation)) {
-			isVertical = true;
-		} else {
-			isVertical = false;
-		}
-		
-		// Use same screen for portrait and landscape so don't rotate
-		if (!rotateDisplay) {
+	public void setOrientation(String orientation) {
+		if (currentOrientation.equalsIgnoreCase(orientation)) {
 			return;
 		}
 		
-		rotateScreen(orientation);
-	}
-	
-	public void setDisplayOrientation(String orientation) {
-		if (!orientation.equalsIgnoreCase(currentScreenOrientation)) {
-			rotateScreen(orientation);
-		}
-	}
-	
-	private void rotateScreen(String orientation) {
-		currentScreenOrientation = orientation;
+		this.currentOrientation = orientation;
+		
 		int width = getWidth();
 		int height = getHeight();
 		
@@ -124,19 +102,16 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 			container.setWidgetPosition(display,0,0);
 		   display.setStylePrimaryName("portraitDisplay");
 		} else {
-			//container.setWidgetPosition(display, (width/2)-(height/2), (height/2)-(width/2));
 			container.setWidgetPosition(display, (height/2)-(width/2), (width/2)-(height/2));
 			display.setStylePrimaryName("landscapeDisplay");
 		}
 		
 	   display.setWidth(width + "px");
 	   display.setHeight(height + "px");
-		
-		// Update the tab bar
-		if (currentTabBar != null) {
-			currentTabBar.refresh();
-			display.setWidgetPosition(currentTabBar,  0, getHeight() - currentTabBar.getHeight());
-		}
+	}
+	
+	public String getOrientation() {
+		return this.currentOrientation;
 	}
 	
 	public void setColour(String colour) {
@@ -148,40 +123,86 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		return colour;
 	}
 	
-	protected void setScreenView(ScreenView screenView) {
-		if (screenView == null) {
-			return;
+	public boolean getIsVertical() {
+		boolean response = false;
+		if (currentOrientation.equalsIgnoreCase("portrait")) {
+			response = true;
 		}
-		
-		if (currentScreen != null && screenView != currentScreen) {
-			display.remove(currentScreen);
+		return response;
+	}
+	
+	public int getWidth() {
+		int value = 0; 
+		if ("portrait".equals(currentOrientation)) {
+			value = this.width;
+		} else {
+			value = this.height;
 		}
-		
-		display.add((Widget)screenView, 0, 0);
-		currentScreen = (Widget)screenView;
-		screenView.onAdd();
+		return value;
+	}
+	
+	public int getHeight() {
+		int value = 0; 
+		if ("portrait".equals(currentOrientation)) {
+			value = this.height;
+		} else {
+			value = this.width;
+		}
+		return value;
 	}
 	
 	/**
 	 * Completely clear the display
 	 */
-	private void clearDisplay() {
+	public void clearDisplay() {
 		display.clear();
 	}
 	
-	protected void setTabBar(TabBarComponent tabBar) {
-		if (tabBar == null) {
-			return;
-		}
-		
-		if (currentTabBar != null && tabBar != currentTabBar) {
-			display.remove(currentTabBar);
-		}
-		display.add(tabBar, 0, height- tabBar.getHeight());
-		DOM.setIntStyleAttribute( tabBar.getElement(), "zIndex", 30000 );
-		currentTabBar = tabBar;
-		tabBar.onAdd();
+	protected void addComponent(ConsoleComponentImpl component) {
+		addComponent(component, 0, 0);
 	}
+	
+	protected void addComponent(ConsoleComponentImpl component, int left, int top) {
+		display.add(component, left, top);
+		component.onAdd();
+	}
+	
+	protected void removeComponent(ConsoleComponentImpl component) {
+		display.remove(component);
+		component.onRemove();
+	}
+	
+	protected void setComponentPosition(ConsoleComponentImpl component, int left, int top) {
+		display.setWidgetPosition(component, left, top);
+	}
+	
+//	protected void setScreenView(ScreenView screenView) {
+//	if (screenView == null) {
+//		return;
+//	}
+//	
+//	if (currentScreen != null && screenView != currentScreen) {
+//		display.remove(currentScreen);
+//	}
+//	
+//	display.add((Widget)screenView, 0, 0);
+//	currentScreen = (Widget)screenView;
+//	screenView.onAdd();
+//}
+	
+//	protected void setTabBar(TabBarComponent tabBar) {
+//		if (tabBar == null) {
+//			return;
+//		}
+//		
+//		if (currentTabBar != null && tabBar != currentTabBar) {
+//			currentTabBar.onRemove();
+//			display.remove(currentTabBar);
+//		}
+//		display.add(tabBar, 0, getHeight() - tabBar.getHeight());
+//		currentTabBar = tabBar;
+//		tabBar.onAdd();
+//	}
 	
 	@Override
 	public void onTouchMove(TouchMoveEvent event) {
@@ -208,24 +229,4 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 
 	@Override
 	public void onRender() {}
-	
-	public int getWidth() {
-		int value = 0; 
-		if ("portrait".equals(currentOrientation)) {
-			value = this.width;
-		} else {
-			value = this.height;
-		}
-		return value;
-	}
-	
-	public int getHeight() {
-		int value = 0; 
-		if ("portrait".equals(currentOrientation)) {
-			value = this.height;
-		} else {
-			value = this.width;
-		}
-		return value;
-	}
 }

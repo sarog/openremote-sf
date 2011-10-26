@@ -22,14 +22,14 @@ import com.google.gwt.user.client.Window;
 
 public class ScreenViewService {
 	public static final int LOADING_SCREEN_ID = -1;
-	Map<Integer, ScreenView> screenViewMap = new HashMap<Integer, ScreenView>();	
+	Map<Integer, ScreenViewImpl> screenViewMap = new HashMap<Integer, ScreenViewImpl>();	
 	
 	public ScreenViewService() {
 		
 	}
 	
-	public ScreenView getScreenView(int screenId) {
-		ScreenView screenView;
+	public ScreenViewImpl getScreenView(int screenId) {
+		ScreenViewImpl screenView;
 		screenView = screenViewMap.get(screenId);
 		if (screenView == null && screenId < 0) {
 			buildSystemScreenViews();
@@ -38,8 +38,8 @@ public class ScreenViewService {
 		return screenView;
 	}
 	
-	public ScreenView getScreenView(Screen screen) {
-		ScreenView screenView = null;
+	public ScreenViewImpl getScreenView(Screen screen) {
+		ScreenViewImpl screenView = null;
 		if (screen != null) {
 			int screenId = screen.getId();
 			screenView = screenViewMap.get(screenId);
@@ -53,7 +53,7 @@ public class ScreenViewService {
 		return screenView;
 	}
 	
-	private ScreenView buildScreenView(Screen screen) {
+	private ScreenViewImpl buildScreenView(Screen screen) {
 		ScreenViewImpl screenView = new ScreenViewImpl();
 		
 		// Cycle through absolute and grid lists and create components
@@ -98,7 +98,7 @@ public class ScreenViewService {
 	}
 	
 	private void buildSystemScreenViews() {
-		ScreenView loadingScreen = new LoadingScreenView();
+		ScreenViewImpl loadingScreen = new LoadingScreenView();
 		screenViewMap.put(LOADING_SCREEN_ID, loadingScreen);
 	}
 }

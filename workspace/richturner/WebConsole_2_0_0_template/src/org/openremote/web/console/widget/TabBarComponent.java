@@ -84,7 +84,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			// Add Handlers
 			registerMouseAndTouchHandlers(this);
 			if (item.getNavigate() != null || systemTabType != null) {
-				this.addHandler(this, TapEvent.getType());
+				storeHandler(this.addHandler(this, TapEvent.getType()));
 			}
 		}
 
@@ -121,6 +121,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		container = (HorizontalPanel)this.getWidget();
 		container.setStylePrimaryName(CLASS_NAME);
 		container.setHeight(TABBAR_HEIGHT + "px");
+		DOM.setIntStyleAttribute(container.getElement(), "zIndex", 30000 );
 		
 		// Add Elements from tab bar entity
 		for (TabBarItem item : tabBar.getItem()) {
@@ -130,7 +131,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		
 		// Register screen view change handler
 		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-		eventBus.addHandler(ScreenViewChangeEvent.getType(), this);
+		storeHandler(eventBus.addHandler(ScreenViewChangeEvent.getType(), this));
 	}
 	
 	/*
@@ -260,6 +261,9 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 
 	@Override
 	public void onScreenViewChange(ScreenViewChangeEvent event) {
+		if (!handlersRegistered) {
+			return;
+		}
 		// Cycle through tab items and if any point to this new screen highlight it
 		for (TabBarItemComponent item : items) {
 			Navigate navigate = item.getItem().getNavigate();
