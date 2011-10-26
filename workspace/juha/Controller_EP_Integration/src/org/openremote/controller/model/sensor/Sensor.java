@@ -699,7 +699,7 @@ public abstract class Sensor
 
       if (isEventListener())
       {
-        return deviceStateCache.queryStatusBySensorId(sensorID);
+        return deviceStateCache.queryStatus(sensorID);
       }
 
       // If we are dealing with regular read commands, execute it to explicitly fetch the
