@@ -75,6 +75,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 @property (nonatomic, assign) int currentValue;
 @property (nonatomic, retain) UIImageView *sliderTip;
 
+- (int)sliderValue:(UISlider *)sender;
 - (void)sliderValueChanged:(UISlider *)sender;
 - (void)releaseSlider:(UISlider *)sender;
 - (void)touchDownSlider:(UISlider *)sender;
@@ -203,11 +204,17 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
     
     NSLog(@"Slider - setPollingStatus %d to %f", sensorId, newStatus);
     
-	((UISlider *)self.view).value = newStatus;
-	self.currentValue = (int)newStatus;
+    UISlider *uiSlider = ((UISlider *)self.view);
+	uiSlider.value = newStatus;
+	self.currentValue = [self sliderValue:uiSlider];
 }
 
 #pragma mark Private methods
+
+- (int)sliderValue:(UISlider *)sender
+{
+    return (int)roundf([sender value]);
+}
 
 - (void)sliderValueChanged:(UISlider *)sender
 {
@@ -216,7 +223,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 }
 
 -(void) releaseSlider:(UISlider *)sender {
-	int afterSlideValue = (int)[sender value];
+	int afterSlideValue = [self sliderValue:sender];
 	if (self.currentValue >= 0 && abs(self.currentValue-afterSlideValue) >= MIN_SLIDE_VARIANT) {
 		[self sendCommandRequest: [NSString stringWithFormat:@"%d", afterSlideValue]];
 	}
@@ -288,7 +295,7 @@ CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	tipText.font = [UIFont systemFontOfSize:40];
 	tipText.backgroundColor = [UIColor clearColor];
 	tipText.textAlignment = UITextAlignmentCenter;
-	tipText.text = [NSString stringWithFormat:@"%d",(int)[uiSlider value]];
+	tipText.text = [NSString stringWithFormat:@"%d", [self sliderValue:uiSlider]];
 	[self.sliderTip addSubview:tipText];
     [tipText release];
 }
