@@ -325,7 +325,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (section == CONTROLLER_URLS_SECTION) {
-        NSLog(@"Number of rows in table view controller section %d", [settingsManager.consoleSettings.controllers count] + 1);
+//        NSLog(@"Number of rows in table view controller section %d", [settingsManager.consoleSettings.controllers count] + 1);
 		return [settingsManager.consoleSettings.controllers count] + 1; // custom URLs need extra cell 'Add url >'
 	}
 	return 1;
