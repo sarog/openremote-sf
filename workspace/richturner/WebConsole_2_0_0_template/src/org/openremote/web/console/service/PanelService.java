@@ -22,5 +22,7 @@ public interface PanelService {
 	
 	Screen getInverseScreen(int screenId);
 	
+	String getScreenOrientation(int screenId);
+	
 	boolean isInitialized();
 }

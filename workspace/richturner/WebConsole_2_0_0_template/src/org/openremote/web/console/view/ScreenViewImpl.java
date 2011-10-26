@@ -3,10 +3,12 @@ package org.openremote.web.console.view;
 import java.util.ArrayList;
 import java.util.List;
 import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.Positional;
 
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -15,12 +17,13 @@ import com.google.gwt.user.client.ui.Widget;
  * @author rich
  *
  */
-public class ScreenViewImpl extends Composite implements ScreenView {
+public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	List<ConsoleComponent> consoleWidgets = new ArrayList<ConsoleComponent>();
 	AbsolutePanel container = new AbsolutePanel();
 	
 	public ScreenViewImpl() {
-		initWidget(container);
+		super(new AbsolutePanel());
+		container = (AbsolutePanel)this.getWidget();
 		setWidth("100%");
 		setHeight("100%");
 	}
@@ -62,8 +65,7 @@ public class ScreenViewImpl extends Composite implements ScreenView {
 	}
 
 	@Override
-	public void onAdd() {
-		// TODO Auto-generated method stub
+	public void onRender() {
 		for (ConsoleComponent component : consoleWidgets) {
 			component.onAdd();
 		}
