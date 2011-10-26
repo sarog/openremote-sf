@@ -69,7 +69,7 @@ public class StatusCommandServiceImpl implements StatusCommandService
     }
 
     Set<Integer> statusSensorIDs = parseStatusSensorIDsStrToSet(unParsedSensorIDs);
-    Map<Integer, String> latestStatuses = statusCache.queryStatuses(statusSensorIDs);
+    Map<Integer, String> latestStatuses = statusCache.queryStatus(statusSensorIDs);
 
     StringBuffer sb = new StringBuffer();
     sb.append(Constants.STATUS_XML_HEADER);
