@@ -554,38 +554,6 @@ public class Deployer
   }
 
 
-  /**
-   * Returns a registered sensor instance. Sensor instances are shared across threads.
-   * Retrieving a sensor with the same ID will yield a same instance. <p>
-   *
-   * If the sensor with given ID is not found, a <tt>null</tt> is returned.
-   *
-   * @see org.openremote.controller.model.sensor.Sensor#getSensorID()
-   *
-   * @param id    sensor ID
-   *
-   * @return      sensor instance, or null if sensor with given ID was not found
-   */
-  public Sensor getSensor(int id)
-  {
-    Sensor sensor = deviceStateCache.getSensor(id);
-
-    if (sensor == null)
-    {
-      // Write a log entry on accessing sensor ID that does not exist. At the moment letting
-      // this continue as it is, that is, returning a null pointer which is likely to blow up
-      // elsewhere unless the calling code guards against it. May consider other ways of
-      // handling it later.
-      //                                                                                  [JPL]
-      log.error(
-          "Attempted to access sensor with id ''{0}'' which did not exist in device " +
-          "state cache.", id
-      );
-    }
-
-    return sensor;
-  }
-
 
 
   /**
@@ -908,6 +876,51 @@ public class Deployer
     }
   }
 
+
+
+
+  // Protected Instance Methods -------------------------------------------------------------------
+
+  /**
+   * Returns a registered sensor instance. Sensor instances are shared across threads.
+   * Retrieving a sensor with the same ID will yield a same instance. <p>
+   *
+   * If the sensor with given ID is not found, a <tt>null</tt> is returned.
+   *
+   * @see org.openremote.controller.model.sensor.Sensor#getSensorID()
+   *
+   * @param id    sensor ID
+   *
+   * @return      sensor instance, or null if sensor with given ID was not found
+   */
+  protected Sensor getSensor(int id)
+  {
+    // TODO :
+    //   This is currently used by getSensorFromComponentInclude() which is a temporary method
+    //   on this interface, as part of ongoing refactoring. This method may not need to stay
+    //   once those refactorings are complete. Also notice that this method is currently the
+    //   only consumer of the deviceStateCache.getSensor() call.
+    //
+    //   The visibility could be lowered to private once unit tests do not directly use this
+    //   API anymore -- they could instead use the StatusCache API.
+
+    Sensor sensor = deviceStateCache.getSensor(id);
+
+    if (sensor == null)
+    {
+      // Write a log entry on accessing sensor ID that does not exist. At the moment letting
+      // this continue as it is, that is, returning a null pointer which is likely to blow up
+      // elsewhere unless the calling code guards against it. May consider other ways of
+      // handling it later.
+      //                                                                                  [JPL]
+      log.error(
+          "Attempted to access sensor with id ''{0}'' which did not exist in device " +
+          "state cache.", id
+      );
+    }
+
+    return sensor;
+  }
 
 
 
