@@ -120,7 +120,7 @@
     <path location = "${config.dir}"/>
     <fileset dir = "${lib.dir}/apache" includes = "**/*.jar"/>
   </path>
-
+  
 
   <path id = "cobertura.path.id">
     <fileset dir = "${lib.dir}/cobertura" includes = "*.jar"/>
@@ -332,6 +332,8 @@
             fork = "true">
       </java>
 
+      
+
       <sequential>
 
         <!--
@@ -355,9 +357,12 @@
         <echo message = "**** STOPPING TEST CONTAINER ****"/>
 
         <java classname = "org.openremote.controller.jetty.JettyStop" classpathref = "test.path.id" />
-        
+
       </sequential>
     </parallel>
+
+    <antcall  target = "-generate-junit-report"/>
+    
   </target>
 
 
@@ -374,6 +379,8 @@
     <antcall target = "-junit">
       <param name = "junit.single.test" value = "true"/>
     </antcall>
+
+    <antcall  target = "-generate-junit-report"/>
 
   </target>
 
@@ -397,6 +404,25 @@
 
     <delete includeemptydirs = "true" dir = "${junit.reports.dir}" />
     <mkdir dir = "${junit.reports.dir}" />
+
+  </target>
+
+
+  <!--
+   | Translates the XML to HTML report - separate task because calling from within
+   | parallel execution block was causing deadlocks.
+   +-->
+  <target  name = "-generate-junit-report">
+
+    <!-- JUnit XML to HTML report -->
+
+    <junitreport todir = "${junit.reports.dir}">
+      <fileset dir = "${junit.reports.dir}">
+        <include name = "TEST-*.xml" />
+      </fileset>
+
+      <report format = "frames" todir = "${junit.reports.dir}" />
+    </junitreport>
 
   </target>
 
@@ -476,16 +502,8 @@
 
     </junit>
 
-    <!-- JUnit XML to HTML report -->
-    <junitreport todir = "${junit.reports.dir}">
-      <fileset dir = "${junit.reports.dir}">
-        <include name = "TEST-*.xml" />
-      </fileset>
-
-      <report format = "frames" todir = "${junit.reports.dir}" />
-    </junitreport>
-
     <fail if="tests.failed" />
+
   </target>
 
 
