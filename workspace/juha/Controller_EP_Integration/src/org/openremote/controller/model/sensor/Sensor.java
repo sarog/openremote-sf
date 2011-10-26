@@ -147,6 +147,20 @@ public abstract class Sensor
    */
   protected final static Logger log = Logger.getLogger(Constants.RUNTIME_SENSORS_LOG_CATEGORY);
 
+  /**
+   * Helper method to allow subclasses to check if a given value matches the 'N/A' string that
+   * is used for uninitialized or error states in sensor implementations.
+   *
+   * @param value   value to compare to
+   *
+   * @return  true if value matches the string representation of
+   *          {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent}, false otherwise
+   */
+  public static boolean isUnknownSensorValue(String value)
+  {
+    return value.equals(Sensor.UNKNOWN_STATUS);
+  }
+
 
 
   // Instance Fields ------------------------------------------------------------------------------
@@ -502,20 +516,6 @@ public abstract class Sensor
    */
   protected abstract Event processEvent(String value);
 
-
-  /**
-   * Helper method to allow subclasses to check if a given value matches the 'N/A' string that
-   * is used for uninitialized or error states in sensor implementations.
-   *
-   * @param value   value to compare to
-   *
-   * @return  true if value matches the string representation of
-   *          {@link org.openremote.controller.model.sensor.Sensor.UnknownEvent}, false otherwise
-   */
-  protected boolean isUnknownSensorValue(String value)
-  {
-    return value.equals(Sensor.UNKNOWN_STATUS);
-  }
 
 
   // Inner Classes -------------------------------------------------------------------------------
