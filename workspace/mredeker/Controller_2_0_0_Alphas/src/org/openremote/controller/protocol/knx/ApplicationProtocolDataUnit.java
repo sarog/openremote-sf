@@ -792,5 +792,32 @@ class ApplicationProtocolDataUnit
 
   }
 
+  /**
+   * Constructs an APDU corresponding to a Group Value Write service for a device expecting
+   * a 2 byte float value (DPT 9.xxx). <p>
+   *
+   * Valid parameter value range is [-670760 - 670760]. The range varies depending on DPT.
+   * 
+   * @param   parameter     float value
+   *
+   * @return  APDU instance for a 2 byte float value
+   *
+   * @throws  ConversionException   if the value is not in a given range or cannot be scaled to the
+   *                                desired range
+   */
+  static ApplicationProtocolDataUnit createTwoOctetFloat(CommandParameter parameter) throws ConversionException
+  {
+    float value = parameter.getValue();
+
+    if (value < 0 || value > 100)
+    {
+      throw new ConversionException(
+          "Expected value is in range [-670760 - 670760], received " + value
+      );
+    }
+    
+    //TODO
+    return null;
+  }
 
 }

@@ -209,6 +209,23 @@ class GroupValueWrite extends KNXCommand implements ExecutableCommand
         }
       }
 
+         else if (name.equals("TEMP") || name.equals("TEMPERATURE"))
+      {
+        if (parameter == null)
+        {
+          throw new NoSuchCommandException("Missing value parameter for TEMPERATURE command.");
+        }
+   
+        try
+        {
+          return ApplicationProtocolDataUnit.createTwoOctetFloat(parameter);
+        }
+        catch (ConversionException e)
+        {
+          throw new NoSuchCommandException(e.getMessage(), e);
+        }
+      }
+      
       else
       {
         return null;                    // according to javadoc
