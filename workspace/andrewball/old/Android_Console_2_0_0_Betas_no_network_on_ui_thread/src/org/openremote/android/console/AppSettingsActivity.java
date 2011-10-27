@@ -41,6 +41,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -671,3 +672,4 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     }
   }
 }
+
