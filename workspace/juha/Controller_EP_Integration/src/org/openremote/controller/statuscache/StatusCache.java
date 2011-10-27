@@ -23,15 +23,18 @@ package org.openremote.controller.statuscache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.openremote.controller.exception.NoSuchComponentException;
-import org.openremote.controller.utils.Logger;
-import org.openremote.controller.protocol.Event;
 import org.openremote.controller.Constants;
+import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.Event;
+import org.openremote.controller.utils.Logger;
 
 /**
  * TODO
  *
+ * @author @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Javen Zhang
  */
 public class StatusCache
@@ -39,30 +42,65 @@ public class StatusCache
 
   // Class Members --------------------------------------------------------------------------------
 
-  private final static Logger logger = Logger.getLogger(Constants.RUNTIME_STATECACHE_LOG_CATEGORY);
+  /**
+   * Common status cache logging category on operations that occur during runtime (not part
+   * of lifecycle start/stop operations).
+   */
+  private final static Logger log = Logger.getLogger(Constants.RUNTIME_STATECACHE_LOG_CATEGORY);
 
 
   // Private Instance Fields ----------------------------------------------------------------------
 
+  /**
+   * TODO : ChangedStatusTable implementation requires a thorough review
+   */
   private ChangedStatusTable changedStatusTable;
 
-  private Map<Integer, String> sensorStatus = null;
+  /**
+   * Maintains a map of sensor ids to their values in cache.
+   */
+  private Map<Integer, String> sensorStatus = new ConcurrentHashMap<Integer, String>();
 
+  /**
+   * A chain of event processors that incoming events (values) are forced through before
+   * their values are stored in the cache. <p>
+   *
+   * Event processors may modify the existing values, discard events entirely or spawn
+   * multiple other events that are included in the state cache.
+   */
   private EventProcessorChain eventProcessorChain;
+
+  /**
+   * Map of sensor IDs to actual sensor instances.
+   */
+  private Map<Integer, Sensor> sensors = new ConcurrentHashMap<Integer, Sensor>();
+
+  /**
+   * Used to indicate if the state cache is in the middle of a shut down process -- this
+   * flag can be used by methods to fail-fast in such cases.
+   */
+  private volatile Boolean isShutdownInProcess = false;
 
 
   // Constructors ---------------------------------------------------------------------------------
 
+  /**
+   * TODO : need to thoroughly review ChangedStatusTable use
+   */
   public StatusCache()
   {
-    sensorStatus = new HashMap<Integer, String>();
+    this(new ChangedStatusTable(), new EventProcessorChain());
   }
 
-//  public StatusCache(ChangedStatusTable changedStatusTable)
-//  {
-//    super();
-//    this.changedStatusTable = changedStatusTable;
-//  }
+  /**
+   * TODO : need to thoroughly review ChangedStatusTable use
+   */
+  public StatusCache(ChangedStatusTable cst, EventProcessorChain epc)
+  {
+    this.changedStatusTable = cst;
+    this.eventProcessorChain = epc;
+  }
+
 
 
 
@@ -70,54 +108,153 @@ public class StatusCache
 
 
   /**
-   * This method is used to let the cache to store the status for all the device.
-   * 
-   * @param componentID
-   * @param status
+   * Register a sensor with this cache instance. The registered sensor will participate in
+   * cache's lifecycle.
    *
-   * @deprecated See ORCJAVA-102 -- http://jira.openremote.org/browse/ORCJAVA-102
+   * @param sensor    sensor to register
    */
-  @Deprecated public synchronized void saveOrUpdateStatus(Integer componentID, String status)
+  public void registerSensor(Sensor sensor)
   {
+    if (isShutdownInProcess)
+      return;
 
+    Sensor previous = sensors.put(sensor.getSensorID(), sensor);
 
-    String oldStatus = sensorStatus.get(componentID);
-    if (status == null || "".equals(status)) {
-       logger.info("Status is null or \"\" while calling saveOrUpdateStatus in statusCache.");
-       return;
+    // Use a specific log category just to log the creation of sensor objects
+    // in this method (happens at startup or soft restart)...
+
+    Logger initLog = Logger.getLogger(Constants.SENSOR_INIT_LOG_CATEGORY);
+
+    if (previous != null)
+    {
+      initLog.error(
+          "Duplicate registration of sensor ID {0}. Sensor ''{1}'' has replaced ''{2}''.",
+          sensor.getSensorID(), sensor.getName(), previous.getName()
+      );
     }
 
+    // TODO :
+    //   Use of Sensor.UNKNOWN_STATUS should go away once we store and return Events rather than
+    //   serializing to untyped strings, see ORCJAVA-203
 
-   // TODO : fix the logic below, it makes little sense  [JPL]
+    sensorStatus.put(sensor.getSensorID(), Sensor.UNKNOWN_STATUS);
 
-    boolean needNotify = false;
-    sensorStatus.put(componentID, status);
-    if (oldStatus== null || "".equals(oldStatus) || !oldStatus.equals(status)) {
-       needNotify = true;
-    }
+    initLog.debug("Initialized sensor ''{0}'' to ''{1}''", sensor.toString(), Sensor.UNKNOWN_STATUS);
 
-    if (needNotify) {
-       updateChangedStatusTable(componentID);
+    initLog.info("Registered sensor : {0}", sensor.toString());
+  }
+
+
+
+  /**
+   * Returns a sensor instance associated with the given ID.
+   *
+   * @param id    sensor ID
+   *
+   * @return      sensor instance
+   */
+  public Sensor getSensor(int id)
+  {
+    // TODO :
+    //   Should eventually return a sensor interface, see ORCJAVA-123
+
+    // TODO :
+    //   This method is currently only consumed by Deployer implementation. The deployer in turn
+    //   is only using it to host a temporary method that may still move due to refactoring.
+    //   At that point the whole delegation through Deployer may not be very meaningful.
+    
+    return sensors.get(id);
+  }
+
+
+  /**
+   * Performs a state cache cleanup at shut down. This method is synchronized, preventing
+   * concurrent thread access to shutdown steps. <p>
+   *
+   * Part of the shutdown of state cache:
+   * <ul>
+   * <li>registered sensors are stopped</li>
+   * <li>the in-memory states are cleared</li>
+   * <li>registered sensors are unregistered</li>
+   * </ul>
+   *
+   * This allows more orderly cleanup of the resources associated with this state cache --
+   * namely the sensor threads are allowed to cleanup and stop properly. <p>
+   *
+   * Once the shutdown is completed, this cache instance can be discarded. There's no corresponding
+   * start operation to allow reuse of this object.
+   */
+  public synchronized void shutdown()
+  {
+    {
+      try
+      {
+        isShutdownInProcess = true;
+
+        stopSensors();
+
+        clearChangedStatuses();
+
+        sensorStatus.clear();
+
+        sensors.clear();
+      }
+
+      finally
+      {
+        isShutdownInProcess = false;
+      }
     }
   }
 
+
+  
   /**
-   * TODO :
-   *   - using method level synchronization to ensure we're at same concurrency control mechanism
-   *     with the collection we are tweaking compared to the original method above
+   * Updates an incoming event value into cache. <p>
    *
-   *     See ORCJAVA-102 -- http://jira.openremote.org/browse/ORCJAVA-102
+   * <b>TODO:</b>
+   *
+   * This method is currently synchronized to restrict concurrency -- events are processed
+   * and updated one-by-one. The implications of concurrent event processing through the processors
+   * and concurrent updates must be evaluated. See ORCJAVA-205.
+   *
+   * @param event   the event to process -- the actual value stored in this cache will depend
+   *                on the modifications made by event processors associated with this cache
    */
   public synchronized void update(Event event)
   {
-    eventProcessorChain.push(event);
+
+    // fail fast on incoming sensor updates, if we want to shut things down already...
+
+    if (isShutdownInProcess)
+    {
+      log.debug(
+          "Device state cache is shutting down. Ignoring update from ''{0}'' (ID = ''{1}'').",
+          event.getSource(), event.getSourceID()
+      );
+
+      return;
+    }
+
+
+    // push incoming event through processing chain -- keep the last returned instance including
+    // modifications if any...
+
+    event = eventProcessorChain.push(event);
+
+
+    // TODO :
+    //   Serializing to strings early -- should go away once we store Events, see ORCJAVA-203
+
+    String oldStatus = sensorStatus.get(event.getSourceID());
 
     String eventValue = event.serialize();
-    
-    String oldStatus = sensorStatus.get(event.getSourceID());
+
+    // Store...
+
     sensorStatus.put(event.getSourceID(), eventValue);
 
-    logger.trace(
+    log.trace(
         "Updated cache with Sensor ID = {0} (''{1}'') with value ''{2}''.",
         event.getSourceID(), event.getSource(), eventValue
     );
@@ -126,78 +263,118 @@ public class StatusCache
     {
       changedStatusTable.updateStatusChangedIDs(event.getSourceID());
 
-      logger.trace(
+      log.trace(
           "Marked Sensor ID = {0} (''{1}'') changed.", event.getSourceID(), event.getSource()
       );
     }
   }
 
 
-   /**
-    * This method is used to query the status whose component id in componentIDs. 
-    * @param sensorIDs
-    * @return null if componentIDS is null.
-    * @throws NoSuchComponentException when the component id is not cached. 
-    */
-   public Map<Integer, String> queryStatuses(Set<Integer> sensorIDs) {
-      if (sensorIDs == null || sensorIDs.size() == 0) {
-         return null;
-      }
-
-      logger.trace("Query status for sensor IDs : {0}", sensorIDs);
-
-      Map<Integer, String> statuses = new HashMap<Integer, String>();
-      for (Integer sensorId : sensorIDs) {
-         if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId))) {
-            throw new NoSuchComponentException("No such component in status cache : " + sensorId);
-         } else {
-            statuses.put(sensorId, this.sensorStatus.get(sensorId));
-         }
-      }
-
-      logger.trace("Returning sensor status map (ID, Value) : {0}", statuses);
-
-      return statuses;
-   }
-   
-   public String queryStatusBySensorlId(Integer sensorId) {
-      String result = this.sensorStatus.get(sensorId);
-      if (result == null) {
-         throw new NoSuchComponentException("no such a component whose id is :"+sensorId);
-      }
-      return result;
-   }
-
-   public String queryStatus(Integer sensorId)
-   {
-     return this.sensorStatus.get(sensorId);
-   }
-  
-   public void clear() {
-      this.sensorStatus.clear();
-   }
-
-   public ChangedStatusTable getChangedStatusTable() {
-      return changedStatusTable;
-   }
-
-   public void setChangedStatusTable(ChangedStatusTable changedStatusTable) {
-      this.changedStatusTable = changedStatusTable;
-   }
-
-
-  // Service Dependencies -------------------------------------------------------------------------
-
-  public void setEventProcessorChain(EventProcessorChain processorChain)
+  /**
+   * TODO :
+   *   Not sure we need this, could just loop on caller side to do multiple queryStatus().
+   *   May be more consistent, especially because of the unoptimal exception handling here, etc.
+   *
+   *   See ORCJAVA-206.
+   *
+   * @throws NoSuchComponentException when the component id is not cached.
+   */
+  public Map<Integer, String> queryStatus(Set<Integer> sensorIDs)
   {
-    this.eventProcessorChain = processorChain;
+    if (sensorIDs == null || sensorIDs.size() == 0)
+    {
+       return null;     // TODO : return an empty collection instead
+    }
+
+    log.trace("Query status for sensor IDs : {0}", sensorIDs);
+
+    Map<Integer, String> statuses = new HashMap<Integer, String>();
+
+    for (Integer sensorId : sensorIDs) 
+    {
+       if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId)))
+       {
+         // TODO : do not throw an exception, instead return 'unknown value'
+         
+         throw new NoSuchComponentException("No such component in status cache : " + sensorId);
+       }
+
+       else
+       {
+          statuses.put(sensorId, this.sensorStatus.get(sensorId));
+       }
+    }
+
+    log.trace("Returning sensor status map (ID, Value) : {0}", statuses);
+
+    return statuses;
+  }
+
+
+  /**
+   * Returns the current in-memory state of the given sensor ID.
+   *
+   * TODO : ORCJAVA-203 -- migrate to Event API
+   *
+   * @param sensorID    requested sensor ID
+   *
+   * @return  current cache-stored value for the given sensor ID
+   */
+  public String queryStatus(Integer sensorID)
+  {
+    String result = this.sensorStatus.get(sensorID);
+
+    if (result == null)
+    {
+      log.error(
+          "Requested sensor id ''{0}'' was not found. Defaulting to ''{1}''.",
+          sensorID, Sensor.UNKNOWN_STATUS);
+
+      return Sensor.UNKNOWN_STATUS;
+    }
+
+    return result;
   }
 
 
 
   // Private Instance Methods ---------------------------------------------------------------------
 
-   private void updateChangedStatusTable(Integer controlId) {
-      changedStatusTable.updateStatusChangedIDs(controlId);
-   }
+
+  private void clearChangedStatuses()
+  {
+    for (Sensor sensor : sensors.values())
+    {
+      // Just wake up all the records, acturelly, the status didn't change.
+      changedStatusTable.updateStatusChangedIDs(sensor.getSensorID());
+    }
+
+    changedStatusTable.clearAllRecords();
+  }
+
+
+  private void stopSensors()
+  {
+    for (Sensor sensor : sensors.values())
+    {
+      log.info(
+          "Stopping sensor ''{0}'' (ID = ''{1}'')...",
+          sensor.getName(), sensor.getSensorID()
+      );
+
+      try
+      {
+        sensor.stop();
+      }
+
+      catch (Throwable t)
+      {
+        log.error(
+            "Failed to stop sensor ''{0}'' (ID = ''{1}'') : {2}",
+            t, sensor.getName(), sensor.getSensorID(), t.getMessage()
+        );
+      }
+    }
+  }
+
 }
