@@ -46,11 +46,21 @@ public class IconicAdapter extends ArrayAdapter<ControllerObject> {
 			}
 		}
 		
+		
 		if(o.isAuto()){
 			icon.setImageResource(R.drawable.auto_discovered);
-		}else{
+		}
+		
+		if((o.getFailoverFor().length()>0)){
+			icon.setImageResource(R.drawable.slider_thumb);
+		}
+		
+		else{
 			icon.setImageResource(R.drawable.custom_controller);
 		}
+		
+		
+		
 		ImageView iconUp=(ImageView)v.findViewById(R.id.iconup);         	 
 
 		if(o.isControllerUp()){

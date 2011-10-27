@@ -21,6 +21,7 @@ package org.openremote.android.console.model;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
@@ -39,8 +40,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerObject;
+import org.openremote.android.console.DataHelper;
 import org.openremote.android.console.Main;
 import org.openremote.android.console.net.IPAutoDiscoveryClient;
+import org.openremote.android.console.net.ORControllerServerSwitcher;
 import org.openremote.android.console.net.SelfCertificateSSLSocketFactory;
 import org.openremote.android.console.util.SecurityUtil;
 
@@ -109,8 +113,32 @@ public class PollingHelper {
 //            } else {
                // TODO ANDROID--89 Gracefully fail on polling errors
                //      don't be so loud and disruptive here
-               ViewHelper.showAlertViewWithTitle(context, "Polling Error", ControllerException
-                     .exceptionMessageOfCode(statusCode));
+            
+            if (ControllerException
+                    .exceptionMessageOfCode(statusCode).equals("Current controller isn't available.")){
+            	DataHelper dh = new DataHelper(context);
+            	
+            ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentServer(context).toString(),dh);//so i guess the purpose of this would be to get the checkedresult and get one out of them
+            	 
+            dh.closeConnection();
+            
+            //if none vailable show dialog for now and finish
+            Log.i(LOG_CATEGORY, "availableGroupMemberURL." + availableGroupMemberURL);
+            if(availableGroupMemberURL==null){
+            	 // ViewHelper.showAlertViewWithTitle(context, "Polling Error", ControllerException.exceptionMessageOfCode(statusCode));
+            	 ViewHelper.showAlertViewWithSetting(context, "Switch controller", "Choose a different controller");
+            	//  this.notifyAll();
+            	 
+            }
+         
+            else{
+            	ORControllerServerSwitcher.switchControllerWithURL(context, availableGroupMemberURL.getControllerName());
+						//AppSettingsModel.setCurrentServer(context, new URL(availableGroupMemberURL.getControllerName()));
+            }
+					
+            	    }
+
+            
 //            }
          }
       };

@@ -140,7 +140,8 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private ProgressDialog loadingPanelProgress;
   
   private IPAutoDiscoveryServer autoDiscoveryServer;
-
+  
+  private NetworkCheckTestAsyncTask pingTest;
   private SavedServersNetworkCheckTestAsyncTask checkedControllers;
   
   private boolean fullOptions=false;
@@ -160,18 +161,31 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
     
     this.autoMode = AppSettingsModel.isAutoMode(AppSettingsActivity.this);
    
-/*
-if(Screen.SCREEN_WIDTH>5000)    {
+    /*
+     * @yusha
+     * This is the layout that loads on this activity create
+     * Change xml screen based on device size
+     */
+    
+  /*  if(Screen.SCREEN_WIDTH < 100){
+    	setContentView(R.layout.app_settings);
+    	addOnclickListenerSecurityButton();
+   
+    Toast toast = Toast.makeText(getApplicationContext(), "Screen.SCREEN_WIDTH"+Screen.SCREEN_WIDTH, 1);
+        toast.show();      
+       }
+    
+    else{   
+    	fullOptions=true;
+        setContentView(R.layout.all_options_app_settings);
+         	
+    }*/
+    
     fullOptions=true;
     setContentView(R.layout.all_options_app_settings);
-}
-else{
-*/
-	 setContentView(R.layout.app_settings);
-//}
+   // autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
+    serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
     
-    
-   
     loadingPanelProgress = new ProgressDialog(this);
     
   // ScrollView scrollView = (ScrollView) findViewById(R.id.serversScrollView);
@@ -202,7 +216,6 @@ else{
      */
   
    if(fullOptions){
-	   //moved SSL, cache to a background screen instead
    initSSLState(); 
    createClearImageCacheButton();
    }
@@ -355,11 +368,16 @@ else{
               "No Panel. Please configure Panel Identity manually.");
           return;
         }
+        
+        //TODO need to request after controller availability is found. So move this method to be called after "Done" is selected
+        requestFailoverGroupUrls(); //this will run aynchronously in the background. after finish() will not run because AppSettingsActivity is closed
+        
         Intent intent = new Intent();
         intent.setClass(AppSettingsActivity.this, Main.class);
         startActivity(intent);
-        //here closing ASA and switching to Main activity
         finish();
+        
+      
       }
     });
   }
@@ -373,7 +391,6 @@ else{
       public void onClick(View v) {
     	  
     	  dh.closeConnection();
-    	  //finish the ASA screen, goes back to GroupActivity
         finish();
       }
     });
@@ -541,8 +558,16 @@ else{
           }
           
           Log.e("ASA", "previousSelectedItem"+previousSelectedItem);
- 
-          requestPanelList(selectedController.getControllerName());
+          
+          //first ping and then fetch
+        // checkControllerUp(selectedController.getControllerName());
+ //shouldnt these process linearly. I guess not because network operations are run on a separate thread
+         
+         
+         // requestPanelList(selectedController.getControllerName());
+          
+          checkControllerUp(selectedController.getControllerName());
+          
           
           
           //set the controller URL after panels can be found. Since Main will try to pull panels of a selected controller in AppSettingsModel
@@ -562,6 +587,8 @@ else{
           
           serverListAdapter.notifyDataSetChanged();
           previousSelectedItem = currentSelectedItem;
+ 
+         
           
        }
     });
@@ -585,12 +612,12 @@ else{
         if (Constants.RESULT_CONTROLLER_URL == resultCode) {
           
 
-         ControllerObject addController = new ControllerObject(proposedServer,"grp1",0,1,0);
+         ControllerObject addController = new ControllerObject(proposedServer,"grp1",0,1,0,"");
           
          
          if(this.dh.find(proposedServer)==0){
          	  serverListAdapter.add(addController);
-              this.dh.insert(proposedServer, "grp1", 0, 1, 0);
+              this.dh.insert(proposedServer, "grp1", 0, 1, 0, "");
               Log.i(TAG,"inserted "+proposedServer+" in database");
          }
 
@@ -659,9 +686,9 @@ else{
         	if(dh.find(result.get(i))==0){
         		
         		//add to the adapter if doesnt exist in the list
-        		serverListAdapter.add(new ControllerObject(result.get(i), "grp1",1,1,0));
+        		serverListAdapter.add(new ControllerObject(result.get(i), "grp1",1,1,0,""));
         	
-          dh.insert(result.get(i), "grp1", 1,1,0);
+          dh.insert(result.get(i), "grp1", 1,1,0,"");
         	}
         	else{
         		length--;
@@ -704,6 +731,7 @@ else{
   
   /**
    * Request panel identity list from controller.
+   * On ItemClick
    */
   private void requestPanelList(String url) {
     setEmptySpinnerContent();
@@ -725,6 +753,12 @@ else{
           AppSettingsActivity.currentServer + "/rest/panels", this);
     }
   }
+  
+  private void checkControllerUp(String url){
+      //first ping and then fetch ORConnection has handler which gives a 
+	  new ORConnection(this.getApplicationContext(), ORHttpMethod.GET, true,
+	          url, this);
+  }
 
   public static class FetchControllerFailoverGroupUrls extends RoboAsyncTask<Void>
   {
@@ -737,13 +771,21 @@ else{
     @Override
     public Void call() throws Exception
     {
-      List<URL> servers = controllerService.getServers();
+      List<URL> servers = controllerService.getServers();//this does not work
+      
+      Log.e(TAG, "controllerService.getServers() " + servers);
 
       for (URL url : servers)
       {
-        Log.i(TAG, "received failover group member URL " + url);
+        Log.e(TAG, "received failover group member URL " + url);
 
-        orControllerServerSwitcher.saveGroupMembersToFile(servers);
+        
+        
+       orControllerServerSwitcher.saveGroupMembersToDB(servers,AppSettingsActivity.currentServer );
+        //i dont want to use files instead wnt to use database put the failover urls as separate rows.
+        //So, url1's failover URLs will have url1 column as "FailoverFor" column. same as controller name
+        //grup is not really needed maybe refactor that in subsequent code bases
+        
       }
 
       return null;
@@ -759,18 +801,29 @@ else{
   @Override
   public void urlConnectionDidFailWithException(Exception e) {
     loadingPanelProgress.dismiss();
-    AlertDialog alertDialog = new AlertDialog.Builder(getBaseContext()).create();
+    AlertDialog alertDialog = new AlertDialog.Builder(this).create(); //getBaseContext() crashing the app
     alertDialog.setTitle("Invalid URL selected");
-    alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
+   alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
+   
+   // alertDialog.setMessage("could not connect to host");
+
     alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
        public void onClick(DialogInterface dialog, int which) {
+    	   //keep the selection s user can see what he selected, but remove the panel associated with previous selection.
+    	   //Also remove from arrayAdapter
+    	   AppSettingsModel.setCurrentPanelIdentity(AppSettingsActivity.this, null);
+    	   panelSelectSpinnerView.setDefaultAdapterContent();
+    	   
           return;
        }
     });
+    
     alertDialog.show();
+  
+    //TODO also update on the adapter and database as such
+    
    
-   
-   Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
+   Log.e(TAG, "Can not get panel identity list", e);
   }
 
   @Override
@@ -796,11 +849,12 @@ else{
           @Override
           public void onClick(View v) {
             super.onClick(v);
-            requestPanelList();
+            requestPanelList(); // if on login, do the request again
           }
         });
       } else {
         // The following code customizes the dialog, because the finish method should do after dialog show and click ok.
+    	  //this would be when the controller is reachable but no panels found on it
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle("Panel List Not Found");
         alertDialog.setMessage(ControllerException.exceptionMessageOfCode(statusCode));
@@ -815,9 +869,8 @@ else{
   }
   
   private void setEmptySpinnerContent() {
-    if (panelSelectSpinnerView != null) {
+    if (true) {
       panelSelectSpinnerView.setOnlyPanel(PanelSelectSpinnerView.CHOOSE_PANEL);
     }
   }
-  
 }

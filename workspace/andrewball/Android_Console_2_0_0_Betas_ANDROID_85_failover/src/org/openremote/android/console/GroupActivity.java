@@ -115,14 +115,11 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
       // Android 3.0 devices are tablets without menu buttons and the action bar
       // doesn't appear without the title bar's being shown.
       Log.i("VERSION.SDK_INT ", ""+VERSION.SDK_INT );      
-     
+   /*  
      if (VERSION.SDK_INT < 11) {
          getWindow().requestFeature(Window.FEATURE_NO_TITLE);
       }
-      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+     */
       Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
       Log.i("OpenRemote-ORIENTATION", "onCreate:" + display.getOrientation());
       if (display != null && display.getOrientation() == 1) {
@@ -376,7 +373,9 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
          if (gesture.isHasControlCommand()) {
             new RoboAsyncTask<Void>() {
               public Void call() throws Exception {
+            	  Log.i("GroupActivity", "sendWriteCommand");
                 controllerService.sendWriteCommand(gesture.getComponentId(), "swipe");
+                
                 return null;
               }
 
@@ -447,12 +446,38 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
          Intent intent = new Intent();
          intent.setClass(GroupActivity.this, AppSettingsActivity.class);
          startActivity(intent);
+         //not finishing the GroupActivity
          break;
       case Constants.MENU_ITEM_LOGOUT:
          doLogout();
          break;
+         
+      case Constants.MENU_ITEM_QUIT:
+          doQuit();
+          break;
       }
    }
+   
+   /**
+    * Handle logout navigation, clear user password.
+    */
+   private void doQuit() {
+	   //finish will finish current activity as well as inform parent activity that may be listening via startactivity for result. then parent activity finishes itself
+    finish();
+   }
+
+   /**
+    * Handle logout navigation, clear user password.
+    */
+   private void doLogout() {
+      String username = UserCache.getUsername(GroupActivity.this);
+      String password = UserCache.getPassword(GroupActivity.this);
+      if (!TextUtils.isEmpty(password)) {
+         UserCache.saveUser(GroupActivity.this, username, "");
+         ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
+      }
+   }
+
 
    /**
     * If there is no global and local tabbar, create default menu.
@@ -467,6 +492,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
       setting.setIcon(R.drawable.ic_menu_manage);
       MenuItem logout = menu.add(-1, Constants.MENU_ITEM_LOGOUT, 1, R.string.logout);
       logout.setIcon(R.drawable.ic_menu_revert);
+      MenuItem quit = menu.add(-1, Constants.MENU_ITEM_QUIT, 2, R.string.quit);
+      quit.setIcon(R.drawable.ic_menu_close_clear_cancel);
       return true;
    }
 
@@ -625,19 +652,8 @@ public class GroupActivity extends GenericActivity implements OnGestureListener 
       }
       return false;
    }
-
-   /**
-    * Handle logout navigation, clear user password.
-    */
-   private void doLogout() {
-      String username = UserCache.getUsername(GroupActivity.this);
-      String password = UserCache.getPassword(GroupActivity.this);
-      if (!TextUtils.isEmpty(password)) {
-         UserCache.saveUser(GroupActivity.this, username, "");
-         ViewHelper.showAlertViewWithTitle(GroupActivity.this, "Logout", username + " logout success.");
-      }
-   }
-
+   
+ 
    /**
     * Handle the navigate to group, it contains to group and to screen.
     * 

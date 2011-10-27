@@ -32,6 +32,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -117,6 +118,7 @@ public class SwitchView extends SensoryControlView {
                      button.setBackgroundDrawable(offImage);
                   }
                }
+               Log.i("SwitchView", "sendWriteCommand");
                if (isOn) {
                   sendCommandRequest(Switch.OFF);
                } else {

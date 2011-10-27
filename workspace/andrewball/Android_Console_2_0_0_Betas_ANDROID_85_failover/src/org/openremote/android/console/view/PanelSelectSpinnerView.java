@@ -123,11 +123,15 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
        alertDialog.setMessage(ControllerException.exceptionMessageOfCode(ControllerException.REQUEST_ERROR));
        alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
+        	  setDefaultAdapterContent();  //dont want to set this as this can be from a previous controller
+        	 
              return;
+            
+             
           }
        });
        alertDialog.show();
-       setDefaultAdapterContent();  
+       
       
       Log.e("OpenRemote-PANEL LIST", "Can not get panel identity list", e);
    }
@@ -195,7 +199,7 @@ public class PanelSelectSpinnerView extends Spinner implements ORConnectionDeleg
    /**
     * Sets panel identity list into the view's adapter.
     */
-   private void setDefaultAdapterContent() {
+   public void setDefaultAdapterContent() {
       if (arrayAdapter != null) {
          arrayAdapter.clear();
          String panel = AppSettingsModel.getCurrentPanelIdentity(getContext());

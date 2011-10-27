@@ -30,16 +30,24 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
+import org.openremote.android.console.AppSettingsActivity;
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerObject;
+import org.openremote.android.console.DataHelper;
+import org.openremote.android.console.Main;
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.PollingHelper;
 import org.openremote.android.console.util.StringUtil;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 /**
  * This is responsible for detecting failover group members and switching to available controller.
@@ -50,9 +58,14 @@ import android.util.Log;
 @Singleton
 public class ORControllerServerSwitcher
 {
-  private ORNetworkCheck orNetworkCheck;
+	
+	//maybe make this global, use BusinessDelegate pattern
+	
 
-  private Context context;
+
+  private ORNetworkCheck orNetworkCheck;
+  private static Context context;
+  private DataHelper dh;
 
   public static class ControllerCheckResult
   {
@@ -101,30 +114,23 @@ public class ORControllerServerSwitcher
 
   // Class Members --------------------------------------------------------------------------------
 
-  /**
-   * Serialize the group members into file named group_members.xml .
-   *
-   * @param context       global Android application context
-   * @param groupMembers  controller cluster group members
-   *
-   * @return  true if save was successful, false otherwise
-   */
-  public boolean saveGroupMembersToFile(List<URL> groupMembers)
+
+  
+  public boolean saveGroupMembersToDB(List<URL> groupMembers, String failoverFor)
   {
-    SharedPreferences.Editor editor =
-        context.getSharedPreferences(SERIALIZE_GROUP_MEMBERS_FILE_NAME, 0).edit();
+	  dh=new DataHelper(this.context);
+	    for (int i = 0; i < groupMembers.size(); i++)
+	    {
+	    	  dh.insert(groupMembers.get(i).toString(), "grp1", 1,1,0,failoverFor);
+	    }
 
-    editor.clear();
-    editor.commit();
-
-    for (int i = 0; i < groupMembers.size(); i++)
-    {
-      editor.putString(i+"", groupMembers.get(i).toString());
-    }
-
-    return editor.commit();
+	    //return editor.commit();
+	    dh.closeConnection();
+       
+	  return false;
   }
 
+  
 
   /**
    * Get the group members from the file group_members.xml .
@@ -132,29 +138,36 @@ public class ORControllerServerSwitcher
    * @return  list of controller URLs
    */
   @SuppressWarnings("unchecked")
-  public List<URL> findAllGroupMembersFromFile()
+  public static List<ControllerObject> findAllGroupMembersFromDB(String name, DataHelper dh)
   {
-    List<URL> groupMemberUrls = new ArrayList<URL>();
+    List<ControllerObject> groupMemberUrls = new ArrayList<ControllerObject>();
 
-    Map<String, String> groupMembersMap =
-        (Map<String, String>) context.getSharedPreferences(SERIALIZE_GROUP_MEMBERS_FILE_NAME, 0).getAll();
+   // dh=new DataHelper(context); //it should be initialized coming in
+    
+     groupMemberUrls=dh.findFailoverControllers(name);
 
-    for(int i = 0; i < groupMembersMap.size(); i++)
-    {
-      String urlAsString = groupMembersMap.get(Integer.toString(i));
-      try
-      {
-        groupMemberUrls.add(new URL(urlAsString));
-      }
-      catch (MalformedURLException e)
-      {
-        Log.e(LOG_CATEGORY, "received invalid failover group member URL from controller: " + urlAsString);
-      }
-    }
 
     return groupMemberUrls;
   }
+  
+  /**
+   * doswitch in polling helper instead of here
+   */
+  public void doSwitch(Context context)
+  {
+  /*  URL availableGroupMemberURL = getOneAvailableFromGroupMemberURLs();
+    AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);*/
 
+  /*  List<String> allGroupMembers = findAllGroupMembersFromFile(context);
+
+    if (availableGroupMemberURL != null)
+    {
+      Log.i(LOG_CATEGORY, "Got an available controller URL from group members" + allGroupMembers);
+      AppSettingsModel.setCurrentServer(context, availableGroupMemberURL);
+    }*/
+
+      //switchControllerWithURL(context, availableGroupMemberURL);
+    }
   /**
    * Check each group member's URL and get an available one. Depends on the WiFi network.
    *
@@ -162,66 +175,81 @@ public class ORControllerServerSwitcher
    *
    * @return  TODO
    */
-  private URL getOneAvailableFromGroupMemberURLs()
+  public static ControllerObject getOneAvailableFromGroupMemberURLs(String name, DataHelper dh)
   {
-    List<URL> allGroupMembers = findAllGroupMembersFromFile();
-
-    Log.i(LOG_CATEGORY, "Checking for an available controller URL from group members: " + allGroupMembers);
-
-    for (URL controllerURL : allGroupMembers)
-    {
-
-      HttpResponse response = null;
-
-      try
-      {
-        response = orNetworkCheck.verifyControllerURL(controllerURL);
-      }
-      catch (IOException e)
-      {
-        // TODO :
-        //
-        //    In case of a fail-over scenario, don't propagate the exception higher up.
-        //    The logic depends on null return values and since there are no tests to back it
-        //    up, leaving it untouched for now.
-        //
-        //    Logging and keeping the null.
-        //                                                                                [JPL]
-
-        Log.i(LOG_CATEGORY, "TODO: need to refactor this logic to rely on exception instead of null return values");
-        Log.i(LOG_CATEGORY, "Error was " + e.getMessage(), e);
-      }
-
-
-      if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
-      {
-        if (!AppSettingsModel.isAutoMode(context))
-        {
-          String selectedControllerServerURL = StringUtil.markControllerServerURLSelected(controllerURL.toString());
-          String customServerURLs = AppSettingsModel.getCustomServers(context);
-
-          if (!customServerURLs.contains(selectedControllerServerURL))
-          {
-            customServerURLs = StringUtil.removeControllerServerURLSelected(customServerURLs);
-
-            if (customServerURLs.contains(controllerURL.toString()))
+	  HttpResponse response= null;
+    List<ControllerObject> allGroupMembers = findAllGroupMembersFromDB(name, dh);
+    
+    ArrayList<ControllerObject> customServersNew = new ArrayList<ControllerObject>(allGroupMembers.size());
+    
+    //ping test all controllers to check if they are available
+    for(int i=0;i<allGroupMembers.size();i++){
+    	
+    	ControllerObject co=allGroupMembers.get(i);
+    	boolean coUp;
+    	
+        try{
+            response = ORConnection.checkURLWithHTTPProtocol(context, ORHttpMethod.GET,new URL(co.getControllerName()),false);
+           
+            Log.i(LOG_CATEGORY,co.getControllerName()+ "response: "+response.getStatusLine());
+            coUp=true; //if you found one, break
+            
+          /*  if (response != null && response.getStatusLine().getStatusCode() == Constants.HTTP_SUCCESS)
             {
-              customServerURLs = customServerURLs.replaceAll(controllerURL.toString(), selectedControllerServerURL);
+             
+              return controllerURL;
+            }*/
+            
+            return co;
             }
-
-            else
-            {
-              customServerURLs = customServerURLs + "," + selectedControllerServerURL;
-            }
-
-            AppSettingsModel.setCustomServers(context, customServerURLs);
-          }
-        }
-        return controllerURL;
-      }
-    }
+            catch(Exception e){
+          	  e.printStackTrace();
+          	  coUp=false;
+            }    	
+    	
+    	    co.setIsControllerUp(coUp);	    	
+    	customServersNew.add(co);
+    }  
 
     return null;
+  }
+  
+  /**
+   * Switch to the controller identified by the availableGroupMemberURL
+   *
+   * @param context                 global Android application context
+   * @param availableGroupMemberURL TODO
+   */
+  public static void switchControllerWithURL(Context context, String availableGroupMemberURL)
+  {
+    if (availableGroupMemberURL.equals(AppSettingsModel.getCurrentServer(context)))
+    {
+      Log.i(
+          LOG_CATEGORY,
+          "The current server is already: " + availableGroupMemberURL +
+          ", should not switch to self."
+      );
+
+      return;
+    }
+
+//    Main.prepareToastForSwitchingController();
+    
+    Log.i(LOG_CATEGORY, "ControllerServerSwitcher is switching controller to " + availableGroupMemberURL);
+
+    try {
+		AppSettingsModel.setCurrentServer(context, new URL(availableGroupMemberURL));
+	} catch (MalformedURLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+  /*  Intent intent = new Intent();
+    intent.setClass(context, Main.class);
+    finish();
+    startActivity(intent);*/
+    
+    
   }
 
 }

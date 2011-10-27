@@ -45,11 +45,16 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import org.openremote.android.console.Constants;
+import org.openremote.android.console.ControllerObject;
+import org.openremote.android.console.DataHelper;
+import org.openremote.android.console.LoginDialog;
+import org.openremote.android.console.LoginDialog.OnloginClickListener;
 import org.openremote.android.console.exceptions.AppInitializationException;
 import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
 import org.openremote.android.console.exceptions.InvalidDataFromControllerException;
 import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
+import org.openremote.android.console.model.ViewHelper;
 import org.openremote.android.console.util.SecurityUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -60,6 +65,7 @@ import com.google.inject.Singleton;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 /**
  * Implementation for the ControllerService interface that uses HTTP (or HTTPS) to
@@ -150,15 +156,36 @@ public class HttpXmlControllerService implements ControllerService
     Log.e(LOG_CATEGORY, message, t);
 
     // TODO attempt client-side controller failover:
-    //
+    //failover shalt occur here
     // If an untried controller was found in the same failover group as the
     // current one, set the current controller URL to that one and do not throw
     // an ORConnectionException.
     //
     // Otherwise, throw an ORConnectionException, indicating that we are giving
     // up on the current controller failover group.
+    
+    DataHelper dh = new DataHelper(ctx);
+   // switch controller maybe
+     ControllerObject availableGroupMemberURL = ORControllerServerSwitcher.getOneAvailableFromGroupMemberURLs(AppSettingsModel.getCurrentServer(ctx).toString(),dh);//so i guess the purpose of this would be to get the checkedresult and get one out of them
+	 
+     dh.closeConnection();
+     
+     //if none vailable show dialog for now and finish
+     Log.i(LOG_CATEGORY, "availableGroupMemberURL." + availableGroupMemberURL);
+     if(availableGroupMemberURL==null){
+     	 // ViewHelper.showAlertViewWithTitle(context, "Polling Error", ControllerException.exceptionMessageOfCode(statusCode));
+     	 ViewHelper.showAlertViewWithSetting(ctx, "Switch controller", "Choose a different controller");
+     	//  this.notifyAll();
+     	 
+     }
+  
+     else{
+     	ORControllerServerSwitcher.switchControllerWithURL(ctx, availableGroupMemberURL.getControllerName());
+					//AppSettingsModel.setCurrentServer(context, new URL(availableGroupMemberURL.getControllerName()));
+     	
+     }
 
-    throw new ORConnectionException(message, t);
+  //  throw new ORConnectionException(message, t);maybe not throw like that
   }
 
   /**
@@ -203,11 +230,21 @@ public class HttpXmlControllerService implements ControllerService
       ORConnectionException, AppInitializationException, InvalidDataFromControllerException,
       Exception
   {
+	  
+	Log.e(LOG_CATEGORY, "getServers() init");
+	  
     final String logPrefix = "getServers(): ";
-
+    Log.e(logPrefix, "receiving failover group member URL ");
+    
+	  Log.e(LOG_CATEGORY, "getControllerUrl().toString(): "+getControllerUrl().toString());
+	  
     URL url = new URL(getControllerUrl().toString() + "/rest/servers");
     HttpClient httpClient = getHttpClient();
     HttpGet request = getHttpGetRequest(httpClient, url);
+
+  /*  HttpClient httpClient = new DefaultHttpClient(params);
+    String url = AppSettingsModel.getSecuredServer(context);
+    HttpGet httpGet = new HttpGet(url + "/rest/servers");*/
 
     HttpResponse response = null;
     try
@@ -218,7 +255,8 @@ public class HttpXmlControllerService implements ControllerService
     {
       dealWithConnectionFailure(url, e);
       Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
-      getServers();
+     // getServers(); // this is okay to find failover controllers. When the main controller fails before fetching the failover urls
+      //that may be a problem
     }
 
     int statusCode = response.getStatusLine().getStatusCode();
@@ -361,6 +399,7 @@ public class HttpXmlControllerService implements ControllerService
     HttpPost request = getHttpPostRequest(httpClient, url);
 
     HttpResponse response = null;
+    Log.i("HttpXmlControllerService", "sendWriteCommand");
     try
     {
       response = httpClient.execute(request);
@@ -369,21 +408,37 @@ public class HttpXmlControllerService implements ControllerService
     {
       dealWithConnectionFailure(url, e);
       Log.i(LOG_CATEGORY, logPrefix + "retrying request with controller at " + getControllerUrl());
-      sendWriteCommand(controlId, command);
+      sendWriteCommand(controlId, command);//why is this happening on catch?
+      return;
+      //sendWriteCommand(controlId, command);//why is this happening on catch?
     }
-
+    
     int statusCode = response.getStatusLine().getStatusCode();
-
+    Log.i("HttpXmlControllerService statusCode", "statusCode");
     if (statusCode == HttpURLConnection.HTTP_UNAUTHORIZED)
     {
+   /* 	//should not throw unauthorized.instead show a login screen
+        LoginDialog loginDialog = new LoginDialog(this);
+        loginDialog.setOnClickListener(loginDialog.new OnloginClickListener() {
+          @Override
+          public void onClick(View v) {
+            super.onClick(v);
+            requestPanelList();
+          }
+        });*/
       throw new ControllerAuthenticationFailureException("controller authentication required");
     }
     else if (statusCode != HttpURLConnection.HTTP_OK)
     {
-      // TODO throw a better exception, there are several documented error conditions associated
+      
+      
+ 
+   /*   
+   // TODO throw a better exception, there are several documented error conditions associated
       //      with other HTTP response status codes in the controller REST API documentation
       throw new Exception(logPrefix + "request to controller failed with HTTP status code " +
-          statusCode);
+          statusCode);*/
+     
     }
   }
 
