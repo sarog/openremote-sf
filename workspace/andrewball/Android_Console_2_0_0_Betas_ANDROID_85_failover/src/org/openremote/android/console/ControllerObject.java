@@ -5,6 +5,7 @@ package org.openremote.android.console;
 public class ControllerObject {
    
     private String controllerName;
+    private String failoverForcontroller;
     private String group;
     private boolean auto;
     private boolean isControllerUp;
@@ -16,13 +17,23 @@ public class ControllerObject {
     	isSelected			=false;
     }
     
-    //for database
+/*    //for database
     public ControllerObject(String controllerName, String group, int auto, int up, int selected){
     	this.controllerName=controllerName;
     	this.group			=group;
     	this.auto			=(auto!=0);
     	this.isControllerUp	=(up!=0);
     	this.isSelected		=(selected!=0);
+    }*/
+    
+    //for failover stuff need failover urls
+    public ControllerObject(String controllerName, String group, int auto, int up, int selected, String failoverFrom){
+    	this.controllerName=controllerName;
+    	this.group			=group;
+    	this.auto			=(auto!=0);
+    	this.isControllerUp	=(up!=0);
+    	this.isSelected		=(selected!=0);
+    	this.failoverForcontroller=failoverFrom;
     }
     
    public boolean isIs_Selected(){
@@ -31,6 +42,10 @@ public class ControllerObject {
    
    public void setIs_Selected(boolean selected){
 	   isSelected=selected;
+   }
+   
+   public String getFailoverFor(){
+	   return failoverForcontroller;
    }
    
     public String getControllerName() {
@@ -53,4 +68,9 @@ public class ControllerObject {
     public void setIsControllerUp(boolean isControllerUp) {
         this.isControllerUp = isControllerUp;
     }
+    
+    //the controller needs to keep this for immediatr fetch
+ //   public ControllerObject[] getFailoverControllers(){
+    	
+//    }
 }

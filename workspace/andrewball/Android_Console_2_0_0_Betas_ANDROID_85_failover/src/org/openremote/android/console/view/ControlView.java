@@ -30,6 +30,8 @@ import org.openremote.android.console.bindings.Component;
 import org.openremote.android.console.bindings.ORButton;
 import org.openremote.android.console.bindings.Slider;
 import org.openremote.android.console.bindings.Switch;
+import org.openremote.android.console.exceptions.ControllerAuthenticationFailureException;
+import org.openremote.android.console.exceptions.ORConnectionException;
 import org.openremote.android.console.model.AppSettingsModel;
 import org.openremote.android.console.model.ControllerException;
 import org.openremote.android.console.model.ViewHelper;
@@ -122,10 +124,27 @@ public class ControlView extends ComponentView implements ORConnectionDelegate {
     * @return true, if successful
     */
    public boolean sendCommandRequest(String commandType) {
-      // TODO Use controllerService here.
-      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
-            + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
-      return true;
+	   Log.i("ControlView", "sendWriteCommand");
+	   
+	      new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
+	              + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+	        return true;
+	        
+ /*     try {
+		controllerService.sendWriteCommand(getComponent().getComponentId(), commandType);
+	} catch (ControllerAuthenticationFailureException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ORConnectionException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+      //new ORUnBlockConnection(this.context, ORHttpMethod.POST, true, AppSettingsModel.getSecuredServer(getContext())
+           // + "/rest/control/" + getComponent().getComponentId() + "/" + commandType, this);
+      return true;*/
    }
 
    /**

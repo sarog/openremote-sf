@@ -45,6 +45,6 @@ public class ORRoundRobinConnection extends ORConnection {
 
       // TODO this should happen in the ControllerService implementation instead
 
-      // ORControllerServerSwitcher.doSwitch();
+       //ORControllerServerSwitcher.doSwitch();
    }
 }

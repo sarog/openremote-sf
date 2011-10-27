@@ -197,7 +197,7 @@ public class ORConnection
    
    /** Deal with the response while httpconnection of android console to controller success. */
    protected void dealWithResponse() {
-      connectionDidReceiveResponse();
+      connectionDidReceiveResponse();//doesnt do anything with good status code
       connectionDidReceiveData();
    }
    
