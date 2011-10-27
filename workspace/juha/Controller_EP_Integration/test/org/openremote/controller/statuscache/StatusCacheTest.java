@@ -23,42 +23,258 @@ package org.openremote.controller.statuscache;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.openremote.controller.suite.AllTests;
-import org.openremote.controller.utils.SecurityUtil;
 import org.openremote.controller.protocol.Event;
+import org.openremote.controller.protocol.ReadCommand;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.model.event.Switch;
+import org.openremote.controller.component.RangeSensor;
+import org.openremote.controller.component.LevelSensor;
 
-import com.meterware.httpunit.HttpException;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 import junit.framework.Assert;
 
 /**
+ * Unit tests for {@link StatusCache} class.
  *
- * TODO
- *
+ * @author @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class StatusCacheTest
 {
 
-  @Test public void testStateCacheConstruction()
-  {
-    StatusCache c = new StatusCache();
 
-    EventProcessorChain chain = new EventProcessorChain();
-    TestProcessor tp = new TestProcessor();
+  /**
+   * Simple run-through test of queryStatus() method.
+   */
+  @Test public void testQueryStatus()
+  {
+    StatusCache cache = new StatusCache();
+
+    Switch switchEvent = new Switch(1, "test", "foo", Switch.State.ON);
+
+    cache.update(switchEvent);
+
+    Assert.assertTrue(cache.queryStatus(1).equals("foo"));
+  }
+
+  /**
+   * Test response on a unknown sensor id.
+   */
+  @Test public void testQueryStatusNonExistingStatus()
+  {
+    StatusCache cache = new StatusCache();
+
+    Assert.assertTrue(Sensor.isUnknownSensorValue(cache.queryStatus(0)));
+  }
+
+
+
+  /**
+   * Test registration on two different types of sensors -- level and range
+   */
+  @Test public void testRegisterSensor()
+  {
+    StatusCache cache = new StatusCache();
+
+    DummyCommand cmd1 = new DummyCommand("0");
+
+    Sensor s1 = new RangeSensor("test1", 1, cache, cmd1, -10, 10);
+
+    cache.registerSensor(s1);
+
+    Assert.assertTrue(cache.getSensor(1).equals(s1));
+    Assert.assertTrue(Sensor.isUnknownSensorValue(cache.queryStatus(1)));
+
+    s1.start();
+
+    waitForUpdate();
+
+    Assert.assertTrue(cache.queryStatus(1).equals("0"));
+
+
+    DummyCommand cmd2 = new DummyCommand("10");
+
+    Sensor s2 = new LevelSensor("test2", 2, cache, cmd2);
+
+    cache.registerSensor(s2);
+
+    Assert.assertTrue(cache.getSensor(2).equals(s2));
+    Assert.assertTrue(Sensor.isUnknownSensorValue(cache.queryStatus(2)));
+
+
+    s2.start();
+
+    waitForUpdate();
+
+    Assert.assertTrue(cache.queryStatus(2).equals("10"));
+  }
+
+
+  @Test public void testDuplicateRegistration()
+  {
+    Assert.fail("Not Yet Implemented -- see ORCJAVA-204 (http://jira.openremote.org/browse/ORCJAVA-204)");
+  }
+
+  @Test public void testNullRegistration()
+  {
+    Assert.fail("Not Yet Implemented -- see ORCJAVA-204 (http://jira.openremote.org/browse/ORCJAVA-204)");
+  }
+
+
+
+  /**
+   * Basic sensor update test
+   */
+  @Test public void testUpdate()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
 
     List<EventProcessor> processors = new ArrayList<EventProcessor>();
+    TestProcessor tp = new TestProcessor();
+
     processors.add(tp);
 
-    chain.setEventProcessors(processors);
+    epc.setEventProcessors(processors);
 
-    c.setEventProcessorChain(chain);
+    StatusCache cache = new StatusCache(cst, epc);
 
-    
+    DummyCommand cmd = new DummyCommand("on");
+
+    Sensor s = new SwitchSensor("test-sensor", 2, cache, cmd);
+
+    cache.registerSensor(s);
+
+    Assert.assertTrue(Sensor.isUnknownSensorValue(cache.queryStatus(2)));
+
+    s.start();
+
+    waitForUpdate();
+
+    Assert.assertTrue(cache.queryStatus(2).equals("on"));
   }
+
+
+  /**
+   * Test that sensor events are pushed through event processor chain
+   */
+  @Test public void testEventProcessorPassThrough()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
+
+    List<EventProcessor> processors = new ArrayList<EventProcessor>();
+    ValueProcessor vp1 = new ValueProcessor("acme");
+    ValueProcessor vp2 = new ValueProcessor("acme");
+
+    processors.add(vp1);
+    processors.add(vp2);
+
+    epc.setEventProcessors(processors);
+
+    StatusCache cache = new StatusCache(cst, epc);
+
+    Event evt = new Switch(3, "test", "acme", Switch.State.ON);
+
+    cache.update(evt);
+
+    Assert.assertTrue(cache.queryStatus(3).equals("acme"));
+  }
+
+  /**
+   * Test event replace within event processor chain.
+   */
+  @Test public void testEventProcessorEventReplace()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
+
+    List<EventProcessor> processors = new ArrayList<EventProcessor>();
+    ValueProcessor vp1 = new ValueProcessor("acme");
+    OnReplacer rep = new OnReplacer();
+
+    processors.add(vp1);
+    processors.add(rep);
+
+    epc.setEventProcessors(processors);
+
+    StatusCache cache = new StatusCache(cst, epc);
+
+    Event evt = new Switch(4, "test4", "acme", Switch.State.ON);
+
+    cache.update(evt);
+
+    Assert.assertTrue(
+        "Expected 'on', got '" + cache.queryStatus(4) + "'.",
+        cache.queryStatus(4).equals("on")
+    );
+  }
+
+
+  /**
+   * Test update of an event that does not have an associated sensor bound to the same id.
+   *
+   * NOTE : These semantics may be not useful as long as we operate on IDs on REST interfaces
+   *        rather than logical names/properties. However, codifying this behavior in unit
+   *        tests for now for possible future use-cases.
+   *                                                                        [JPL]
+   */
+  @Test public void testUpdateUndefinedSensorID()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
+
+    List<EventProcessor> processors = new ArrayList<EventProcessor>();
+    TestProcessor tp = new TestProcessor();
+
+    processors.add(tp);
+
+    epc.setEventProcessors(processors);
+
+    StatusCache cache = new StatusCache(cst, epc);
+
+    Event evt = new Switch(1, "test", "foo", Switch.State.ON);
+
+    cache.update(evt);
+
+    Assert.assertTrue(cache.queryStatus(1).equals("foo"));
+  }
+
+
+  // Helper Methods -------------------------------------------------------------------------------
+
+  private void waitForUpdate()
+  {
+    try
+    {
+      Thread.sleep(ReadCommand.POLLING_INTERVAL * 2);
+    }
+
+    catch (InterruptedException e)
+    {
+      Assert.fail(e.getMessage());
+    }
+  }
+
+
+  // Nested Classes -------------------------------------------------------------------------------
+
+
+  private static class DummyCommand extends ReadCommand
+  {
+    private String value;
+
+    DummyCommand(String value)
+    {
+      this.value = value;
+    }
+
+    public String read(Sensor s)
+    {
+      return value;
+    }
+  }
+
 
   private static class TestProcessor extends EventProcessor
   {
@@ -67,6 +283,33 @@ public class StatusCacheTest
       return evt;
     }
   }
+
+  private static class OnReplacer extends EventProcessor
+  {
+    @Override public Event push(Event evt)
+    {
+      return new Switch(evt.getSourceID(), evt.getSource(), "on", Switch.State.ON);
+    }
+  }
+
+  private static class ValueProcessor extends EventProcessor
+  {
+    private String eventValue;
+
+    ValueProcessor(String val)
+    {
+      eventValue = val;
+    }
+
+    @Override public Event push(Event evt)
+    {
+      Assert.assertTrue(evt.getValue().equals(eventValue));
+      return evt;
+    }
+  }
+
+
+
 
 ///**
 // *
