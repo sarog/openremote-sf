@@ -140,8 +140,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
   private ProgressDialog loadingPanelProgress;
   
   private IPAutoDiscoveryServer autoDiscoveryServer;
-  
-  private NetworkCheckTestAsyncTask pingTest;
+
   private SavedServersNetworkCheckTestAsyncTask checkedControllers;
   
   private boolean fullOptions=false;
@@ -181,11 +180,9 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
          	
     }*/
     
-    fullOptions=true;
-    setContentView(R.layout.all_options_app_settings);
-   // autoServersListView = (ListView) findViewById(R.id.auto_servers_list_view);
-    serversLayout = (LinearLayout) findViewById(R.id.custom_servers_layout);
-    
+    fullOptions=false;
+    setContentView(R.layout.app_settings);
+  
     loadingPanelProgress = new ProgressDialog(this);
     
   // ScrollView scrollView = (ScrollView) findViewById(R.id.serversScrollView);
@@ -717,6 +714,7 @@ public class AppSettingsActivity extends GenericActivity implements ORConnection
         serverListAdapter.notifyDataSetChanged();
        
       }
+      
     };
 
     autoDiscoveryServer.execute((Void) null);
