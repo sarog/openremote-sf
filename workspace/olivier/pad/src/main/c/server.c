@@ -61,6 +61,8 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 	case ACK:
 		CHECK(writeInt32(sock, &message->fields[0]))
 		break;
+	case NOTIFY:
+		break;
 	}
 
 	return R_SUCCESS;
