@@ -168,8 +168,8 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 	
 	protected void removeComponent(ConsoleComponentImpl component) {
-		display.remove(component);
 		component.onRemove();
+		display.remove(component);
 	}
 	
 	protected void setComponentPosition(ConsoleComponentImpl component, int left, int top) {

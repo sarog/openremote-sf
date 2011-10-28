@@ -1,13 +1,12 @@
 package org.openremote.web.console.widget;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Label;
 
 public class LabelComponent extends PassiveConsoleComponent {
 	public static final String CLASS_NAME = "labelComponent";
 	private Label container;
 	
-	public LabelComponent() {
+	private LabelComponent() {
 		super(new Label());
 		container = (Label)this.getWidget();
 		setStylePrimaryName(CLASS_NAME);
@@ -34,11 +33,14 @@ public class LabelComponent extends PassiveConsoleComponent {
 		
 	}
 
-	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.LabelComponent label) {
+	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.LabelComponent entity) {
 		LabelComponent component = new LabelComponent();
-		component.setText(label.getText());
-		component.setColor(label.getColor());
-		component.setFontSize(label.getFontSize());
+		if (entity == null) {
+			return component;
+		}
+		component.setText(entity.getText());
+		component.setColor(entity.getColor());
+		component.setFontSize(entity.getFontSize());
 		return component;
 	}
 

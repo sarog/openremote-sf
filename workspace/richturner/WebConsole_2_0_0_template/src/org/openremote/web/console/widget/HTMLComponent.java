@@ -6,7 +6,7 @@ public class HTMLComponent extends PassiveConsoleComponent {
 	public static final String CLASS_NAME = "htmlComponent";
 	private HTML container;
 	
-	public HTMLComponent() {
+	protected HTMLComponent() {
 		// Create HTML widget container
 		super(new HTML());
 		container = (HTML)this.getWidget();
@@ -23,5 +23,14 @@ public class HTMLComponent extends PassiveConsoleComponent {
 	
 	public void setHTML(String html) {
 		container.setHTML(html);
-	}		
+	}
+	
+	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.HTMLComponent entity) {
+		HTMLComponent component = new HTMLComponent(); 
+		if (entity == null) {
+			return component;
+		}
+		component.setHTML(entity.getHtml());
+		return component;
+	}
 }

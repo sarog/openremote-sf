@@ -292,12 +292,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			consoleDisplay.setComponentPosition(currentTabBar,  0, consoleDisplay.getHeight() - currentTabBar.getHeight());
 		}
 		
-		// Fire Screen View Change event
-		// Seems that the old tabBar is handling the event but the newly
-		// created one doesn't need to look into this but temporary workaround used 
 		if (screenChanged) {
-			HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-			eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));			
+			currentTabBar.onScreenViewChange(currentScreenId);			
 		}
 	}
 	
@@ -415,8 +411,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			} else if(toGroupId != null && toScreenId != null) {
 				Screen screen = panelService.getScreenById(toScreenId);
 				loadScreen(toGroupId, screen);
-				HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-				eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));
+				//HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+				//eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));
 			}
 		}
 	}

@@ -70,4 +70,11 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 			component.onAdd();
 		}
 	}
+	
+	@Override
+	public void onRemove() {
+		for (ConsoleComponent component : consoleWidgets) {
+			component.onRemove();
+		}
+	}
 }

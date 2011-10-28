@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 
-public class TabBarComponent extends InteractiveConsoleComponent implements ScreenViewChangeHandler {
+public class TabBarComponent extends InteractiveConsoleComponent {
 	public static final String CLASS_NAME = "tabBarComponent";
 	public static final int TABBAR_HEIGHT = 47;
 	public static final int PADDING_TOP = 3;
@@ -128,10 +128,6 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			TabBarItemComponent tabBarItem = new TabBarItemComponent(item);
 			this.addItem(tabBarItem);
 		}
-		
-		// Register screen view change handler
-		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-		storeHandler(eventBus.addHandler(ScreenViewChangeEvent.getType(), this));
 	}
 	
 	/*
@@ -185,7 +181,6 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		hideCurrentItems();
 		
 		// Remove the system tab items
-		int count = container.getWidgetCount();
 		for (TabBarItemComponent item : items) {
 			if (item.systemTabType != null) {
 				items.remove(item);
@@ -259,8 +254,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 		return TABBAR_HEIGHT;
 	}
 
-	@Override
-	public void onScreenViewChange(ScreenViewChangeEvent event) {
+	public void onScreenViewChange(int newScreenId) {
 		if (!handlersRegistered) {
 			return;
 		}
@@ -270,7 +264,7 @@ public class TabBarComponent extends InteractiveConsoleComponent implements Scre
 			if (navigate != null) {
 				Integer toScreen = navigate.getToScreen();
 				if (toScreen != null) {
-					if (toScreen == event.getNewScreenId()) {
+					if (toScreen == newScreenId) {
 						item.addStyleName("tabBarItemSelected");
 					} else {
 						item.removeStyleName("tabBarItemSelected");
