@@ -49,10 +49,14 @@ struct _serviceContext_t {
 	transaction_t *serverTx;
 };
 
+static serviceContext_t *context;
+static apr_socket_t *acceptedSocket;
+
 static apr_socket_t* createListenSocket(apr_pool_t *listenPool);
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool);
 int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+int receive(char *portId, char *buf, int len);
 
 /**
  *
@@ -137,15 +141,14 @@ static apr_socket_t* createListenSocket(apr_pool_t *listenPool) {
 }
 
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool) {
-	apr_socket_t *ns;/* accepted socket */
 	apr_status_t rv;
 
-	rv = apr_socket_accept(&ns, lsock, socketPool);
+	rv = apr_socket_accept(&acceptedSocket, lsock, socketPool);
 	if (rv == APR_SUCCESS) {
 		// Create service context
-		serviceContext_t *context = apr_palloc(socketPool, sizeof(serviceContext_t));
+		context = apr_palloc(socketPool, sizeof(serviceContext_t));
 		apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
-		descriptor.desc.s = ns;
+		descriptor.desc.s = acceptedSocket;
 		context->status = RECV_MESSAGE;
 		context->cbFunc = receiveMessage;
 		context->socketPool = socketPool;
@@ -157,8 +160,8 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 		context->clientTx = NULL;
 
 		/* non-blocking socket. We can't expect that @ns inherits non-blocking mode from @lsock */
-		apr_socket_opt_set(ns, APR_SO_NONBLOCK, 1);
-		apr_socket_timeout_set(ns, 0);
+		apr_socket_opt_set(acceptedSocket, APR_SO_NONBLOCK, 1);
+		apr_socket_timeout_set(acceptedSocket, 0);
 
 		/* monitor accepted socket */
 		apr_pollset_add(pollset, &descriptor);
@@ -172,7 +175,7 @@ void createTransaction(apr_pool_t *pool, transaction_t **transaction) {
 		(*transaction)->request = NULL;
 		(*transaction)->response = NULL;
 		(*transaction)->status = WAITING_FOR_REQUEST;
-		(*transaction)->portReceiveCb = clientReceive;
+		(*transaction)->portReceiveCb = receive;
 	}
 }
 
@@ -184,6 +187,8 @@ void clearTransaction(apr_pool_t *pool, transaction_t **transaction) {
 void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
 	apr_socket_close(sock);
 	apr_pool_clear(context->socketPool);
+	context = NULL;
+	acceptedSocket = NULL;
 }
 
 static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
@@ -250,4 +255,12 @@ static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_s
 	context->status = RECV_MESSAGE;
 	context->cbFunc = receiveMessage;
 	return R_SUCCESS;
+}
+
+int receive(char *portId, char *buf, int len) {
+	if (context->clientTx != NULL)
+		return R_TX_RUNNING;
+	createTransaction(context->clientTxPool, &context->clientTx);
+
+	return operatePortData(acceptedSocket, context->clientTx, context->clientTxPool, portId, buf, len);
 }

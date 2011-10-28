@@ -10,6 +10,8 @@
 #define R_PORT_EXISTS       -5
 #define R_WRONG_LOCK_STATUS -6
 #define R_UNLOCKED          -7
+#define R_TX_RUNNING        -8
+
 // Linux specific
 #define R_PORT_ERROR        -100
 #define R_SEND_ERROR        -101
