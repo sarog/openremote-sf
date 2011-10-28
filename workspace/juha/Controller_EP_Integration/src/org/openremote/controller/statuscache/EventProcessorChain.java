@@ -24,26 +24,87 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.openremote.controller.protocol.Event;
+import org.openremote.controller.utils.Logger;
+import org.openremote.controller.Constants;
 
 /**
- * TODO
+ * Event processor chain is a container of {@link EventProcessor event processors} for the
+ * {@link org.openremote.controller.statuscache.StatusCache device state cache} which
+ * can push incoming events from the sensors (and potentially other sources) through a processing
+ * chain before they get added to the in-memory cache state.  <p>
+ *
+ * Event processors can modify event properties, discard events, or create new events as part
+ * of the processing. Events are pushed into each processor in a order determined by the processor
+ * configuration. The event which will be stored in the in-memory state cache is the event instance
+ * returned by the last processor in the stack. <p>
+ *
+ * Typical use of event processors is scripting of incoming events, executing rules, logging, etc.
+ *
+ * @see org.openremote.controller.statuscache.EventProcessor
+ * @see org.openremote.controller.statuscache.StatusCache
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
 public class EventProcessorChain
 {
 
+  // Class Members --------------------------------------------------------------------------------
+
+  /**
+   * <b>Runtime</b> log category for event processing.
+   */
+  private final static Logger log = Logger.getLogger(Constants.RUNTIME_STATECACHE_LOG_CATEGORY);
+
+
   // Private Instance Fields ----------------------------------------------------------------------
 
+  /**
+   * Contains the ordered list of configured event processors for this chain.
+   */
   private List<EventProcessor> processors = new ArrayList<EventProcessor>(5);
 
-  private boolean hasInit = false; // TODO : hack
+  /**
+   * Flag for lazy initialization.
+   */
+  private boolean hasInit = false;
 
 
-  // Public Instance Methods ----------------------------------------------------------------------
 
-  public void push(Event event)
+  // Service Dependencies -------------------------------------------------------------------------
+
+
+  /**
+   * Configures this event processor chain with a given, ordered, list of event processors.
+   *
+   * @param processors    event processor list -- the order of the list is significant
+   */
+  public void setEventProcessors(List<EventProcessor> processors)
   {
+    this.processors = processors;
+  }
+
+
+
+
+  // Protected Instance Methods -------------------------------------------------------------------
+
+  /**
+   * Pushes an event through a stack of event processors. The returned event is the result of
+   * modifications of all configured event processors (specifically as returned by the last
+   * event processor in the stack).
+   *
+   * @param event   event to process
+   *
+   * @return  event to store in cache -- this is the event returned by the last event processor
+   *          in the stack.
+   */
+  protected Event push(Event event)
+  {
+    // This was a lazy initialization of processors due to some earlier bugs that have been
+    // resolved now. Can eventually be placed into constructor or other more appropriate
+    // initialization sequence -- although lazy init is not bad in itself
+    //                                                                          [JPL]
+
     if (!hasInit)
     {
       initProcessors();
@@ -51,34 +112,52 @@ public class EventProcessorChain
       hasInit = true;
     }
 
+
     for (EventProcessor processor : processors)
     {
+      log.trace("Processing {0}...", event);
+
       event = processor.push(event);
+
+      log.trace("Event {0} processed by ''{1}''...", event, processor.getName());
     }
+
+    log.trace("Processing of {0} complete...", event);
+
+    return event;
   }
 
-  // Service Dependencies -------------------------------------------------------------------------
 
-  public void setEventProcessors(List<EventProcessor> processors)
-  {
-    this.processors = processors;
+  
+  // Private Methods ------------------------------------------------------------------------------
 
-  }
-
-  //
-
+  /**
+   * Initializes each event processor in the stack by calling its
+   * {@link EventProcessor#init()} method.
+   */
   private void initProcessors()
   {
+    // Log for initialization -- separate from runtime logging
+
+    Logger initLog = Logger.getLogger(Constants.EVENT_PROCESSOR_INIT_LOG_CATEGORY);
+
     for (EventProcessor ep : processors)
     {
       try
       {
+        initLog.debug("Initializing event processor: {0}", ep.getName());
+
         ep.init();
+
+        initLog.info("Initialized event processor : {0}", ep.getName());
       }
+
       catch (Throwable t)
       {
-        System.out.println("ERROR initializing event processor : " + t); // TODO
-        t.printStackTrace();
+        initLog.error(
+            "ERROR Initializing event processor ''{0}'' : {1}",
+            t, ep.getName(), t.getMessage()
+        );
       }
     }
   }
