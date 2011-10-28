@@ -3,7 +3,7 @@
 #include "apr_general.h"
 
 #include "padConfig.h"
-#include "server.h"
+#include "socket.h"
 #include "portManager.h"
 
 void main(int argc, const char *argv[]) {

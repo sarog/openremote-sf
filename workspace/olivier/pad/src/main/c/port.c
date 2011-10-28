@@ -23,16 +23,29 @@ int logicalUnlock(port_t *port, char *source) {
 	return R_SUCCESS;
 }
 
-int lock(apr_pool_t *pool, port_t *port, char *source) {
+int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceiveCb) {
 	CHECK(logicalLock(port, source))
-	int r = port->lockCb(pool, port->portId, &port->runtimeData);
+
+	// Prepare runtime
+	apr_pool_create(&port->runtimePool, pool);
+	int r = port->lockCb(port->runtimePool, port->portId, &port->context, portReceiveCb);
 	if (r != R_SUCCESS) {
-		return logicalUnlock(port, source);
+		return unlock(pool, port, source);
 	}
 	return r;
 }
 
 int unlock(apr_pool_t *pool, port_t *port, char *source) {
+	apr_pool_destroy(port->runtimePool);
 	int r = logicalUnlock(port, source);
 	return r;
+}
+
+int portSend(apr_pool_t *pool, port_t *port, char *data, int len) {
+	// Check if port is locked
+	if (port->lockSource == NULL)
+		return R_UNLOCKED;
+
+	// Send data
+	return port->portSendCb(port->context, data, len);
 }
