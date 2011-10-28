@@ -60,7 +60,6 @@
 
 - (void)setPollingStatus:(NSNotification *)notification
 {
-    /*
 	PollingStatusParserDelegate *pollingDelegate = (PollingStatusParserDelegate *)[notification object];
 	int sensorId = self.image.sensorId;
 	NSString *newStatus = [pollingDelegate.statusMap objectForKey:[NSString stringWithFormat:@"%d",sensorId]];
@@ -81,10 +80,10 @@
             if (stateValue) {
                 imageView.label.text = stateValue;
             } else {
-                imageView.label.text = self.image.label.text;
+                imageView.label.text = newStatus;
             }
         }
-    }*/
+    }
 }
 
 @synthesize view;
