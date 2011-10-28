@@ -3,13 +3,13 @@ package org.openremote.web.console.panel.entity.component;
 import org.openremote.web.console.panel.entity.Navigate;
 
 public interface ButtonComponent {
-	int getId();
+	Integer getId();
 	String getName();
 	Navigate getNavigate();
-	boolean getHasControlCommand();
+	Boolean getHasControlCommand();
 	
-	void setId(int id);
+	void setId(Integer id);
 	void setName(String name);
 	void setNavigate(Navigate navigate);
-	void setHasControlCommand(boolean hasControlCommand);
+	void setHasControlCommand(Boolean hasControlCommand);
 }

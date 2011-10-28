@@ -59,11 +59,11 @@ public class ScreenViewService {
 		// Cycle through absolute and grid lists and create components
 		List<AbsoluteLayout> absoluteElems = screen.getAbsolute();
 		for (AbsoluteLayout layout : absoluteElems) {
-			LabelComponent label = layout.getLabel();
-			ImageComponent image = layout.getImage();
-			SliderComponent slider = layout.getSlider();
-			SwitchComponent switchComp = layout.getSwitch();
-			ButtonComponent button = layout.getButton();
+			LabelComponent labelComponent = layout.getLabel();
+			ImageComponent imageComponent = layout.getImage();
+			SliderComponent sliderComponent = layout.getSlider();
+			SwitchComponent switchComponent = layout.getSwitch();
+			ButtonComponent buttonComponent = layout.getButton();
 			
 			// Create Absolute Panel Component
 			AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
@@ -74,16 +74,16 @@ public class ScreenViewService {
 			// Create Console Component
 			ConsoleComponent component = null;
 			
-			if (label != null) {
-				component = org.openremote.web.console.widget.LabelComponent.build(label);
-			} else if (image != null) {
-				
-			} else if (slider != null) {
-				
-			} else if (switchComp != null) {
-				
-			} else if (button != null) {
-				
+			if (labelComponent != null) {
+				component = org.openremote.web.console.widget.LabelComponent.build(labelComponent);
+			} else if (imageComponent != null) {
+				component = org.openremote.web.console.widget.ImageComponent.build(imageComponent);
+			} else if (sliderComponent != null) {
+				component = org.openremote.web.console.widget.SliderComponent.build(sliderComponent);
+			} else if (switchComponent != null) {
+				component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
+			} else if (buttonComponent != null) {
+				component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
 			} else {
 				return null;
 			}

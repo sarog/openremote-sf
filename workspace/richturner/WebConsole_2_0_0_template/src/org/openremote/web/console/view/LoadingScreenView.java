@@ -13,7 +13,7 @@ public class LoadingScreenView extends ScreenViewImpl {
 		htmlSpinner.setSize(100);
 
 		// Create a label component for the loading message text
-		LabelComponent msgWidget = new LabelComponent();
+		LabelComponent msgWidget = (LabelComponent) LabelComponent.build(null);
 		msgWidget.setText(LOADING_MESSAGE);
 		msgWidget.getElement().setAttribute("style", "color: #245E36; text-shadow: -1px -1px 0 #4FA800, 1px -1px 0 #4FA800, -1px 1px 0 #4FA800, 1px 1px 0 #4FA800; font-weight: bold; font-size: 25px; font-family: verdana, arial, sans-serif;");
 

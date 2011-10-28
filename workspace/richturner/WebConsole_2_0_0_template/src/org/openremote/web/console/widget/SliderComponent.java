@@ -13,7 +13,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class SliderComponent extends InteractiveConsoleComponent {
 	public static final String CLASS_NAME = "sliderComponent";
@@ -57,10 +56,10 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			DOM.setStyleAttribute(element, "borderStyle", "solid");
 			setStylePrimaryName("slider_handle");
 		   	
-			this.addHandler(this, DragStartEvent.getType());
-			this.addHandler(this, DragMoveEvent.getType());
-			this.addHandler(this, DragEndEvent.getType());
-			this.addHandler(this, DragCancelEvent.getType());
+			storeHandler(this.addHandler(this, DragStartEvent.getType()));
+			storeHandler(this.addHandler(this, DragMoveEvent.getType()));
+			storeHandler(this.addHandler(this, DragEndEvent.getType()));
+			storeHandler(this.addHandler(this, DragCancelEvent.getType()));
 		}
 		
 		public void onDragStart(DragStartEvent event) {
@@ -68,8 +67,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
-			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
-			boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
+			boolean sliderAppearsVertical = isVertical();
 			
 			if (!sliderAppearsVertical) {
 				doHandleDrag(event.getXPos());
@@ -115,7 +113,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			DOM.setStyleAttribute(element, "borderRadius", height + "px");
 			DOM.setStyleAttribute(element, "WebkitUserSelect", "none");
 			
-			this.addHandler(this, TapEvent.getType());
+			storeHandler(this.addHandler(this, TapEvent.getType()));
 		}
 
 		@Override
@@ -151,23 +149,80 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		}
 	}
 
-	public SliderComponent() {
+	private SliderComponent() {
 		this(SliderComponent.DEFAULT_WIDTH, SliderComponent.DEFAULT_HEIGHT);
 	}
 	
-	public SliderComponent(int width, int height) {
+	private SliderComponent(int width, int height) {
 		super(new AbsolutePanel());
 		container = (AbsolutePanel)this.getWidget();
 		container.setStylePrimaryName(CLASS_NAME);
 		
+		this.width = width;
+		this.height = height;
+	}
+	
+	private void doHandleDrag(int absPos) {
+		int relPos = calculateRelativePixelValue(absPos);
+		int value = (int)(relPos * pixelValueDensity);
+		setValue(value);
+	}
+	
+	private int calculateRelativePixelValue(int absValue) {
+		int value = absValue;
+		int pixelMin = 0;
+		boolean sliderAppearsVertical = isVertical();
+		
+		if (!sliderAppearsVertical) {		
+			if (!isVertical) {
+					pixelMin = (int)(slideBar.getAbsoluteLeft() + halfHandle);
+					value = value - pixelMin;
+			} else {
+				pixelMin = (int)(slideBar.getAbsoluteLeft() + slideBar.getWidth() - halfHandle);
+				value = pixelMin - value;
+			}
+		} else {
+			pixelMin = (int)( slideBar.getAbsoluteTop() + slideBar.getWidth() - halfHandle);
+			value = pixelMin - value;
+		}
+		return value;
+	}
+	
+	public boolean isVertical() {
+		String unitIsVerticalString = WebConsole.getConsoleUnit().getOrientation();
+		boolean unitIsVertical = unitIsVerticalString.equalsIgnoreCase("portrait") ? true : false;
+		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
+		return (isVertical && (unitIsVertical && displayIsVertical) || (!isVertical && (!unitIsVertical && displayIsVertical)));
+	}
+	
+	public void setValue(int value) {
+		value = value < minValue ? minValue : value;
+		value = value > maxValue ? maxValue : value;
+		value = Math.round(value/stepSize) * stepSize;
+		
+		if (value != this.value) {
+			int relPos = (int)Math.round((value-minValue)/pixelValueDensity);
+			relPos = isVertical ? slideBar.getWidth() - relPos - handle.getSize() : relPos; 
+			setHandlePosition(relPos);
+			this.value = value;
+		}
+	}
+	
+	private void setHandlePosition(int pixelPos) {
+		if (!isVertical) {
+			DOM.setStyleAttribute(handle.getElement(), "left", pixelPos + "px");
+		} else {
+			DOM.setStyleAttribute(handle.getElement(), "top", pixelPos + "px");
+		}
+	}
+	
+	@Override
+	public void onRender() {
 		int handleSize = 0;
 		int handleXPos = 0;
 		int handleYPos = 0;
 		int slideBarXPos = 0;
 		int slideBarYPos = 0;
-		
-		this.width = width;
-		this.height = height;
 		
 		// Determine the orientation of the slider
 		if (height > width) {
@@ -217,45 +272,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		
 		registerMouseAndTouchHandlers(slideBar);
 		registerMouseAndTouchHandlers(handle);
-	}
-	
-	private void doHandleDrag(int absPos) {
-		int relPos = calculateRelativePixelValue(absPos);
-		int value = (int)(relPos * pixelValueDensity);
-		//Window.alert(absPos + " : " + relPos + " : " + value);
-		setValue(value);
-	}
-	
-	private int calculateRelativePixelValue(int absValue) {
-		int value = absValue;
-		int pixelMin = 0;
-		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
-		boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
 		
-		if (!sliderAppearsVertical) {		
-			if (!isVertical) {
-					pixelMin = (int)(slideBar.getAbsoluteLeft() + halfHandle);
-					value = value - pixelMin;
-			} else {
-				pixelMin = (int)(slideBar.getAbsoluteLeft() + slideBar.getWidth() - halfHandle);
-				value = pixelMin - value;
-			}
-		} else {
-			pixelMin = (int)( slideBar.getAbsoluteTop() + slideBar.getWidth() - halfHandle);
-			value = pixelMin - value;
-		}
-		return value;
-	}
-	
-	private void setHandlePosition(int pixelPos) {
-		if (!isVertical) {
-			DOM.setStyleAttribute(handle.getElement(), "left", pixelPos + "px");
-		} else {
-			DOM.setStyleAttribute(handle.getElement(), "top", pixelPos + "px");
-		}
-	}
-	
-	public void onRender() {
 		int pixelRange = (int)(slideBar.getWidth() - (2 * halfHandle));
 		pixelValueDensity = (double) (maxValue - minValue) / pixelRange;
 	}
@@ -275,19 +292,6 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		}
 	}
 	
-	public void setValue(int value) {
-		value = value < minValue ? minValue : value;
-		value = value > maxValue ? maxValue : value;
-		value = Math.round(value/stepSize) * stepSize;
-		
-		if (value != this.value) {
-			int relPos = (int)Math.round(value/pixelValueDensity);
-			relPos = isVertical ? slideBar.getWidth() - relPos - handle.getSize() : relPos; 
-			setHandlePosition(relPos);
-			this.value = value;
-		}
-	}
-	
 	public void setStepSize(int size) {
 		if (!isInitialised) {
 			stepSize = size;
@@ -300,5 +304,20 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	
 	public int getWidth() {
 		return width;
+	}
+	
+	public void setMin(int min) {
+		this.minValue = min;
+	}
+
+	public void setMax(int max) {
+		this.maxValue = max;
+	}
+	
+	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
+		SliderComponent component = new SliderComponent();
+		component.setMax(entity.getMax().getValue());
+		component.setMin(entity.getMin().getValue());
+		return component;
 	}
 }

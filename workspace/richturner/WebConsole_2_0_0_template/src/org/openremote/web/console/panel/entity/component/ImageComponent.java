@@ -29,15 +29,13 @@ import org.openremote.web.console.panel.entity.Link;
  */
 public interface ImageComponent {
    
-	int getId();
+	Integer getId();
 	String getSrc();
-   String getStyle();
    Link getLink();
    Include getInclude();
    
-   void setId(int id);
+   void setId(Integer id);
    void setSrc(String src);
-	void setStyle(String style);
 	void setLink(Link link);
 	void setInclude(Include include);
 }
