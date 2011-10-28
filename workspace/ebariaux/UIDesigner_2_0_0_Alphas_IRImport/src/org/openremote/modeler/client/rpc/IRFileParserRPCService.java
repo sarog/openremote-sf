@@ -35,7 +35,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 /**
- * The Interface is for managing slider entity.
+ * The Interface is for managing fileParser entity.
  */
 @RemoteServiceRelativePath("irfile.smvc")
 public interface IRFileParserRPCService extends RemoteService {
