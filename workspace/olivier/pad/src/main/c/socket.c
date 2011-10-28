@@ -56,7 +56,7 @@ static apr_socket_t* createListenSocket(apr_pool_t *listenPool);
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool);
 int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
 static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
-int receive(char *portId, char *buf, int len);
+int receiveData(char *portId, char *buf, int len);
 
 /**
  *
@@ -175,7 +175,7 @@ void createTransaction(apr_pool_t *pool, transaction_t **transaction) {
 		(*transaction)->request = NULL;
 		(*transaction)->response = NULL;
 		(*transaction)->status = WAITING_FOR_REQUEST;
-		(*transaction)->portReceiveCb = receive;
+		(*transaction)->portReceiveCb = receiveData;
 	}
 }
 
@@ -257,10 +257,12 @@ static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_s
 	return R_SUCCESS;
 }
 
-int receive(char *portId, char *buf, int len) {
+int receiveData(char *portId, char *buf, int len) {
 	if (context->clientTx != NULL)
 		return R_TX_RUNNING;
 	createTransaction(context->clientTxPool, &context->clientTx);
 
-	return operatePortData(acceptedSocket, context->clientTx, context->clientTxPool, portId, buf, len);
+	CHECK(operatePortData(acceptedSocket, context->clientTx, context->clientTxPool, portId, buf, len))
+	CHECK(writeMessage(acceptedSocket, context->clientTx->request))
+	return R_SUCCESS;
 }

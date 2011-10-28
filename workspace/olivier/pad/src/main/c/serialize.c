@@ -17,6 +17,11 @@ int buf2Uint16(const char *buf, apr_uint16_t *res) {
 	return R_SUCCESS;
 }
 
+int int162Buf(char *buf, apr_int16_t val) {
+	apr_snprintf(buf, 5, "%04X", val);
+	return R_SUCCESS;
+}
+
 int buf2Int32(const char *buf, apr_int32_t *res) {
 	apr_off_t v;
 	char *end;
@@ -46,6 +51,14 @@ void createMessageFields(apr_pool_t *pool, message_t *message, int nbFields) {
 		message->fields[i].encoding = HEX;
 		message->fields[i].length = 0;
 	}
+}
+
+int fillStringField(apr_pool_t *pool, field_t *field, char *buf, int len) {
+	int i;
+	field->length = len;
+	field->stringVal = apr_palloc(pool, len);
+	memcpy(field->stringVal, buf, len);
+	return R_SUCCESS;
 }
 
 void printMessage(message_t *message) {
@@ -93,6 +106,14 @@ int createACK(apr_pool_t *pool, message_t **message, apr_int32_t code) {
 	return R_SUCCESS;
 }
 
+int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf, int len) {
+	CHECK(createMessage(NOTIFY, message, pool))
+	createMessageFields(pool, *message, 2);
+	CHECK(fillStringField(pool, &(*message)->fields[0], portId, strlen(portId)))CHECK(
+			fillStringField(pool, &(*message)->fields[1], buf, len))
+	return R_SUCCESS;
+}
+
 int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
 	int l = len - 1;
 	apr_status_t rv = apr_socket_recv(sock, buf, &l);
@@ -124,11 +145,31 @@ int readFieldLength(apr_socket_t *sock, apr_uint16_t *fieldLength) {
 	return R_SUCCESS;
 }
 
+int writeFieldLength(apr_socket_t *sock, apr_uint16_t fieldLength) {
+	char buf[4];
+	int len = 4;
+	CHECK(int162Buf(buf, fieldLength))
+	apr_socket_send(sock, buf, &len);
+	return R_SUCCESS;
+}
+
 int readString(apr_pool_t *pool, apr_socket_t *sock, field_t *field) {
 	apr_uint16_t fieldLength;
 	CHECK(readFieldLength(sock, &fieldLength))
 	field->stringVal = apr_palloc(pool, fieldLength + 1);
 	CHECK(receiveStringBuf(sock, field->stringVal, fieldLength + 1))
+	return R_SUCCESS;
+}
+
+int writeString(apr_socket_t *sock, char *buf, int len) {
+	int i;
+	int tmpLen = 2 * len;
+	char tmp[2 * len];
+	writeFieldLength(sock, len);
+	for (i = 0; i < len; ++i) {
+		apr_snprintf(&tmp[2 * i], 2, "%02X", buf[i]);
+	}
+	apr_socket_send(sock, tmp, &tmpLen);
 	return R_SUCCESS;
 }
 
