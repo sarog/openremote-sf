@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "apr_hash.h"
 #include "portManager.h"
+#include "linuxSerialPort.h"
 
-extern physicalLock_t physicalLock;
-extern physicalUnlock_t physicalUnlock;
-extern physicalSend_t physicalSend;
+//extern physicalLock_t physicalLock;
+//extern physicalUnlock_t physicalUnlock;
+//extern physicalSend_t physicalSend;
 static apr_pool_t *portPool;
 static apr_hash_t *ports;
 

@@ -229,7 +229,7 @@ static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, ap
 	apr_thread_mutex_unlock(context->clientTx->mutex);
 
 	// Clear transaction
-	clearClientTransaction(context->clientTxPool, context->clientTx);
+	clearClientTransaction(context->clientTxPool, &context->clientTx);
 	return R_SUCCESS;
 }
 

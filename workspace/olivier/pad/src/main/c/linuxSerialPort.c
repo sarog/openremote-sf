@@ -105,7 +105,7 @@ int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, po
 		return R_PORT_ERROR;
 	}
 
-	CHECK(lsConfigure(*portContext));
+//	CHECK(lsConfigure(*portContext));
 	CHECK(lsCreateReadThread(pool, *portContext));
 
 	return R_SUCCESS;
@@ -113,7 +113,7 @@ int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, po
 
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) {
 	lsInterruptReadThread(*portContext);
-	lsUnconfigure(*portContext);
+//	lsUnconfigure(*portContext);
 	// Close serial port
 	close((*portContext)->fd);
 	return R_SUCCESS;

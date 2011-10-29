@@ -40,26 +40,33 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		break;
 	case NOTIFY: {
 		port_t *port;
-		CHECK(getPort(tx->request->fields[0].stringVal, &port))
-		int r = portSend(txPool, port, tx->request->fields[1].stringVal, tx->request->fields[1].length);
+		int r = getPort(tx->request->fields[0].stringVal, &port);
+		if (r == R_SUCCESS) {
+			r = portSend(txPool, port, tx->request->fields[1].stringVal, tx->request->fields[1].length);
+		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 		break;
 	}
 	case LOCK: {
 		port_t *port;
-		CHECK(getPort(tx->request->fields[0].stringVal, &port))
-		int r = lock(txPool, port, tx->request->fields[1].stringVal, tx->portReceiveCb);
+		int r = getPort(tx->request->fields[0].stringVal, &port);
+		if (r == R_SUCCESS) {
+			r = lock(txPool, port, tx->request->fields[1].stringVal, tx->portReceiveCb);
+		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case UNLOCK: {
 		port_t *port;
-		CHECK(getPort(tx->request->fields[0].stringVal, &port))
-		int r = unlock(txPool, port, tx->request->fields[1].stringVal);
+		int r = getPort(tx->request->fields[0].stringVal, &port);
+		if (r == R_SUCCESS) {
+			r = unlock(txPool, port, tx->request->fields[1].stringVal);
+		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
-	case CREATE_PORT:
-		return createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
-		break;
+	case CREATE_PORT: {
+		int r = createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
+		return createACK(txPool, &tx->response, r); //TODO define a return code
+	}
 	case CONFIGURE: {
 		port_t *port;
 		CHECK(getPort(tx->request->fields[0].stringVal, &port))

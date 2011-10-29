@@ -41,11 +41,34 @@ int unlock(apr_pool_t *pool, port_t *port, char *source) {
 	return r;
 }
 
+int unencode(apr_pool_t *pool, char **buf, char *data, int len) {
+	int i;
+	if (len % 2 != 0)
+		return R_INVALID_MESSAGE;
+	*buf = apr_palloc(pool, len / 2);
+	char tmp[3];
+	tmp[2] = 0;
+	char *end;
+	for (i = 0; i < len; i += 2) {
+		tmp[0] = data[i];
+		tmp[1] = data[i + 1];
+		APR_CHECK(apr_strtoff(&buf[i / 2], tmp, &end, 16), R_INVALID_MESSAGE);
+		if (*end != 0 || end - (*buf) != 2)
+			return R_INVALID_MESSAGE;
+	}
+	return R_SUCCESS;
+}
+
 int portSend(apr_pool_t *pool, port_t *port, char *data, int len) {
+	char *buf;
+
 	// Check if port is locked
 	if (port->lockSource == NULL)
 		return R_UNLOCKED;
 
+	// Unencode data
+	CHECK(unencode(pool, &buf, data, len));
+
 	// Send data
-	return port->portSendCb(port->context, data, len);
+	return port->portSendCb(port->context, buf, len / 2);
 }
