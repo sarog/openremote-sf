@@ -1,7 +1,23 @@
+#include <stddef.h>
 #include "codes.h"
 #include "serialize.h"
 #include "port.h"
 #include "server.h"
+
+void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx, portReceive_t receiveCb) {
+	if (*tx == NULL) {
+		*tx = apr_palloc(pool, sizeof(serverTransaction_t));
+		(*tx)->request = NULL;
+		(*tx)->response = NULL;
+		(*tx)->status = WAITING_FOR_REQUEST;
+		(*tx)->portReceiveCb = receiveCb;
+	}
+}
+
+void clearServerTransaction(apr_pool_t *pool, serverTransaction_t **tx) {
+	apr_pool_clear(pool);
+	*tx = NULL;
+}
 
 int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *type) {
 	CHECK(readHeader(sock, code))
@@ -12,7 +28,7 @@ int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *type) {
 	return R_SUCCESS;
 }
 
-int operateRequest(apr_socket_t *sock, transaction_t *tx, apr_pool_t *txPool, char code) {
+int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPool, char code) {
 
 	CHECK(readBody(sock, &tx->request, txPool, code))
 
@@ -50,19 +66,6 @@ int operateRequest(apr_socket_t *sock, transaction_t *tx, apr_pool_t *txPool, ch
 		// TODO configure
 		break;
 	}
-	}
-
-	return R_SUCCESS;
-}
-
-int writeMessage(apr_socket_t *sock, message_t *message) {
-	CHECK(writeHeader(sock, message));
-	switch (message->code) {
-	case ACK:
-		CHECK(writeInt32(sock, &message->fields[0]))
-		break;
-	case NOTIFY:
-		break;
 	}
 
 	return R_SUCCESS;

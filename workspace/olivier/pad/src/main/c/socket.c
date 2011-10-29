@@ -45,8 +45,8 @@ struct _serviceContext_t {
 	apr_pool_t *socketPool;
 	apr_pool_t *serverTxPool;
 	apr_pool_t *clientTxPool;
-	transaction_t *clientTx;
-	transaction_t *serverTx;
+	clientTransaction_t *clientTx;
+	serverTransaction_t *serverTx;
 };
 
 static serviceContext_t *context;
@@ -169,19 +169,17 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 	return TRUE;
 }
 
-void createTransaction(apr_pool_t *pool, transaction_t **transaction) {
-	if (*transaction == NULL) {
-		*transaction = apr_palloc(pool, sizeof(transaction_t));
-		(*transaction)->request = NULL;
-		(*transaction)->response = NULL;
-		(*transaction)->status = WAITING_FOR_REQUEST;
-		(*transaction)->portReceiveCb = receiveData;
+int writeMessage(apr_socket_t *sock, message_t *message) {
+	CHECK(writeHeader(sock, message));
+	switch (message->code) {
+	case ACK:
+		CHECK(writeInt32(sock, &message->fields[0]))
+		break;
+	case NOTIFY:
+		break;
 	}
-}
 
-void clearTransaction(apr_pool_t *pool, transaction_t **transaction) {
-	apr_pool_clear(pool);
-	*transaction = NULL;
+	return R_SUCCESS;
 }
 
 void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
@@ -194,7 +192,7 @@ void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
 static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
 	// Create a new server transaction
 	// TODO what happens if a transaction was already created?
-	createTransaction(context->serverTxPool, &context->serverTx);
+	createServerTransaction(context->serverTxPool, &context->serverTx, receiveData);
 
 	int r = operateRequest(sock, context->serverTx, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
@@ -214,7 +212,24 @@ static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr
 }
 
 static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
-	// TODO
+	// Check if a transaction is running
+	if (context->clientTx == NULL)
+		return R_TX_NOT_FOUND;
+
+	// TODO Read response
+	int r = operateResponse(sock, context->clientTx, context->clientTxPool, code);
+	if (r != R_SUCCESS) {
+		closeSocket(sock, context);
+		return r;
+	}
+
+	// Synchronize with waiting client
+	apr_thread_mutex_lock(context->clientTx->mutex);
+	apr_thread_cond_signal(context->clientTx->cond);
+	apr_thread_mutex_unlock(context->clientTx->mutex);
+
+	// Clear transaction
+	clearClientTransaction(context->clientTxPool, context->clientTx);
 	return R_SUCCESS;
 }
 
@@ -244,7 +259,7 @@ static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_s
 	writeMessage(sock, context->serverTx->response);
 
 	// Clear all memory related to request and response
-	clearTransaction(context->serverTxPool, &context->serverTx);
+	clearServerTransaction(context->serverTxPool, &context->serverTx);
 
 	// Change context status from write to read
 	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
@@ -260,9 +275,15 @@ static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_s
 int receiveData(char *portId, char *buf, int len) {
 	if (context->clientTx != NULL)
 		return R_TX_RUNNING;
-	createTransaction(context->clientTxPool, &context->clientTx);
+	createClientTransaction(context->clientTxPool, &context->clientTx);
 
-	CHECK(operatePortData(acceptedSocket, context->clientTx, context->clientTxPool, portId, buf, len))
-	CHECK(writeMessage(acceptedSocket, context->clientTx->request))
-	return R_SUCCESS;
+	CHECK(operatePortData(context->clientTx, context->clientTxPool, portId, buf, len))
+	apr_thread_mutex_lock(context->clientTx->mutex);
+	// Synchronize with response if message sent
+	int r = writeMessage(acceptedSocket, context->clientTx->request);
+	if (r == R_SUCCESS) {
+		apr_thread_cond_timedwait(context->clientTx->cond, context->clientTx->mutex, 2000000);
+	}
+	apr_thread_mutex_unlock(context->clientTx->mutex);
+	return r;
 }
