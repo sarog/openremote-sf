@@ -154,10 +154,9 @@ int writeFieldLength(apr_socket_t *sock, apr_uint16_t fieldLength) {
 }
 
 int readString(apr_pool_t *pool, apr_socket_t *sock, field_t *field) {
-	apr_uint16_t fieldLength;
-	CHECK(readFieldLength(sock, &fieldLength))
-	field->stringVal = apr_palloc(pool, fieldLength + 1);
-	CHECK(receiveStringBuf(sock, field->stringVal, fieldLength + 1))
+	CHECK(readFieldLength(sock, &field->length))
+	field->stringVal = apr_palloc(pool, field->length + 1);
+	CHECK(receiveStringBuf(sock, field->stringVal, field->length + 1))
 	return R_SUCCESS;
 }
 
