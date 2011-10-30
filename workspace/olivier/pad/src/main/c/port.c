@@ -17,9 +17,9 @@ int logicalLock(port_t *port, char *source) {
 int logicalUnlock(port_t *port, char *source) {
 	if (port->lockSource == NULL || strcmp(port->lockSource, source) != 0)
 		return R_WRONG_LOCK_STATUS;
+	printf("port '%s' unlocked by '%s'\n", port->portId, port->lockSource);
 	free(port->lockSource);
 	port->lockSource = NULL;
-	printf("port '%s' unlocked by '%s' \n", port->portId, port->lockSource);
 	return R_SUCCESS;
 }
 
@@ -36,6 +36,7 @@ int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceive
 }
 
 int unlock(apr_pool_t *pool, port_t *port, char *source) {
+	port->unlockCb(port->runtimePool, port->portId, &port->context);
 	apr_pool_destroy(port->runtimePool);
 	int r = logicalUnlock(port, source);
 	return r;
@@ -52,8 +53,8 @@ int unencode(apr_pool_t *pool, char **buf, char *data, int len) {
 	for (i = 0; i < len; i += 2) {
 		tmp[0] = data[i];
 		tmp[1] = data[i + 1];
-		APR_CHECK(apr_strtoff(&buf[i / 2], tmp, &end, 16), R_INVALID_MESSAGE);
-		if (*end != 0 || end - (*buf) != 2)
+		APR_CHECK(apr_strtoff(&(*buf)[i / 2], tmp, &end, 16), R_INVALID_MESSAGE);
+		if (*end != 0 || end - tmp != 2)
 			return R_INVALID_MESSAGE;
 	}
 	return R_SUCCESS;

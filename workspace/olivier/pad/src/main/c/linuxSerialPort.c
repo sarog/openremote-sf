@@ -26,6 +26,7 @@ void *lsRead(apr_thread_t *thread, void *data) {
 
 	while (res > 0) {
 		res = read(portContext->fd, buf, RCV_BUF_SIZE); /* read RCV_BUF_SIZE bytes at most   */
+		printf("read %d bytes\n", res);
 		portContext->portReceiveCb(portContext->portId, buf, res);
 	}
 

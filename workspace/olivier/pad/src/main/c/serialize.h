@@ -11,7 +11,7 @@ typedef struct _field_t {
 	enum {
 		HEX = 'H'
 	} encoding;
-	int length;
+	apr_uint16_t length;
 	union {
 		apr_int32_t int32Val;
 		char *stringVal;
