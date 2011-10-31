@@ -1,10 +1,7 @@
 package org.openremote.web.console.widget;
 
 import org.openremote.web.console.client.WebConsole;
-
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 
 public class ImageComponent extends PassiveConsoleComponent {
 	public static final String CLASS_NAME = "imageComponent";

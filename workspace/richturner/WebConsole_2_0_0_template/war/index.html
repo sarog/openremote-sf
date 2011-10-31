@@ -7,24 +7,27 @@
 <!-- but may lead to some differences in layout.   -->
 <html>
 	<head>
+		<title>OpenRemote Web Console - 2.0</title>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		
 		<!-- For mobile devices -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi;" />
-		<!-- For android devices -->
-		<!-- For mobile devices not supporting viewport -->
 		<meta name="HandheldFriendly" content="true"/>
+
 		<!-- Apple settings -->
 		<!-- hide the browser chrome -->
 		<meta name="apple-mobile-web-app-capable" content="yes" /> 
 		<!-- set the phone status bar style; can be grey, black, or black translucent -->
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<!-- set home screen icon for iOS -->
+		<link rel="apple-touch-icon" href="resources/images/icon.png"/>
+		<!-- set startup image when web app launched from home screen on iOS -->
+		<link rel="apple-touch-startup-image" href="resources/images/startup.png">
 		
+		<!-- General settings -->
+	 	<link rel="shortcut icon" href="resources/images/icon.png">
+    	<link type="image/png" rel="icon" href="resources/images/icon.png">
 		<link type="text/css" rel="stylesheet" href="resources/css/webconsole.css">
-	
-		<title>OpenRemote Web Console - 2.0</title>
-
-		<script language="javascript" src="webconsole/webconsole.nocache.js"></script>
-		
 	    <style type="text/css">
 	      #welcome-content {
 	      	 background: none repeat scroll 0 0 white;
@@ -39,17 +42,26 @@
 	         z-index: 20001;
 	      }
 	      
-
-	      
 	      #welcome-content .spinner {
 	         float: left;
 	         margin-right: 8px;
 	         vertical-align: top;
 	      }
 	    </style>
+	    
+	    <!-- GWT Bootstrap -->
+	    <script language="javascript" src="webconsole/webconsole.nocache.js"></script>
+	    
+	    <script type="text/javascript">
+	    	function fullScreenCheck() {
+	    		if (("standalone" in window.navigator) && !window.navigator.standalone) {
+	    				window.alert("To run in full screen mode please add this page to your Home Screen");
+	    		}
+	    	}
+	    </script>
 	</head>
 
-	<body>
+	<body onload="fullScreenCheck();">
 		<iframe id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
 		
 		<div style="font: 10px arial, tahoma, sans-serif;" id="welcome-content">

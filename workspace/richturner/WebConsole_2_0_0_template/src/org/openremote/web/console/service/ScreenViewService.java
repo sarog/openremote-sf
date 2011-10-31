@@ -3,9 +3,7 @@ package org.openremote.web.console.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
-import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
 import org.openremote.web.console.panel.entity.component.ImageComponent;
@@ -13,7 +11,6 @@ import org.openremote.web.console.panel.entity.component.LabelComponent;
 import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
 import org.openremote.web.console.view.LoadingScreenView;
-import org.openremote.web.console.view.ScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.AbsolutePanelComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
@@ -45,9 +42,9 @@ public class ScreenViewService {
 			screenView = screenViewMap.get(screenId);
 			if (screenView == null) {
 				screenView = buildScreenView(screen);
-			}
-			if (screenView != null) {
-				screenViewMap.put(screenId, screenView);
+				if (screenView != null) {
+					screenViewMap.put(screenId, screenView);
+				}
 			}
 		}
 		return screenView;
@@ -57,43 +54,48 @@ public class ScreenViewService {
 		ScreenViewImpl screenView = new ScreenViewImpl();
 		
 		// Cycle through absolute and grid lists and create components
-		List<AbsoluteLayout> absoluteElems = screen.getAbsolute();
-		for (AbsoluteLayout layout : absoluteElems) {
-			LabelComponent labelComponent = layout.getLabel();
-			ImageComponent imageComponent = layout.getImage();
-			SliderComponent sliderComponent = layout.getSlider();
-			SwitchComponent switchComponent = layout.getSwitch();
-			ButtonComponent buttonComponent = layout.getButton();
+		try {
+			List<AbsoluteLayout> absoluteElems = screen.getAbsolute();
 			
-			// Create Absolute Panel Component
-			AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
-			absPanel.setHeight(layout.getHeight() + "px");
-			absPanel.setWidth(layout.getWidth() + "px");
-			absPanel.setPosition(layout.getLeft(),layout.getTop());
-			
-			// Create Console Component
-			ConsoleComponent component = null;
-			
-			if (labelComponent != null) {
-				component = org.openremote.web.console.widget.LabelComponent.build(labelComponent);
-			} else if (imageComponent != null) {
-				component = org.openremote.web.console.widget.ImageComponent.build(imageComponent);
-			} else if (sliderComponent != null) {
-				component = org.openremote.web.console.widget.SliderComponent.build(sliderComponent);
-			} else if (switchComponent != null) {
-				component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
-			} else if (buttonComponent != null) {
-				component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
-			} else {
-				return null;
+			for (AbsoluteLayout layout : absoluteElems) {
+				LabelComponent labelComponent = layout.getLabel();
+				ImageComponent imageComponent = layout.getImage();
+				SliderComponent sliderComponent = layout.getSlider();
+				SwitchComponent switchComponent = layout.getSwitch();
+				ButtonComponent buttonComponent = layout.getButton();
+				
+				// Create Absolute Panel Component
+				AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
+				absPanel.setHeight(layout.getHeight() + "px");
+				absPanel.setWidth(layout.getWidth() + "px");
+				absPanel.setPosition(layout.getLeft(),layout.getTop());
+				
+				// Create Console Component
+				ConsoleComponent component = null;
+				
+				if (labelComponent != null) {
+					component = org.openremote.web.console.widget.LabelComponent.build(labelComponent);
+				} else if (imageComponent != null) {
+					component = org.openremote.web.console.widget.ImageComponent.build(imageComponent);
+				} else if (sliderComponent != null) {
+					component = org.openremote.web.console.widget.SliderComponent.build(sliderComponent);
+				} else if (switchComponent != null) {
+					component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
+				} else if (buttonComponent != null) {
+					component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
+				} else {
+					return null;
+				}
+				
+				if (component != null) {
+					absPanel.setComponent(component);
+					screenView.addConsoleWidget(absPanel);
+				}
 			}
-			
-			if (component != null) {
-				absPanel.setComponent(component);
-				screenView.addConsoleWidget(absPanel);
-			}
+		} catch (Exception e) {
+			Window.alert("Problem with JSON Parsing");
+			// TODO: Handle error
 		}
-		
 		return screenView;
 	}
 	

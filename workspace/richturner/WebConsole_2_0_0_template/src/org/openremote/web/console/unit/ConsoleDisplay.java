@@ -1,30 +1,18 @@
 package org.openremote.web.console.unit;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressMoveEvent;
-import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.util.BrowserUtils;
-import org.openremote.web.console.view.ScreenView;
-import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.InteractiveConsoleComponent;
-import org.openremote.web.console.widget.Positional;
-import org.openremote.web.console.widget.TabBarComponent;
-
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.TouchMoveEvent;
 import com.google.gwt.event.dom.client.TouchMoveHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This is the container where content will actually be displayed
@@ -176,33 +164,14 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		display.setWidgetPosition(component, left, top);
 	}
 	
-//	protected void setScreenView(ScreenView screenView) {
-//	if (screenView == null) {
-//		return;
-//	}
-//	
-//	if (currentScreen != null && screenView != currentScreen) {
-//		display.remove(currentScreen);
-//	}
-//	
-//	display.add((Widget)screenView, 0, 0);
-//	currentScreen = (Widget)screenView;
-//	screenView.onAdd();
-//}
-	
-//	protected void setTabBar(TabBarComponent tabBar) {
-//		if (tabBar == null) {
-//			return;
-//		}
-//		
-//		if (currentTabBar != null && tabBar != currentTabBar) {
-//			currentTabBar.onRemove();
-//			display.remove(currentTabBar);
-//		}
-//		display.add(tabBar, 0, getHeight() - tabBar.getHeight());
-//		currentTabBar = tabBar;
-//		tabBar.onAdd();
-//	}
+	protected void doResize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		container.setWidth(this.width + "px");
+		container.setHeight(this.height + "px");
+		display.setWidth(width + "px");
+		display.setHeight(height + "px");
+	}
 	
 	@Override
 	public void onTouchMove(TouchMoveEvent event) {
