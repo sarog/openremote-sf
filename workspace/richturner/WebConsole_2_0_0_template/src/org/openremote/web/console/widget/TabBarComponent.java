@@ -7,18 +7,15 @@ import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.NavigateEvent;
-import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
-import org.openremote.web.console.event.ui.ScreenViewChangeHandler;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.TabImage;
 import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.panel.entity.TabBarItem;
 import org.openremote.web.console.service.AutoBeanService;
-import org.openremote.web.console.service.MyFactory;
 import org.openremote.web.console.unit.ConsoleDisplay;
-
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -29,8 +26,10 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class TabBarComponent extends InteractiveConsoleComponent {
 	public static final String CLASS_NAME = "tabBarComponent";
-	public static final int TABBAR_HEIGHT = 47;
-	public static final int PADDING_TOP = 3;
+	public static final int TAB_IMAGE_SIZE = 30;
+	public static final int TAB_TEXT_HEIGHT = 13;
+	public static final int PADDING_TOP = 2;
+	public static final int PADDING_BOTTOM = 0;
 	private List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
 	private HorizontalPanel container;
 	private int pageCount = 0;
@@ -44,7 +43,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	}
 	
 	public class TabBarItemComponent extends VerticalPanel implements TapHandler {
-		private static final int TAB_ITEM_MIN_WIDTH = 65;
+		private static final int TAB_ITEM_MIN_WIDTH = 60;
 		private TabBarItem item;
 		private EnumSystemTabItemType systemTabType;
 		
@@ -61,23 +60,29 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 			this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 			DOM.setStyleAttribute(this.getElement(), "paddingTop", PADDING_TOP + "px");
+			DOM.setStyleAttribute(this.getElement(), "paddingBottom", PADDING_BOTTOM + "px");
 			
 			// Add Image
 			if (tabImage != null) {
 				Image imageComponent = new Image();
 				String controllerUrl = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
 				imageComponent.setUrl(controllerUrl + "/" + tabImage.getSrc());
-				imageComponent.setSize(30 + "px", 30 + "px");
+				imageComponent.setSize(TAB_IMAGE_SIZE + "px", TAB_IMAGE_SIZE + "px");
 				imageComponent.setStylePrimaryName("tabBarItemImage");
 				this.add(imageComponent);
+			} else {
+				HTML dummy = new HTML();
+				dummy.setSize(TAB_IMAGE_SIZE + "px", TAB_IMAGE_SIZE + "px");
+				this.add(dummy);
 			}
 			
 			// Add Text
 			if (item.getName() != null && !item.getName().equals("")) {
 				Label nameComponent = new Label();
 				nameComponent.setText(item.getName());
-				nameComponent.setSize("100%", "14px");
+				nameComponent.setSize("100%", TAB_TEXT_HEIGHT + "px");
 				nameComponent.setStylePrimaryName("tabBarItemName");
+				DOM.setStyleAttribute(this.getElement(), "lineHeight", TAB_TEXT_HEIGHT + "px");
 				this.add(nameComponent);
 			}
 			
@@ -120,7 +125,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		super(new HorizontalPanel());
 		container = (HorizontalPanel)this.getWidget();
 		container.setStylePrimaryName(CLASS_NAME);
-		container.setHeight(TABBAR_HEIGHT + "px");
+		container.setHeight(getHeight() + "px");
 		DOM.setIntStyleAttribute(container.getElement(), "zIndex", 30000 );
 		
 		// Add Elements from tab bar entity
@@ -128,6 +133,10 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 			TabBarItemComponent tabBarItem = new TabBarItemComponent(item);
 			this.addItem(tabBarItem);
 		}
+	}
+	
+	public int getHeight() {
+		return TAB_IMAGE_SIZE + TAB_TEXT_HEIGHT + PADDING_TOP + PADDING_BOTTOM;
 	}
 	
 	/*
@@ -141,7 +150,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		int itemCount = items.size();
 		maxItemsPerPage = (displayWidth / TabBarItemComponent.TAB_ITEM_MIN_WIDTH);
 		pageCount = (int)Math.ceil(((double)itemCount/maxItemsPerPage));
-		this.setWidth(displayWidth+"px");
+		this.setWidth("100%");
 
 		// Insert Next and Prev Nav buttons if overflow
 		if (itemCount > maxItemsPerPage) {
@@ -248,10 +257,6 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				break;
 		}
 		return tabBarItem;
-	}
-	
-	public int getHeight() {
-		return TABBAR_HEIGHT;
 	}
 
 	public void onScreenViewChange(int newScreenId) {

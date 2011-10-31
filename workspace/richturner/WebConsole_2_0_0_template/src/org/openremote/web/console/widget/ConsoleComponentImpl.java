@@ -11,20 +11,21 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		initWidget(container);
 		setVisible(false);
 		container.addStyleName("consoleWidget");
+		DOM.setStyleAttribute(container.getElement(), "WebkitUserSelect", "none");
 	}
 	
 	public void onAdd() {
-		// Check that handlers have been registered if interactive if not register them on the parent
+		// Call Widgets onRender Method and then display it
+		setVisible(true);
+		onRender();
+		
+		// Check that handlers have been registered if interactive if not register them on the top level widget
 		if (this instanceof InteractiveConsoleComponent) {
 			InteractiveConsoleComponent thisWidget = (InteractiveConsoleComponent) this;
 			if (!thisWidget.handlersRegistered) {
 				thisWidget.registerMouseAndTouchHandlers();
 			}
 		}
-		
-		// Call Widgets onRender Method and then display it
-		setVisible(true);
-		onRender();
 		isInitialised = true;
 	}
 	

@@ -131,13 +131,14 @@ body {
 SCREEN WIDGET CSS BELOW 
 */
 
-.slider_bar {
+.sliderComponentBar {
 	background-color: #CED1E0;
+	background-color: buttonFace;
 }
   
-.slider_handle {
-   background-color: red;
-   border-color: #000;
+.sliderComponentHandle {
+   background-color: buttonFace;
+   -webkit-border-radius: 12px;
 }
 
 /*
@@ -213,10 +214,23 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 }
 
 .tabBarItemName {
-	font-size: 12px;
+	font-size: 10px;
 	color: white;
 }
 
 .tabBarItemImage {
 	
+}
+
+.buttonComponent {
+	background: buttonFace;
+    padding: 9px;
+    letter-spacing: 1px;
+    font-size: 9px;
+    border: none;
+    color: #000;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -webkit-appearance: none;
 }

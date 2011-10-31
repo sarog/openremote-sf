@@ -1,7 +1,6 @@
 package org.openremote.web.console.unit;
 
 import java.util.List;
-
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.HoldEvent;
@@ -9,7 +8,6 @@ import org.openremote.web.console.event.hold.HoldHandler;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.rotate.RotationHandler;
 import org.openremote.web.console.event.swipe.SwipeEvent;
-import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.swipe.SwipeHandler;
 import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
@@ -17,12 +15,10 @@ import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.event.ui.NavigateHandler;
-import org.openremote.web.console.event.ui.ScreenViewChangeEvent;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelCredentials;
 import org.openremote.web.console.panel.PanelCredentialsImpl;
 import org.openremote.web.console.panel.PanelIdentity;
-import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
@@ -34,7 +30,7 @@ import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.service.PanelService;
 import org.openremote.web.console.service.PanelServiceImpl;
 import org.openremote.web.console.service.ScreenViewService;
-import org.openremote.web.console.view.ScreenView;
+import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.TabBarComponent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -59,7 +55,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private LocalDataService dataService = new LocalDataServiceImpl();
 	private ScreenViewService screenViewService = new ScreenViewService();
 	private PanelCredentials currentPanelCredentials;
-	private PanelIdentity currentPanelIdentity;
 	private Integer currentGroupId;
 	private Integer currentScreenId;
 	private TabBarComponent currentTabBar;
@@ -117,6 +112,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		AbsolutePanel consoleContainer = (AbsolutePanel)this.getParent();
 		consoleContainer.setWidgetPosition(this, (winWidth/2)-(width/2), (winHeight/2)-(height/2));
 	}
+	
+	public void doResize(int width, int height) {
+		if (getOrientation().equalsIgnoreCase("portrait")) {
+			setSize(width, height);
+			consoleDisplay.doResize(width, height);
+		} else {
+			setSize(height, width);
+			consoleDisplay.doResize(height, width);			
+		}
+	}
 
 	/**
 	 * Adjusts the CSS class to either landscape or portrait
@@ -152,7 +157,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		setScreenView(loadingScreen);
 		
 		// Check for Last Panel in Cache
-		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://192.168.1.71:8080/controller", 30, "Mobile");
+		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://multimation.co.uk:8080/controller", 30, "Mobile");
 		dataService.setLastPanelCredentials(panelCred);
 		PanelCredentials lastPanelCredentials = dataService.getLastPanelCredentials();
 		
@@ -236,8 +241,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		boolean screenOrientationChanged = false;
 		boolean tabBarChanged = false;
 		
-		String orientation = "";
-		
 		if (screen == null) {
 			return;
 		}
@@ -284,6 +287,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 				TabBarComponent tabBarComponent = new TabBarComponent(tabBar);
 				tabBarChanged = setTabBar(tabBarComponent);
 			}
+		}
+		
+		if (currentTabBar == null) {
+			return;
 		}
 		
 		// Update the tab bar only if it's not new
@@ -354,6 +361,15 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	public void onRotate(RotationEvent event) {
 		String orientation = event.getOrientation();
 		setOrientation(orientation);
+		// Resize if mobile
+		if(BrowserUtils.isMobile) {
+			doResize(event.getWindowWidth(), event.getWindowHeight());
+			// Refresh the tab bar
+			if (currentTabBar != null) {
+				currentTabBar.refresh();
+				consoleDisplay.setComponentPosition(currentTabBar,  0, consoleDisplay.getHeight() - currentTabBar.getHeight());
+			}
+		}
 		setPosition(event.getWindowWidth(), event.getWindowHeight());
 		
 		// Load in the inverse screen to what is currently loaded if screen orientation doesn't match console orientation
@@ -374,6 +390,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 
 	@Override
 	public void onSwipe(SwipeEvent event) {
+		// TODO: Swipe gesture handling
 		switch (event.getDirection()) {
 			case LEFT:
 				

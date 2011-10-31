@@ -16,10 +16,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 
 public class SliderComponent extends InteractiveConsoleComponent {
 	public static final String CLASS_NAME = "sliderComponent";
+	public static final String HANDLE_CLASS_NAME = "sliderComponentHandle";
+	public static final String BAR_CLASS_NAME = "sliderComponentBar";
 	public static final int DEFAULT_WIDTH = 300;
 	public static final int DEFAULT_HEIGHT = 40;
-	public static final int MIN_SLIDE_BAR_HEIGHT = 20;
-	public static final int MIN_HANDLE_SIZE = 40;
+	public static final int SLIDE_BAR_HEIGHT = 10;
+	public static final int HANDLE_SIZE = 26;
+	public static final int HANDLE_CLICK_AREA_SIZE = 40;
 	private Handle handle;
 	private SlideBar slideBar;
 	private int width;
@@ -28,34 +31,44 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	private boolean isVertical = false;
 	private int minValue = 0;
 	private int maxValue = 100;
-	private double pixelValueDensity = 0;
+	private int pixelRange = 0;
 	private int lastValue = 0;
 	private int value = 0;
-	private double halfHandle = 0;
+	private int halfHandle = 0;
+	private int handleFixedPos = 0;
+	private int handleInternalMargin = 0;
 	private int stepSize = 1;
 	private int slideBarWidth = 0;
 	private int slideBarHeight = 0;
-
+	
 	class Handle extends SimplePanel implements Draggable {
 		protected static final int BORDER_WIDTH = 2;
-		private int size;
-		private Element element;
 		
-		public Handle(int size) {
-			size = size < MIN_HANDLE_SIZE ? MIN_HANDLE_SIZE : size;		
-			int innerSize = size - (2 * Handle.BORDER_WIDTH);
-			this.size = size;
-			setWidth(innerSize + "px");
-			setHeight(innerSize + "px");
+		public Handle() {
+			SimplePanel visibleHandle = new SimplePanel();
+			int innerSize = HANDLE_SIZE - (2 * Handle.BORDER_WIDTH);
+			Element visibleElem = visibleHandle.getElement();
+			Element touchElem = getElement();
 			
-			element = getElement();
-			DOM.setStyleAttribute(element, "WebkitBorderRadius", size + "px");
-			DOM.setStyleAttribute(element, "MozBorderRadius", size + "px");
-			DOM.setStyleAttribute(element, "borderRadius", size + "px");
-			DOM.setStyleAttribute(element, "borderWidth", BORDER_WIDTH + "px");
-			DOM.setStyleAttribute(element, "borderStyle", "solid");
-			setStylePrimaryName("slider_handle");
-		   	
+			visibleHandle.setWidth(innerSize + "px");
+			visibleHandle.setHeight(innerSize + "px");
+			visibleHandle.setStylePrimaryName(HANDLE_CLASS_NAME);
+			DOM.setStyleAttribute(visibleElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
+			DOM.setStyleAttribute(visibleElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
+			DOM.setStyleAttribute(visibleElem, "borderRadius", HANDLE_SIZE/2 + "px");
+			DOM.setStyleAttribute(visibleElem, "borderWidth", BORDER_WIDTH + "px");
+			DOM.setStyleAttribute(visibleElem, "borderStyle", "solid");
+			DOM.setStyleAttribute(visibleElem, "marginTop", handleInternalMargin + "px");
+			//DOM.setStyleAttribute(visibleElem, "marginLeft", handleInternalMargin + "px");
+			
+			this.setWidth(HANDLE_CLICK_AREA_SIZE + "px");
+			this.setHeight(HANDLE_CLICK_AREA_SIZE + "px");
+			this.setWidget(visibleHandle);
+			
+			DOM.setStyleAttribute(touchElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
+			DOM.setStyleAttribute(touchElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
+			DOM.setStyleAttribute(touchElem, "borderRadius", HANDLE_SIZE/2 + "px");
+			
 			storeHandler(this.addHandler(this, DragStartEvent.getType()));
 			storeHandler(this.addHandler(this, DragMoveEvent.getType()));
 			storeHandler(this.addHandler(this, DragEndEvent.getType()));
@@ -67,12 +80,10 @@ public class SliderComponent extends InteractiveConsoleComponent {
 
 		@Override
 		public void onDragMove(DragMoveEvent event) {
-			boolean sliderAppearsVertical = isVertical();
-			
-			if (!sliderAppearsVertical) {
-				doHandleDrag(event.getXPos());
-			} else {
+			if (appearsVertical()) {
 				doHandleDrag(event.getYPos());
+			} else {
+				doHandleDrag(event.getXPos());
 			}
 		}
 
@@ -86,31 +97,32 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			// This event occurs when press moves off the console display
 			doValueChange();
 		}
-		
-		public int getSize() {
-			return size;
-		}
 	}
 	
 	class SlideBar extends SimplePanel implements TapHandler {
-		protected static final double HEIGHT_RATIO = 0.4;
-		protected static final double WIDTH_RATIO = 1.0;
 		private boolean clickable = true;
-		private int width;
-		private int height;
+
 		
-		public SlideBar(int width, int height) {
-			this.width = width;
-			this.height = height;
+		public SlideBar() {
 			Element element = getElement();
 			
-			setStylePrimaryName("slider_bar");
-			setHeight(height + "px");
-			setWidth(width + "px");
+			if (isVertical) {
+				slideBarWidth = SLIDE_BAR_HEIGHT;
+				slideBarHeight = height;
+			} else {
+				slideBarWidth = width;
+				slideBarHeight = SLIDE_BAR_HEIGHT;
+			}
 			
-			DOM.setStyleAttribute(element, "MozBorderRadius", height + "px");
-			DOM.setStyleAttribute(element, "WebkitBorderRadius", height + "px");
-			DOM.setStyleAttribute(element, "borderRadius", height + "px");
+			setHeight(slideBarHeight + "px");
+			setWidth(slideBarWidth + "px");
+			
+			this.setStylePrimaryName(BAR_CLASS_NAME);
+			int rad = (height/2);
+			DOM.setStyleAttribute(element, "MozBorderRadius", rad + "px");
+			DOM.setStyleAttribute(element, "WebkitBorderRadius", rad + "px");
+			DOM.setStyleAttribute(element, "borderRadius", rad + "px");
+			DOM.setStyleAttribute(element, "borderStyle", "1px solid");
 			DOM.setStyleAttribute(element, "WebkitUserSelect", "none");
 			
 			storeHandler(this.addHandler(this, TapEvent.getType()));
@@ -121,74 +133,91 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			if (!clickable) {
 				return;
 			}
-			boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
-			boolean sliderAppearsVertical = (isVertical && displayIsVertical) || (!isVertical && !displayIsVertical);
 			
-			if (!sliderAppearsVertical) {
-				doHandleDrag(event.getXPos());
-			} else {
+			if (appearsVertical()) {
 				doHandleDrag(event.getYPos());
+			} else {
+				doHandleDrag(event.getXPos());
 			}
+			
 			doValueChange();
 		}
-		
-		public int getHeight() {
-			if (isVertical) {
-				return width;
-			} else {
-				return height;
-			}
-		}
-		
-		public int getWidth() {
-			if (isVertical) {
-				return height;
-			} else {
-				return width;
-			}
-		}
-	}
-
-	private SliderComponent() {
-		this(SliderComponent.DEFAULT_WIDTH, SliderComponent.DEFAULT_HEIGHT);
 	}
 	
-	private SliderComponent(int width, int height) {
+	private SliderComponent() {
 		super(new AbsolutePanel());
 		container = (AbsolutePanel)this.getWidget();
 		container.setStylePrimaryName(CLASS_NAME);
+		container.setWidth("100%");
+		container.setHeight("100%");
+		DOM.setStyleAttribute(container.getElement(), "overflow", "visible");
+		handleInternalMargin = (HANDLE_CLICK_AREA_SIZE - HANDLE_SIZE) / 2;
+	}
+	
+	@Override
+	public void onRender() {
+		if (!isInitialised) {
+			int relSlideBarXPos = 0;
+			int relSlideBarYPos = 0;
+			
+			width = container.getParent().getOffsetWidth();
+			height = container.getParent().getOffsetHeight();
+			
+			// Create Slide Bar
+			slideBar = new SlideBar();
+			container.add(slideBar);
+			relSlideBarXPos = (int)(((double)width - slideBarWidth) / 2);
+			relSlideBarYPos = (int)(((double)height - slideBarHeight) / 2);
+			container.setWidgetPosition(slideBar, relSlideBarXPos, relSlideBarYPos);
+			
+			// Create Handle
+			handle = new Handle();
+			halfHandle = (int)(Math.floor((double)HANDLE_SIZE / 2));
+			
+			if (isVertical) {
+				handleFixedPos = (int)(((double)width - HANDLE_CLICK_AREA_SIZE)/2);
+			} else {
+				handleFixedPos = (int)(((double)height - HANDLE_CLICK_AREA_SIZE)/2);
+			}
+			container.add(handle);
+			setHandlePosition(halfHandle);
+			
+			// Calculate pixel value density
+			pixelRange = (int)(getWidth() - (2 * halfHandle));
+		}
 		
-		this.width = width;
-		this.height = height;
+		registerMouseAndTouchHandlers(slideBar);
+		registerMouseAndTouchHandlers(handle);
 	}
 	
 	private void doHandleDrag(int absPos) {
 		int relPos = calculateRelativePixelValue(absPos);
-		int value = (int)(relPos * pixelValueDensity);
+		int limitedPos = setHandlePosition(relPos);
+		int value = (int)Math.round((((double)(limitedPos - halfHandle) / pixelRange) * (maxValue - minValue)) + minValue);
 		setValue(value);
 	}
 	
 	private int calculateRelativePixelValue(int absValue) {
 		int value = absValue;
 		int pixelMin = 0;
-		boolean sliderAppearsVertical = isVertical();
 		
-		if (!sliderAppearsVertical) {		
-			if (!isVertical) {
-					pixelMin = (int)(slideBar.getAbsoluteLeft() + halfHandle);
-					value = value - pixelMin;
-			} else {
-				pixelMin = (int)(slideBar.getAbsoluteLeft() + slideBar.getWidth() - halfHandle);
-				value = pixelMin - value;
-			}
-		} else {
-			pixelMin = (int)( slideBar.getAbsoluteTop() + slideBar.getWidth() - halfHandle);
+		if (appearsVertical()) {
+			pixelMin = (int)(slideBar.getAbsoluteTop() + getWidth());
 			value = pixelMin - value;
+		} else {
+			if (isVertical) {
+				pixelMin = (int)(container.getAbsoluteLeft() + getWidth());
+				value = pixelMin - value;		
+			} else {
+				pixelMin = container.getAbsoluteLeft();
+				value = value - pixelMin;				
+			}
 		}
+		
 		return value;
 	}
 	
-	public boolean isVertical() {
+	public boolean appearsVertical() {
 		String unitIsVerticalString = WebConsole.getConsoleUnit().getOrientation();
 		boolean unitIsVertical = unitIsVerticalString.equalsIgnoreCase("portrait") ? true : false;
 		boolean displayIsVertical = WebConsole.getConsoleUnit().getConsoleDisplay().getIsVertical();
@@ -201,80 +230,20 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		value = Math.round(value/stepSize) * stepSize;
 		
 		if (value != this.value) {
-			int relPos = (int)Math.round((value-minValue)/pixelValueDensity);
-			relPos = isVertical ? slideBar.getWidth() - relPos - handle.getSize() : relPos; 
-			setHandlePosition(relPos);
 			this.value = value;
 		}
 	}
 	
-	private void setHandlePosition(int pixelPos) {
-		if (!isVertical) {
-			DOM.setStyleAttribute(handle.getElement(), "left", pixelPos + "px");
-		} else {
-			DOM.setStyleAttribute(handle.getElement(), "top", pixelPos + "px");
-		}
-	}
-	
-	@Override
-	public void onRender() {
-		int handleSize = 0;
-		int handleXPos = 0;
-		int handleYPos = 0;
-		int slideBarXPos = 0;
-		int slideBarYPos = 0;
-		
-		// Determine the orientation of the slider
-		if (height > width) {
-			this.isVertical = true;
-			width = width < MIN_SLIDE_BAR_HEIGHT ? MIN_SLIDE_BAR_HEIGHT : width;
-		} else {
-			height = height < MIN_SLIDE_BAR_HEIGHT ? MIN_SLIDE_BAR_HEIGHT : height;
-		}
-		
-		container.setWidth(width + "px");
-		container.setHeight(height + "px");
-		DOM.setStyleAttribute(container.getElement(), "WebkitUserSelect", "none");
-		DOM.setStyleAttribute(container.getElement(), "overflow", "visible");
-		
-		if (!isVertical) {
-			handleSize = height;
-			slideBarWidth = (int)Math.round(SlideBar.WIDTH_RATIO * width);
-			slideBarHeight = (int)Math.round(SlideBar.HEIGHT_RATIO * height);
-		} else {
-			handleSize = width;
-			slideBarWidth = (int)Math.round(SlideBar.HEIGHT_RATIO * width);
-			slideBarHeight = (int)Math.round(SlideBar.WIDTH_RATIO * height);
-		}
-		
-		slideBarXPos = (int)(width - slideBarWidth) / 2;
-		slideBarYPos = (int)(height - slideBarHeight) / 2;
-		
-		slideBar = new SlideBar(slideBarWidth, slideBarHeight);
-		handle = new Handle(handleSize);
-		
-		// Update size info from actual handle object
-		handleSize = handle.getSize();
-		halfHandle = (double)(handleSize / 2);
-		
+	// Relative Pos to centre of handle
+	private int setHandlePosition(int pos) {
+		pos = pos < (0 + halfHandle) ? (int)(0 + halfHandle) : pos;
+		pos = pos > (getWidth() - halfHandle) ? (int)(getWidth() - halfHandle) : pos;
 		if (isVertical) {
-			handleXPos = (int)(((slideBarWidth/2) + slideBarXPos) - halfHandle);
-			handleYPos = slideBarHeight - handleSize;
+			container.setWidgetPosition(handle, handleFixedPos, (int)(getWidth() - pos - halfHandle - handleInternalMargin));			
 		} else {
-			handleYPos = (int)(((slideBarHeight/2) + slideBarYPos) - halfHandle);
+			container.setWidgetPosition(handle, (int)(pos - halfHandle - handleInternalMargin), handleFixedPos);
 		}
-		
-		container.add(slideBar);
-		container.setWidgetPosition(slideBar, slideBarXPos, slideBarYPos);
-		
-		container.add(handle);
-		container.setWidgetPosition(handle, handleXPos, handleYPos);
-		
-		registerMouseAndTouchHandlers(slideBar);
-		registerMouseAndTouchHandlers(handle);
-		
-		int pixelRange = (int)(slideBar.getWidth() - (2 * halfHandle));
-		pixelValueDensity = (double) (maxValue - minValue) / pixelRange;
+		return pos;
 	}
 	
 	private void doValueChange() {
@@ -297,13 +266,21 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			stepSize = size;
 		}
 	}
-	
+
 	public int getHeight() {
-		return height;
+		if (isVertical) {
+			return width;
+		} else {
+			return height;
+		}
 	}
 	
 	public int getWidth() {
-		return width;
+		if (isVertical) {
+			return height;
+		} else {
+			return width;
+		}
 	}
 	
 	public void setMin(int min) {
@@ -314,10 +291,15 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		this.maxValue = max;
 	}
 	
+	public void setIsVertical(boolean isVertical) {
+		this.isVertical = isVertical;
+	}
+	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
 		SliderComponent component = new SliderComponent();
 		component.setMax(entity.getMax().getValue());
 		component.setMin(entity.getMin().getValue());
+		component.setIsVertical(entity.getVertical());
 		return component;
 	}
 }
