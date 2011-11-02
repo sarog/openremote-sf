@@ -12,12 +12,13 @@ public abstract class ConsoleComponentImpl extends Composite implements ConsoleC
 		setVisible(false);
 		container.addStyleName("consoleWidget");
 		DOM.setStyleAttribute(container.getElement(), "WebkitUserSelect", "none");
+		DOM.setStyleAttribute(container.getElement(), "cursor", "pointer");
 	}
 	
-	public void onAdd() {
+	public void onAdd(int width, int height) {
 		// Call Widgets onRender Method and then display it
 		setVisible(true);
-		onRender();
+		onRender(width, height);
 		
 		// Check that handlers have been registered if interactive if not register them on the top level widget
 		if (this instanceof InteractiveConsoleComponent) {

@@ -28,9 +28,9 @@ public class LabelComponent extends PassiveConsoleComponent {
 	}
 	
 	@Override
-	public void onRender() {
-		// TODO Auto-generated method stub
-		
+	public void onRender(int width, int height) {
+		container.setWidth(width + "px");
+		container.setHeight(height + "px");
 	}
 
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.LabelComponent entity) {

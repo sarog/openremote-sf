@@ -15,20 +15,20 @@ public class LoadingScreenView extends ScreenViewImpl {
 		// Create a label component for the loading message text
 		LabelComponent msgWidget = (LabelComponent) LabelComponent.build(null);
 		msgWidget.setText(LOADING_MESSAGE);
-		msgWidget.getElement().setAttribute("style", "color: #245E36; text-shadow: -1px -1px 0 #4FA800, 1px -1px 0 #4FA800, -1px 1px 0 #4FA800, 1px 1px 0 #4FA800; font-weight: bold; font-size: 25px; font-family: verdana, arial, sans-serif;");
+		msgWidget.getElement().setAttribute("style", "color: #245E36; text-shadow: -1px -1px 0 #4FA800, 1px -1px 0 #4FA800, -1px 1px 0 #4FA800, 1px 1px 0 #4FA800; font-weight: bold; font-size: 25px; font-family: verdana, arial, sans-serif; letter-spacing: 1px;");
 
 		// Create container for spinner
 		AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
-		absPanel.setHeight("100%");
+		absPanel.setHeight(100);
 		absPanel.setWidth("100%");
-		absPanel.setPosition(0,-70);
+		absPanel.setPosition(0,160);
 		absPanel.setComponent(htmlSpinner);
 		
 		// Create container for label
 		AbsolutePanelComponent absPanel2 = new AbsolutePanelComponent();
-		absPanel2.setHeight("100%");
+		absPanel2.setHeight(25);
 		absPanel2.setWidth("100%");
-		absPanel2.setPosition(0,0);
+		absPanel2.setPosition(0,270);
 		absPanel2.setComponent(msgWidget);
 		
 		// Add components to screen view

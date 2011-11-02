@@ -1,5 +1,8 @@
 package org.openremote.web.console.widget;
 
+import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.unit.ConsoleDisplay;
+
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -12,6 +15,8 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 	private HorizontalPanel componentContainer;
 	private int left;
 	private int top;
+	private int height;
+	private int width;
 	
 	public AbsolutePanelComponent() {
 		super(new SimplePanel());
@@ -29,9 +34,10 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 	}
 
 	@Override
-	public void onRender() {
+	// Pass size info to widget so explicit size can be set to avoid any cross browser rendering issues
+	public void onRender(int width, int height) {
 		if (component != null) {
-			component.onAdd();
+			component.onAdd(this.width, this.height);
 		}
 	}
 	
@@ -59,4 +65,51 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 	public int getTop() {
 		return this.top;
 	}
-}
+	
+	public void setHeight(int height) {
+		this.height = height;
+		super.setHeight(height + "px");
+	}
+	
+	public void setWidth(int width) {
+		this.width = width;
+		super.setWidth(width + "px");
+	}
+	
+	@Override
+	public void setHeight(String height) {
+		int heightInt = 0;
+		if (height.endsWith("%")) {
+			height = height.replaceAll("%", "");
+			try {
+				double calc = Integer.parseInt(height);
+				int displayWidth = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
+				heightInt = (int)Math.round((calc / 100) * displayWidth); 
+			} catch (Exception e) {}
+		} else if (height.endsWith("px")) {
+			height = height.replaceAll("px", "");
+			try {
+				heightInt = Integer.parseInt(height);
+			} catch (Exception e) {}
+		}
+		setHeight(heightInt);
+	}
+	
+	@Override
+	public void setWidth(String width) {
+		int widthInt = 0;
+		if (width.endsWith("%")) {
+			width = width.replaceAll("%", "");
+			try {
+				double calc = Integer.parseInt(width);
+				int displayWidth = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
+				widthInt = (int)Math.round((calc / 100) * displayWidth); 
+			} catch (Exception e) {}
+		} else if (width.endsWith("px")) {
+			width = width.replaceAll("px", "");
+			try {
+				widthInt = Integer.parseInt(width);
+			} catch (Exception e) {}
+		}
+		setWidth(widthInt);
+	}}

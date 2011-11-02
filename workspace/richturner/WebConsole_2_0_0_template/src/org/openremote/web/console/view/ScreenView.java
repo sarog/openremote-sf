@@ -5,6 +5,4 @@ import org.openremote.web.console.widget.ConsoleComponent;
 
 public interface ScreenView {
 	public List<ConsoleComponent> getConsoleWidgets();
-	
-	public void onAdd();
 }

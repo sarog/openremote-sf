@@ -152,7 +152,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	
 	protected void addComponent(ConsoleComponentImpl component, int left, int top) {
 		display.add(component, left, top);
-		component.onAdd();
+		component.onAdd(component.getOffsetWidth(), component.getOffsetHeight());
 	}
 	
 	protected void removeComponent(ConsoleComponentImpl component) {
@@ -197,5 +197,5 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 
 	@Override
-	public void onRender() {}
+	public void onRender(int width, int height) {}
 }

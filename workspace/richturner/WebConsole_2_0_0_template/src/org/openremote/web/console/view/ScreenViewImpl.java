@@ -65,9 +65,9 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	}
 
 	@Override
-	public void onRender() {
+	public void onRender(int width, int height) {
 		for (ConsoleComponent component : consoleWidgets) {
-			component.onAdd();
+			component.onAdd(width, height);
 		}
 	}
 	
