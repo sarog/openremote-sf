@@ -219,7 +219,6 @@ public class ImportWizardWindow extends FormWindow {
                 addDeviceCommand(device, output, "STOP", NoScene, NoLevel, NoKey, "_Stop");
                 addDeviceCommand(device, output, "FADE", NoScene, NoLevel, NoKey, "_Fade");
                 addDeviceCommand(device, output, "STATUS_DIMMER", NoScene, NoLevel, NoKey, "_LevelRead");
-//                addDeviceSlider(device, output, sliderCommand, sensor);
               } else if (Output.OutputType.GrafikEyeMainUnit.equals(output.getType())) {
                 addDeviceCommand(device, output, "SCENE", "0", NoLevel, NoKey, "_SceneOff");
                 addDeviceCommand(device, output, "STATUS_SCENE", "0", NoLevel, NoKey, "_OffRead");
@@ -309,7 +308,7 @@ public class ImportWizardWindow extends FormWindow {
     add(form);
   }
 
-  private static Sensor createDeviceSensor(Device aDevice, SensorType sensorType, DeviceCommand readCommand, String name) {
+  private Sensor createDeviceSensor(Device aDevice, SensorType sensorType, DeviceCommand readCommand, String name) {
     Sensor sensor = null;
     if (SensorType.RANGE == sensorType) {
       sensor = new RangeSensor();
@@ -320,15 +319,13 @@ public class ImportWizardWindow extends FormWindow {
     sensor.setType(sensorType);
     SensorCommandRef sensorCommandRef = new SensorCommandRef();
     sensorCommandRef.setDeviceCommand(readCommand);
-    sensorCommandRef.setSensor(sensor); // TODO: try not setting this and not re-setting it in backend -> hibernate exception still ? -> No exception on create but relationship not correctly set and impossible to delete later
-//    sensorCommandRef.setDeviceName(aDevice.getName());
+    sensorCommandRef.setSensor(sensor);
     sensor.setSensorCommandRef(sensorCommandRef);
     sensor.setDevice(aDevice);
-//    aDevice.getSensors().add(sensor);
     return sensor;
   }
 
-  private static Slider createDeviceSlider(Device aDevice, DeviceCommand sliderCommand, Sensor readSensor, String name) {
+  private Slider createDeviceSlider(Device aDevice, DeviceCommand sliderCommand, Sensor readSensor, String name) {
     Slider slider = new Slider();
     slider.setName(name);
     SliderCommandRef sliderCommandRef = new SliderCommandRef();
@@ -341,15 +338,14 @@ public class ImportWizardWindow extends FormWindow {
     sliderSensorRef.setSlider(slider);
     slider.setSliderSensorRef(sliderSensorRef);
     slider.setDevice(aDevice);
-//    aDevice.getSliders().add(slider);
     return slider;
   }
 
-  private static DeviceCommand addDeviceCommand(Device aDevice, Output output, String command, String scene, String level, String key, String nameSuffix) {
+  private DeviceCommand addDeviceCommand(Device aDevice, Output output, String command, String scene, String level, String key, String nameSuffix) {
     return addDeviceCommand(aDevice, output.getName() + nameSuffix, output.getAddress(), command, scene, level, key);
   }
 
-  private static DeviceCommand addDeviceCommand(Device aDevice, String name, String address, String command, String scene, String level, String key) {
+  private DeviceCommand addDeviceCommand(Device aDevice, String name, String address, String command, String scene, String level, String key) {
     DeviceCommand dc = new DeviceCommand();
     Map<String, String> attrMap = new HashMap<String, String>();
     attrMap.put(DeviceCommandWindow.DEVICE_COMMAND_PROTOCOL, "Lutron HomeWorks"); // Display name of protocol needs to be used
@@ -371,7 +367,7 @@ public class ImportWizardWindow extends FormWindow {
     return dc;
   }
   
-  private static String removeEnd(String receiver, int length) {
+  private String removeEnd(String receiver, int length) {
     if (receiver == null) {
       return null;
     }
