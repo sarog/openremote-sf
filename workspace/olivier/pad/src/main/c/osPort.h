@@ -1,5 +1,5 @@
 #ifndef _OSPORT_H
-#define _OSPORT_H_
+#define _OSPORT_H
 
 typedef struct _portConfiguration_t portConfiguration_t;
 typedef struct _portContext_t portContext_t;

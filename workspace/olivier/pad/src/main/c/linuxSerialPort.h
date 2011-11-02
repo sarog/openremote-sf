@@ -6,14 +6,14 @@
 #include "apr_thread_proc.h"
 #include "osPort.h"
 
-typedef struct _portContext_t {
+struct _portContext_t {
 	char *portId;
 	int fd;
 	struct termios oldtio;
 	struct termios newtio;
 	apr_thread_t *readThread;
 	portReceive_t portReceiveCb;
-} portContext_t;
+};
 
 int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, portReceive_t portReceiveCb);
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext);
