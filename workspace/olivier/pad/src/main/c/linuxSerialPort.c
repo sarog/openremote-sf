@@ -1,8 +1,10 @@
+#include <stddef.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <linux/serial.h>
 #include <sys/ioctl.h>
+#include <asm-generic/ioctls.h>  // To please Eclipse
 #include "codes.h"
 #include "linuxSerialPort.h"
 
