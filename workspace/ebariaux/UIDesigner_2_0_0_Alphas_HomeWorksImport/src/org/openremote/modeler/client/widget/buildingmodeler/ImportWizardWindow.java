@@ -13,6 +13,7 @@ import org.openremote.modeler.client.lutron.importmodel.Output;
 import org.openremote.modeler.client.lutron.importmodel.Room;
 import org.openremote.modeler.client.proxy.DeviceCommandBeanModelProxy;
 import org.openremote.modeler.client.proxy.SensorBeanModelProxy;
+import org.openremote.modeler.client.proxy.SliderBeanModelProxy;
 import org.openremote.modeler.client.rpc.AsyncSuccessCallback;
 import org.openremote.modeler.client.widget.FormWindow;
 import org.openremote.modeler.domain.Device;
@@ -31,7 +32,6 @@ import com.extjs.gxt.ui.client.event.Events;
 import com.extjs.gxt.ui.client.event.FormEvent;
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.FileUploadField;
 import com.extjs.gxt.ui.client.widget.form.FormPanel.Encoding;
@@ -187,23 +187,22 @@ public class ImportWizardWindow extends FormWindow {
           reportError(PARSING_ERROR_MESSAGE);
           return;
         }
+        
         final List<BeanModel> allModels = new ArrayList<BeanModel>();
         DeviceCommandBeanModelProxy.saveDeviceCommandList(createDeviceCommands(areas), new AsyncSuccessCallback<List<BeanModel>>() {
           @Override
-          public void onSuccess(List<BeanModel> deviceCommandModels) {
+          public void onSuccess(final List<BeanModel> deviceCommandModels) {
             allModels.addAll(deviceCommandModels);
             SensorBeanModelProxy.saveSensorList(createSensors(deviceCommandModels), new AsyncSuccessCallback<List<BeanModel>>() {
               @Override
               public void onSuccess(List<BeanModel> sensorModels) {
                 allModels.addAll(sensorModels);
-                fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
-
-/*                SliderBeanModelProxy.saveSliderList(device.getSliders(), new AsyncSuccessCallback<List<BeanModel>>() {
+                SliderBeanModelProxy.saveSliderList(createSliders(deviceCommandModels, sensorModels), new AsyncSuccessCallback<List<BeanModel>>() {
                   public void onSuccess(List<BeanModel> sliderModels) {
                     allModels.addAll(sliderModels);
                     fireEvent(SubmitEvent.SUBMIT, new SubmitEvent(allModels));
                   }
-                });*/
+                });
               }
             });
           }
@@ -262,21 +261,45 @@ public class ImportWizardWindow extends FormWindow {
       }
       
       private List<Sensor> createSensors(final List<BeanModel> deviceCommands) {
+        List<Sensor> result = new ArrayList<Sensor>();
+        
         for (BeanModel commandBeanModel : deviceCommands) {
           DeviceCommand deviceCommand = (DeviceCommand)commandBeanModel.getBean();
           if ("STATUS_SCENE".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
             if (deviceCommand.getProtocol().getAttributeValue("scene") != null) {
-//              addDeviceSensor(device, SensorType.SWITCH, deviceCommand, removeEnd(deviceCommand.getName(), 4) + "Selected");
-/*            } else {
-              Sensor sensor = addDeviceSensor(device, SensorType.RANGE, deviceCommand, removeEnd(deviceCommand.getName(), 4) + "_SelectedScene");
+              result.add(createDeviceSensor(device, SensorType.SWITCH, deviceCommand, removeEnd(deviceCommand.getName(), 4) + "Selected"));
+            } else {
+              Sensor sensor = createDeviceSensor(device, SensorType.RANGE, deviceCommand, removeEnd(deviceCommand.getName(), 4) + "SelectedScene");
               ((RangeSensor) sensor).setMin(0);
-              ((RangeSensor) sensor).setMax(8);*/
+              ((RangeSensor) sensor).setMax(8);
+              result.add(sensor);
             }
-/*          } else if ("STATUS_DIMMER".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
-            addDeviceSensor(device, SensorType.LEVEL, deviceCommand, removeEnd(deviceCommand.getName(), 4));*/
+          } else if ("STATUS_DIMMER".equals(deviceCommand.getProtocol().getAttributeValue("command"))) {
+            result.add(createDeviceSensor(device, SensorType.LEVEL, deviceCommand, removeEnd(deviceCommand.getName(), 4)));
           }
         }
-        return device.getSensors();
+        return result;
+      }
+
+      private List<Slider> createSliders(final List<BeanModel> commands, final List<BeanModel>sensors) {
+        List<Slider> result = new ArrayList<Slider>();
+        for (BeanModel sensorBeanModel : sensors) {
+          Sensor sensor = (Sensor)sensorBeanModel.getBean();
+          if (sensor.getType() == SensorType.LEVEL) {
+            String outputName = removeEnd(sensor.getName(), 6);
+            DeviceCommand sliderCommand = null;
+            for (BeanModel commandBeanModel : commands) {
+              if ((((DeviceCommand)commandBeanModel.getBean()).getName().equals(outputName + "_Fade"))) {
+                sliderCommand = (DeviceCommand)commandBeanModel.getBean();
+                break;
+              }
+            }
+            if (sliderCommand != null) {
+              result.add(createDeviceSlider(device, sliderCommand, sensor, outputName + "_Slider"));
+            }
+          }
+        }
+        return result;
       }
 
     });
@@ -286,7 +309,7 @@ public class ImportWizardWindow extends FormWindow {
     add(form);
   }
 
-  private static Sensor addDeviceSensor(Device aDevice, SensorType sensorType, DeviceCommand readCommand, String name) {
+  private static Sensor createDeviceSensor(Device aDevice, SensorType sensorType, DeviceCommand readCommand, String name) {
     Sensor sensor = null;
     if (SensorType.RANGE == sensorType) {
       sensor = new RangeSensor();
@@ -297,17 +320,17 @@ public class ImportWizardWindow extends FormWindow {
     sensor.setType(sensorType);
     SensorCommandRef sensorCommandRef = new SensorCommandRef();
     sensorCommandRef.setDeviceCommand(readCommand);
-    sensorCommandRef.setSensor(sensor);
-    sensorCommandRef.setDeviceName(aDevice.getName());
+    sensorCommandRef.setSensor(sensor); // TODO: try not setting this and not re-setting it in backend -> hibernate exception still ? -> No exception on create but relationship not correctly set and impossible to delete later
+//    sensorCommandRef.setDeviceName(aDevice.getName());
     sensor.setSensorCommandRef(sensorCommandRef);
     sensor.setDevice(aDevice);
-    aDevice.getSensors().add(sensor);
+//    aDevice.getSensors().add(sensor);
     return sensor;
   }
 
-  private static Slider addDeviceSlider(Device aDevice, Output output, DeviceCommand sliderCommand, Sensor readSensor) {
+  private static Slider createDeviceSlider(Device aDevice, DeviceCommand sliderCommand, Sensor readSensor, String name) {
     Slider slider = new Slider();
-    slider.setName(output.getName() + "_Slider");
+    slider.setName(name);
     SliderCommandRef sliderCommandRef = new SliderCommandRef();
     sliderCommandRef.setDeviceCommand(sliderCommand);
     sliderCommandRef.setSlider(slider);
@@ -318,7 +341,7 @@ public class ImportWizardWindow extends FormWindow {
     sliderSensorRef.setSlider(slider);
     slider.setSliderSensorRef(sliderSensorRef);
     slider.setDevice(aDevice);
-    aDevice.getSliders().add(slider);
+//    aDevice.getSliders().add(slider);
     return slider;
   }
 
