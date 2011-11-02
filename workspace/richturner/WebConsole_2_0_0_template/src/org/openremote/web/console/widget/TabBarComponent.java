@@ -83,6 +83,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				nameComponent.setSize("100%", TAB_TEXT_HEIGHT + "px");
 				nameComponent.setStylePrimaryName("tabBarItemName");
 				DOM.setStyleAttribute(this.getElement(), "lineHeight", TAB_TEXT_HEIGHT + "px");
+				DOM.setStyleAttribute(this.getElement(), "fontSize", TAB_TEXT_HEIGHT + "px");
 				this.add(nameComponent);
 			}
 			
@@ -144,7 +145,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	 * is dependent on the display size, get that from console display
 	 */
 	@Override
-	public void onRender() {
+	public void onRender(int width, int height) {
 		ConsoleDisplay display = WebConsole.getConsoleUnit().getConsoleDisplay();		
 		int displayWidth = display.getWidth();
 		int itemCount = items.size();
@@ -197,7 +198,7 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		}
 		
 		// Recall render to do the calculations
-		onRender();
+		onRender(0, 0);
 	}
 	
 	private void loadPage(int pageNo) {

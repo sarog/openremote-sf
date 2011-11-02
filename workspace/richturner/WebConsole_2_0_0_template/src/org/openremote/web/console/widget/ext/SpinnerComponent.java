@@ -33,9 +33,9 @@ public class SpinnerComponent extends HTMLComponent {
 	public void setHTML(String html) {}
 	
 	@Override
-	public void onRender() {
+	public void onRender(int width, int height) {
 		this.getElement().getFirstChildElement().setAttribute("style", "position: absolute; top: 50%; left: 50%; margin-top: -" + size/2 + "px; margin-left: -" + size/2 + "px; width: " + size + "px; height: " + size + "px;");
-		super.onRender();
+		super.onRender(width, height);
 	}
 	
 	public void setSize(int size) {

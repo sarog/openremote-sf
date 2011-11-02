@@ -18,19 +18,19 @@ public class PanelServiceImpl implements PanelService {
 	boolean isInitialised = false;
 	
 	@Override
-	public Screen getScreenById(int screenId) {
+	public Screen getScreenById(Integer screenId) {
 		Screen screen = null;
 		
-		if (currentScreenMap != null) {
+		if (currentScreenMap != null && screenId != null) {
 				screen = currentScreenMap.get(screenId);
 		}
 		return screen;
 	}
 	
-	private Group getGroupById(int id) {
+	private Group getGroupById(Integer id) {
 		Group group = null;
 		
-		if (currentGroupMap != null) {
+		if (currentGroupMap != null && id != null) {
 				group = currentGroupMap.get(id);
 		}
 		return group;
@@ -40,7 +40,7 @@ public class PanelServiceImpl implements PanelService {
 	public Screen getScreenByName(String name) {
 		Screen screen = null;
 		
-		if (currentScreenMap != null) {
+		if (currentScreenMap != null && name != null) {
 			for (Iterator<Integer> it = currentScreenMap.keySet().iterator(); it.hasNext();) {
 				Integer id = it.next();
 				Screen screenElem = currentScreenMap.get(id);
@@ -116,10 +116,10 @@ public class PanelServiceImpl implements PanelService {
 	}
 
 	@Override
-	public TabBar getTabBar(int groupId) {
+	public TabBar getTabBar(Integer groupId) {
 		TabBar tabBar = null;
 		
-		if (currentGroupMap != null) {
+		if (currentGroupMap != null && groupId != null) {
 			Group group = getGroupById(groupId);
 			if (group != null) {
 				tabBar = group.getTabbar();
@@ -133,11 +133,11 @@ public class PanelServiceImpl implements PanelService {
 	}
 
 	@Override
-	public Screen getInverseScreen(int screenId) {
+	public Screen getInverseScreen(Integer screenId) {
 		Screen screen = null;
 		Screen inverseScreen = null;
 		
-		if (currentScreenMap != null) {
+		if (currentScreenMap != null && screenId != null) {
 				screen = currentScreenMap.get(screenId);
 		}
 		
@@ -152,9 +152,13 @@ public class PanelServiceImpl implements PanelService {
 	}
 	
 	@Override
-	public String getScreenOrientation(int screenId) {
+	public String getScreenOrientation(Integer screenId) {
 		String orientation = "portrait";
-		Boolean isLandscape = getScreenById(screenId).getLandscape();
+		Boolean isLandscape = null;
+		
+		if (screenId != null) {
+			isLandscape = getScreenById(screenId).getLandscape();
+		}
 		if (isLandscape != null && isLandscape) {
 			orientation = "landscape";
 		}

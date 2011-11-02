@@ -14,15 +14,15 @@ public interface PanelService {
 	
 	void setCurrentPanel(Panel currentPanel);
 	
-	Screen getScreenById(int screenId);
+	Screen getScreenById(Integer screenId);
 	
 	Screen getScreenByName(String name);
 	
-	TabBar getTabBar(int groupId);
+	TabBar getTabBar(Integer groupId);
 	
-	Screen getInverseScreen(int screenId);
+	Screen getInverseScreen(Integer screenId);
 	
-	String getScreenOrientation(int screenId);
+	String getScreenOrientation(Integer screenId);
 	
 	boolean isInitialized();
 }

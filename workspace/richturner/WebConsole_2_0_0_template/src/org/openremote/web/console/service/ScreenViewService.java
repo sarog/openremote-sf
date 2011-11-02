@@ -16,6 +16,7 @@ import org.openremote.web.console.widget.AbsolutePanelComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 
 public class ScreenViewService {
 	public static final int LOADING_SCREEN_ID = -1;
@@ -66,8 +67,8 @@ public class ScreenViewService {
 				
 				// Create Absolute Panel Component
 				AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
-				absPanel.setHeight(layout.getHeight() + "px");
-				absPanel.setWidth(layout.getWidth() + "px");
+				absPanel.setHeight(layout.getHeight());
+				absPanel.setWidth(layout.getWidth());
 				absPanel.setPosition(layout.getLeft(),layout.getTop());
 				
 				// Create Console Component

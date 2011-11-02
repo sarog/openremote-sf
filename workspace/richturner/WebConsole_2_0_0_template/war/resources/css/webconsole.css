@@ -104,11 +104,10 @@ body {
 #consoleDisplay {
 	background-color: black;
 	overflow: hidden;
-	cursor: pointer;
 }
 
 .consoleDisplay .portraitDisplay {
-	
+	cursor: pointer;
 }
 
 .consoleDisplay .landscapeDisplay {
@@ -132,8 +131,11 @@ SCREEN WIDGET CSS BELOW
 */
 
 .sliderComponentBar {
-	background-color: #CED1E0;
 	background-color: buttonFace;
+}
+
+.sliderComponentBarTrack {
+	background-color: blue;
 }
   
 .sliderComponentHandle {
@@ -213,9 +215,13 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	);
 }
 
+.tabBarItemSelected .tabBarItemName {
+	font-weight: bold;
+	color: #FFF;
+}
+
 .tabBarItemName {
-	font-size: 10px;
-	color: white;
+	color: #CCC;
 }
 
 .tabBarItemImage {
@@ -223,12 +229,11 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 }
 
 .buttonComponent {
-	background: buttonFace;
-    padding: 9px;
-    letter-spacing: 1px;
-    font-size: 9px;
+	background: #5A697E;
     border: none;
-    color: #000;
+    color: #FFF;
+    font-weight: bold;
+    font-family: arial;
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
