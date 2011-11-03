@@ -310,14 +310,40 @@
 	
 	<!-- ###############  button  ################ -->
 	
+    <xsd:simpleType name="repeatDelayType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The repeat delay type. 				
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:integer">
+			<xsd:minInclusive value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+    <xsd:simpleType name="longPressDelayType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				The repeat delay type. 				
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:integer">
+			<xsd:minInclusive value="250"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 	<xsd:element name="button">
 		<xsd:annotation>
 			<xsd:documentation><![CDATA[
 				The button on panel.Its label is the name shown on the button.
-				Its position is defined by coordinates (x, y).
-				Its size is defined by width and height.The meature is one cell on the panel.
+				Its position and size is defined by its containing layout.
 				attribute repeat: whether the button send command on and on when it is pressed down. 	
-				attribute hasControlCommand: whether the button has bound a command. 			
+				attribute repeatDelay: delay between each successive execution of the command, in milliseconds
+				attribute hasPesssCommand: whether the button sends a command on press
+				attribute hasReleaseCommand: whether the button sends a command when released after a short press
+				attribute hasLongPressCommand: whether the button sends a command when user keeps pressing for at least longPressDelay milliseconds
+				attribute hasLongReleaseCommand: whether the button sends a command when released after having been pressed for at least longPressDelay milliseconds
+				attribute longPressDelay: delay after initial press for a press/release to be considered long, in milliseconds
 			]]></xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
@@ -327,7 +353,12 @@
 			<xsd:attribute name="id" type="idType" use="required" />
 			<xsd:attribute name="name" type="xsd:string" use="required" />
 			<xsd:attribute name="repeat" type="xsd:boolean" use="optional"/>
-			<xsd:attribute name="hasControlCommand" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="repeatDelay" type="repeatDelayType" use="optional"/>
+            <xsd:attribute name="hasPressCommand" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="hasShortReleaseCommand" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="hasLongPressCommand" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="hasLongReleaseCommand" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="longPressDelay" type="longPressDelayType" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
 	

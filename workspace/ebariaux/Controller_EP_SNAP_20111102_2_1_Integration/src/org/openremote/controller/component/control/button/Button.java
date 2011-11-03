@@ -35,7 +35,10 @@ public class Button extends Control {
    @Override
    protected List<String> getAvailableActions() {
       List<String> availableActions = new ArrayList<String>();
-      availableActions.add("click");
+      availableActions.add("press");
+      availableActions.add("shortRelease");
+      availableActions.add("longPress");
+      availableActions.add("longRelease");
       return availableActions;
    }
     

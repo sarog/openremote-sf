@@ -93,24 +93,27 @@ public class ButtonBuilderTest
 
   @Test public void testNoSuchButton() throws Exception
   {
-    getButtonByID(10, "click");
+    getButtonByID(10, "press");
 
     fail("should not get here..");
   }
 
   @Test public void testBasicBuild() throws Exception
   {
-     Button btn = getButtonByID(9, "click");
+     Button btn = getButtonByID(9, "press");
      Assert.assertNotNull(btn);
   }
 
   @Test public void testGetCommand() throws Exception
   {
-     Button btn = getButtonByID(9, "click");
+     Button btn = getButtonByID(9, "press");
      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
 
-     btn = getButtonByID(9, "click");
+     btn = getButtonByID(9, "press");
      Assert.assertEquals(btn.getExecutableCommands().size(), 2);
+
+     btn = getButtonByID(9, "shortRelease");
+     Assert.assertEquals(btn.getExecutableCommands().size(), 3);
 
      btn = getButtonByID(9, "status");
      Assert.assertEquals(btn.getExecutableCommands().size(), 0);
