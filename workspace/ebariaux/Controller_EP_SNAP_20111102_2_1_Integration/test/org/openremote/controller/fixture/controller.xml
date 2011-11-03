@@ -51,8 +51,15 @@
 			<include type="sensor" ref="1008" />
 		</slider>
 		<button id="9">
-			<delay>500</delay>
-      		<include type="command" ref="99" />
+		    <macro commandParam="press">
+			    <delay>500</delay>
+      		    <include type="command" ref="99" />
+      		</macro>
+            <macro commandParam="shortRelease">
+                <delay>500</delay>
+      		    <include type="command" ref="99" />
+                <delay>200</delay>
+            </macro>
     	</button>
     	<image id="10">
 			<include type="sensor" ref="1005" />

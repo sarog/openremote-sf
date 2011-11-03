@@ -442,7 +442,7 @@
 
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:group ref = "macroGroup" />
+        <xsd:group ref = "macroElement" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -463,7 +463,7 @@
 
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:group ref = "macroGroup" />
+        <xsd:group ref = "macroElement"  minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -556,29 +556,32 @@
       <xsd:documentation><![CDATA[
 
           A button component is a simple one-way component to send write commands to a device.
-          One or more commands may be sent in sequence, and delays can be used where necessary
-          between commands.
-
+          Commands might be sent for different event occuring on the buttons,
+          currently supported are: press, shortRelease, longPress, longRelease
+          For each event, a macro encapsulates the commands to be sent.
+        
           A button component must have a controller unique integer identifier.
 
           An example button element is as follows:
 
             <components>
               <button id = "nnn">
-                  <include type = "command" ref = "nnn" />
-                  <include type = "command" ref = "nnn" />
-                  <delay>500</delay>
-                  <include type = "command" ref = "nnn" />
+                <macro commandParam="press">      
+	            <include type = "command" ref = "nnn" />
+	            <include type = "command" ref = "nnn" />
+	            <delay>500</delay>
+	            <include type = "command" ref = "nnn" />
+                </macro>
               </button>
-              ...
-            </components>
+          ...
+        </components>
 
       ]]></xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:group ref = "macroGroup" minOccurs = "0" maxOccurs = "unbounded"/>
+        <xsd:element ref = "macro" minOccurs = "0" maxOccurs = "4"/>
       </xsd:sequence>
       <xsd:attribute name = "id" type = "idType" use = "required" />
     </xsd:complexType>
@@ -1078,6 +1081,32 @@
   </xsd:element>
 
 
+  <!--
+  ================================================================================================
+
+    Macro definition.
+
+  ================================================================================================
+  -->
+  <xsd:element name = "macro">
+    <xsd:annotation>
+      <xsd:documentation><![CDATA[
+        
+          The macro element is used in buttons to define the set of executable commands,
+          grouped by the event type.
+        
+          One or more commands may be sent in sequence, and delays can be used where necessary
+          between commands.
+        
+        ]]></xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:group ref = "macroElement" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name = "commandParam" type = "xsd:string" use = "required" />
+    </xsd:complexType>
+  </xsd:element>
 
   <!--
   =================================================================================================
@@ -1086,20 +1115,19 @@
 
   =================================================================================================
   -->
-  <xsd:group name = "macroGroup">
+  <xsd:group name = "macroElement">
     <xsd:annotation>
       <xsd:documentation><![CDATA[
 
-          A macro group defines a sequence of write commands (and optionally delays) that are
-          executed in response to a component invocation for components that support macro
-          inclusion.
-
+          A macro element defines the possibile executable commands a sequence of executation can be built of,
+          this includes commands and delays.
+        
       ]]></xsd:documentation>
     </xsd:annotation>
 
     <xsd:choice>
-      <xsd:element ref = "delay" minOccurs = "0" maxOccurs = "unbounded"/>
-      <xsd:element ref = "include"  minOccurs = "0" maxOccurs = "unbounded"/>
+      <xsd:element ref = "delay"/>
+      <xsd:element ref = "include"/>
     </xsd:choice>
   </xsd:group>
 
