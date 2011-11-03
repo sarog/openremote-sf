@@ -35,6 +35,9 @@ import java.util.HashMap;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 import org.openremote.controller.LutronHomeWorksConfig;
+import org.openremote.controller.protocol.lutron.model.Dimmer;
+import org.openremote.controller.protocol.lutron.model.GrafikEye;
+import org.openremote.controller.protocol.lutron.model.Keypad;
 
 /**
  * 

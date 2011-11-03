@@ -18,9 +18,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.openremote.controller.protocol.lutron;
+package org.openremote.controller.protocol.lutron.model;
 
 import org.apache.log4j.Logger;
+import org.openremote.controller.protocol.lutron.HomeWorksDevice;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksAddress;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder;
+import org.openremote.controller.protocol.lutron.LutronHomeWorksGateway;
 
 /**
  * Represents a GRAFIK Eye component on the Lutron bus.
