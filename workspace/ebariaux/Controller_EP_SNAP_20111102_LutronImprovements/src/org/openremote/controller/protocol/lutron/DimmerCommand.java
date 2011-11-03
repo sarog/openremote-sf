@@ -27,6 +27,7 @@ import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.StatusCommand;
 import org.openremote.controller.component.EnumSensorType;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.protocol.lutron.model.Dimmer;
 
 /**
  * Command to be sent to a dimmer device to actuate or query status.
