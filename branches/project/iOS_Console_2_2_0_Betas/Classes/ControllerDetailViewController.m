@@ -48,6 +48,9 @@
 @property (nonatomic, retain) NSUndoManager *previousUndoManager;
 @property (nonatomic, retain) UIColor *originalTextColor;
 
+@property (nonatomic, retain) UIView *controllerSectionHeaderView;
+@property (nonatomic, retain) UILabel *controllerErrorLabel;
+
 - (void)updateTableViewHeaderForGroupMemberFetchStatus;
 - (void)refreshGroupMemberTableViewSection;
 
@@ -82,6 +85,8 @@
     self.passwordField = nil;
     self.previousUndoManager = nil;
     self.originalTextColor = nil;
+    self.controllerSectionHeaderView = nil;
+    self.controllerErrorLabel = nil;
     [super dealloc];
 }
 
@@ -217,9 +222,11 @@
         NSURL *nsUrl = [NSURL URLWithString:url];
         if ([nsUrl scheme] == nil) {
             self.urlField.textColor = [UIColor redColor];
+            self.controllerErrorLabel.text = @"Invalid controller URL";
             return NO;
         }
         self.urlField.textColor = self.originalTextColor;
+        self.controllerErrorLabel.text = @"";
         self.urlField.text = url;
         self.controller.primaryURL = url;
     } else if (textField == self.usernameField) {
@@ -352,18 +359,27 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if (section == 0) {
-        // Note: all this can be accomplish with just the tableView:titleForHeaderInSection: method
-        // This has been added to add display of error message in section title.
-        // See IPHONE-123 for more information
-        UIView *v = [[[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, tableView.frame.size.width)] autorelease];
-        UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 11.0, 330.0, 21.0)]; // TODO: compute width
-        l.text = @"Controller URL:";
-        l.font = [UIFont boldSystemFontOfSize:17];
-        l.textColor = [UIColor colorWithRed:0.298039 green:0.337255 blue:0.423529 alpha:1.0];
-        l.backgroundColor = [UIColor groupTableViewBackgroundColor];
-        [v addSubview:l];
-        [l release];
-        return v;
+        if (!self.controllerSectionHeaderView) {
+            UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, tableView.frame.size.width)];
+            UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 11.0, 330.0, 21.0)]; // TODO: compute width
+            l.text = @"Controller URL:";
+            l.font = [UIFont boldSystemFontOfSize:17];
+            l.textColor = [UIColor colorWithRed:0.298039 green:0.337255 blue:0.423529 alpha:1.0];
+            l.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            [v addSubview:l];
+            [l release];
+            l = [[UILabel alloc] initWithFrame:CGRectMake(384.0, 11.0, 330.0, 21.0)]; // TODO: compute width and position
+            l.font = [UIFont boldSystemFontOfSize:17];
+            l.textColor = [UIColor redColor];
+            l.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            l.textAlignment = UITextAlignmentRight;
+            [v addSubview:l];
+            self.controllerErrorLabel = l;
+            [l release];
+            self.controllerSectionHeaderView = v;
+            [v release];
+        }
+        return self.controllerSectionHeaderView;
     }
     return nil;
 }
@@ -413,6 +429,8 @@
 @synthesize creating;
 @synthesize previousUndoManager;
 @synthesize originalTextColor;
+@synthesize controllerSectionHeaderView;
+@synthesize controllerErrorLabel;
 
 - (void)setGroupMembers:(NSArray *)theGroupMembers
 {
