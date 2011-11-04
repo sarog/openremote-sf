@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.Map;
 
 /**
  * A physical bus using datagram sockets to send and receive messages.
@@ -14,9 +15,13 @@ public class DatagramSocketPhysicalBus implements PhysicalBus {
    private DatagramSocket inSocket, outSocket;
 
    @Override
-   public void start(Object inChannel, Object outChannel) {
-      this.inSocket = (DatagramSocket) inChannel;
-      this.outSocket = (DatagramSocket) outChannel;
+   public void configure(Map<String, Object> configuration) {
+      this.inSocket = (DatagramSocket) configuration.get("inSocket");
+      this.outSocket = (DatagramSocket) configuration.get("outSocket");
+   }
+
+   @Override
+   public void start() {
    }
 
    @Override
