@@ -59,7 +59,7 @@ public class JSONTranslatorTest extends TestCase
   
   @Before public void setUp()
   {
-    RESTTests.replaceControllerPanelXML(JSON_FIXTURES + Constants.PANEL_XML);
+    AllTests.replacePanelXML(JSON_FIXTURES + Constants.PANEL_XML);
   }
 
   private String getJSONFixtureFile(String name)

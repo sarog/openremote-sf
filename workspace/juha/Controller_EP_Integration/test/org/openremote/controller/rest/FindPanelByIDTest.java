@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.openremote.controller.Constants;
 import org.openremote.controller.model.JSONMapping;
 import org.openremote.controller.suite.RESTTests;
+import org.openremote.controller.suite.AllTests;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -82,7 +83,7 @@ public class FindPanelByIDTest
   @Test public void requestFatherPanelProfile() throws Exception
   {
 
-    RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
+    AllTests.replacePanelXML(Constants.PANEL_XML);
 
 
     URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
@@ -178,7 +179,7 @@ public class FindPanelByIDTest
 
   @Test public void requestFatherPanelProfileJSON() throws Exception
   {
-     RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
+     AllTests.replacePanelXML(Constants.PANEL_XML);
 
 
      URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "father");
@@ -258,7 +259,7 @@ public class FindPanelByIDTest
 
   @Test public void testGetNonExistentPanelProfile() throws Exception
   {
-    RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
+    AllTests.replacePanelXML(Constants.PANEL_XML);
 
     URL doesNotExist = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
@@ -276,7 +277,7 @@ public class FindPanelByIDTest
 
   @Test public void testGetNonExistentPanelProfileJSON() throws Exception
   {
-     RESTTests.replaceControllerPanelXML(Constants.PANEL_XML);
+     AllTests.replacePanelXML(Constants.PANEL_XML);
 
      URL doesNotExist = new URL(RESTTests.containerURL + RESTAPI_PANEL_DEFINITION_URI + "doesNotExist");
 
