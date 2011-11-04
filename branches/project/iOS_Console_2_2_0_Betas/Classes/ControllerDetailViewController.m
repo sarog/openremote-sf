@@ -360,18 +360,19 @@
 {
     if (section == 0) {
         if (!self.controllerSectionHeaderView) {
-            UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, tableView.frame.size.width)];
-            UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 11.0, 330.0, 21.0)]; // TODO: compute width
+            CGFloat totalWidth = tableView.frame.size.width;
+            UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 20.0, totalWidth)];
+            UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(54.0, 11.0, (totalWidth / 2.0) - 54.0, 21.0)];
             l.text = @"Controller URL:";
             l.font = [UIFont boldSystemFontOfSize:17];
             l.textColor = [UIColor colorWithRed:0.298039 green:0.337255 blue:0.423529 alpha:1.0];
-            l.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            l.backgroundColor = [UIColor clearColor];
             [v addSubview:l];
             [l release];
-            l = [[UILabel alloc] initWithFrame:CGRectMake(384.0, 11.0, 330.0, 21.0)]; // TODO: compute width and position
+            l = [[UILabel alloc] initWithFrame:CGRectMake(totalWidth / 2.0, 11.0, (totalWidth / 2.0) - 54.0, 21.0)];
             l.font = [UIFont boldSystemFontOfSize:17];
             l.textColor = [UIColor redColor];
-            l.backgroundColor = [UIColor groupTableViewBackgroundColor];
+            l.backgroundColor = [UIColor clearColor];
             l.textAlignment = UITextAlignmentRight;
             [v addSubview:l];
             self.controllerErrorLabel = l;
