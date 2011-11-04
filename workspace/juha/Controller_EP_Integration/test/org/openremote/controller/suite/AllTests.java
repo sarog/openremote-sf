@@ -28,7 +28,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
@@ -36,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.openremote.controller.net.MulticastAutoDiscoveryTest;
 import org.openremote.controller.utils.MacrosIrDelayUtilTest;
 import org.openremote.controller.utils.PathUtil;
@@ -72,7 +72,8 @@ import org.jdom.input.DOMBuilder;
    ComponentTests.class,
    SensorTests.class,
    EventTests.class,
-   ProtocolTests.class
+   ProtocolTests.class,
+   StatusCacheTests.class
 
 })
 
@@ -106,30 +107,29 @@ public class AllTests
   // Class Members --------------------------------------------------------------------------------
 
 
-  static
+
+  private static boolean hasContext = false;
+
+  @BeforeClass public synchronized static void initServiceContext()
   {
+    if (hasContext)
+      return;
+
     try
-    {      
+    {
       new SpringContext();
+
+      hasContext = true;
     }
+
     catch (Throwable t)
     {
-      System.err.println(
-          "=================================================================================\n\n" +
-
-          " Cannot initialize tests: " + t.getMessage() + "\n\n" +
-
-          " Stack Trace: \n\n"
-      );
-
-      t.printStackTrace(System.err);
-
-      System.exit(1);
+      throw new Error("Failed to run tests : " + t.getMessage());
     }
   }
 
 
-  private final static Logger log = Logger.getLogger(AllTests.class.getName());
+  private final static Logger log = Logger.getLogger("OpenRemote.Controller.UnitTest");
 
 
   // Path Helpers ---------------------------------------------------------------------------------
