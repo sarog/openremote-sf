@@ -33,6 +33,7 @@ import org.openremote.controller.Constants;
 import org.openremote.controller.model.JSONMapping;
 import org.openremote.controller.model.Panel;
 import org.openremote.controller.suite.RESTTests;
+import org.openremote.controller.suite.AllTests;
 import org.w3c.dom.Document;
 
 
@@ -78,7 +79,7 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTTests.replaceControllerPanelXML("panelList1.xml");
+    AllTests.replacePanelXML("panelList1.xml");
 
 
     // Retrieve the panels list through REST/XML API...
@@ -145,7 +146,7 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTTests.replaceControllerPanelXML("panelList1.xml");
+    AllTests.replacePanelXML("panelList1.xml");
 
 
     // Retrieve the panels list through REST/XML API...
@@ -218,7 +219,7 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted.xml");
+    AllTests.replacePanelXML("brokenPanelStructure-NotWellFormatted.xml");
 
 
     URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
@@ -243,7 +244,7 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTTests.replaceControllerPanelXML("brokenPanelStructure-NotWellFormatted2.xml");
+    AllTests.replacePanelXML("brokenPanelStructure-NotWellFormatted2.xml");
 
 
     URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
@@ -267,7 +268,7 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTTests.replaceControllerPanelXML("brokenPanelStructure-MissingPanelsTag.xml");
+    AllTests.replacePanelXML("brokenPanelStructure-MissingPanelsTag.xml");
 
 
     URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
@@ -292,7 +293,7 @@ public class ListPanelIDsTest
   {
     // Deploy our panel.xml...
 
-    RESTTests.replaceControllerPanelXML("brokenPanelStructure-MissingEndTag.xml");
+    AllTests.replacePanelXML("brokenPanelStructure-MissingEndTag.xml");
 
 
     URL panelList = new URL(RESTTests.containerURL + RESTAPI_PANELS_URI);
