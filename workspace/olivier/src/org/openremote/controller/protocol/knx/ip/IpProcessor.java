@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.protocol.bus.DatagramSocketMessage;
@@ -35,9 +37,9 @@ import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
-import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 import org.openremote.controller.utils.Logger;
 
 /**
@@ -59,7 +61,7 @@ class IpProcessor {
    private IpMessage con;
    private PhysicalBusListener busListener;
    private IpProcessorListener listener;
-   private PhysicalBus bus;
+   private PhysicalBus port;
    private DatagramSocket inSocket;
    private String physicalBusClazz;
 
@@ -76,7 +78,7 @@ class IpProcessor {
          }
          while (!this.isInterrupted()) {
             try {
-               Message b = IpProcessor.this.bus.receive();
+               Message b = IpProcessor.this.port.receive();
                // TODO Check sender address?
 
                // Create an IpMessage from received data
@@ -121,11 +123,15 @@ class IpProcessor {
 
    void start(String src, InetAddress srcAddr, DatagramSocket outSocket) throws KnxIpException, IOException,
          InterruptedException {
-      this.bus = PhysicalBusFactory.createPhysicalBus(this.physicalBusClazz);
-      this.inSocket = new DatagramSocket(new InetSocketAddress(srcAddr, 0));
+      this.port = PhysicalBusFactory.createPhysicalBus(this.physicalBusClazz);
 
       // Start bus
-      this.bus.start(this.inSocket, outSocket == null ? this.inSocket : outSocket);
+      Map<String, Object> cfg = new HashMap<String, Object>();
+      cfg.put("inSocket", this.inSocket);
+      cfg.put("outSocket", outSocket == null ? this.inSocket : outSocket);
+      this.port.configure(cfg);
+      this.inSocket = new DatagramSocket(new InetSocketAddress(srcAddr, 0));
+      this.port.start();
       
       // Start bus listener
       this.busListener = new PhysicalBusListener(src);
@@ -142,7 +148,7 @@ class IpProcessor {
 
    void stop() throws InterruptedException {
       // Stop bus
-      this.bus.stop();
+      this.port.stop();
 
       // Stop IpListener
       this.busListener.interrupt();
@@ -167,7 +173,7 @@ class IpProcessor {
    }
 
    void send(IpMessage message, InetSocketAddress destAddr) throws IOException {
-      this.send(message, destAddr, this.bus);
+      this.send(message, destAddr, this.port);
    }
 
    private void send(IpMessage message, InetSocketAddress destAddr, PhysicalBus bus) throws IOException {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -36,8 +37,12 @@ public class PhysicalBusMock implements PhysicalBus {
    }
 
    @Override
-   public void start(Object inChannel, Object outChannel) {
-      this.srcAddr = (InetSocketAddress) ((DatagramSocket) inChannel).getLocalSocketAddress();
+   public void configure(Map<String, Object> configuration) {
+      this.srcAddr = (InetSocketAddress) ((DatagramSocket) configuration.get("inSocket")).getLocalSocketAddress();
+   }
+
+   @Override
+   public void start() {
       this.seq = 0;
    }
 

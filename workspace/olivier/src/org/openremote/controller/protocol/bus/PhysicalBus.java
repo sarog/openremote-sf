@@ -1,8 +1,7 @@
 package org.openremote.controller.protocol.bus;
 
 import java.io.IOException;
-
-import org.openremote.controller.protocol.knx.ip.KnxIpException;
+import java.util.Map;
 
 /**
  * The abstraction of a physical bus.
@@ -11,16 +10,13 @@ import org.openremote.controller.protocol.knx.ip.KnxIpException;
  * </p>
  */
 public interface PhysicalBus {
+   void configure(Map<String, Object> configuration);
+   
    /**
     * Start the physical bus.
     * 
-    * @param srcAddr
-    * @return An object that may be used by the caller.
-    * @throws KnxIpException
-    * @throws IOException
-    * @throws InterruptedException
     */
-   void start(Object inChannel, Object outChannel);
+   void start();
 
    /**
     * Stop the physical bus.
