@@ -282,6 +282,11 @@ public class StatusCacheTest
     {
       return evt;
     }
+
+    @Override public String getName()
+    {
+      return "Test Processor";
+    }
   }
 
   private static class OnReplacer extends EventProcessor
@@ -289,6 +294,11 @@ public class StatusCacheTest
     @Override public Event push(Event evt)
     {
       return new Switch(evt.getSourceID(), evt.getSource(), "on", Switch.State.ON);
+    }
+
+    @Override public String getName()
+    {
+      return "OnReplacer";
     }
   }
 
@@ -305,6 +315,11 @@ public class StatusCacheTest
     {
       Assert.assertTrue(evt.getValue().equals(eventValue));
       return evt;
+    }
+
+    @Override public String getName()
+    {
+      return "ValueProcessor";
     }
   }
 
