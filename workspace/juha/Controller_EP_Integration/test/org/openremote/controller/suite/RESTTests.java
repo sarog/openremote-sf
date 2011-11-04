@@ -21,17 +21,11 @@
 package org.openremote.controller.suite;
 
 import java.io.InputStream;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -44,7 +38,6 @@ import org.openremote.controller.rest.ListPanelIDsTest;
 import org.openremote.controller.rest.SensorStatusTest;
 import org.openremote.controller.rest.support.json.JSONTranslatorTest;
 import org.openremote.controller.statuscache.StatusAndPollingTest;
-import org.openremote.controller.statuscache.StatusCacheTest;
 import org.openremote.controller.Constants;
 import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.utils.PathUtil;
@@ -58,7 +51,6 @@ import org.w3c.dom.Node;
 {
    ControlStatusPollingRESTServletTest.class,
    SkipStateTrackTest.class,
-   StatusCacheTest.class,
    StatusAndPollingTest.class,
    JSONTranslatorTest.class,
 
@@ -276,34 +268,6 @@ public class RESTTests
   // Configuration File Utilities -----------------------------------------------------------------
 
 
-  public static void restoreControllerPanelXML()
-  {
-    AllTests.restorePanelXML();
-//    String containerPanelXml = AllTests.getFixtureFile(Constants.PANEL_XML);
-//
-//    if (new File(containerPanelXml + ".bak").exists())
-//    {
-//       new File(containerPanelXml + ".bak").renameTo(new File(containerPanelXml));
-//    }
-  }
-
-
-  public static void replaceControllerPanelXML(String filename)
-  {
-    AllTests.replacePanelXML(filename);
-//
-//    String fixtureFile = AllTests.getFixtureFile(filename);
-//
-//    String containerPanelXml = RESTTests.getContainerPanelXML();
-//
-//    if (new File(containerPanelXml).exists())
-//    {
-//       new File(containerPanelXml).renameTo(new File(containerPanelXml + ".bak"));
-//    }
-//
-//    copyFile(fixtureFile, containerPanelXml);
-  }
-
   public static void deleteControllerPanelXML()
   {
     String containerPanelXml = getContainerPanelXML();
@@ -317,12 +281,6 @@ public class RESTTests
         ControllerConfiguration.readXML().getResourcePath()) +
         Constants.PANEL_XML;
   }
-
-
-  
-
-
-
 
   private static void deleteFile(String fileName)
   {
