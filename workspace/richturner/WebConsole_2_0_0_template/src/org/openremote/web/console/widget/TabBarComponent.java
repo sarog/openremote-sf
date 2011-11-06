@@ -3,7 +3,6 @@ package org.openremote.web.console.widget;
 import java.util.ArrayList;
 import java.util.List;
 import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.NavigateEvent;
@@ -13,7 +12,13 @@ import org.openremote.web.console.panel.entity.TabBar;
 import org.openremote.web.console.panel.entity.TabBarItem;
 import org.openremote.web.console.service.AutoBeanService;
 import org.openremote.web.console.unit.ConsoleDisplay;
-import com.google.gwt.event.shared.HandlerManager;
+import org.openremote.web.console.util.BrowserUtils;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -26,16 +31,20 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 
 public class TabBarComponent extends InteractiveConsoleComponent {
 	public static final String CLASS_NAME = "tabBarComponent";
+	public static final String TAB_ITEM_CLASS_NAME = "tabBarItem";
+	public static final String TAB_IMAGE_CLASS_NAME = "tabBarItemImage";
+	public static final String TAB_TEXT_CLASS_NAME = "tabBarItemText";
 	public static final int TAB_IMAGE_SIZE = 30;
-	public static final int TAB_TEXT_HEIGHT = 13;
+	public static final int TAB_TEXT_HEIGHT = 12;
 	public static final int PADDING_TOP = 2;
-	public static final int PADDING_BOTTOM = 0;
+	public static final int PADDING_BOTTOM = 2;
+	private static final int TAB_ITEM_MIN_WIDTH = 60;
 	private List<TabBarItemComponent> items = new ArrayList<TabBarItemComponent>();
-	private HorizontalPanel container;
 	private int pageCount = 0;
 	private int maxItemsPerPage = 0;
 	private int currentPage = 0;
 	private int widthPerItem = 0;
+	private List<HandlerRegistration> systemTabHandlers = new ArrayList<HandlerRegistration>();
 	
 	private static enum EnumSystemTabItemType {
 		PREVIOUS,
@@ -43,7 +52,6 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	}
 	
 	public class TabBarItemComponent extends VerticalPanel implements TapHandler {
-		private static final int TAB_ITEM_MIN_WIDTH = 60;
 		private TabBarItem item;
 		private EnumSystemTabItemType systemTabType;
 		
@@ -54,17 +62,19 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		public TabBarItemComponent(TabBarItem item, EnumSystemTabItemType systemTabType) {
 			this.item = item;
 			this.systemTabType = systemTabType;
+			setStylePrimaryName(TAB_ITEM_CLASS_NAME);
 			TabImage tabImage = item.getImage();
-			DOM.setStyleAttribute(this.getElement(), "overflow", "hidden");
-			this.setHeight("100%");
-			this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-			this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			DOM.setStyleAttribute(this.getElement(), "paddingTop", PADDING_TOP + "px");
-			DOM.setStyleAttribute(this.getElement(), "paddingBottom", PADDING_BOTTOM + "px");
+			setHeight("100%");
+			setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+			setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			DOM.setStyleAttribute(getElement(), "overflow", "hidden");
+			DOM.setStyleAttribute(getElement(), "paddingTop", PADDING_TOP + "px");
+			DOM.setStyleAttribute(getElement(), "paddingBottom", PADDING_BOTTOM + "px");
 			
 			// Add Image
 			if (tabImage != null) {
 				Image imageComponent = new Image();
+				imageComponent.setStylePrimaryName(TAB_IMAGE_CLASS_NAME);
 				String controllerUrl = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
 				imageComponent.setUrl(controllerUrl + "/" + tabImage.getSrc());
 				imageComponent.setSize(TAB_IMAGE_SIZE + "px", TAB_IMAGE_SIZE + "px");
@@ -81,16 +91,10 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				Label nameComponent = new Label();
 				nameComponent.setText(item.getName());
 				nameComponent.setSize("100%", TAB_TEXT_HEIGHT + "px");
-				nameComponent.setStylePrimaryName("tabBarItemName");
-				DOM.setStyleAttribute(this.getElement(), "lineHeight", TAB_TEXT_HEIGHT + "px");
-				DOM.setStyleAttribute(this.getElement(), "fontSize", TAB_TEXT_HEIGHT + "px");
+				nameComponent.setStylePrimaryName(TAB_TEXT_CLASS_NAME);
+				DOM.setStyleAttribute(nameComponent.getElement(), "lineHeight", TAB_TEXT_HEIGHT + "px");
+				DOM.setStyleAttribute(nameComponent.getElement(), "fontSize", TAB_TEXT_HEIGHT + "px");
 				this.add(nameComponent);
-			}
-			
-			// Add Handlers
-			registerMouseAndTouchHandlers(this);
-			if (item.getNavigate() != null || systemTabType != null) {
-				storeHandler(this.addHandler(this, TapEvent.getType()));
 			}
 		}
 
@@ -101,7 +105,6 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				if (item != null) {
 					Navigate navigate = item.getNavigate();
 					if (navigate != null) {
-						HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
 						eventBus.fireEvent(new NavigateEvent(navigate));
 					}
 				}
@@ -117,17 +120,14 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 			}
 		}
 		
-		public TabBarItem getItem() {
+		private TabBarItem getItem() {
 			return this.item;
 		}
 	}
 	
 	public TabBarComponent(TabBar tabBar) {
-		super(new HorizontalPanel());
-		container = (HorizontalPanel)this.getWidget();
-		container.setStylePrimaryName(CLASS_NAME);
-		container.setHeight(getHeight() + "px");
-		DOM.setIntStyleAttribute(container.getElement(), "zIndex", 30000 );
+		super(new HorizontalPanel(), CLASS_NAME);
+		DOM.setIntStyleAttribute(getElement(), "zIndex", 30000 );
 		
 		// Add Elements from tab bar entity
 		for (TabBarItem item : tabBar.getItem()) {
@@ -146,36 +146,38 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 	 */
 	@Override
 	public void onRender(int width, int height) {
+		setHeight(getHeight() + "px");
+		setWidth("100%");
 		ConsoleDisplay display = WebConsole.getConsoleUnit().getConsoleDisplay();		
 		int displayWidth = display.getWidth();
 		int itemCount = items.size();
-		maxItemsPerPage = (displayWidth / TabBarItemComponent.TAB_ITEM_MIN_WIDTH);
+		maxItemsPerPage = (displayWidth / TAB_ITEM_MIN_WIDTH);
 		pageCount = (int)Math.ceil(((double)itemCount/maxItemsPerPage));
-		this.setWidth("100%");
 
-		// Insert Next and Prev Nav buttons if overflow
+		// Insert Next and Prev Nav buttons if there is overflow
 		if (itemCount > maxItemsPerPage) {
 			for (int i=1; i<=pageCount; i++) {
 				int insertPos = (maxItemsPerPage * i) - 1;
 				// Insert next and previous if more screens
 				if (i < pageCount) {
-					TabBarItem nextItem = createSystemTabItem(EnumSystemTabItemType.NEXT);
-					TabBarItemComponent nextComponent = new TabBarItemComponent(nextItem, EnumSystemTabItemType.NEXT);
-					this.insertItem(insertPos, nextComponent);
-					TabBarItem prevItem = createSystemTabItem(EnumSystemTabItemType.PREVIOUS);
-					TabBarItemComponent prevComponent = new TabBarItemComponent(prevItem, EnumSystemTabItemType.PREVIOUS);
-					this.insertItem(insertPos+1, prevComponent);
+					this.insertItem(insertPos, createSystemTabItem(EnumSystemTabItemType.NEXT));
+					this.insertItem(insertPos+1, createSystemTabItem(EnumSystemTabItemType.PREVIOUS));
 				}
 				itemCount = items.size();
 				pageCount = (int)Math.round(((double)itemCount/maxItemsPerPage));
 			}
 		}
 		
-		// Determine width per item
+		// Determine width per item and add handlers
 		int itemsOnPage = items.size() > maxItemsPerPage ? maxItemsPerPage : items.size();
 		widthPerItem = (int)Math.floor((double)displayWidth / itemsOnPage);
 		for (TabBarItemComponent item : items) {
 			item.setWidth(widthPerItem + "px");
+			if (!isInitialised) {
+				if (item.getItem().getNavigate() != null) {
+					addInteractiveChild(item);
+				}
+			}
 		}
 		
 		// Load first page of items
@@ -191,11 +193,20 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		hideCurrentItems();
 		
 		// Remove the system tab items
+		List<TabBarItemComponent> removedItems = new ArrayList<TabBarItemComponent>();
 		for (TabBarItemComponent item : items) {
 			if (item.systemTabType != null) {
-				items.remove(item);
+				removedItems.add(item);
 			}
 		}
+		for (TabBarItemComponent item : removedItems) {
+			items.remove(item);
+		}
+		
+		for (HandlerRegistration handler : systemTabHandlers) {
+			handler.removeHandler();
+		}
+		systemTabHandlers.clear();
 		
 		// Recall render to do the calculations
 		onRender(0, 0);
@@ -216,14 +227,14 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				break;
 			}
 			TabBarItemComponent item = items.get(i);
-			container.add(item);
+			((HorizontalPanel)getWidget()).add(item);
 		}
 	}
 	
 	public void hideCurrentItems() {
-		int count = container.getWidgetCount();
+		int count = ((HorizontalPanel)getWidget()).getWidgetCount();
 		for (int i=0; i<count; i++) {
-			container.remove(0);
+			((HorizontalPanel)getWidget()).remove(0);
 		}
 	}
 	
@@ -245,8 +256,9 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 		items.remove(index);
 	}
 	
-	private static TabBarItem createSystemTabItem(EnumSystemTabItemType itemType) {
+	private TabBarItemComponent createSystemTabItem(EnumSystemTabItemType itemType) {
 		TabBarItem tabBarItem = null;
+		TabBarItemComponent component = null;
 		AutoBean<TabBarItem> TabBarItemBean = AutoBeanService.getInstance().getFactory().tabBarItem();
 		tabBarItem = TabBarItemBean.as();
 		switch (itemType) {
@@ -257,7 +269,18 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				tabBarItem.setName(">");
 				break;
 		}
-		return tabBarItem;
+		component = new TabBarItemComponent(tabBarItem, itemType);
+		// Add handlers as not created by usual mechanism
+		if(BrowserUtils.isMobile()) {
+			systemTabHandlers.add(component.addDomHandler(this, TouchStartEvent.getType()));
+			systemTabHandlers.add(component.addDomHandler(this, TouchEndEvent.getType()));
+		} else {
+			systemTabHandlers.add(component.addDomHandler(this, MouseDownEvent.getType()));
+			systemTabHandlers.add(component.addDomHandler(this, MouseUpEvent.getType()));
+			systemTabHandlers.add(component.addDomHandler(this, MouseOutEvent.getType()));
+		}
+		systemTabHandlers.add(component.addHandler(component, TapEvent.getType()));
+		return component;
 	}
 
 	public void onScreenViewChange(int newScreenId) {
@@ -271,9 +294,9 @@ public class TabBarComponent extends InteractiveConsoleComponent {
 				Integer toScreen = navigate.getToScreen();
 				if (toScreen != null) {
 					if (toScreen == newScreenId) {
-						item.addStyleName("tabBarItemSelected");
+						item.addStyleName("selected");
 					} else {
-						item.removeStyleName("tabBarItemSelected");
+						item.removeStyleName("selected");
 					}
 				}
 			}

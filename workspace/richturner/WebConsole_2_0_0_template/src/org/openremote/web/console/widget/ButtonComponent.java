@@ -1,54 +1,64 @@
 package org.openremote.web.console.widget;
 
+import org.openremote.web.console.event.press.PressCancelEvent;
+import org.openremote.web.console.event.press.PressCancelHandler;
+import org.openremote.web.console.event.press.PressEndEvent;
+import org.openremote.web.console.event.press.PressEndHandler;
+import org.openremote.web.console.event.press.PressStartEvent;
+import org.openremote.web.console.event.press.PressStartHandler;
+import org.openremote.web.console.event.tap.TapEvent;
+import org.openremote.web.console.event.tap.TapHandler;
+
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
-public class ButtonComponent extends InteractiveConsoleComponent {
+public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
 	public static final String CLASS_NAME = "buttonComponent";
-	private Label container;
 	private String name;
+	private boolean isRendered = false;
 	
 	private ButtonComponent() {
-		super(new Label());
-		container = (Label)this.getWidget();
-		setStylePrimaryName(CLASS_NAME);
-		DOM.setStyleAttribute(container.getElement(), "overflow", "hidden");
-		DOM.setStyleAttribute(container.getElement(), "whiteSpace", "nowrap");
-		DOM.setStyleAttribute(container.getElement(), "display", "inline-block");
-		//DOM.setStyleAttribute(container.getElement(), "padding", "9px");
-		//DOM.setStyleAttribute(container.getElement(), "fontSize", "15px");
+		super(new Label(), CLASS_NAME);
+		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
+		DOM.setStyleAttribute(getElement(), "display", "inline-block");
 	}
 	
 	public void setName(String name) {
 		this.name = name;
-		container.setText(name);
+		((Label)getWidget()).setText(name);
+		
+		if (!isRendered) {
+			return;
+		}
+		
+		// Check length of name and whether it is completely visible
+		boolean textResized = false;
+		String newName = name;
+		setWidth("");
+		int currentWidth = getOffsetWidth();
+		
+		while (currentWidth > width) {
+			newName = newName.substring(0, newName.length()-1);
+			((Label)getWidget()).setText(newName);
+			textResized = true;
+			currentWidth = getOffsetWidth();
+		}
+		
+		if (textResized) {
+			name = newName.substring(0, newName.length()-1);
+			name += "..";
+			((Label)getWidget()).setText(name);
+			this.name = name;
+		}
+		setWidth(width + "px");
 	}
 	
 	@Override
 	public void onRender(int width, int height) {
-		// Check length of name and whether it is completely visible
-		boolean textResized = false;
-		
-		while (container.getOffsetWidth() > width) {
-			name = name.substring(0, name.length()-1);
-			container.setText(name);
-			textResized = true;
-		}
-		
-		if (textResized) {
-			name = name.substring(0, name.length()-1);
-			name += "..";
-			container.setText(name);
-		}
-		
-		container.setWidth(width + "px");
-		container.setHeight(height + "px");
-		DOM.setStyleAttribute(container.getElement(), "lineHeight", height + "px");
+		isRendered = true;
+		setName(name);
+		DOM.setStyleAttribute(getElement(), "lineHeight", height + "px");
 	}
 
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
@@ -58,5 +68,26 @@ public class ButtonComponent extends InteractiveConsoleComponent {
 		}
 		component.setName(entity.getName());
 		return component;
+	}
+
+	@Override
+	public void onPressCancel(PressCancelEvent event) {
+		this.removeStyleName("pressed");
+	}
+
+	@Override
+	public void onPressEnd(PressEndEvent event) {
+		this.removeStyleName("pressed");
+	}
+
+	@Override
+	public void onPressStart(PressStartEvent event) {
+		this.addStyleName("pressed");
+	}
+
+	@Override
+	public void onTap(TapEvent event) {
+		// TODO Auto-generated method stub
+		Window.alert("TAP");
 	}
 }

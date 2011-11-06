@@ -23,6 +23,24 @@ public class SwipeEvent extends GwtEvent<SwipeHandler> {
 		RIGHT,
 		UP,
 		DOWN;
+		
+		public static SwipeDirection enumValueOf(String direction) {
+			SwipeDirection result = null;
+			try {
+			   result = SwipeDirection.valueOf(direction.toUpperCase());
+			} catch (Exception e) {
+				if (direction.equalsIgnoreCase("swipe-left-to-right")) {
+					result = SwipeDirection.RIGHT;
+				} else if (direction.equalsIgnoreCase("swipe-right-to-left")) {
+					result = SwipeDirection.LEFT;
+				} else if (direction.equalsIgnoreCase("swipe-bottom-to-top")) {
+					result = SwipeDirection.UP;
+				} else if (direction.equalsIgnoreCase("swipe-top-to-bottom")) {
+					result = SwipeDirection.DOWN;
+				}
+			}
+			return result;
+		}
 	}
 	
 	public SwipeEvent(SwipeAxis axis, SwipeDirection direction, Widget source) {
@@ -57,7 +75,7 @@ public class SwipeEvent extends GwtEvent<SwipeHandler> {
 	}
 	
 	public static final class SwipeLimits {
-		private static final double PRIMARY_DISTANCE_RATIO = 0.8;
+		private static final double PRIMARY_DISTANCE_RATIO = 0.7;
 		private static final double SECONDARY_DISTANCE_RATIO = 0.3;
 		private static final int MIN_SECONDARY_DISTANCE_PIXELS = 30;
 		private static final int MAX_SECONDARY_DISTANCE_PIXELS = 80;

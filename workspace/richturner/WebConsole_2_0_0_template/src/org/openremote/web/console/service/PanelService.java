@@ -18,6 +18,10 @@ public interface PanelService {
 	
 	Screen getScreenByName(String name);
 	
+	Screen getNextScreen(Integer groupId, Integer screenId);
+	
+	Screen getPreviousScreen(Integer groupId, Integer screenId);
+	
 	TabBar getTabBar(Integer groupId);
 	
 	Screen getInverseScreen(Integer screenId);

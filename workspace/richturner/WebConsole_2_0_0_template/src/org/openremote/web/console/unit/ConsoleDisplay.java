@@ -25,39 +25,25 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	public static final int DEFAULT_DISPLAY_WIDTH = 320;
 	public static final int DEFAULT_DISPLAY_HEIGHT = 460;
 	private static final String DEFAULT_DISPLAY_COLOUR = "black";
+	public static final String CLASS_NAME = "consoleDisplay";
 	private AbsolutePanel display;
-	private int width;
-	private int height;
 	private String colour;
-	private AbsolutePanel container;
 	private String currentOrientation = "portrait";
 	
-	public ConsoleDisplay(int width, int height) {
-		super(new AbsolutePanel());
-		container = (AbsolutePanel)this.getWidget();
-		
-		this.width = width;
-		this.height = height;
-		container.setWidth(this.width + "px");
-		container.setHeight(this.height + "px");
-		container.getElement().setId("consoleDisplayWrapper");
-		container.setStylePrimaryName("consoleDisplay");
+	public ConsoleDisplay() {
+		super(new AbsolutePanel(), CLASS_NAME);
+		getElement().setId("consoleDisplayWrapper");
 		
 		// Create display panel where screen is actually loaded
 		display = new AbsolutePanel();
-		display.setWidth(width + "px");
-		display.setHeight(height + "px");
 		display.setStylePrimaryName("portraitDisplay");
 		display.getElement().setId("consoleDisplay");
 		
 		// Add display to the wrapper
-		container.add(display, 0, 0);
+		((AbsolutePanel)getWidget()).add(display, 0, 0);
 		
 		// Set default colour
 		setColour(DEFAULT_DISPLAY_COLOUR);
-		
-		// Add mouse and touch handlers on entire widget
-		registerMouseAndTouchHandlers();
 		
 		// Add move handlers which are only used on this display component
 		if(BrowserUtils.isMobile()) {
@@ -66,8 +52,6 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 			this.addDomHandler(this, MouseMoveEvent.getType());
 			this.addDomHandler(this, MouseOutEvent.getType());
 		}
-		
-		setVisible(true);
 	}
 	
 	/**
@@ -87,10 +71,10 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 		int height = getHeight();
 		
 		if ("portrait".equals(orientation)) {
-			container.setWidgetPosition(display,0,0);
+			((AbsolutePanel)getWidget()).setWidgetPosition(display,0,0);
 		   display.setStylePrimaryName("portraitDisplay");
 		} else {
-			container.setWidgetPosition(display, (height/2)-(width/2), (width/2)-(height/2));
+			((AbsolutePanel)getWidget()).setWidgetPosition(display, (height/2)-(width/2), (width/2)-(height/2));
 			display.setStylePrimaryName("landscapeDisplay");
 		}
 		
@@ -103,7 +87,7 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 	
 	public void setColour(String colour) {
-		container.getElement().getStyle().setBackgroundColor(colour);
+		getElement().getStyle().setBackgroundColor(colour);
 		this.colour = colour;
 	}
 	
@@ -165,10 +149,6 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 	
 	protected void doResize(int width, int height) {
-		this.width = width;
-		this.height = height;
-		container.setWidth(this.width + "px");
-		container.setHeight(this.height + "px");
 		display.setWidth(width + "px");
 		display.setHeight(height + "px");
 	}
@@ -197,5 +177,8 @@ public class ConsoleDisplay extends InteractiveConsoleComponent implements Touch
 	}
 
 	@Override
-	public void onRender(int width, int height) {}
+	public void onRender(int width, int height) {
+		display.setWidth(width + "px");
+		display.setHeight(height + "px");
+	}
 }

@@ -1,6 +1,14 @@
 package org.openremote.web.console.util;
 
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.service.AsyncControllerCallback;
+import org.openremote.web.console.service.ControllerService;
+
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -65,4 +73,19 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 		public static int getNativeWidth() {
 			return getNativeWindowDim("width");
 		}
+		
+//		public static void checkImageExists(String imageUrl, ImageExistsCallback callback) {
+//			if (callback == null) {
+//				return;
+//			}
+//			if (imageUrl.equals("")) {
+//				callback.onResponse(false);
+//			}
+//			RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(imageUrl));
+//			try {
+//			  Request request = builder.sendRequest(null, callback);
+//			} catch (RequestException e) {
+//				callback.onResponse(false);
+//			}
+//		}
 }

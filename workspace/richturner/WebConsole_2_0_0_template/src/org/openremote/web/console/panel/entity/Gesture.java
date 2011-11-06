@@ -25,10 +25,10 @@ package org.openremote.web.console.panel.entity;
  */
 
 public interface Gesture {
-	int getId();
+	Integer getId();
 	String getType();
    Navigate getNavigate();
-   boolean getHasControlCommand();
+   Boolean getHasControlCommand();
    
    void setId(int id); 
    void setType(String type);

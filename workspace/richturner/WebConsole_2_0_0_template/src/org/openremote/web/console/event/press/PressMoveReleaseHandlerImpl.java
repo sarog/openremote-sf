@@ -57,6 +57,7 @@ public class PressMoveReleaseHandlerImpl implements PressStartHandler, PressEndH
 
 	public void onPressCancel(PressCancelEvent event) {
 		if (pressStarted) {
+			pressedWidget.fireEvent(event);
 			pressedWidget.fireEvent(new DragCancelEvent(event));
 			if (!eventHandled) {
 				processPressRelease(event);

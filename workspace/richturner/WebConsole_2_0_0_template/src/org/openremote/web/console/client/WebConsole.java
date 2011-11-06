@@ -90,6 +90,10 @@ public class WebConsole implements EntryPoint {
 			return;
 		}
 		
+		// Force body size so we have something to scroll
+		RootPanel.getBodyElement().getStyle().setHeight(2000, Unit.PX);
+		RootPanel.getBodyElement().getStyle().setWidth(2000, Unit.PX);	
+		
 		// Determine window orientation
 		updateWindowOrientation();
 		
@@ -115,7 +119,7 @@ public class WebConsole implements EntryPoint {
 	   Window.scrollTo(0, 1);
 
 		// Wait 1s for first run as some browsers take a while to do the scroll
-	   addressBarMonitor.schedule(1000);
+	   addressBarMonitor.schedule(1200);
 	}
 	
 	/**
@@ -171,6 +175,8 @@ public class WebConsole implements EntryPoint {
 	 */ 
 	
 	public void setContainerWidgetSize(int width, int height) {
+		RootPanel.getBodyElement().getStyle().setWidth(width, Unit.PX);
+		RootPanel.getBodyElement().getStyle().setHeight(height, Unit.PX);	
 		RootPanel.get("consoleContainer").setWidth(width + "px");
 		RootPanel.get("consoleContainer").setHeight(height + "px");
 	}
@@ -279,36 +285,4 @@ public class WebConsole implements EntryPoint {
 	public boolean isMobileWindowFullyInitialised() {
 		return (isPortraitInitialised && isLandscapeInitialised);
 	}
-	
-//	public static void preventTouchAndClick(Widget widget) {
-//		widget.addDomHandler(new MouseDownHandler() {
-//			@Override
-//			public void onMouseDown(MouseDownEvent event) {
-//				event.preventDefault();				
-//			}}, MouseDownEvent.getType());
-//		
-//		widget.addDomHandler(new TouchStartHandler() {
-//			@Override
-//			public void onTouchStart(TouchStartEvent event) {
-//				event.preventDefault();				
-//			}}, TouchStartEvent.getType());
-//		
-//		widget.addDomHandler(new TouchEndHandler() {
-//			@Override
-//			public void onTouchEnd(TouchEndEvent event) {
-//				event.preventDefault();				
-//			}}, TouchEndEvent.getType());
-//		
-//		widget.addDomHandler(new MouseUpHandler() {
-//			@Override
-//			public void onMouseUp(MouseUpEvent event) {
-//				event.preventDefault();				
-//			}}, MouseUpEvent.getType());
-//		
-//		widget.addDomHandler(new DoubleClickHandler() {
-//			@Override
-//			public void onDoubleClick(DoubleClickEvent event) {
-//				event.preventDefault();				
-//			}}, DoubleClickEvent.getType());
-//	}
 }

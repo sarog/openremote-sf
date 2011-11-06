@@ -1,33 +1,119 @@
 package org.openremote.web.console.widget;
 
-import com.google.gwt.user.client.ui.Button;
+import org.openremote.web.console.event.sensor.SensorChangeHandler;
+import org.openremote.web.console.panel.entity.Link;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
 
-public class SwitchComponent extends InteractiveConsoleComponent {
-	public static final String CLASS_NAME = "buttonComponent";
-	private Button container;
+public class SwitchComponent extends InteractiveConsoleComponent implements SensorChangeHandler {
+	public static final String CLASS_NAME = "switchComponent";
+	private String name;
+	private int width;
+	private int height;
+	private Image onImage;
+	private Image offImage;
+	private boolean onImageExists = false;
+	private boolean offImageExists = false;
+	private LabelComponent label;
 	
 	private SwitchComponent() {
-		super(new Button());
-		container = (Button)this.getWidget();
-		setStylePrimaryName(CLASS_NAME);
-		container.setHeight("100%");
-		container.setWidth("100%");
-		container.setText("OFF");
+		super(new AbsolutePanel(), CLASS_NAME);
+		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
+		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
+		DOM.setStyleAttribute(getElement(), "display", "inline-block");
+		
+		label = new LabelComponent();
+		setName("OFF");
+		label.setVisible(true);
+		// Remove standard style name from label component
+		label.removeStyleName("labelComponent");
+		
+		onImage = new Image();
+		onImage.setVisible(false);
+		
+		offImage = new Image();
+		offImage.setVisible(false);
+		
+		((AbsolutePanel)getWidget()).add(label);
 	}
 	
-	public void setName(String name) {
-		container.setText(name);
+	/*
+	 * Check images exist so we don't waste time initialising sensor later on if they don't
+	 */
+	public void onSensorAdd() {
+		if (sensor.isValid()) {
+			onImage.addLoadHandler(new LoadHandler() {
+
+				@Override
+				public void onLoad(LoadEvent event) {
+					onImageExists = true;
+				}
+			});
+			onImage.setUrl(sensor.getMappedValue("on"));
+			
+			offImage.addLoadHandler(new LoadHandler() {
+
+				@Override
+				public void onLoad(LoadEvent event) {
+					offImageExists = true;
+				}
+			});
+			offImage.setUrl(sensor.getMappedValue("off"));			
+		}
+	}
+
+	private void setName(String name) {
+		this.name = name;
+		label.setText(name);
 	}
 	
 	@Override
 	public void onRender(int width, int height) {
-		container.setWidth(width + "px");
-		container.setHeight(height + "px");
+		onImage.setWidth(width + "px");
+		onImage.setHeight(height + "px");
+		offImage.setWidth(width + "px");
+		offImage.setHeight(height + "px");
+		
+		label.onRender(width, height);
+		checkSensor();
 	}
-
+	
+	/*
+	 * Only use the sensor if either the on or off image exist
+	 */
+	private void checkSensor() {
+		if (!onImageExists && !offImageExists) {
+			sensor = null;
+		}
+	}
+	
+	@Override
+	public void sensorChanged(String value) {
+		if (value.equalsIgnoreCase("on")) {
+			offImage.setVisible(false);
+			if (onImageExists) {
+				onImage.setVisible(true);
+			}
+		} else if (value.equalsIgnoreCase("off")) {
+			onImage.setVisible(false);
+			if (offImageExists) {
+				offImage.setVisible(true);
+			}			
+		}
+	}
+	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SwitchComponent entity) {
 		SwitchComponent component = new SwitchComponent();
+		if (entity == null) {
+			return component;
+		}
+		Link link = entity.getLink();
+		if (link != null) {
+			component.setSensor(new Sensor(entity.getLink()));
+		}
 		return component;
 	}
-
 }

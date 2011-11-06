@@ -1,36 +1,34 @@
 package org.openremote.web.console.widget;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 public class LabelComponent extends PassiveConsoleComponent {
 	public static final String CLASS_NAME = "labelComponent";
-	private Label container;
 	
-	private LabelComponent() {
-		super(new Label());
-		container = (Label)this.getWidget();
-		setStylePrimaryName(CLASS_NAME);
-		//this.setWidth("20px");
-		//this.setHeight("20px");
-		//DOM.setStyleAttribute(this.getElement(), "border", "2px solid white");
+	protected LabelComponent() {
+		super(new Label(), CLASS_NAME);
+		DOM.setStyleAttribute(getElement(), "overflow", "hidden");
+		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
+		DOM.setStyleAttribute(getElement(), "display", "inline-block");
 	}
 	
 	public void setText(String text) {
-		container.setText(text);
+		((Label)getWidget()).setText(text);
 	}
 	
 	public void setColor(String color) {
-		container.getElement().getStyle().setProperty("color", color);
+		getElement().getStyle().setProperty("color", color);
 	}
 	
 	public void setFontSize(int size) {
-		container.getElement().getStyle().setProperty("fontSize", size + "px");
+		getElement().getStyle().setProperty("fontSize", size + "px");
 	}
 	
 	@Override
 	public void onRender(int width, int height) {
-		container.setWidth(width + "px");
-		container.setHeight(height + "px");
+		DOM.setStyleAttribute(getElement(), "lineHeight", height + "px");
 	}
 
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.LabelComponent entity) {
@@ -43,5 +41,4 @@ public class LabelComponent extends PassiveConsoleComponent {
 		component.setFontSize(entity.getFontSize());
 		return component;
 	}
-
 }
