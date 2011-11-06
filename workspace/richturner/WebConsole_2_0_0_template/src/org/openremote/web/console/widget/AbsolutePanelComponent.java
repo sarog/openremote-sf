@@ -1,8 +1,6 @@
 package org.openremote.web.console.widget;
 
 import org.openremote.web.console.client.WebConsole;
-import org.openremote.web.console.unit.ConsoleDisplay;
-
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -10,7 +8,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AbsolutePanelComponent extends PassiveConsoleComponent implements Positional {
 	private static final String CLASS_NAME = "absolutePanelComponent";
-	private SimplePanel container;
 	private ConsoleComponent component;
 	private HorizontalPanel componentContainer;
 	private int left;
@@ -19,10 +16,7 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 	private int width;
 	
 	public AbsolutePanelComponent() {
-		super(new SimplePanel());
-		container = (SimplePanel)this.getWidget();
-		container.setStylePrimaryName(CLASS_NAME);
-		
+		super(new SimplePanel(), CLASS_NAME);
 		componentContainer = new HorizontalPanel();
 		componentContainer.setWidth("100%");
 		componentContainer.setHeight("100%");
@@ -30,14 +24,27 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 		componentContainer.setHorizontalAlignment(HasAlignment.ALIGN_CENTER);
 		componentContainer.setVerticalAlignment(HasAlignment.ALIGN_MIDDLE);
 		
-		container.add(componentContainer);
+		((SimplePanel)this.getWidget()).add(componentContainer);
 	}
 
+	@Override
+	public void onAdd(int width, int height) {
+		setVisible(true);
+		onRender(width, height);
+	}
+	
 	@Override
 	// Pass size info to widget so explicit size can be set to avoid any cross browser rendering issues
 	public void onRender(int width, int height) {
 		if (component != null) {
 			component.onAdd(this.width, this.height);
+		}
+	}
+	
+	@Override
+	public void onRemove() {
+		if (component != null) {
+			component.onRemove();
 		}
 	}
 	
@@ -112,4 +119,5 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 			} catch (Exception e) {}
 		}
 		setWidth(widthInt);
-	}}
+	}
+}

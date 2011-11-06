@@ -5,10 +5,7 @@ import java.util.List;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.ConsoleComponentImpl;
 import org.openremote.web.console.widget.Positional;
-
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -19,18 +16,15 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	List<ConsoleComponent> consoleWidgets = new ArrayList<ConsoleComponent>();
-	AbsolutePanel container = new AbsolutePanel();
-	
+	public static final String CLASS_NAME = "screenView";
 	public ScreenViewImpl() {
-		super(new AbsolutePanel());
-		container = (AbsolutePanel)this.getWidget();
+		super(new AbsolutePanel(), CLASS_NAME);
 		setWidth("100%");
 		setHeight("100%");
 	}
 	
 	public void addConsoleWidget(ConsoleComponent widget) {
-		consoleWidgets.add(widget);
-		addToPanel(widget);
+		addToScreen(widget);
 	}
 
 	@Override
@@ -41,15 +35,16 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	/**
 	 * Add specified component to the Screen View Panel
 	 */
-	private void addToPanel(ConsoleComponent widget) {
+	private void addToScreen(ConsoleComponent widget) {
 		int left = 0;
 		int top = 0;
-	
+		consoleWidgets.add(widget);
+		
 		if (widget instanceof Positional) {
 			left = ((Positional) widget).getLeft();
 			top = ((Positional) widget).getTop();
 		}
-		container.add((Widget) widget, left, top);
+		((AbsolutePanel)getWidget()).add((Widget) widget, left, top);
 	}
 	
 	/**
@@ -59,11 +54,17 @@ public class ScreenViewImpl extends ConsoleComponentImpl implements ScreenView {
 	 * @param top
 	 */
 	public void setConsoleWidgetPosition(ConsoleComponent widget, int left, int top) {
-		if (container.getWidgetIndex((Widget)widget) >= 0) {
-			container.setWidgetPosition((Widget)widget, left, top);
+		if (((AbsolutePanel)getWidget()).getWidgetIndex((Widget)widget) >= 0) {
+			((AbsolutePanel)getWidget()).setWidgetPosition((Widget)widget, left, top);
 		}		
 	}
 
+	@Override
+	public void onAdd(int width, int height) {
+		setVisible(true);
+		onRender(width, height);
+	}
+	
 	@Override
 	public void onRender(int width, int height) {
 		for (ConsoleComponent component : consoleWidgets) {

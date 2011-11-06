@@ -17,7 +17,7 @@ public class ConsoleUnitEventManager {
 	private HandlerManager eventBus;
 	private PressMoveReleaseHandlerImpl pressMoveReleaseHandler;
 	
-	public ConsoleUnitEventManager() {
+	private ConsoleUnitEventManager() {
 		eventBus = new HandlerManager(WebConsole.getConsoleUnit());
 		pressMoveReleaseHandler = new PressMoveReleaseHandlerImpl();
 		attachHandlers();

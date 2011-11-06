@@ -18,6 +18,7 @@ body {
 	-webkit-user-select: none;
 	tap-highlight-color: rgba(0,0,0,0);
 	user-select: none;
+	overflow: hidden;
 }
 
 #consoleContainer {
@@ -104,10 +105,11 @@ body {
 #consoleDisplay {
 	background-color: black;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .consoleDisplay .portraitDisplay {
-	cursor: pointer;
+
 }
 
 .consoleDisplay .landscapeDisplay {
@@ -135,7 +137,7 @@ SCREEN WIDGET CSS BELOW
 }
 
 .sliderComponentBarTrack {
-	background-color: blue;
+	background-color: #4FA800;
 }
   
 .sliderComponentHandle {
@@ -199,7 +201,7 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	);
 }
 
-.tabBarItemSelected {
+.tabBarItem.selected {
 	background-image: linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -o-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
 	background-image: -moz-linear-gradient(bottom, rgb(20,20,20) 0%, rgb(110,110,110) 100%);
@@ -215,20 +217,20 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
 	);
 }
 
-.tabBarItemSelected .tabBarItemName {
-	font-weight: bold;
-	color: #FFF;
+.tabBarItemText {
+	color: #CCC;
 }
 
-.tabBarItemName {
-	color: #CCC;
+.tabBarItem.selected .tabBarItemText {
+	font-weight: bold;
+	color: #FFF;
 }
 
 .tabBarItemImage {
 	
 }
 
-.buttonComponent {
+.buttonComponent, .switchComponent {
 	background: #5A697E;
     border: none;
     color: #FFF;
@@ -238,4 +240,21 @@ http://37signals.com/svn/posts/2577-loading-spinner-animation-using-css-and-webk
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     -webkit-appearance: none;
+}
+
+.buttonComponent, .switchComponent {
+	background: #5A697E;
+    border: none;
+    color: #FFF;
+    font-weight: bold;
+    font-family: arial;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -webkit-appearance: none;
+}
+
+.buttonComponent.pressed, .switchComponent.pressed {
+	background: #3A495E;
+	color: #DDD;
 }

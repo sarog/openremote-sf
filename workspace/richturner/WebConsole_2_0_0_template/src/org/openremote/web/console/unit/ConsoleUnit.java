@@ -1,30 +1,33 @@
 package org.openremote.web.console.unit;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.openremote.web.console.controller.Controller;
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.hold.HoldEvent;
 import org.openremote.web.console.event.hold.HoldHandler;
 import org.openremote.web.console.event.rotate.RotationEvent;
 import org.openremote.web.console.event.rotate.RotationHandler;
+import org.openremote.web.console.event.sensor.SensorChangeEvent;
+import org.openremote.web.console.event.sensor.SensorChangeHandler;
 import org.openremote.web.console.event.swipe.SwipeEvent;
+import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.swipe.SwipeHandler;
-import org.openremote.web.console.event.tap.DoubleTapEvent;
-import org.openremote.web.console.event.tap.DoubleTapHandler;
-import org.openremote.web.console.event.tap.TapEvent;
-import org.openremote.web.console.event.tap.TapHandler;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.event.ui.NavigateHandler;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelCredentials;
 import org.openremote.web.console.panel.PanelCredentialsImpl;
 import org.openremote.web.console.panel.PanelIdentity;
+import org.openremote.web.console.panel.entity.Gesture;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.TabBar;
-import org.openremote.web.console.rpc.json.JSONPControllerService;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.ControllerService;
+import org.openremote.web.console.service.JSONPControllerService;
 import org.openremote.web.console.service.LocalDataService;
 import org.openremote.web.console.service.LocalDataServiceImpl;
 import org.openremote.web.console.service.PanelService;
@@ -34,6 +37,7 @@ import org.openremote.web.console.util.BrowserUtils;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.TabBarComponent;
 import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -41,7 +45,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, TapHandler, DoubleTapHandler, NavigateHandler {
+public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, NavigateHandler {
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -59,6 +63,8 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	private Integer currentScreenId;
 	private TabBarComponent currentTabBar;
 	private ScreenViewImpl currentScreen;
+	private List<HandlerRegistration> sensorHandlerRegistrations = new ArrayList<HandlerRegistration>();
+	private Map<SwipeDirection, Gesture> gestureMap = new HashMap<SwipeDirection, Gesture>();
 	
 	public ConsoleUnit() {
 		this(ConsoleDisplay.DEFAULT_DISPLAY_WIDTH, ConsoleDisplay.DEFAULT_DISPLAY_HEIGHT);
@@ -76,8 +82,9 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		this.addStyleName("consoleUnit");
 		
 		// Create a display and add to console container
-		consoleDisplay = new ConsoleDisplay(width, height);
+		consoleDisplay = new ConsoleDisplay();
 		add(consoleDisplay);
+		consoleDisplay.onAdd(width, height);
 		
 		// Register gesture and controller message handlers
 		registerHandlers();
@@ -235,6 +242,10 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		}
 	}
 	
+	public void loadScreen(Screen screen) {
+		loadScreen(currentGroupId, screen);
+	}
+	
 	public void loadScreen(Integer groupId, Screen screen) {
 		boolean screenChanged = false;
 		boolean groupChanged = false;
@@ -267,13 +278,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 				screenOrientationChanged = true;
 				
 				// Adjust console display to suit new screen
-				consoleDisplay.setOrientation(panelService.getScreenOrientation(currentScreenId));
+				consoleDisplay.setOrientation(newScreenOrientation);				
 			}
 			
 			ScreenViewImpl screenView = screenViewService.getScreenView(screen);
 		
 			if (screenView != null) {
 				setScreenView(screenView);
+				
+				// Configure gestures
+				setGestureMap(screen.getGesture());
 			} else {
 				loadSettings();
 				return;
@@ -304,6 +318,24 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		}
 	}
 	
+	private void setGestureMap(List<Gesture> gestures) {
+		clearGestureMap();
+		
+		if (gestures != null) {
+			for (Gesture gesture : gestures) {
+				SwipeDirection direction = SwipeDirection.enumValueOf(gesture.getType());
+				gestureMap.put(direction, gesture);
+			}
+		}
+	}
+	
+	private void clearGestureMap() {
+		gestureMap.put(SwipeDirection.LEFT, null);
+		gestureMap.put(SwipeDirection.RIGHT, null);
+		gestureMap.put(SwipeDirection.UP, null);
+		gestureMap.put(SwipeDirection.DOWN, null);
+	}
+	
 	public void loadSettings() {
 		// TODO Load the settings screen
 		Window.alert("LOAD SETTINGS");
@@ -319,6 +351,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		}
 	
 		consoleDisplay.addComponent(screenView);
+		
 		currentScreen = screenView;
 	}
 	
@@ -342,6 +375,16 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		return this.controllerService;
 	}
 	
+	public void registerSensorHandler(SensorChangeHandler handler) {
+		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+		eventBus.addHandler(SensorChangeEvent.getType(), handler);
+	}
+	
+	public void unRegisterSensorHandler(SensorChangeHandler handler) {
+		HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+		eventBus.removeHandler(SensorChangeEvent.getType(), handler);
+	}
+	
 	/*
 	 * **********************************************
 	 * Event Handlers below here
@@ -352,8 +395,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		eventBus.addHandler(RotationEvent.getType(), this);
 		eventBus.addHandler(SwipeEvent.getType(), this);
 		eventBus.addHandler(HoldEvent.getType(), this);
-		eventBus.addHandler(TapEvent.getType(), this);
-		eventBus.addHandler(DoubleTapEvent.getType(), this);
 		eventBus.addHandler(NavigateEvent.getType(), this);
 	}
 	
@@ -385,33 +426,49 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 	
 	@Override
 	public void onHold(HoldEvent event) {
-		loadSettings();
-	}
-
-	@Override
-	public void onSwipe(SwipeEvent event) {
-		// TODO: Swipe gesture handling
-		switch (event.getDirection()) {
-			case LEFT:
-				
-				break;
-			case RIGHT:
-				break;
-			case DOWN:
-				break;
-			case UP:
-				break;
+		if (event.getSource() == consoleDisplay) {
+			loadSettings();
 		}
 	}
 
 	@Override
-	public void onTap(TapEvent event) {
-		//TODO Handle Tap Event
-	}
-	
-	@Override
-	public void onDoubleTap(DoubleTapEvent event) {
-		//TODO Handle Double Tap
+	public void onSwipe(SwipeEvent event) {
+		Gesture gesture = gestureMap.get(event.getDirection());
+		boolean gestureHandled = false;
+		Navigate navigate = null;
+		Boolean hasControlCommand = null;
+		Integer commandId = null;
+		
+		if (gesture != null) {
+			navigate = gesture.getNavigate();
+			hasControlCommand = gesture.getHasControlCommand();
+			commandId = gesture.getId();
+			if (navigate != null) {
+				if (navigate.getToGroup() != currentGroupId || navigate.getToScreen() != currentScreenId) {
+					gestureHandled = true;
+					HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+					eventBus.fireEvent(new NavigateEvent(navigate));
+				}
+			} else if (hasControlCommand) {
+				gestureHandled = true;
+				// TODO: Send Command
+			}
+		}
+		
+		if (gestureHandled) {
+			return;
+		}
+			
+		switch (event.getDirection()) {
+			case LEFT:
+				Screen nextScreen = panelService.getNextScreen(currentGroupId, currentScreenId);
+				loadScreen(nextScreen);
+				break;
+			case RIGHT:
+				Screen prevScreen = panelService.getPreviousScreen(currentGroupId, currentScreenId);
+				loadScreen(prevScreen);
+				break;
+		}
 	}
 	
 	@Override
@@ -428,8 +485,6 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 			} else if(toGroupId != null && toScreenId != null) {
 				Screen screen = panelService.getScreenById(toScreenId);
 				loadScreen(toGroupId, screen);
-				//HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
-				//eventBus.fireEvent(new ScreenViewChangeEvent(currentScreenId));
 			}
 		}
 	}

@@ -11,11 +11,11 @@ import org.openremote.web.console.panel.entity.ScreenRef;
 import org.openremote.web.console.panel.entity.TabBar;
 
 public class PanelServiceImpl implements PanelService {
-	Panel currentPanel;
-	Map<Integer, Group> currentGroupMap = null;
-	Map<Integer, Screen> currentScreenMap = null;
-	TabBar currentPanelTabBar = null;
-	boolean isInitialised = false;
+	private Panel currentPanel;
+	private Map<Integer, Group> currentGroupMap = null;
+	private Map<Integer, Screen> currentScreenMap = null;
+	private TabBar currentPanelTabBar = null;
+	private boolean isInitialised = false;
 	
 	@Override
 	public Screen getScreenById(Integer screenId) {
@@ -55,17 +55,27 @@ public class PanelServiceImpl implements PanelService {
 
 	@Override
 	public Screen getDefaultScreen(Integer groupId) {
+		return getScreenByGroupIndex(groupId, 0);
+	}
+	
+	@Override
+	public Screen getNextScreen(Integer groupId, Integer screenId) {
 		Screen screen = null;
+		Integer screenIndex = getGroupScreenIndex(groupId, screenId);
 		
-		if (groupId != null && currentGroupMap != null && currentScreenMap != null) {
-			Group group = getGroupById(groupId);
-			if (group != null) {
-				List<ScreenRef> screenRefs = group.getInclude();
-				if (screenRefs != null) {
-					int screenId = screenRefs.get(0).getRef();
-					screen = getScreenById(screenId);
-				}
-			}	
+		if (screenIndex != null && screenIndex >= 0) {
+			screen = getScreenByGroupIndex(groupId, screenIndex+1);
+		}		
+		return screen;
+	}
+	
+	@Override
+	public Screen getPreviousScreen(Integer groupId, Integer screenId) {
+		Screen screen = null;
+		Integer screenIndex = getGroupScreenIndex(groupId, screenId);
+		
+		if (screenIndex != null && screenIndex > 0) {
+			screen = getScreenByGroupIndex(groupId, screenIndex-1);
 		}
 		return screen;
 	}
@@ -81,10 +91,12 @@ public class PanelServiceImpl implements PanelService {
 		return groupId;
 	}
 	
+	@Override
 	public Panel getCurrentPanel() {
 		return currentPanel;
 	}
 
+	@Override
 	public void setCurrentPanel(Panel currentPanel) { 
 		this.currentPanel = currentPanel;
 		this.currentGroupMap = null;
@@ -168,5 +180,48 @@ public class PanelServiceImpl implements PanelService {
 	@Override
 	public boolean isInitialized() {
 		return this.isInitialised;
-	}	
+	}
+	
+	private Integer getGroupScreenIndex(Integer groupId, Integer screenId) {
+		Integer screenIndex = null;
+		
+		Group group = getGroupById(groupId);
+		if (group != null) {
+			List<ScreenRef> screenRefs = group.getInclude();
+			if (screenRefs != null) {
+				for (int i=0; i < screenRefs.size(); i++) {
+					if (screenId == screenRefs.get(i).getRef()) {
+						screenIndex = i;
+						break;
+					}
+				}
+			}
+		}
+		
+		return screenIndex;
+	}
+	
+	private Screen getScreenByGroupIndex(Integer groupId, Integer index) {
+		Screen screen = null;
+		
+		if (index == null || index < 0) {
+			return screen;
+		}
+		
+		if (groupId != null && currentGroupMap != null && currentScreenMap != null) {
+			Group group = getGroupById(groupId);
+			if (group != null) {
+				List<ScreenRef> screenRefs = group.getInclude();
+				if (screenRefs != null && index <= (screenRefs.size()-1)) {
+					ScreenRef ref = screenRefs.get(index); 
+					if (ref != null) {
+						int screenId = ref.getRef();
+						screen = getScreenById(screenId);
+					}
+				}
+			}	
+		}
+		
+		return screen;
+	}
 }

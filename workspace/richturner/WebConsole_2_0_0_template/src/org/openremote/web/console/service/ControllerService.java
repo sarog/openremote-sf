@@ -32,6 +32,7 @@ public abstract class ControllerService {
 			getPanelIdentities(controller.getUrl(), callback);
 		}
 	}
+	
 	public abstract void getPanelIdentities(String controllerUrl, AsyncControllerCallback<List<PanelIdentity>> callback);
 	
 	/*
@@ -42,6 +43,7 @@ public abstract class ControllerService {
 			getPanel(controller.getUrl(), panelName, callback);
 		}
 	}
+	
 	public abstract void getPanel(String controllerUrl, String panelName, AsyncControllerCallback<Panel> callback);
 	
 	/*
@@ -52,10 +54,25 @@ public abstract class ControllerService {
 			isSecure(controller.getUrl(), callback);
 		}
 	}
+	
 	public abstract void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 	
 	/*
 	 * Static Method for retrieving controller alive status
 	 */
 	public abstract void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback);
+	
+	/*
+	 * Check if image exists on controller
+	 */
+	public void imageExists(String imageUrl, AsyncControllerCallback<Boolean> callback) {
+		if (controller != null) {
+			imageExists(controller.getUrl(), imageUrl, callback);
+		}
+	}
+	
+	public void imageExists(String controllerUrl, String imageUrl,	AsyncControllerCallback<Boolean> callback) {
+		// TODO Auto-generated method stub
+		
+	}
 }

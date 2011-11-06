@@ -12,4 +12,10 @@ public interface ConsoleComponent {
 	
 	// Sets the visibility of the widget
 	public void setVisible(boolean visible);
+	
+	// Sets the sensor info associated with this component
+	public void setSensor(Sensor sensor);
+	
+	// Gets the sensor info associated with this component
+	public Sensor getSensor();
 }

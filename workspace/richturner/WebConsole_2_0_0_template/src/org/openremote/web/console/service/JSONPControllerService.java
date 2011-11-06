@@ -1,4 +1,4 @@
-package org.openremote.web.console.rpc.json;
+package org.openremote.web.console.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +9,6 @@ import org.openremote.web.console.controller.EnumControllerResponseCode;
 import org.openremote.web.console.panel.Panel;
 import org.openremote.web.console.panel.PanelIdentity;
 import org.openremote.web.console.panel.PanelIdentityList;
-import org.openremote.web.console.service.AsyncControllerCallback;
-import org.openremote.web.console.service.AutoBeanService;
-import org.openremote.web.console.service.ControllerService;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
@@ -189,14 +186,14 @@ public class JSONPControllerService extends ControllerService {
 		   script.setAttribute("type", "text/javascript");
 		   // [2] Define the callback function on the window object.
 		   window[callback] = function(jsonObj) {
-		      handler.@org.openremote.web.console.rpc.json.JSONPControllerService::handleResponse(ILcom/google/gwt/core/client/JavaScriptObject;)(requestId, jsonObj);
+		      handler.@org.openremote.web.console.service.JSONPControllerService::handleResponse(ILcom/google/gwt/core/client/JavaScriptObject;)(requestId, jsonObj);
 		     	window[callback + "done"] = true;
 		   }
 		
 		   // [3] JSON download has 1-second timeout.
 		   setTimeout(function() {
 		   	if (!window[callback + "done"]) {
-					handler.@org.openremote.web.console.rpc.json.JSONPControllerService::handleResponse(ILcom/google/gwt/core/client/JavaScriptObject;)(requestId, null);
+					handler.@org.openremote.web.console.service.JSONPControllerService::handleResponse(ILcom/google/gwt/core/client/JavaScriptObject;)(requestId, null);
 		     	}
 		
 			  	// [4] Cleanup. Remove script and callback elements.

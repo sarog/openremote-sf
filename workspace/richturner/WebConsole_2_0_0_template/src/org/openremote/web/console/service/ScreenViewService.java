@@ -14,9 +14,7 @@ import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.AbsolutePanelComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
-
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
 
 public class ScreenViewService {
 	public static final int LOADING_SCREEN_ID = -1;

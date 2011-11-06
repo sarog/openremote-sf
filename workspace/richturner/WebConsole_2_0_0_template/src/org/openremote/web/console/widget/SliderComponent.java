@@ -29,7 +29,6 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	private SlideBar slideBar;
 	private int width;
 	private int height;
-	private AbsolutePanel container;
 	private boolean isVertical = false;
 	private int minValue = 0;
 	private int maxValue = 100;
@@ -38,7 +37,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	private int value = 0;
 	private int halfHandle = 0;
 	private int handleFixedPos = 0;
-	private int handleInternalMargin = 0;
+	private int handleInternalMargin = (HANDLE_CLICK_AREA_SIZE - HANDLE_SIZE) / 2;
 	private int stepSize = 1;
 	private int slideBarWidth = 0;
 	private int slideBarHeight = 0;
@@ -61,7 +60,6 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			DOM.setStyleAttribute(visibleElem, "borderWidth", BORDER_WIDTH + "px");
 			DOM.setStyleAttribute(visibleElem, "borderStyle", "solid");
 			DOM.setStyleAttribute(visibleElem, "marginTop", handleInternalMargin + "px");
-			//DOM.setStyleAttribute(visibleElem, "marginLeft", handleInternalMargin + "px");
 			
 			this.setWidth(HANDLE_CLICK_AREA_SIZE + "px");
 			this.setHeight(HANDLE_CLICK_AREA_SIZE + "px");
@@ -70,11 +68,6 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			DOM.setStyleAttribute(touchElem, "WebkitBorderRadius", HANDLE_SIZE/2 + "px");
 			DOM.setStyleAttribute(touchElem, "MozBorderRadius", HANDLE_SIZE/2 + "px");
 			DOM.setStyleAttribute(touchElem, "borderRadius", HANDLE_SIZE/2 + "px");
-			
-			storeHandler(this.addHandler(this, DragStartEvent.getType()));
-			storeHandler(this.addHandler(this, DragMoveEvent.getType()));
-			storeHandler(this.addHandler(this, DragEndEvent.getType()));
-			storeHandler(this.addHandler(this, DragCancelEvent.getType()));
 		}
 		
 		public void onDragStart(DragStartEvent event) {
@@ -107,20 +100,8 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		
 		public SlideBar() {
 			Element element = getElement();
-			
-			if (isVertical) {
-				slideBarWidth = SLIDE_BAR_HEIGHT;
-				slideBarHeight = height;
-			} else {
-				slideBarWidth = width;
-				slideBarHeight = SLIDE_BAR_HEIGHT;
-			}
-			
-			setHeight(slideBarHeight + "px");
-			setWidth(slideBarWidth + "px");
 			this.setStylePrimaryName(BAR_CLASS_NAME);
-			
-			int rad = (height/2);
+			int rad = (SLIDE_BAR_HEIGHT/2);
 			DOM.setStyleAttribute(element, "MozBorderRadius", rad + "px");
 			DOM.setStyleAttribute(element, "WebkitBorderRadius", rad + "px");
 			DOM.setStyleAttribute(element, "borderRadius", rad + "px");
@@ -129,22 +110,18 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			
 			SimplePanel track = new SimplePanel();
 			track.setStylePrimaryName(TRACK_CLASS_NAME);
-			Element trackElem = track.getElement();
+			Element trackElem = track.getElement();	
 			if (isVertical) {
 				track.setWidth("100%");
 				track.setHeight("100%");
-				DOM.setStyleAttribute(trackElem, "marginTop", height + "px");
 			} else {
 				track.setHeight("100%");
-				DOM.setStyleAttribute(trackElem, "marginRight", width + "px");
 			}			
 			DOM.setStyleAttribute(trackElem, "MozBorderRadius", rad + "px");
 			DOM.setStyleAttribute(trackElem, "WebkitBorderRadius", rad + "px");
 			DOM.setStyleAttribute(trackElem, "borderRadius", rad + "px");
 			DOM.setStyleAttribute(trackElem, "borderStyle", "1px solid");
-			
 			this.setWidget(track);
-			storeHandler(this.addHandler(this, TapEvent.getType()));
 		}
 
 		@Override
@@ -164,17 +141,21 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		
 		protected Widget getTrack() {
 			return this.getWidget();
-		}
+		} 
 	}
 	
 	private SliderComponent() {
-		super(new AbsolutePanel());
-		container = (AbsolutePanel)this.getWidget();
-		container.setStylePrimaryName(CLASS_NAME);
-		container.setWidth("100%");
-		container.setHeight("100%");
-		DOM.setStyleAttribute(container.getElement(), "overflow", "visible");
-		handleInternalMargin = (HANDLE_CLICK_AREA_SIZE - HANDLE_SIZE) / 2;
+		// Define container widget
+		super(new AbsolutePanel(), CLASS_NAME);
+		DOM.setStyleAttribute(getElement(), "overflow", "visible");
+		
+		// Define child components
+		slideBar = new SlideBar();
+		((AbsolutePanel)getWidget()).add(slideBar);
+		handle = new Handle();
+		((AbsolutePanel)getWidget()).add(handle);
+		addInteractiveChild(slideBar);
+		addInteractiveChild(handle);
 	}
 	
 	@Override
@@ -186,15 +167,22 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			this.width = width;
 			this.height = height;
 			
-			// Create Slide Bar
-			slideBar = new SlideBar();
-			container.add(slideBar);
+			// Configure Slide Bar
+			if (isVertical) {
+				slideBarWidth = SLIDE_BAR_HEIGHT;
+				slideBarHeight = height;
+			} else {
+				slideBarWidth = width;
+				slideBarHeight = SLIDE_BAR_HEIGHT;
+			}
 			relSlideBarXPos = (int)(((double)width - slideBarWidth) / 2);
 			relSlideBarYPos = (int)(((double)height - slideBarHeight) / 2);
-			container.setWidgetPosition(slideBar, relSlideBarXPos, relSlideBarYPos);
+			((AbsolutePanel)getWidget()).setWidgetPosition(slideBar, relSlideBarXPos, relSlideBarYPos);
+			slideBar.setHeight(slideBarHeight + "px");
+			slideBar.setWidth(slideBarWidth + "px");
+			setTrackLength(0);
 			
-			// Create Handle
-			handle = new Handle();
+			// Configure Handle
 			halfHandle = (int)(Math.floor((double)HANDLE_SIZE / 2));
 			
 			if (isVertical) {
@@ -202,15 +190,11 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			} else {
 				handleFixedPos = (int)(((double)height - HANDLE_CLICK_AREA_SIZE)/2);
 			}
-			container.add(handle);
 			setHandlePosition(halfHandle);
 			
 			// Calculate pixel value density
 			pixelRange = (int)(getWidth() - (2 * halfHandle));
 		}
-		
-		registerMouseAndTouchHandlers(slideBar);
-		registerMouseAndTouchHandlers(handle);
 	}
 	
 	private void doHandleDrag(int absPos) {
@@ -230,10 +214,10 @@ public class SliderComponent extends InteractiveConsoleComponent {
 			value = pixelMin - value;
 		} else {
 			if (isVertical) {
-				pixelMin = (int)(container.getAbsoluteLeft() + getWidth());
+				pixelMin = (int)(getAbsoluteLeft() + getWidth());
 				value = pixelMin - value;		
 			} else {
-				pixelMin = container.getAbsoluteLeft();
+				pixelMin = getAbsoluteLeft();
 				value = value - pixelMin;				
 			}
 		}
@@ -263,9 +247,9 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		pos = pos < (0 + halfHandle) ? (int)(0 + halfHandle) : pos;
 		pos = pos > (getWidth() - halfHandle) ? (int)(getWidth() - halfHandle) : pos;
 		if (isVertical) {
-			container.setWidgetPosition(handle, handleFixedPos, (int)(getWidth() - pos - halfHandle - handleInternalMargin));			
+			((AbsolutePanel)getWidget()).setWidgetPosition(handle, handleFixedPos, (int)(getWidth() - pos - halfHandle - handleInternalMargin));			
 		} else {
-			container.setWidgetPosition(handle, (int)(pos - halfHandle - handleInternalMargin), handleFixedPos);
+			((AbsolutePanel)getWidget()).setWidgetPosition(handle, (int)(pos - halfHandle - handleInternalMargin), handleFixedPos);
 		}
 		return pos;
 	}
@@ -275,6 +259,7 @@ public class SliderComponent extends InteractiveConsoleComponent {
 		if (isVertical) {
 			length = height-size;
 			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "marginTop", length + "px");
+			slideBar.getTrack().setHeight(size + "px");
 		} else {
 			length = width-size;
 			DOM.setStyleAttribute(slideBar.getTrack().getElement(), "marginRight", length + "px");
