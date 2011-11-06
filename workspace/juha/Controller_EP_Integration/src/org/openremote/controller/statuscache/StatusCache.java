@@ -27,12 +27,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.NoSuchComponentException;
+import org.openremote.controller.exception.ResourceNotFoundException;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.protocol.Event;
 import org.openremote.controller.utils.Logger;
 
 /**
- * TODO
+ * TODO:
+ *
+ *   ORCJAVA-208 -- internalize ChangedStatusTable and ChangedStatusRecord into this implementation
+ *
  *
  * @author @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Javen Zhang
@@ -51,15 +55,12 @@ public class StatusCache
 
   // Private Instance Fields ----------------------------------------------------------------------
 
-  /**
-   * TODO : ChangedStatusTable implementation requires a thorough review
-   */
-  private ChangedStatusTable changedStatusTable;
 
   /**
    * Maintains a map of sensor ids to their values in cache.
    */
-  private Map<Integer, String> sensorStatus = new ConcurrentHashMap<Integer, String>();
+  private SensorMap sensorMap;
+
 
   /**
    * A chain of event processors that incoming events (values) are forced through before
@@ -71,7 +72,7 @@ public class StatusCache
   private EventProcessorChain eventProcessorChain;
 
   /**
-   * Map of sensor IDs to actual sensor instances.
+   * TODO : Map of sensor IDs to actual sensor instances.
    */
   private Map<Integer, Sensor> sensors = new ConcurrentHashMap<Integer, Sensor>();
 
@@ -85,7 +86,7 @@ public class StatusCache
   // Constructors ---------------------------------------------------------------------------------
 
   /**
-   * TODO : need to thoroughly review ChangedStatusTable use
+   * Constructs a new status cache instance.
    */
   public StatusCache()
   {
@@ -93,12 +94,14 @@ public class StatusCache
   }
 
   /**
-   * TODO : need to thoroughly review ChangedStatusTable use
+   * TODO : ORCJAVA-208
+   *
+   * @Deprecated only used by tests at the moment -- can be removed once ORCJAVA-208 is complete
    */
-  public StatusCache(ChangedStatusTable cst, EventProcessorChain epc)
+  @Deprecated public StatusCache(ChangedStatusTable cst, EventProcessorChain epc)
   {
-    this.changedStatusTable = cst;
     this.eventProcessorChain = epc;
+    this.sensorMap = new SensorMap(cst);
   }
 
 
@@ -113,10 +116,17 @@ public class StatusCache
    *
    * @param sensor    sensor to register
    */
-  public void registerSensor(Sensor sensor)
+  public synchronized void registerSensor(Sensor sensor)
   {
+    // TODO :
+    //   push thread synchronization down to sensorMap.init() once
+    //   Sensor references are handled there
+    //                                                    [JPL]
+
     if (isShutdownInProcess)
+    {
       return;
+    }
 
     Sensor previous = sensors.put(sensor.getSensorID(), sensor);
 
@@ -133,13 +143,7 @@ public class StatusCache
       );
     }
 
-    // TODO :
-    //   Use of Sensor.UNKNOWN_STATUS should go away once we store and return Events rather than
-    //   serializing to untyped strings, see ORCJAVA-203
-
-    sensorStatus.put(sensor.getSensorID(), Sensor.UNKNOWN_STATUS);
-
-    initLog.debug("Initialized sensor ''{0}'' to ''{1}''", sensor.toString(), Sensor.UNKNOWN_STATUS);
+    sensorMap.init(sensor);
 
     initLog.info("Registered sensor : {0}", sensor.toString());
   }
@@ -193,11 +197,9 @@ public class StatusCache
 
         stopSensors();
 
-        clearChangedStatuses();
+        sensorMap.clear();
 
-        sensorStatus.clear();
-
-        sensors.clear();
+        sensors.clear();        // TODO
       }
 
       finally
@@ -242,31 +244,9 @@ public class StatusCache
 
     event = eventProcessorChain.push(event);
 
+    // Update the final value...
 
-    // TODO :
-    //   Serializing to strings early -- should go away once we store Events, see ORCJAVA-203
-
-    String oldStatus = sensorStatus.get(event.getSourceID());
-
-    String eventValue = event.serialize();
-
-    // Store...
-
-    sensorStatus.put(event.getSourceID(), eventValue);
-
-    log.trace(
-        "Updated cache with Sensor ID = {0} (''{1}'') with value ''{2}''.",
-        event.getSourceID(), event.getSource(), eventValue
-    );
-
-    if (oldStatus == null || oldStatus.equals("") || !oldStatus.equals(eventValue))
-    {
-      changedStatusTable.updateStatusChangedIDs(event.getSourceID());
-
-      log.trace(
-          "Marked Sensor ID = {0} (''{1}'') changed.", event.getSourceID(), event.getSource()
-      );
-    }
+    sensorMap.update(event);
   }
 
 
@@ -292,7 +272,8 @@ public class StatusCache
 
     for (Integer sensorId : sensorIDs) 
     {
-       if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId)))
+      if (!sensorMap.hasExistingState(sensorId))
+       //if (this.sensorStatus.get(sensorId) == null || "".equals(this.sensorStatus.get(sensorId)))
        {
          // TODO : do not throw an exception, instead return 'unknown value'
          
@@ -301,7 +282,8 @@ public class StatusCache
 
        else
        {
-          statuses.put(sensorId, this.sensorStatus.get(sensorId));
+         statuses.put(sensorId, sensorMap.getCurrentState(sensorId).serialize());
+          //statuses.put(sensorId, this.sensorStatus.get(sensorId));
        }
     }
 
@@ -322,10 +304,9 @@ public class StatusCache
    */
   public String queryStatus(Integer sensorID)
   {
-    String result = this.sensorStatus.get(sensorID);
-
-    if (result == null)
+    if (!sensorMap.hasExistingState(sensorID))
     {
+
       log.error(
           "Requested sensor id ''{0}'' was not found. Defaulting to ''{1}''.",
           sensorID, Sensor.UNKNOWN_STATUS);
@@ -333,26 +314,29 @@ public class StatusCache
       return Sensor.UNKNOWN_STATUS;
     }
 
-    return result;
+    return sensorMap.getCurrentState(sensorID).serialize();
   }
 
+
+  /**
+   * TODO
+   *
+   * @param name
+   * @return
+   * @throws ResourceNotFoundException
+   */
+  public Event queryStatus(String name) throws ResourceNotFoundException
+  {
+    return sensorMap.get(name);
+  }
 
 
   // Private Instance Methods ---------------------------------------------------------------------
 
 
-  private void clearChangedStatuses()
-  {
-    for (Sensor sensor : sensors.values())
-    {
-      // Just wake up all the records, acturelly, the status didn't change.
-      changedStatusTable.updateStatusChangedIDs(sensor.getSensorID());
-    }
-
-    changedStatusTable.clearAllRecords();
-  }
-
-
+  /**
+   * TODO
+   */
   private void stopSensors()
   {
     for (Sensor sensor : sensors.values())
@@ -377,4 +361,108 @@ public class StatusCache
     }
   }
 
+
+
+
+  // Inner Classes --------------------------------------------------------------------------------
+
+
+  /**
+   * TODO
+   */
+  private class SensorMap
+  {
+
+    private Map<String, Integer> nameIdIndex = new ConcurrentHashMap<String, Integer>();
+    private Map<Integer, Event> currentState = new ConcurrentHashMap<Integer, Event>();
+    private ChangedStatusTable deviceStatusChanges;
+
+    private SensorMap(ChangedStatusTable cst)
+    {
+      this.deviceStatusChanges = cst;
+    }
+
+    private void init(Sensor sensor)
+    {
+      nameIdIndex.put(sensor.getName(), sensor.getSensorID());
+      currentState.put(sensor.getSensorID(), new Sensor.UnknownEvent(sensor));
+    }
+
+    private void clear()
+    {
+      clearDeviceStatusChanges();
+
+      nameIdIndex.clear();
+      currentState.clear();
+    }
+
+    private void clearDeviceStatusChanges()
+    {
+      for (Sensor sensor : sensors.values())
+      {
+        // Just wake up all the records, acturelly, the status didn't change.
+        deviceStatusChanges.updateStatusChangedIDs(sensor.getSensorID());
+      }
+
+      deviceStatusChanges.clearAllRecords();
+
+    }
+
+
+    private boolean hasExistingState(int id)
+    {
+      return currentState.get(id) != null;
+    }
+
+    private Event getCurrentState(int id)
+    {
+      return currentState.get(id);
+    }
+
+    private Event get(String name) throws ResourceNotFoundException
+    {
+      if (!nameIdIndex.keySet().contains(name))
+      {
+        throw new ResourceNotFoundException(
+            "No sensors with name ''{0}'' found.", name
+        );
+      }
+
+      int id = nameIdIndex.get(name);
+
+      return currentState.get(id);
+    }
+
+
+    private void update(Event event)
+    {
+      int id = event.getSourceID();
+
+      if (currentState.get(id) == null)
+      {
+        currentState.put(id, event);
+      }
+
+      else
+      {
+        Event previousState = currentState.get(id);
+
+        if (previousState.isEqual(event))
+        {
+          return;
+        }
+
+        currentState.put(id, event);
+      }
+
+
+      deviceStatusChanges.updateStatusChangedIDs(event.getSourceID());
+
+      log.trace(
+          "Marked Sensor ID = {0} (''{1}'') changed.", event.getSourceID(), event.getSource()
+      );
+
+    }
+
+  }
 }
