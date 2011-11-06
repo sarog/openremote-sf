@@ -21,7 +21,6 @@
 package org.openremote.controller.statuscache;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -30,17 +29,21 @@ import java.util.Set;
 /**
  * TODO:
  *
+ *  - See relevant task ORCJAVA-208 (http://jira.openremote.org/browse/ORCJAVA-208)
+ *    This should be part of internal implementation of StatusCache
+ *
  *  - See relevant task ORCJAVA-165 (http://jira.openremote.org/browse/ORCJAVA-165)
  *
  *
  *
- * 
- * A changed status record.<br />
- * This Record is used to record the skipped changed statuses and waited changed statuses .<br />
+ * A changed status record.
+ *
+ * This Record is used to record the skipped changed statuses and waited changed statuses .
  * 
  * @author Handy.Wang 2009-10-23
  */
-public class ChangedStatusRecord {
+public class ChangedStatusRecord
+{
    
   /** A logical identity of panel */
   private String deviceID;
@@ -56,69 +59,14 @@ public class ChangedStatusRecord {
   // Constructors ---------------------------------------------------------------------------------
 
 
-//   Looks like dead code [JPL]
-//
-//  public ChangedStatusRecord()
-//  {
-//    super();
-//    deviceID = "";
-//    pollingSensorIDs = new ArrayList<Integer>();
-//  //      statusChangedSensorIDs = new HashSet<Integer>();
-//  }
 
   public ChangedStatusRecord(String deviceID, List<Integer> pollingSensorIDs)
   {
     this.deviceID = deviceID;
     this.pollingSensorIDs = pollingSensorIDs;
-    //this.statusChangedSensorIDs = new HashSet<Integer>();
   }
 
-//   Looks like dead code [JPL]
-//
-//   public ChangedStatusRecord(String deviceID, Integer[] pollingSensorIDs) {
-//      super();
-//      this.deviceID = deviceID;
-//      this.pollingSensorIDs = new ArrayList<Integer>();
-//      this.setPollingSensorIDs(pollingSensorIDs);
-//      this.statusChangedSensorIDs = new HashSet<Integer>();
-//   }
-//
-//
-//   Looks like dead code [JPL]
-//
-//  public ChangedStatusRecord(String deviceID, String[] pollingSensorIDs)
-//  {
-//    this.pollingSensorIDs = new ArrayList<Integer>();
-//
-//    for (String s : pollingSensorIDs) {
-//       this.pollingSensorIDs.add(Integer.parseInt(s));
-//    }
-//
-//    this.deviceID = deviceID;
-////      this.statusChangedSensorIDs = new HashSet<Integer>();
-//  }
-//
-//
-//   Looks like dead code [JPL]
-//
-//  public ChangedStatusRecord(String deviceID, Collection<Integer> pollingSensorIDs)
-//  {
-//    this.pollingSensorIDs = new ArrayList<Integer>();
-//    for (Integer i : pollingSensorIDs) {
-//       this.pollingSensorIDs.add(i);
-//    }
-//    this.deviceID = deviceID;
-////      this.statusChangedSensorIDs = new HashSet<Integer>();
-//  }
 
-
-//
-//   Looks like dead code [JPL]
-//
-//  public void setDeviceID(String deviceID)
-//  {
-//    this.deviceID = deviceID;
-//  }
 
 
   public String getDeviceID()
@@ -144,28 +92,10 @@ public class ChangedStatusRecord {
 
 
 
-//   Looks like dead code [JPL]
-//
-//   /**
-//    * Add pollingSensor id into polling sensor id list.
-//    */
-//   public void addPollingSensorID(Integer pollingSensorID) {
-//      this.pollingSensorIDs.add(pollingSensorID);
-//   }
-//
-//
-//   Looks like dead code [JPL]
-//
-//   /**
-//    * Add statusChanged id into status changed id list.
-//    */
-//   public void addStatusChangedSensorID(Integer statusChangedSensorID) {
-//      this.statusChangedSensorIDs.add(statusChangedSensorID);
-//   }
-
-  @Override
-  public boolean equals(Object obj)
+  @Override public boolean equals(Object obj)
   {
+    // TODO : this implementation looks pretty bad  [JPL]
+
     if (obj == null || !(obj instanceof ChangedStatusRecord))
     {
        return false;
@@ -199,8 +129,7 @@ public class ChangedStatusRecord {
   }
 
 
-  @Override
-  public String toString()
+  @Override public String toString()
   {
      StringBuffer sb = new StringBuffer();
 
@@ -210,23 +139,6 @@ public class ChangedStatusRecord {
      return sb.toString();
   }
 
-
-//  Looks like dead code  [JPL]
-//
-//   private void setPollingSensorIDs(Integer[] pollingSensorIDs) {
-//      for (Integer pollingSensorID : pollingSensorIDs) {
-//         this.pollingSensorIDs.add(pollingSensorID);
-//      }
-//   }
-//
-//  Looks like dead code  [JPL]
-//
-//   /**
-//    * Overload the method setPollingSensorIDs with the parameter type "Integer[]".
-//    */
-//   public void setPollingSensorIDs(List<Integer> pollingSensorIDs) {
-//      this.pollingSensorIDs = pollingSensorIDs;
-//   }
 
 
 }
