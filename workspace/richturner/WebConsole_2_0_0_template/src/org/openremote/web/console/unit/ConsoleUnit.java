@@ -162,7 +162,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		// Create and load loading screen
 		ScreenViewImpl loadingScreen = screenViewService.getScreenView(ScreenViewService.LOADING_SCREEN_ID);
 		setScreenView(loadingScreen);
-		
+
 		// Check for Last Panel in Cache
 		PanelCredentialsImpl panelCred = new PanelCredentialsImpl("http://multimation.co.uk:8080/controller", 30, "Mobile");
 		dataService.setLastPanelCredentials(panelCred);

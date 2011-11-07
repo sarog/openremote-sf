@@ -90,8 +90,8 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 			height = height.replaceAll("%", "");
 			try {
 				double calc = Integer.parseInt(height);
-				int displayWidth = WebConsole.getConsoleUnit().getConsoleDisplay().getWidth();
-				heightInt = (int)Math.round((calc / 100) * displayWidth); 
+				int displayHeight = WebConsole.getConsoleUnit().getConsoleDisplay().getHeight();
+				heightInt = (int)Math.round((calc / 100) * displayHeight); 
 			} catch (Exception e) {}
 		} else if (height.endsWith("px")) {
 			height = height.replaceAll("px", "");
