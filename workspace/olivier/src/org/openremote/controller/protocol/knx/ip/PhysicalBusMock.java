@@ -9,18 +9,19 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.openremote.controller.protocol.bus.DatagramSocketMessage;
-import org.openremote.controller.protocol.bus.Message;
-import org.openremote.controller.protocol.bus.PhysicalBus;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectReq;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateReq;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectReq;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverReq;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
+import org.openremote.controller.protocol.port.DatagramSocketMessage;
+import org.openremote.controller.protocol.port.Message;
+import org.openremote.controller.protocol.port.Port;
+import org.openremote.controller.protocol.port.PortException;
 
 // TODO add a KNX response send mechanism
-public class PhysicalBusMock implements PhysicalBus {
+public class PhysicalBusMock implements Port {
    private static final byte[] DISCOVER_RESP = new byte[] { 0x06, 0x10, 0x02, 0x02, 0x00, 0x0E, 0x08, 0x01, 127, 0, 0,
          1, 0x0E, 0x56, 0, 0 };
    private static final byte[] CONNECT_RESP = new byte[] { 0x06, 0x10, 0x02, 0x06, 0x00, 0x12, 0x15, 0x00, 0x08, 0x01,
@@ -51,7 +52,7 @@ public class PhysicalBusMock implements PhysicalBus {
    }
 
    @Override
-   public void send(Message message) throws IOException {
+   public void send(Message message) throws PortException, IOException {
       byte[] req = message.getContent();
       int sti = (req[2] << 8) + req[3];
       switch (sti) {

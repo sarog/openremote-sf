@@ -1,14 +1,16 @@
-package org.openremote.controller.protocol.bus;
+package org.openremote.controller.protocol.port;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openremote.controller.protocol.port.Port;
+import org.openremote.controller.protocol.port.PortFactory;
 
-public class PhysicalBusFactoryTest {
+public class PortFactoryTest {
    @Test
    public void testCreatePhysicalBus() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-      PhysicalBus b = PhysicalBusFactory
+      Port b = PortFactory
             .createPhysicalBus("org.openremote.controller.protocol.bus.DatagramSocketPhysicalBus");
-      Assert.assertTrue(b instanceof PhysicalBus);
+      Assert.assertTrue(b instanceof Port);
    }
 }

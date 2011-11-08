@@ -64,14 +64,16 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case CREATE_PORT: {
+		printf("creating port %s, %s\n", tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
 		int r = createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
+		printf("port created, %d\n", r);
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case CONFIGURE: {
 		port_t *port;
 		CHECK(getPort(tx->request->fields[0].stringVal, &port))
 		// TODO configure
-		break;
+		return createACK(txPool, &tx->response, 0);
 	}
 	}
 

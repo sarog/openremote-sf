@@ -1,11 +1,11 @@
-package org.openremote.controller.protocol.bus;
+package org.openremote.controller.protocol.port;
 
 import java.net.InetSocketAddress;
 
 /**
  * A message used by <code>DatagramSocketPhysicalBus</code>.
  * 
- * @see DatagramSocketPhysicalBus
+ * @see DatagramSocketPort
  * @see Message
  */
 public class DatagramSocketMessage extends Message {
