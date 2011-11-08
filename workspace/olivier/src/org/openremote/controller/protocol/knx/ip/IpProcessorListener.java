@@ -21,7 +21,8 @@
 package org.openremote.controller.protocol.knx.ip;
 
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
+import org.openremote.controller.protocol.port.PortException;
 
 public interface IpProcessorListener {
-   void notifyMessage(IpMessage message);
+   void notifyMessage(IpMessage message) throws PortException;
 }

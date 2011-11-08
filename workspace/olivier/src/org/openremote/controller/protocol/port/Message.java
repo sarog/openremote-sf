@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.bus;
+package org.openremote.controller.protocol.port;
 
 /**
  * A message to send or receive over a physical bus.

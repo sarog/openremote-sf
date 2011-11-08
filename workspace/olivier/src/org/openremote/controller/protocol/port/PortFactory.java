@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.bus;
+package org.openremote.controller.protocol.port;
 
 import org.openremote.controller.Constants;
 import org.openremote.controller.utils.Logger;
@@ -6,7 +6,7 @@ import org.openremote.controller.utils.Logger;
 /**
  * A factory for <code>PhysicalBus</code> instances.
  */
-public class PhysicalBusFactory {
+public class PortFactory {
    /**
     * A common log category name intended to be used across all classes related to Physical Bus implementation.
     */
@@ -14,11 +14,11 @@ public class PhysicalBusFactory {
 
    private final static Logger log = Logger.getLogger(PHYSICALBUS_LOG_CATEGORY);
 
-   public static PhysicalBus createPhysicalBus(String clazz) {
+   public static Port createPhysicalBus(String clazz) {
       try {
          Class<?> c = Class.forName(clazz);
-         if (PhysicalBus.class.isAssignableFrom(c)) {
-            return (PhysicalBus) c.newInstance();
+         if (Port.class.isAssignableFrom(c)) {
+            return (Port) c.newInstance();
          } else {
             return null;
          }

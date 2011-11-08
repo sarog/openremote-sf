@@ -3,9 +3,9 @@
 #include "portManager.h"
 //#include "linuxSerialPort.h"
 
-extern physicalLock_t physicalLock;
-extern physicalUnlock_t physicalUnlock;
-extern physicalSend_t physicalSend;
+extern physicalLock_t physicalLockCb;
+extern physicalUnlock_t physicalUnlockCb;
+extern physicalSend_t physicalSendCb;
 static apr_pool_t *portPool;
 static apr_hash_t *ports;
 
@@ -32,9 +32,9 @@ int createPort(char *portId, char *portType) {
 	p->lockSource = NULL;
 	p->configuration = NULL;
 	apr_hash_set(ports, portId, strlen(portId), p);
-	p->lockCb = physicalLock;
-	p->unlockCb = physicalUnlock;
-	p->portSendCb = physicalSend;
+	p->lockCb = physicalLockCb;
+	p->unlockCb = physicalUnlockCb;
+	p->portSendCb = physicalSendCb;
 	printf("port '%s' created\n", portId);
 	return R_SUCCESS;
 }

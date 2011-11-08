@@ -1,4 +1,4 @@
-package org.openremote.controller.protocol.bus;
+package org.openremote.controller.protocol.port;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,9 +9,9 @@ import java.util.Map;
 /**
  * A physical bus using datagram sockets to send and receive messages.
  * 
- * @see PhysicalBus
+ * @see Port
  */
-public class DatagramSocketPhysicalBus implements PhysicalBus {
+public class DatagramSocketPort implements Port {
    private DatagramSocket inSocket, outSocket;
 
    @Override

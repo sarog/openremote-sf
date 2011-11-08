@@ -71,7 +71,7 @@ int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 	// start the read thread
 //	pthread_mutex_lock(&start_sync_mutex);
 //	pthread_create(&read_thread, NULL, read_port, NULL);
-	apr_thread_create(&portContext->readThread, NULL, lsRead, portContext, pool);
+//	apr_thread_create(&portContext->readThread, NULL, lsRead, portContext, pool);
 
 	// wait for the read thread to start.
 //	pthread_cond_wait(&start_sync_cond, &start_sync_mutex);
@@ -83,9 +83,9 @@ int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 }
 
 int lsInterruptReadThread(portContext_t *portContext) {
-	apr_status_t r;
-	apr_thread_exit(portContext->readThread, APR_SUCCESS);
-	apr_thread_join(&r, portContext->readThread);
+//	apr_status_t r;
+//	apr_thread_exit(portContext->readThread, APR_SUCCESS);
+//	apr_thread_join(&r, portContext->readThread);
 	return R_SUCCESS;
 }
 
@@ -114,6 +114,8 @@ int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, po
 	return R_SUCCESS;
 }
 
+physicalLock_t physicalLockCb = physicalLock;
+
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) {
 	lsInterruptReadThread(*portContext);
 //	lsUnconfigure(*portContext);
@@ -122,9 +124,14 @@ int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) 
 	return R_SUCCESS;
 }
 
+physicalUnlock_t physicalUnlockCb = physicalUnlock;
+
 int physicalSend(portContext_t *portContext, char *data, int len) {
 	int r = write(portContext->fd, data, len); // TODO write in a loop
 	if (r == -1)
 		return R_SEND_ERROR;
+	printf("wrote %d bytes\n", r);
 	return R_SUCCESS;
 }
+
+physicalSend_t physicalSendCb = physicalSend;

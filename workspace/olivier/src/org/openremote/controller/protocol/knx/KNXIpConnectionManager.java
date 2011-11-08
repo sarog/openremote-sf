@@ -47,6 +47,7 @@ import org.openremote.controller.protocol.knx.ip.IpDiscoverer;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClient;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener;
 import org.openremote.controller.protocol.knx.ip.KnxIpException;
+import org.openremote.controller.protocol.port.PortException;
 import org.openremote.controller.utils.Logger;
 
 
@@ -708,6 +709,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
         Thread.currentThread().interrupt();
       } catch (IOException e) {
         throw new ConnectionException("Connect failed", e);
+      } catch (PortException e) {
+        throw new ConnectionException("Connect failed", e);
       }
     }
 
@@ -830,6 +833,11 @@ public class KNXIpConnectionManager implements DiscoveryListener
       {
         log.error("Disconnect failed", e);
       }
+      
+      catch (PortException e)
+      {
+        log.error("Disconnect failed", e);
+      }
     }
 
    private synchronized byte[] service(KNXCommand command)
@@ -867,6 +875,12 @@ public class KNXIpConnectionManager implements DiscoveryListener
       }
 
       catch (IOException e)
+      {
+        log.error("Service failed", e);
+        this.stop();
+      }
+
+      catch (PortException e)
       {
         log.error("Service failed", e);
         this.stop();

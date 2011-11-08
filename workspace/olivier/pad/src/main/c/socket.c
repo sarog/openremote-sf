@@ -159,9 +159,9 @@ static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *soc
 		context->serverTx = NULL;
 		context->clientTx = NULL;
 
-		/* non-blocking socket. We can't expect that @ns inherits non-blocking mode from @lsock */
-		apr_socket_opt_set(acceptedSocket, APR_SO_NONBLOCK, 1);
-		apr_socket_timeout_set(acceptedSocket, 0);
+		// Blocking socket. Blocking timeout = 1s
+		apr_socket_opt_set(acceptedSocket, APR_SO_NONBLOCK, 0);
+		apr_socket_timeout_set(acceptedSocket, 1000000);
 
 		/* monitor accepted socket */
 		apr_pollset_add(pollset, &descriptor);
@@ -176,6 +176,8 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 		CHECK(writeInt32(sock, &message->fields[0]))
 		break;
 	case NOTIFY:
+		CHECK(writeString(sock, message->fields[0]));
+		CHECK(writeOctetString(sock, message->fields[1]));
 		break;
 	}
 
@@ -183,6 +185,7 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 }
 
 void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
+	printf("closing socket\n");
 	apr_socket_close(sock);
 	apr_pool_clear(context->socketPool);
 	context = NULL;
@@ -196,6 +199,7 @@ static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr
 
 	int r = operateRequest(sock, context->serverTx, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
+		printf("operateRequest() failed, %d\n", r);
 		closeSocket(sock, context);
 		return r;
 	}
@@ -278,8 +282,9 @@ int receiveData(char *portId, char *buf, int len) {
 	createClientTransaction(context->clientTxPool, &context->clientTx);
 
 	CHECK(operatePortData(context->clientTx, context->clientTxPool, portId, buf, len))
+
+	// Send message and synchronize with response if message sent
 	apr_thread_mutex_lock(context->clientTx->mutex);
-	// Synchronize with response if message sent
 	int r = writeMessage(acceptedSocket, context->clientTx->request);
 	if (r == R_SUCCESS) {
 		apr_thread_cond_timedwait(context->clientTx->cond, context->clientTx->mutex, 2000000);

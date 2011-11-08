@@ -118,6 +118,7 @@ int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
 	int l = len - 1;
 	apr_status_t rv = apr_socket_recv(sock, buf, &l);
 	if (rv == APR_EOF || l != len - 1) {
+		printf("expected %d, got %d\n", len -1, l);
 		return R_INVALID_MESSAGE;
 	}
 	buf[l] = 0; // Make sure buf can be treated as a string
@@ -150,6 +151,7 @@ int writeFieldLength(apr_socket_t *sock, apr_uint16_t fieldLength) {
 	int len = 4;
 	CHECK(int162Buf(buf, fieldLength))
 	apr_socket_send(sock, buf, &len);
+	// TODO check len and return value
 	return R_SUCCESS;
 }
 
@@ -160,15 +162,24 @@ int readString(apr_pool_t *pool, apr_socket_t *sock, field_t *field) {
 	return R_SUCCESS;
 }
 
-int writeString(apr_socket_t *sock, char *buf, int len) {
+int writeString(apr_socket_t *sock, field_t *field) {
+	apr_size_t len = field->length;
+	CHECK(writeFieldLength(sock, len));
+	apr_socket_send(sock, field->stringVal, &len);
+	// TODO check len and return value
+	return R_SUCCESS;
+}
+
+int writeOctetString(apr_socket_t *sock, field_t *field) {
 	int i;
-	int tmpLen = 2 * len;
-	char tmp[2 * len];
-	writeFieldLength(sock, len);
-	for (i = 0; i < len; ++i) {
-		apr_snprintf(&tmp[2 * i], 2, "%02X", buf[i]);
+	int len = 2 * field->length;
+	char tmp[len];
+	writeFieldLength(sock, field->length);
+	for (i = 0; i < field->length; ++i) {
+		apr_snprintf(&tmp[2 * i], 2, "%02X", field->stringVal[i]);
 	}
-	apr_socket_send(sock, tmp, &tmpLen);
+	apr_socket_send(sock, tmp, &len);
+	// TODO check len and return value
 	return R_SUCCESS;
 }
 
