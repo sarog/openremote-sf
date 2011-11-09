@@ -11,6 +11,9 @@ public class NotifyMessage extends PadMessage {
    private String portId;
    private byte[] content;
 
+   public NotifyMessage() {
+   }
+
    public NotifyMessage(String portId, byte[] content) {
       this.portId = portId;
       this.content = content;
@@ -28,12 +31,13 @@ public class NotifyMessage extends PadMessage {
    }
 
    @Override
-   protected void readBody(InputStream is) {
-      // TODO
+   protected void readBody(InputStream is) throws IOException {
+      this.portId = PadMessage.readString(is);
+      this.content = PadMessage.readOctetString(is);
    }
 
    public Message getMessage() {
-      return null;
+      return new Message(this.content);
    }
 
    public String getPortId() {

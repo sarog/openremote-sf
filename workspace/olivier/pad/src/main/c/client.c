@@ -34,6 +34,7 @@ int operateResponse(apr_socket_t *sock, clientTransaction_t *tx, apr_pool_t *txP
 		// TODO check ACK code
 		break;
 	default:
+		printf("Received response code %d, %c\n", tx->request->code, tx->request->code);
 		return R_UNEXPECTED_RESP;
 	}
 

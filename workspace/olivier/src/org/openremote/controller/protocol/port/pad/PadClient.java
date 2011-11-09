@@ -67,7 +67,7 @@ class PadClient {
             }
          } catch (UnknownHostException e) {
             // Cannot happen
-         } 
+         }
       }
    }
 
@@ -83,7 +83,7 @@ class PadClient {
             int v = r.getValue();
             if (v != 0) throw new PortException(PortException.SERVICE_FAILED, v);
          }
-      }  catch (InterruptedException e) {
+      } catch (InterruptedException e) {
          // Nothing more to do
       }
    }
@@ -131,7 +131,7 @@ class PadClient {
                         PadClient.this.portListeners.get(portId).notifyMessage(n);
                      }
                   }
-                  
+
                   // Send ACK
                   new AckMessage(0).write(PadClient.this.socket.getOutputStream());
                   break;
@@ -140,11 +140,19 @@ class PadClient {
                }
 
                // Handle message
+            } catch (IOException x) {
+               try {
+                  PadClient.this.socket.close();
+               } catch (IOException e) {
+                  e.printStackTrace();
+               }
+               this.interrupt();
             } catch (Exception x) {
                System.out.println("Caught " + x + ", " + x.getMessage());
                x.printStackTrace();
             }
          }
+         System.out.println("reader stopped");
       }
    }
 }

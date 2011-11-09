@@ -75,21 +75,26 @@ void printMessage(message_t *message) {
 		printf(" (ACK), code=0x%X", message->fields[0].int32Val);
 		break;
 	case NOTIFY:
-		printf(" (NOTIFY), portId='%s', content='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		printf(" (NOTIFY), portId='%s', content='%s'",
+				message->fields[0].stringVal, message->fields[1].stringVal);
 		break;
 	case LOCK:
-		printf(" (LOCK), portId='%s', sourceId='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		printf(" (LOCK), portId='%s', sourceId='%s'",
+				message->fields[0].stringVal, message->fields[1].stringVal);
 		break;
 	case UNLOCK:
-		printf(" (UNLOCK), portId='%s', sourceId='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		printf(" (UNLOCK), portId='%s', sourceId='%s'",
+				message->fields[0].stringVal, message->fields[1].stringVal);
 		break;
 	case CREATE_PORT:
-		printf(" (CREATE_PORT), portId='%s', portType='%s'", message->fields[0].stringVal, message->fields[1].stringVal);
+		printf(" (CREATE_PORT), portId='%s', portType='%s'",
+				message->fields[0].stringVal, message->fields[1].stringVal);
 		break;
 	case CONFIGURE:
 		printf(" (CONFIGURE), portId='%s'", message->fields[0].stringVal);
 		for (i = 0; i < message->fields[1].int32Val; ++i) {
-			printf("\n\t%s=%s", message->fields[2 + i * 2].stringVal, message->fields[3 + i * 2].stringVal);
+			printf("\n\t%s=%s", message->fields[2 + i * 2].stringVal,
+					message->fields[3 + i * 2].stringVal);
 		}
 		break;
 	default:
@@ -106,7 +111,8 @@ int createACK(apr_pool_t *pool, message_t **message, apr_int32_t code) {
 	return R_SUCCESS;
 }
 
-int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf, int len) {
+int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf,
+		int len) {
 	CHECK(createMessage(NOTIFY, message, pool))
 	createMessageFields(pool, *message, 2);
 	CHECK(fillStringField(pool, &(*message)->fields[0], portId, strlen(portId)))CHECK(
@@ -118,7 +124,7 @@ int receiveStringBuf(apr_socket_t *sock, char *buf, int len) {
 	int l = len - 1;
 	apr_status_t rv = apr_socket_recv(sock, buf, &l);
 	if (rv == APR_EOF || l != len - 1) {
-		printf("expected %d, got %d\n", len -1, l);
+		printf("expected %d, got %d\n", len - 1, l);
 		return R_INVALID_MESSAGE;
 	}
 	buf[l] = 0; // Make sure buf can be treated as a string
@@ -173,10 +179,10 @@ int writeString(apr_socket_t *sock, field_t *field) {
 int writeOctetString(apr_socket_t *sock, field_t *field) {
 	int i;
 	int len = 2 * field->length;
-	char tmp[len];
-	writeFieldLength(sock, field->length);
+	char tmp[len + 1];
+	writeFieldLength(sock, len);
 	for (i = 0; i < field->length; ++i) {
-		apr_snprintf(&tmp[2 * i], 2, "%02X", field->stringVal[i]);
+		apr_snprintf(&tmp[2 * i], 3, "%02X", field->stringVal[i] & 0xFF);
 	}
 	apr_socket_send(sock, tmp, &len);
 	// TODO check len and return value
@@ -184,7 +190,8 @@ int writeOctetString(apr_socket_t *sock, field_t *field) {
 }
 
 int checkCode(char code) {
-	if (strchr("PSANCLUO", code) == NULL)
+	if (strchr("PSANCLUO", code) == NULL
+	)
 		return R_INVALID_CODE;
 	return R_SUCCESS;
 }
@@ -204,7 +211,8 @@ int readHeader(apr_socket_t *sock, char *code) {
 	if (rv == APR_EOF || len == 0) {
 		return R_INVALID_MESSAGE;
 	}
-	if (car != PROTOCOL_VERSION)
+	if (car != PROTOCOL_VERSION
+	)
 		return R_INVALID_VERSION;
 
 	// Read message code
@@ -220,7 +228,8 @@ int readHeader(apr_socket_t *sock, char *code) {
 	return R_SUCCESS;
 }
 
-int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool, char code) {
+int readBody(apr_socket_t *sock, message_t **message, apr_pool_t *pool,
+		char code) {
 	// Allocate message
 	*message = apr_palloc(pool, sizeof(message_t));
 

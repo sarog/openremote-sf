@@ -2,15 +2,36 @@ package org.openremote.controller.protocol.port.pad;
 
 import java.io.IOException;
 
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.port.PortException;
-import org.openremote.controller.protocol.port.pad.PadClient;
-import org.openremote.controller.protocol.port.pad.PingMessage;
 
 public class PadClientTest {
+   @Before
+   public void setUp() throws IOException, InterruptedException {
+      Runtime.getRuntime().exec("pad/src/main/c/pad");
+      synchronized (this) {
+         this.wait(1000);
+      }
+   }
+
+   @After
+   public void tearDown() throws InterruptedException, IOException {
+      Runtime.getRuntime().exec("pkill pad");
+   }
+
    @Test
-   public void testClient() throws PortException, IOException {
+   public void testClient() {
       PadClient c = PadClient.instance();
-      c.service(new PingMessage());
+      try {
+         c.service(new PingMessage());
+      } catch (IOException e) {
+         Assert.fail(e.getMessage());
+      } catch (PortException e) {
+         Assert.fail(e.getMessage());
+      }
    }
 }

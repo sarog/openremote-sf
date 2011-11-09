@@ -7,7 +7,10 @@ public class PadMessageFactory {
       switch (code) {
       case AckMessage.CODE:
          return new AckMessage();
+      case NotifyMessage.CODE:
+         return new NotifyMessage();
       }
+      
       throw new PortException(PortException.INVALID_MESSAGE);
    }
 }

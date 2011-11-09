@@ -19,6 +19,8 @@ public class AbstractPort implements Port, PortListener {
    public AbstractPort() {
       this.notifyLock = new Object();
       this.padClient = PadClient.instance();
+      this.portId = null;
+      this.portType = null;
    }
 
    @Override
@@ -28,11 +30,13 @@ public class AbstractPort implements Port, PortListener {
       if (!(o1 instanceof String) || !(o2 instanceof String)) {
          throw new PortException(PortException.INVALID_CONFIGURATION);
       }
+      if (this.portId != null) this.padClient.unregisterPortListener(this.portId);
       this.portId = (String) o1;
       this.portType = (String) o2;
-      if (portId == null || portId.equals("") || portType == null || portType.equals("")) {
+      if (this.portId == null || this.portId.equals("") || this.portType == null || this.portType.equals("")) {
          throw new PortException(PortException.INVALID_CONFIGURATION);
       }
+      this.padClient.registerPortListener(this.portId, this);
       try {
          this.padClient.service(new CreatePortMessage(this.portId, this.portType));
       } catch (PortException x) {
