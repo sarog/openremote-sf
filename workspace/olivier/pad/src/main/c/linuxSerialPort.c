@@ -29,7 +29,8 @@ void *lsRead(apr_thread_t *thread, void *data) {
 	while (res > 0) {
 		res = read(portContext->fd, buf, RCV_BUF_SIZE); /* read RCV_BUF_SIZE bytes at most   */
 		printf("read %d bytes\n", res);
-		portContext->portReceiveCb(portContext->portId, buf, res);
+		int r = portContext->portReceiveCb(portContext->portId, buf, res);
+		printf("notification result : %d\n", r);
 	}
 
 //	pthread_exit(NULL);
@@ -71,7 +72,7 @@ int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 	// start the read thread
 //	pthread_mutex_lock(&start_sync_mutex);
 //	pthread_create(&read_thread, NULL, read_port, NULL);
-//	apr_thread_create(&portContext->readThread, NULL, lsRead, portContext, pool);
+	apr_thread_create(&portContext->readThread, NULL, lsRead, portContext, pool);
 
 	// wait for the read thread to start.
 //	pthread_cond_wait(&start_sync_cond, &start_sync_mutex);
@@ -108,7 +109,7 @@ int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, po
 		return R_PORT_ERROR;
 	}
 
-//	CHECK(lsConfigure(*portContext));
+	CHECK(lsConfigure(*portContext));
 	CHECK(lsCreateReadThread(pool, *portContext));
 
 	return R_SUCCESS;
@@ -118,7 +119,7 @@ physicalLock_t physicalLockCb = physicalLock;
 
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) {
 	lsInterruptReadThread(*portContext);
-//	lsUnconfigure(*portContext);
+	lsUnconfigure(*portContext);
 	// Close serial port
 	close((*portContext)->fd);
 	return R_SUCCESS;

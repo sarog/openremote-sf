@@ -176,8 +176,8 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 		CHECK(writeInt32(sock, &message->fields[0]))
 		break;
 	case NOTIFY:
-		CHECK(writeString(sock, message->fields[0]));
-		CHECK(writeOctetString(sock, message->fields[1]));
+		CHECK(writeString(sock, &message->fields[0]));
+		CHECK(writeOctetString(sock, &message->fields[1]));
 		break;
 	}
 
@@ -223,6 +223,7 @@ static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, ap
 	// TODO Read response
 	int r = operateResponse(sock, context->clientTx, context->clientTxPool, code);
 	if (r != R_SUCCESS) {
+		printf("operateResponse() failed, %d\n", r);
 		closeSocket(sock, context);
 		return r;
 	}
@@ -244,6 +245,7 @@ int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket
 	// Read message header
 	int r = checkInputMessage(sock, &code, &type);
 	if (r != R_SUCCESS) {
+		printf("checkInputMessage() failed, %d\n", r);
 		closeSocket(sock, context);
 		return r;
 	}

@@ -4,21 +4,77 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.protocol.port.Message;
 import org.openremote.controller.protocol.port.PortException;
 import org.openremote.controller.protocol.port.pad.AbstractPort;
 
 public class AbstractPortTest {
+   private AbstractPort port;
+   private Message message;
+   private Object lock;
+   private PortListener listener;
+
+   @Before
+   public void setUp() throws IOException, InterruptedException {
+      // Runtime.getRuntime().exec("pad/src/main/c/pad");
+      // synchronized (this) {
+      // this.wait(1000);
+      // }
+      this.lock = new Object();
+      this.listener = new PortListener();
+   }
+
+   @After
+   public void tearDown() throws InterruptedException, IOException {
+      // Runtime.getRuntime().exec("pkill pad");
+   }
+
    @Test
-   public void testPort() throws PortException, IOException {
-      AbstractPort port = new AbstractPort();
+   public void testPort() {
+      this.port = new AbstractPort();
+
       Map<String, Object> cfg = new HashMap<String, Object>();
       cfg.put(AbstractPort.PORT_ID, "/dev/ttyUSB0");
       cfg.put(AbstractPort.PORT_TYPE, "serial");
-      port.configure(cfg);
-      port.start();
-      port.send(new Message(new byte[] { 0x10, 0x40, 0x40, 0x16 }));
-      port.stop();
+      try {
+         this.port.configure(cfg);
+         this.port.start();
+         this.listener.start();
+         synchronized (this.lock) {
+            this.message = null;
+            this.port.send(new Message(new byte[] { 0x10, 0x40, 0x40, 0x16 }));
+            this.lock.wait(3000);
+            Assert.assertNotNull(this.message);
+            Assert.assertEquals(1, this.message.getContent().length);
+            Assert.assertEquals((byte) 0xE5, this.message.getContent()[0]);
+         }
+         this.port.stop();
+      } catch (IOException e) {
+         Assert.fail(e.getMessage());
+      } catch (PortException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      } catch (InterruptedException e) {
+         Assert.fail(e.getMessage());
+      }
+   }
+
+   private class PortListener extends Thread {
+      @Override
+      public void run() {
+         try {
+            synchronized (AbstractPortTest.this.lock) {
+               AbstractPortTest.this.message = AbstractPortTest.this.port.receive();
+               AbstractPortTest.this.lock.notify();
+            }
+         } catch (IOException e) {
+            Assert.fail(e.getMessage());
+         }
+      }
    }
 }
