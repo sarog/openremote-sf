@@ -79,7 +79,7 @@ public class FileUtilsExt {
     * @throws IOException in case of an I/O error
     */
    public static void writeStringToFile(File file, String data) throws IOException {
-       writeStringToFile(file, data, null);
+       writeStringToFile(file, data, "UTF-8");
    }
    
    /**
