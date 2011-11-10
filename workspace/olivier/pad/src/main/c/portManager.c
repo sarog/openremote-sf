@@ -35,7 +35,6 @@ int createPort(char *portId, char *portType) {
 	p->lockCb = physicalLockCb;
 	p->unlockCb = physicalUnlockCb;
 	p->portSendCb = physicalSendCb;
-	printf("port '%s' created\n", portId);
 	return R_SUCCESS;
 }
 

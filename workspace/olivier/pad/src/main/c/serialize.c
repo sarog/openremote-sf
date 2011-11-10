@@ -115,8 +115,9 @@ int createNotify(apr_pool_t *pool, message_t **message, char *portId, char *buf,
 		int len) {
 	CHECK(createMessage(NOTIFY, message, pool))
 	createMessageFields(pool, *message, 2);
-	CHECK(fillStringField(pool, &(*message)->fields[0], portId, strlen(portId)))CHECK(
-			fillStringField(pool, &(*message)->fields[1], buf, len))
+	CHECK(
+			fillStringField(pool, &(*message)->fields[0], portId, strlen(portId)));
+	CHECK(fillStringField(pool, &(*message)->fields[1], buf, len));
 	return R_SUCCESS;
 }
 
@@ -179,8 +180,8 @@ int writeString(apr_socket_t *sock, field_t *field) {
 int writeOctetString(apr_socket_t *sock, field_t *field) {
 	int i;
 	int len = 2 * field->length;
-	char tmp[len + 1];
-	writeFieldLength(sock, len);
+	char tmp[len + 1];writeFieldLength
+	(sock, len);
 	for (i = 0; i < field->length; ++i) {
 		apr_snprintf(&tmp[2 * i], 3, "%02X", field->stringVal[i] & 0xFF);
 	}
@@ -225,6 +226,7 @@ int readHeader(apr_socket_t *sock, char *code) {
 	// Check code is valid
 	APR_CHECK(checkCode(car), rv)
 	*code = car;
+	printf("code = %c\n", *code);
 	return R_SUCCESS;
 }
 

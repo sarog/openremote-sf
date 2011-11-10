@@ -199,7 +199,6 @@ static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr
 
 	int r = operateRequest(sock, context->serverTx, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
-		printf("operateRequest() failed, %d\n", r);
 		closeSocket(sock, context);
 		return r;
 	}
@@ -223,7 +222,6 @@ static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, ap
 	// TODO Read response
 	int r = operateResponse(sock, context->clientTx, context->clientTxPool, code);
 	if (r != R_SUCCESS) {
-		printf("operateResponse() failed, %d\n", r);
 		closeSocket(sock, context);
 		return r;
 	}
@@ -240,18 +238,17 @@ static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, ap
 
 int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
 	char code;
-	messageTxType_t type;
+	messageTxType_t txType;
 
 	// Read message header
-	int r = checkInputMessage(sock, &code, &type);
+	int r = checkInputMessage(sock, &code, &txType);
 	if (r != R_SUCCESS) {
-		printf("checkInputMessage() failed, %d\n", r);
 		closeSocket(sock, context);
 		return r;
 	}
 
 	// Handle rest of message according to its transaction type
-	if (type == SERVER) {
+	if (txType == SERVER_TX) {
 		return receiveRequest(context, pollset, sock, code);
 	} else {
 		return receiveResponse(context, pollset, sock, code);

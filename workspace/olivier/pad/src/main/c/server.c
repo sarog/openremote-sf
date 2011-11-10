@@ -4,7 +4,8 @@
 #include "port.h"
 #include "server.h"
 
-void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx, portReceive_t receiveCb) {
+void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx,
+		portReceive_t receiveCb) {
 	if (*tx == NULL) {
 		*tx = apr_palloc(pool, sizeof(serverTransaction_t));
 		(*tx)->request = NULL;
@@ -19,16 +20,18 @@ void clearServerTransaction(apr_pool_t *pool, serverTransaction_t **tx) {
 	*tx = NULL;
 }
 
-int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *type) {
+int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *txType) {
 	CHECK(readHeader(sock, code))
-	if (*code == ACK)
-		*type = CLIENT;
-	else
-		*type = SERVER;
+	if (*code == ACK) {
+		*txType = CLIENT_TX;
+	} else {
+		*txType = SERVER_TX;
+	}
 	return R_SUCCESS;
 }
 
-int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPool, char code) {
+int operateRequest(apr_socket_t *sock, serverTransaction_t *tx,
+		apr_pool_t *txPool, char code) {
 
 	CHECK(readBody(sock, &tx->request, txPool, code))
 
@@ -42,7 +45,8 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		port_t *port;
 		int r = getPort(tx->request->fields[0].stringVal, &port);
 		if (r == R_SUCCESS) {
-			r = portSend(txPool, port, tx->request->fields[1].stringVal, tx->request->fields[1].length);
+			r = portSend(txPool, port, tx->request->fields[1].stringVal,
+					tx->request->fields[1].length);
 		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 		break;
@@ -51,7 +55,8 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		port_t *port;
 		int r = getPort(tx->request->fields[0].stringVal, &port);
 		if (r == R_SUCCESS) {
-			r = lock(txPool, port, tx->request->fields[1].stringVal, tx->portReceiveCb);
+			r = lock(txPool, port, tx->request->fields[1].stringVal,
+					tx->portReceiveCb);
 		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
@@ -64,9 +69,8 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPo
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case CREATE_PORT: {
-		printf("creating port %s, %s\n", tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
-		int r = createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
-		printf("port created, %d\n", r);
+		int r = createPort(tx->request->fields[0].stringVal,
+				tx->request->fields[1].stringVal);
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case CONFIGURE: {
