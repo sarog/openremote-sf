@@ -4,7 +4,7 @@
 #include "apr_network_io.h"
 
 typedef enum _messageTxType_t {
-	CLIENT, SERVER
+	CLIENT_TX, SERVER_TX
 } messageTxType_t;
 
 typedef struct _field_t {

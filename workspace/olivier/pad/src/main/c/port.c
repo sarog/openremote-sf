@@ -10,14 +10,12 @@ int logicalLock(port_t *port, char *source) {
 		return R_WRONG_LOCK_STATUS;
 	port->lockSource = malloc(strlen(source) + 1);
 	strcpy(port->lockSource, source);
-	printf("port '%s' locked by '%s'\n", port->portId, port->lockSource);
 	return R_SUCCESS;
 }
 
 int logicalUnlock(port_t *port, char *source) {
 	if (port->lockSource == NULL || strcmp(port->lockSource, source) != 0)
 		return R_WRONG_LOCK_STATUS;
-	printf("port '%s' unlocked by '%s'\n", port->portId, port->lockSource);
 	free(port->lockSource);
 	port->lockSource = NULL;
 	return R_SUCCESS;
