@@ -137,6 +137,13 @@ public class JSONFormatter {
                         for (int j=0; j<gridArr.length(); j++) {
                            JSONObject gridObj = gridArr.optJSONObject(j);
                            if (gridObj != null) {
+                              updateValue(gridObj, "top", gridObj.optInt("top"));
+                              updateValue(gridObj, "left", gridObj.optInt("left"));
+                              updateValue(gridObj, "width", gridObj.optInt("width"));
+                              updateValue(gridObj, "height", gridObj.optInt("height"));
+                              updateValue(gridObj, "rows", gridObj.optInt("cols"));
+                              updateValue(gridObj, "cols", gridObj.optInt("cols"));
+                              
                               updateValue(gridObj, "cell", convertToArray(gridObj.opt("cell")));
                               
                               // Convert any 0 string values to integer values
