@@ -20,21 +20,22 @@
  */
 package org.openremote.controller.protocol.lutron;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.lutron.model.GrafikEye;
+import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
 
 /**
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  *
  */
-public class GrafikEyeCommand extends LutronHomeWorksCommand implements ExecutableCommand, StatusCommand {
+public class GrafikEyeCommand extends LutronHomeWorksCommand implements ExecutableCommand, EventListener {
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -99,33 +100,61 @@ public class GrafikEyeCommand extends LutronHomeWorksCommand implements Executab
     }
   }
 
-  // Implements StatusCommand -------------------------------------------------------------------
+  // Implements EventListener -------------------------------------------------------------------
 
   @Override
-  public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
-    try {
-      GrafikEye grafikEye = (GrafikEye) gateway.getHomeWorksDevice(address, GrafikEye.class);
-      if (grafikEye == null) {
-        // This should never happen as above command is supposed to create device
-        log.warn("Gateway could not create a GRAFIK Eye we're receiving feedback for (" + address + ")");
-        return "";
-      }
-      if (grafikEye.getSelectedScene() == null) {
-        // We don't have any information about the state yet, ask Lutron processor about it
-        grafikEye.queryScene();
-        return "";
-      }
-      if (sensorType == EnumSensorType.SWITCH) {
-        return (grafikEye.getSelectedScene() == scene) ? "on" : "off";
-      } else if (sensorType == EnumSensorType.RANGE) {
-        return Integer.toString(grafikEye.getSelectedScene());
+  public void setSensor(Sensor sensor) {
+      if (sensors.isEmpty()) {
+         // First sensor registered, we also need to register ourself with the device
+         try {
+            GrafikEye grafikEye = (GrafikEye) gateway.getHomeWorksDevice(address, GrafikEye.class);
+            if (grafikEye == null) {
+              // This should never happen as above command is supposed to create device
+              log.warn("Gateway could not create a GRAFIK Eye we're receiving feedback for (" + address + ")");
+            }
+
+            // Register ourself with the Keypad so it can propagate update when received
+            grafikEye.addCommand(this);
+            addSensor(sensor);
+
+            // Trigger a query to get the initial value
+            grafikEye.queryScene();
+         } catch (LutronHomeWorksDeviceException e) {
+            log.error("Impossible to get device", e);
+         }
       } else {
-        log.warn("Query GRAFIK Eye status for incompatible sensor type " + sensorType);
-        return "";
+         addSensor(sensor);
       }
-    } catch (LutronHomeWorksDeviceException e) {
-      log.error("Impossible to get device", e);
-    }
-    return "";
+  }
+  
+  @Override
+  public void stop(Sensor sensor) {
+     removeSensor(sensor);
+     if (sensors.isEmpty()) {
+        // Last sensor removed, we may unregister ourself from device
+        try {
+           GrafikEye grafikEye = (GrafikEye) gateway.getHomeWorksDevice(address, GrafikEye.class);
+           if (grafikEye == null) {
+             // This should never happen as above command is supposed to create device
+             log.warn("Gateway could not create a GRAFIK Eye we're receiving feedback for (" + address + ")");
+           }
+
+           grafikEye.removeCommand(this);
+        } catch (LutronHomeWorksDeviceException e) {
+           log.error("Impossible to get device", e);
+        }
+     }
+  }
+
+  @Override
+  protected void updateSensor(HomeWorksDevice device, Sensor sensor) {
+     GrafikEye grafikEye = (GrafikEye)device;
+     if (sensor instanceof SwitchSensor) {
+        sensor.update((grafikEye.getSelectedScene() == scene) ? "on" : "off");
+      } else if (sensor instanceof RangeSensor) {
+         sensor.update(Integer.toString(grafikEye.getSelectedScene()));
+      } else {
+         log.warn("Query GRAFIK Eye status for incompatible sensor type (" + sensor + ")");
+      }
   }
 }

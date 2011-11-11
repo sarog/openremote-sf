@@ -20,14 +20,16 @@
  */
 package org.openremote.controller.protocol.lutron;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.ExecutableCommand;
-import org.openremote.controller.command.StatusCommand;
-import org.openremote.controller.component.EnumSensorType;
+import org.openremote.controller.component.LevelSensor;
+import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.model.sensor.SwitchSensor;
+import org.openremote.controller.protocol.EventListener;
 import org.openremote.controller.protocol.lutron.model.Dimmer;
+import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
 
 /**
  * Command to be sent to a dimmer device to actuate or query status.
@@ -35,7 +37,7 @@ import org.openremote.controller.protocol.lutron.model.Dimmer;
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
-public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableCommand, StatusCommand {
+public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableCommand, EventListener {
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -103,36 +105,64 @@ public class DimmerCommand extends LutronHomeWorksCommand implements ExecutableC
     }
   }
 
-  // Implements StatusCommand -------------------------------------------------------------------
+  // Implements EventListener -------------------------------------------------------------------
 
   @Override
-  public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
-    try {
-      Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
-      if (dimmer == null) {
-        // This should never happen as above command is supposed to create device
-        log.warn("Gateway could not create a Dimmer we're receiving feedback for (" + address + ")");
-        return "";
-      }
-      if (dimmer.getLevel() == null) {
-        // We don't have any information about the state yet, ask Lutron processor about it
-        dimmer.queryLevel();
-        return "";
-      }
-      if (sensorType == EnumSensorType.SWITCH) {
-        return (dimmer.getLevel().intValue() != 0) ? "on" : "off";
-      } else if (sensorType == EnumSensorType.RANGE) {
-        return Integer.toString(dimmer.getLevel());
-      } else if (sensorType == EnumSensorType.LEVEL) {
-        return Integer.toString(dimmer.getLevel());
+  public void setSensor(Sensor sensor) {
+      if (sensors.isEmpty()) {
+         // First sensor registered, we also need to register ourself with the device
+         try {
+            Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
+            if (dimmer == null) {
+              // This should never happen as above command is supposed to create device
+              log.warn("Gateway could not create a Dimmer we're receiving feedback for (" + address + ")");
+            }
+
+            // Register ourself with the Keypad so it can propagate update when received
+            dimmer.addCommand(this);
+            addSensor(sensor);
+
+            // Trigger a query to get the initial value
+            dimmer.queryLevel();
+         } catch (LutronHomeWorksDeviceException e) {
+            log.error("Impossible to get device", e);
+         }
       } else {
-        log.warn("Query dimmer status for incompatible sensor type " + sensorType);
-        return "";
+         addSensor(sensor);
       }
-    } catch (LutronHomeWorksDeviceException e) {
-      log.error("Impossible to get device", e);
-    }
-    return "";
+  }
+  
+  @Override
+  public void stop(Sensor sensor) {
+     removeSensor(sensor);
+     if (sensors.isEmpty()) {
+        // Last sensor removed, we may unregister ourself from device
+        try {
+           Dimmer dimmer = (Dimmer) gateway.getHomeWorksDevice(address, Dimmer.class);
+           if (dimmer == null) {
+             // This should never happen as above command is supposed to create device
+             log.warn("Gateway could not create a Dimmer we're receiving feedback for (" + address + ")");
+           }
+
+           dimmer.removeCommand(this);
+        } catch (LutronHomeWorksDeviceException e) {
+           log.error("Impossible to get device", e);
+        }
+     }
+  }
+
+  @Override
+  protected void updateSensor(HomeWorksDevice device, Sensor sensor) {
+     Dimmer dimmer = (Dimmer)device;
+     if (sensor instanceof SwitchSensor) {
+        sensor.update((dimmer.getLevel().intValue() != 0) ? "on" : "off");
+      } else if (sensor instanceof RangeSensor) {
+         sensor.update(Integer.toString(dimmer.getLevel()));
+      } else if (sensor instanceof LevelSensor) {
+        sensor.update(Integer.toString(dimmer.getLevel()));
+      } else {
+        log.warn("Query dimmer status for incompatible sensor type (" + sensor + ")");
+      }
   }
 
 }

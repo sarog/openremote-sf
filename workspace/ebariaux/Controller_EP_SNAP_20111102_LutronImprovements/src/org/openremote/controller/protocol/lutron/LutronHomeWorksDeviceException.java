@@ -1,5 +1,7 @@
 package org.openremote.controller.protocol.lutron;
 
+import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
+
 @SuppressWarnings("serial")
 public class LutronHomeWorksDeviceException extends Exception {
 
