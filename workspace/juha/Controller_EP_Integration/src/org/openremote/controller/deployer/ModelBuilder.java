@@ -22,6 +22,7 @@ package org.openremote.controller.deployer;
 
 
 import org.openremote.controller.exception.InitializationException;
+import org.jdom.Namespace;
 
 /**
  * Model builders are sequences of actions which construct the controller's object model (a.k.a.
@@ -63,6 +64,22 @@ public interface ModelBuilder
     VERSION_3_0("3.0");
 
 
+
+    // Constants ------------------------------------------------------------------------------------
+
+
+    /**
+     * XML namespace definition for OpenRemote XML elements.
+     */
+    public final static Namespace OPENREMOTE_NAMESPACE = Namespace.getNamespace(
+        "or",                            // prefix
+        "http://www.openremote.org"      // namespace identifier
+    );
+
+
+    
+    // Members ------------------------------------------------------------------------------------
+
     /**
      * Maps a string values to type-safe enum instances. <p>
      *
@@ -97,13 +114,13 @@ public interface ModelBuilder
 
 
     /**
-     * Stores the string represenation of this enum. This string value should only be used on
+     * Stores the string representation of this enum. This string value should only be used on
      * user interfaces to isolate the user from the enum definitions used within the codebase.
      */
     private String versionString;
 
     /**
-     * Constrcuts an enum with a given string representation.
+     * Constructs an enum with a given string representation.
      *
      * @param version   version string for user interfaces
      */
