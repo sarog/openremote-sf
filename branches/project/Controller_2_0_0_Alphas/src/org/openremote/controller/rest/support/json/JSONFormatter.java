@@ -141,7 +141,7 @@ public class JSONFormatter {
                               updateValue(gridObj, "left", gridObj.optInt("left"));
                               updateValue(gridObj, "width", gridObj.optInt("width"));
                               updateValue(gridObj, "height", gridObj.optInt("height"));
-                              updateValue(gridObj, "rows", gridObj.optInt("cols"));
+                              updateValue(gridObj, "rows", gridObj.optInt("rows"));
                               updateValue(gridObj, "cols", gridObj.optInt("cols"));
                               
                               updateValue(gridObj, "cell", convertToArray(gridObj.opt("cell")));
