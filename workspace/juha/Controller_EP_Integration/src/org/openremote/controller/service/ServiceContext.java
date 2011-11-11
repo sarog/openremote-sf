@@ -30,7 +30,6 @@ import org.openremote.controller.net.RoundRobinTCPServer;
 import org.openremote.controller.net.RoundRobinUDPServer;
 import org.openremote.controller.net.IPAutoDiscoveryServer;
 import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.command.CommandBuilder;
 
 /**
  * This class defines an abstract service context without compile time links to any particular
@@ -56,8 +55,6 @@ public abstract class ServiceContext
   //        described in ORCJAVA-183 : http://jira.openremote.org/browse/ORCJAVA-183
   //
   //        Reduce dependencies to deprecated getDeployer() API -- ORCJAVA-193, ORCJAVA-173
-  //
-  //        Remove dependency to deprecated getProtocol() API -- ORCJAVA-194
   //
   //        Remove direct use of subclass SpringContext API -- ORCJAVA-195
 
@@ -93,8 +90,7 @@ public abstract class ServiceContext
     CONTROLLER_CONFIGURATION("configuration"),                // TODO : To be removed, see ORCJAVA-183
     ROUND_ROBIN_CONFIGURATION("roundRobinConfig"),            // TODO : To be removed, see ORCJAVA-183
     LUTRON_HOMEWORKS_CONFIGURATION("lutronHomeWorksConfig"),  // TODO : To be removed, see ORCJAVA-183
-    DEVICE_STATE_CACHE("statusCache"),                        // TODO : Deprecated, see ORCJAVA-197
-    PROTOCOL("commandFactory");                               // TODO : Deprecated, see ORCJAVA-194
+    DEVICE_STATE_CACHE("statusCache");                        // TODO : Deprecated, see ORCJAVA-197
 
 
     private String springBeanName;
@@ -227,30 +223,6 @@ public abstract class ServiceContext
     {
       throw new Error(
           "Device state cache service implementation has had an incompatible change.", e
-      );
-    }
-  }
-
-
-  /**
-   * TODO : see ORCJAVA-194 (http://jira.openremote.org/browse/ORCJAVA-194)
-   *
-   * @deprecated  This method is temporary, and should be removed with completion of ORCJAVA-194
-   */
-  @Deprecated public static CommandBuilder getProtocol(String name)
-  {
-    Object service = getInstance().getService(ServiceName.PROTOCOL, name);
-
-    if (service instanceof CommandBuilder)
-    {
-      return (CommandBuilder) service;
-    }
-
-    else
-    {
-      throw new Error(
-          "Protocol builder service implementation has had an incompatible change. " +
-          "Expected " + CommandBuilder.class.getName() + " type."
       );
     }
   }
