@@ -22,18 +22,22 @@ package org.openremote.controller.protocol.lutron;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.openremote.controller.command.Command;
 import org.openremote.controller.exception.NoSuchCommandException;
+import org.openremote.controller.model.sensor.Sensor;
+import org.openremote.controller.protocol.lutron.model.HomeWorksDevice;
 
 /**
  * Command sent from the console that should result in action to the Lutron processor (through the gateway).
  * 
  * @author <a href="mailto:eric@openremote.org">Eric Bariaux</a>
  */
-public class LutronHomeWorksCommand implements Command {
+public abstract class LutronHomeWorksCommand implements Command {
 
 	// Class Members --------------------------------------------------------------------------------
 
@@ -120,6 +124,11 @@ public class LutronHomeWorksCommand implements Command {
 	 */
 	protected String name;
 	
+   /**
+    * Sensors we are a command of
+    */
+   protected List<Sensor> sensors;
+	
 	// Constructors ---------------------------------------------------------------------------------
 
 	/**
@@ -131,6 +140,43 @@ public class LutronHomeWorksCommand implements Command {
 	public LutronHomeWorksCommand(String name, LutronHomeWorksGateway gateway) {
 		this.name = name;
 		this.gateway = gateway;
+		this.sensors = new ArrayList<Sensor>();
+	}
+	
+   /**
+    * Add a sensor to update on value change.
+    * 
+    * @param sensor Sensor to add
+    */
+   public void addSensor(Sensor sensor) {
+      sensors.add(sensor);
+   }
+   
+   /**
+    * Remove a sensor to update on value change.
+    * 
+    * @param sensor Sensor to remove
+    */
+   public void removeSensor(Sensor sensor) {
+      sensors.remove(sensor);
+   }
+	
+   /**
+    * Update all registered sensor (because of value change on given device).
+    * 
+    * @param device HomeWorksDevice that triggers the update
+    */
+	public void updateSensors(HomeWorksDevice device) {
+      for (Sensor sensor : sensors) {
+         updateSensor(device, sensor);
+      }	   
 	}
 
+   /**
+    * Update the specified sensor based on value of given device.
+    * 
+    * @param device HomeWorksDevice that triggers the update
+    * @param sensor Sensor to update
+    */
+   abstract protected  void updateSensor(HomeWorksDevice device, Sensor sensor);
 }

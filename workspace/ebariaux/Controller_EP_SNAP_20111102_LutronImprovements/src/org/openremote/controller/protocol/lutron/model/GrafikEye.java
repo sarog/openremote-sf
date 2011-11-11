@@ -21,7 +21,6 @@
 package org.openremote.controller.protocol.lutron.model;
 
 import org.apache.log4j.Logger;
-import org.openremote.controller.protocol.lutron.HomeWorksDevice;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksAddress;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksCommandBuilder;
 import org.openremote.controller.protocol.lutron.LutronHomeWorksGateway;
@@ -82,6 +81,8 @@ public class GrafikEye extends HomeWorksDevice {
 	    // Not understood as a scene, do not update ourself
 	    log.warn("Invalid feedback received " + info, e);
 	  }
+	    
+     super.processUpdate(info);
 	}
 
 	// Getters/Setters ------------------------------------------------------------------------------
