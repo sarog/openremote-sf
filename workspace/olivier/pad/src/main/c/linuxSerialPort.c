@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stddef.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -5,15 +6,30 @@
 #include <linux/serial.h>
 #include <sys/ioctl.h>
 #include <asm-generic/ioctls.h>  // To please Eclipse
+#include <signal.h>
 #include "codes.h"
 #include "linuxSerialPort.h"
 
 #define RCV_BUF_SIZE 256
 
-void *lsRead(apr_thread_t *thread, void *data) {
+void lsReceiveSignal(int sig) {
+	printf("Signal %d!\n", sig);
+}
+
+void *lsRead(void *data) {
 	char buf[RCV_BUF_SIZE];
 	portContext_t *portContext = (portContext_t *) data;
 
+printf("lsRead(0)\n");
+	sigset_t signalMask;
+	sigemptyset(&signalMask);
+	sigaddset(&signalMask, SIGALRM);
+	int ret = pthread_sigmask(SIG_UNBLOCK, &signalMask, NULL);
+	struct sigaction act;
+	act.sa_handler = lsReceiveSignal;
+	act.sa_flags = 0;
+	sigaction(SIGALRM, &act, NULL);
+	printf("lsRead(1)\n");
 	// init cancellation state for the thread
 //  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);      /* enabled */
 //  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL); /* cancel immediately */
@@ -34,8 +50,8 @@ void *lsRead(apr_thread_t *thread, void *data) {
 		}
 	}
 
-//	pthread_exit(NULL);
-
+	printf("exiting read thread\n");
+	pthread_exit(R_SUCCESS);
 	return NULL;
 }
 
@@ -60,7 +76,7 @@ int lsConfigure(portContext_t *portContext) {
 			CREAD | PARENB | // receiver, enable parity
 			B19200;
 	portContext->newtio.c_iflag = INPCK | IGNPAR; // input modes : parity check & ignore parity-error bytes
-	portContext->newtio.c_lflag = 0; // local modes :
+	portContext->newtio.c_lflag = 0 & ~(ICANON | ECHO | ECHOE | ISIG); // Raw mode
 	portContext->newtio.c_oflag = 0; // output modes
 	portContext->newtio.c_cc[VMIN] = 1;
 	portContext->newtio.c_cc[VTIME] = 0; // read timeout = 0 * 0.1s
@@ -72,9 +88,11 @@ int lsConfigure(portContext_t *portContext) {
 int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 	// start the read thread
 //	pthread_mutex_lock(&start_sync_mutex);
-//	pthread_create(&read_thread, NULL, read_port, NULL);
-	apr_thread_create(&portContext->readThread, NULL, lsRead, portContext,
-			pool);
+	sigset_t signalMask;
+	sigemptyset(&signalMask);
+	sigaddset(&signalMask, SIGALRM);
+	int ret = pthread_sigmask(SIG_BLOCK, &signalMask, NULL);
+	pthread_create(&portContext->readThread, NULL, lsRead, portContext);
 
 	// wait for the read thread to start.
 //	pthread_cond_wait(&start_sync_cond, &start_sync_mutex);
@@ -88,9 +106,9 @@ int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 int lsInterruptReadThread(portContext_t *portContext) {
 	apr_status_t r;
 	printf("=>lsInterrupReadThread()\n");
-	r = apr_thread_exit(portContext->readThread, APR_SUCCESS);
-	printf("thread exit = %d\n", r);
-	apr_thread_join(&r, portContext->readThread);
+	pthread_kill(portContext->readThread, SIGALRM);
+	pthread_join(portContext->readThread, NULL);
+	printf("thread joined\n");
 	return R_SUCCESS;
 }
 
@@ -100,8 +118,7 @@ int lsUnconfigure(portContext_t *portContext) {
 	return R_SUCCESS;
 }
 
-int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext,
-		portReceive_t portReceiveCb) {
+int physicalLock(apr_pool_t *pool, char *portId, portContext_t **portContext, portReceive_t portReceiveCb) {
 	// Allocate serial port data memory
 	*portContext = apr_palloc(pool, sizeof(portContext_t));
 	(*portContext)->portReceiveCb = portReceiveCb;
@@ -124,8 +141,9 @@ physicalLock_t physicalLockCb = physicalLock;
 
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) {
 	// Close serial port
-	int r = close((*portContext)->fd);
-	printf("close() = %d\n", r);
+	//fcntl((*portContext)->fd, F_SETFL, FNDELAY);
+	int res = close((*portContext)->fd);
+	printf("close() = %d\n", res);
 
 	// Interrupt read thread
 	lsInterruptReadThread(*portContext);
