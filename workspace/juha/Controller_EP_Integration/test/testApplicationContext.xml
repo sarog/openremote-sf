@@ -170,22 +170,42 @@
     <constructor-arg value = "Default Deployer"/>
     <constructor-arg ref = "statusCache"/>
     <constructor-arg ref = "configuration"/>
+    <constructor-arg>
+      <map>
+        <entry key = "2.0" value-ref = "version20ModelBuilder"/>
+      </map>
+    </constructor-arg>
 
   </bean>
-  
+
+
+  <bean id = "version20ModelBuilder" class = "org.openremote.controller.deployer.Version20ModelBuilder" >
+
+    <constructor-arg ref = "statusCache"/>
+    <constructor-arg ref = "configuration"/>
+    <constructor-arg ref = "sensorBuilder"/>
+    <constructor-arg ref = "commandBuilder"/>
+    
+  </bean>
 
   <!--
    | TODO   : XML mappers
    |
    |
    +-->
-  <bean id = "sensorBuilder" class = "org.openremote.controller.model.xml.SensorBuilder">
-    <constructor-arg ref = "deployer"/>
+  <bean id = "sensorBuilder" class = "org.openremote.controller.model.xml.Version20SensorBuilder">
+<!--
+    <constructor-arg ref = "version20ModelBuilder"/>
     <constructor-arg ref = "statusCache"/>
-    
+-->    
     <property name = "commandFactory" ref = "commandFactory"/>  <!-- TODO -->
   </bean>
-  
+
+  <bean id = "commandBuilder" class = "org.openremote.controller.deployer.Version20CommandBuilder">
+
+    <constructor-arg ref = "commandFactory"/>
+    
+  </bean>
 
 	<!-- controller.xml change service
   <bean id = "controllerXMLChangeService"
@@ -204,7 +224,23 @@
    -->
 
   
-    <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
+  <bean id = "commandFactory" class = "org.openremote.controller.command.CommandFactory">
+
+    <constructor-arg>
+      <map>
+        <entry key = "ir"               value-ref = "irCommandBuilder"/>
+        <entry key = "knx"              value-ref = "knxCommandBuilder"/>
+        <entry key = "x10"              value-ref = "x10CommandBuilder"/>
+        <entry key = "socket"           value-ref = "tcpSocketCommandBuilder"/>
+        <entry key = "telnet"           value-ref = "telnetCommandBuilder"/>
+        <entry key = "http"             value-ref = "httpGetCommandBuilder"/>
+<!--    <entry key = "upnp"             value-ref = "upnpCommandBuilder"/>      -->
+        <entry key = "virtual"          value-ref = "virtualCommandBuilder"/>
+        <entry key = "onewire"          value-ref = "oneWireCommandBuilder"/>
+        <entry key = "lutron_homeworks" value-ref = "lutronHomeWorksCommandBuilder"/>
+      </map>
+    </constructor-arg>
+<!--
 		<property name = "commandBuilders">
 		    <props>
                 <prop key = "ir">irCommandBuilder</prop>
@@ -213,13 +249,14 @@
                 <prop key = "socket">tcpSocketCommandBuilder</prop>
                 <prop key = "telnet">telnetCommandBuilder</prop>
                 <prop key = "http">httpGetCommandBuilder</prop>
-                <!-- <prop key = "upnp">upnpCommandBuilder</prop> -->
+                <!- <prop key = "upnp">upnpCommandBuilder</prop> ->
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
             <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
 		    </props>
 		</property>
+-->
 	</bean>
 
 	<!-- COMMAND BUILDERS ============================================================================
