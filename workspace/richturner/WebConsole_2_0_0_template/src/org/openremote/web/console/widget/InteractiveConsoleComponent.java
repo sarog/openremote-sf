@@ -2,7 +2,6 @@ package org.openremote.web.console.widget;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openremote.web.console.event.ConsoleUnitEventManager;
 import org.openremote.web.console.event.drag.DragCancelEvent;
 import org.openremote.web.console.event.drag.DragEndEvent;
@@ -26,6 +25,7 @@ import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -43,6 +43,8 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	PressStartEvent startEvent = null;
 	protected PressMoveEvent lastMoveEvent = null;
 	HandlerManager eventBus = ConsoleUnitEventManager.getInstance().getEventBus();
+	protected Navigate navigate;
+	protected Boolean hasControlCommand = false;
 	
 	protected InteractiveConsoleComponent(Widget container, String className) {
 		super(container, className);
@@ -186,5 +188,13 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	public void addInteractiveChild(Widget component) {
 		interactiveChildren.add(component);
+	}
+	
+	public Navigate getNaviate() {
+		return navigate;
+	}
+	
+	public void setNavigate(Navigate navigate) {
+		this.navigate = navigate;
 	}
 }

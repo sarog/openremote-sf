@@ -1,5 +1,6 @@
 package org.openremote.web.console.widget;
 
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.press.PressCancelEvent;
 import org.openremote.web.console.event.press.PressCancelHandler;
 import org.openremote.web.console.event.press.PressEndEvent;
@@ -8,66 +9,88 @@ import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.event.press.PressStartHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.NavigateEvent;
+import org.openremote.web.console.panel.entity.ButtonDefault;
+import org.openremote.web.console.panel.entity.Navigate;
+import org.openremote.web.console.util.BrowserUtils;
 
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
 public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
 	public static final String CLASS_NAME = "buttonComponent";
 	private String name;
 	private boolean isRendered = false;
+	private Label label; 
+	private Image img;
+	private boolean srcExists = false;
 	
 	private ButtonComponent() {
-		super(new Label(), CLASS_NAME);
+		super(new AbsolutePanel(), CLASS_NAME);
 		DOM.setStyleAttribute(getElement(), "whiteSpace", "nowrap");
 		DOM.setStyleAttribute(getElement(), "display", "inline-block");
+		
+		label = new Label();
+		label.setWidth("100%");
+		label.setHeight("100%");
+		
+		img = new Image();
+		img.addLoadHandler(new LoadHandler() {
+
+			@Override
+			public void onLoad(LoadEvent event) {
+				srcExists = true;
+				showImage();
+			}
+		});
+		
+		((AbsolutePanel)getWidget()).add(label);
+		((AbsolutePanel)getWidget()).add(img);
 	}
 	
 	public void setName(String name) {
-		this.name = name;
-		((Label)getWidget()).setText(name);
-		
+		this.name = name;		
 		if (!isRendered) {
 			return;
 		}
-		
-		// Check length of name and whether it is completely visible
-		boolean textResized = false;
-		String newName = name;
-		setWidth("");
-		int currentWidth = getOffsetWidth();
-		
-		while (currentWidth > width) {
-			newName = newName.substring(0, newName.length()-1);
-			((Label)getWidget()).setText(newName);
-			textResized = true;
-			currentWidth = getOffsetWidth();
+		this.name = BrowserUtils.limitStringLength(name, width);
+		label.setText(this.name);
+	}
+	
+	public void setImage(String src) {
+		String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
+		url += "/" + src;
+		img.setUrl(url);
+	}
+	
+	public void showImage() {
+		if (srcExists) {
+			img.setVisible(true);
+			label.setVisible(false);
+			DOM.setStyleAttribute(getElement(), "background", "none");
+		} else {
+			hideImage();
 		}
-		
-		if (textResized) {
-			name = newName.substring(0, newName.length()-1);
-			name += "..";
-			((Label)getWidget()).setText(name);
-			this.name = name;
-		}
-		setWidth(width + "px");
+	}
+	
+	public void hideImage() {
+		img.setVisible(false);
+		label.setVisible(true);
+		DOM.setStyleAttribute(getElement(), "background", "");
 	}
 	
 	@Override
 	public void onRender(int width, int height) {
 		isRendered = true;
+		label.setHeight(height + "px");
 		setName(name);
-		DOM.setStyleAttribute(getElement(), "lineHeight", height + "px");
-	}
-
-	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
-		ButtonComponent component = new ButtonComponent();
-		if (entity == null) {
-			return component;
-		}
-		component.setName(entity.getName());
-		return component;
+		DOM.setStyleAttribute(label.getElement(), "lineHeight", height + "px");
+		showImage();
 	}
 
 	@Override
@@ -88,6 +111,31 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	@Override
 	public void onTap(TapEvent event) {
 		// TODO Auto-generated method stub
-		Window.alert("TAP");
+		if (navigate != null) {
+			eventBus.fireEvent(new NavigateEvent(navigate));
+		} else if (hasControlCommand) {
+			// TODO: Send Command
+			Window.alert("SEND COMMAND");
+			//eventBus.fireEvent(new CommandEvent(getId()));
+		}
+	}
+	
+	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
+		ButtonComponent component = new ButtonComponent();
+		
+		if (entity == null) {
+			return component;
+		}
+		component.setName(entity.getName());
+		ButtonDefault buttonDefault = entity.getDefault();
+		Boolean hasControl = entity.getHasControlCommand();
+		if (buttonDefault != null) {
+			component.setImage(buttonDefault.getImage().getSrc());
+		}
+		if (hasControl != null && hasControl) {
+			component.hasControlCommand = hasControl;
+		}
+		component.setNavigate(entity.getNavigate());
+		return component;
 	}
 }

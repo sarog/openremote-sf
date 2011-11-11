@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
+import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
 import org.openremote.web.console.panel.entity.component.ImageComponent;
@@ -14,6 +15,8 @@ import org.openremote.web.console.view.LoadingScreenView;
 import org.openremote.web.console.view.ScreenViewImpl;
 import org.openremote.web.console.widget.AbsolutePanelComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
+import org.openremote.web.console.widget.GridPanelComponent;
+
 import com.google.gwt.user.client.Window;
 
 public class ScreenViewService {
@@ -56,39 +59,21 @@ public class ScreenViewService {
 		try {
 			List<AbsoluteLayout> absoluteElems = screen.getAbsolute();
 			
-			for (AbsoluteLayout layout : absoluteElems) {
-				LabelComponent labelComponent = layout.getLabel();
-				ImageComponent imageComponent = layout.getImage();
-				SliderComponent sliderComponent = layout.getSlider();
-				SwitchComponent switchComponent = layout.getSwitch();
-				ButtonComponent buttonComponent = layout.getButton();
-				
-				// Create Absolute Panel Component
-				AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
-				absPanel.setHeight(layout.getHeight());
-				absPanel.setWidth(layout.getWidth());
-				absPanel.setPosition(layout.getLeft(),layout.getTop());
-				
-				// Create Console Component
-				ConsoleComponent component = null;
-				
-				if (labelComponent != null) {
-					component = org.openremote.web.console.widget.LabelComponent.build(labelComponent);
-				} else if (imageComponent != null) {
-					component = org.openremote.web.console.widget.ImageComponent.build(imageComponent);
-				} else if (sliderComponent != null) {
-					component = org.openremote.web.console.widget.SliderComponent.build(sliderComponent);
-				} else if (switchComponent != null) {
-					component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
-				} else if (buttonComponent != null) {
-					component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
-				} else {
-					return null;
-				}
-				
-				if (component != null) {
-					absPanel.setComponent(component);
+			if (absoluteElems != null) {
+				for (AbsoluteLayout layout : absoluteElems) {
+					// Create Absolute Panel Component
+					AbsolutePanelComponent absPanel = AbsolutePanelComponent.build(layout);
 					screenView.addConsoleWidget(absPanel);
+				}
+			}
+			
+			List<GridLayout> gridElems = screen.getGrid();
+			
+			if (gridElems != null) {
+				for (GridLayout layout : gridElems) {
+					// Create Grid Panel Component
+					GridPanelComponent gridPanel = GridPanelComponent.build(layout);
+					screenView.addConsoleWidget(gridPanel);
 				}
 			}
 		} catch (Exception e) {

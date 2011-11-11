@@ -3,19 +3,19 @@ package org.openremote.web.console.panel.entity;
 import java.util.List;
 
 public interface GridLayout {
-	int getLeft();
-	int getTop();
-	int getWidth();
-	int getHeight();
-	int getRows();
-	int getCols();
+	Integer getLeft();
+	Integer getTop();
+	Integer getWidth();
+	Integer getHeight();
+	Integer getRows();
+	Integer getCols();
 	List<Cell> getCell();
 	
-	void setLeft(int left);
-	void setTop(int top);
-	void setWidth(int width);
-	void setHeight(int height);
-	void setRows(int rows);
-	void setCols(int cols);
+	void setLeft(Integer left);
+	void setTop(Integer top);
+	void setWidth(Integer width);
+	void setHeight(Integer height);
+	void setRows(Integer rows);
+	void setCols(Integer cols);
 	void setCell(List<Cell> cells);
 }
