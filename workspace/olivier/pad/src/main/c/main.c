@@ -7,7 +7,7 @@
 #include "portManager.h"
 
 void main(int argc, const char *argv[]) {
-  printf("%s version %d.%d\n", argv[0], pad_VERSION_MAJOR, pad_VERSION_MINOR);
+  printf("pad version %d.%d\n", pad_VERSION_MAJOR, pad_VERSION_MINOR);
 
   apr_status_t st = apr_initialize();
 

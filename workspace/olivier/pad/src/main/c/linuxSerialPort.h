@@ -3,7 +3,6 @@
 
 #include <termios.h>
 #include "apr_pools.h"
-#include "apr_thread_proc.h"
 #include "osPort.h"
 
 struct _portContext_t {
@@ -11,7 +10,7 @@ struct _portContext_t {
 	int fd;
 	struct termios oldtio;
 	struct termios newtio;
-	apr_thread_t *readThread;
+	pthread_t readThread;
 	portReceive_t portReceiveCb;
 };
 
