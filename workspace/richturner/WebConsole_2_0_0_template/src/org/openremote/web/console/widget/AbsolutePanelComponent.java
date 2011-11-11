@@ -1,6 +1,13 @@
 package org.openremote.web.console.widget;
 
 import org.openremote.web.console.client.WebConsole;
+import org.openremote.web.console.panel.entity.AbsoluteLayout;
+import org.openremote.web.console.panel.entity.component.ButtonComponent;
+import org.openremote.web.console.panel.entity.component.ImageComponent;
+import org.openremote.web.console.panel.entity.component.LabelComponent;
+import org.openremote.web.console.panel.entity.component.SliderComponent;
+import org.openremote.web.console.panel.entity.component.SwitchComponent;
+
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -119,5 +126,43 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 			} catch (Exception e) {}
 		}
 		setWidth(widthInt);
+	}
+	
+	public static AbsolutePanelComponent build(AbsoluteLayout layout) throws Exception {
+		AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
+		
+		absPanel.setHeight(layout.getHeight());
+		absPanel.setWidth(layout.getWidth());
+		absPanel.setPosition(layout.getLeft(),layout.getTop());
+		
+		// Create component
+		LabelComponent labelComponent = layout.getLabel();
+		ImageComponent imageComponent = layout.getImage();
+		SliderComponent sliderComponent = layout.getSlider();
+		SwitchComponent switchComponent = layout.getSwitch();
+		ButtonComponent buttonComponent = layout.getButton();
+		
+		// Create Console Component
+		ConsoleComponent component = null;
+		
+		if (labelComponent != null) {
+			component = org.openremote.web.console.widget.LabelComponent.build(labelComponent);
+		} else if (imageComponent != null) {
+			component = org.openremote.web.console.widget.ImageComponent.build(imageComponent);
+		} else if (sliderComponent != null) {
+			component = org.openremote.web.console.widget.SliderComponent.build(sliderComponent);
+		} else if (switchComponent != null) {
+			component = org.openremote.web.console.widget.SwitchComponent.build(switchComponent);
+		} else if (buttonComponent != null) {
+			component = org.openremote.web.console.widget.ButtonComponent.build(buttonComponent);
+		} else {
+			return null;
+		}
+		
+		if (component != null) {
+			absPanel.setComponent(component);
+		}
+		
+		return absPanel;
 	}
 }

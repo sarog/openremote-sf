@@ -3,13 +3,15 @@ package org.openremote.web.console.util;
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.service.AsyncControllerCallback;
 import org.openremote.web.console.service.ControllerService;
-
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 	public class BrowserUtils {
@@ -72,6 +74,43 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 		
 		public static int getNativeWidth() {
 			return getNativeWindowDim("width");
+		}
+
+		/*
+		 * This method creates a label widget somewhere and shortens the string
+		 * one character at a time until the label width is less than or equal
+		 * to the specified value
+		 */
+		public static String limitStringLength(String name, int width) {
+			Label label = new Label(name);
+			label.setHeight("auto");
+			label.setWidth("auto");
+			DOM.setStyleAttribute(label.getElement(), "position", "absolute");
+			DOM.setStyleAttribute(label.getElement(), "visibility", "hidden");
+			
+			RootPanel.get().add(label);
+			String retName = name;
+			
+			// Check length of name and whether it is completely visible
+			boolean textResized = false;
+			String newName = name;
+			int currentWidth = label.getOffsetWidth();
+			int iterations = 0;
+			
+			while (currentWidth > width && iterations <= 100 && newName.length()>1) {
+				newName = newName.substring(0, newName.length()-1);
+				label.setText(newName);
+				textResized = true;
+				currentWidth = label.getOffsetWidth();
+				iterations++;
+			}
+			
+			if (textResized && newName.length() > 1) {
+				retName = newName.substring(0, newName.length()-1);
+				retName += "..";
+			}
+			RootPanel.get().remove(label);
+			return retName;
 		}
 		
 //		public static void checkImageExists(String imageUrl, ImageExistsCallback callback) {

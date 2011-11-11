@@ -7,20 +7,20 @@ import org.openremote.web.console.panel.entity.component.SliderComponent;
 import org.openremote.web.console.panel.entity.component.SwitchComponent;
 
 public interface Cell {
-	int getX();
-	int getY();
-	int getRowspan();
-	int getColspan();
+	Integer getX();
+	Integer getY();
+	Integer getRowspan();
+	Integer getColspan();
 	ButtonComponent getButton();
 	LabelComponent getLabel();
 	SliderComponent getSlider();
 	ImageComponent getImage();
 	SwitchComponent getSwitch();
 	
-	void setX(int x);
-	void setY(int y);
-	void setRowspan(int rowspan);
-	void setColspan(int colspan);
+	void setX(Integer x);
+	void setY(Integer y);
+	void setRowspan(Integer rowspan);
+	void setColspan(Integer colspan);
 	void setButton(ButtonComponent component);
 	void setLabel(LabelComponent component);
 	void setSlider(SliderComponent component);
