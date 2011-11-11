@@ -134,8 +134,7 @@ public abstract class LutronHomeWorksCommand implements Command {
 	/**
 	 * Constructs a Lutron HomeWorks command with a given gateway.
 	 * 
-	 * @param gateway
-	 *            Lutron gatewate instance used for transmitting this commnad
+	 * @param gateway Lutron gateway instance used for transmitting this command
 	 */
 	public LutronHomeWorksCommand(String name, LutronHomeWorksGateway gateway) {
 		this.name = name;
