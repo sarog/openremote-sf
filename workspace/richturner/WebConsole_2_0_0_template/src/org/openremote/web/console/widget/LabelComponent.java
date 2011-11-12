@@ -36,6 +36,7 @@ public class LabelComponent extends PassiveConsoleComponent {
 		if (entity == null) {
 			return component;
 		}
+		component.setId(entity.getId());
 		component.setText(entity.getText());
 		component.setColor(entity.getColor());
 		component.setFontSize(entity.getFontSize());

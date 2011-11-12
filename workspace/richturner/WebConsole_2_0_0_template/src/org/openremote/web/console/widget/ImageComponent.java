@@ -52,6 +52,10 @@ public class ImageComponent extends PassiveConsoleComponent {
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ImageComponent entity) {
 		ImageComponent component = new ImageComponent();
+		if (entity == null) {
+			return component;
+		}
+		component.setId(entity.getId());
 		component.setSrc(entity.getSrc());
 		return component;
 	}

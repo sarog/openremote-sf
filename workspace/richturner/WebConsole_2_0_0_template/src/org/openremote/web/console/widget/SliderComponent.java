@@ -8,6 +8,9 @@ import org.openremote.web.console.event.drag.DragStartEvent;
 import org.openremote.web.console.event.drag.Draggable;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.CommandSendEvent;
+import org.openremote.web.console.event.ui.NavigateEvent;
+
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -269,8 +272,10 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	private void doValueChange() {
 		if (value != lastValue) {
 			// Fire value change event on console unit event bus
-			Window.alert("TELL THE WORLD NEW VALUE IS: " + value);
 			lastValue = value;
+			if (hasControlCommand) {
+				eventBus.fireEvent(new CommandSendEvent(getId(), new Integer(value).toString(), this));
+			}
 		}
 	}
 	
@@ -317,9 +322,14 @@ public class SliderComponent extends InteractiveConsoleComponent {
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.SliderComponent entity) {
 		SliderComponent component = new SliderComponent();
+		if (entity == null) {
+			return component;
+		}
+		component.setId(entity.getId());
 		component.setMax(entity.getMax().getValue());
 		component.setMin(entity.getMin().getValue());
 		component.setIsVertical(entity.getVertical());
+		component.setHasControlCommand(true);
 		return component;
 	}
 }

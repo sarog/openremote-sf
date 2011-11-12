@@ -23,6 +23,7 @@ public class HTMLComponent extends PassiveConsoleComponent {
 		if (entity == null) {
 			return component;
 		}
+		component.setId(entity.getId());
 		component.setHTML(entity.getHtml());
 		return component;
 	}

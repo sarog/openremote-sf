@@ -38,7 +38,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive, TapHandler {
+public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive {
 	private List<HandlerRegistration> handlerRegistrations = new ArrayList<HandlerRegistration>();
 	private List<Widget> interactiveChildren = new ArrayList<Widget>();
 	protected boolean handlersRegistered = false;
@@ -208,15 +208,7 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 		this.hasControlCommand = hasControlCommand;
 	}
 	
-	@Override
-	public void onTap(TapEvent event) {
-		// TODO Auto-generated method stub
-		if (navigate != null) {
-			eventBus.fireEvent(new NavigateEvent(navigate));
-		} else if (hasControlCommand) {
-			// TODO: Send Command
-			Window.alert("SEND COMMAND");
-			//eventBus.fireEvent(new CommandEvent(getId()));
-		}
+	public void onCommandSendResponse(Boolean success, String command) {
+		// DO NOTHING BY DEFAULT UP TO COMPONENTS IF THEY WANT TO REACT TO THIS
 	}
 }

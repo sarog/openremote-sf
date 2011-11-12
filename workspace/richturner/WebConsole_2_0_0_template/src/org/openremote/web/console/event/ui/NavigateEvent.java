@@ -1,9 +1,7 @@
 package org.openremote.web.console.event.ui;
 
 import org.openremote.web.console.panel.entity.Navigate;
-
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Indicates that the screen view has changed on the controller

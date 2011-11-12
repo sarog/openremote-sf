@@ -16,28 +16,7 @@ import com.google.gwt.jsonp.client.JsonpRequestBuilder;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class JSONPControllerService extends ControllerService {
-	private Controller controller;
-	private int requestId = 0;
-	private Map<Integer, CommandCallbackPair> requestMap = new HashMap<Integer, CommandCallbackPair>();
-	
-	private class CommandCallbackPair {
-		private EnumControllerCommand command;
-		private AsyncControllerCallback<?> callback;
-		
-		public CommandCallbackPair(EnumControllerCommand command, AsyncControllerCallback<?> callback) {
-			this.command = command;
-			this.callback = callback;
-		}
 
-		public EnumControllerCommand getCommand() {
-			return command;
-		}
-
-		public AsyncControllerCallback<?> getCallback() {
-			return callback;
-		}
-	}
-	
 	private static String getJsonMethodUrl(EnumControllerCommand command) {
 		String methodUrl = "";
 		switch (command) {
@@ -100,13 +79,16 @@ public class JSONPControllerService extends ControllerService {
 			// Check for JSONP Error Response and if set throw appropriate exception
 			JSONObject jsonObj = new JSONObject(jsObj);
 
-			boolean isSecure = false;
+			
+			
+			int errorCode = 0;
+			String errorMessage = "";
+			
 			if (jsonObj.containsKey("error")) {
-				int errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
-				if (!(command == EnumControllerCommand.IS_SECURE && errorCode == 403)) {
+				errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
+				errorMessage = jsonObj.get("error").isObject().get("message").isString().stringValue();
+				if (!((command == EnumControllerCommand.IS_SECURE && errorCode == 403) || errorCode == 200)) {
 					callback.onFailure(new Exception("Error: " + EnumControllerResponseCode.getResponseCode(errorCode).getDescription()));
-				} else {
-					isSecure = true;
 				}
 			}
 			
@@ -128,7 +110,19 @@ public class JSONPControllerService extends ControllerService {
 					break;
 				case IS_SECURE:
 					AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callback;
-					isSecureCallback.onSuccess(isSecure);
+					if (errorCode == 403) {
+						isSecureCallback.onSuccess(true);
+					} else {
+						isSecureCallback.onSuccess(false);
+					}
+					break;
+				case SEND_COMMAND:
+					AsyncControllerCallback<Boolean> successCallback = (AsyncControllerCallback<Boolean>)callback;
+					if (errorCode == 200) {
+						successCallback.onSuccess(true);
+					} else {
+						successCallback.onSuccess(false);
+					}
 					break;
 			}
 		}
@@ -164,137 +158,38 @@ public class JSONPControllerService extends ControllerService {
 		doJsonpRequest(controllerUrl, new JSONPControllerCallback(EnumControllerCommand.IS_ALIVE, callback));	
 	}
 	
-	// ------------------------	Internal JSON Methods ------------------------------------------
-	
-	private void sendCommand(int requestId, String commandUrl, EnumControllerCommand command, AsyncControllerCallback<?> callback) {
-		if (!commandUrl.equals("")) {
-			CommandCallbackPair callbackMap = new CommandCallbackPair(command, callback);
-			requestMap.put(requestId, callbackMap);
-			getJson(requestId, commandUrl, this);
-		}
+	@Override
+	public void sendCommand(String controllerUrl, String sendCommand, AsyncControllerCallback<Boolean> callback) {
+		EnumControllerCommand command = EnumControllerCommand.SEND_COMMAND;
+		doJsonpRequest(buildCompleteJsonUrl(controllerUrl, new String[] {sendCommand}, command), new JSONPControllerCallback(command, callback));
 	}
 	
-	/**
-	   * Make call to controller using JSONP
-	   */
-		private native static void getJson(int requestId, String url, JSONPControllerService handler) /*-{
-		   var callback = "callback" + requestId;
-		   
-		   // [1] Create a script element.
-		   var script = document.createElement("script");
-		   script.setAttribute("src", url+callback);
-		   script.setAttribute("type", "text/javascript");
-		   // [2] Define the callback function on the window object.
-		   window[callback] = function(jsonObj) {
-		      handler.@org.openremote.web.console.service.JSONPControllerService::handleResponse(ILcom/google/gwt/core/client/JavaScriptObject;)(requestId, jsonObj);
-		     	window[callback + "done"] = true;
-		   }
+	// ------------------------	Internal JSON Methods ------------------------------------------
 		
-		   // [3] JSON download has 1-second timeout.
-		   setTimeout(function() {
-		   	if (!window[callback + "done"]) {
-					handler.@org.openremote.web.console.service.JSONPControllerService::handleResponse(ILcom/google/gwt/core/client/JavaScriptObject;)(requestId, null);
-		     	}
+	private static String buildCompleteJsonUrl(String controllerUrl, EnumControllerCommand command) {
+		return buildCompleteJsonUrl(controllerUrl, new String[0], command);
+	}
+	
+	private static String buildCompleteJsonUrl(String controllerUrl, String[] params, EnumControllerCommand command) {
+		String url = controllerUrl;
+		int paramCounter = 0;
+		url = url.endsWith("/") ? url : url + "/";
+		String methodUrl = getJsonMethodUrl(command);
 		
-			  	// [4] Cleanup. Remove script and callback elements.
-			  	document.body.removeChild(script);
-			  	delete window[callback];
-			  	delete window[callback + "done"];
-		   }, 1000);
+		if (methodUrl.equals("")) {
+			return "";
+		} else {
+			url += methodUrl;
+		}		
 		
-		   // [5] Attach the script element to the document body.
-		   document.body.appendChild(script);
-	  	}-*/;
-		
-		private static String buildCompleteJsonUrl(String controllerUrl, EnumControllerCommand command) {
-			return buildCompleteJsonUrl(controllerUrl, new String[0], command);
-		}
-		
-		private static String buildCompleteJsonUrl(String controllerUrl, String[] params, EnumControllerCommand command) {
-			String url = controllerUrl;
-			int paramCounter = 0;
-			url = url.endsWith("/") ? url : url + "/";
-			String methodUrl = getJsonMethodUrl(command);
-			
-			if (methodUrl.equals("")) {
-				return "";
-			} else {
-				url += methodUrl;
-			}		
-			
-			for (String param : params) {
-				url += param;
-				paramCounter++;
-				if (paramCounter < params.length) {
-					url = url.endsWith("/") ? url : url + "/";
-				}
-			}
-			url = URL.encode(url);// + "?callback=";
-			return url;
-		}
-		
-		@SuppressWarnings("unchecked")
-		public void handleResponse(int requestId, JavaScriptObject jsObj) {
-			CommandCallbackPair callbackMap = requestMap.remove(requestId);
-			EnumControllerCommand command;
-			
-			if (callbackMap == null) {
-				return;
-			}
-
-			
-			command = callbackMap.getCommand();
-			
-			// Throw a Controller Error on the callback and exit
-			if (jsObj == null) {
-				callbackMap.getCallback().onFailure(new Exception("Error: " + EnumControllerResponseCode.NOT_FOUND.getDescription()));
-				return;
-			}
-			
-			// Check for JSONP Error Response and if set throw appropriate exception
-			JSONObject jsonObj = new JSONObject(jsObj);
-
-			boolean isSecure = false;
-			if (jsonObj.containsKey("error")) {
-				int errorCode = (int) jsonObj.get("error").isObject().get("code").isNumber().doubleValue();
-				if (!(command == EnumControllerCommand.IS_SECURE && errorCode == 403)) {
-					callbackMap.getCallback().onFailure(new Exception("Error: " + EnumControllerResponseCode.getResponseCode(errorCode).getDescription()));
-				} else {
-					isSecure = true;
-				}
-			}
-			
-			// If we've got this far then we assume JSON response is correctly formatted so we build the response object
-			switch(command) {
-				case GET_PANEL_LIST:
-					AsyncControllerCallback<List<PanelIdentity>> panelListCallback = (AsyncControllerCallback<List<PanelIdentity>>)callbackMap.getCallback();
-					PanelIdentityList panels = AutoBeanService.getInstance().fromJsonString(PanelIdentityList.class, jsonObj.toString());
-					panelListCallback.onSuccess(panels.getPanel());
-					break;
-				case GET_PANEL_LAYOUT:
-					AsyncControllerCallback<Panel> panelLayoutCallback = (AsyncControllerCallback<Panel>)callbackMap.getCallback();
-					Panel panel = AutoBeanService.getInstance().fromJsonString(Panel.class, jsonObj.toString());
-					panelLayoutCallback.onSuccess(panel);
-					break;
-				case IS_ALIVE:
-					AsyncControllerCallback<Boolean> isAliveCallback = (AsyncControllerCallback<Boolean>)callbackMap.getCallback();
-					isAliveCallback.onSuccess(true);
-					break;
-				case IS_SECURE:
-					AsyncControllerCallback<Boolean> isSecureCallback = (AsyncControllerCallback<Boolean>)callbackMap.getCallback();
-					isSecureCallback.onSuccess(isSecure);
-					break;
+		for (String param : params) {
+			url += param;
+			paramCounter++;
+			if (paramCounter < params.length) {
+				url = url.endsWith("/") ? url : url + "/";
 			}
 		}
-		
-		
-		// --------------------- 	JSON Overlays below here ----------------------------------
-		
-//		private native final JsArray<PanelIdentityJso> getPanelIdentities(JavaScriptObject jsObj) /*-{
-//			return jsObj.panel;
-//		}-*/;
-		
-//		private native final PanelJso getPanel(JavaScriptObject jsObj) /*-{
-//			return jsObj;
-//		}-*/;
+		url = URL.encode(url);
+		return url;
+	}
 }

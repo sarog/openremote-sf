@@ -54,7 +54,10 @@ public abstract class ControllerService {
 			isSecure(controller.getUrl(), callback);
 		}
 	}
-	
+
+	/*
+	 * Static Method for retrieving controller security status
+	 */
 	public abstract void isSecure(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 	
 	/*
@@ -63,16 +66,12 @@ public abstract class ControllerService {
 	public abstract void isAlive(String controllerUrl, AsyncControllerCallback<Boolean> callback);
 	
 	/*
-	 * Check if image exists on controller
+	 * Method for sending a command request to the controller
 	 */
-	public void imageExists(String imageUrl, AsyncControllerCallback<Boolean> callback) {
+	public void sendCommand(String command, AsyncControllerCallback<Boolean> callback) {
 		if (controller != null) {
-			imageExists(controller.getUrl(), imageUrl, callback);
+			sendCommand(controller.getUrl(), command, callback);
 		}
 	}
-	
-	public void imageExists(String controllerUrl, String imageUrl,	AsyncControllerCallback<Boolean> callback) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void sendCommand(String controllerUrl, String command, AsyncControllerCallback<Boolean> callback);
 }
