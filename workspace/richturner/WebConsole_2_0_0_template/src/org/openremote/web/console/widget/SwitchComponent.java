@@ -1,6 +1,8 @@
 package org.openremote.web.console.widget;
 
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.sensor.SensorChangeHandler;
+import org.openremote.web.console.panel.entity.ButtonDefault;
 import org.openremote.web.console.panel.entity.Link;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
@@ -37,7 +39,9 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		offImage = new Image();
 		offImage.setVisible(false);
 		
-		((AbsolutePanel)getWidget()).add(label);
+		((AbsolutePanel)getWidget()).add(label, 0, 0);
+		((AbsolutePanel)getWidget()).add(onImage, 0, 0);
+		((AbsolutePanel)getWidget()).add(offImage, 0, 0);
 	}
 	
 	/*
@@ -45,6 +49,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 	 */
 	public void onSensorAdd() {
 		if (sensor.isValid()) {
+			String url = WebConsole.getConsoleUnit().getControllerService().getController().getUrl();
 			onImage.addLoadHandler(new LoadHandler() {
 
 				@Override
@@ -52,16 +57,17 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 					onImageExists = true;
 				}
 			});
-			onImage.setUrl(sensor.getMappedValue("on"));
+			onImage.setUrl(url + "/" + sensor.getMappedValue("on"));
 			
 			offImage.addLoadHandler(new LoadHandler() {
 
 				@Override
 				public void onLoad(LoadEvent event) {
 					offImageExists = true;
+					onRender(0, 0);
 				}
 			});
-			offImage.setUrl(sensor.getMappedValue("off"));			
+			offImage.setUrl(url + "/" + sensor.getMappedValue("off"));			
 		}
 	}
 
@@ -72,12 +78,17 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 	
 	@Override
 	public void onRender(int width, int height) {
-		onImage.setWidth(width + "px");
-		onImage.setHeight(height + "px");
-		offImage.setWidth(width + "px");
-		offImage.setHeight(height + "px");
+		if (!isInitialised) {
+			label.setWidth(width + "px");
+			label.setHeight(height + "px");
+			label.onRender(width, height);
+		}
 		
-		label.onRender(width, height);
+		if (offImageExists) {
+			offImage.setVisible(true);
+			label.setVisible(false);
+			DOM.setStyleAttribute(getElement(), "background", "none");
+		}
 		checkSensor();
 	}
 	
@@ -114,6 +125,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		if (link != null) {
 			component.setSensor(new Sensor(entity.getLink()));
 		}
+		component.setHasControlCommand(true);
 		return component;
 	}
 }

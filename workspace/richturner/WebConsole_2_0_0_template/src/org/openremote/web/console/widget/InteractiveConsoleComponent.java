@@ -25,6 +25,7 @@ import org.openremote.web.console.event.tap.DoubleTapEvent;
 import org.openremote.web.console.event.tap.DoubleTapHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.Navigate;
 import org.openremote.web.console.util.BrowserUtils;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -34,9 +35,10 @@ import com.google.gwt.event.dom.client.TouchEndEvent;
 import com.google.gwt.event.dom.client.TouchStartEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive {
+public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl implements Interactive, TapHandler {
 	private List<HandlerRegistration> handlerRegistrations = new ArrayList<HandlerRegistration>();
 	private List<Widget> interactiveChildren = new ArrayList<Widget>();
 	protected boolean handlersRegistered = false;
@@ -196,5 +198,25 @@ public abstract class InteractiveConsoleComponent extends ConsoleComponentImpl i
 	
 	public void setNavigate(Navigate navigate) {
 		this.navigate = navigate;
+	}
+	
+	public Boolean getHasControlCommand() {
+		return hasControlCommand;
+	}
+	
+	public void setHasControlCommand(Boolean hasControlCommand) {
+		this.hasControlCommand = hasControlCommand;
+	}
+	
+	@Override
+	public void onTap(TapEvent event) {
+		// TODO Auto-generated method stub
+		if (navigate != null) {
+			eventBus.fireEvent(new NavigateEvent(navigate));
+		} else if (hasControlCommand) {
+			// TODO: Send Command
+			Window.alert("SEND COMMAND");
+			//eventBus.fireEvent(new CommandEvent(getId()));
+		}
 	}
 }

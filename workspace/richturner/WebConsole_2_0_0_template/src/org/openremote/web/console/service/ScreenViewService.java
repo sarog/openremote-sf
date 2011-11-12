@@ -3,7 +3,10 @@ package org.openremote.web.console.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.panel.entity.AbsoluteLayout;
+import org.openremote.web.console.panel.entity.Background;
 import org.openremote.web.console.panel.entity.GridLayout;
 import org.openremote.web.console.panel.entity.Screen;
 import org.openremote.web.console.panel.entity.component.ButtonComponent;
@@ -17,6 +20,8 @@ import org.openremote.web.console.widget.AbsolutePanelComponent;
 import org.openremote.web.console.widget.ConsoleComponent;
 import org.openremote.web.console.widget.GridPanelComponent;
 
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.Window;
 
 public class ScreenViewService {
@@ -54,6 +59,9 @@ public class ScreenViewService {
 	
 	private ScreenViewImpl buildScreenView(Screen screen) {
 		ScreenViewImpl screenView = new ScreenViewImpl();
+		
+		// Set background if defined
+		screenView.setBackground(screen.getBackground());
 		
 		// Cycle through absolute and grid lists and create components
 		try {
