@@ -22,10 +22,9 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
-public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
+public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler {
 	public static final String CLASS_NAME = "buttonComponent";
 	private String name;
-	private boolean isRendered = false;
 	private Label label; 
 	private Image img;
 	private boolean srcExists = false;
@@ -55,7 +54,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	
 	public void setName(String name) {
 		this.name = name;		
-		if (!isRendered) {
+		if (!isInitialised) {
 			return;
 		}
 		this.name = BrowserUtils.limitStringLength(name, width);
@@ -86,8 +85,8 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	
 	@Override
 	public void onRender(int width, int height) {
-		isRendered = true;
 		label.setHeight(height + "px");
+		isInitialised = true;
 		setName(name);
 		DOM.setStyleAttribute(label.getElement(), "lineHeight", height + "px");
 		showImage();
@@ -107,18 +106,6 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 	public void onPressStart(PressStartEvent event) {
 		this.addStyleName("pressed");
 	}
-
-	@Override
-	public void onTap(TapEvent event) {
-		// TODO Auto-generated method stub
-		if (navigate != null) {
-			eventBus.fireEvent(new NavigateEvent(navigate));
-		} else if (hasControlCommand) {
-			// TODO: Send Command
-			Window.alert("SEND COMMAND");
-			//eventBus.fireEvent(new CommandEvent(getId()));
-		}
-	}
 	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
 		ButtonComponent component = new ButtonComponent();
@@ -133,7 +120,7 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 			component.setImage(buttonDefault.getImage().getSrc());
 		}
 		if (hasControl != null && hasControl) {
-			component.hasControlCommand = hasControl;
+			component.setHasControlCommand(hasControl);
 		}
 		component.setNavigate(entity.getNavigate());
 		return component;
