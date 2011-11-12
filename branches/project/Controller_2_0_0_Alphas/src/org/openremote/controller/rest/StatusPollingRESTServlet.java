@@ -48,7 +48,7 @@ import org.openremote.controller.spring.SpringContext;
  * @author Handy.Wang 2009-10-19
  */
 @SuppressWarnings("serial")
-public class StatusPollingRESTServlet extends HttpServlet {
+public class StatusPollingRESTServlet extends RESTAPI {
 
    /** This service is responsible for observe statuses change and return the changed statuses(xml-formatted). */
    private StatusPollingService statusPollingService = 
@@ -58,36 +58,9 @@ public class StatusPollingRESTServlet extends HttpServlet {
    private StatusCacheService statusCacheService = (StatusCacheService)SpringContext.getInstance().getBean("statusCacheService");
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
-   
-   /**
-    * The Constructor.
-    */
-   public StatusPollingRESTServlet() {
-      super();
-   }
 
-   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      doPost(request, response);
-   }
-
-   /**
-    * It's responsible for polling the <b>changed statuses</b> or <b>TIME_OUT</b> if time out.
-    */
-   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      logger.info("Started polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
-      // Set response MIME type and character encoding...
-
-      response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-      response.setContentType(Constants.MIME_APPLICATION_XML);
-      
-
-     // Get the 'accept' header from client -- this will indicate whether we will send
-     // application/xml or application/json response...
-
-     String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-
-
+   @Override
+   protected void handleRequest(HttpServletRequest request, HttpServletResponse response) {
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/polling\\/(.*?)\\/(.*)";
       Pattern pattern = Pattern.compile(regexp);
@@ -95,7 +68,6 @@ public class StatusPollingRESTServlet extends HttpServlet {
       String unParsedSensorIDs = null;
       String deviceID = null;
       
-      PrintWriter printWriter = response.getWriter();
       if (matcher.find()) {
          deviceID = matcher.group(1);
          if (deviceID == null || "".equals(deviceID)) {
@@ -107,20 +79,20 @@ public class StatusPollingRESTServlet extends HttpServlet {
             String pollingResults = statusPollingService.queryChangedState(deviceID, unParsedSensorIDs);
             if (pollingResults != null && !"".equals(pollingResults)) {
                if (Constants.SERVER_RESPONSE_TIME_OUT.equalsIgnoreCase(pollingResults)) {
-                  printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 504, RESTAPI.composeXMLErrorDocument(504, "Time out")));
+                  sendResponse(response, 504, "Time out");
                } else {
                   logger.info("Return the polling status.");
-                  printWriter.write(JSONTranslator.translateXMLToJSON(acceptHeader, response, pollingResults));
+                  sendResponse(response, pollingResults);
                }
             }
             logger.info("Finished polling at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (ControllerException e) {
-            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
+            logger.error("CommandException occurs", e);
+            sendResponse(response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, ControlCommandException.INVALID_POLLING_URL, RESTAPI.composeXMLErrorDocument(ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url)));
+         sendResponse(response, ControlCommandException.INVALID_POLLING_URL, "Invalid polling url:"+url);
       }
-      printWriter.flush();
    }
    
    /**
