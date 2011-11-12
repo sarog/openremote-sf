@@ -2,15 +2,20 @@ package org.openremote.web.console.widget;
 
 import org.openremote.web.console.client.WebConsole;
 import org.openremote.web.console.event.sensor.SensorChangeHandler;
+import org.openremote.web.console.event.tap.TapEvent;
+import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.CommandSendEvent;
+import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.ButtonDefault;
 import org.openremote.web.console.panel.entity.Link;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 
-public class SwitchComponent extends InteractiveConsoleComponent implements SensorChangeHandler {
+public class SwitchComponent extends InteractiveConsoleComponent implements SensorChangeHandler, TapHandler {
 	public static final String CLASS_NAME = "switchComponent";
 	private String name;
 	private int width;
@@ -20,6 +25,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 	private boolean onImageExists = false;
 	private boolean offImageExists = false;
 	private LabelComponent label;
+	private String state = "";
 	
 	private SwitchComponent() {
 		super(new AbsolutePanel(), CLASS_NAME);
@@ -83,12 +89,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 			label.setHeight(height + "px");
 			label.onRender(width, height);
 		}
-		
-		if (offImageExists) {
-			offImage.setVisible(true);
-			label.setVisible(false);
-			DOM.setStyleAttribute(getElement(), "background", "none");
-		}
+		updateState("off");
 		checkSensor();
 	}
 	
@@ -103,16 +104,60 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 	
 	@Override
 	public void sensorChanged(String value) {
-		if (value.equalsIgnoreCase("on")) {
-			offImage.setVisible(false);
-			if (onImageExists) {
-				onImage.setVisible(true);
+		updateState(value);
+	}
+	
+	@Override
+	public void onTap(TapEvent event) {
+		if (navigate != null) {
+			eventBus.fireEvent(new NavigateEvent(navigate));
+		} else if (hasControlCommand) {
+			eventBus.fireEvent(new CommandSendEvent(getId(), getSendCommand(), this));
+		}
+	}
+	
+	private String getSendCommand() {
+		String sendCommand = "off";
+		if (state.equalsIgnoreCase("off")) {
+			sendCommand = "on";
+		}
+		return sendCommand;
+	}
+	
+	@Override
+	public void onCommandSendResponse(Boolean success, String command) {
+		// Update the state of the switch if send command was a success
+		if (success) {
+			updateState(command);
+		}
+	}
+	
+	private void updateState(String newState) {
+		if (!newState.equalsIgnoreCase(state)) {
+			if (newState.equalsIgnoreCase("on")) {
+				offImage.setVisible(false);
+				if (onImageExists) {
+					onImage.setVisible(true);
+					label.setVisible(false);
+					DOM.setStyleAttribute(getElement(), "background", "none");
+				} else {
+					setName(newState.toUpperCase());
+					label.setVisible(true);
+					DOM.setStyleAttribute(getElement(), "background", "");
+				}		
+			} else if (newState.equalsIgnoreCase("off")) {
+				onImage.setVisible(false);
+				if (offImageExists) {
+					offImage.setVisible(true);
+					label.setVisible(false);
+					DOM.setStyleAttribute(getElement(), "background", "none");
+				} else {
+					setName(newState.toUpperCase());
+					label.setVisible(true);
+					DOM.setStyleAttribute(getElement(), "background", "");
+				}
 			}
-		} else if (value.equalsIgnoreCase("off")) {
-			onImage.setVisible(false);
-			if (offImageExists) {
-				offImage.setVisible(true);
-			}			
+			this.state = newState;
 		}
 	}
 	
@@ -121,6 +166,7 @@ public class SwitchComponent extends InteractiveConsoleComponent implements Sens
 		if (entity == null) {
 			return component;
 		}
+		component.setId(entity.getId());
 		Link link = entity.getLink();
 		if (link != null) {
 			component.setSensor(new Sensor(entity.getLink()));

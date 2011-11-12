@@ -130,7 +130,9 @@ public class AbsolutePanelComponent extends PassiveConsoleComponent implements P
 	
 	public static AbsolutePanelComponent build(AbsoluteLayout layout) throws Exception {
 		AbsolutePanelComponent absPanel = new AbsolutePanelComponent();
-		
+		if (layout == null) {
+			return absPanel;
+		}
 		absPanel.setHeight(layout.getHeight());
 		absPanel.setWidth(layout.getWidth());
 		absPanel.setPosition(layout.getLeft(),layout.getTop());

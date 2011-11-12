@@ -9,6 +9,7 @@ import org.openremote.web.console.event.press.PressStartEvent;
 import org.openremote.web.console.event.press.PressStartHandler;
 import org.openremote.web.console.event.tap.TapEvent;
 import org.openremote.web.console.event.tap.TapHandler;
+import org.openremote.web.console.event.ui.CommandSendEvent;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.panel.entity.ButtonDefault;
 import org.openremote.web.console.panel.entity.Navigate;
@@ -22,7 +23,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
-public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler {
+public class ButtonComponent extends InteractiveConsoleComponent implements PressStartHandler, PressEndHandler, PressCancelHandler, TapHandler {
 	public static final String CLASS_NAME = "buttonComponent";
 	private String name;
 	private Label label; 
@@ -107,12 +108,22 @@ public class ButtonComponent extends InteractiveConsoleComponent implements Pres
 		this.addStyleName("pressed");
 	}
 	
+	@Override
+	public void onTap(TapEvent event) {
+		if (navigate != null) {
+			eventBus.fireEvent(new NavigateEvent(navigate));
+		} else if (hasControlCommand) {
+			eventBus.fireEvent(new CommandSendEvent(getId(), "click", this));
+		}
+	}
+	
 	public static ConsoleComponent build(org.openremote.web.console.panel.entity.component.ButtonComponent entity) {
 		ButtonComponent component = new ButtonComponent();
 		
 		if (entity == null) {
 			return component;
 		}
+		component.setId(entity.getId());
 		component.setName(entity.getName());
 		ButtonDefault buttonDefault = entity.getDefault();
 		Boolean hasControl = entity.getHasControlCommand();

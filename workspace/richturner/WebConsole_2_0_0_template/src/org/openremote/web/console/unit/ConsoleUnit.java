@@ -15,6 +15,8 @@ import org.openremote.web.console.event.sensor.SensorChangeHandler;
 import org.openremote.web.console.event.swipe.SwipeEvent;
 import org.openremote.web.console.event.swipe.SwipeEvent.SwipeDirection;
 import org.openremote.web.console.event.swipe.SwipeHandler;
+import org.openremote.web.console.event.ui.CommandSendEvent;
+import org.openremote.web.console.event.ui.CommandSendHandler;
 import org.openremote.web.console.event.ui.NavigateEvent;
 import org.openremote.web.console.event.ui.NavigateHandler;
 import org.openremote.web.console.panel.Panel;
@@ -45,7 +47,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, NavigateHandler {
+public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHandler, HoldHandler, NavigateHandler, CommandSendHandler {
 	public static final String CONSOLE_HTML_ELEMENT_ID = "consoleUnit";
 	public static final String LOGO_TEXT_LEFT = "Open";
 	public static final String LOGO_TEXT_RIGHT = "Remote";
@@ -396,6 +398,7 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 		eventBus.addHandler(SwipeEvent.getType(), this);
 		eventBus.addHandler(HoldEvent.getType(), this);
 		eventBus.addHandler(NavigateEvent.getType(), this);
+		eventBus.addHandler(CommandSendEvent.getType(), this);
 	}
 	
 	@Override
@@ -486,6 +489,20 @@ public class ConsoleUnit extends SimplePanel implements RotationHandler, SwipeHa
 				Screen screen = panelService.getScreenById(toScreenId);
 				loadScreen(toGroupId, screen);
 			}
+		}
+	}
+
+	@Override
+	public void onCommandSend(CommandSendEvent event) {
+		if (event != null) {
+			controllerService.sendCommand(event.getCommandId() + "/" + event.getCommand(), new AsyncControllerCallback<Boolean>() {
+				@Override
+				public void onSuccess(Boolean result) {
+					if (!result) {
+						Window.alert("Command Send Failed!");
+					}
+				}			
+			});
 		}
 	}
 }
