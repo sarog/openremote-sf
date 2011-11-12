@@ -29,12 +29,18 @@ import org.openremote.controller.exception.InitializationException;
 import org.jdom.Element;
 import org.jdom.Document;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
 
 /**
  * A common superclass implementation for different model builder implementations to share/reuse
- * code.
+ * code.  <p>
+ *
+ * Subclasses should provide implementations of {@link #build} and
+ * {@link #readControllerXMLDocument()} methods. The build() method will be invoked by this
+ * implementation after the default implementation of
+ * {@link org.openremote.controller.deployer.ModelBuilder#buildModel()} has been executed.
+ * The readControllerXMLDocument() should be implemented to read the XML definition of the
+ * controller from file system.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -50,18 +56,6 @@ abstract class AbstractModelBuilder implements ModelBuilder
    */
 
 
-  // Constants ------------------------------------------------------------------------------------
-
-
-  /**
-   * XML namespace definition for OpenRemote XML elements.
-   */
-  public final static Namespace OPENREMOTE_NAMESPACE = Namespace.getNamespace(
-      "or",                            // prefix
-      "http://www.openremote.org"      // namespace identifier
-  );
-
-
 
   // Class Members --------------------------------------------------------------------------------
 
@@ -74,43 +68,129 @@ abstract class AbstractModelBuilder implements ModelBuilder
 
 
 
+  /**
+   * Isolated this one method call to suppress warnings (JDOM API does not use generics).
+   *
+   * @param rootElement  the root element which child elements are retrieved
+   *
+   * @return  the child elements of the root element
+   */
+  @SuppressWarnings("unchecked")
+  protected static List<Element> getChildElements(Element rootElement)
+  {
+    return rootElement.getChildren();
+  }
+
+
+  // Instance Fields ------------------------------------------------------------------------------
+
+
+  /**
+   * Stores a JDOM Document reference to an in-memory node-tree of the controller's XML definition.
+   */
+  protected Document controllerXMLDefinition;
+
+
+
+
+  // Public Instance Methods ----------------------------------------------------------------------
+
+
+  /**
+   * Returns the XML element from controller's XML definition matching the given "id" attribute
+   * value. Id attribute values must be unique and only one element can be returned from the query
+   * (multiple elements with same id will cause an exception to be thrown).
+   *
+   * @param  id      value of element's "id" attribute
+   *
+   * @return JDOM Element matching the given element id attribute
+   *
+   * @throws InitializationException
+   *            if controller's XML definition cannot be read
+   *
+   * @throws XMLParsingException
+   *            if element with given id was not found, if there were more than one element
+   *            with the same id, or if for any other reason the execution of the XPath query
+   *            fails
+   */
+  public Element queryElementById(int id) throws InitializationException
+  {
+
+    Element element = queryElementFromXML(controllerXMLDefinition, "*[@id='" + id + "']");
+
+    if (element == null)
+    {
+      throw new XMLParsingException("No component found with id ''{0}''.", id);
+    }
+
+    return element;
+  }
+
+
+
+  // Implements ModelBuilder ----------------------------------------------------------------------
+
+
+  /**
+   * Provides a default implementation which reads the controller's XML definition into memory
+   * (via {@link #readControllerXMLDocument()} method) and stores the XML document node-tree
+   * in {@link #controllerXMLDefinition} field.  <p>
+   *
+   * Subclasses can override this method altogether or provide additional implementation via
+   * {@link #build} method which this implementation will execute.
+   */
+  @Override public void buildModel()
+  {
+    try
+    {
+      controllerXMLDefinition = readControllerXMLDocument();
+
+      build();
+    }
+
+    catch (InitializationException e)
+    {
+      log.error("Reading controller's definition failed : {0}", e, e.getMessage());
+    }
+  }
+
+
+
   // Protected Instance Methods -------------------------------------------------------------------
 
 
   /**
-   * Utility method to execute a given XPath expression on the controller's XML definition.
-   * This implementation is limited to XPath expressions that target XML elements only.
+   * Executes an XPath expression on the controller's XML definition using the
+   * {@link ModelBuilder.SchemaVersion#OPENREMOTE_NAMESPACE} namespace.
+   * This implementation is limited to XPath expressions that return a single
+   * XML elements only.
    *
-   * @param   xPath   XPath expression to return a single XML element
+   * @param   doc          controller's XML definition
+   *
+   * @param   xPathQuery   XPath expression to return a single XML element. The given string
+   *                       is prefixed with '//or:' for OpenRemote namespace.
    *
    * @return  One XML element or <tt>null</tt> if nothing was found
    *
-   * @throws org.openremote.controller.exception.XMLParsingException   if there were errors creating the XPath expression
-   *                                or executing it
+   * @throws  XMLParsingException
+   *            if there were errors creating the XPath expression or executing it
    */
-  protected Element queryElementFromXML(String xPath) throws InitializationException
+  protected static Element queryElementFromXML(Document doc, String xPathQuery)
+      throws XMLParsingException
   {
-    Document doc = getControllerXMLDefinition();
-
-    if (doc == null)
-    {
-      throw new XMLParsingException(
-          "Cannot execute XPath expression ''{0}'' -- XML document instance was null.", xPath
-      );
-    }
-
-    if (xPath == null || xPath.equals(""))
+    if (xPathQuery == null || xPathQuery.equals(""))
     {
       throw new XMLParsingException(
           "Null or empty XPath expression for document {0}", doc
       );
     }
 
+    xPathQuery = "//" + SchemaVersion.OPENREMOTE_NAMESPACE.getPrefix() + ":" + xPathQuery;
+
     try
     {
-      XPath xpath = XPath.newInstance(xPath);
-      //xpath.addNamespace(Constants.OPENREMOTE_NAMESPACE, Constants.OPENREMOTE_WEBSITE);
-      xpath.addNamespace(OPENREMOTE_NAMESPACE);
+      XPath xpath = XPath.newInstance(xPathQuery);
+      xpath.addNamespace(SchemaVersion.OPENREMOTE_NAMESPACE);
 
       List elements = xpath.selectNodes(doc);
 
@@ -120,7 +200,7 @@ abstract class AbstractModelBuilder implements ModelBuilder
         {
           throw new XMLParsingException(
               "Expression ''{0}'' matches more than one element : {1}",
-              xPath, elements.size()
+              xPathQuery, elements.size()
           );
         }
 
@@ -148,24 +228,30 @@ abstract class AbstractModelBuilder implements ModelBuilder
     catch (JDOMException e)
     {
       throw new XMLParsingException(
-          "XPath evaluation ''{0}'' failed : {1}", e, xPath, e.getMessage()
+          "XPath evaluation ''{0}'' failed : {1}", e, xPathQuery, e.getMessage()
       );
     }
   }
 
 
   /**
+   * Subclasses should implement this to include additional logic in addition to the default
+   * implementation in {@link #buildModel()} method.
+   */
+  protected abstract void build();
+
+  
+  /**
    * Subclasses should implement to return an XML document instance that contains the controller's
-   * XML definition. This is used by methods that operate on the XML document, such as
-   * {@link #queryElementFromXML(String)}.
+   * XML definition. 
    *
    * @return    reference to XML document instance that contains controller's definition
    *
    *
-   * @throws    InitializationException   if the XML document reference cannot be retrieved for
+   * @throws    InitializationException   if the XML document instance cannot be read for
    *                                      any reason
    */
-  protected abstract Document getControllerXMLDefinition() throws InitializationException;
+  protected abstract Document readControllerXMLDocument() throws InitializationException;
 
 }
 
