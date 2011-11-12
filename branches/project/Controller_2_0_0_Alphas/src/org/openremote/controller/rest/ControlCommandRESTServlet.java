@@ -23,12 +23,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.openremote.controller.Constants;
 import org.openremote.controller.exception.ControlCommandException;
@@ -43,31 +41,18 @@ import org.openremote.controller.spring.SpringContext;
  * @author Handy.Wang
  */
 @SuppressWarnings("serial")
-public class ControlCommandRESTServlet extends HttpServlet {
+public class ControlCommandRESTServlet extends RESTAPI {
    
    private Logger logger = Logger.getLogger(ControlCommandRESTServlet.class.getName());
    
    private static ControlCommandService controlCommandService = 
       (ControlCommandService) SpringContext.getInstance().getBean("controlCommandService");
+
+   // Implement REST API ---------------------------------------------------------------------------
    
-   /* (non-Javadoc)
-    * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-    */
    @Override
-   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-      doPost(req, resp);
-   }
-
-   /* (non-Javadoc)
-    * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-    */
-   @Override
-   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-       
-    // Set response MIME type and character encoding...
-
-    response.setContentType(Constants.MIME_APPLICATION_XML);
-    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
+   protected void handleRequest(HttpServletRequest request, HttpServletResponse response)
+   {
 
     // Get the 'accept' header from client -- this will indicate whether we will send
     // application/xml or application/json response...
@@ -81,28 +66,23 @@ public class ControlCommandRESTServlet extends HttpServlet {
       String controlID = null;
       String commandParam = null;
       
-      PrintWriter output = response.getWriter();
-      
       if (matcher.find()) {
          controlID = matcher.group(1);
          commandParam = matcher.group(2);
-         try{
+         try {
             if (isNotEmpty(controlID) && isNotEmpty(commandParam)) {
-                  controlCommandService.trigger(controlID, commandParam);
-
-                  // TODO : this just makes no sense -- why would you put HTTP 200 OK into an error document? chinese logic
-                  output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 200, RESTAPI.composeXMLErrorDocument(200, "SUCCESS")));
-               } else {
-                  throw new InvalidCommandTypeException(commandParam);
-               }
+               controlCommandService.trigger(controlID, commandParam);
+               sendResponse(response, 200, "SUCCESS");
+            } else {
+               throw new InvalidCommandTypeException(commandParam);
+            }
          } catch (ControlCommandException e) {
             logger.error("ControlCommandException occurs", e);
-            output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
+            sendResponse(response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         output.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, 400, RESTAPI.composeXMLErrorDocument(400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}")));
+         sendResponse(response, 400, "Bad REST Request, should be /rest/control/{control_id}/{commandParam}");
       }
-      output.flush();
    }
    
    /**
@@ -115,5 +95,4 @@ public class ControlCommandRESTServlet extends HttpServlet {
    private boolean isNotEmpty(String param) {
       return (param != null && !"".equals(param)) ? true : false;
    }
-
 }

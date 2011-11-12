@@ -45,52 +45,32 @@ import org.openremote.controller.spring.SpringContext;
  * @author Handy.Wang 2009-12-23
  */
 @SuppressWarnings("serial")
-public class RoundRobinRESTServlet extends HttpServlet {
+public class RoundRobinRESTServlet extends RESTAPI {
    
    private Logger logger = Logger.getLogger(this.getClass().getName());
    
    private RoundRobinService roundRobinService = (RoundRobinService) SpringContext.getInstance().getBean("roundRobinService");
 
-   public RoundRobinRESTServlet() {
-      super();
-   }
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	   logger.info("Start RoundRobin group member REST service. at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
-    // Set response MIME type and character encoding...
-
-    response.setCharacterEncoding(Constants.CHARACTER_ENCODING_UTF8);
-    response.setContentType(Constants.MIME_APPLICATION_XML);
-	   
-    // Get the 'accept' header from client -- this will indicate whether we will send
-    // application/xml or application/json response...
-
-    String acceptHeader = request.getHeader(Constants.HTTP_ACCEPT_HEADER);
-
+   @Override
+   protected void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+      logger.info("Start RoundRobin group member REST service. at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
       String url = request.getRequestURL().toString();
       String regexp = "rest\\/servers";
       Pattern pattern = Pattern.compile(regexp);
       Matcher matcher = pattern.matcher(url);
-      PrintWriter printWriter = response.getWriter();
       if (matcher.find()) {
          try {
             Set<String> groupMemberControllerAppURLSet = roundRobinService.discoverGroupMembersAppURL();
             String serversXML = roundRobinService.constructServersXML(groupMemberControllerAppURLSet);
-            printWriter.println(JSONTranslator.translateXMLToJSON(acceptHeader, response, serversXML));
+            sendResponse(response, serversXML);
             logger.info("Finished RoundRobin group member REST service.  at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
          } catch (RoundRobinException e) {
-            printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, e.getErrorCode(), RESTAPI.composeXMLErrorDocument(e.getErrorCode(), e.getMessage())));
+            logger.error("CommandException occurs", e);
+            sendResponse(response, e.getErrorCode(), e.getMessage());
          }
       } else {
-         printWriter.print(JSONTranslator.translateXMLToJSON(acceptHeader, response, RoundRobinException.INVALID_ROUND_ROBIN_URL, RESTAPI.composeXMLErrorDocument(RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url)));
+         sendResponse(response, RoundRobinException.INVALID_ROUND_ROBIN_URL, "Invalid round robin rul " + url);
       }
-      printWriter.flush();
-	}
-
+   }
 }
