@@ -26,6 +26,7 @@ import java.security.PrivilegedAction;
 
 import org.jdom.Document;
 import org.openremote.controller.ControllerConfiguration;
+import org.openremote.controller.exception.InitializationException;
 
 
 /**
@@ -97,16 +98,16 @@ public class Version30ModelBuilder extends AbstractModelBuilder
   }
 
 
+  // Constructors ---------------------------------------------------------------------------------
+
+  public Version30ModelBuilder() throws InitializationException
+  {
+    super();
+  }
 
 
   // Implements ModelBuilder ----------------------------------------------------------------------
 
-
-
-  @Override public void buildModel()
-  {
-    // nothing here yet...
-  }
 
   @Override public boolean hasControllerDefinitionChanged()
   {
@@ -116,7 +117,12 @@ public class Version30ModelBuilder extends AbstractModelBuilder
 
   // Implements AbstractModelBuilder --------------------------------------------------------------
 
-  @Override protected Document getControllerXMLDefinition()
+  @Override protected void build()
+  {
+    // nothing here yet...
+  }
+
+  @Override protected Document readControllerXMLDocument()
   {
     return null;
   }
