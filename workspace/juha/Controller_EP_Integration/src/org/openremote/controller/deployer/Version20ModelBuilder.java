@@ -136,7 +136,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    *       </config>
    * }</pre>
    */
-  private final static String XML_CONFIG_PROPERTY_VALUE_ATTR = "name";
+  private final static String XML_CONFIG_PROPERTY_VALUE_ATTR = "value";
 
 
 
@@ -185,8 +185,8 @@ public class Version20ModelBuilder extends AbstractModelBuilder
      * Runs an XPath query on the given model builder's associated XML definition to retrieve
      * the element nodes indicated by this enum's element name.
      *
-     * @param   builder   reference to a model builder instance that is used to retrieve the
-     *                    XML document instance
+     * @param   doc   reference to the in-memory XML document model that contains this controller's
+     *                definition
      *
      * @return  Returns the XML element and sub-elements indicated by this enum element name.
      *
@@ -195,12 +195,9 @@ public class Version20ModelBuilder extends AbstractModelBuilder
      *              if there's an error in attempting to retrieve the XML nodes indicated by
      *              this enum's element name
      */
-    protected Element query(Version20ModelBuilder builder) throws InitializationException
+    protected Element query(Document doc) throws InitializationException
     {
-      return Version20ModelBuilder.queryElementFromXML(
-          builder.getControllerXMLDefinition(),
-          elementName
-      );
+      return Version20ModelBuilder.queryElementFromXML(doc, elementName);
     }
 
   }
@@ -351,10 +348,15 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    * @param deviceProtocolBuilder
    *            Reference to a delegate object that handles the details of parsing the
    *            {@code <commands>} segment of the controller definition schema.
+   *
+   * @throws InitializationException
+   *            if the XML document containing this controller's definition cannot be read
+   *            for any reason
    */
   public Version20ModelBuilder(StatusCache cache, ControllerConfiguration config,
                                SensorBuilder<Version20ModelBuilder> sensorBuilder,
                                DeviceProtocolBuilder deviceProtocolBuilder)
+      throws InitializationException
   {
     if (cache == null)
     {
@@ -418,7 +420,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
     try
     {
-      element = XMLSegment.CONFIG.query(this);
+      element = XMLSegment.CONFIG.query(controllerXMLDefinition);
 
       if (element == null)
       {
@@ -469,17 +471,6 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
 
   // Implements ModelBuilder --------------------------------------------------------------------
-
-  /**
-   * Sequence of actions to build object model based on the current 2.0 schema.
-   */
-  @Override public void buildModel()
-  {
-    // TODO : at the moment only contains sensor model and partial command model
-
-    buildSensorModel();
-    buildCommandModel();
-  }
 
 
   /**
@@ -534,6 +525,19 @@ public class Version20ModelBuilder extends AbstractModelBuilder
 
   // Implements AbstractModelBuilder --------------------------------------------------------------
 
+
+  /**
+   * Sequence of actions to build object model based on the current 2.0 schema.
+   */
+  @Override protected void build()
+  {
+    // TODO : at the moment only contains sensor model and partial command model
+
+    buildSensorModel();
+    buildCommandModel();
+  }
+
+
   /**
    * Returns an XML document instance built from {@link #CONTROLLER_XML}. The XML parser is
    * located with JAXP API (via JDOM library). By default the document instance is validated
@@ -541,7 +545,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
    *
    * @return a built document for controller.xml
    */
-  @Override protected Document getControllerXMLDefinition() throws InitializationException
+  @Override protected Document readControllerXMLDocument() throws InitializationException
   {
     SAXBuilder builder = new SAXBuilder();
     String xsdPath = CONTROLLER_XSD_PATH;
@@ -666,7 +670,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
     {
       // Parse <commands> element from the controller.xml...
 
-      commandsElement = XMLSegment.COMMANDS.query(this);
+      commandsElement = XMLSegment.COMMANDS.query(controllerXMLDefinition);
 
 
       if (commandsElement == null)
@@ -736,7 +740,7 @@ public class Version20ModelBuilder extends AbstractModelBuilder
     {
       // Parse <sensors> element from the controller.xml...
 
-      sensorsElement = XMLSegment.SENSORS.query(this);
+      sensorsElement = XMLSegment.SENSORS.query(controllerXMLDefinition);
 
 
       if (sensorsElement == null)
