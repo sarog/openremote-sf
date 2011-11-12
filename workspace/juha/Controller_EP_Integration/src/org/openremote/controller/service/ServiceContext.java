@@ -341,7 +341,7 @@ public abstract class ServiceContext
    * @param   name    service name
    * @return  service implementation
    */
-  protected abstract Object getService(ServiceName name, Object... params);
+  protected abstract Object getService(ServiceName name);
 
 
   /**

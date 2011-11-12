@@ -34,8 +34,7 @@ import org.openremote.controller.command.CommandFactory;
  * TODO :
  *
  *   ORCJAVA-195 : remove direct API references to this subclass of service context
- *   ORCJAVA-194 : remove deprecated used of getProtocol() and param handling in getService()
- * 
+ *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  * @author Dan 2009-2-16
  */
@@ -117,25 +116,9 @@ public class SpringContext extends ServiceContext
    *
    * @return  bean reference
    */
-  @Override protected Object getService(ServiceName name, Object... params)
+  @Override protected Object getService(ServiceName name)
   {
-    if (name == ServiceName.PROTOCOL && params != null)
-    {
-      // TODO : This should go away with completion of ORCJAVA-194
-
-      CommandFactory cf = (CommandFactory)getBean(name.getSpringBeanName());
-      Map<String, String> protocols = cf.getProtocols();
-
-      String paramValue = (String)params[0];
-      String protocolImplName = protocols.get(paramValue);
-
-      return getBean(protocolImplName);
-    }
-
-    else
-    {
-      return getBean(name.getSpringBeanName());
-    }
+    return getBean(name.getSpringBeanName());
   }
 
 
