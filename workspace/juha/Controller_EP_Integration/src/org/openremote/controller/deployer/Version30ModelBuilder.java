@@ -98,13 +98,6 @@ public class Version30ModelBuilder extends AbstractModelBuilder
   }
 
 
-  // Constructors ---------------------------------------------------------------------------------
-
-  public Version30ModelBuilder() throws InitializationException
-  {
-    super();
-  }
-
 
   // Implements ModelBuilder ----------------------------------------------------------------------
 
