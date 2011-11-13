@@ -7,8 +7,6 @@
 typedef struct _clientTransaction_t {
 	message_t *request;
 	message_t *response;
-	apr_thread_cond_t *cond;
-	apr_thread_mutex_t *mutex;
 } clientTransaction_t;
 
 int createClientTransaction(apr_pool_t *pool, clientTransaction_t **tx);

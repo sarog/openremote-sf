@@ -4,8 +4,7 @@
 #include "port.h"
 #include "server.h"
 
-void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx,
-		portReceive_t receiveCb) {
+void createServerTransaction(apr_pool_t *pool, serverTransaction_t **tx, portReceive_t receiveCb) {
 	if (*tx == NULL) {
 		*tx = apr_palloc(pool, sizeof(serverTransaction_t));
 		(*tx)->request = NULL;
@@ -30,8 +29,7 @@ int checkInputMessage(apr_socket_t *sock, char *code, messageTxType_t *txType) {
 	return R_SUCCESS;
 }
 
-int operateRequest(apr_socket_t *sock, serverTransaction_t *tx,
-		apr_pool_t *txPool, char code) {
+int operateRequest(apr_socket_t *sock, serverTransaction_t *tx, apr_pool_t *txPool, char code) {
 
 	CHECK(readBody(sock, &tx->request, txPool, code))
 
@@ -45,8 +43,7 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx,
 		port_t *port;
 		int r = getPort(tx->request->fields[0].stringVal, &port);
 		if (r == R_SUCCESS) {
-			r = portSend(txPool, port, tx->request->fields[1].stringVal,
-					tx->request->fields[1].length);
+			r = portSend(txPool, port, tx->request->fields[1].stringVal, tx->request->fields[1].length);
 		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 		break;
@@ -55,8 +52,7 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx,
 		port_t *port;
 		int r = getPort(tx->request->fields[0].stringVal, &port);
 		if (r == R_SUCCESS) {
-			r = lock(txPool, port, tx->request->fields[1].stringVal,
-					tx->portReceiveCb);
+			r = lock(txPool, port, tx->request->fields[1].stringVal, tx->portReceiveCb);
 		}
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
@@ -69,8 +65,7 @@ int operateRequest(apr_socket_t *sock, serverTransaction_t *tx,
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case CREATE_PORT: {
-		int r = createPort(tx->request->fields[0].stringVal,
-				tx->request->fields[1].stringVal);
+		int r = createPort(tx->request->fields[0].stringVal, tx->request->fields[1].stringVal);
 		return createACK(txPool, &tx->response, r); //TODO define a return code
 	}
 	case CONFIGURE: {

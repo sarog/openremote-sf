@@ -20,7 +20,6 @@ void *lsRead(void *data) {
 	char buf[RCV_BUF_SIZE];
 	portContext_t *portContext = (portContext_t *) data;
 
-printf("lsRead(0)\n");
 	sigset_t signalMask;
 	sigemptyset(&signalMask);
 	sigaddset(&signalMask, SIGALRM);
@@ -29,7 +28,6 @@ printf("lsRead(0)\n");
 	act.sa_handler = lsReceiveSignal;
 	act.sa_flags = 0;
 	sigaction(SIGALRM, &act, NULL);
-	printf("lsRead(1)\n");
 	// init cancellation state for the thread
 //  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);      /* enabled */
 //  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL); /* cancel immediately */
@@ -44,13 +42,11 @@ printf("lsRead(0)\n");
 
 	while (res > 0) {
 		res = read(portContext->fd, buf, RCV_BUF_SIZE); /* read RCV_BUF_SIZE bytes at most   */
-		printf("read %d bytes\n", res);
 		if (res > 0) {
 			int r = portContext->portReceiveCb(portContext->portId, buf, res);
 		}
 	}
 
-	printf("exiting read thread\n");
 	pthread_exit(R_SUCCESS);
 	return NULL;
 }
@@ -105,10 +101,8 @@ int lsCreateReadThread(apr_pool_t *pool, portContext_t *portContext) {
 
 int lsInterruptReadThread(portContext_t *portContext) {
 	apr_status_t r;
-	printf("=>lsInterrupReadThread()\n");
 	pthread_kill(portContext->readThread, SIGALRM);
 	pthread_join(portContext->readThread, NULL);
-	printf("thread joined\n");
 	return R_SUCCESS;
 }
 
@@ -142,8 +136,7 @@ physicalLock_t physicalLockCb = physicalLock;
 int physicalUnlock(apr_pool_t *pool, char *portId, portContext_t **portContext) {
 	// Close serial port
 	//fcntl((*portContext)->fd, F_SETFL, FNDELAY);
-	int res = close((*portContext)->fd);
-	printf("close() = %d\n", res);
+	close((*portContext)->fd);
 
 	// Interrupt read thread
 	lsInterruptReadThread(*portContext);

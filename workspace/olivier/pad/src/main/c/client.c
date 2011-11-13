@@ -8,14 +8,10 @@ int createClientTransaction(apr_pool_t *pool, clientTransaction_t **tx) {
 	*tx = apr_palloc(pool, sizeof(clientTransaction_t));
 	(*tx)->request = NULL;
 	(*tx)->response = NULL;
-	APR_CHECK(apr_thread_cond_create(&(*tx)->cond, pool), R_INTERN_ERROR);
-	APR_CHECK( apr_thread_mutex_create(&(*tx)->mutex, APR_THREAD_MUTEX_DEFAULT, pool), R_INTERN_ERROR)
 	return R_SUCCESS;
 }
 
 void clearClientTransaction(apr_pool_t *pool, clientTransaction_t **tx) {
-	apr_thread_mutex_destroy((*tx)->mutex);
-	apr_thread_cond_destroy((*tx)->cond);
 	apr_pool_clear(pool);
 	*tx = NULL;
 }

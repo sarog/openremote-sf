@@ -34,28 +34,29 @@
 typedef struct _serviceContext_t serviceContext_t;
 
 // Network event callback function type
-typedef int (*socket_callback_t)(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+typedef int (*socket_callback_t)(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset);
 
 // Service context
 struct _serviceContext_t {
 	enum {
 		RECV_MESSAGE, SEND_MESSAGE,
 	} status;
+	apr_socket_t *socket;
 	socket_callback_t cbFunc;
-	apr_pool_t *socketPool;
 	apr_pool_t *serverTxPool;
 	apr_pool_t *clientTxPool;
+	apr_thread_cond_t *clientCond;
+	apr_thread_mutex_t *clientMutex;
 	clientTransaction_t *clientTx;
 	serverTransaction_t *serverTx;
 };
 
 static serviceContext_t *context;
-static apr_socket_t *acceptedSocket;
 
 static apr_socket_t* createListenSocket(apr_pool_t *listenPool);
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool);
-int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
-static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock);
+int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset);
+static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset);
 int receiveData(char *portId, char *buf, int len);
 
 /**
@@ -95,7 +96,7 @@ int runServer() {
 				} else {
 					serviceContext_t *context = descriptors[i].client_data;
 					socket_callback_t cbFunc = context->cbFunc;
-					cbFunc(context, pollset, descriptors[i].desc.s);
+					cbFunc(socketPool, context, pollset);
 				}
 			}
 		}
@@ -143,30 +144,40 @@ static apr_socket_t* createListenSocket(apr_pool_t *listenPool) {
 static int doAccept(apr_pollset_t *pollset, apr_socket_t *lsock, apr_pool_t *socketPool) {
 	apr_status_t rv;
 
-	rv = apr_socket_accept(&acceptedSocket, lsock, socketPool);
-	if (rv == APR_SUCCESS) {
-		// Create service context
-		context = apr_palloc(socketPool, sizeof(serviceContext_t));
-		apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
-		descriptor.desc.s = acceptedSocket;
-		context->status = RECV_MESSAGE;
-		context->cbFunc = receiveMessage;
-		context->socketPool = socketPool;
+	// Create service context
+	context = apr_palloc(socketPool, sizeof(serviceContext_t));
+	apr_socket_accept(&context->socket, lsock, socketPool);
+	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
+	descriptor.desc.s = context->socket;
+	context->status = RECV_MESSAGE;
+	context->cbFunc = receiveMessage;
 
-		// Create new transaction pools
-		apr_pool_create(&context->serverTxPool, context->socketPool);
-		apr_pool_create(&context->clientTxPool, context->socketPool);
-		context->serverTx = NULL;
-		context->clientTx = NULL;
+	// Create new transaction pools
+	apr_pool_create(&context->serverTxPool, socketPool);
+	apr_pool_create(&context->clientTxPool, socketPool);
+	context->serverTx = NULL;
+	context->clientTx = NULL;
 
-		// Blocking socket. Blocking timeout = 1s
-		apr_socket_opt_set(acceptedSocket, APR_SO_NONBLOCK, 0);
-		apr_socket_timeout_set(acceptedSocket, 1000000);
+	// Create client sync objects
+	apr_thread_cond_create(&context->clientCond, socketPool);
+	apr_thread_mutex_create(&context->clientMutex, APR_THREAD_MUTEX_DEFAULT, socketPool);
 
-		/* monitor accepted socket */
-		apr_pollset_add(pollset, &descriptor);
-	}
+	// Blocking socket. Blocking timeout = 1s
+	apr_socket_opt_set(context->socket, APR_SO_NONBLOCK, 0);
+	apr_socket_timeout_set(context->socket, 1000000);
+
+	/* monitor accepted socket */
+	apr_pollset_add(pollset, &descriptor);
 	return TRUE;
+}
+
+void closeSocket(apr_pool_t *socketPool,serviceContext_t *context) {
+	apr_socket_close(context->socket);
+	int r = apr_thread_mutex_destroy(context->clientMutex);
+	r = apr_thread_cond_destroy(context->clientCond);
+	apr_pool_clear(socketPool);
+	context = NULL;
+	printf("Closed socket\n");
 }
 
 int writeMessage(apr_socket_t *sock, message_t *message) {
@@ -184,28 +195,20 @@ int writeMessage(apr_socket_t *sock, message_t *message) {
 	return R_SUCCESS;
 }
 
-void closeSocket(apr_socket_t *sock, serviceContext_t *context) {
-	printf("closing socket\n");
-	apr_socket_close(sock);
-	apr_pool_clear(context->socketPool);
-	context = NULL;
-	acceptedSocket = NULL;
-}
-
-static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
+static int receiveRequest(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset, char code) {
 	// Create a new server transaction
 	// TODO what happens if a transaction was already created?
 	createServerTransaction(context->serverTxPool, &context->serverTx, receiveData);
 
-	int r = operateRequest(sock, context->serverTx, context->serverTxPool, code);
+	int r = operateRequest(context->socket, context->serverTx, context->serverTxPool, code);
 	if (r != R_SUCCESS) {
-		closeSocket(sock, context);
+		closeSocket(socketPool, context);
 		return r;
 	}
 
 	// Change context status from receive to send
-	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
-	descriptor.desc.s = sock;
+	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLIN, 0, { NULL }, context };
+	descriptor.desc.s = context->socket;
 	apr_pollset_remove(pollset, &descriptor);
 	descriptor.reqevents = APR_POLLOUT;
 	apr_pollset_add(pollset, &descriptor);
@@ -214,59 +217,59 @@ static int receiveRequest(serviceContext_t *context, apr_pollset_t *pollset, apr
 	return R_SUCCESS;
 }
 
-static int receiveResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock, char code) {
+static int receiveResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset, char code) {
 	// Check if a transaction is running
 	if (context->clientTx == NULL)
 		return R_TX_NOT_FOUND;
 
-	// TODO Read response
-	int r = operateResponse(sock, context->clientTx, context->clientTxPool, code);
+	// Read response
+	int r = operateResponse(context->socket, context->clientTx, context->clientTxPool, code);
 	if (r != R_SUCCESS) {
-		closeSocket(sock, context);
+		closeSocket(socketPool, context);
 		return r;
 	}
 
 	// Synchronize with waiting client
-	apr_thread_mutex_lock(context->clientTx->mutex);
-	apr_thread_cond_signal(context->clientTx->cond);
-	apr_thread_mutex_unlock(context->clientTx->mutex);
+	apr_thread_mutex_lock(context->clientMutex);
+	apr_thread_cond_signal(context->clientCond);
+	apr_thread_mutex_unlock(context->clientMutex);
 
 	// Clear transaction
 	clearClientTransaction(context->clientTxPool, &context->clientTx);
 	return R_SUCCESS;
 }
 
-int receiveMessage(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
+int receiveMessage(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset) {
 	char code;
 	messageTxType_t txType;
 
 	// Read message header
-	int r = checkInputMessage(sock, &code, &txType);
+	int r = checkInputMessage(context->socket, &code, &txType);
 	if (r != R_SUCCESS) {
-		closeSocket(sock, context);
+		closeSocket(socketPool,  context);
 		return r;
 	}
 
 	// Handle rest of message according to its transaction type
 	if (txType == SERVER_TX) {
-		return receiveRequest(context, pollset, sock, code);
+		return receiveRequest(socketPool, context, pollset, code);
 	} else {
-		return receiveResponse(context, pollset, sock, code);
+		return receiveResponse(socketPool, context, pollset, code);
 	}
 }
 
 /**
  * Send a response to the client.
  */
-static int sendResponse(serviceContext_t *context, apr_pollset_t *pollset, apr_socket_t *sock) {
-	writeMessage(sock, context->serverTx->response);
+static int sendResponse(apr_pool_t *socketPool, serviceContext_t *context, apr_pollset_t *pollset) {
+	writeMessage(context->socket, context->serverTx->response);
 
 	// Clear all memory related to request and response
 	clearServerTransaction(context->serverTxPool, &context->serverTx);
 
 	// Change context status from write to read
-	apr_pollfd_t descriptor = { context->socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
-	descriptor.desc.s = sock;
+	apr_pollfd_t descriptor = { socketPool, APR_POLL_SOCKET, APR_POLLOUT, 0, { NULL }, context };
+	descriptor.desc.s = context->socket;
 	apr_pollset_remove(pollset, &descriptor);
 	descriptor.reqevents = APR_POLLIN;
 	apr_pollset_add(pollset, &descriptor);
@@ -283,11 +286,11 @@ int receiveData(char *portId, char *buf, int len) {
 	CHECK(operatePortData(context->clientTx, context->clientTxPool, portId, buf, len))
 
 	// Send message and synchronize with response if message sent
-	apr_thread_mutex_lock(context->clientTx->mutex);
-	int r = writeMessage(acceptedSocket, context->clientTx->request);
+	apr_thread_mutex_lock(context->clientMutex);
+	int r = writeMessage(context->socket, context->clientTx->request);
 	if (r == R_SUCCESS) {
-		apr_thread_cond_timedwait(context->clientTx->cond, context->clientTx->mutex, 2000000);
+		apr_thread_cond_timedwait(context->clientCond, context->clientMutex, 2000000);
 	}
-	apr_thread_mutex_unlock(context->clientTx->mutex);
+	apr_thread_mutex_unlock(context->clientMutex);
 	return r;
 }

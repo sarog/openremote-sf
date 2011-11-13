@@ -6,10 +6,14 @@
 #include "port.h"
 
 int logicalLock(port_t *port, char *source) {
+	printf("=>logicalLock(0), source='%s'\n", source);
 	if (port->lockSource != NULL)
 		return R_WRONG_LOCK_STATUS;
+	printf("=>logicalLock(1)\n");
 	port->lockSource = malloc(strlen(source) + 1);
+	printf("=>logicalLock(2)\n");
 	strcpy(port->lockSource, source);
+	printf("=>logicalLock(3)\n");
 	return R_SUCCESS;
 }
 
@@ -22,14 +26,19 @@ int logicalUnlock(port_t *port, char *source) {
 }
 
 int lock(apr_pool_t *pool, port_t *port, char *source, portReceive_t portReceiveCb) {
+	printf("=>lock(0)\n");
 	CHECK(logicalLock(port, source))
 
 	// Prepare runtime
+	printf("=>lock(1)\n");
 	apr_pool_create(&port->runtimePool, pool);
+	printf("=>lock(2)\n");
 	int r = port->lockCb(port->runtimePool, port->portId, &port->context, portReceiveCb);
+	printf("=>lock(3)\n");
 	if (r != R_SUCCESS) {
 		return unlock(pool, port, source);
 	}
+	printf("=>lock(4)\n");
 	return r;
 }
 
