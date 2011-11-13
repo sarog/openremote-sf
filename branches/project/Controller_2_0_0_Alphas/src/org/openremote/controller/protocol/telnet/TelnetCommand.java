@@ -354,7 +354,7 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
    }
 
    @Override
-   public String read(EnumSensorType sensorType, Map<String, String> statusMap) {
+   public String read(EnumSensorType sensorType, Map<String, String> stateMap) {
 	   String readResponse = statusDefault;
 	   String filteredResponse = "";
 	   send(true);
@@ -401,6 +401,17 @@ public class TelnetCommand implements ExecutableCommand, StatusCommand {
                }
                catch (PatternSyntaxException e) {
                   logger.info("Can't convert filteredResponse to type Integer: " + e);
+               }
+               break;
+            case CUSTOM:
+               readResponse = filteredResponse;
+               for (String stateKey : stateMap.keySet())
+               {
+                 String state = stateMap.get(stateKey);
+                 if (filteredResponse.equals(state)) {
+                    readResponse = stateKey;
+                    break;
+                 }
                }
                break;
             default:
