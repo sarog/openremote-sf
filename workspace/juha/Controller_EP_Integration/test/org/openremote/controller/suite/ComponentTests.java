@@ -23,6 +23,11 @@ package org.openremote.controller.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.openremote.controller.component.ComponentBuilderTest;
+import org.openremote.controller.component.onlysensory.LabelBuilderTest;
+import org.openremote.controller.component.control.ButtonBuilderTest;
+import org.openremote.controller.component.control.SwitchBuilderTest;
+import org.openremote.controller.component.control.GestureBuilderTest;
+import org.openremote.controller.component.control.SliderBuilderTest;
 
 /**
  * Unit tests for component types.
@@ -32,7 +37,12 @@ import org.openremote.controller.component.ComponentBuilderTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
   {
-    ComponentBuilderTest.class
+    ComponentBuilderTest.class,
+    ButtonBuilderTest.class,
+    SwitchBuilderTest.class,
+    GestureBuilderTest.class,
+    SliderBuilderTest.class,
+    LabelBuilderTest.class
   }
 )
 public class ComponentTests

@@ -30,7 +30,7 @@ import org.openremote.controller.protocol.socket.TCPSocketCommandBuilderTest;
 import org.openremote.controller.protocol.telnet.TelnetCommandBuilderTest;
 import org.openremote.controller.protocol.x10.X10CommandBuilderTest;
 import org.openremote.controller.protocol.upnp.UPnPCommandBuilderTest;
-import org.openremote.controller.model.xml.SensorBuilderTest;
+import org.openremote.controller.model.xml.Version20SensorBuilderTest;
 
 /**
  * All tests for protocol command builders.
@@ -49,7 +49,7 @@ import org.openremote.controller.model.xml.SensorBuilderTest;
       X10CommandBuilderTest.class,
       //KNXCommandBuilderTest.class,      // moved to KNXTests Suite
       UPnPCommandBuilderTest.class,
-      SensorBuilderTest.class
+      Version20SensorBuilderTest.class
    }
 )
 public class AllCommandBuildersTests

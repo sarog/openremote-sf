@@ -55,7 +55,6 @@ import org.jdom.input.DOMBuilder;
  */
 @RunWith(Suite.class) @SuiteClasses(
 {
-   AllControlBuilderTests.class,
    AllServiceTests.class,
    MacrosIrDelayUtilTest.class,
    AllCommandBuildersTests.class,
