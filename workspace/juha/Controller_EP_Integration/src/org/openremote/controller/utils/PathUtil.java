@@ -25,21 +25,26 @@ package org.openremote.controller.utils;
  * 
  * @author Dan 2009-5-14
  */
-public class PathUtil
+@Deprecated public class PathUtil
 {
    
   /**
    * Append file separator.
    */
-  public static String addSlashSuffix(String src)
+  @Deprecated public static String addSlashSuffix(String src)
   {
+    if (src == null)
+    {
+      return "/";
+    }
+
     return src.endsWith("/") ? src : src + "/";
   }
 
   /**
    * Removes the slash suffix.
    */
-  public static String removeSlashSuffix(String src)
+  @Deprecated public static String removeSlashSuffix(String src)
   {
     return src.endsWith("/") ? src.substring(0, src.lastIndexOf("/")) : src ;
   }
