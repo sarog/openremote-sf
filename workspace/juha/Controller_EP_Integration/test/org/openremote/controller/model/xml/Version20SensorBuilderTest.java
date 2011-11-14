@@ -52,7 +52,7 @@ import org.openremote.controller.suite.AllTests;
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
-public class SensorBuilderTest
+public class Version20SensorBuilderTest
 {
 
   // Instance Fields ------------------------------------------------------------------------------
