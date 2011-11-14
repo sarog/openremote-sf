@@ -24,13 +24,11 @@ package org.openremote.controller.model.xml;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.ComponentBuilder;
 import org.openremote.controller.component.ComponentFactory;
@@ -41,17 +39,16 @@ import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.StateSensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.protocol.ReadCommand;
-import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 import org.openremote.controller.service.ControlCommandService;
 import org.openremote.controller.service.Deployer;
+import org.openremote.controller.service.DeployerTest;
 import org.openremote.controller.service.impl.ControlCommandServiceImpl;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.EventProcessorChain;
 import org.openremote.controller.statuscache.StatusCache;
 import org.openremote.controller.suite.AllTests;
 
+
 /**
- * Unit tests for {@link org.openremote.controller.model.xml.SensorBuilder} class.
+ * Unit tests for {@link Version20SensorBuilder} class.
  *
  * @author <a href="mailto:juha@openremote.org">Juha Lindfors</a>
  */
@@ -61,7 +58,7 @@ public class SensorBuilderTest
   // Instance Fields ------------------------------------------------------------------------------
 
   private Deployer deployer;
-  private SensorBuilder sensorBuilder;
+  private Version20SensorBuilder sensorBuilder;
   private ControlCommandService commandService;
   private StatusCache cache;
 
@@ -76,25 +73,16 @@ public class SensorBuilderTest
    */
   @Before public void setUp() throws Exception
   {
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    cache = new StatusCache(cst, echain);
-
-    ControllerConfiguration cc = new ControllerConfiguration();
+    AllTests.initServiceContext();
+    
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/sensor");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    deployer = new Deployer("Deployer for " + deploymentURI, cache, cc);
+    CommandFactory cf = DeployerTest.createCommandFactory();
+    sensorBuilder = new Version20SensorBuilder();
+    cache = new StatusCache();
 
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-    cf.setCommandBuilders(p);
-
-    sensorBuilder = new SensorBuilder(deployer, cache);
-    sensorBuilder.setCommandFactory(cf);
-
+    deployer = DeployerTest.createDeployer(deploymentURI, cf, sensorBuilder, cache);
+    
     ButtonBuilder bb = new ButtonBuilder();
     bb.setDeployer(deployer);
     bb.setCommandFactory(cf);
