@@ -23,7 +23,6 @@ package org.openremote.controller.component;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -31,15 +30,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openremote.controller.Constants;
-import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.command.CommandFactory;
+import org.openremote.controller.deployer.ModelBuilder;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
-import org.openremote.controller.model.xml.SensorBuilder;
+import org.openremote.controller.model.xml.Version20SensorBuilder;
 import org.openremote.controller.service.Deployer;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.service.DeployerTest;
 import org.openremote.controller.suite.AllTests;
 
 
@@ -52,10 +48,8 @@ import org.openremote.controller.suite.AllTests;
  */
 public class ComponentBuilderTest
 {
-  private static Namespace ns = Namespace.getNamespace(Constants.OPENREMOTE_WEBSITE);
 
-  //private ComponentBuilder componentBuilder;
-  private SensorBuilder sensorBuilder;
+  private Version20SensorBuilder sensorBuilder;
   private Deployer deployer;
 
 
@@ -63,32 +57,11 @@ public class ComponentBuilderTest
 
   @Before public void setUp() throws Exception
   {
-    //componentBuilder = new TestComponentBuilder();
-
-    // Setup command factory with one protocol implementation we can use with components...
-
-    CommandFactory commandFactory = new CommandFactory();
-    Properties props = new Properties();
-    props.setProperty("virtual", "virtualCommandBuilder");
-    commandFactory.setCommandBuilders(props);
-
-    //componentBuilder.setCommandFactory(commandFactory);
-    //componentBuilder.setRemoteActionXMLParser(ServiceContext.getControllerXMLParser());
-
-
-    ControllerConfiguration cc = new ControllerConfiguration();
+    AllTests.initServiceContext();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("component");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    StatusCache sc = new StatusCache(cst, echain);
-
-    deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
-
-    sensorBuilder = new SensorBuilder(deployer, sc);
-    sensorBuilder.setCommandFactory(commandFactory);
+    sensorBuilder = new Version20SensorBuilder();
+    deployer = DeployerTest.createDeployer(deploymentURI, sensorBuilder);
 
     deployer.softRestart();
   }
@@ -125,7 +98,7 @@ public class ComponentBuilderTest
     Assert.assertNotNull(switch1);
     Assert.assertTrue(switch1.getAttribute("id").getIntValue() == 1);
 
-    Element include = switch1.getChild("include", ns);
+    Element include = switch1.getChild("include", ModelBuilder.SchemaVersion.OPENREMOTE_NAMESPACE);
 
     Assert.assertNotNull(include);
     Assert.assertNotNull(include.getAttribute("type"));
@@ -154,7 +127,7 @@ public class ComponentBuilderTest
   @Test public void testParseSensorBUG() throws Exception
   {
     Element switch1 = deployer.queryElementById(1);
-    Element include = switch1.getChild("include", ns);
+    Element include = switch1.getChild("include", ModelBuilder.SchemaVersion.OPENREMOTE_NAMESPACE);
 
 
     // Test...
@@ -231,7 +204,7 @@ public class ComponentBuilderTest
     Assert.assertNotNull(slider);
     Assert.assertTrue(slider.getAttribute("id").getIntValue() == 8);
 
-    Element include = slider.getChild("include", ns);
+    Element include = slider.getChild("include", ModelBuilder.SchemaVersion.OPENREMOTE_NAMESPACE);
 
     Assert.assertNotNull(include);
     Assert.assertNotNull(include.getAttribute("type"));
@@ -280,13 +253,15 @@ public class ComponentBuilderTest
   @Test public void testParseSensorOnSliderBUG() throws Exception
   {
     Element slider = deployer.queryElementById(8);
-    Element include = slider.getChild("include", ns);
+    Element include = slider.getChild("include",  ModelBuilder.SchemaVersion.OPENREMOTE_NAMESPACE);
 
 
     // Test...
 
     Sensor sensor = deployer.getSensorFromComponentInclude(include);
 
+
+    Assert.assertNotNull("BUG: got null sensor", sensor);
 
     Assert.assertNotNull(sensor.getProperties());
     Assert.assertTrue(sensor.getProperties().containsKey(Sensor.RANGE_MAX_STATE));

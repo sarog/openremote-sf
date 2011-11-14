@@ -21,24 +21,18 @@
 package org.openremote.controller.component.control;
 
 import java.net.URI;
-import java.util.Properties;
 
 import junit.framework.Assert;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.Sensory;
 import org.openremote.controller.component.control.switchtoggle.Switch;
 import org.openremote.controller.component.control.switchtoggle.SwitchBuilder;
 import org.openremote.controller.exception.InitializationException;
-import org.openremote.controller.model.xml.SensorBuilder;
-import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 import org.openremote.controller.service.Deployer;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.service.DeployerTest;
 import org.openremote.controller.suite.AllTests;
 
 /**
@@ -68,26 +62,11 @@ public class SwitchBuilderTest
    */
   @Before public void setUp() throws Exception
   {
-
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    StatusCache sc = new StatusCache(cst, echain);
-
-    ControllerConfiguration cc = new ControllerConfiguration();
-
     URI uri = AllTests.getAbsoluteFixturePath().resolve("builder/switch");
-    cc.setResourcePath(uri.getPath());
 
-    deployer = new Deployer("Deployment for " + uri, sc, cc);
+    CommandFactory cf = DeployerTest.createCommandFactory();
 
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-    cf.setCommandBuilders(p);
-
-    SensorBuilder sensorBuilder = new SensorBuilder(deployer, sc);
-    sensorBuilder.setCommandFactory(cf);
+    deployer = DeployerTest.createDeployer(uri, cf);
 
     builder = new SwitchBuilder();
     builder.setDeployer(deployer);
