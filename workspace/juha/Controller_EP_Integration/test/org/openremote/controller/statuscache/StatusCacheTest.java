@@ -29,6 +29,9 @@ import org.openremote.controller.protocol.ReadCommand;
 import org.openremote.controller.model.sensor.Sensor;
 import org.openremote.controller.model.sensor.SwitchSensor;
 import org.openremote.controller.model.event.Switch;
+import org.openremote.controller.model.event.Level;
+import org.openremote.controller.model.event.Range;
+import org.openremote.controller.model.event.CustomState;
 import org.openremote.controller.component.RangeSensor;
 import org.openremote.controller.component.LevelSensor;
 
@@ -154,6 +157,211 @@ public class StatusCacheTest
     Assert.assertTrue(cache.queryStatus(2).equals("on"));
   }
 
+  /**
+   *  Basic switch event update/query tests. Query by ID.
+   */
+  @Test public void testSwitchEventUpdate()
+  {
+    StatusCache cache = new StatusCache();
+
+    Switch sw1 = new Switch(1, "foo", "on", Switch.State.ON);
+
+    cache.update(sw1);
+
+    String currentStatus = cache.queryStatus(1);
+
+    Assert.assertTrue(currentStatus.equals("on"));
+
+
+
+    Switch sw2 = new Switch(1, "foo", "off", Switch.State.OFF);
+
+    Assert.assertFalse(sw1.isEqual(sw2));
+    Assert.assertFalse(sw2.isEqual(sw1));
+    
+    cache.update(sw2);
+
+    currentStatus = cache.queryStatus(1);
+
+    Assert.assertTrue(
+        "Expected 'off', got '" + currentStatus + "'",
+        currentStatus.equals("off")
+    );
+
+
+
+    cache.update(sw2);
+
+    currentStatus = cache.queryStatus(1);
+
+    Assert.assertTrue(
+        "Expected 'off', got '" + currentStatus + "'",
+        currentStatus.equals("off")
+    );
+
+    Switch sw3 = new Switch(1, "foo", "closed", Switch.State.OFF);
+
+    cache.update(sw3);
+
+    currentStatus = cache.queryStatus(1);
+
+    Assert.assertTrue(
+        "Expected 'closed', got '" + currentStatus + "'",
+        currentStatus.equals("closed")
+    );
+
+
+
+    cache.update(sw1);
+
+    currentStatus = cache.queryStatus(1);
+
+    Assert.assertTrue(currentStatus.equals("on"));
+  }
+
+
+  /**
+   * Basic level event update/query tests. Query by ID.
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testLevelEventUpdate() throws Exception
+  {
+    StatusCache cache = new StatusCache();
+
+    Level l1 = new Level(10, "level", 10);
+
+    cache.update(l1);
+
+    String currentStatus = cache.queryStatus(10);
+
+    Assert.assertTrue(currentStatus.equals("10"));
+
+
+
+
+
+    Level l2 = new Level(10, "level", 11);
+
+    Assert.assertFalse(l1.isEqual(l2));
+    Assert.assertFalse(l2.isEqual(l1));
+
+    cache.update(l2);
+
+    currentStatus = cache.queryStatus(10);
+
+    Assert.assertTrue(
+        "Expected '11', got '" + currentStatus + "'",
+        currentStatus.equals("11")
+    );
+
+
+
+
+    cache.update(l2);
+
+    currentStatus = cache.queryStatus(10);
+
+    Assert.assertTrue(
+        "Expected '11', got '" + currentStatus + "'",
+        currentStatus.equals("11")
+    );
+
+    Level l3 = new Level(10, "level", 20);
+
+    cache.update(l3);
+
+    currentStatus = cache.queryStatus(10);
+
+    Assert.assertTrue(
+        "Expected '20', got '" + currentStatus + "'",
+        currentStatus.equals("20")
+    );
+
+
+
+    cache.update(l1);
+
+    currentStatus = cache.queryStatus(10);
+
+    Assert.assertTrue(currentStatus.equals("10"));
+  }
+
+
+
+
+  /**
+   * TODO : query by *NAME*
+   *
+   * @throws Exception if test fails
+   */
+  @Test public void testLevelEventQuery() throws Exception
+  {
+    StatusCache cache = new StatusCache();
+
+    Level l1 = new Level(10, "l1", 10);
+
+    cache.update(l1);
+
+    String currentStatus = cache.queryStatus(10);
+
+    Assert.assertTrue(currentStatus.equals("10"));
+
+    Event currentStatusEvent = cache.queryStatus("l1");
+
+    Assert.assertTrue(currentStatusEvent.isEqual(l1));
+    Assert.assertTrue(currentStatusEvent.getValue().equals(10));
+    Assert.assertTrue(currentStatusEvent.serialize().equals("10"));
+
+
+//
+//    Switch sw2 = new Switch(1, "foo", "off", Switch.State.OFF);
+//
+//    Assert.assertFalse(sw1.isEqual(sw2));
+//    Assert.assertFalse(sw2.isEqual(sw1));
+//
+//    cache.update(sw2);
+//
+//    currentStatus = cache.queryStatus(1);
+//
+//    Assert.assertTrue(
+//        "Expected 'off', got '" + currentStatus + "'",
+//        currentStatus.equals("off")
+//    );
+//
+//
+//
+//    cache.update(sw2);
+//
+//    currentStatus = cache.queryStatus(1);
+//
+//    Assert.assertTrue(
+//        "Expected 'off', got '" + currentStatus + "'",
+//        currentStatus.equals("off")
+//    );
+//
+//    Switch sw3 = new Switch(1, "foo", "closed", Switch.State.OFF);
+//
+//    cache.update(sw3);
+//
+//    currentStatus = cache.queryStatus(1);
+//
+//    Assert.assertTrue(
+//        "Expected 'closed', got '" + currentStatus + "'",
+//        currentStatus.equals("closed")
+//    );
+//
+//
+//
+//    cache.update(sw1);
+//
+//    currentStatus = cache.queryStatus(1);
+//
+//    Assert.assertTrue(currentStatus.equals("on"));    
+  }
+
+
+
 
   /**
    * Test that sensor events are pushed through event processor chain
@@ -184,7 +392,7 @@ public class StatusCacheTest
   /**
    * Test event replace within event processor chain.
    */
-  @Test public void testEventProcessorEventReplace()
+  @Test public void testEventProcessorEventMod()
   {
     ChangedStatusTable cst = new ChangedStatusTable();
     EventProcessorChain epc = new EventProcessorChain();
@@ -241,6 +449,105 @@ public class StatusCacheTest
   }
 
 
+  /**
+   * TODO:
+   *
+   *   This test exists to document the current behavior of StatusCache use of ChangedStatusTable
+   *   implementation. The functionality of ChangedStatusTable and ChangedStatusRecord should
+   *   be internalized as part of StatusCache implementation, as per ORCJAVA-208 -- this test is
+   *   likely in need of modification at that point.
+   */
+  @Test public void testUpdateStatusChange()
+  {
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
+
+    StatusCache cache = new StatusCache(cst, epc);
+
+
+    // One event update to a single device...
+
+    Event evt = new Switch(1, "test1", "foo", Switch.State.OFF);
+
+    List<Integer> pollingSensorIDs = new ArrayList<Integer>();
+    pollingSensorIDs.add(1);
+
+    cst.insert(new ChangedStatusRecord("My Device", pollingSensorIDs));
+
+    cache.update(evt);
+
+    ChangedStatusRecord record = cst.query("My Device", pollingSensorIDs);
+
+    Assert.assertTrue(record.getDeviceID().equals("My Device"));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(1));
+    Assert.assertTrue(record.getPollingSensorIDs().size() == 1);
+    Assert.assertTrue(record.getStatusChangedSensorIDs().contains(1));
+    Assert.assertTrue(record.getStatusChangedSensorIDs().size() == 1);
+
+
+
+
+    // One event update on a request of 3 sensor IDs (same device)...
+
+    evt = new Level(30, "test30", 30);
+
+    pollingSensorIDs = new ArrayList<Integer>();
+    pollingSensorIDs.add(10);
+    pollingSensorIDs.add(20);
+    pollingSensorIDs.add(30);
+    pollingSensorIDs.add(40);
+
+    cst.insert(new ChangedStatusRecord("Another Device", pollingSensorIDs));
+
+    cache.update(evt);
+
+    pollingSensorIDs.remove(new Integer(10));
+
+    record = cst.query("Another Device", pollingSensorIDs);
+
+    Assert.assertTrue(record.getDeviceID().equals("Another Device"));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(20));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(30));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(40));
+    Assert.assertTrue(record.getPollingSensorIDs().size() == 3);
+    Assert.assertTrue(record.getStatusChangedSensorIDs().contains(30));
+    Assert.assertTrue(record.getStatusChangedSensorIDs().size() == 1);
+
+
+
+
+    // Two event updates on a request of 4 sensor IDs (same device)...
+    
+    Event evt1 = new Range(100, "test100", 100);
+    Event evt2 = new CustomState(200, "test200", "acme");
+
+
+    pollingSensorIDs = new ArrayList<Integer>();
+    pollingSensorIDs.add(100);
+    pollingSensorIDs.add(200);
+    pollingSensorIDs.add(300);
+    pollingSensorIDs.add(400);
+
+    cst.insert(new ChangedStatusRecord("Third Device", pollingSensorIDs));
+
+    cache.update(evt1);
+    cache.update(evt2);
+
+    record = cst.query("Third Device", pollingSensorIDs);
+
+    Assert.assertTrue(record.getDeviceID().equals("Third Device"));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(100));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(200));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(300));
+    Assert.assertTrue(record.getPollingSensorIDs().contains(400));
+    Assert.assertTrue(record.getPollingSensorIDs().size() == 4);
+    Assert.assertTrue(record.getStatusChangedSensorIDs().contains(100));
+    Assert.assertTrue(record.getStatusChangedSensorIDs().contains(200));
+    Assert.assertTrue(record.getStatusChangedSensorIDs().size() == 2);
+  }
+
+
+  
   // Helper Methods -------------------------------------------------------------------------------
 
   private void waitForUpdate()
@@ -278,10 +585,7 @@ public class StatusCacheTest
 
   private static class TestProcessor extends EventProcessor
   {
-    @Override public Event push(Event evt)
-    {
-      return evt;
-    }
+    @Override public void push(EventContext ctx) { }
 
     @Override public String getName()
     {
@@ -291,9 +595,15 @@ public class StatusCacheTest
 
   private static class OnReplacer extends EventProcessor
   {
-    @Override public Event push(Event evt)
+    @Override public void push(EventContext ctx)
     {
-      return new Switch(evt.getSourceID(), evt.getSource(), "on", Switch.State.ON);
+      Event evt = ctx.getEvent();
+
+      if (evt instanceof Switch)
+      {
+        Switch sw = (Switch)evt;
+        sw.setValue("on");
+      }
     }
 
     @Override public String getName()
@@ -311,10 +621,9 @@ public class StatusCacheTest
       eventValue = val;
     }
 
-    @Override public Event push(Event evt)
+    @Override public void push(EventContext ctx)
     {
-      Assert.assertTrue(evt.getValue().equals(eventValue));
-      return evt;
+      Assert.assertTrue(ctx.getEvent().getValue().equals(eventValue));
     }
 
     @Override public String getName()
