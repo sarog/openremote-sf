@@ -20,7 +20,6 @@
  */
 package org.openremote.controller.component.control;
 
-import java.util.Properties;
 import java.net.URI;
 
 import junit.framework.Assert;
@@ -28,16 +27,12 @@ import org.jdom.Element;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.ControllerConfiguration;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.control.button.Button;
 import org.openremote.controller.component.control.button.ButtonBuilder;
 import org.openremote.controller.exception.InitializationException;
-import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 import org.openremote.controller.service.Deployer;
-import org.openremote.controller.statuscache.ChangedStatusTable;
-import org.openremote.controller.statuscache.StatusCache;
-import org.openremote.controller.statuscache.EventProcessorChain;
+import org.openremote.controller.service.DeployerTest;
 import org.openremote.controller.suite.AllTests;
 
 /**
@@ -64,21 +59,10 @@ public class ButtonBuilderTest
 
   @Before public void setUp() throws Exception
   {
-    ChangedStatusTable cst = new ChangedStatusTable();
-    EventProcessorChain echain = new EventProcessorChain();
-
-    StatusCache sc = new StatusCache(cst, echain);
-
-    ControllerConfiguration cc = new ControllerConfiguration();
     URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/button");
-    cc.setResourcePath(deploymentURI.getPath());
 
-    deployer = new Deployer("Deployer for " + deploymentURI, sc, cc);
-
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-    cf.setCommandBuilders(p);
+    CommandFactory cf = DeployerTest.createCommandFactory();
+    deployer = DeployerTest.createDeployer(deploymentURI, cf);
 
     builder = new ButtonBuilder();
     builder.setCommandFactory(cf);

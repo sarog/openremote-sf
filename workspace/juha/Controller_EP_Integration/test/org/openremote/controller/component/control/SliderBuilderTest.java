@@ -22,32 +22,21 @@ package org.openremote.controller.component.control;
 
 import static org.junit.Assert.fail;
 
-import java.util.List;
-import java.util.Properties;
+import java.net.URI;
 
 import junit.framework.Assert;
 
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
 import org.junit.Before;
 import org.junit.Test;
-import org.openremote.controller.Constants;
-import org.openremote.controller.ControllerConfiguration;
-import org.openremote.controller.model.xml.SensorBuilder;
-import org.openremote.controller.protocol.virtual.VirtualCommandBuilder;
 import org.openremote.controller.service.Deployer;
-import org.openremote.controller.statuscache.StatusCache;
+import org.openremote.controller.service.DeployerTest;
 import org.openremote.controller.suite.AllTests;
 import org.openremote.controller.command.ExecutableCommand;
 import org.openremote.controller.command.CommandFactory;
 import org.openremote.controller.component.control.slider.Slider;
 import org.openremote.controller.component.control.slider.SliderBuilder;
-import org.openremote.controller.exception.NoSuchComponentException;
 import org.openremote.controller.exception.XMLParsingException;
-import org.openremote.controller.utils.SpringTestContext;
 
 /**
  * TODO:
@@ -64,21 +53,11 @@ public class SliderBuilderTest {
 
   @Before public void setUp() throws Exception
   {
-    CommandFactory cf = new CommandFactory();
-    Properties p = new Properties();
-    p.put("virtual", VirtualCommandBuilder.class.getName());
-    cf.setCommandBuilders(p);
+    URI deploymentURI = AllTests.getAbsoluteFixturePath().resolve("builder/slider");
 
-    StatusCache sc = new StatusCache();
+    CommandFactory cf = DeployerTest.createCommandFactory();
 
-    ControllerConfiguration cc = new ControllerConfiguration();
-    cc.setResourcePath(AllTests.getAbsoluteFixturePath().resolve("builder/slider").getPath());
-
-    deployer = new Deployer("Deployer for " + getClass().getSimpleName(), sc, cc);
-
-    SensorBuilder sb = new SensorBuilder(deployer, sc);
-    sb.setCommandFactory(cf);
-    
+    deployer = DeployerTest.createDeployer(deploymentURI, cf);
     deployer.startController();
 
     sliderBuilder = new SliderBuilder();
