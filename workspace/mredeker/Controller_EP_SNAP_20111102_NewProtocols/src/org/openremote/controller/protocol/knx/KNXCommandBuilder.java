@@ -177,22 +177,21 @@ public class KNXCommandBuilder implements CommandBuilder
 
 
   // TODO : inject service dependency
-  private final KNXIpConnectionManager connectionManager = new KNXIpConnectionManager();
+  private KNXIpConnectionManager connectionManager = null;
 
+private String knxIpInterfaceHostname;
+
+private int knxIpInterfacePort;
 
   // Constructors ---------------------------------------------------------------------------------
-  private static int count = 0;
   /**
    * TODO
    */
   public KNXCommandBuilder(String knxIpInterfaceHostname, int knxIpInterfacePort)
   {
-    count++;
-    if(count == 2) {
-    this.connectionManager.setKnxIpInterfaceHostname(knxIpInterfaceHostname);
-    this.connectionManager.setKnxIpInterfacePort(knxIpInterfacePort);
-    this.connectionManager.scheduleConnection();
-    }
+     this.knxIpInterfaceHostname = knxIpInterfaceHostname;
+     this.knxIpInterfacePort = knxIpInterfacePort;
+
   }
 
 
@@ -224,6 +223,12 @@ public class KNXCommandBuilder implements CommandBuilder
    */
   public Command build(Element element)
   {
+     if (this.connectionManager == null) {
+        this.connectionManager = new KNXIpConnectionManager();
+        this.connectionManager.setKnxIpInterfaceHostname(this.knxIpInterfaceHostname);
+        this.connectionManager.setKnxIpInterfacePort(this.knxIpInterfacePort);
+        this.connectionManager.scheduleConnection();
+     }
     /*
      * TODO : ${param} handling (javadoc)
      *
