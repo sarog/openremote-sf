@@ -213,6 +213,8 @@ public class KNXIpConnectionManager implements DiscoveryListener
   * TODO
   *
   * @return
+  *
+  * @throws ConnectionException
   */
   protected KNXConnection getConnection() throws ConnectionException
   {
@@ -717,8 +719,12 @@ public class KNXIpConnectionManager implements DiscoveryListener
 
             synchronized (this.syncLock)
             {
-              this.con = cEmiFrame;
-              this.syncLock.notify();
+              if(this.con == null) {
+                this.con = cEmiFrame;
+                this.syncLock.notify();
+              } else {
+                log.warn("Unexpected KNX con  (" + Thread.currentThread().toString() +")");
+              }
             }
 
             break;
@@ -781,8 +787,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
     //
     //  System.out.println(buffer);
     //
-   
-   
+    
     @Override
     public void notifyInterfaceStatus(Status status) {
        log.info("Notified with KNX interface status = " + status);
@@ -834,6 +839,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
       {
         synchronized (this.syncLock)
         {
+           this.con = null;
            this.client.service(m);
 
            // Wait for server confirmation and check it
@@ -845,11 +851,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (KnxIpException e)
       {
         log.error("Service failed", e);
-        try {
-          this.client.terminateConnection();
-        } catch (InterruptedException e1) {
-           Thread.currentThread().interrupt();
-        }
+        this.stop();
       }
 
       catch (InterruptedException e)
@@ -860,11 +862,7 @@ public class KNXIpConnectionManager implements DiscoveryListener
       catch (IOException e)
       {
         log.error("Service failed", e);
-        try {
-           this.client.terminateConnection();
-         } catch (InterruptedException e1) {
-            Thread.currentThread().interrupt();
-         }
+        this.stop();
       }
 
       return null;
