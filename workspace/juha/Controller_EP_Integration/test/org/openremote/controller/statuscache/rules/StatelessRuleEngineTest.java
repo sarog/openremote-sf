@@ -774,7 +774,72 @@ public class StatelessRuleEngineTest
 
   }
 
-  
+
+  /**
+   * Test parameterized command execution based on sensor event condition.
+   *
+   * @throws Exception    if test fails
+   */
+  @Test public void testParameterizedCommandExecution() throws Exception
+  {
+    String newResourcePath = AllTests.getAbsoluteFixturePath()
+        .resolve("statuscache/rules/param-command-execution/").toString();
+
+    config.setResourcePath(newResourcePath);
+
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
+
+    StatelessRuleEngine sre = new StatelessRuleEngine();
+
+    List<EventProcessor> processors = new ArrayList<EventProcessor>();
+    processors.add(sre);
+
+    epc.setEventProcessors(processors);
+
+    StatusCache cache = new StatusCache(cst, epc);
+
+    Map<String, CommandBuilder> builders = new HashMap<String, CommandBuilder>();
+
+    Tester2CommandBuilder targetBuilder = new Tester2CommandBuilder();
+    builders.put("tester2", targetBuilder);
+
+    CommandFactory cf = new CommandFactory(builders);
+
+    Element cmdElement = new Element("command");
+    cmdElement.setAttribute("id", "10");
+    cmdElement.setAttribute("protocol", "tester2");
+
+    Element nameProp = new Element("property");
+    nameProp.setAttribute("name", "name");
+    nameProp.setAttribute("value", "My Command");
+
+    Set<Element> content = new HashSet<Element>();
+    content.add(nameProp);
+
+    cmdElement.addContent(content);
+
+    Version20CommandBuilder commandBuilder = new Version20CommandBuilder(cf);
+    Command cmd = commandBuilder.build(cmdElement);
+
+
+    Set<Command> commands = new HashSet<Command>();
+    commands.add(cmd);
+
+    cache.initializeEventContext(commands);
+
+
+    Switch sw1 = new Switch(100, "test sensor", "on", Switch.State.ON);
+
+    cache.update(sw1);
+
+
+    Assert.assertTrue(targetBuilder.complete);
+  }
+
+
+
+
 
   // Nested Classes -------------------------------------------------------------------------------
 
@@ -803,6 +868,25 @@ public class StatelessRuleEngineTest
     @Override public void send()
     {
       callbacks.add(callbackId);
+    }
+  }
+
+  private static class Tester2CommandBuilder implements CommandBuilder
+  {
+    boolean complete = false;
+
+    @Override public org.openremote.controller.command.Command build(Element element)
+    {
+      Assert.assertTrue(element.getAttribute("protocol").getValue().equals("tester2"));
+      Assert.assertTrue(element.getAttribute("id").getValue().equals("10"));
+
+      Assert.assertTrue(element.getAttribute(
+          org.openremote.controller.command.Command.DYNAMIC_VALUE_ATTR_NAME).getValue().equals("5")
+      );
+
+      complete = true;
+
+      return null;
     }
   }
 
