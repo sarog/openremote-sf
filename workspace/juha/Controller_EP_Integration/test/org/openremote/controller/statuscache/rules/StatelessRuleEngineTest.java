@@ -46,6 +46,7 @@ import org.openremote.controller.statuscache.EventProcessor;
 import org.openremote.controller.exception.InitializationException;
 import org.openremote.controller.model.event.Switch;
 import org.openremote.controller.model.event.Level;
+import org.openremote.controller.model.event.Range;
 import org.openremote.controller.model.Command;
 import org.openremote.controller.protocol.Event;
 import org.jdom.Element;
@@ -839,6 +840,109 @@ public class StatelessRuleEngineTest
 
 
 
+  /**
+   * Tests rules using event subtypes (range) and a three-way rule definition that
+   * executes with different command parameters depending on whether the range value
+   * is at min boundary, max boundary or between boundaries.
+   * 
+   * @throws Exception    if test fails
+   */
+  @Test public void testSpecializedEventAPI() throws Exception
+  {
+    String newResourcePath = AllTests.getAbsoluteFixturePath()
+        .resolve("statuscache/rules/range-limits/").toString();
+
+    config.setResourcePath(newResourcePath);
+
+    ChangedStatusTable cst = new ChangedStatusTable();
+    EventProcessorChain epc = new EventProcessorChain();
+
+    StatelessRuleEngine sre = new StatelessRuleEngine();
+
+    List<EventProcessor> processors = new ArrayList<EventProcessor>();
+    processors.add(sre);
+
+    epc.setEventProcessors(processors);
+
+    StatusCache cache = new StatusCache(cst, epc);
+
+    Map<String, CommandBuilder> builders = new HashMap<String, CommandBuilder>();
+
+    Tester3CommandBuilder targetBuilder = new Tester3CommandBuilder();
+    builders.put("tester3", targetBuilder);
+
+    CommandFactory cf = new CommandFactory(builders);
+
+    Element cmdElement = new Element("command");
+    cmdElement.setAttribute("id", "99");
+    cmdElement.setAttribute("protocol", "tester3");
+
+    Element nameProp = new Element("property");
+    nameProp.setAttribute("name", "name");
+    nameProp.setAttribute("value", "My Command");
+
+    Set<Element> content = new HashSet<Element>();
+    content.add(nameProp);
+
+    cmdElement.addContent(content);
+
+    Version20CommandBuilder commandBuilder = new Version20CommandBuilder(cf);
+    Command cmd = commandBuilder.build(cmdElement);
+
+
+    Set<Command> commands = new HashSet<Command>();
+    commands.add(cmd);
+
+    cache.initializeEventContext(commands);
+
+
+    for (int rangeValue = 0; rangeValue < 10; rangeValue++)
+    {
+      Range range = new Range(11, "temperature", rangeValue, -10, 10);
+
+      cache.update(range);
+
+      Assert.assertTrue(
+          "Expected '" + rangeValue + "', got " + targetBuilder.currentValue,
+          targetBuilder.currentValue.equals(Integer.toString(rangeValue)));
+    }
+
+
+    {
+      Range range = new Range(11, "temperature", 10, -10, 10);
+
+      cache.update(range);
+
+      Assert.assertTrue(
+          "Expected 'hit the max', got " + targetBuilder.currentValue,
+          targetBuilder.currentValue.equals("hit the max"));
+    }
+
+    for (int rangeValue = 9; rangeValue > -10; rangeValue--)
+    {
+      Range range = new Range(11, "temperature", rangeValue, -10, 10);
+
+      cache.update(range);
+
+      Assert.assertTrue(
+          "Expected '" + rangeValue + "', got " + targetBuilder.currentValue,
+          targetBuilder.currentValue.equals(Integer.toString(rangeValue)));
+    }
+
+    Range range = new Range(11, "temperature", -10, -10, 10);
+
+    cache.update(range);
+
+    Assert.assertTrue(
+        "Expected 'hit the min', got " + targetBuilder.currentValue,
+        targetBuilder.currentValue.equals("hit the min"));
+
+
+  }
+
+
+
+
 
 
   // Nested Classes -------------------------------------------------------------------------------
@@ -889,6 +993,25 @@ public class StatelessRuleEngineTest
       return null;
     }
   }
+
+
+
+  private static class Tester3CommandBuilder implements CommandBuilder
+  {
+    String currentValue = "";
+
+    @Override public org.openremote.controller.command.Command build(Element element)
+    {
+      Assert.assertTrue(element.getAttribute("protocol").getValue().equals("tester3"));
+      Assert.assertTrue(element.getAttribute("id").getValue().equals("99"));
+
+      currentValue = element.getAttribute(
+          org.openremote.controller.command.Command.DYNAMIC_VALUE_ATTR_NAME).getValue();
+
+      return null;
+    }
+  }
+
 
   private static class EventGrab extends EventProcessor
   {
