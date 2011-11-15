@@ -219,6 +219,7 @@
                 <prop key = "onewire">oneWireCommandBuilder</prop>
                 <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
                 <prop key = "datetime">datetimeCommandBuilder</prop>
+                <prop key = "wol">wolCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -234,6 +235,9 @@
 
 	<!-- DateTime Command Builder -->
 	<bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
+	
+	<!-- WOL Command Builder -->
+	<bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
 	
 	<!-- Infrared Command Builder -->
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
