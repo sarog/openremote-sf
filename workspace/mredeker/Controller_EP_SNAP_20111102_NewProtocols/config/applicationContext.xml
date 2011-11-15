@@ -220,6 +220,7 @@
                 <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
                 <prop key = "datetime">datetimeCommandBuilder</prop>
                 <prop key = "wol">wolCommandBuilder</prop>
+                <prop key = "samsungTV">samsungTVCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -238,6 +239,11 @@
 	
 	<!-- WOL Command Builder -->
 	<bean id = "wolCommandBuilder" class = "org.openremote.controller.protocol.wol.WakeOnLanCommandBuilder"/>
+	
+	<!-- Samsung TV Command Builder -->
+	<bean id = "samsungTVCommandBuilder" class = "org.openremote.controller.protocol.samsungtv.SamsungTVRemoteCommandBuilder">
+		<constructor-arg index="0" value="${samsungTV.interface.ip}" />
+	</bean>
 	
 	<!-- Infrared Command Builder -->
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
