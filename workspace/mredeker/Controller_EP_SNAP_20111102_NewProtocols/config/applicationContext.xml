@@ -222,6 +222,7 @@
                 <prop key = "wol">wolCommandBuilder</prop>
                 <prop key = "samsungTV">samsungTVCommandBuilder</prop>
                 <prop key = "russound">russoundCommandBuilder</prop>
+                <prop key = "hsc40">hsc40CommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -253,6 +254,12 @@
 		<constructor-arg index="2" value="${russound.keypadId}" />
 		<constructor-arg index="3" value="${russound.serialDevice}" />
 		<constructor-arg index="4" value="${russound.statusPollingInterval}" />
+	</bean>
+	
+	<!-- HSC-40 Command Builder -->
+	<bean id = "hsc40CommandBuilder" class = "org.openremote.controller.protocol.hsc40.Hsc40CommandBuilder">
+		<constructor-arg index="0" value="${hsc40.interface.ip}" />
+		<constructor-arg index="1" value="${hsc40.interface.port}" type="int" />
 	</bean>
 	
 	<!-- Infrared Command Builder -->
