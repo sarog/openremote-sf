@@ -117,6 +117,10 @@ public abstract class DataPointType
 
   public final static Float2ByteValue VALUE_TEMP = new Float2ByteValue(9, 1);
 
+  // Scene management
+  public final static Unsigned8BitValue SCENE_NUMBER = new Unsigned8BitValue(17, 1);
+  public final static Unsigned8BitValue SCENE_CONTROL = new Unsigned8BitValue(18, 1);
+
   public static DataPointType lookup(String dptID)
   {
     dptID = dptID.toUpperCase().trim();

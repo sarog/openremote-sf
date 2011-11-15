@@ -293,6 +293,41 @@ class ApplicationProtocolDataUnit
   }
 
 
+  /**
+  * Constructs an APDU corresponding to a Group Value Write service for a device expecting an
+  * 6-bit unsigned scene number value (DPT 17.001).
+  * <p>
+  *
+  * Valid parameter value range is [0-63].
+  *
+  * @param parameter
+  *           scene number value
+  * @param learn
+  *           <code>true</code> if command to learn scene
+  *
+  * @return APDU instance for a 8-bit unsigned counter value
+  *
+  * @throws ConversionException
+  *            if the value is not in a given range
+  */
+  static ApplicationProtocolDataUnit createSceneNumber(CommandParameter parameter, boolean learn)
+     throws ConversionException
+  {
+    int value = parameter.getValue();
+
+    if (value < 0 || value > 63)
+    {
+      throw new ConversionException("Expected value is in range [0-63] , received " + value);
+    }
+
+    return new ApplicationProtocolDataUnit(
+        ApplicationLayer.Service.GROUPVALUE_WRITE,
+        new Unsigned8Bit(
+          DataPointType.Unsigned8BitValue.VALUE_1_UCOUNT,
+          learn ? value : 0x80 | value)
+    );
+  }
+
   // Private Instance Fields ----------------------------------------------------------------------
 
   /**
