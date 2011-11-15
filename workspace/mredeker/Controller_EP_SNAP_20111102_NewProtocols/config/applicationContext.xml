@@ -217,7 +217,8 @@
                 <prop key = "virtual">virtualCommandBuilder</prop>
                 <prop key = "mockup">mockupCommandBuilder</prop>
                 <prop key = "onewire">oneWireCommandBuilder</prop>
-            <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "lutron_homeworks">lutronHomeWorksCommandBuilder</prop>
+                <prop key = "datetime">datetimeCommandBuilder</prop>
 		    </props>
 		</property>
 	</bean>
@@ -230,6 +231,9 @@
 	 | See the org.openremote.controller.command.CommandBuilder interface for details if you seek to
 	 | extend the implementation with additional command types.
 	 +-->
+
+	<!-- DateTime Command Builder -->
+	<bean id = "datetimeCommandBuilder" class = "org.openremote.controller.protocol.datetime.DateTimeCommandBuilder"/>
 	
 	<!-- Infrared Command Builder -->
 	<bean id = "irCommandBuilder" class = "org.openremote.controller.protocol.infrared.IRCommandBuilder"/>
