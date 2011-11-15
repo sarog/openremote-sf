@@ -26,7 +26,6 @@ import java.net.InetSocketAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.openremote.controller.Constants;
 import org.openremote.controller.protocol.knx.ip.IpTunnelClientListener.Status;
 import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.protocol.knx.ip.message.Hpai;
@@ -42,15 +41,11 @@ import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
 import org.openremote.controller.utils.Logger;
 
 public class IpTunnelClient implements IpProcessorListener {
-   /**
-    * A common log category name intended to be used across all classes related to KNX implementation.
-    */
-   public final static String KNXIP_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx.ip";
 
    /**
     * KNX logger. Uses a common category for all KNX related logging.
     */
-   private final static Logger log = Logger.getLogger(KNXIP_LOG_CATEGORY);
+   private final static Logger log = Logger.getLogger(IpProcessor.KNXIP_LOG_CATEGORY);
 
    private int channelId;
    private int seqCounter;
@@ -83,7 +78,7 @@ public class IpTunnelClient implements IpProcessorListener {
 
       // Check response
       if (resp == null) {
-         throw new KnxIpException(Code.noResponseFromInterface, "Service failed");
+         throw new KnxIpException(Code.noResponseFromInterface, "Service failed, no ACK");
       } else {
          // Handle tunnel ACK, ignore other responses
          if (resp instanceof IpTunnelingAck) {
@@ -95,12 +90,10 @@ public class IpTunnelClient implements IpProcessorListener {
                      throw new KnxIpException(Code.responseError, "Service failed : " + st);
                   }
                } else {
-                  this.disconnect();
                   throw new KnxIpException(Code.wrongSequenceCounterValue, "Service failed, expected "
                         + this.seqCounter + ", got " + cr.getSeqCounter());
                }
             } else {
-               this.disconnect();
                throw new KnxIpException(Code.wrongChannelId, "Service failed");
             }
          }

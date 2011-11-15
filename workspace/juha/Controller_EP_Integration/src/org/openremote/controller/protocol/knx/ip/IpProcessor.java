@@ -29,15 +29,17 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.openremote.controller.Constants;
 import org.openremote.controller.protocol.knx.ip.KnxIpException.Code;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpConnectionStateResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDisconnectResp;
 import org.openremote.controller.protocol.knx.ip.message.IpDiscoverResp;
 import org.openremote.controller.protocol.knx.ip.message.IpMessage;
-import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingAck;
 import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
+import org.openremote.controller.protocol.knx.ip.message.IpMessage.Primitive;
+import org.openremote.controller.utils.Logger;
 
 /**
  * IP message processor, able to :
@@ -48,6 +50,12 @@ import org.openremote.controller.protocol.knx.ip.message.IpTunnelingReq;
  * </ul>
  */
 class IpProcessor {
+   /**
+    * A common log category name intended to be used across all classes related to KNX implementation.
+    */
+   public final static String KNXIP_LOG_CATEGORY = Constants.CONTROLLER_PROTOCOL_LOG_CATEGORY + "knx.ip";
+
+   private final static Logger log = Logger.getLogger(KNXIP_LOG_CATEGORY);
    private DatagramSocket socket;
    private Object syncLock;
    private IpMessage con;
@@ -95,14 +103,16 @@ class IpProcessor {
                   }
                }
             } catch (IOException x) {
-               // Socket read error, ignore
-               Thread.currentThread().interrupt();
+               // Socket read error, stop thread
+              log.debug("KNX-IP socket listener IOException", x);
+              Thread.currentThread().interrupt();
             } catch (KnxIpException x) {
-               // Invalid message, ignore
-            } catch (Throwable t) {
-               // TODO Ignore?
-            }
+               // Invalid message, stop thread
+              log.warn("KNX-IP socket listener KnxIpException", x);
+              Thread.currentThread().interrupt();
+            } 
          }
+         log.warn("KNX-IP socket listener stopped");
       }
    }
 
