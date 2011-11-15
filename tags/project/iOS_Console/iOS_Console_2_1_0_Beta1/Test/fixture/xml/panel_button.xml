@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openremote xmlns="http://www.openremote.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openremote.org http://www.openremote.org/schemas/panel.xsd">
+    <panels>
+        <panel id="1" name="panel">
+            <include type="group" ref="2"/>
+        </panel>
+    </panels>
+    <screens>
+        <screen id="3" name="screen">
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="10" hasPressCommand="true" hasShortReleaseCommand="true" hasLongPressCommand="true" hasLongReleaseCommand="true"/>
+            </absolute>
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="11" hasPressCommand="true" repeat="true" hasShortReleaseCommand="true" hasLongPressCommand="true" hasLongReleaseCommand="true"/>
+            </absolute>
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="12" hasPressCommand="true" repeat="true" hasShortReleaseCommand="true"/>
+            </absolute>
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="13" hasPressCommand="true" repeat="true" repeatDelay="500" hasShortReleaseCommand="true"/>
+            </absolute>
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="14" hasPressCommand="true" repeat="true" repeatDelay="5" hasShortReleaseCommand="true"/>
+            </absolute>
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="15" hasPressCommand="true" hasLongReleaseCommand="true" longPressDelay="1234"/>
+            </absolute>
+            <absolute left="0" top="0" width="100" height="20">
+                <button id="16" hasPressCommand="true" hasLongReleaseCommand="true" longPressDelay="12"/>
+            </absolute>
+        </screen>
+    </screens>
+    <groups>
+        <group id="2" name="group">
+            <include type="screen" ref="3"/>
+        </group>
+    </groups>
+</openremote>
